@@ -10,3 +10,5 @@ Change log for the `skills_stuff` parent repository.
 ## 2026-03-09
 - Published initial `skills_stuff` parent repository.
 - Added `specialists/project/skill-mx02-migration` as a Git submodule.
+| 2026-03-09T06:42:22.260853+00:00 | main | origin | `5a6f2248b0f8` | Initial commit: skills_stuff with specialist submodule |
+| 2026-03-09T06:42:22.260853+00:00 | main | origin | `2ac1f9a50eee` | chore: enforce revision history controls for living skills |
