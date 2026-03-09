@@ -1,0 +1,1 @@
+Use this adapter as a Claude subagent prompt or include in project context.

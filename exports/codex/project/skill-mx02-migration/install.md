@@ -1,0 +1,1 @@
+Paste AGENTS.fragment.md into repo AGENTS.md and reference specialist pack path.

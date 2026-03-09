@@ -1,0 +1,1 @@
+Map SYSTEM.md and USER_GUIDE.md into your local MCP-capable client configuration.
