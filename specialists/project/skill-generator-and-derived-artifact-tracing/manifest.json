@@ -1,0 +1,29 @@
+{
+  "specialist_type": "project",
+  "subject_name": "generator_and_derived_artifact_tracing",
+  "slug": "skill-generator-and-derived-artifact-tracing",
+  "subject_id": null,
+  "title": "Generator and Derived Artifact Tracing",
+  "description": "Canonical specialist for tracing source-of-truth, generators, flatteners, caches, exports, and derived outputs to prevent drift.",
+  "tags": ["skills", "workflow"],
+  "environment": null,
+  "owner": null,
+  "site": null,
+  "role": null,
+  "scope_boundary": "In scope: tracing source-to-derived relationships and drift risks. Out of scope: broad implementation beyond what the tracing proves.",
+  "parent_refs": [],
+  "related_refs": [],
+  "source_bias": "stable-operational",
+  "created_at": "2026-03-17T00:00:00Z",
+  "updated_at": "2026-03-17T00:00:00Z",
+  "version": "0.1.0",
+  "dependencies": [],
+  "known_constraints": [],
+  "stable_facts": [
+    {"statement": "Do not treat generated artifacts as canonical source without explicit evidence.", "confidence": 0.95, "tags": ["workflow"]},
+    {"statement": "Trace generators, flatteners, templates, and exporters before recommending edits.", "confidence": 0.95, "tags": ["workflow"]},
+    {"statement": "Call out drift risk when source and derived artifacts diverge.", "confidence": 0.95, "tags": ["workflow"]}
+  ],
+  "assumptions": [],
+  "diagnostics": []
+}

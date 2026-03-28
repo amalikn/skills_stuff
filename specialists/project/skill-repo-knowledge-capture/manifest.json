@@ -1,0 +1,99 @@
+{
+  "specialist_type": "project",
+  "subject_name": "repo_knowledge_capture",
+  "slug": "skill-repo-knowledge-capture",
+  "subject_id": null,
+  "title": "Project Specialist: repo_knowledge_capture",
+  "description": "Canonical specialist for local-only repo knowledge capture and versioning.",
+  "tags": [
+    "skills",
+    "knowledge-capture",
+    "git",
+    "local-only"
+  ],
+  "environment": null,
+  "owner": null,
+  "site": null,
+  "role": null,
+  "scope_boundary": "Local-only capture of repo knowledge artifacts outside the target repository.",
+  "parent_refs": [],
+  "related_refs": [],
+  "source_bias": "stable-operational",
+  "created_at": "2026-03-17T00:00:00Z",
+  "updated_at": "2026-03-17T00:00:00Z",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "name": "git",
+      "kind": "tool",
+      "required": true
+    },
+    {
+      "name": "bash",
+      "kind": "tool",
+      "required": true
+    },
+    {
+      "name": "cp",
+      "kind": "tool",
+      "required": true
+    },
+    {
+      "name": "mkdir",
+      "kind": "tool",
+      "required": true
+    }
+  ],
+  "known_constraints": [
+    "Does not push or sync remotely.",
+    "Captures only local filesystem artifacts selected by the workflow."
+  ],
+  "stable_facts": [
+    {
+      "statement": "The canonical storage root is ~/.*/_ansible/local-knowledge/<repo-name>/.",
+      "confidence": 0.93,
+      "tags": [
+        "storage",
+        "local-only"
+      ]
+    },
+    {
+      "statement": "The workflow uses .git/info/exclude instead of tracked .gitignore changes.",
+      "confidence": 0.97,
+      "tags": [
+        "git",
+        "safety"
+      ]
+    },
+    {
+      "statement": "The helper script requires an explicit target repo path.",
+      "confidence": 0.97,
+      "tags": [
+        "workflow",
+        "safety"
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "The target path is a local git repository clone."
+    },
+    {
+      "statement": "Knowledge artifacts are untracked local files such as .serena/ and .smart-coding-cache/."
+    }
+  ],
+  "diagnostics": [
+    {
+      "title": "Verify target repo root",
+      "command": "git -C <repo-path> rev-parse --show-toplevel",
+      "expected": "Absolute path to repo root",
+      "read_only": true
+    },
+    {
+      "title": "Inspect local-only ignore rules",
+      "command": "cat <repo-path>/.git/info/exclude",
+      "expected": "Contains .serena/ and .smart-coding-cache/",
+      "read_only": true
+    }
+  ]
+}

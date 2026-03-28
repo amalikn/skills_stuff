@@ -1,0 +1,1 @@
+Install the runtime skill as `repo-knowledge-capture` and copy the canonical reference files into the runtime `references/` tree. The runtime `SKILL.md` should point to the canonical helper script path and restate the local-only safety rules.

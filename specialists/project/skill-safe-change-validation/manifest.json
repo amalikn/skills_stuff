@@ -1,0 +1,29 @@
+{
+  "specialist_type": "project",
+  "subject_name": "safe_change_validation",
+  "slug": "skill-safe-change-validation",
+  "subject_id": null,
+  "title": "Safe Change Validation",
+  "description": "Canonical specialist for selecting and reporting the smallest meaningful validation for code, config, and infrastructure changes.",
+  "tags": ["skills", "workflow"],
+  "environment": null,
+  "owner": null,
+  "site": null,
+  "role": null,
+  "scope_boundary": "In scope: validation planning and reporting for changes. Out of scope: broad test strategy redesign unless explicitly requested.",
+  "parent_refs": [],
+  "related_refs": [],
+  "source_bias": "stable-operational",
+  "created_at": "2026-03-17T00:00:00Z",
+  "updated_at": "2026-03-17T00:00:00Z",
+  "version": "0.1.0",
+  "dependencies": [],
+  "known_constraints": [],
+  "stable_facts": [
+    {"statement": "Do not claim completeness when only partial validation ran.", "confidence": 0.95, "tags": ["workflow"]},
+    {"statement": "Validation planning must happen before editing, not after.", "confidence": 0.95, "tags": ["workflow"]},
+    {"statement": "State explicitly what remains unverified.", "confidence": 0.95, "tags": ["workflow"]}
+  ],
+  "assumptions": [],
+  "diagnostics": []
+}

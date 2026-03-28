@@ -1,0 +1,29 @@
+{
+  "specialist_type": "project",
+  "subject_name": "repo_local_guidance",
+  "slug": "skill-repo-local-guidance",
+  "subject_id": null,
+  "title": "Repo Local Guidance",
+  "description": "Canonical specialist for thin-root local AGENTS guidance with longer support docs under .agents and local-only git exclusion.",
+  "tags": ["skills", "guidance", "local-only"],
+  "environment": null,
+  "owner": null,
+  "site": null,
+  "role": null,
+  "scope_boundary": "In scope: thin root AGENTS guidance, .agents support docs, local-only ignore setup, and maintenance of repo-local operator guidance. Out of scope: tracked repo governance unless explicitly requested.",
+  "parent_refs": [],
+  "related_refs": [],
+  "source_bias": "stable-operational",
+  "created_at": "2026-03-17T00:00:00Z",
+  "updated_at": "2026-03-17T00:00:00Z",
+  "version": "0.1.0",
+  "dependencies": [],
+  "known_constraints": [],
+  "stable_facts": [
+    {"statement": "Root AGENTS.md stays at repo root because Codex auto-loads repo guidance from AGENTS.md, not from .agents/." , "confidence": 0.97, "tags": ["autoload", "guidance"]},
+    {"statement": ".agents/ is the correct place for longer repo-local support docs when root AGENTS.md should stay thin.", "confidence": 0.95, "tags": ["layout", "guidance"]},
+    {"statement": ".git/info/exclude is the correct local-only ignore mechanism for AGENTS.md and .agents/ when they must not be pushed.", "confidence": 0.97, "tags": ["git", "local-only"]}
+  ],
+  "assumptions": [],
+  "diagnostics": []
+}

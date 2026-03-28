@@ -1,0 +1,29 @@
+{
+  "specialist_type": "project",
+  "subject_name": "repo_bootstrap_and_governance",
+  "slug": "skill-repo-bootstrap-and-governance",
+  "subject_id": null,
+  "title": "Repo Bootstrap and Governance",
+  "description": "Canonical specialist for repo onboarding, AGENTS placement, and governance split between global rules, repo guidance, and reusable skills.",
+  "tags": ["skills", "workflow"],
+  "environment": null,
+  "owner": null,
+  "site": null,
+  "role": null,
+  "scope_boundary": "In scope: governance, onboarding, AGENTS/skills split. Out of scope: repo feature work unrelated to bootstrap/governance.",
+  "parent_refs": [],
+  "related_refs": [],
+  "source_bias": "stable-operational",
+  "created_at": "2026-03-17T00:00:00Z",
+  "updated_at": "2026-03-17T00:00:00Z",
+  "version": "0.1.0",
+  "dependencies": [],
+  "known_constraints": [],
+  "stable_facts": [
+    {"statement": "Do not restate global guidance in repo AGENTS unless it changes materially in repo context.", "confidence": 0.95, "tags": ["workflow"]},
+    {"statement": "Prefer improving an existing strong skill over creating a duplicate.", "confidence": 0.95, "tags": ["workflow"]},
+    {"statement": "Author reusable skills in canonical source repos when that workflow exists.", "confidence": 0.95, "tags": ["workflow"]}
+  ],
+  "assumptions": [],
+  "diagnostics": []
+}

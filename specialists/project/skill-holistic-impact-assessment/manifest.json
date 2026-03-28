@@ -1,0 +1,29 @@
+{
+  "specialist_type": "project",
+  "subject_name": "holistic_impact_assessment",
+  "slug": "skill-holistic-impact-assessment",
+  "subject_id": null,
+  "title": "Holistic Impact Assessment",
+  "description": "Canonical specialist for rename, refactor, schema, and dependency impact analysis.",
+  "tags": ["skills", "workflow"],
+  "environment": null,
+  "owner": null,
+  "site": null,
+  "role": null,
+  "scope_boundary": "In scope: impact-analysis workflow and output discipline. Out of scope: carrying out the code change unless separately requested.",
+  "parent_refs": [],
+  "related_refs": [],
+  "source_bias": "stable-operational",
+  "created_at": "2026-03-17T00:00:00Z",
+  "updated_at": "2026-03-17T00:00:00Z",
+  "version": "0.1.0",
+  "dependencies": [],
+  "known_constraints": [],
+  "stable_facts": [
+    {"statement": "Never conclude non-trivial impact from a single file or grep hit alone.", "confidence": 0.95, "tags": ["workflow"]},
+    {"statement": "Separate direct edits from impacted consumers and generated sources.", "confidence": 0.95, "tags": ["workflow"]},
+    {"statement": "Run a contradiction check before finalizing the impact answer.", "confidence": 0.95, "tags": ["workflow"]}
+  ],
+  "assumptions": [],
+  "diagnostics": []
+}
