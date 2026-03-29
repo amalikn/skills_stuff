@@ -20,3 +20,4 @@ Change log for the `skills_stuff` parent repository.
 - Added repo-local governance index material under `governance/`.
 - Added new canonical project specialists and matching Codex export adapters for generator tracing, impact assessment, repo governance, repo knowledge capture, repo local guidance, and safe change validation.
 | 2026-03-28T23:48:26.796690+00:00 | main | origin | `f1c31bf70930` | skills_stuff: publish new project specialists and codex exports |
+| 2026-03-28T23:56:10.309731+00:00 | main | origin | `7447d4bbe01e` | docs(revision): record published skills_stuff checkpoint |
