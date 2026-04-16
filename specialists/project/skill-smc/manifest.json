@@ -1,0 +1,34 @@
+{
+  "specialist_type": "project",
+  "subject_name": "smc",
+  "slug": "skill-smc",
+  "subject_id": null,
+  "title": "SMC Box Operations and ansible-wifi Authoring",
+  "description": "Operational knowledge base for SMC (Small Cell Management) boxes managed by ansible-wifi. Covers Ansible authoring, service architecture, communication flows, troubleshooting, and failure modes.",
+  "tags": ["ansible", "smc", "wifi", "operations", "troubleshooting", "teleport", "networking"],
+  "environment": "ansible-wifi",
+  "owner": null,
+  "site": null,
+  "role": null,
+  "scope_boundary": "In scope: ansible-wifi repo authoring, SMC box service management, live troubleshooting, Teleport access, Prometheus alerting interpretation, topology variable management. Out of scope: CNMaestro dashboard UI operations, NBN Accelerate portal, Teleport server administration.",
+  "parent_refs": [],
+  "related_refs": [],
+  "source_bias": "stable-operational",
+  "created_at": "2026-04-15T00:00:00Z",
+  "updated_at": "2026-04-15T00:00:00Z",
+  "version": "0.1.0",
+  "dependencies": [],
+  "known_constraints": [
+    "SMC boxes run overlayroot — changes do not persist across reboot unless lower dir is remounted rw",
+    "Ansible connects via Teleport proxy, not direct SSH",
+    "topology_vars.py plugin output is cached in hidden .*.yml files — mtime-based, may be stale after git checkout"
+  ],
+  "stable_facts": [
+    {"statement": "SMC boxes are x86 PCs or ARM64 Raspberry Pis running Ubuntu 20.04+ (22.04 seen in production).", "confidence": 0.99, "tags": ["hardware"]},
+    {"statement": "All remote access routes through Teleport reverse SSH tunnel. SSH port = 50000 + site_eclipse_siteid.", "confidence": 0.99, "tags": ["access", "teleport"]},
+    {"statement": "overlayroot is enabled: writes go to tmpfs at /media/root-rw/overlay and are lost on reboot.", "confidence": 0.99, "tags": ["overlayroot", "persistence"]},
+    {"statement": "Canonical topology source is inventories/*/topology_vars/<site>.yml. Hidden .*.yml files are generated cache.", "confidence": 0.99, "tags": ["ansible", "topology"]}
+  ],
+  "assumptions": [],
+  "diagnostics": []
+}

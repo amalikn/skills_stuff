@@ -9,7 +9,7 @@ The skill now provides a deterministic local-only workflow for preserving and ve
 ### Canonical specialist
 Created under:
 
-`/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-repo-knowledge-capture`
+`/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-repo-knowledge-capture`
 
 Implemented files:
 - `manifest.json`
@@ -32,7 +32,7 @@ Implemented files:
 ### Codex export
 Created under:
 
-`/Volumes/Data/_ai/_mcp/skills_stuff/exports/codex/project/skill-repo-knowledge-capture`
+`/Volumes/Data/_ai/_skills/skills_stuff/exports/codex/project/skill-repo-knowledge-capture`
 
 Implemented files:
 - `SYSTEM.md`

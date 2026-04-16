@@ -9,7 +9,7 @@ This is clone-local automation, not a tracked repo feature. It will not be pushe
 - Create a local `.git/hooks/pre-push` hook in the `ansible-wifi` clone.
 - Hook behavior:
   - resolve repo root from the hook location
-  - call the canonical helper at `/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-repo-knowledge-capture/scripts/repo_knowledge_capture.sh`
+  - call the canonical helper at `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-repo-knowledge-capture/scripts/repo_knowledge_capture.sh`
   - run `setup`
   - run `snapshot`
   - determine the newest snapshot name
@@ -42,6 +42,6 @@ This is clone-local automation, not a tracked repo feature. It will not be pushe
 
 ## Assumptions
 - Installation target is the current local `ansible-wifi` clone only.
-- The canonical helper path remains `/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-repo-knowledge-capture/scripts/repo_knowledge_capture.sh`.
+- The canonical helper path remains `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-repo-knowledge-capture/scripts/repo_knowledge_capture.sh`.
 - Default capture root remains `~/_ansible/local-knowledge/ansible-wifi/`.
 - Blocking push on capture failure is the intended enforcement model.

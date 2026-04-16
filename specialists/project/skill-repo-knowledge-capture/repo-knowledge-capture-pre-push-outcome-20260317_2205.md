@@ -8,7 +8,7 @@ Implemented clone-local `pre-push` automation for `ansible-wifi` using the canon
 ## Implemented Changes
 - Created local hook at `.git/hooks/pre-push` in the `ansible-wifi` clone.
 - Hook resolves repo root from its own location and calls the canonical helper at:
-  - `/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-repo-knowledge-capture/scripts/repo_knowledge_capture.sh`
+  - `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-repo-knowledge-capture/scripts/repo_knowledge_capture.sh`
 - Hook sequence:
   - `setup`
   - `snapshot`

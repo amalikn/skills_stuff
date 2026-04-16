@@ -17,7 +17,7 @@ Markdown naming follows the canonical rule in [`/Volumes/Data/_ai/governance/cat
 
 Use:
 
-- [`../AGENTS.md`](/Volumes/Data/_ai/_mcp/skills_stuff/AGENTS.md)
-- [`../skills.md`](/Volumes/Data/_ai/_mcp/skills_stuff/skills.md)
-- [`../.agents/validation.md`](/Volumes/Data/_ai/_mcp/skills_stuff/.agents/validation.md)
+- [`../AGENTS.md`](/Volumes/Data/_ai/_skills/skills_stuff/AGENTS.md)
+- [`../skills.md`](/Volumes/Data/_ai/_skills/skills_stuff/skills.md)
+- [`../.agents/validation.md`](/Volumes/Data/_ai/_skills/skills_stuff/.agents/validation.md)
 - [`/Volumes/Data/_ai/governance/catalog.md`](/Volumes/Data/_ai/governance/catalog.md)

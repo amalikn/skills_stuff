@@ -1,0 +1,54 @@
+{
+  "specialist_type": "project",
+  "subject_name": "eml_to_md",
+  "slug": "skill-eml-to-md",
+  "subject_id": null,
+  "title": "EML to MD",
+  "description": "Canonical specialist for converting email thread .eml files into cleaned markdown threads with stable sectioning, TOC, timezone-aware dates, and signature-level cleanup.",
+  "tags": ["skills", "email", "documentation"],
+  "environment": null,
+  "owner": null,
+  "site": null,
+  "role": null,
+  "scope_boundary": "In scope: extracting and normalizing email threads from .eml into readable markdown. Out of scope: legal analysis, mailbox synchronization, or rewriting message substance beyond cleanup and formatting.",
+  "parent_refs": [],
+  "related_refs": [],
+  "source_bias": "stable-operational",
+  "created_at": "2026-04-06T00:00:00Z",
+  "updated_at": "2026-04-06T00:00:00Z",
+  "version": "0.1.0",
+  "dependencies": [],
+  "known_constraints": [
+    "If a cleaned markdown thread already exists, compare it against the source .eml before deciding whether to append or regenerate.",
+    "Do not claim that an email or attachment is present in the cleaned markdown unless it is actually reproduced there."
+  ],
+  "stable_facts": [
+    {
+      "statement": "One cleaned markdown section should correspond to one email in the thread.",
+      "confidence": 0.98,
+      "tags": ["format"]
+    },
+    {
+      "statement": "Section headings should use the pattern 'Email X - YYYYMMDD_hhmm - <summary>'.",
+      "confidence": 0.98,
+      "tags": ["format"]
+    },
+    {
+      "statement": "The cleaned markdown should keep human-written body text while removing signatures, legal disclaimers, inline image placeholders, and transport clutter.",
+      "confidence": 0.98,
+      "tags": ["cleanup"]
+    },
+    {
+      "statement": "Header fields in the cleaned markdown should show names only in From, To, and Cc unless the user explicitly asks to preserve addresses.",
+      "confidence": 0.95,
+      "tags": ["format", "privacy"]
+    },
+    {
+      "statement": "If timezone normalization is requested or already established in the project, convert message timestamps consistently and explicitly.",
+      "confidence": 0.95,
+      "tags": ["dates"]
+    }
+  ],
+  "assumptions": [],
+  "diagnostics": []
+}

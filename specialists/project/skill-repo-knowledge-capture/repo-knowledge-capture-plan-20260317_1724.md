@@ -9,7 +9,7 @@ The workflow is explicit-use only. Default behavior is local-only safety first: 
 ### Canonical skill structure
 Create the canonical specialist at:
 
-`/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-repo-knowledge-capture`
+`/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-repo-knowledge-capture`
 
 Include these files:
 - `manifest.json`
@@ -34,7 +34,7 @@ The canonical specialist is the only authoring surface. Future edits should happ
 ### Codex export and install shape
 Render a Codex export at:
 
-`/Volumes/Data/_ai/_mcp/skills_stuff/exports/codex/project/skill-repo-knowledge-capture`
+`/Volumes/Data/_ai/_skills/skills_stuff/exports/codex/project/skill-repo-knowledge-capture`
 
 Export only the Codex-facing adapter files needed by the runtime packaging model. Install the runtime skill as:
 

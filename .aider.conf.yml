@@ -1,0 +1,4 @@
+# Repo-level Aider configuration
+# Inherits global governance via AGENTS.md which @imports ~/.agents/AGENTS.md
+read:
+  - AGENTS.md

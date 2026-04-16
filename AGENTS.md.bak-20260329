@@ -1,0 +1,29 @@
+Title: Skills Stuff Repo Agent Policy
+Category: agent-governance-guide
+Status: current
+Authority: local-supplement
+Scope: Repo-local agent behavior for the skills_stuff source-of-truth repo
+Source of truth: [AGENTS.md](/Volumes/Data/_ai/_mcp/skills_stuff/AGENTS.md)
+Synced from: [agent-governance-guide.md](/Volumes/Data/_ai/governance/categories/agent-governance-guide.md)
+Synced to: /Volumes/Data/_ai/governance/sync-map.yaml
+Last reviewed: 2026-03-24
+Summary: Repo-local agent guidance for skills_stuff with explicit linkage to the canonical governance stack.
+
+# AGENTS.md
+
+This repository is the canonical source-of-truth for specialist packs and client export adapters. Treat `specialists/` as the authoring surface and `exports/` as delivery/adaptation layers unless the task explicitly says otherwise.
+
+Working rules for this repo:
+- Inspect the touched specialist and any corresponding export adapter before editing.
+- Do not treat runtime installs such as `~/.codex/skills` as the source-of-truth for reusable guidance.
+- Keep canonical content and export adapters aligned when a change affects both layers.
+- Follow the canonical markdown policy from [`/Volumes/Data/_ai/governance/categories/markdown-guide.md`](/Volumes/Data/_ai/governance/categories/markdown-guide.md). For new time-bound markdown files in this repo, use `<slug>-YYYYMMDD_hhmm.md` unless the file is a stable convention-locked entrypoint.
+- Use [`skills.md`](/Volumes/Data/_ai/_mcp/skills_stuff/skills.md) for common task patterns and [`.agents/validation.md`](/Volumes/Data/_ai/_mcp/skills_stuff/.agents/validation.md) for current validation limits.
+- If the correct source-of-truth or adapter scope is unclear, stop and ask the operator instead of editing both sides speculatively.
+- Treat this file as repo-local guidance only. It is not a global cross-repo policy file and not a native requirement of any client runtime.
+
+## Canonical Governance Linkage
+
+- Cross-repo reusable governance lives under [`/Volumes/Data/_ai/governance/README.md`](/Volumes/Data/_ai/governance/README.md).
+- The local governance index for this repo lives under [`/Volumes/Data/_ai/_mcp/skills_stuff/governance/README.md`](/Volumes/Data/_ai/_mcp/skills_stuff/governance/README.md).
+- This file remains repo-local operational guidance and reconciles reusable rules upward only through explicit review.
