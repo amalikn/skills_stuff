@@ -1,0 +1,28 @@
+{
+  "installed_at": "2026-03-17T07:05:47.569777+00:00",
+  "updated_at": "2026-03-17T07:05:47.569800+00:00",
+  "source_specialist": {
+    "specialist_type": "project",
+    "slug": "skill-repo-knowledge-capture",
+    "manifest_path": "/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-repo-knowledge-capture/manifest.json",
+    "specialist_path": "/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-repo-knowledge-capture"
+  },
+  "source_manifest_hash": "10ca8c77ac8814d52c11b18b3e5bb5748d9dc4dd52653f98842aad159f572f1e",
+  "source_version": "0.1.0",
+  "managed_files": [
+    ".skill_builder.json",
+    "SKILL.md",
+    "references/CHANGELOG.md",
+    "references/CHECKLISTS/change.md",
+    "references/CHECKLISTS/healthcheck.md",
+    "references/CHECKLISTS/rollback.md",
+    "references/CHECKLISTS/triage.md",
+    "references/CONTEXT/assumptions.md",
+    "references/CONTEXT/boundaries.md",
+    "references/CONTEXT/dependencies.md",
+    "references/CONTEXT/relationships.md",
+    "references/KNOWN_ISSUES.md",
+    "references/PROFILE.md",
+    "references/RUNBOOK.md"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "installed_at": "2026-03-17T06:46:35.629873+00:00",
+  "updated_at": "2026-03-17T06:46:35.629884+00:00",
+  "source_specialist": {
+    "specialist_type": "project",
+    "slug": "skill-holistic-impact-assessment",
+    "manifest_path": "/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-holistic-impact-assessment/manifest.json",
+    "specialist_path": "/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-holistic-impact-assessment"
+  },
+  "source_manifest_hash": "20abdfdeb50c067cc012e9d979fd6cb1226296d52ce37ccb268b00145b7d1c4f",
+  "source_version": "0.1.0",
+  "managed_files": [
+    ".skill_builder.json",
+    "SKILL.md",
+    "references/CHANGELOG.md",
+    "references/CHECKLISTS/change.md",
+    "references/CHECKLISTS/healthcheck.md",
+    "references/CHECKLISTS/rollback.md",
+    "references/CHECKLISTS/triage.md",
+    "references/CONTEXT/assumptions.md",
+    "references/CONTEXT/boundaries.md",
+    "references/CONTEXT/dependencies.md",
+    "references/CONTEXT/relationships.md",
+    "references/KNOWN_ISSUES.md",
+    "references/PROFILE.md",
+    "references/RUNBOOK.md"
+  ]
+}

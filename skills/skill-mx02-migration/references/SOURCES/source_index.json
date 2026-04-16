@@ -1,0 +1,86 @@
+[
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/00_INDEX.md",
+    "file_type": "md",
+    "checksum": "1af8e0e1c31bdf769d664769be994b7002598097df6c2e13238444ee5fac8cfb",
+    "size": 935,
+    "modified_at": "2026-03-06T12:26:40.526609Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/README.md",
+    "file_type": "md",
+    "checksum": "34cc77bc6a91105d2fea47e1275e9ffb41606a95a94165cd8e399153cdcb72c4",
+    "size": 3005,
+    "modified_at": "2026-03-06T14:04:49.966587Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/REVISION_HISTORY.md",
+    "file_type": "md",
+    "checksum": "60e2b6f82bd4795a9f0c2bd1fc83dc8691e3b313f04388fc0438510ba7ace315",
+    "size": 1200,
+    "modified_at": "2026-03-06T14:04:59.041574Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/runbooks/03_DISCOVERY_RUNBOOK.md",
+    "file_type": "md",
+    "checksum": "1f5feb1d9950e57b1f84c55b26825a5bcd1b4736d5dc56d94ffc0ae72105fef4",
+    "size": 741,
+    "modified_at": "2026-03-06T12:22:18.616678Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/runbooks/04_BUILD_AND_MIGRATE_RUNBOOK.md",
+    "file_type": "md",
+    "checksum": "49c4c865bcfc16c632d7190d198d4d2c9d401488dd9dd995da566e661bfdf35d",
+    "size": 3997,
+    "modified_at": "2026-03-06T14:01:51.730953Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/runbooks/05_CUTOVER_CHECKLIST.md",
+    "file_type": "md",
+    "checksum": "e670d3c817e4607188db0c86f94a3e7ba963f929cda0e2917dfcdac24b7fab76",
+    "size": 1394,
+    "modified_at": "2026-03-06T14:02:04.612836Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/operations/07_OPERATIONS_AND_RISKS.md",
+    "file_type": "md",
+    "checksum": "bb6d1d27497691684865bec41d96bddb7f6de2613c7061536990aaf1b2363f77",
+    "size": 498,
+    "modified_at": "2026-03-06T12:22:18.626540Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/operations/10_NEXT_ACTIONS.md",
+    "file_type": "md",
+    "checksum": "2d5b56ff63095b8616172425d844bfbcc6f2533c038d35052dd5e6380ed606b1",
+    "size": 606,
+    "modified_at": "2026-03-06T12:22:18.633327Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/architecture/02_TARGET_LAYOUT.md",
+    "file_type": "md",
+    "checksum": "20625aed5bb6d626f3b7ae82602670db0393becfdde4fd1dd39e0a51143d363b",
+    "size": 649,
+    "modified_at": "2026-03-06T12:22:18.614333Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/architecture/06_POSTFIX_DOVECOT_REFERENCE.md",
+    "file_type": "md",
+    "checksum": "06779e09d9e0adecb7b56bed4fe144ea4d90c7bd2e7cc074bcf4251299c4fa95",
+    "size": 614,
+    "modified_at": "2026-03-06T12:22:18.624207Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/evidence/08_LIVE_NETWORK_FIX_LOG.md",
+    "file_type": "md",
+    "checksum": "2259a2329c8ea3a6c9ef29585867af37f3e47914e7ef72e3b03efd9bd217b243",
+    "size": 962,
+    "modified_at": "2026-03-06T12:22:18.629035Z"
+  },
+  {
+    "path": "/Volumes/Data/_ai/_project/project_stuff/mx02_migration/evidence/09_COMMAND_EVIDENCE.md",
+    "file_type": "md",
+    "checksum": "1fe10f63a682a4da686f024c7974d193e65baf8bee593c61264da339ae7bcbfd",
+    "size": 581,
+    "modified_at": "2026-03-06T12:22:18.631233Z"
+  }
+]

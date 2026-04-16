@@ -1,0 +1,28 @@
+{
+  "installed_at": "2026-03-17T06:46:35.727891+00:00",
+  "updated_at": "2026-03-17T06:46:35.727900+00:00",
+  "source_specialist": {
+    "specialist_type": "project",
+    "slug": "skill-safe-change-validation",
+    "manifest_path": "/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-safe-change-validation/manifest.json",
+    "specialist_path": "/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-safe-change-validation"
+  },
+  "source_manifest_hash": "5cbdbcde19c99c8a190a835cc1882ad5bec60787ef1754b088cde6f91fb8f91c",
+  "source_version": "0.1.0",
+  "managed_files": [
+    ".skill_builder.json",
+    "SKILL.md",
+    "references/CHANGELOG.md",
+    "references/CHECKLISTS/change.md",
+    "references/CHECKLISTS/healthcheck.md",
+    "references/CHECKLISTS/rollback.md",
+    "references/CHECKLISTS/triage.md",
+    "references/CONTEXT/assumptions.md",
+    "references/CONTEXT/boundaries.md",
+    "references/CONTEXT/dependencies.md",
+    "references/CONTEXT/relationships.md",
+    "references/KNOWN_ISSUES.md",
+    "references/PROFILE.md",
+    "references/RUNBOOK.md"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "installed_at": "2026-03-09T06:24:17.980667+00:00",
+  "updated_at": "2026-03-09T06:24:17.980676+00:00",
+  "source_specialist": {
+    "specialist_type": "project",
+    "slug": "skill-mx02-migration",
+    "manifest_path": "/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-mx02-migration/manifest.json",
+    "specialist_path": "/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-mx02-migration"
+  },
+  "source_manifest_hash": "f4e9e1ee8fb64ada243812aa9fc87024c24924d6534435bfaeec383e9690a297",
+  "source_version": "0.1.0",
+  "managed_files": [
+    ".skill_builder.json",
+    "SKILL.md",
+    "references/CHANGELOG.md",
+    "references/CHECKLISTS/change.md",
+    "references/CHECKLISTS/healthcheck.md",
+    "references/CHECKLISTS/rollback.md",
+    "references/CHECKLISTS/triage.md",
+    "references/CLIENTS/codex/SYSTEM.md",
+    "references/CONTEXT/assumptions.md",
+    "references/CONTEXT/boundaries.md",
+    "references/CONTEXT/dependencies.md",
+    "references/CONTEXT/relationships.md",
+    "references/KNOWN_ISSUES.md",
+    "references/PROFILE.md",
+    "references/RUNBOOK.md",
+    "references/SOURCES/source_index.json",
+    "references/SOURCES/source_summary.md"
+  ]
+}

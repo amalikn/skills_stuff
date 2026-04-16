@@ -1,0 +1,28 @@
+{
+  "installed_at": "2026-03-17T07:05:47.516346+00:00",
+  "updated_at": "2026-03-17T07:05:47.516355+00:00",
+  "source_specialist": {
+    "specialist_type": "project",
+    "slug": "skill-repo-bootstrap-and-governance",
+    "manifest_path": "/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-repo-bootstrap-and-governance/manifest.json",
+    "specialist_path": "/Volumes/Data/_ai/_mcp/skills_stuff/specialists/project/skill-repo-bootstrap-and-governance"
+  },
+  "source_manifest_hash": "d5da04cf0f073d16bde0266654413ed37aed08adce976e127fea07986400b738",
+  "source_version": "0.1.0",
+  "managed_files": [
+    ".skill_builder.json",
+    "SKILL.md",
+    "references/CHANGELOG.md",
+    "references/CHECKLISTS/change.md",
+    "references/CHECKLISTS/healthcheck.md",
+    "references/CHECKLISTS/rollback.md",
+    "references/CHECKLISTS/triage.md",
+    "references/CONTEXT/assumptions.md",
+    "references/CONTEXT/boundaries.md",
+    "references/CONTEXT/dependencies.md",
+    "references/CONTEXT/relationships.md",
+    "references/KNOWN_ISSUES.md",
+    "references/PROFILE.md",
+    "references/RUNBOOK.md"
+  ]
+}
