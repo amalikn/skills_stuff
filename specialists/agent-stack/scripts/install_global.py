@@ -181,6 +181,7 @@ def install(
             if target.is_symlink() and target.resolve() == links[target].resolve():
                 target.unlink()
         raise
+    result["would_create"] = []
     result["created"] = created
     return result
 

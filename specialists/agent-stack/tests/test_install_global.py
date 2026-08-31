@@ -50,10 +50,12 @@ class GlobalInstallTests(unittest.TestCase):
     def test_install_creates_only_expected_symlinks(self) -> None:
         expected = self.installed_links()
 
-        INSTALL.install(self.home, clients={"claude", "codex", "agents"})
+        result = INSTALL.install(self.home, clients={"claude", "codex", "agents"})
 
         self.assertTrue(all(path.is_symlink() for path in expected))
         self.assertEqual({path.resolve() for path in expected}, set(expected.values()))
+        self.assertEqual(set(expected), set(result["created"]))
+        self.assertEqual([], result["would_create"])
 
     def test_install_is_idempotent(self) -> None:
         INSTALL.install(self.home, clients={"claude", "codex", "agents"})
