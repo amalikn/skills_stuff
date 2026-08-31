@@ -52,7 +52,7 @@ path. Project-local instructions remain authoritative.
 ## Contents
 
 - `personas/`: 15 on-demand specialist personas, including `orchestrator-follett`.
-- `skills/`: 39 current packages, including `orchestrator`, `skill-project-coherence`, and `skill-slurp-chat`, classified in `manifest.yaml` as `project_agnostic` or `tool_specific`.
+- `skills/`: 37 current packages, including `orchestrator`, classified in `manifest.yaml` as `project_agnostic` or `tool_specific`.
 - `manifest.yaml`: source paths, install convention, and the classification inventory.
 - `scripts/sync_auto_company.py`: conservative upstream comparison and update tool.
 

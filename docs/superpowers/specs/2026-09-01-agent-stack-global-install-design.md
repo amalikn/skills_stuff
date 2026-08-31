@@ -31,9 +31,9 @@ clear decision rights, and "power with" specialists rather than command over the
 | Client | Global destination | Entries |
 | --- | --- | --- |
 | Claude Code | `~/.claude/agents` | 15 persona Markdown files |
-| Claude Code | `~/.claude/skills` | 38 skill links; existing `skill-creator` is retained |
-| Codex | `~/.codex/skills` | 38 skill links; existing `skill-creator` is retained |
-| Compatible `.agents` clients | `~/.agents/skills` | 38 skill links; existing `skill-creator` is retained |
+| Claude Code | `~/.claude/skills` | 36 skill links; existing `skill-creator` is retained |
+| Codex | `~/.codex/skills` | 36 skill links; existing `skill-creator` is retained |
+| Compatible `.agents` clients | `~/.agents/skills` | 36 skill links; existing `skill-creator` is retained |
 
 The `frontend-design.md` single-file source requires a small client adapter directory whose `SKILL.md` is itself a symlink to the canonical file; all package skills are installed as direct directory
 symlinks. An empty pre-existing frontend adapter directory may be reused; a nonempty directory is a collision. Personas are intentionally not installed into `.agents`, because it has no universal

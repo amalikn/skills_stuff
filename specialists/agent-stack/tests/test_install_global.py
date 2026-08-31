@@ -38,8 +38,6 @@ class GlobalInstallTests(unittest.TestCase):
         self.assertIn(self.home / ".claude/skills/orchestrator", targets)
         self.assertIn(self.home / ".codex/skills/orchestrator", targets)
         self.assertIn(self.home / ".agents/skills/orchestrator", targets)
-        self.assertIn(self.home / ".claude/skills/skill-slurp-chat", targets)
-        self.assertIn(self.home / ".codex/skills/skill-project-coherence", targets)
 
     def test_dry_run_changes_nothing(self) -> None:
         expected = self.installed_links()
@@ -55,7 +53,7 @@ class GlobalInstallTests(unittest.TestCase):
         result = INSTALL.install(self.home, clients={"claude", "codex", "agents"})
 
         self.assertTrue(all(path.is_symlink() for path in expected))
-        self.assertEqual({path.resolve() for path in expected}, {source.resolve() for source in expected.values()})
+        self.assertEqual({path.resolve() for path in expected}, set(expected.values()))
         self.assertEqual(set(expected), set(result["created"]))
         self.assertEqual([], result["would_create"])
 
