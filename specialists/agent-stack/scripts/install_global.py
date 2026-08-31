@@ -139,8 +139,9 @@ def preflight(links: dict[Path, Path]) -> tuple[list[Path], list[Path], list[Pat
     collisions: list[Path] = []
     for target, source in links.items():
         if target.name == "SKILL.md" and target.parent.exists() and link_state(target, source) == "missing":
-            collisions.append(target.parent)
-            continue
+            if not target.parent.is_dir() or any(target.parent.iterdir()):
+                collisions.append(target.parent)
+                continue
         state = link_state(target, source)
         if state == "missing":
             missing.append(target)

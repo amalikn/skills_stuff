@@ -117,8 +117,9 @@ worktree, supports `--status`, `--dry-run`, `--install`, `--uninstall`, `--clien
 
 - [x] **Step 4: Implement atomic install, verification, and owned-link-only uninstall**
 
-Preflight all selected paths before writing. A correct existing symlink is idempotent; any other existing target, including an existing frontend adapter directory, is a collision. Verify each
-created link resolves exactly to the canonical source. Uninstall only symlinks whose resolved target equals the expected source, retaining unexpected files and directories.
+Preflight all selected paths before writing. A correct existing symlink is idempotent; any other existing target, including a nonempty frontend adapter directory, is a collision. An empty adapter
+directory may be reused. Verify each created link resolves exactly to the canonical source. Uninstall only symlinks whose resolved target equals the expected source, retaining unexpected files and
+directories.
 
 - [x] **Step 5: Re-run the test module**
 

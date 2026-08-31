@@ -35,7 +35,8 @@ clear decision rights, and "power with" specialists rather than command over the
 | Compatible `.agents` clients | `~/.agents/skills` | 36 skill links; existing `skill-creator` is retained |
 
 The `frontend-design.md` single-file source requires a small client adapter directory whose `SKILL.md` is itself a symlink to the canonical file; all package skills are installed as direct directory
-symlinks. A pre-existing frontend adapter directory is a collision. Personas are intentionally not installed into `.agents`, because it has no universal persona-discovery convention.
+symlinks. An empty pre-existing frontend adapter directory may be reused; a nonempty directory is a collision. Personas are intentionally not installed into `.agents`, because it has no universal
+persona-discovery convention.
 
 ## Commands
 

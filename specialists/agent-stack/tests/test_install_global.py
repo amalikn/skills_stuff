@@ -155,6 +155,14 @@ class GlobalInstallTests(unittest.TestCase):
         self.assertFalse(any(path.is_symlink() for path in expected))
         self.assertEqual("keep", (adapter / "local.md").read_text(encoding="utf-8"))
 
+    def test_empty_frontend_adapter_directory_is_reused(self) -> None:
+        adapter = self.home / ".claude/skills/frontend-design"
+        adapter.mkdir(parents=True)
+
+        INSTALL.install(self.home, clients={"claude"})
+
+        self.assertTrue((adapter / "SKILL.md").is_symlink())
+
 
 if __name__ == "__main__":
     unittest.main()
