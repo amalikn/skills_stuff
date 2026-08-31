@@ -55,6 +55,8 @@ capabilities:
   - {id: seo-audit, kind: package, path: skills/seo-audit, portability: general}
   - {id: seo-content-strategist, kind: package, path: skills/seo-content-strategist, portability: general}
   - {id: skill-creator, kind: package, path: skills/skill-creator, portability: general}
+  - {id: skill-project-coherence, kind: package, path: skills/skill-project-coherence, portability: general}
+  - {id: skill-slurp-chat, kind: package, path: skills/skill-slurp-chat, portability: tool-specific}
   - {id: startup-business-models, kind: package, path: skills/startup-business-models, portability: general}
   - {id: startup-financial-modeling, kind: package, path: skills/startup-financial-modeling, portability: general}
   - {id: tailwind-v4-shadcn, kind: package, path: skills/tailwind-v4-shadcn, portability: tool-specific}
