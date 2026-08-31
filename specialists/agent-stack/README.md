@@ -12,19 +12,45 @@ no-human-gate operating patterns.
 
 ## Use
 
-This is canonical source material under `specialists/`. Install the two top-level directories with symlinks; do not copy their contents.
+Agent Stack is canonical source material under `specialists/`. Its default delivery path is a global, symlink-only install for Claude Code, Codex, and compatible agents that discover
+`~/.agents/skills`. Do not copy its contents.
 
 ```bash
-ln -s /Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/personas <project>/.claude/agents
-ln -s /Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/skills <project>/.claude/skills
+cd /Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack
+just global-dry-run
+just global-install install
 ```
 
-Create the target parent directories first if needed. Replace only project-local directories that the operator has explicitly approved for this shared installation.
+This links personas into Claude Code and skills into `~/.claude/skills`, `~/.codex/skills`, and `~/.agents/skills`. The last target is for compatible agents that explicitly discover that
+standard path; it is not a claim that every agent does. The installer never copies source content or overwrites a pre-existing global entry. Agent Stack’s duplicate `skill-creator` remains
+excluded by default; pass `--include skill-creator` only after deliberately reconciling it.
+
+The original per-project directory-symlink arrangement remains available for a project that explicitly needs a fixed shared library. Do not replace existing project-local directories without
+operator approval.
+
+### Orchestrator
+
+Use `orchestrator` for a multi-specialist task that needs one human-governed coordination path. It selects the smallest useful roles and skills, separates evidence from inference, highlights
+disagreement, and returns one synthesis. `orchestrator-follett` is the companion persona for runtimes that support persona discovery. Neither starts a background process, makes material decisions
+for you, or persists cross-project state.
+
+### Other agents and `.agents`-compatible projects
+
+For an agent that documents global discovery at `~/.agents/skills`, the default global install covers it. For an agent that documents project-local discovery from `.agents/skills`, link the
+canonical skill directory directly when that project does not already own the directory:
+
+```bash
+mkdir -p <project>/.agents
+ln -s /Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/skills <project>/.agents/skills
+```
+
+`.agents` has no universal persona-discovery convention. Use `orchestrator` everywhere; additionally link or reference `personas/orchestrator-follett.md` only when that runtime documents a persona
+path. Project-local instructions remain authoritative.
 
 ## Contents
 
-- `personas/`: 14 on-demand specialist personas.
-- `skills/`: all 36 current Auto Company skill packages, classified in `manifest.yaml` as `project_agnostic` or `tool_specific`.
+- `personas/`: 15 on-demand specialist personas, including `orchestrator-follett`.
+- `skills/`: 37 current packages, including `orchestrator`, classified in `manifest.yaml` as `project_agnostic` or `tool_specific`.
 - `manifest.yaml`: source paths, install convention, and the classification inventory.
 - `scripts/sync_auto_company.py`: conservative upstream comparison and update tool.
 

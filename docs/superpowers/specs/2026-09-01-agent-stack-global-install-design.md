@@ -2,7 +2,9 @@
 
 ## Goal
 
-Make the reusable Agent Stack available from every Claude Code and Codex session without copying it into each project. Keep project-level instructions and governance local to their projects.
+Make the reusable Agent Stack available from every Claude Code and Codex session, plus compatible agents that discover `~/.agents/skills`, without copying it into each project. Add an opt-in
+Orchestrator that coordinates its specialists while keeping
+project-level governance and human decision ownership local.
 
 ## Decision
 
@@ -11,22 +13,36 @@ No persona or skill content is copied into a client directory.
 
 It will not replace, copy, rename, or overwrite existing global entries. The install is atomic at the selected client scope: a collision stops the operation before any new link is created.
 
+## Orchestrator
+
+`skills/orchestrator/SKILL.md` is an explicit, on-demand coordinator. It first reads project constraints and available evidence, then uses the manifest and `team` skill to select the smallest useful
+set of roles and procedures. It must state its selected team, decision gates, and synthesis contract before asking specialists to contribute.
+
+The coordination flow is: frame the task; select skills and personas; run bounded specialist passes; distinguish evidence, inference, and disagreement; return one recommendation, residual risks, and
+the next action. It detects circular work and reports a blocker rather than inventing progress. It never starts a daemon, forces a GO decision, writes cross-project state, or overrides a project’s
+own instructions and permissions.
+
+`personas/orchestrator-follett.md` is coordination persona guidance for runtimes that support it. Inspired by Mary Parker Follett, it favours shared purpose, integration of genuine disagreement,
+clear decision rights, and "power with" specialists rather than command over them. It does not substitute its judgment for the user’s on material decisions.
+
 ## Client Mapping
 
 | Client | Global destination | Entries |
 | --- | --- | --- |
-| Claude Code | `~/.claude/agents` | 14 persona Markdown files |
-| Claude Code | `~/.claude/skills` | 36 skill entries |
-| Codex | `~/.codex/skills` | 36 skill entries |
+| Claude Code | `~/.claude/agents` | 15 persona Markdown files |
+| Claude Code | `~/.claude/skills` | 36 skill links; existing `skill-creator` is retained |
+| Codex | `~/.codex/skills` | 36 skill links; existing `skill-creator` is retained |
+| Compatible `.agents` clients | `~/.agents/skills` | 36 skill links; existing `skill-creator` is retained |
 
 The `frontend-design.md` single-file source requires a small client adapter directory whose `SKILL.md` is itself a symlink to the canonical file; all package skills are installed as direct directory
-symlinks. Personas are intentionally not installed into Codex because Codex has no corresponding persona discovery directory in this stack.
+symlinks. A pre-existing frontend adapter directory is a collision. Personas are intentionally not installed into `.agents`, because it has no universal persona-discovery convention.
 
 ## Commands
 
 `just global-status` reports the expected links and their current state without changes. `just global-dry-run` previews a complete install. `just global-install install` creates links only after preflight succeeds. `just global-uninstall uninstall` removes only links that still resolve exactly to Agent Stack sources.
 
-The underlying script accepts an alternate home directory for automated tests. It reports `missing`, `correct`, `collision`, and `stale-agent-stack-link` states. A stale link is treated as an error until reviewed; it is never silently replaced.
+The underlying script accepts an alternate home directory for automated tests. It refuses global installation from a secondary Git worktree, reports `missing`, `correct`, `collision`, and
+`stale-agent-stack-link` states, and treats a stale link as an error until reviewed; it is never silently replaced.
 
 ## Safety and Recovery
 

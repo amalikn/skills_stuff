@@ -24,3 +24,21 @@ record-current source:
 # Run the standard-library sync tests.
 test:
     mise exec -- python -m unittest discover -s tests -v
+
+# Report the symlink-only global installation state; skill-creator stays excluded by default.
+global-status:
+    mise exec -- python scripts/install_global.py --status
+
+# Preview the global installation without changing Claude, Codex, or compatible .agents directories.
+global-dry-run:
+    mise exec -- python scripts/install_global.py --dry-run
+
+# Install every non-conflicting Agent Stack entry globally through verified symlinks only.
+global-install confirm="":
+    test "{{confirm}}" = "install"
+    mise exec -- python scripts/install_global.py --install
+
+# Remove only global links that still point exactly to Agent Stack sources.
+global-uninstall confirm="":
+    test "{{confirm}}" = "uninstall"
+    mise exec -- python scripts/install_global.py --uninstall

@@ -21,6 +21,7 @@ capabilities:
   - {id: interaction-cooper, kind: persona, path: personas/interaction-cooper.md, portability: general}
   - {id: marketing-godin, kind: persona, path: personas/marketing-godin.md, portability: general}
   - {id: operations-pg, kind: persona, path: personas/operations-pg.md, portability: general}
+  - {id: orchestrator-follett, kind: persona, path: personas/orchestrator-follett.md, portability: general}
   - {id: product-norman, kind: persona, path: personas/product-norman.md, portability: general}
   - {id: qa-bach, kind: persona, path: personas/qa-bach.md, portability: general}
   - {id: research-thompson, kind: persona, path: personas/research-thompson.md, portability: general}
@@ -43,6 +44,7 @@ capabilities:
   - {id: github-explorer, kind: package, path: skills/github-explorer, portability: tool-specific}
   - {id: market-sizing-analysis, kind: package, path: skills/market-sizing-analysis, portability: general}
   - {id: micro-saas-launcher, kind: package, path: skills/micro-saas-launcher, portability: general}
+  - {id: orchestrator, kind: package, path: skills/orchestrator, portability: general}
   - {id: ph-community-outreach, kind: package, path: skills/ph-community-outreach, portability: general}
   - {id: premortem, kind: package, path: skills/premortem, portability: general}
   - {id: pricing-strategy, kind: package, path: skills/pricing-strategy, portability: general}
