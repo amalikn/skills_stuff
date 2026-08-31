@@ -143,18 +143,18 @@ Add `global-status`, `global-dry-run`, `global-install confirm=""`, and `global-
 
 Replace per-project installation as the default with global `just` commands. State that `orchestrator` is opt-in, does not run in the background, and project-local governance wins.
 
-- [ ] **Step 2: Run the complete suite and non-mutating real-home preview**
+- [x] **Step 2: Run the complete suite and non-mutating real-home preview**
 
 Run: `just test` and `just global-dry-run` from `specialists/agent-stack`.
 
 Expected: all tests pass; preview reports either a fully installable inventory or collisions without changes.
 
-- [ ] **Step 3: Apply only after successful preflight**
+- [x] **Step 3: Apply only after successful preflight**
 
 Run: `just global-install install`.
 
 Expected: every non-colliding selected path becomes a verified symlink, or the command exits before changing anything and reports collisions.
 
-- [ ] **Step 4: Record the outcome and commit**
+- [x] **Step 4: Record the outcome and commit**
 
 Record installed/skipped targets, exact validation, and any unresolved collisions. Commit only Agent Stack files from the isolated worktree.

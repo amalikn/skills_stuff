@@ -15,12 +15,13 @@ It will not replace, copy, rename, or overwrite existing global entries. The ins
 
 ## Orchestrator
 
-`skills/orchestrator/SKILL.md` is an explicit, on-demand coordinator. It first reads project constraints and available evidence, then uses the manifest and `team` skill to select the smallest useful
-set of roles and procedures. It must state its selected team, decision gates, and synthesis contract before asking specialists to contribute.
+`skills/orchestrator/SKILL.md` is the normal single entry point to Agent Stack. The operator gives it the task rather than selecting specialists directly. It first reads project constraints and
+available evidence, then uses the manifest and `team` skill to select the smallest useful set of roles and procedures. It must state its selected team, decision gates, and synthesis contract before
+asking specialists to contribute.
 
 The coordination flow is: frame the task; select skills and personas; run bounded specialist passes; distinguish evidence, inference, and disagreement; return one recommendation, residual risks, and
-the next action. It detects circular work and reports a blocker rather than inventing progress. It never starts a daemon, forces a GO decision, writes cross-project state, or overrides a project’s
-own instructions and permissions.
+the next action. Direct specialist use is an explicit exception for a requested narrow task. It detects circular work and reports a blocker rather than inventing progress. It never starts a daemon,
+forces a GO decision, writes cross-project state, or overrides a project’s own instructions and permissions.
 
 `personas/orchestrator-follett.md` is coordination persona guidance for runtimes that support it. Inspired by Mary Parker Follett, it favours shared purpose, integration of genuine disagreement,
 clear decision rights, and "power with" specialists rather than command over them. It does not substitute its judgment for the user’s on material decisions.

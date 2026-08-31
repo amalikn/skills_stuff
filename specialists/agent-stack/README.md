@@ -30,9 +30,11 @@ operator approval.
 
 ### Orchestrator
 
-Use `orchestrator` for a multi-specialist task that needs one human-governed coordination path. It selects the smallest useful roles and skills, separates evidence from inference, highlights
-disagreement, and returns one synthesis. `orchestrator-follett` is the companion persona for runtimes that support persona discovery. Neither starts a background process, makes material decisions
-for you, or persists cross-project state.
+`orchestrator` is the normal single entry point for Agent Stack. Give the task to it; do not first decide which specialist to call. It selects the smallest useful roles and skills, separates
+evidence from inference, highlights disagreement, and returns one synthesis. The installed specialist skills remain its internal library. Call one directly only when you explicitly want a narrow,
+single-specialist task.
+
+`orchestrator-follett` is the companion persona for runtimes that support persona discovery. Neither starts a background process, makes material decisions for you, or persists cross-project state.
 
 ### Other agents and `.agents`-compatible projects
 
