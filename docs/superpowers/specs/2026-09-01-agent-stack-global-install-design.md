@@ -7,6 +7,7 @@ Make the reusable Agent Stack available from every Claude Code and Codex session
 ## Decision
 
 Agent Stack remains the single canonical source at `specialists/agent-stack/`. A new installer will create individual symlinks from the global client directories to canonical persona and skill entries.
+No persona or skill content is copied into a client directory.
 
 It will not replace, copy, rename, or overwrite existing global entries. The install is atomic at the selected client scope: a collision stops the operation before any new link is created.
 
@@ -18,7 +19,8 @@ It will not replace, copy, rename, or overwrite existing global entries. The ins
 | Claude Code | `~/.claude/skills` | 36 skill entries |
 | Codex | `~/.codex/skills` | 36 skill entries |
 
-The `frontend-design.md` single-file source requires a small client adapter directory containing `SKILL.md`; all package skills are installed as direct symlinks. Personas are intentionally not installed into Codex because Codex has no corresponding persona discovery directory in this stack.
+The `frontend-design.md` single-file source requires a small client adapter directory whose `SKILL.md` is itself a symlink to the canonical file; all package skills are installed as direct directory
+symlinks. Personas are intentionally not installed into Codex because Codex has no corresponding persona discovery directory in this stack.
 
 ## Commands
 
