@@ -129,8 +129,12 @@ class GlobalInstallTests(unittest.TestCase):
             text=True,
         )
 
-        self.assertEqual(2, completed.returncode)
-        self.assertIn("canonical checkout", completed.stderr)
+        is_secondary_worktree = SCRIPT.parent.parent.resolve() != INSTALL.canonical_install_root()
+        self.assertEqual(2 if is_secondary_worktree else 0, completed.returncode)
+        if is_secondary_worktree:
+            self.assertIn("canonical checkout", completed.stderr)
+        else:
+            self.assertIn("would_create", completed.stdout)
 
     def test_cli_requires_an_explicit_action(self) -> None:
         with mock.patch.object(sys, "argv", [str(SCRIPT)]):
