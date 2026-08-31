@@ -1,0 +1,26 @@
+set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
+
+# Show the current configured upstream state without mirror or network access.
+upstream-status:
+    mise exec -- python scripts/sync_auto_company.py --status
+
+# Compare the existing local mirror without fetching it.
+upstream-dry-run:
+    mise exec -- python scripts/sync_auto_company.py --dry-run
+
+# Fetch the official upstream into the disposable working cache and report proposed changes.
+upstream-fetch-dry-run:
+    mise exec -- python scripts/sync_auto_company.py --fetch --dry-run
+
+# Apply only safe additions and unchanged canonical replacements after explicit confirmation.
+upstream-apply confirm="":
+    test "{{confirm}}" = "apply"
+    mise exec -- python scripts/sync_auto_company.py --fetch --apply
+
+# Record a reviewed local Auto Company source checkout as the current import baseline.
+record-current source:
+    mise exec -- python scripts/sync_auto_company.py --record-current --source "{{source}}"
+
+# Run the standard-library sync tests.
+test:
+    mise exec -- python -m unittest discover -s tests -v

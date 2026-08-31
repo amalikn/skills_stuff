@@ -1,0 +1,69 @@
+version: 1
+name: agent-stack
+language: English
+source:
+  repository: https://github.com/MaxMiksa/Auto-Company.git
+  source_paths:
+    personas: .claude/agents
+    skills: .claude/skills
+install:
+  method: directory-symlink
+  consumer_paths:
+    personas: .claude/agents
+    skills: .claude/skills
+capabilities:
+  - {id: ceo-bezos, kind: persona, path: personas/ceo-bezos.md, portability: general}
+  - {id: cfo-campbell, kind: persona, path: personas/cfo-campbell.md, portability: general}
+  - {id: critic-munger, kind: persona, path: personas/critic-munger.md, portability: general}
+  - {id: cto-vogels, kind: persona, path: personas/cto-vogels.md, portability: general}
+  - {id: devops-hightower, kind: persona, path: personas/devops-hightower.md, portability: general}
+  - {id: fullstack-dhh, kind: persona, path: personas/fullstack-dhh.md, portability: general}
+  - {id: interaction-cooper, kind: persona, path: personas/interaction-cooper.md, portability: general}
+  - {id: marketing-godin, kind: persona, path: personas/marketing-godin.md, portability: general}
+  - {id: operations-pg, kind: persona, path: personas/operations-pg.md, portability: general}
+  - {id: product-norman, kind: persona, path: personas/product-norman.md, portability: general}
+  - {id: qa-bach, kind: persona, path: personas/qa-bach.md, portability: general}
+  - {id: research-thompson, kind: persona, path: personas/research-thompson.md, portability: general}
+  - {id: sales-ross, kind: persona, path: personas/sales-ross.md, portability: general}
+  - {id: ui-duarte, kind: persona, path: personas/ui-duarte.md, portability: general}
+  - {id: agent-browser, kind: package, path: skills/agent-browser, portability: tool-specific}
+  - {id: code-review-security, kind: package, path: skills/code-review-security, portability: general}
+  - {id: cold-email-sequence-generator, kind: package, path: skills/cold-email-sequence-generator, portability: general}
+  - {id: community-led-growth, kind: package, path: skills/community-led-growth, portability: general}
+  - {id: competitive-intelligence-analyst, kind: package, path: skills/competitive-intelligence-analyst, portability: general}
+  - {id: content-strategy, kind: package, path: skills/content-strategy, portability: general}
+  - {id: deep-analysis, kind: package, path: skills/deep-analysis, portability: general}
+  - {id: deep-reading-analyst, kind: package, path: skills/deep-reading-analyst, portability: general}
+  - {id: deep-research, kind: package, path: skills/deep-research, portability: general}
+  - {id: devops, kind: package, path: skills/devops, portability: tool-specific}
+  - {id: email-sequence, kind: package, path: skills/email-sequence, portability: general}
+  - {id: financial-unit-economics, kind: package, path: skills/financial-unit-economics, portability: general}
+  - {id: find-skills, kind: package, path: skills/find-skills, portability: general}
+  - {id: frontend-design, kind: single_file, path: skills/frontend-design.md, portability: general}
+  - {id: github-explorer, kind: package, path: skills/github-explorer, portability: tool-specific}
+  - {id: market-sizing-analysis, kind: package, path: skills/market-sizing-analysis, portability: general}
+  - {id: micro-saas-launcher, kind: package, path: skills/micro-saas-launcher, portability: general}
+  - {id: ph-community-outreach, kind: package, path: skills/ph-community-outreach, portability: general}
+  - {id: premortem, kind: package, path: skills/premortem, portability: general}
+  - {id: pricing-strategy, kind: package, path: skills/pricing-strategy, portability: general}
+  - {id: product-strategist, kind: package, path: skills/product-strategist, portability: general}
+  - {id: scientific-critical-thinking, kind: package, path: skills/scientific-critical-thinking, portability: general}
+  - {id: security-audit, kind: package, path: skills/security-audit, portability: general}
+  - {id: senior-qa, kind: package, path: skills/senior-qa, portability: general}
+  - {id: seo-audit, kind: package, path: skills/seo-audit, portability: general}
+  - {id: seo-content-strategist, kind: package, path: skills/seo-content-strategist, portability: general}
+  - {id: skill-creator, kind: package, path: skills/skill-creator, portability: general}
+  - {id: startup-business-models, kind: package, path: skills/startup-business-models, portability: general}
+  - {id: startup-financial-modeling, kind: package, path: skills/startup-financial-modeling, portability: general}
+  - {id: tailwind-v4-shadcn, kind: package, path: skills/tailwind-v4-shadcn, portability: tool-specific}
+  - {id: team, kind: package, path: skills/team, portability: general}
+  - {id: user-persona-creation, kind: package, path: skills/user-persona-creation, portability: general}
+  - {id: user-research-synthesis, kind: package, path: skills/user-research-synthesis, portability: general}
+  - {id: ux-audit-rethink, kind: package, path: skills/ux-audit-rethink, portability: general}
+  - {id: web-scraping, kind: package, path: skills/web-scraping, portability: general}
+  - {id: websh, kind: package, path: skills/websh, portability: tool-specific}
+upstream_sync:
+  script: scripts/sync_auto_company.py
+  state: upstream-state.json
+  translation_policy: translation-policy.md
+  policy: report-first; apply only safe English additions or unchanged canonical replacements

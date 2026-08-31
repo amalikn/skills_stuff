@@ -18,6 +18,7 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
   - `skill-safe-change-validation`
   - existing `skill-mx02-migration`
 - Codex export adapters are present under `exports/codex/project/` for the new project specialists.
+- `specialists/agent-stack/` is the canonical, English-only home for Auto Company-derived personas and skills. It is a reusable on-demand library, not an Auto Company runtime component.
 
 ## Governance
 - Repo-local guidance: [AGENTS.md](/Volumes/Data/_ai/_skills/skills_stuff/AGENTS.md)

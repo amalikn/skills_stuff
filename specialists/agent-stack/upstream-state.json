@@ -1,0 +1,938 @@
+{
+  "branch": "main",
+  "last_imported_commit": "ebfab9b4bd5f0ab5ad452a1ff85285b3c141acdd",
+  "tracked": {
+    "personas/ceo-bezos.md": {
+      "canonical_sha256": "aa44a5ee8c1464713a3f92cc1780fa7a2f25f1873eb610b46e170f0ede5055bb",
+      "mode": "translated",
+      "source_sha256": "04655828d6c110787651efc71d53ab2e6d04f26356b3c7de8f00c909aa645de2"
+    },
+    "personas/cfo-campbell.md": {
+      "canonical_sha256": "7bf4d09e3e92217d16191100eedabf286a8b5c5f59f9f1e88c4718bed25f78b1",
+      "mode": "translated",
+      "source_sha256": "63186e51dad6191930907dd8f0847fa8d78080c43f3d9d1576629c30b5f01545"
+    },
+    "personas/critic-munger.md": {
+      "canonical_sha256": "6d0b606eed00fbedd4eebd37c49f48a5545f4cee7ffbcce2e0d54e510ec2812f",
+      "mode": "translated",
+      "source_sha256": "ca59c72d8b8a91436b1fe60866af2318bb0540e83551c244882427c6fc52b18b"
+    },
+    "personas/cto-vogels.md": {
+      "canonical_sha256": "b0249c3fabf156fff36e1ede4d327404bed3105e7622985683439aa3d250614c",
+      "mode": "translated",
+      "source_sha256": "1ebb7f996b34ab379efdbf986ff84d228a141a6d4de14ea7e12881a9e8ee414b"
+    },
+    "personas/devops-hightower.md": {
+      "canonical_sha256": "960a55e2a4c9501140cf766d376618cb50b4ce6ba490128f3f7f63b004e6c9a7",
+      "mode": "translated",
+      "source_sha256": "b878799362a333ec60429f484dfb71a9acc0fc1dac01ece82b2349009bc15a86"
+    },
+    "personas/fullstack-dhh.md": {
+      "canonical_sha256": "c171cafcd5a71ee193b29bef806f050f53fe6a0bee4fad6add7150843bc8e292",
+      "mode": "translated",
+      "source_sha256": "eb0f38a3deb7bc114fb019750bc25a2a69697b033a673f6e2128c55b12161a4c"
+    },
+    "personas/interaction-cooper.md": {
+      "canonical_sha256": "15ad29f23c31131394f574430c9a03ad4fe09564db2c71d5166776e43ea39ef4",
+      "mode": "translated",
+      "source_sha256": "5cea25452ad088f74219b933aa1991f2b6e80f0555854fb0e87dfb05099303d2"
+    },
+    "personas/marketing-godin.md": {
+      "canonical_sha256": "a54bfc82faaec1523dc70326535db3dff2f89dc65f6020b791234000036a8c00",
+      "mode": "translated",
+      "source_sha256": "57022054cf4a10653f9ef22f17eed9be884f26611ff26a6b4a4eef1fe13d7f33"
+    },
+    "personas/operations-pg.md": {
+      "canonical_sha256": "cda497040134778d8d25e8a7777c5bec6130d2aa30a54f034322971fa709e05a",
+      "mode": "translated",
+      "source_sha256": "9609adb51e32d8286a400731f4d6c7556defbac5f8ae7a35866f79d359f2d0b5"
+    },
+    "personas/product-norman.md": {
+      "canonical_sha256": "a157871983ff83151931fe8fbf6f602802074687ca0439f3082aefa8b98108ae",
+      "mode": "translated",
+      "source_sha256": "c972ab38f3da66602ab74df381508381eafc0a47d285ee65eea10c7d4235dd9e"
+    },
+    "personas/qa-bach.md": {
+      "canonical_sha256": "47b9cee58494085b4e22955bdab74a5d1ff4be3294f3e19dc615f69a89007882",
+      "mode": "translated",
+      "source_sha256": "8a978a70de635de0c49a1cfc5a330ff3ce074d738f8cb76c9c88f9151960b050"
+    },
+    "personas/research-thompson.md": {
+      "canonical_sha256": "99a3fa4fe0f9f7e2ea66130315ab1f66dd9563f8d1694fb3fa7fdd8259e9533e",
+      "mode": "translated",
+      "source_sha256": "f34818ac1c966bf9c96c5fece843343d39e35e828ac7064b0084bb2efbbc5b52"
+    },
+    "personas/sales-ross.md": {
+      "canonical_sha256": "e164262ca865fab8782700c8706bf193cdd4cb3c39aa59cb24a0b62beb2a5fd2",
+      "mode": "translated",
+      "source_sha256": "1abba59b58e42bc2193de192e9a9ee1db3d381c4ed684ea2bc19c0753723ffd1"
+    },
+    "personas/ui-duarte.md": {
+      "canonical_sha256": "1e6a2efccf2c3f682ec0d1d6f4c34a7b433ede46eeb3a08c0a0704b8f6561d61",
+      "mode": "translated",
+      "source_sha256": "359692585ee6ad8afd4026aafe72b6554772015666845360ce97ed4988b1dfba"
+    },
+    "skills/agent-browser/SKILL.md": {
+      "canonical_sha256": "84effb42371bac499123843088fe4304d8b7c5de765722e3ad92cc0f7cc68557",
+      "mode": "mirrored",
+      "source_sha256": "84effb42371bac499123843088fe4304d8b7c5de765722e3ad92cc0f7cc68557"
+    },
+    "skills/agent-browser/references/authentication.md": {
+      "canonical_sha256": "cd56ddc957da3705a2dd2b6956c36a41d0366543f645d2ef1b309dcdee5cdd0e",
+      "mode": "mirrored",
+      "source_sha256": "cd56ddc957da3705a2dd2b6956c36a41d0366543f645d2ef1b309dcdee5cdd0e"
+    },
+    "skills/agent-browser/references/commands.md": {
+      "canonical_sha256": "3e5e521a1e6fdd7c0304333883b16859f83b2149bed70ede10464e534c9e4740",
+      "mode": "mirrored",
+      "source_sha256": "3e5e521a1e6fdd7c0304333883b16859f83b2149bed70ede10464e534c9e4740"
+    },
+    "skills/agent-browser/references/proxy-support.md": {
+      "canonical_sha256": "4620b5b49ea05f7439c967bf3396ea4d883e0c2313aba1b3494cdc2a6839d14d",
+      "mode": "mirrored",
+      "source_sha256": "4620b5b49ea05f7439c967bf3396ea4d883e0c2313aba1b3494cdc2a6839d14d"
+    },
+    "skills/agent-browser/references/session-management.md": {
+      "canonical_sha256": "2ce531bf105aaf827a907a4e255e00321eef5994ca0e21e41c28489c0a8efebb",
+      "mode": "mirrored",
+      "source_sha256": "2ce531bf105aaf827a907a4e255e00321eef5994ca0e21e41c28489c0a8efebb"
+    },
+    "skills/agent-browser/references/snapshot-refs.md": {
+      "canonical_sha256": "6a9fda02203cff88c4bce0c1834fc9e492c03fa75cef0fc2800e28b92f4e1133",
+      "mode": "mirrored",
+      "source_sha256": "6a9fda02203cff88c4bce0c1834fc9e492c03fa75cef0fc2800e28b92f4e1133"
+    },
+    "skills/agent-browser/references/video-recording.md": {
+      "canonical_sha256": "c2c12bd8c44e5d36fbb94cfc376180d47507d3c26a7ee8876b892fc700dcf332",
+      "mode": "mirrored",
+      "source_sha256": "c2c12bd8c44e5d36fbb94cfc376180d47507d3c26a7ee8876b892fc700dcf332"
+    },
+    "skills/agent-browser/templates/authenticated-session.sh": {
+      "canonical_sha256": "470999dc7d073464adbf556d2486665889b9ca933f8122cab2073e83a4583a60",
+      "mode": "mirrored",
+      "source_sha256": "470999dc7d073464adbf556d2486665889b9ca933f8122cab2073e83a4583a60"
+    },
+    "skills/agent-browser/templates/capture-workflow.sh": {
+      "canonical_sha256": "bf3f3a2f8413773891d9fa400d2a2fddf6d73ffc7a9b2fa00f797f944171c3d5",
+      "mode": "mirrored",
+      "source_sha256": "bf3f3a2f8413773891d9fa400d2a2fddf6d73ffc7a9b2fa00f797f944171c3d5"
+    },
+    "skills/agent-browser/templates/form-automation.sh": {
+      "canonical_sha256": "b86836986d339f736b15ca78cf3d566e845a6293ae25a5b00aa520b837572650",
+      "mode": "mirrored",
+      "source_sha256": "b86836986d339f736b15ca78cf3d566e845a6293ae25a5b00aa520b837572650"
+    },
+    "skills/code-review-security/SKILL.md": {
+      "canonical_sha256": "6a7d57ae5b2f014c8b43b95500f391084f079d24c0157200cfc119caf79cd7b9",
+      "mode": "mirrored",
+      "source_sha256": "6a7d57ae5b2f014c8b43b95500f391084f079d24c0157200cfc119caf79cd7b9"
+    },
+    "skills/code-review-security/scripts/security-scan.py": {
+      "canonical_sha256": "53ac74a15e266f3773eb460b47b22a43b6a0f1ba5f0d4dcff9f007d7b1e9584f",
+      "mode": "mirrored",
+      "source_sha256": "53ac74a15e266f3773eb460b47b22a43b6a0f1ba5f0d4dcff9f007d7b1e9584f"
+    },
+    "skills/cold-email-sequence-generator/SKILL.md": {
+      "canonical_sha256": "89082db5e31f995f969c332a425a33cbc85ae44f20848ff60bb2ee925cbd6583",
+      "mode": "mirrored",
+      "source_sha256": "89082db5e31f995f969c332a425a33cbc85ae44f20848ff60bb2ee925cbd6583"
+    },
+    "skills/community-led-growth/SKILL.md": {
+      "canonical_sha256": "10355a3fabad9296bf9c862cc4bc1b11ba89e3b535aeec9fbd93c34b8ea68dd4",
+      "mode": "mirrored",
+      "source_sha256": "10355a3fabad9296bf9c862cc4bc1b11ba89e3b535aeec9fbd93c34b8ea68dd4"
+    },
+    "skills/community-led-growth/references/patterns.md": {
+      "canonical_sha256": "631312647e799d70081385e6122858789a9ebb2c3b03dab3f83ba9deab87f1b2",
+      "mode": "mirrored",
+      "source_sha256": "631312647e799d70081385e6122858789a9ebb2c3b03dab3f83ba9deab87f1b2"
+    },
+    "skills/community-led-growth/references/sharp_edges.md": {
+      "canonical_sha256": "1aa3c9f765dc4abac5004251abd61ae43833d21cbf2e7ec13e14ef3e634cd2aa",
+      "mode": "mirrored",
+      "source_sha256": "1aa3c9f765dc4abac5004251abd61ae43833d21cbf2e7ec13e14ef3e634cd2aa"
+    },
+    "skills/community-led-growth/references/validations.md": {
+      "canonical_sha256": "23ab47c0667524720eb21f4fd3849bd55d7454e464a6a72df3505fdb7b57e9a4",
+      "mode": "mirrored",
+      "source_sha256": "23ab47c0667524720eb21f4fd3849bd55d7454e464a6a72df3505fdb7b57e9a4"
+    },
+    "skills/competitive-intelligence-analyst/SKILL.md": {
+      "canonical_sha256": "1fb3029edeec9229265d8129114a6296adb791df0928a12d96703252c0298b55",
+      "mode": "mirrored",
+      "source_sha256": "1fb3029edeec9229265d8129114a6296adb791df0928a12d96703252c0298b55"
+    },
+    "skills/competitive-intelligence-analyst/plugin.json": {
+      "canonical_sha256": "3e144d6071f4ab25bf35667e54f4a4b013e68bb1e8462f317dc458600ee3b275",
+      "mode": "mirrored",
+      "source_sha256": "3e144d6071f4ab25bf35667e54f4a4b013e68bb1e8462f317dc458600ee3b275"
+    },
+    "skills/content-strategy/SKILL.md": {
+      "canonical_sha256": "1fb9d6c57f1b816b8a65c543910e5be5e50847c1cc56652e0da2027f232df9e6",
+      "mode": "mirrored",
+      "source_sha256": "1fb9d6c57f1b816b8a65c543910e5be5e50847c1cc56652e0da2027f232df9e6"
+    },
+    "skills/deep-analysis/SKILL.md": {
+      "canonical_sha256": "ee116608b70531b58f8d36609127fcb837c057e3c557e7f9f7f37855e7dbe986",
+      "mode": "mirrored",
+      "source_sha256": "ee116608b70531b58f8d36609127fcb837c057e3c557e7f9f7f37855e7dbe986"
+    },
+    "skills/deep-reading-analyst/SKILL.md": {
+      "canonical_sha256": "afebad75f8a7c89c693cc82cc05f2bb680494de28f50cda4d1e9e0b68af85aec",
+      "mode": "mirrored",
+      "source_sha256": "afebad75f8a7c89c693cc82cc05f2bb680494de28f50cda4d1e9e0b68af85aec"
+    },
+    "skills/deep-reading-analyst/references/5w2h_analysis.md": {
+      "canonical_sha256": "7683589d946baa9e6b4809c2d6843022dc2aa93da3d84a101407fa3ccbc4dd11",
+      "mode": "mirrored",
+      "source_sha256": "7683589d946baa9e6b4809c2d6843022dc2aa93da3d84a101407fa3ccbc4dd11"
+    },
+    "skills/deep-reading-analyst/references/comparison_matrix.md": {
+      "canonical_sha256": "e9c83042cb82f3ae4f83cf292c11e71d051a4bc8b9a211c548dae1869c17f9a1",
+      "mode": "mirrored",
+      "source_sha256": "e9c83042cb82f3ae4f83cf292c11e71d051a4bc8b9a211c548dae1869c17f9a1"
+    },
+    "skills/deep-reading-analyst/references/critical_thinking.md": {
+      "canonical_sha256": "dd457369e63537960292507d9d22993b5b4d6e1bc4f11028bd0ceb13df6c19f9",
+      "mode": "mirrored",
+      "source_sha256": "dd457369e63537960292507d9d22993b5b4d6e1bc4f11028bd0ceb13df6c19f9"
+    },
+    "skills/deep-reading-analyst/references/first_principles.md": {
+      "canonical_sha256": "b124691f0b86ab8c0f0f99828146630e65549829a069d3a35d2fb8850d18c739",
+      "mode": "mirrored",
+      "source_sha256": "b124691f0b86ab8c0f0f99828146630e65549829a069d3a35d2fb8850d18c739"
+    },
+    "skills/deep-reading-analyst/references/inversion_thinking.md": {
+      "canonical_sha256": "6b9d79bf0082f5ac21be532bd20822c8a4023dfbd4a7a15da0d054615a3e9dbf",
+      "mode": "mirrored",
+      "source_sha256": "6b9d79bf0082f5ac21be532bd20822c8a4023dfbd4a7a15da0d054615a3e9dbf"
+    },
+    "skills/deep-reading-analyst/references/mental_models.md": {
+      "canonical_sha256": "8a0266491f6d08bc03f0e03c5e59b317fc40f31ed6cd7752c3d0d3ec969b5065",
+      "mode": "mirrored",
+      "source_sha256": "8a0266491f6d08bc03f0e03c5e59b317fc40f31ed6cd7752c3d0d3ec969b5065"
+    },
+    "skills/deep-reading-analyst/references/output_templates.md": {
+      "canonical_sha256": "8e3a32f26ccbf9d5339393b7a8318635ab50126d44dd9a8f37d1f4e1721bdb91",
+      "mode": "mirrored",
+      "source_sha256": "8e3a32f26ccbf9d5339393b7a8318635ab50126d44dd9a8f37d1f4e1721bdb91"
+    },
+    "skills/deep-reading-analyst/references/scqa_framework.md": {
+      "canonical_sha256": "9010c66cec9a537db437926db39385f9481742531ab82d234b4d5e14c7f7017b",
+      "mode": "mirrored",
+      "source_sha256": "9010c66cec9a537db437926db39385f9481742531ab82d234b4d5e14c7f7017b"
+    },
+    "skills/deep-reading-analyst/references/six_hats.md": {
+      "canonical_sha256": "ff43667fb8d5d32817807b0dff4cb0a094af053ec17ee9b49ec0addeace2bb6e",
+      "mode": "mirrored",
+      "source_sha256": "ff43667fb8d5d32817807b0dff4cb0a094af053ec17ee9b49ec0addeace2bb6e"
+    },
+    "skills/deep-reading-analyst/references/systems_thinking.md": {
+      "canonical_sha256": "ce8cc465333448cc8a9359b8f44e0f41148d849bf8a609964e75abc4eed980b9",
+      "mode": "mirrored",
+      "source_sha256": "ce8cc465333448cc8a9359b8f44e0f41148d849bf8a609964e75abc4eed980b9"
+    },
+    "skills/deep-research/.gitignore": {
+      "canonical_sha256": "8deaddb94b5dcb98b975843bdda26b968e4d223b85135c684b6bb352dcfeb4f9",
+      "mode": "mirrored",
+      "source_sha256": "8deaddb94b5dcb98b975843bdda26b968e4d223b85135c684b6bb352dcfeb4f9"
+    },
+    "skills/deep-research/ARCHITECTURE_REVIEW.md": {
+      "canonical_sha256": "e53e00fd99f5d16381b57b8b9e6228abfb1f04ee54b6846bd2562507a8ca74ef",
+      "mode": "mirrored",
+      "source_sha256": "e53e00fd99f5d16381b57b8b9e6228abfb1f04ee54b6846bd2562507a8ca74ef"
+    },
+    "skills/deep-research/AUTONOMY_VERIFICATION.md": {
+      "canonical_sha256": "6ce81b830a75061af327fbf870b59e744f179ac901ff015eef9c52f416f2aca9",
+      "mode": "mirrored",
+      "source_sha256": "6ce81b830a75061af327fbf870b59e744f179ac901ff015eef9c52f416f2aca9"
+    },
+    "skills/deep-research/COMPETITIVE_ANALYSIS.md": {
+      "canonical_sha256": "c5db6a7c56018499376bcf0752ac0d8bf0010442fe407d827347a06e66d7d901",
+      "mode": "mirrored",
+      "source_sha256": "c5db6a7c56018499376bcf0752ac0d8bf0010442fe407d827347a06e66d7d901"
+    },
+    "skills/deep-research/CONTEXT_OPTIMIZATION.md": {
+      "canonical_sha256": "92730f1c8aa9b4390e1efd7c8fc5bd0dcb9dde04d4d7652395f499219e7f0b3e",
+      "mode": "mirrored",
+      "source_sha256": "92730f1c8aa9b4390e1efd7c8fc5bd0dcb9dde04d4d7652395f499219e7f0b3e"
+    },
+    "skills/deep-research/QUICK_START.md": {
+      "canonical_sha256": "2da1a41176ec384abe6d6fbf290214ee1adaad0827c5bd9c8f94c0a87b65227a",
+      "mode": "mirrored",
+      "source_sha256": "2da1a41176ec384abe6d6fbf290214ee1adaad0827c5bd9c8f94c0a87b65227a"
+    },
+    "skills/deep-research/SKILL.md": {
+      "canonical_sha256": "af533b36012ace7444991b07210e883c9ba38109c400b7585d3866555fa5f6b9",
+      "mode": "mirrored",
+      "source_sha256": "af533b36012ace7444991b07210e883c9ba38109c400b7585d3866555fa5f6b9"
+    },
+    "skills/deep-research/WORD_PRECISION_AUDIT.md": {
+      "canonical_sha256": "96b20a05825e1172fa0fb49e0c55f54ebf8c447b7f0c397647486b7f14a29c66",
+      "mode": "mirrored",
+      "source_sha256": "96b20a05825e1172fa0fb49e0c55f54ebf8c447b7f0c397647486b7f14a29c66"
+    },
+    "skills/deep-research/reference/methodology.md": {
+      "canonical_sha256": "68c436d9010499cecb174935bfa14acd021f49482f5c59939616695421f03802",
+      "mode": "mirrored",
+      "source_sha256": "68c436d9010499cecb174935bfa14acd021f49482f5c59939616695421f03802"
+    },
+    "skills/deep-research/requirements.txt": {
+      "canonical_sha256": "919b2d6b0b1735d62df40d13cee9c9cde1e6855cb85a76a7938abece4d60339d",
+      "mode": "mirrored",
+      "source_sha256": "919b2d6b0b1735d62df40d13cee9c9cde1e6855cb85a76a7938abece4d60339d"
+    },
+    "skills/deep-research/scripts/citation_manager.py": {
+      "canonical_sha256": "0333c86beef3d0f09b9bd3004f11a9950a93266bf1696b55d5874a9e32110df1",
+      "mode": "mirrored",
+      "source_sha256": "0333c86beef3d0f09b9bd3004f11a9950a93266bf1696b55d5874a9e32110df1"
+    },
+    "skills/deep-research/scripts/md_to_html.py": {
+      "canonical_sha256": "506c38771d32fbccf931a27b7b64cf20c0df5113b2914b051c17e9d178fc1b17",
+      "mode": "mirrored",
+      "source_sha256": "506c38771d32fbccf931a27b7b64cf20c0df5113b2914b051c17e9d178fc1b17"
+    },
+    "skills/deep-research/scripts/research_engine.py": {
+      "canonical_sha256": "b627ffdce2d3041ac2ab156b38eff294c2e7344e8d4e80dc0c5e17c0e8c9a299",
+      "mode": "mirrored",
+      "source_sha256": "b627ffdce2d3041ac2ab156b38eff294c2e7344e8d4e80dc0c5e17c0e8c9a299"
+    },
+    "skills/deep-research/scripts/source_evaluator.py": {
+      "canonical_sha256": "8421efa7b862bb139108e6da40b285706188cb272843bf39082c8b9888d5050e",
+      "mode": "mirrored",
+      "source_sha256": "8421efa7b862bb139108e6da40b285706188cb272843bf39082c8b9888d5050e"
+    },
+    "skills/deep-research/scripts/validate_report.py": {
+      "canonical_sha256": "e92ce5a130718bd0a225cb507a584e0c100eaa415240c8ac3f99e6736c3015f3",
+      "mode": "mirrored",
+      "source_sha256": "e92ce5a130718bd0a225cb507a584e0c100eaa415240c8ac3f99e6736c3015f3"
+    },
+    "skills/deep-research/scripts/verify_citations.py": {
+      "canonical_sha256": "aef55749aa73366a1c0db32749481371c4612de08d858247dac5f24147648220",
+      "mode": "mirrored",
+      "source_sha256": "aef55749aa73366a1c0db32749481371c4612de08d858247dac5f24147648220"
+    },
+    "skills/deep-research/scripts/verify_html.py": {
+      "canonical_sha256": "28bbba06906fa2f9bae87ea20b68390ce4f4bc76f00343991a8ad2119e21b36c",
+      "mode": "mirrored",
+      "source_sha256": "28bbba06906fa2f9bae87ea20b68390ce4f4bc76f00343991a8ad2119e21b36c"
+    },
+    "skills/deep-research/templates/mckinsey_report_template.html": {
+      "canonical_sha256": "6b2d742f5279e78df71543bfb6c4fd88d7ee1c726b54fa945616307b2157c1f1",
+      "mode": "mirrored",
+      "source_sha256": "6b2d742f5279e78df71543bfb6c4fd88d7ee1c726b54fa945616307b2157c1f1"
+    },
+    "skills/deep-research/templates/report_template.md": {
+      "canonical_sha256": "162ae6318436fb9a911bed8b552b72c7500ea351790121609870c09d6ad10076",
+      "mode": "mirrored",
+      "source_sha256": "162ae6318436fb9a911bed8b552b72c7500ea351790121609870c09d6ad10076"
+    },
+    "skills/deep-research/tests/fixtures/invalid_report.md": {
+      "canonical_sha256": "9b5177dbd31b80ea1d1e16f159989f232f6b6875dbc7ea7fddf70ba1fd0ad311",
+      "mode": "mirrored",
+      "source_sha256": "9b5177dbd31b80ea1d1e16f159989f232f6b6875dbc7ea7fddf70ba1fd0ad311"
+    },
+    "skills/deep-research/tests/fixtures/valid_report.md": {
+      "canonical_sha256": "e6a24a5deec1ec65279cb446c58f9309a3d6f4e040e37f1bda09c64a73829b5a",
+      "mode": "mirrored",
+      "source_sha256": "e6a24a5deec1ec65279cb446c58f9309a3d6f4e040e37f1bda09c64a73829b5a"
+    },
+    "skills/devops/.env.example": {
+      "canonical_sha256": "2e90b03a2ca418a05985b6cc4c2a02ccb96764b7b058538597217f1311c7bf18",
+      "mode": "mirrored",
+      "source_sha256": "2e90b03a2ca418a05985b6cc4c2a02ccb96764b7b058538597217f1311c7bf18"
+    },
+    "skills/devops/SKILL.md": {
+      "canonical_sha256": "2456b40d4a02aedd8845bef4228792d62bde8193439228b491b4be1fab247058",
+      "mode": "mirrored",
+      "source_sha256": "2456b40d4a02aedd8845bef4228792d62bde8193439228b491b4be1fab247058"
+    },
+    "skills/devops/references/browser-rendering.md": {
+      "canonical_sha256": "d258f97511e47ef425bfc1ae5578720162fa2499466ef4c275072c1a4db25d9d",
+      "mode": "mirrored",
+      "source_sha256": "d258f97511e47ef425bfc1ae5578720162fa2499466ef4c275072c1a4db25d9d"
+    },
+    "skills/devops/references/cloudflare-d1-kv.md": {
+      "canonical_sha256": "d35c07d3bf5356a21544e088c9995cd59dec463992ae95e7a848130ebf8c6d3d",
+      "mode": "mirrored",
+      "source_sha256": "d35c07d3bf5356a21544e088c9995cd59dec463992ae95e7a848130ebf8c6d3d"
+    },
+    "skills/devops/references/cloudflare-platform.md": {
+      "canonical_sha256": "d009a10f0f37073a08ae51ab6768a63b3baf20f815c2048e3370dfd263d21e6a",
+      "mode": "mirrored",
+      "source_sha256": "d009a10f0f37073a08ae51ab6768a63b3baf20f815c2048e3370dfd263d21e6a"
+    },
+    "skills/devops/references/cloudflare-r2-storage.md": {
+      "canonical_sha256": "03c90dd24354676d97ac53b2b111daae3c88002955849f2bddd9689447db4235",
+      "mode": "mirrored",
+      "source_sha256": "03c90dd24354676d97ac53b2b111daae3c88002955849f2bddd9689447db4235"
+    },
+    "skills/devops/references/cloudflare-workers-advanced.md": {
+      "canonical_sha256": "fc4b2c5bd5c826ce1dbbeec914666dd6c8edc64287dbd0acc75c4de1ccaae019",
+      "mode": "mirrored",
+      "source_sha256": "fc4b2c5bd5c826ce1dbbeec914666dd6c8edc64287dbd0acc75c4de1ccaae019"
+    },
+    "skills/devops/references/cloudflare-workers-apis.md": {
+      "canonical_sha256": "d36537cf342f93b3db0bc6457f2e61ac5f10e3daf82fab2d557cdb88278fe57f",
+      "mode": "mirrored",
+      "source_sha256": "d36537cf342f93b3db0bc6457f2e61ac5f10e3daf82fab2d557cdb88278fe57f"
+    },
+    "skills/devops/references/cloudflare-workers-basics.md": {
+      "canonical_sha256": "a975a4f0ef7e663e66f54156153568b2735a9a626e0fae13cd777e5399979a37",
+      "mode": "mirrored",
+      "source_sha256": "a975a4f0ef7e663e66f54156153568b2735a9a626e0fae13cd777e5399979a37"
+    },
+    "skills/devops/references/docker-basics.md": {
+      "canonical_sha256": "9e92f9e2f9e147d1002b3abdb45526ac175fd63d1fec6b5862a3c3c0cb828631",
+      "mode": "mirrored",
+      "source_sha256": "9e92f9e2f9e147d1002b3abdb45526ac175fd63d1fec6b5862a3c3c0cb828631"
+    },
+    "skills/devops/references/docker-compose.md": {
+      "canonical_sha256": "cf6eb6338aa55201f0a5b4390cdb33d4de2b8cffabf2c2b84dac612a2d4f0816",
+      "mode": "mirrored",
+      "source_sha256": "cf6eb6338aa55201f0a5b4390cdb33d4de2b8cffabf2c2b84dac612a2d4f0816"
+    },
+    "skills/devops/references/gcloud-platform.md": {
+      "canonical_sha256": "195c09f69bb47976467fe1e5094a156f16ac88ad8e20003b60d7f9ae037bc09d",
+      "mode": "mirrored",
+      "source_sha256": "195c09f69bb47976467fe1e5094a156f16ac88ad8e20003b60d7f9ae037bc09d"
+    },
+    "skills/devops/references/gcloud-services.md": {
+      "canonical_sha256": "2581140e4bf5412fdc7b2758e9c2acc59e428117af26b1cc1efb10a21106c454",
+      "mode": "mirrored",
+      "source_sha256": "2581140e4bf5412fdc7b2758e9c2acc59e428117af26b1cc1efb10a21106c454"
+    },
+    "skills/devops/references/kubernetes-basics.md": {
+      "canonical_sha256": "7232b88a3ec5a740f08683867e57481dee4ea3083fc27fafb872af51a7aeb12f",
+      "mode": "mirrored",
+      "source_sha256": "7232b88a3ec5a740f08683867e57481dee4ea3083fc27fafb872af51a7aeb12f"
+    },
+    "skills/devops/references/kubernetes-helm-advanced.md": {
+      "canonical_sha256": "3fbb59829fbdc9cb5722147889d3d6666d43a3efc7e589667dc92ea0574d13ca",
+      "mode": "mirrored",
+      "source_sha256": "3fbb59829fbdc9cb5722147889d3d6666d43a3efc7e589667dc92ea0574d13ca"
+    },
+    "skills/devops/references/kubernetes-helm.md": {
+      "canonical_sha256": "9496cac90b2bb1656c81d5194858dd974e06ed746ebb1c12d9102641812fbb8a",
+      "mode": "mirrored",
+      "source_sha256": "9496cac90b2bb1656c81d5194858dd974e06ed746ebb1c12d9102641812fbb8a"
+    },
+    "skills/devops/references/kubernetes-kubectl.md": {
+      "canonical_sha256": "43fe156bfd4ba7fa44cc76335e709f885c262aa5a5aeb95a047b66141c11c84e",
+      "mode": "mirrored",
+      "source_sha256": "43fe156bfd4ba7fa44cc76335e709f885c262aa5a5aeb95a047b66141c11c84e"
+    },
+    "skills/devops/references/kubernetes-security-advanced.md": {
+      "canonical_sha256": "26e8cbd516658233fe85a3dff805d7697de7615e9711c396bb7c59bd904b1196",
+      "mode": "mirrored",
+      "source_sha256": "26e8cbd516658233fe85a3dff805d7697de7615e9711c396bb7c59bd904b1196"
+    },
+    "skills/devops/references/kubernetes-security.md": {
+      "canonical_sha256": "83c817d3dae55f4ee170a97bc311ee375e1305cd32be29fc984512bcc5d17ad7",
+      "mode": "mirrored",
+      "source_sha256": "83c817d3dae55f4ee170a97bc311ee375e1305cd32be29fc984512bcc5d17ad7"
+    },
+    "skills/devops/references/kubernetes-troubleshooting-advanced.md": {
+      "canonical_sha256": "9922fd417784d88ba34d028f45bab63da3c0b97e385ee7f453b6bcf38ff04534",
+      "mode": "mirrored",
+      "source_sha256": "9922fd417784d88ba34d028f45bab63da3c0b97e385ee7f453b6bcf38ff04534"
+    },
+    "skills/devops/references/kubernetes-troubleshooting.md": {
+      "canonical_sha256": "5f5d950904dcb79bf926d6bcb41e3b60fc424cc60a9023ba1ca99e20ba8941e9",
+      "mode": "mirrored",
+      "source_sha256": "5f5d950904dcb79bf926d6bcb41e3b60fc424cc60a9023ba1ca99e20ba8941e9"
+    },
+    "skills/devops/references/kubernetes-workflows-advanced.md": {
+      "canonical_sha256": "b18c3169301374f8bb125e710f871aa4ec832cb8257cfca4ba8627c97f3e7242",
+      "mode": "mirrored",
+      "source_sha256": "b18c3169301374f8bb125e710f871aa4ec832cb8257cfca4ba8627c97f3e7242"
+    },
+    "skills/devops/references/kubernetes-workflows.md": {
+      "canonical_sha256": "dafc947fbad553a3707ef9256093b800b44bc8131eca7ea332c705d31f6b85a2",
+      "mode": "mirrored",
+      "source_sha256": "dafc947fbad553a3707ef9256093b800b44bc8131eca7ea332c705d31f6b85a2"
+    },
+    "skills/devops/scripts/cloudflare_deploy.py": {
+      "canonical_sha256": "439844726c149c7dd5c7a6fb85b20059b8e230041c1a61364fd609b4c503216c",
+      "mode": "mirrored",
+      "source_sha256": "439844726c149c7dd5c7a6fb85b20059b8e230041c1a61364fd609b4c503216c"
+    },
+    "skills/devops/scripts/docker_optimize.py": {
+      "canonical_sha256": "6126aee0ce7901cd5f99fdbf55e34119be7f7b416f93b4c70e53afd680c919fa",
+      "mode": "mirrored",
+      "source_sha256": "6126aee0ce7901cd5f99fdbf55e34119be7f7b416f93b4c70e53afd680c919fa"
+    },
+    "skills/devops/scripts/requirements.txt": {
+      "canonical_sha256": "4a508a3b086c25ad5adc9b743a8c0a576910e650008b8144fc58f68770b662fd",
+      "mode": "mirrored",
+      "source_sha256": "4a508a3b086c25ad5adc9b743a8c0a576910e650008b8144fc58f68770b662fd"
+    },
+    "skills/devops/scripts/tests/requirements.txt": {
+      "canonical_sha256": "0795bdcfb80afae0ff06e9cbe5bed67b39283e577984bed87d85da3fec798a37",
+      "mode": "mirrored",
+      "source_sha256": "0795bdcfb80afae0ff06e9cbe5bed67b39283e577984bed87d85da3fec798a37"
+    },
+    "skills/devops/scripts/tests/test_cloudflare_deploy.py": {
+      "canonical_sha256": "66373336b3290bed9ca300699816954006cabc9f91897cb4759358d365dabc69",
+      "mode": "mirrored",
+      "source_sha256": "66373336b3290bed9ca300699816954006cabc9f91897cb4759358d365dabc69"
+    },
+    "skills/devops/scripts/tests/test_docker_optimize.py": {
+      "canonical_sha256": "c82fd9d4f18e60d1ebdbcebda5781d462a6a0c846658512aa5239e1eaee0d9fb",
+      "mode": "mirrored",
+      "source_sha256": "c82fd9d4f18e60d1ebdbcebda5781d462a6a0c846658512aa5239e1eaee0d9fb"
+    },
+    "skills/email-sequence/SKILL.md": {
+      "canonical_sha256": "d1abc04bc58e8511a68bd7da19846ec750d97cc4f843ba2d79d67caa43d2401d",
+      "mode": "mirrored",
+      "source_sha256": "d1abc04bc58e8511a68bd7da19846ec750d97cc4f843ba2d79d67caa43d2401d"
+    },
+    "skills/email-sequence/references/copy-guidelines.md": {
+      "canonical_sha256": "0e237c8b9e00e30780cb43ef2529d1a454dfa8fc9f04a396d429093dfcd355f2",
+      "mode": "mirrored",
+      "source_sha256": "0e237c8b9e00e30780cb43ef2529d1a454dfa8fc9f04a396d429093dfcd355f2"
+    },
+    "skills/email-sequence/references/email-types.md": {
+      "canonical_sha256": "dec15c858acf882d9d57a2cc1d0b990377c01721db12326b3478ee8015ecd898",
+      "mode": "mirrored",
+      "source_sha256": "dec15c858acf882d9d57a2cc1d0b990377c01721db12326b3478ee8015ecd898"
+    },
+    "skills/email-sequence/references/sequence-templates.md": {
+      "canonical_sha256": "50e84112175a248f7b2bf1f24d25c633745c8e6bf6c10d45e733f8450d9bfd26",
+      "mode": "mirrored",
+      "source_sha256": "50e84112175a248f7b2bf1f24d25c633745c8e6bf6c10d45e733f8450d9bfd26"
+    },
+    "skills/financial-unit-economics/SKILL.md": {
+      "canonical_sha256": "58247539a5e74d7e5cf567029046d71c33eb6555a7aa9250cda4d147bfa4b923",
+      "mode": "mirrored",
+      "source_sha256": "58247539a5e74d7e5cf567029046d71c33eb6555a7aa9250cda4d147bfa4b923"
+    },
+    "skills/financial-unit-economics/resources/evaluators/rubric_financial_unit_economics.json": {
+      "canonical_sha256": "54630edcd4e05cc152faf6bdb4520b554d31db93b6abd4e4d249730a74d9517b",
+      "mode": "mirrored",
+      "source_sha256": "54630edcd4e05cc152faf6bdb4520b554d31db93b6abd4e4d249730a74d9517b"
+    },
+    "skills/financial-unit-economics/resources/methodology.md": {
+      "canonical_sha256": "0efd28be8e421ec2dd3adabd4325d94a05de18b16cc8f85821bb74e78a339bb8",
+      "mode": "mirrored",
+      "source_sha256": "0efd28be8e421ec2dd3adabd4325d94a05de18b16cc8f85821bb74e78a339bb8"
+    },
+    "skills/financial-unit-economics/resources/template.md": {
+      "canonical_sha256": "ba5c2736666c32afd6befdf1136626dc5e31779d631c47d05904d5398e88fb44",
+      "mode": "mirrored",
+      "source_sha256": "ba5c2736666c32afd6befdf1136626dc5e31779d631c47d05904d5398e88fb44"
+    },
+    "skills/find-skills/SKILL.md": {
+      "canonical_sha256": "54b44dc9539df865fbb060f62fb062e8232e765852a0cf14c38301fe0c1eb264",
+      "mode": "mirrored",
+      "source_sha256": "54b44dc9539df865fbb060f62fb062e8232e765852a0cf14c38301fe0c1eb264"
+    },
+    "skills/frontend-design.md": {
+      "canonical_sha256": "b81e2ff87ed8fa4d6c377ccb127a7254c9e6a77e3ae94f21e6b514f7bb2945a0",
+      "mode": "mirrored",
+      "source_sha256": "b81e2ff87ed8fa4d6c377ccb127a7254c9e6a77e3ae94f21e6b514f7bb2945a0"
+    },
+    "skills/github-explorer/.gitignore": {
+      "canonical_sha256": "73d4d510ef17b2b5341e361a2f00b2ea1094f1cd7a33de35cb2c5f0645ff3a9f",
+      "mode": "mirrored",
+      "source_sha256": "73d4d510ef17b2b5341e361a2f00b2ea1094f1cd7a33de35cb2c5f0645ff3a9f"
+    },
+    "skills/github-explorer/LICENSE": {
+      "canonical_sha256": "b20f7b192fb6455920575df5dbd63ee6c305133c637e2478b868a0a52c09a1cd",
+      "mode": "mirrored",
+      "source_sha256": "b20f7b192fb6455920575df5dbd63ee6c305133c637e2478b868a0a52c09a1cd"
+    },
+    "skills/github-explorer/SKILL.md": {
+      "canonical_sha256": "7fdad35969d9af7e50b63de40c6bdc4e6c022580cce6458735f30a15919f78bb",
+      "mode": "translated",
+      "source_sha256": "e126b2eefe54c822332fa718d5d18d8936a32ca6c9159e703dbd486acb89e650"
+    },
+    "skills/market-sizing-analysis/SKILL.md": {
+      "canonical_sha256": "f0011cf9f82091d16bfd8956aa50e74bcb28eed25e5c76baebfb1dbc2c8b23f4",
+      "mode": "mirrored",
+      "source_sha256": "f0011cf9f82091d16bfd8956aa50e74bcb28eed25e5c76baebfb1dbc2c8b23f4"
+    },
+    "skills/market-sizing-analysis/examples/saas-market-sizing.md": {
+      "canonical_sha256": "96b0cdf809227e3173f7af537d6045ef5e63e06d8b645013431d43239a09dc56",
+      "mode": "mirrored",
+      "source_sha256": "96b0cdf809227e3173f7af537d6045ef5e63e06d8b645013431d43239a09dc56"
+    },
+    "skills/market-sizing-analysis/references/data-sources.md": {
+      "canonical_sha256": "9e4a4543bab01311668e04d5f8db58e99fb7b4b8512d62e891673812140b76be",
+      "mode": "mirrored",
+      "source_sha256": "9e4a4543bab01311668e04d5f8db58e99fb7b4b8512d62e891673812140b76be"
+    },
+    "skills/micro-saas-launcher/SKILL.md": {
+      "canonical_sha256": "b941be706fcb678788b78b0155428e4e1861e512a26ea0765ee8ba6deb0ff427",
+      "mode": "mirrored",
+      "source_sha256": "b941be706fcb678788b78b0155428e4e1861e512a26ea0765ee8ba6deb0ff427"
+    },
+    "skills/ph-community-outreach/SKILL.md": {
+      "canonical_sha256": "b7f23b486895e6ed38db94c727153d1315ffe6b1561ce57c8051a8c734527cd3",
+      "mode": "mirrored",
+      "source_sha256": "b7f23b486895e6ed38db94c727153d1315ffe6b1561ce57c8051a8c734527cd3"
+    },
+    "skills/premortem/SKILL.md": {
+      "canonical_sha256": "dd0537f1533226414b1c0861aad33befbd67ff6c9641febdc5b4493e0a3aaa21",
+      "mode": "mirrored",
+      "source_sha256": "dd0537f1533226414b1c0861aad33befbd67ff6c9641febdc5b4493e0a3aaa21"
+    },
+    "skills/pricing-strategy/SKILL.md": {
+      "canonical_sha256": "d86827dd4b0bb3a1cc5c3584537ab03972c0e6b842b027404f1ecc1507ab086d",
+      "mode": "mirrored",
+      "source_sha256": "d86827dd4b0bb3a1cc5c3584537ab03972c0e6b842b027404f1ecc1507ab086d"
+    },
+    "skills/pricing-strategy/references/research-methods.md": {
+      "canonical_sha256": "ac2d88b81bcebcae4132d5d23ac4dffaf900fb8ef4a3f1e74ad97ecf00264221",
+      "mode": "mirrored",
+      "source_sha256": "ac2d88b81bcebcae4132d5d23ac4dffaf900fb8ef4a3f1e74ad97ecf00264221"
+    },
+    "skills/pricing-strategy/references/tier-structure.md": {
+      "canonical_sha256": "dec6eb26846fcb6fa67c1daca45438b1a7f5b2a526386e62c8bf5af3a5aea81c",
+      "mode": "mirrored",
+      "source_sha256": "dec6eb26846fcb6fa67c1daca45438b1a7f5b2a526386e62c8bf5af3a5aea81c"
+    },
+    "skills/product-strategist/SKILL.md": {
+      "canonical_sha256": "40755753acdb83fb2aa40b5142fe035ebf829cb9bff7226d104f3e0f201e0ce3",
+      "mode": "mirrored",
+      "source_sha256": "40755753acdb83fb2aa40b5142fe035ebf829cb9bff7226d104f3e0f201e0ce3"
+    },
+    "skills/scientific-critical-thinking/SKILL.md": {
+      "canonical_sha256": "ff731dfbd9c5976e5c9de627f5f26a3b5a9ae418f9918cff96e547cb0da02336",
+      "mode": "mirrored",
+      "source_sha256": "ff731dfbd9c5976e5c9de627f5f26a3b5a9ae418f9918cff96e547cb0da02336"
+    },
+    "skills/scientific-critical-thinking/references/common_biases.md": {
+      "canonical_sha256": "99f608c86075f1a1ab115a1cf4ecd54fe482266cb5e47761172894f21829f6cf",
+      "mode": "mirrored",
+      "source_sha256": "99f608c86075f1a1ab115a1cf4ecd54fe482266cb5e47761172894f21829f6cf"
+    },
+    "skills/scientific-critical-thinking/references/evidence_hierarchy.md": {
+      "canonical_sha256": "e9e2f27ca88620b110f02d7b951e0da8c020d5525c3fc1e5519816227220e9fb",
+      "mode": "mirrored",
+      "source_sha256": "e9e2f27ca88620b110f02d7b951e0da8c020d5525c3fc1e5519816227220e9fb"
+    },
+    "skills/scientific-critical-thinking/references/experimental_design.md": {
+      "canonical_sha256": "d7756396f9efbf3af3cb485288e6f24759b3d064f7d56c2a6db39a4ef4e4784a",
+      "mode": "mirrored",
+      "source_sha256": "d7756396f9efbf3af3cb485288e6f24759b3d064f7d56c2a6db39a4ef4e4784a"
+    },
+    "skills/scientific-critical-thinking/references/logical_fallacies.md": {
+      "canonical_sha256": "7911abe82bc05c8f513591e9b00572f21e5a631783cc00cd9dbf644b5eae28ce",
+      "mode": "mirrored",
+      "source_sha256": "7911abe82bc05c8f513591e9b00572f21e5a631783cc00cd9dbf644b5eae28ce"
+    },
+    "skills/scientific-critical-thinking/references/scientific_method.md": {
+      "canonical_sha256": "09e709bdc7919a2b21825175aff5e0f9c26117a02ec654bfdb347fc8fa7ad0b7",
+      "mode": "mirrored",
+      "source_sha256": "09e709bdc7919a2b21825175aff5e0f9c26117a02ec654bfdb347fc8fa7ad0b7"
+    },
+    "skills/scientific-critical-thinking/references/statistical_pitfalls.md": {
+      "canonical_sha256": "c525ed590c36eef9dfca95c9c8bc2ab3e228e9247aa476a2c2ddcf07ffc62172",
+      "mode": "mirrored",
+      "source_sha256": "c525ed590c36eef9dfca95c9c8bc2ab3e228e9247aa476a2c2ddcf07ffc62172"
+    },
+    "skills/security-audit/SKILL.md": {
+      "canonical_sha256": "49593d464763ec4b8051e3a21ed86fb81f79cf949083a123567fe9e258c14536",
+      "mode": "mirrored",
+      "source_sha256": "49593d464763ec4b8051e3a21ed86fb81f79cf949083a123567fe9e258c14536"
+    },
+    "skills/security-audit/references/api-security.md": {
+      "canonical_sha256": "083338f5eb9e4d10079916b94f432e86e5e62e35e5637983f4431722cc0c1b0a",
+      "mode": "mirrored",
+      "source_sha256": "083338f5eb9e4d10079916b94f432e86e5e62e35e5637983f4431722cc0c1b0a"
+    },
+    "skills/security-audit/references/auth-patterns.md": {
+      "canonical_sha256": "f7b8ecb37cdfac6dfb979f74999541605ca69f6931fbd6273f108ecd458f206b",
+      "mode": "mirrored",
+      "source_sha256": "f7b8ecb37cdfac6dfb979f74999541605ca69f6931fbd6273f108ecd458f206b"
+    },
+    "skills/security-audit/references/dependency-security.md": {
+      "canonical_sha256": "65825e9ff5b5c2e5cdb424b60575421105e8f41d370464436cc6de426c8d45be",
+      "mode": "mirrored",
+      "source_sha256": "65825e9ff5b5c2e5cdb424b60575421105e8f41d370464436cc6de426c8d45be"
+    },
+    "skills/security-audit/references/owasp-top-10.md": {
+      "canonical_sha256": "ae6f38135223db522dad8c6fb751b21e760619add0919c51d98c3040894f41ab",
+      "mode": "mirrored",
+      "source_sha256": "ae6f38135223db522dad8c6fb751b21e760619add0919c51d98c3040894f41ab"
+    },
+    "skills/security-audit/references/secrets-management.md": {
+      "canonical_sha256": "5a9c28dfcd323384e141e9005254821988235a41c8452840b659fd272731a1a5",
+      "mode": "mirrored",
+      "source_sha256": "5a9c28dfcd323384e141e9005254821988235a41c8452840b659fd272731a1a5"
+    },
+    "skills/senior-qa/SKILL.md": {
+      "canonical_sha256": "4453b4aa9bf923a911ee0c44249e74a95b91b5da7daee16c61652a8a7c8595ae",
+      "mode": "mirrored",
+      "source_sha256": "4453b4aa9bf923a911ee0c44249e74a95b91b5da7daee16c61652a8a7c8595ae"
+    },
+    "skills/senior-qa/references/qa_best_practices.md": {
+      "canonical_sha256": "35f7878ade02eb2c1f8fbf67b8cf7f27c4d66cf1093e4d483b5b2860c84e3f08",
+      "mode": "mirrored",
+      "source_sha256": "35f7878ade02eb2c1f8fbf67b8cf7f27c4d66cf1093e4d483b5b2860c84e3f08"
+    },
+    "skills/senior-qa/references/test_automation_patterns.md": {
+      "canonical_sha256": "6b7c43ad88df0f55c4bda0efca2cbb202162a1cb1e5dfc0b11c8829e25625026",
+      "mode": "mirrored",
+      "source_sha256": "6b7c43ad88df0f55c4bda0efca2cbb202162a1cb1e5dfc0b11c8829e25625026"
+    },
+    "skills/senior-qa/references/testing_strategies.md": {
+      "canonical_sha256": "cea2d5eea69ebfcb7d7b102cfb3097884b2f17e5a4e49aed86ca0afa0aee785a",
+      "mode": "mirrored",
+      "source_sha256": "cea2d5eea69ebfcb7d7b102cfb3097884b2f17e5a4e49aed86ca0afa0aee785a"
+    },
+    "skills/senior-qa/scripts/coverage_analyzer.py": {
+      "canonical_sha256": "e08093a0b56879523910e11ede760e70cd08f651f121f6de17a638e2b1a3b01b",
+      "mode": "mirrored",
+      "source_sha256": "e08093a0b56879523910e11ede760e70cd08f651f121f6de17a638e2b1a3b01b"
+    },
+    "skills/senior-qa/scripts/e2e_test_scaffolder.py": {
+      "canonical_sha256": "ba9c6f8e1f7483726666a0594f38ccc34e57216f4033de27e7c54cdbf96f32a9",
+      "mode": "mirrored",
+      "source_sha256": "ba9c6f8e1f7483726666a0594f38ccc34e57216f4033de27e7c54cdbf96f32a9"
+    },
+    "skills/senior-qa/scripts/test_suite_generator.py": {
+      "canonical_sha256": "68acd4bd28a5eaffcc41e9e0c81c30d4a7787c8c29ac1134e9d569427abe2a11",
+      "mode": "mirrored",
+      "source_sha256": "68acd4bd28a5eaffcc41e9e0c81c30d4a7787c8c29ac1134e9d569427abe2a11"
+    },
+    "skills/seo-audit/SKILL.md": {
+      "canonical_sha256": "51fdd3616ae1dd1209e0f7344582e76bed640c182118df9824859470249031d7",
+      "mode": "mirrored",
+      "source_sha256": "51fdd3616ae1dd1209e0f7344582e76bed640c182118df9824859470249031d7"
+    },
+    "skills/seo-audit/references/aeo-geo-patterns.md": {
+      "canonical_sha256": "633f254f2d9db26021cb85741022dd831f7f3af4a0a2bd765504a0a0b0e315e9",
+      "mode": "mirrored",
+      "source_sha256": "633f254f2d9db26021cb85741022dd831f7f3af4a0a2bd765504a0a0b0e315e9"
+    },
+    "skills/seo-audit/references/ai-writing-detection.md": {
+      "canonical_sha256": "586226f9b7ccdba3ad07a1d025442d294a8f0c43117b655c7231e97ed5720351",
+      "mode": "mirrored",
+      "source_sha256": "586226f9b7ccdba3ad07a1d025442d294a8f0c43117b655c7231e97ed5720351"
+    },
+    "skills/seo-content-strategist/SKILL.md": {
+      "canonical_sha256": "639af9d5421fd3481c7be6301649a813799a70cc831619651d9a9ccfb8a139a0",
+      "mode": "mirrored",
+      "source_sha256": "639af9d5421fd3481c7be6301649a813799a70cc831619651d9a9ccfb8a139a0"
+    },
+    "skills/seo-content-strategist/rules/cluster-pillar-page-strategy.md": {
+      "canonical_sha256": "93be00873eaeefcce7f5c4943e9b90871a56136e4db43d2017844a78dedf9c0a",
+      "mode": "mirrored",
+      "source_sha256": "93be00873eaeefcce7f5c4943e9b90871a56136e4db43d2017844a78dedf9c0a"
+    },
+    "skills/seo-content-strategist/rules/intent-search-mapping.md": {
+      "canonical_sha256": "20479f1a0a37f91ea25e3f6c4a1daf43a1776ed35ad20c57bfbb5e3ed4f7ba6e",
+      "mode": "mirrored",
+      "source_sha256": "20479f1a0a37f91ea25e3f6c4a1daf43a1776ed35ad20c57bfbb5e3ed4f7ba6e"
+    },
+    "skills/seo-content-strategist/rules/keyword-research-methodology.md": {
+      "canonical_sha256": "9b341abdd4a91695a4cde3c2cf70304caec8c9f633c46199b6196eb7cc68b2a3",
+      "mode": "mirrored",
+      "source_sha256": "9b341abdd4a91695a4cde3c2cf70304caec8c9f633c46199b6196eb7cc68b2a3"
+    },
+    "skills/seo-content-strategist/rules/links-building-strategy.md": {
+      "canonical_sha256": "bf0589ababd379cedff9fb1059174d612da585fa781bd8a634ade9eb5ef9d627",
+      "mode": "mirrored",
+      "source_sha256": "bf0589ababd379cedff9fb1059174d612da585fa781bd8a634ade9eb5ef9d627"
+    },
+    "skills/seo-content-strategist/rules/measurement-content-performance.md": {
+      "canonical_sha256": "59b0426bd46be2a404c01ad089fed96a0022a823a7480c781021dd495b59cf24",
+      "mode": "mirrored",
+      "source_sha256": "59b0426bd46be2a404c01ad089fed96a0022a823a7480c781021dd495b59cf24"
+    },
+    "skills/seo-content-strategist/rules/onpage-seo-optimization.md": {
+      "canonical_sha256": "ade89844e1d0821e518ff66298602bda4a1463fb5eb2548337c06604f377af53",
+      "mode": "mirrored",
+      "source_sha256": "ade89844e1d0821e518ff66298602bda4a1463fb5eb2548337c06604f377af53"
+    },
+    "skills/seo-content-strategist/rules/programmatic-seo.md": {
+      "canonical_sha256": "a02d0d0e36d9873d41c55deb6f5d7d9f171702b0fbf42a7712d912d2af464309",
+      "mode": "mirrored",
+      "source_sha256": "a02d0d0e36d9873d41c55deb6f5d7d9f171702b0fbf42a7712d912d2af464309"
+    },
+    "skills/seo-content-strategist/rules/refresh-content-optimization.md": {
+      "canonical_sha256": "b3ad01cc5a8b8da26f46965b601a9a98e72aadd490f4bf5285305e5b15c1b7e2",
+      "mode": "mirrored",
+      "source_sha256": "b3ad01cc5a8b8da26f46965b601a9a98e72aadd490f4bf5285305e5b15c1b7e2"
+    },
+    "skills/seo-content-strategist/rules/serp-feature-optimization.md": {
+      "canonical_sha256": "9aef12414785638b50ca58a470d09613b5bf39a5bb05af4939ba882f8f6c2fd2",
+      "mode": "mirrored",
+      "source_sha256": "9aef12414785638b50ca58a470d09613b5bf39a5bb05af4939ba882f8f6c2fd2"
+    },
+    "skills/seo-content-strategist/rules/technical-seo-saas.md": {
+      "canonical_sha256": "115e42a5766ea38b353f199edeb326787b7ef38d8b1a2fd89db04a1edea284bc",
+      "mode": "mirrored",
+      "source_sha256": "115e42a5766ea38b353f199edeb326787b7ef38d8b1a2fd89db04a1edea284bc"
+    },
+    "skills/skill-creator/LICENSE.txt": {
+      "canonical_sha256": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd",
+      "mode": "mirrored",
+      "source_sha256": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd"
+    },
+    "skills/skill-creator/SKILL.md": {
+      "canonical_sha256": "d57b6e3a44535b9c0ef454dad5c86f5df78185fc80a65c7092885b4b5e10f81b",
+      "mode": "mirrored",
+      "source_sha256": "d57b6e3a44535b9c0ef454dad5c86f5df78185fc80a65c7092885b4b5e10f81b"
+    },
+    "skills/skill-creator/references/output-patterns.md": {
+      "canonical_sha256": "d6027800b9d8c26589edba85b42901a41ac36d753b4e9cebc7f4cbb03cdcf0a4",
+      "mode": "mirrored",
+      "source_sha256": "d6027800b9d8c26589edba85b42901a41ac36d753b4e9cebc7f4cbb03cdcf0a4"
+    },
+    "skills/skill-creator/references/workflows.md": {
+      "canonical_sha256": "ef4846877d5dab47511a01a6cf31476ad64f5bc5945635459295794575338980",
+      "mode": "mirrored",
+      "source_sha256": "ef4846877d5dab47511a01a6cf31476ad64f5bc5945635459295794575338980"
+    },
+    "skills/skill-creator/scripts/init_skill.py": {
+      "canonical_sha256": "cf12790f1d4958799281920d599f56aea38fb5c26e2812a61dd740bf3d4b6b99",
+      "mode": "mirrored",
+      "source_sha256": "cf12790f1d4958799281920d599f56aea38fb5c26e2812a61dd740bf3d4b6b99"
+    },
+    "skills/skill-creator/scripts/package_skill.py": {
+      "canonical_sha256": "b31fbcb3e362d5c5308e99255ff8e83cde3a513e0636953964a648494ca10931",
+      "mode": "mirrored",
+      "source_sha256": "b31fbcb3e362d5c5308e99255ff8e83cde3a513e0636953964a648494ca10931"
+    },
+    "skills/skill-creator/scripts/quick_validate.py": {
+      "canonical_sha256": "67cf5703402013936c8fb75ad6a1afecd8841d45cc5e606b634eb05825fde365",
+      "mode": "mirrored",
+      "source_sha256": "67cf5703402013936c8fb75ad6a1afecd8841d45cc5e606b634eb05825fde365"
+    },
+    "skills/startup-business-models/SKILL.md": {
+      "canonical_sha256": "5457890151ef84d7f182c250d29d5083548bab40d3df1cc53e4ebf85f24a3ed0",
+      "mode": "mirrored",
+      "source_sha256": "5457890151ef84d7f182c250d29d5083548bab40d3df1cc53e4ebf85f24a3ed0"
+    },
+    "skills/startup-financial-modeling/SKILL.md": {
+      "canonical_sha256": "856b007c7dbf7a8cbfff9a18b82c0914ece2561d0790b18ce981c36bae96e73d",
+      "mode": "mirrored",
+      "source_sha256": "856b007c7dbf7a8cbfff9a18b82c0914ece2561d0790b18ce981c36bae96e73d"
+    },
+    "skills/tailwind-v4-shadcn/SKILL.md": {
+      "canonical_sha256": "ba664c44d4956200c92db3d115f91d5b1a2601f11dfc25a8d38c0488e9282d27",
+      "mode": "mirrored",
+      "source_sha256": "ba664c44d4956200c92db3d115f91d5b1a2601f11dfc25a8d38c0488e9282d27"
+    },
+    "skills/tailwind-v4-shadcn/references/advanced-usage.md": {
+      "canonical_sha256": "f6ab5fed69adbd14f3d03940035ae44d4d711d91220a6ecac46919c4b818082f",
+      "mode": "mirrored",
+      "source_sha256": "f6ab5fed69adbd14f3d03940035ae44d4d711d91220a6ecac46919c4b818082f"
+    },
+    "skills/tailwind-v4-shadcn/references/common-gotchas.md": {
+      "canonical_sha256": "b42d35ce713ae2f7ff0a77072cbbb70f89428f01b8e0ac77ee325368841fb835",
+      "mode": "mirrored",
+      "source_sha256": "b42d35ce713ae2f7ff0a77072cbbb70f89428f01b8e0ac77ee325368841fb835"
+    },
+    "skills/tailwind-v4-shadcn/references/dark-mode.md": {
+      "canonical_sha256": "3392626694dcf970bdadd4537b425de5825fc0a2a8725474110f246528c87e34",
+      "mode": "mirrored",
+      "source_sha256": "3392626694dcf970bdadd4537b425de5825fc0a2a8725474110f246528c87e34"
+    },
+    "skills/tailwind-v4-shadcn/references/migration-guide.md": {
+      "canonical_sha256": "4580c5c918d71e3ac518d236a035bd627a5e99b254bb93f05eed67fc5ae53b42",
+      "mode": "mirrored",
+      "source_sha256": "4580c5c918d71e3ac518d236a035bd627a5e99b254bb93f05eed67fc5ae53b42"
+    },
+    "skills/tailwind-v4-shadcn/references/plugins-reference.md": {
+      "canonical_sha256": "01c4e9f4095445d00868a20d386004a2cbc8a9974cb507269184291bb53b3907",
+      "mode": "mirrored",
+      "source_sha256": "01c4e9f4095445d00868a20d386004a2cbc8a9974cb507269184291bb53b3907"
+    },
+    "skills/tailwind-v4-shadcn/templates/components.json": {
+      "canonical_sha256": "38d09e0be58f15412e01057114a5d9d4b3582200378441a3c74fd490c37b9a4b",
+      "mode": "mirrored",
+      "source_sha256": "38d09e0be58f15412e01057114a5d9d4b3582200378441a3c74fd490c37b9a4b"
+    },
+    "skills/tailwind-v4-shadcn/templates/index.css": {
+      "canonical_sha256": "3bb8a7a2daf4a9507f8c27deeb626b0d51166d018f7aa0d1d656dd8f652a527a",
+      "mode": "mirrored",
+      "source_sha256": "3bb8a7a2daf4a9507f8c27deeb626b0d51166d018f7aa0d1d656dd8f652a527a"
+    },
+    "skills/tailwind-v4-shadcn/templates/theme-provider.tsx": {
+      "canonical_sha256": "df87540b95499b272216c7b41a5d133bf0a449eb25049128f8a032ccd0e65580",
+      "mode": "mirrored",
+      "source_sha256": "df87540b95499b272216c7b41a5d133bf0a449eb25049128f8a032ccd0e65580"
+    },
+    "skills/tailwind-v4-shadcn/templates/tsconfig.app.json": {
+      "canonical_sha256": "8d20a8ea391818bebc7436709dd00e3e5422db9f811868127f1584efe8ff3047",
+      "mode": "mirrored",
+      "source_sha256": "8d20a8ea391818bebc7436709dd00e3e5422db9f811868127f1584efe8ff3047"
+    },
+    "skills/tailwind-v4-shadcn/templates/utils.ts": {
+      "canonical_sha256": "51bbf14cd1f84f49aab2e0dbee420137015d56b6677bb439e83a908cd292cce1",
+      "mode": "mirrored",
+      "source_sha256": "51bbf14cd1f84f49aab2e0dbee420137015d56b6677bb439e83a908cd292cce1"
+    },
+    "skills/tailwind-v4-shadcn/templates/vite.config.ts": {
+      "canonical_sha256": "37171894fd3d8b7709d1ea15c4db5f4ba0faa1b58d7c7418d11ce4e30eb5562d",
+      "mode": "mirrored",
+      "source_sha256": "37171894fd3d8b7709d1ea15c4db5f4ba0faa1b58d7c7418d11ce4e30eb5562d"
+    },
+    "skills/team/SKILL.md": {
+      "canonical_sha256": "64dd2622d550a179ddf2b8402eb48302f91b495bf2b1df58edb012dadb05c22b",
+      "mode": "translated",
+      "source_sha256": "17bd875701d2ef7bf74e2f55f2a49eaa947b6e8a19f04df3f32d61a68bbf95a1"
+    },
+    "skills/user-persona-creation/SKILL.md": {
+      "canonical_sha256": "a8656ee8df46e503b22e2a05e110b19ef4f838f0e6a0506a29d38f41885cfaeb",
+      "mode": "mirrored",
+      "source_sha256": "a8656ee8df46e503b22e2a05e110b19ef4f838f0e6a0506a29d38f41885cfaeb"
+    },
+    "skills/user-research-synthesis/SKILL.md": {
+      "canonical_sha256": "968a08f0bf67a5f375d7e4ff29f3270b29d95d2af912b912bc3b87b2d848f50f",
+      "mode": "mirrored",
+      "source_sha256": "968a08f0bf67a5f375d7e4ff29f3270b29d95d2af912b912bc3b87b2d848f50f"
+    },
+    "skills/ux-audit-rethink/SKILL.md": {
+      "canonical_sha256": "487ed8f36216390581538bd7f065138c4f4983535da7a81dac1f39211d2ebc45",
+      "mode": "mirrored",
+      "source_sha256": "487ed8f36216390581538bd7f065138c4f4983535da7a81dac1f39211d2ebc45"
+    },
+    "skills/web-scraping/SKILL.md": {
+      "canonical_sha256": "6e87c841885b75d3e3bb3f06ea60b635cd1e5feacd9118cbec75edb52d1cc233",
+      "mode": "translated",
+      "source_sha256": "971f92ae1817af832f2df0c78574cee7dc69a51db93877f87c9765ddcc8ccb99"
+    },
+    "skills/websh/PLAN.md": {
+      "canonical_sha256": "26766ff6d49169459d251daf5c6c61debfb55f999610cd37f256b250dba89046",
+      "mode": "mirrored",
+      "source_sha256": "26766ff6d49169459d251daf5c6c61debfb55f999610cd37f256b250dba89046"
+    },
+    "skills/websh/SKILL.md": {
+      "canonical_sha256": "a097b68b2d4224f859a9b10af9c0f2c2233d74e5ebea2a8695dff90d5ff8c1d6",
+      "mode": "mirrored",
+      "source_sha256": "a097b68b2d4224f859a9b10af9c0f2c2233d74e5ebea2a8695dff90d5ff8c1d6"
+    },
+    "skills/websh/commands.md": {
+      "canonical_sha256": "87083b2df14623efe084b5e48ed33da53378165ebd5b9b952ca7edff1fb1cb31",
+      "mode": "mirrored",
+      "source_sha256": "87083b2df14623efe084b5e48ed33da53378165ebd5b9b952ca7edff1fb1cb31"
+    },
+    "skills/websh/help.md": {
+      "canonical_sha256": "b3f54ee7fa64cc40fb57e4b9d840a6a5c49e19edb28a34b453ade60e74a16bd2",
+      "mode": "mirrored",
+      "source_sha256": "b3f54ee7fa64cc40fb57e4b9d840a6a5c49e19edb28a34b453ade60e74a16bd2"
+    },
+    "skills/websh/shell.md": {
+      "canonical_sha256": "215bc32f658f171be119835fa5148ad0d4578cf8b422d0c971b1e28e78a60d0a",
+      "mode": "mirrored",
+      "source_sha256": "215bc32f658f171be119835fa5148ad0d4578cf8b422d0c971b1e28e78a60d0a"
+    },
+    "skills/websh/state/cache.md": {
+      "canonical_sha256": "f4b3521047efce8ad839117e53603cb5a6079fd122664680ccc12eb5461f7caf",
+      "mode": "mirrored",
+      "source_sha256": "f4b3521047efce8ad839117e53603cb5a6079fd122664680ccc12eb5461f7caf"
+    },
+    "skills/websh/state/crawl.md": {
+      "canonical_sha256": "8f28686ea9b48c0ee71d1b03ba132be90fbe50c0a60a73738193ba5933f45e0b",
+      "mode": "mirrored",
+      "source_sha256": "8f28686ea9b48c0ee71d1b03ba132be90fbe50c0a60a73738193ba5933f45e0b"
+    }
+  },
+  "upstream_url": "https://github.com/MaxMiksa/Auto-Company.git",
+  "version": 1
+}

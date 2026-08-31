@@ -7,6 +7,10 @@ Change log for the `skills_stuff` parent repository.
 - Submodules must contain their own `REVISION_HISTORY.md`.
 - Pushes should use controlled workflows so rollback points are explicit.
 
+## 2026-08-31
+- Added `specialists/agent-stack/` as the canonical English-only pack for Auto Company-derived personas and skills.
+- Adopted symlink-only installation; Auto Company's autonomous loop, consensus mechanism, daemon, settings, and prompts remain outside this pack.
+
 ## 2026-03-09
 - Published initial `skills_stuff` parent repository.
 - Added `specialists/project/skill-mx02-migration` as a Git submodule.

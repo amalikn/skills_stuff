@@ -1,0 +1,74 @@
+{
+  "entries": {
+    "personas/ceo-bezos.md": {
+      "canonical_sha256": "aa44a5ee8c1464713a3f92cc1780fa7a2f25f1873eb610b46e170f0ede5055bb",
+      "source_sha256": "04655828d6c110787651efc71d53ab2e6d04f26356b3c7de8f00c909aa645de2"
+    },
+    "personas/cfo-campbell.md": {
+      "canonical_sha256": "7bf4d09e3e92217d16191100eedabf286a8b5c5f59f9f1e88c4718bed25f78b1",
+      "source_sha256": "63186e51dad6191930907dd8f0847fa8d78080c43f3d9d1576629c30b5f01545"
+    },
+    "personas/critic-munger.md": {
+      "canonical_sha256": "6d0b606eed00fbedd4eebd37c49f48a5545f4cee7ffbcce2e0d54e510ec2812f",
+      "source_sha256": "ca59c72d8b8a91436b1fe60866af2318bb0540e83551c244882427c6fc52b18b"
+    },
+    "personas/cto-vogels.md": {
+      "canonical_sha256": "b0249c3fabf156fff36e1ede4d327404bed3105e7622985683439aa3d250614c",
+      "source_sha256": "1ebb7f996b34ab379efdbf986ff84d228a141a6d4de14ea7e12881a9e8ee414b"
+    },
+    "personas/devops-hightower.md": {
+      "canonical_sha256": "960a55e2a4c9501140cf766d376618cb50b4ce6ba490128f3f7f63b004e6c9a7",
+      "source_sha256": "b878799362a333ec60429f484dfb71a9acc0fc1dac01ece82b2349009bc15a86"
+    },
+    "personas/fullstack-dhh.md": {
+      "canonical_sha256": "c171cafcd5a71ee193b29bef806f050f53fe6a0bee4fad6add7150843bc8e292",
+      "source_sha256": "eb0f38a3deb7bc114fb019750bc25a2a69697b033a673f6e2128c55b12161a4c"
+    },
+    "personas/interaction-cooper.md": {
+      "canonical_sha256": "15ad29f23c31131394f574430c9a03ad4fe09564db2c71d5166776e43ea39ef4",
+      "source_sha256": "5cea25452ad088f74219b933aa1991f2b6e80f0555854fb0e87dfb05099303d2"
+    },
+    "personas/marketing-godin.md": {
+      "canonical_sha256": "a54bfc82faaec1523dc70326535db3dff2f89dc65f6020b791234000036a8c00",
+      "source_sha256": "57022054cf4a10653f9ef22f17eed9be884f26611ff26a6b4a4eef1fe13d7f33"
+    },
+    "personas/operations-pg.md": {
+      "canonical_sha256": "cda497040134778d8d25e8a7777c5bec6130d2aa30a54f034322971fa709e05a",
+      "source_sha256": "9609adb51e32d8286a400731f4d6c7556defbac5f8ae7a35866f79d359f2d0b5"
+    },
+    "personas/product-norman.md": {
+      "canonical_sha256": "a157871983ff83151931fe8fbf6f602802074687ca0439f3082aefa8b98108ae",
+      "source_sha256": "c972ab38f3da66602ab74df381508381eafc0a47d285ee65eea10c7d4235dd9e"
+    },
+    "personas/qa-bach.md": {
+      "canonical_sha256": "47b9cee58494085b4e22955bdab74a5d1ff4be3294f3e19dc615f69a89007882",
+      "source_sha256": "8a978a70de635de0c49a1cfc5a330ff3ce074d738f8cb76c9c88f9151960b050"
+    },
+    "personas/research-thompson.md": {
+      "canonical_sha256": "99a3fa4fe0f9f7e2ea66130315ab1f66dd9563f8d1694fb3fa7fdd8259e9533e",
+      "source_sha256": "f34818ac1c966bf9c96c5fece843343d39e35e828ac7064b0084bb2efbbc5b52"
+    },
+    "personas/sales-ross.md": {
+      "canonical_sha256": "e164262ca865fab8782700c8706bf193cdd4cb3c39aa59cb24a0b62beb2a5fd2",
+      "source_sha256": "1abba59b58e42bc2193de192e9a9ee1db3d381c4ed684ea2bc19c0753723ffd1"
+    },
+    "personas/ui-duarte.md": {
+      "canonical_sha256": "1e6a2efccf2c3f682ec0d1d6f4c34a7b433ede46eeb3a08c0a0704b8f6561d61",
+      "source_sha256": "359692585ee6ad8afd4026aafe72b6554772015666845360ce97ed4988b1dfba"
+    },
+    "skills/github-explorer/SKILL.md": {
+      "canonical_sha256": "7fdad35969d9af7e50b63de40c6bdc4e6c022580cce6458735f30a15919f78bb",
+      "source_sha256": "e126b2eefe54c822332fa718d5d18d8936a32ca6c9159e703dbd486acb89e650"
+    },
+    "skills/team/SKILL.md": {
+      "canonical_sha256": "64dd2622d550a179ddf2b8402eb48302f91b495bf2b1df58edb012dadb05c22b",
+      "source_sha256": "17bd875701d2ef7bf74e2f55f2a49eaa947b6e8a19f04df3f32d61a68bbf95a1"
+    },
+    "skills/web-scraping/SKILL.md": {
+      "canonical_sha256": "6e87c841885b75d3e3bb3f06ea60b635cd1e5feacd9118cbec75edb52d1cc233",
+      "source_sha256": "971f92ae1817af832f2df0c78574cee7dc69a51db93877f87c9765ddcc8ccb99"
+    }
+  },
+  "policy": "translation-policy.md",
+  "version": 1
+}
