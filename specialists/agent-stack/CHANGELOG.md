@@ -1,5 +1,33 @@
 # Changelog — Agent Stack
 
+## 20260903_2000
+
+### Added — a broken multi-persona run keeps what it already bought
+
+- **[`scripts/persona_note.py`](scripts/persona_note.py) and Step 7.5.** A multi-persona route costs minutes and real money per analysis, and if the session dies, the context compacts, or a runner
+  hits a limit — all observed today, when a session limit killed a 60-call run at call 5 — everything that already finished dies with everything that never ran. Each analysis is now written as it
+  returns, with a a MANIFEST.json recording dispatched against returned.
+- **The dispatch is recorded BEFORE the work**, which is the whole mechanism: without it a run that died mid-flight is indistinguishable from one that only ever wanted the personas that came back.
+- **Every note carries a banner saying it is not the verdict.** A stale persona view read as the answer is the obvious trap in keeping raw analyses, and it is cheaper to label every note than to rely
+  on the reader remembering.
+- **Evidence retention, never resume.** Nothing re-dispatches on its own — auto-continuation is unattended work, which [rule 0001](.archcore/rules/0001-safety-model.md) excludes and which is why this
+  project exists as a fork.
+- Separately from crash safety, the raw notes are better evidence than the synthesis: today a CFO's postage-band arithmetic and a Critic's six-condition inversion were the most useful output of a run,
+  and only a paraphrase of them survived into the report.
+
+### Added — the measurement that decides whether resume is ever worth building
+
+- **`--returned` on the field log**, against the existing `--dispatched`. Two counts rather than a boolean, because "2 of 4 came back" and "the run broke" are different facts and only the first says
+  how much was salvaged. The report prints run completeness and, when nothing has broken, says so: *"no incomplete runs recorded — the resume mechanism has not yet been shown to be needed"*.
+- **The resume mechanism was deliberately NOT built.** It is the expensive half — stale inputs, changed tasks, superseded views — and there is no measurement of how often a multi-persona run actually
+  breaks. Gathering that first is the same discipline the rest of this project runs on.
+
+### Changed
+
+- **SKILL.md re-compressed after the two new steps ate the trim**: 6,013 → 5,722 tokens, against 6,479 before any of today's work. Reasoning for both new steps moved into
+  `skills/skill-agent-stack/references/field-log.md`; the commands and operative rules stay inline.
+- Three regression tests, negative-tested by forcing `complete` to true and watching two go red. Suite 46 → 49; governance 706 checks.
+
 ## 20260903_1900
 
 ### Fixed — the field log asked for five of the eleven fields it accepts
@@ -18,9 +46,9 @@
 
 ### Notes — what was deliberately left out, and why
 
-Recorded in the skill's `skills/skill-agent-stack/references/field-log.md`: **duration** (an agent cannot measure its own wall-clock reliably, and `dispatched` already proxies cost with a fact), **domain tags** (derivable,
-and asking invites fitting the tag to the route chosen — the error rule 0006 names), **rework** (a strong signal, but only knowable later, so it belongs to a follow-up entry), and **anything git
-already knows**.
+Recorded in the skill's `skills/skill-agent-stack/references/field-log.md`: **duration** (an agent cannot measure its own wall-clock reliably, and `dispatched` already proxies cost with a fact),
+**domain tags** (derivable, and asking invites fitting the tag to the route chosen — the error rule 0006 names), **rework** (a strong signal, but only knowable later, so it belongs to a follow-up
+entry), and **anything git already knows**.
 
 **Every added field is friction, and friction kills capture.** The log had four entries when these were chosen; the stated bar for a fifth is that it answers a question the existing ones cannot.
 
@@ -715,6 +743,7 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260903_2000](#20260903_2000)
 - [20260903_1900](#20260903_1900)
 - [20260903_1830](#20260903_1830)
 - [20260903_1600](#20260903_1600)

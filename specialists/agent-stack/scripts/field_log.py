@@ -82,6 +82,10 @@ def add(args: argparse.Namespace) -> int:
         # count. Recording only the estimate would give a number nothing can check; recording only the count would lose the magnitude.
         "tokens_estimated": args.tokens,
         "dispatched": args.dispatched,
+        # `returned` against `dispatched` is the incomplete marker. Recorded as two counts rather than a boolean because "2 of 4 came back" and "the run broke"
+        # are different facts, and only the first says how much was salvaged. This is the measurement that decides whether a resume mechanism is ever worth
+        # building — deliberately gathered before building one.
+        "returned": args.returned,
         "note": args.note or (f"no override: {args.overrode}" if args.overrode and not is_override(args.overrode) else None),
     }
     LOG.parent.mkdir(parents=True, exist_ok=True)
@@ -147,6 +151,19 @@ def report(args: argparse.Namespace) -> int:
         did = sum(1 for r in closed if r["closure_changed"].strip())
         print(f"\nclosure ran on {len(closed)} entr(ies); it changed the route in {did}")
 
+    # Incompleteness, which is the question that decides whether a resume mechanism earns its complexity.
+    both = [r for r in rows if isinstance(r.get("dispatched"), int) and isinstance(r.get("returned"), int)]
+    if both:
+        broke = [r for r in both if r["returned"] < r["dispatched"]]
+        print(f"\nrun completeness: {len(both) - len(broke)}/{len(both)} complete")
+        if broke:
+            lost = sum(r["dispatched"] - r["returned"] for r in broke)
+            print(f"  {len(broke)} incomplete run(s), {lost} persona analys(es) not returned")
+            for r in broke[-5:]:
+                print(f"    {r['ts'][:10]}  {r.get('owner', '?'):20} {r['returned']}/{r['dispatched']}  {r['task'][:60]}")
+        else:
+            print("  no incomplete runs recorded — the resume mechanism has not yet been shown to be needed")
+
     # Cost. Split by whether personas were dispatched, because that is where the money goes and it is the decision the operator actually makes.
     costed = [r for r in rows if isinstance(r.get("tokens_estimated"), int)]
     if costed:
@@ -208,6 +225,8 @@ def main() -> int:
                    help="What close_route.py altered, from its --explain output. Empty means it changed nothing, which is itself worth recording.")
     a.add_argument("--tokens", type=int,
                    help="ESTIMATE of tokens the routed work consumed, including subagents. Unverifiable by construction — record your best estimate, or omit it.")
+    a.add_argument("--returned", type=int,
+                   help="How many dispatched personas actually came back. Below --dispatched means the run was incomplete; the difference is what was lost.")
     a.add_argument("--dispatched", type=int,
                    help="How many subagents you actually spawned. A COUNT, not an estimate, and the dominant cost driver. Record 0 when you did the work inline.")
     a.add_argument("--note")

@@ -251,6 +251,21 @@ Give each persona/skill a bounded assignment containing:
 
 Default to dependency order rather than parallelism when one result materially changes another's work. Parallelise only independent analyses.
 
+## Step 7.5 — Keep Each Persona's Analysis As It Returns
+
+**Multi-persona routes only.** Record the dispatch *before* the work, then store each analysis as it comes back:
+
+```bash
+NOTES=<project reports dir>/.runs/<slug>-YYYYMMDD_hhmm
+S=/Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/scripts/persona_note.py
+python3 $S dispatch --run-dir $NOTES --task "<the task>" --persona cfo-campbell --persona critic-munger
+<persona output> | python3 $S write --run-dir $NOTES --persona cfo-campbell
+python3 $S status --run-dir $NOTES
+```
+
+**Record the dispatch before the work**, or an incomplete run is indistinguishable from one that only wanted the personas that returned. This is evidence
+retention, not resume — nothing re-dispatches on its own. Why: [references/field-log.md](references/field-log.md).
+
 ## Step 8 — Handle Disagreement
 
 Do not average conflicting specialist views.
@@ -287,7 +302,7 @@ python3 /Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/scripts/f
   --owner <primary_owner you named> --persona <each one> --skill <each one> \
   --gate research --gate critic --gate qa --gate runtime   `# ONLY the ones you set true` \
   --closure-changed "<what close_route.py --explain printed, or empty if nothing>" \
-  --dispatched <how many subagents you actually spawned> --tokens <your estimate> \
+  --dispatched <how many you spawned> --returned <how many came back> --tokens <your estimate> \
   --followed full|partial|no \
   --overrode "<what you used instead, and why — OMIT if you followed the route>"
 ```
@@ -314,30 +329,16 @@ rate is 1.00 on all four, so a broad or all-true gate set is not authority to ex
 
 ## Step 9.5 — Persist the Synthesis Into the Project
 
-**When the route produced a verdict, an assessment or a decision the project will refer back to, write it into the project as a file.** Not for narrow or
-routine work — a usability list or a config fix does not need a document, and producing one for every task is noise.
+**When the route produced a verdict, assessment or decision the project will refer back to, write it into the project as a file.** Not for narrow or routine
+work — a document per task is noise. Do it when the output is a GO/NO-GO or recommendation; when personas disagreed and the disagreement is part of the answer;
+when the finding rests on evidence someone will re-check; or when a later session would otherwise redo the reasoning.
 
-Do it when any of these hold: the output is a GO/NO-GO or a recommendation; personas disagreed and the disagreement is part of the answer; the finding rests on
-evidence someone will want to re-check; or a later session would otherwise have to redo the reasoning.
+**Where — the project decides, not this skill.** Follow its existing reports convention exactly (`docs/reports/`, `reports/`, whatever its `AGENTS.md` names);
+otherwise use `docs/` and say so; never invent a parallel structure beside one that exists. Name it `<slug>-YYYYMMDD_hhmm.md`.
 
-**Where — look before you write. The project decides, not this skill.**
-
-1. If the project already has a reports convention, follow it exactly (`docs/reports/`, `reports/`, or whatever its `AGENTS.md` names).
-2. Otherwise put it in `docs/` and say in your answer that you created that location.
-3. Never invent a parallel structure beside one that already exists.
-
-**Name it** `<slug>-YYYYMMDD_hhmm.md` — the operator's global convention.
-
-**Contents that make it usable as a reference later**, rather than a transcript:
-
-- the verdict or recommendation in its own sentence, first;
-- what the finding rests on, with figures and their source, separated from inference;
-- **disagreement preserved, not averaged** — where two personas reached different conclusions, record both and what each turned on;
-- what would change the answer, stated concretely enough to act on;
-- the route that produced it: the primary owner, the personas and skills used, and which gates fired.
-
-That last line matters more than it looks. A report that records its own route can be re-read later against what the router did, and is the only artefact that
-connects a decision to the reasoning path that produced it.
+**Contents:** the verdict in its own sentence first; what it rests on, with figures and their source, separated from inference; **disagreement preserved, not
+averaged**; what would change the answer, concretely; and the route that produced it — owner, personas, skills, gates fired. Why that last line matters:
+[references/field-log.md](references/field-log.md).
 
 ## Routing Self-Check
 

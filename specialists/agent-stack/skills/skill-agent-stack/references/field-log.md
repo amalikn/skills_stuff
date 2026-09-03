@@ -43,3 +43,22 @@ below n=10.
 - **Anything the repo already knows.** The commit, the diff, the files touched. Recording them here duplicates git and goes stale.
 
 **Every added field is friction, and friction kills capture.** The log had four entries when these were chosen; the bar for a fifth field is that it answers a question the existing ones cannot.
+
+## Why persona notes are kept, and why they are not a resume mechanism
+
+A multi-persona route costs minutes and real money per analysis. If the session dies, the context compacts, or a runner hits a limit — all observed on 20260903, when a session limit killed a 60-call
+run at call 5 — everything that already finished dies with everything that never ran.
+
+Recording the dispatch **before** the work is what makes an incomplete run visible as incomplete. Without it, a run that died mid-flight is indistinguishable from one that only ever wanted the
+personas that came back, and that difference is the entire point.
+
+Nothing re-dispatches on its own. Auto-continuation is unattended work, which [rule 0001](../../../.archcore/rules/0001-safety-model.md) excludes and which is why this project exists as a fork.
+Continuing a broken run is the operator's call; the completed notes are simply there when they make it.
+
+Separately from crash safety, the raw notes are better evidence than the synthesis. The synthesis compresses several analyses into one answer, and the compression is lossy in the direction that
+matters: on 20260903 a CFO's postage-band arithmetic and a Critic's six-condition inversion were the most useful output of a run, and only a paraphrase of them survived into the report.
+
+## Why a report records its own route
+
+A report that names the owner, personas, skills and gates that produced it can later be re-read against what the router actually did. It is the only artefact connecting a decision to the reasoning
+path behind it — which matters most when two personas disagreed and the disagreement is part of the answer.

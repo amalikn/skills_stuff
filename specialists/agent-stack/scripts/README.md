@@ -120,6 +120,23 @@ the right shape (apply the safe classes, propose the rest) and it is worth keepi
 
 Below 10 entries it proposes nothing and says why. That is the correct output, not a failure. It will not invent a skill or write a persona — authoring is `skill-creator`'s job.
 
+### `persona_note.py`
+
+- **Purpose:** stores each persona's analysis as it returns during a multi-persona route, and records which personas were dispatched against which came back, so
+  a run that breaks halfway keeps what it already bought.
+- **Run with:** `dispatch --run-dir D --persona X ...` before the work; `write --run-dir D --persona X` reading the analysis on stdin; `status --run-dir D` for
+  what is still pending
+- **Outputs:** one markdown note per persona, each carrying a banner saying it is **not the verdict**, plus a a MANIFEST.json recording dispatched against returned
+- **Requires:** standard library only
+- **Safety:** `safe` and `modifies-files` — it writes into the run directory it is given and calls no model
+- **Idempotent:** re-writing a persona overwrites its note; the manifest never double-counts
+
+**Evidence retention, never resume.** Nothing here re-dispatches anything or continues a broken run: auto-continuation is unattended work, which
+[rule 0001](../.archcore/rules/0001-safety-model.md) excludes and which is why this project exists as a fork. Re-running is the operator's decision.
+
+Recording the dispatch **before** the work is what makes an incomplete run visible as incomplete — otherwise it is indistinguishable from a run that only ever
+wanted the personas that returned.
+
 ### `field_log.py`
 
 - **Purpose:** records what the router actually did on **real work**, and reports the pattern. Every other measurement in this project tests agreement with a corpus — necessary, but not sufficient,

@@ -213,4 +213,56 @@ class RoutingBehaviorTests(unittest.TestCase):
                       "Corrects the prior entry - critic gate was dispatched after all"):
             self.assertTrue(fl.is_override(value), f"{value!r} should count as an override")
 
+    # --- Persona notes: a broken run keeps what it bought -------------------------------------------------------------------------------------------
+
+    def _persona_note(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("persona_note", ROOT / "scripts" / "persona_note.py")
+        m = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = m
+        spec.loader.exec_module(m)
+        return m
+
+    def test_incomplete_run_is_visible_as_incomplete(self):
+        """Dispatch recorded before the work is what separates "the run died" from "we only wanted these two"."""
+        import tempfile, argparse
+        pn = self._persona_note()
+        with tempfile.TemporaryDirectory() as d:
+            pn.cmd_dispatch(argparse.Namespace(run_dir=d, persona=["a", "b", "c", "d"], task="t"))
+            m = pn.load_manifest(Path(d))
+            self.assertEqual(sorted(m["dispatched"]), ["a", "b", "c", "d"])
+            self.assertEqual(m["returned"], [])
+            self.assertFalse(m["complete"], "a run with nothing returned must not read as complete")
+
+    def test_returned_notes_survive_and_are_labelled_not_the_verdict(self):
+        import tempfile, argparse, io
+        pn = self._persona_note()
+        with tempfile.TemporaryDirectory() as d:
+            pn.cmd_dispatch(argparse.Namespace(run_dir=d, persona=["cfo-campbell", "critic-munger", "qa-bach"], task="t"))
+            real_stdin = sys.stdin
+            try:
+                sys.stdin = io.StringIO("break-even needs 115-134% of a 50-unit pilot")
+                pn.cmd_write(argparse.Namespace(run_dir=d, persona="cfo-campbell"))
+            finally:
+                sys.stdin = real_stdin
+            note = (Path(d) / "cfo-campbell.md").read_text()
+            self.assertIn("115-134%", note, "the analysis itself must survive")
+            self.assertIn("not the verdict", note, "a persona note must say it is not the answer")
+            m = pn.load_manifest(Path(d))
+            self.assertEqual(m["returned"], ["cfo-campbell"])
+            self.assertFalse(m["complete"], "1 of 3 returned is not complete")
+
+    def test_an_empty_analysis_is_refused(self):
+        """An empty note would read as a returned persona that said nothing, which is worse than a missing one."""
+        import tempfile, argparse, io
+        pn = self._persona_note()
+        with tempfile.TemporaryDirectory() as d:
+            real_stdin = sys.stdin
+            try:
+                sys.stdin = io.StringIO("   \n")
+                self.assertEqual(pn.cmd_write(argparse.Namespace(run_dir=d, persona="x")), 1)
+            finally:
+                sys.stdin = real_stdin
+            self.assertFalse((Path(d) / "x.md").exists())
+
 if __name__ == "__main__": unittest.main()
