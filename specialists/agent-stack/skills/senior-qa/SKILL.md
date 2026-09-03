@@ -207,3 +207,8 @@ Check the comprehensive troubleshooting section in `references/qa_best_practices
 - Workflow Guide: `references/test_automation_patterns.md`
 - Technical Guide: `references/qa_best_practices.md`
 - Tool Scripts: `scripts/` directory
+
+## Runtime / Environment
+
+For Agent Stack-owned Python helper scripts, prefer the repository root `mise` + `.venv` environment (see `../../RUNTIME.md` from this skill directory). Do not assume globally installed Python packages and do not install global dependencies silently. If this skill has skill-local requirements, install them into an approved isolated environment and keep consumer-project dependencies under that project's control.
+

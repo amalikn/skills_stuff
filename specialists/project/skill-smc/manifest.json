@@ -4,19 +4,32 @@
   "slug": "skill-smc",
   "subject_id": null,
   "title": "SMC Box Operations and ansible-wifi Authoring",
-  "description": "Operational knowledge base for SMC (Small Cell Management) boxes managed by ansible-wifi. Covers Ansible authoring, service architecture, communication flows, troubleshooting, and failure modes.",
-  "tags": ["ansible", "smc", "wifi", "operations", "troubleshooting", "teleport", "networking"],
+  "description": "Operational knowledge base for SMC (Site Management Controller) boxes and related ansible-wifi, ansible-malik, dns_query, and local-knowledge workflows. Covers Ansible authoring, URL capture/PCAP processing, service architecture, communication flows, troubleshooting, and failure modes.",
+  "tags": [
+    "ansible",
+    "smc",
+    "wifi",
+    "operations",
+    "troubleshooting",
+    "teleport",
+    "networking"
+  ],
   "environment": "ansible-wifi",
   "owner": null,
   "site": null,
   "role": null,
-  "scope_boundary": "In scope: ansible-wifi repo authoring, SMC box service management, live troubleshooting, Teleport access, Prometheus alerting interpretation, topology variable management. Out of scope: CNMaestro dashboard UI operations, NBN Accelerate portal, Teleport server administration.",
+  "scope_boundary": "In scope: ansible-wifi repo authoring, ansible-malik SMC operator playbooks, dns_query work tied to SMC URL-capture PCAP layouts, local-knowledge-ansible/ansible-wifi artifacts, SMC box service management, live troubleshooting, Teleport access, Prometheus alerting interpretation, topology variable management. Out of scope: CNMaestro dashboard UI operations, NBN Accelerate portal, Teleport server administration.",
   "parent_refs": [],
-  "related_refs": [],
+  "related_refs": [
+    "/Volumes/Data/_ansible/ansible-wifi",
+    "/Volumes/Data/_ansible/ansible-malik",
+    "/Volumes/Data/_ai/_scripts/scripts_stuff/python/dns_query",
+    "/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi"
+  ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "2026-04-15T00:00:00Z",
-  "version": "0.1.0",
+  "updated_at": "2026-08-03T18:25:00Z",
+  "version": "0.1.25",
   "dependencies": [],
   "known_constraints": [
     "SMC boxes run overlayroot — changes do not persist across reboot unless lower dir is remounted rw",
@@ -24,11 +37,141 @@
     "topology_vars.py plugin output is cached in hidden .*.yml files — mtime-based, may be stale after git checkout"
   ],
   "stable_facts": [
-    {"statement": "SMC boxes are x86 PCs or ARM64 Raspberry Pis running Ubuntu 20.04+ (22.04 seen in production).", "confidence": 0.99, "tags": ["hardware"]},
-    {"statement": "All remote access routes through Teleport reverse SSH tunnel. SSH port = 50000 + site_eclipse_siteid.", "confidence": 0.99, "tags": ["access", "teleport"]},
-    {"statement": "overlayroot is enabled: writes go to tmpfs at /media/root-rw/overlay and are lost on reboot.", "confidence": 0.99, "tags": ["overlayroot", "persistence"]},
-    {"statement": "Canonical topology source is inventories/*/topology_vars/<site>.yml. Hidden .*.yml files are generated cache.", "confidence": 0.99, "tags": ["ansible", "topology"]}
+    {
+      "statement": "SMC boxes are x86 PCs or ARM64 Raspberry Pis running Ubuntu 20.04+ (22.04 seen in production).",
+      "confidence": 0.99,
+      "tags": [
+        "hardware"
+      ]
+    },
+    {
+      "statement": "All remote access routes through Teleport reverse SSH tunnel. SSH port = 50000 + site_eclipse_siteid.",
+      "confidence": 0.99,
+      "tags": [
+        "access",
+        "teleport"
+      ]
+    },
+    {
+      "statement": "overlayroot is enabled: writes go to tmpfs at /media/root-rw/overlay and are lost on reboot.",
+      "confidence": 0.99,
+      "tags": [
+        "overlayroot",
+        "persistence"
+      ]
+    },
+    {
+      "statement": "Canonical topology source is inventories/*/topology_vars/<site>.yml. Hidden .*.yml files are generated cache.",
+      "confidence": 0.99,
+      "tags": [
+        "ansible",
+        "topology"
+      ]
+    },
+    {
+      "statement": "DHCP/LAN client DNS (Unbound+Stubby, or bind9/RPZ) is gated by smc_ltp inventory-group membership, not flavor. The SMC's own DNS resolution is a separate systemd-resolved/glibc path with DNSStubListener=no by default, bypassing unbound/stubby/bind entirely.",
+      "confidence": 0.95,
+      "tags": [
+        "dns",
+        "networking"
+      ]
+    },
+    {
+      "statement": "smc_ltp is a static rcp-only Ansible group defined in inventories/rcp/prod (INI, not topology_vars-generated), currently 7 sites: guda-guda, pandanus-park, old-looma, new-looma, warburton, beagle-bay, umoona -- every 'low touch'-onboarded site. It has two unrelated purposes, not one: (1) a separate smc_ltp.yml playbook runs CNMaestro-managed Cambium ePMP/cnPilot wireless-backhaul provisioning; (2) smc_bases.yml's dns_mgmt play switches the host's DNS resolver from unbound+stubby to bind9+RPZ (zone file literally named db.cambium-rpz). The literal expansion of the acronym 'LTP' is not documented anywhere in the codebase. Corrected 2026-08-03, twice same day: first from 'only guda-guda' (mislabeled 'cnMaestro mDNS') to 4 sites via direct inventory read, then to the full 7 after the operator confirmed every low-touch site should be a member and directed adding the 3 missing ones (warburton/beagle-bay/umoona) -- a real inventory gap, operator-directed fix, verified via ansible-inventory --list and ansible-playbook --syntax-check, uncommitted/not yet run against any live SMC.",
+      "confidence": 0.92,
+      "tags": [
+        "dns",
+        "networking",
+        "cnmaestro",
+        "smc_ltp"
+      ]
+    },
+    {
+      "statement": "A named 'low touch' onboarding method (operator-confirmed 2026-08-03) was used to deploy guda-guda (pilot, 2025-04-15), then a year later umoona (2026-04-12), warburton, beagle-bay, pandanus-park, old-looma, and new-looma. All 7 low-touch sites are confirmed smc_ltp members (operator confirmed the link is real, not coincidental, and directed adding the 3 that were missing from the inventory). Mechanism confirmed 2026-08-03: it is a manual step someone has to remember -- no low-touch onboarding tooling automatically assigns smc_ltp group membership, and nothing enforces or checks it happened, which is the actual root cause of the 3-site gap and a standing risk for future low-touch sites. The only 'low_touch' hit anywhere in ansible-wifi (smc_bases_low_touch_provisioning: true on pierre-rcp01, not a cohort member) is never read by any role/playbook -- an orphaned var, not an implemented code path distinct from smc_ltp group membership itself.",
+      "confidence": 0.92,
+      "tags": [
+        "onboarding",
+        "deployment-history",
+        "smc_ltp"
+      ]
+    },
+    {
+      "statement": "The captive portal runs under mod_php as www-data, NOT PHP-FPM. Verified 2026-07-28 on three rcp hosts: no php*-fpm packages installed, libapache2-mod-php present, apache2ctl -M shows php_module, no /etc/php/*/fpm directory. No SetHandler exists in any role template and the enabled Apache modules are only rewrite and ssl. Earlier PHP-FPM documentation described reverted family-friendly-smc01 work that never reached production.",
+      "confidence": 0.95,
+      "tags": [
+        "captive-portal",
+        "php"
+      ]
+    },
+    {
+      "statement": "Kohana::init() unconditionally requires APPPATH/cache AND APPPATH/logs to be writable by the web user, throwing 'Directory :dir must be writable' before routing. It prints rather than raises, so the response is HTTP 200 with a ~40-byte body and apache error.log stays empty — status-code-only health checks cannot detect a dead portal.",
+      "confidence": 0.99,
+      "tags": [
+        "captive-portal",
+        "kohana",
+        "monitoring"
+      ]
+    },
+    {
+      "statement": "An Ansible tag on a block that destroys and recreates state must also be carried by every task repairing permissions/ownership on that state, including any stat task whose registered variable gates the repair block's when condition. Otherwise the tag-limited run is guaranteed broken while the untagged full run stays correct.",
+      "confidence": 0.99,
+      "tags": [
+        "ansible",
+        "authoring"
+      ]
+    }
   ],
   "assumptions": [],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "statement": "First live tsh ssh access to the NBN Accelerate cluster (2026-08-03): warakurna-smc01 and indulkana-smc01, both nbn_accelerate. Confirmed live: Teleport domain (teleport.communitywifi.net.au:443), HTTPS-only portal (permanent redirect, on-box TLS termination at /etc/ssl/communitywifi.net.au/), wifi-community-app-backend present, ClamAV+Lynis installed, Asterisk absent, non-smc_ltp DNS stack (unbound+stubby, named inactive) -- every prior code-inspection-only claim checked came back confirmed, 2/2 hosts. New finding: clamav-freshclam has been failing on both hosts (exit 17, CDN-blocked) since 2026-06-21/07-23 respectively -- ClamAV hardening is deployed but running a stale virus database. Not investigated further (read-only exploratory session). nbn_wh and cw flavors remain unvalidated.",
+      "confidence": 0.95,
+      "tags": [
+        "nbn-accelerate",
+        "live-validation",
+        "clamav"
+      ]
+    },
+    {
+      "statement": "Full NBN Accelerate cluster fleet sweep (2026-08-03), superseding the 2-host spot-check above: all 26 reachable nbn_accelerate hosts + both nbn_wh hosts (28 total, aurukun-smc03 unreachable). Hardware: 11x AAEON BOXER-6641 (i5-8500T, 15Gi RAM, Transcend TS128GSSD420K SSD) + 15x AAEON BOXER-6404 (Celeron J1900, 7.7Gi RAM, Innodisk CFast 3ME3) for nbn_accelerate; both nbn_wh hosts are Cortex-A72 RPi-class (7.6Gi RAM, Swissbit SB AFNI0 microSD, no dmidecode -- expected). nbn_wh is the operator-confirmed wh-flavor equivalent on this cluster. clamav-freshclam confirmed failed on 26/26 nbn_accelerate hosts (not just 2), failure dates spanning 10 continuous months (2025-10-02 to 2026-07-30). nbn_wh overlayroot not yet active on either host -- operator confirmed this is a planned-but-not-yet-executed rollout (smc_rise_deploy.yml already targets nbn_wh alongside rct/wh), not a bug. Kernel-version drift confirmed live (5.15.0-79 to 5.15.0-133 across the fleet), corroborating the earlier no-automated-kernel-pipeline structural finding. koonibba-smc01 flagged at 95% disk usage with the fleet's oldest kernel. isc-dhcp-server6 failed on 28/28 hosts, confirmed benign (IPv6 disabled by policy). nbn_wh zram/swap presence contradicts the platform table's universal RPi-zram claim -- unresolved. Raw evidence relocated to local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/fleet-hardware-audit-20260803/ per evidence-retention policy.",
+      "confidence": 0.95,
+      "tags": [
+        "nbn-accelerate",
+        "live-validation",
+        "clamav",
+        "hardware-inventory",
+        "fleet-sweep"
+      ]
+    },
+    {
+      "statement": "clamav-freshclam fleet-wide failure ROOT CAUSE CONFIRMED (2026-08-03, verified via WebSearch against clamav.net and Cisco-Talos/clamav GitHub issues, not just inferred): fleet runs clamav 0.103.11+dfsg-0ubuntu0.22.04.1 uniformly (one host, warakurna-smc01, on 0.103.12 -- same EOL branch). ClamAV's 0.103 branch reached end-of-life for database updates on 2025-09-14; after that date the ClamAV CDN actively rejects freshclam requests from any 0.103.x client with HTTP 403 Forbidden. This is documented, expected, upstream behavior affecting any fleet still on 0.103.x past the cutoff -- not a cw-cluster-specific network/firewall/proxy issue, and not something that self-heals (ClamAV 0.103.4+ added a 24h cool-down for CDN-blocked clients specifically, but the block itself is permanent until the client version is upgraded). This also explains the 10-month staggered failure-date spread: each host only flips to failed the first time its freshclam timer runs after the 2025-09-14 cutoff, so hosts with different timer schedules/provisioning dates trip it at different times rather than simultaneously. Fix: upgrade clamav/clamav-freshclam fleet-wide to 1.4 LTS (current) or 1.0 LTS (older supported alternative) via roles/smc_bases.yml -- no automated version-update pipeline exists for this cluster, so nothing will self-correct without a deliberate rollout.",
+      "confidence": 0.97,
+      "tags": [
+        "nbn-accelerate",
+        "clamav",
+        "root-cause",
+        "eol"
+      ]
+    },
+    {
+      "statement": "Grafana MCP exploration (2026-08-03) after fixing the blank nbn-instance service-account token (required a session/MCP restart to pick up -- stdio MCP servers cache env vars at spawn time): mcp-grafana-apn has 20 dashboards vs mcp-grafana-nbn's 9. RISE health/watchdog dashboards (RISE SMC Health Detail, RISE SMC Table, RISE Dashboard) exist only on mcp-grafana-apn -- confirmed via dashboard panel queries that RISE is deployed only to rct/wh flavors (flavor=~\"rct|wh\" gate on the 'Pending sites' panel), so rcp and the whole NBN Accelerate cluster (nbn_accelerate/nbn_wh) run zero RISE metrics. Pulled exact Prometheus metric names for the previously-undocumented rise_healthcheck.py/rise_overlay_metrics.sh/rise_zram_metrics.sh/rise_watchdog.py textfile collectors (rise_healthcheck_health_score_*, rise_healthcheck_health_penalty*, rise_overlay_used_pct/_inodes_free_pct/_active, rise_zram_*, rise_watchdog_up/_active/_boot_firmware_used_pct/_unit_active) -- these previously had '--' placeholders in the service-map textfile-collector table. Also confirmed the RISE fleet-rollup logic: a host is 'offline' when rise_watchdog_up was seen in the last 30d but not the last 5m, vs. 'pending' (RISE not yet deployed) when node_exporter is up on an rct/wh host but no rise_watchdog_up series has ever existed for it.",
+      "confidence": 0.95,
+      "tags": [
+        "grafana",
+        "rise",
+        "monitoring",
+        "live-validation"
+      ]
+    },
+    {
+      "statement": "new-looma-smc01 second confirmed whole-host outage (2026-08-03), independent of the 2026-07-30 topology cross-wiring fix: operator reported the site back online; live Prometheus query via mcp-grafana-apn confirmed both up{job=\"prometheus\"} and up{job=\"node_exporter\"} for new-looma-smc01 dropped simultaneously from 2026-08-01 23:40 UTC to 2026-08-03 06:40 UTC (31h gap), then both resumed together -- consistent with whole-host/network unreachability, not a single-service crash. A separate, already-explained 18h gap in the same 7-day window (2026-07-29 11:10 to 2026-07-30 05:10 UTC) lines up with the documented cross-wiring fix. Root cause of this second, newer gap NOT established (no tsh ssh used this session, Prometheus history only) -- flagged as a possible recurrence pattern at this specific site, not concluded to share a cause with the cross-wiring bug or the still-open my_node_network_device_info zero-series gap also unique to new-looma/old-looma/horn-island.",
+      "confidence": 0.9,
+      "tags": [
+        "new-looma",
+        "outage",
+        "live-validation",
+        "grafana"
+      ]
+    }
+  ]
 }

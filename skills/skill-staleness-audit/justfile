@@ -1,0 +1,113 @@
+# skill-staleness-audit — task runner.
+#
+# Copy this into the project being audited, or invoke with:
+#   just --justfile <skill>/justfile --working-directory <project> <recipe>
+#
+# The recipes are the enforcement layer. Phases recorded here produce receipts that
+# `audit-verify` checks arithmetically — so "I did Phase 4" and "I said I did Phase 4"
+# stop being indistinguishable.
+
+skill_dir := justfile_directory()
+root      := invocation_directory()
+py        := "python3"
+
+# List recipes
+default:
+    @just --justfile "{{justfile()}}" --list
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 0 — snapshot. ALWAYS FIRST. Verifies its own output is non-empty.
+# ─────────────────────────────────────────────────────────────────────────────
+audit-snapshot:
+    @bash "{{skill_dir}}/scripts/snapshot_worktree.sh"
+
+# Start an audit. scope is free text, recorded in the report.
+audit-init scope="whole project":
+    @{{py}} "{{skill_dir}}/scripts/audit_state.py" --root "{{root}}" init --scope "{{scope}}"
+    @echo
+    @echo "Next: just audit-snapshot, then record its result:"
+    @echo "  just audit-record 0 snapshot_path=<path> files_snapshotted=<n>"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 1 — coverage + claims
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Classify every file. Fails (exit 1) when files need a non-text method or coverage is blind.
+audit-coverage:
+    @{{py}} "{{skill_dir}}/scripts/coverage_manifest.py" --root "{{root}}" --record
+
+# Enumerate checkable claims. count-map declares what a unit means, e.g. doc=docs/*.md
+audit-claims *ARGS:
+    @{{py}} "{{skill_dir}}/scripts/claim_scan.py" --root "{{root}}" --record {{ARGS}}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 4 — per-artifact reasoning worksheet. Pass the values under audit as signals.
+# ─────────────────────────────────────────────────────────────────────────────
+audit-signals *ARGS:
+    @{{py}} "{{skill_dir}}/scripts/artifact_signals.py" --root "{{root}}" --record \
+        --out "{{root}}/.staleness-audit/phase4-worksheet.md" {{ARGS}}
+    @echo "Fill every Verdict cell, then:"
+    @echo "  just audit-record 4 artifacts_reasoned=<n> findings=<n>"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 7 — the exit gate. Blocks on anything mechanically checkable.
+# ─────────────────────────────────────────────────────────────────────────────
+audit-verify *ARGS:
+    @{{py}} "{{skill_dir}}/scripts/verify_completeness.py" --root "{{root}}" {{ARGS}}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# State
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Record a phase receipt: just audit-record 4 artifacts_reasoned=22 findings=2
+audit-record phase +PAIRS:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    args=()
+    for kv in {{PAIRS}}; do
+      args+=(--key "${kv%%=*}" --value "${kv#*=}")
+    done
+    {{py}} "{{skill_dir}}/scripts/audit_state.py" --root "{{root}}" record \
+        --phase {{phase}} "${args[@]}"
+
+# Attach a note to a phase
+audit-note phase text:
+    @{{py}} "{{skill_dir}}/scripts/audit_state.py" --root "{{root}}" note \
+        --phase {{phase}} --text "{{text}}"
+
+# Where the audit stands. Exit 1 while anything is incomplete or unreconciled.
+audit-status:
+    @{{py}} "{{skill_dir}}/scripts/audit_state.py" --root "{{root}}" status
+
+# Block until a phase has a complete receipt — use to gate later work
+audit-require phase:
+    @{{py}} "{{skill_dir}}/scripts/audit_state.py" --root "{{root}}" require --phase {{phase}}
+
+# Copy the working templates into the project's audit directory
+audit-templates:
+    @mkdir -p "{{root}}/.staleness-audit"
+    @cp "{{skill_dir}}/templates/"*.md "{{root}}/.staleness-audit/"
+    @echo "templates copied to {{root}}/.staleness-audit/"
+
+# Discard audit state (does NOT touch the snapshot)
+audit-reset:
+    @{{py}} "{{skill_dir}}/scripts/audit_state.py" --root "{{root}}" reset
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Convenience
+# ─────────────────────────────────────────────────────────────────────────────
+
+# The mechanical opening: snapshot → coverage → claims → Phase 4 worksheet.
+# Phases 2, 3, 5, 6 are judgement and cannot be automated — that is the point.
+audit-start scope="whole project": audit-init audit-snapshot audit-templates
+    -@just --justfile "{{justfile()}}" --working-directory "{{root}}" audit-coverage
+    -@just --justfile "{{justfile()}}" --working-directory "{{root}}" audit-claims
+    -@just --justfile "{{justfile()}}" --working-directory "{{root}}" audit-signals
+    @echo
+    @echo "Mechanical passes done. Now the parts that need judgement:"
+    @echo "  Phase 2  fix in dependency order        patterns/defect-taxonomy.md"
+    @echo "  Phase 3  supersession banners            patterns/supersession-banners.md"
+    @echo "  Phase 4  fill the worksheet              patterns/per-artifact-reasoning.md"
+    @echo "  Phase 5  checks that CAN FAIL            patterns/check-hardening.md"
+    @echo "  Phase 6  residual-risk register          templates/residual-risk-register.md"
+    @echo "  Phase 7  just audit-verify"

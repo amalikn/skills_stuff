@@ -1,13 +1,15 @@
 version: 1
 name: agent-stack
 language: English
+routing_catalog: routing.toml
+runtime_contract: RUNTIME.md
 source:
   repository: https://github.com/MaxMiksa/Auto-Company.git
   source_paths:
     personas: .claude/agents
     skills: .claude/skills
 install:
-  method: directory-symlink
+  method: individual-symlink
   consumer_paths:
     personas: .claude/agents
     skills: .claude/skills

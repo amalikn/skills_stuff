@@ -1,59 +1,53 @@
 ---
 name: team
-description: "Form a temporary AI-agent team for a task by selecting the smallest suitable group from the persona library."
+description: Form the smallest sufficient temporary persona team for a task using Agent Stack routing ownership and non-overlap rules. Normally invoked by orchestrator rather than directly by the operator.
 argument-hint: "[task description]"
 disable-model-invocation: true
 ---
 
-# Form a Temporary Team
+# Form a Temporary Agent Stack Team
 
-Use this skill to choose a focused temporary team from `personas/` for the task below.
+Use root `routing.toml` and the persona files under `personas/`. This skill chooses **personas only**; `orchestrator` separately chooses procedural skills.
 
 ## Task
 
 $ARGUMENTS
 
-## Available Personas
+## Selection Algorithm
 
-| Persona | File | Primary contribution |
-| --- | --- | --- |
-| CEO | `ceo-bezos` | strategy, priorities, business model, decision narratives |
-| CTO | `cto-vogels` | architecture, technology choices, system design |
-| Critic | `critic-munger` | independent challenge, pre-mortems, assumption review |
-| Product | `product-norman` | product definition, usability, human-centred decisions |
-| UI Design | `ui-duarte` | visual design, design systems, interface hierarchy |
-| Interaction Design | `interaction-cooper` | user flows, personas, interaction models |
-| Full-Stack Engineering | `fullstack-dhh` | implementation, technical plans, product delivery |
-| Quality Assurance | `qa-bach` | test strategy, release confidence, defect analysis |
-| DevOps / SRE | `devops-hightower` | delivery, infrastructure, monitoring, operational readiness |
-| Marketing | `marketing-godin` | positioning, demand, content, audience development |
-| Operations | `operations-pg` | customer learning, growth, community, product-market fit |
-| Sales | `sales-ross` | pipeline, conversion, customer conversations |
-| CFO | `cfo-campbell` | pricing, financial model, cost discipline, unit economics |
-| Research | `research-thompson` | market research, competition, industry evidence |
+1. Identify the concrete decision/output and affected domains.
+2. Select exactly one primary persona whose `owns`/`intents` best match that decision.
+3. Add supporting personas only for non-duplicative required inputs or gates.
+4. Add `critic-munger` only for material/high-risk/weak-evidence decisions or explicit independent review.
+5. Keep the normal team to 1–4 domain personas. Exceed four only when the task truly contains multiple independent decisions.
+6. Reject ornamental roles: shared vocabulary or general usefulness is not a reason to select a persona.
 
-## Procedure
+## Ownership Rules
 
-### 1. Choose the smallest useful team
+- CEO: enterprise direction, strategic priority, resource allocation.
+- CFO: economic viability, financial guardrails, pricing economics.
+- CTO: technical architecture and technology strategy.
+- Product: product outcome, scope, requirements/prioritisation.
+- Interaction: behaviour, workflows, state transitions.
+- UI: visual hierarchy/design system/interface presentation.
+- Full-Stack: application implementation.
+- DevOps: delivery mechanism and operational readiness.
+- QA: quality risk and release confidence.
+- Research: evidence synthesis and source quality.
+- Marketing: market message and marketing channels.
+- Sales: sales process, qualification, conversion.
+- Operations: operating process and pilot execution.
+- Critic: independent challenge; not the primary domain owner.
 
-Select two to five personas whose work is necessary for the task.
+## Required Output
 
-- Match the task, rather than maximising the number of agents.
-- Cover necessary hand-offs, such as product to design to engineering.
-- Avoid overlapping roles unless a deliberate independent review is valuable.
-- Briefly state who was selected and why before team work begins.
+```markdown
+Primary: <persona> — <decision it owns>
+Support:
+- <persona> — <unique input/gate>
+Excluded plausible roles:
+- <persona> — <why unnecessary>
+Sequence: <handoff order>
+```
 
-### 2. Create focused assignments
-
-Give each member a concrete outcome, relevant context, boundaries, and a location for its output. Include the complete persona file as role guidance when the runtime supports it.
-
-Use an English, kebab-case team name. Keep the team temporary and avoid assigning a persona authority the human operator has not delegated.
-
-### 3. Coordinate and synthesise
-
-Collect outputs, reconcile conflicts, and clearly separate evidence, inference, and open decisions. The operator remains the final decision maker. Dissolve the temporary team after the task is
-complete.
-
-## Output Expectations
-
-Store role-specific working material under `docs/<role>/` only when that project convention applies. Return a unified conclusion, disagreements that need a human decision, and the next action.
+Explicitly naming excluded plausible roles is required for non-trivial routing because it guards against team inflation.

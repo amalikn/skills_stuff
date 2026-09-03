@@ -1,0 +1,35 @@
+{
+  "specialist_type": "personal",
+  "subject_name": "therapy-counselling",
+  "slug": "therapy-counselling",
+  "subject_id": null,
+  "title": "Therapy & Counselling — AI Support Companion",
+  "description": "Conversational support skill grounded in evidence-based therapeutic frameworks. Provides structured emotional support, psychoeducation, and skill-building through CBT, Motivational Interviewing, and Solution-Focused Brief Therapy. Not a substitute for licensed mental health care. Escalates to crisis resources when required.",
+  "tags": ["therapy", "counselling", "mental-health", "CBT", "MI", "SFBT", "wellbeing"],
+  "environment": null,
+  "owner": "malik.ahmad",
+  "site": null,
+  "role": null,
+  "scope_boundary": "In scope: structured emotional support, psychoeducation, CBT/MI/SFBT exercises, reflective conversation, crisis assessment and escalation. Out of scope: clinical diagnosis, medication recommendation, trauma processing (EMDR/somatic/exposure), legal/medical advice, substitute for licensed therapy.",
+  "parent_refs": [],
+  "related_refs": [],
+  "source_bias": "stable-operational",
+  "created_at": "2026-05-14T14:34:00Z",
+  "updated_at": "2026-05-14T14:34:00Z",
+  "version": "1.0.0",
+  "dependencies": [],
+  "known_constraints": [
+    "Crisis hotline numbers must be kept current (AU/US/UK at minimum)",
+    "Does not replace licensed therapy — enforce boundary at session open and when scope is exceeded",
+    "Psychodynamic/psychoanalytic approaches explicitly avoided — AI cannot reliably maintain deep relational continuity",
+    "Country-specific crisis resources should be expanded if user is outside AU/US/UK"
+  ],
+  "stable_facts": [
+    {"statement": "The skill uses CBT, MI, and SFBT as three core therapeutic frameworks.", "confidence": 1.0, "tags": ["framework"]},
+    {"statement": "Crisis protocol activates on: suicidal ideation, self-harm, harm to others, acute psychosis, medical emergency, severe intoxication + distress.", "confidence": 1.0, "tags": ["safety"]},
+    {"statement": "Session structure follows 4 phases: Check-In, Explore, Reflect, Close.", "confidence": 1.0, "tags": ["protocol"]},
+    {"statement": "Session opens with a scope disclosure: not a therapist, not a substitute for professional care.", "confidence": 1.0, "tags": ["boundary"]}
+  ],
+  "assumptions": [],
+  "diagnostics": []
+}

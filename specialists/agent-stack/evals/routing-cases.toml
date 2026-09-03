@@ -1,0 +1,1232 @@
+version = 2
+description = "Representative routing regression corpus for Agent Stack real-world workloads. Behavioral scoring is implemented by scripts/evaluate_routing.py."
+
+# ==============================================================================================================================================================
+# WHAT THIS FILE IS
+#
+# 60 cases describing how Agent Stack SHOULD route real workloads. Each case gives a model a task and asserts what a correct route looks like.
+# `scripts/evaluate_routing.py` scores a model's returned plan against those assertions.
+#
+# Two ways to run it:
+#   just routing-eval-check       validates this corpus against routing.toml — no model call, belongs in preflight
+#   just routing-eval-hermes 60   behavioural run against a real model
+#
+# ==============================================================================================================================================================
+# FIELD SEMANTICS — the required / preferred / forbidden split is the whole scoring model
+#
+#   required_personas    HARD. Absent from the plan => -20 and the case fails.
+#   required_skills      HARD, same.
+#   forbidden_personas   HARD. Present in the plan => -20 and the case fails. This is how a case says "this domain looks adjacent but is not
+#   forbidden_skills       relevant" — e.g. a networking case forbids cfo-campbell.
+#   preferred_personas   SOFT. Missing one lowers the diagnostic score but does NOT fail the case. Use for a route that is better but not the
+#   preferred_skills       only defensible one.
+#   primary_owner        HARD when set. The single persona accountable for the answer. null on direct-skill cases.
+#   max_personas         HARD ceiling. Exceeding it scores "team inflation".
+#
+# Only HARD failures decide pass/fail. Preferred matches move the number, not the verdict — so a case can score 90 and still fail, and reading the pass rate
+# without the failure classes will mislead you.
+#
+# DIRECT-SKILL CASES: `primary_owner = null` + `max_personas = 1` + empty required_personas means the task should be answered by a skill alone. Selecting ANY
+# persona fails it. These exist to catch team inflation and live mostly in the direct-adversarial family; treat that family as the canary for over-routing.
+#
+# ==============================================================================================================================================================
+# THE FOUR GATE FLAGS
+#
+# Each case declares which obligations a correct route carries. Their meanings are defined in routing.toml's [[gates]] section, which the evaluation prompt
+# supplies to the model in full — keep the two in step.
+#
+#   research_required   Further EXTERNAL evidence must be acquired. False when the evidence needed is already in the task or in the artefact under
+#                       review — it does not stay true merely because facts are involved.
+#   critic_required     The route reaches a consequential or hard-to-reverse conclusion. Consequence is the trigger, not complexity and not disagreement.
+#   qa_required         Code, config or a release is created, changed, or judged fit to ship. A design-only task trips this only if it commits to a
+#                       rollout/validation mechanism.
+#   runtime_required    COMPUTED, never judged. True iff a selected skill declares execution = "tool" in routing.toml. The scorer calculates this and
+#                       ignores the model's self-report; a mismatch is recorded as a diagnostic about prompt-following, not as a routing error.
+#
+# A gate is an obligation on the ROUTE, not an instruction to add a persona. The scorer accepts either a capability skill or the gate's persona as satisfaction
+# — requiring the persona would cause the very inflation the direct-skill cases exist to punish.
+#
+# RESOLVED 2026-09-01. This section previously recorded a conflict: routing.toml marked critic-gate as requiring its persona unconditionally, while this corpus
+# lists critic-munger as *preferred* in 19 of the 22 critic_required cases and *required* in only 1. It was resolved in the CATALOGUE's favour of capability
+# satisfaction — no gate now requires its persona unconditionally; each escalates only on its own persona_mandatory_when_tags. The scorer still does not enforce
+# persona escalation, because the corpus carries no tags for it to test against. Nothing here needs changing.
+#
+# ==============================================================================================================================================================
+# ==============================================================================================================================================================
+# THIS 60-CASE CORPUS IS FROZEN AS A DEVELOPMENT SET — 2026-09-02
+#
+# It has done its job. It took routing from a specification failure (43 gate misses against undefined flags) through an ownership-precedence phase to a measured
+# architecture, and it is the corpus that proved deterministic closure worth +25 to +40 points on three different models. With closure applied it now scores
+# 50/60, and production-tier models reach ~80% live.
+#
+# DO NOT TUNE AGAINST IT FURTHER. Past this point a better score on these 60 stops being evidence of better routing and starts being evidence of fitting the
+# corpus — the failures that remain are no longer dominated by one architectural defect, which is precisely the condition under which further optimisation
+# overfits. Add cases only to cover a NEW routing concept, never to chase a number.
+#
+# The next evidence must come from outside this file: an unseen holdout authored without reference to these cases, and replay against real project tasks.
+# ==============================================================================================================================================================
+
+# `required_personas` IS FOR MANDATORY OWNERSHIP, NOT AN IDEAL TEAM (policy set 2026-09-02)
+#
+#   required_personas  = ownership or independent judgement that is genuinely mandatory for THIS case
+#   preferred_personas = who would improve the route without being required
+#   tags               = semantic characteristics of the task; they say WHY a generic policy applies. Judged by the model, never derived from the two above
+#   capability         = enough for ordinary fulfilment — a gate is discharged by any provider declaring it at primary strength
+#
+# Do not use `required_personas` to force a complete team. Three cases were relaxed under this rule: net-security-review keeps cto-vogels because the
+# deliverable IS security posture, but drops qa-bach because the case already requires security-audit, which provides validation at primary strength;
+# python-feature is ordinary implementation against settled criteria, so a validation capability suffices; jdm-portal-build keeps product-norman because
+# "define and build" means requirements are still open, and drops the rest of its four-persona team to preferred.
+# IS security posture, but drops qa-bach because the case already requires security-audit, which provides validation at primary strength; python-feature is
+# ordinary implementation against settled criteria, so a validation capability suffices; jdm-portal-build keeps product-norman because "define and build" means
+# requirements are still open, and drops the rest of its four-persona team to preferred.
+#
+# ==============================================================================================================================================================
+# ADDING A CASE
+#
+# 1. Give it a stable `id`, a real `task` (one sentence, no hints about the expected route), a `mode`, and a `family`.
+# 2. Assert only what you would genuinely defend as wrong-if-absent. Over-using `required_*` makes the corpus brittle and turns legitimate alternative routes
+#    into failures.
+# 3. Add at least one `forbidden_*` where an adjacent-looking domain should NOT be pulled in — those catch more real defects than the positive assertions do.
+# 4. Set all four gate flags deliberately. Every case asserts all four, so an unconsidered `false` is still a claim.
+# 5. Run `just routing-eval-check` — it verifies every persona/skill id resolves against routing.toml before any model is invoked.
+#
+# Editing this file changes `eval_corpus_sha` in result provenance, which is how a stale comparison is detected. That is intended: results from different corpus
+# versions are not comparable. Comments do not change parsed data, so a comment-only edit is safe mid-run, but it does move the hash.
+# ==============================================================================================================================================================
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+# NETWORKING / INFRASTRUCTURE  (15 cases)
+#
+#   ISP-scale network and Linux infrastructure work: diagnosis, design, migration, automation, observability, security.
+#
+#   Owner is normally cto-vogels; devops-hightower joins for operational delivery, qa-bach for validation. Carries the
+#   most gate assertions of any family and, in the 2026-09-01 baseline, the most genuine routing errors — the
+#   cto-vogels / fullstack-dhh boundary is the recurring confusion.
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[[cases]]
+id = "net-bgp-flap"
+task = "Diagnose repeated BGP adjacency flaps between edge routers from logs, configuration and vendor evidence."
+mode = "review"
+family = "networking-infrastructure"
+required_personas = ["cto-vogels"]
+preferred_personas = ["research-thompson", "devops-hightower"]
+forbidden_personas = ["cfo-campbell", "marketing-godin", "ui-duarte"]
+required_skills = []
+preferred_skills = ["deep-analysis"]
+forbidden_skills = ["pricing-strategy"]
+primary_owner = "cto-vogels"
+max_personas = 3
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "net-ospf-design"
+task = "Design OSPF areas and failure behaviour for a multi-site ISP network migration."
+mode = "design"
+family = "networking-infrastructure"
+required_personas = ["cto-vogels"]
+preferred_personas = ["critic-munger"]
+forbidden_personas = ["marketing-godin", "sales-ross"]
+required_skills = []
+preferred_skills = ["premortem"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 3
+research_required = false
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "net-pppoe-capacity"
+task = "Assess PPPoE/BNG capacity, subscriber growth headroom and failure domains before adding 20,000 sessions."
+mode = "decision"
+family = "networking-infrastructure"
+required_personas = ["cto-vogels"]
+preferred_personas = ["research-thompson", "critic-munger"]
+forbidden_personas = ["ui-duarte", "marketing-godin"]
+required_skills = []
+preferred_skills = ["deep-analysis", "premortem"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 3
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "net-radius-outage"
+task = "Troubleshoot intermittent RADIUS authentication failures affecting broadband subscribers."
+mode = "review"
+family = "networking-infrastructure"
+required_personas = ["cto-vogels"]
+preferred_personas = ["devops-hightower"]
+forbidden_personas = ["cfo-campbell", "product-norman"]
+required_skills = []
+preferred_skills = ["deep-analysis"]
+forbidden_skills = ["market-sizing-analysis"]
+primary_owner = "cto-vogels"
+max_personas = 3
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "net-dns-migration"
+task = "Plan migration of authoritative DNS infrastructure with rollback, observability and minimal outage risk."
+mode = "decision"
+family = "networking-infrastructure"
+required_personas = ["cto-vogels", "devops-hightower"]
+preferred_personas = ["qa-bach", "critic-munger"]
+forbidden_personas = ["marketing-godin"]
+required_skills = []
+preferred_skills = ["devops", "premortem"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 4
+research_required = false
+critic_required = true
+qa_required = true
+runtime_required = false
+
+[[cases]]
+id = "net-ansible-automation"
+task = "Implement Ansible automation for repeatable network configuration deployment with validation and rollback."
+mode = "implementation"
+family = "networking-infrastructure"
+required_personas = ["fullstack-dhh", "devops-hightower"]
+preferred_personas = ["cto-vogels", "qa-bach"]
+forbidden_personas = ["cfo-campbell", "marketing-godin"]
+required_skills = ["devops"]
+preferred_skills = ["senior-qa"]
+forbidden_skills = []
+primary_owner = "devops-hightower"
+max_personas = 4
+research_required = false
+critic_required = false
+qa_required = true
+runtime_required = true
+
+[[cases]]
+id = "net-monitoring-stack"
+task = "Choose an observability design for network devices, Linux services, metrics, logs and alerting."
+mode = "design"
+family = "networking-infrastructure"
+required_personas = ["devops-hightower"]
+preferred_personas = ["cto-vogels"]
+forbidden_personas = ["sales-ross", "ui-duarte"]
+required_skills = []
+preferred_skills = ["devops"]
+forbidden_skills = []
+primary_owner = "devops-hightower"
+max_personas = 3
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "net-security-review"
+task = "Review a network-management application and API for security weaknesses before internal deployment."
+mode = "review"
+family = "networking-infrastructure"
+required_personas = ["cto-vogels"]
+preferred_personas = ["qa-bach", "critic-munger"]
+forbidden_personas = ["marketing-godin"]
+required_skills = ["security-audit"]
+preferred_skills = ["code-review-security"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 3
+research_required = false
+critic_required = true
+qa_required = true
+runtime_required = false
+
+[[cases]]
+id = "net-vendor-current-docs"
+task = "Verify current vendor-supported configuration and caveats for a routing feature before rollout."
+mode = "research"
+family = "networking-infrastructure"
+required_personas = ["research-thompson"]
+preferred_personas = ["cto-vogels"]
+forbidden_personas = ["cfo-campbell", "marketing-godin"]
+required_skills = []
+preferred_skills = ["deep-research"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "nas-architecture"
+task = "Choose storage/virtualisation architecture for a NAS running backups, containers and VMs."
+mode = "decision"
+family = "networking-infrastructure"
+required_personas = ["cto-vogels"]
+preferred_personas = ["research-thompson", "critic-munger"]
+forbidden_personas = ["marketing-godin", "sales-ross"]
+required_skills = []
+preferred_skills = ["deep-analysis"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 3
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "linux-service-failure"
+task = "Diagnose why a Linux service repeatedly crashes after deployment and propose an operational fix."
+mode = "review"
+family = "networking-infrastructure"
+required_personas = ["devops-hightower"]
+preferred_personas = ["fullstack-dhh"]
+forbidden_personas = ["cfo-campbell"]
+required_skills = []
+preferred_skills = ["deep-analysis"]
+forbidden_skills = []
+primary_owner = "devops-hightower"
+max_personas = 3
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "infra-cicd-rollout"
+task = "Design CI/CD with staged rollout, rollback and release checks for an internal service."
+mode = "design"
+family = "networking-infrastructure"
+required_personas = ["devops-hightower", "qa-bach"]
+preferred_personas = ["cto-vogels"]
+forbidden_personas = ["marketing-godin"]
+required_skills = ["devops"]
+preferred_skills = ["senior-qa"]
+forbidden_skills = []
+primary_owner = "devops-hightower"
+max_personas = 3
+research_required = false
+critic_required = false
+qa_required = true
+runtime_required = true
+
+[[cases]]
+id = "network-change-premortem"
+task = "Run only a pre-mortem for a high-risk core-router change plan."
+mode = "review"
+family = "networking-infrastructure"
+required_personas = []
+preferred_personas = []
+forbidden_personas = ["ceo-bezos", "marketing-godin", "sales-ross"]
+required_skills = ["premortem"]
+preferred_skills = []
+forbidden_skills = ["pricing-strategy"]
+max_personas = 1
+research_required = false
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "network-code-review"
+task = "Review Python network automation code for correctness, maintainability and security."
+mode = "review"
+family = "networking-infrastructure"
+required_personas = ["fullstack-dhh"]
+preferred_personas = ["cto-vogels", "qa-bach"]
+forbidden_personas = ["marketing-godin"]
+required_skills = ["code-review-security"]
+preferred_skills = ["senior-qa"]
+forbidden_skills = []
+primary_owner = "fullstack-dhh"
+max_personas = 3
+research_required = false
+critic_required = false
+qa_required = true
+runtime_required = false
+
+[[cases]]
+id = "network-migration-go-no-go"
+task = "Give a GO/NO-GO recommendation for a major network migration using test evidence, rollback readiness and operational risk."
+mode = "decision"
+family = "networking-infrastructure"
+required_personas = ["cto-vogels", "qa-bach"]
+preferred_personas = ["devops-hightower", "critic-munger"]
+forbidden_personas = ["marketing-godin"]
+required_skills = []
+preferred_skills = ["premortem", "senior-qa"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 4
+research_required = false
+critic_required = true
+qa_required = true
+runtime_required = false
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+# SOFTWARE / AI ENGINEERING  (10 cases)
+#
+#   Code, architecture, security review, release readiness, and agent/skill construction.
+#
+#   Where qa_required concentrates. Watch the fullstack-dhh / cto-vogels split: implementation belongs to the former,
+#   system-boundary decisions to the latter.
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[[cases]]
+id = "repo-architecture-audit"
+task = "Audit an AI-agent repository for architecture, maintainability, safety and test gaps."
+mode = "review"
+family = "software-ai-engineering"
+required_personas = ["cto-vogels", "qa-bach"]
+preferred_personas = ["critic-munger"]
+forbidden_personas = ["marketing-godin"]
+required_skills = []
+preferred_skills = ["deep-analysis", "security-audit"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 3
+research_required = false
+critic_required = true
+qa_required = true
+runtime_required = false
+
+[[cases]]
+id = "python-feature"
+task = "Implement a Python feature from clear acceptance criteria and add regression tests."
+mode = "implementation"
+family = "software-ai-engineering"
+required_personas = ["fullstack-dhh"]
+preferred_personas = ["qa-bach"]
+forbidden_personas = ["ceo-bezos", "cfo-campbell"]
+required_skills = []
+preferred_skills = ["senior-qa"]
+forbidden_skills = []
+primary_owner = "fullstack-dhh"
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = true
+runtime_required = false
+
+[[cases]]
+id = "api-architecture"
+task = "Design an API boundary and data model for a new service that must scale and remain maintainable."
+mode = "design"
+family = "software-ai-engineering"
+required_personas = ["cto-vogels"]
+preferred_personas = ["fullstack-dhh", "critic-munger"]
+forbidden_personas = ["marketing-godin"]
+required_skills = []
+preferred_skills = ["deep-analysis"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 3
+research_required = false
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "security-code-scan"
+task = "Perform a focused secure-code review of authentication and secrets handling."
+mode = "review"
+family = "software-ai-engineering"
+required_personas = ["cto-vogels"]
+preferred_personas = ["qa-bach"]
+forbidden_personas = ["marketing-godin"]
+required_skills = ["code-review-security"]
+preferred_skills = ["security-audit"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = true
+runtime_required = false
+
+[[cases]]
+id = "agent-routing-design"
+task = "Improve an AI-agent orchestrator so it selects the smallest correct set of personas and skills."
+mode = "design"
+family = "software-ai-engineering"
+required_personas = ["cto-vogels"]
+preferred_personas = ["qa-bach", "critic-munger"]
+forbidden_personas = ["marketing-godin"]
+required_skills = []
+preferred_skills = ["deep-analysis"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 3
+research_required = false
+critic_required = true
+qa_required = true
+runtime_required = false
+
+[[cases]]
+id = "skill-create"
+task = "Create and validate one reusable Agent Stack skill from an agreed workflow."
+mode = "implementation"
+family = "software-ai-engineering"
+required_personas = []
+preferred_personas = []
+forbidden_personas = ["ceo-bezos", "marketing-godin"]
+required_skills = ["skill-creator"]
+preferred_skills = []
+forbidden_skills = []
+max_personas = 1
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = true
+
+[[cases]]
+id = "github-current-project"
+task = "Research a GitHub project, its current capabilities and implementation constraints."
+mode = "research"
+family = "software-ai-engineering"
+required_personas = ["research-thompson"]
+preferred_personas = ["cto-vogels"]
+forbidden_personas = ["cfo-campbell"]
+required_skills = ["github-explorer"]
+preferred_skills = ["deep-research"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = true
+
+[[cases]]
+id = "frontend-workflow"
+task = "Define and implement a multi-step application workflow with UX states and test coverage."
+mode = "mixed"
+family = "software-ai-engineering"
+required_personas = ["product-norman", "interaction-cooper", "fullstack-dhh", "qa-bach"]
+preferred_personas = []
+forbidden_personas = ["cfo-campbell", "sales-ross"]
+required_skills = []
+preferred_skills = ["ux-audit-rethink", "senior-qa"]
+forbidden_skills = []
+primary_owner = "product-norman"
+max_personas = 4
+research_required = false
+critic_required = false
+qa_required = true
+runtime_required = false
+
+[[cases]]
+id = "ui-only"
+task = "Design the visual hierarchy and component treatment for an already-defined dashboard."
+mode = "design"
+family = "software-ai-engineering"
+required_personas = ["ui-duarte"]
+preferred_personas = []
+forbidden_personas = ["cfo-campbell", "sales-ross", "ceo-bezos"]
+required_skills = ["frontend-design"]
+preferred_skills = []
+forbidden_skills = []
+primary_owner = "ui-duarte"
+max_personas = 1
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "release-readiness"
+task = "Assess release readiness from existing test results, known defects and rollback evidence."
+mode = "review"
+family = "software-ai-engineering"
+required_personas = ["qa-bach"]
+preferred_personas = ["devops-hightower"]
+forbidden_personas = ["marketing-godin", "sales-ross"]
+required_skills = ["senior-qa"]
+preferred_skills = []
+forbidden_skills = []
+primary_owner = "qa-bach"
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = true
+runtime_required = false
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+# JDM IMPORT  (12 cases)
+#
+#   Japanese vehicle importing: demand research, auction sourcing, landed cost, compliance, logistics, sales channel.
+#
+#   Evidence-first — research-thompson owns fact-finding, cfo-campbell owns landed-cost economics, operations-pg owns
+#   process. Regulatory questions stay research tasks and must not imply legal-advice capability.
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[[cases]]
+id = "jdm-model-demand"
+task = "Research which eligible JDM vehicle models currently have Australian demand and credible retail pricing evidence."
+mode = "research"
+family = "jdm-import"
+required_personas = ["research-thompson"]
+preferred_personas = ["cfo-campbell"]
+forbidden_personas = ["ui-duarte", "devops-hightower"]
+required_skills = []
+preferred_skills = ["deep-research", "market-sizing-analysis"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "jdm-landed-cost"
+task = "Calculate landed economics for importing a specific Japanese vehicle including auction price, freight, duty/GST, compliance, repairs, warranty reserve and downside margin."
+mode = "decision"
+family = "jdm-import"
+required_personas = ["cfo-campbell", "research-thompson"]
+preferred_personas = ["operations-pg", "critic-munger"]
+forbidden_personas = ["ui-duarte", "marketing-godin"]
+required_skills = ["financial-unit-economics"]
+preferred_skills = ["deep-research", "premortem"]
+forbidden_skills = []
+primary_owner = "cfo-campbell"
+max_personas = 4
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "jdm-go-no-go-car"
+task = "Give a GO/NO-GO recommendation on bidding for a specific auction vehicle using current comparable prices and downside economics."
+mode = "decision"
+family = "jdm-import"
+required_personas = ["cfo-campbell", "research-thompson"]
+preferred_personas = ["operations-pg", "critic-munger"]
+forbidden_personas = ["fullstack-dhh", "ui-duarte"]
+required_skills = ["financial-unit-economics"]
+preferred_skills = ["deep-research", "premortem"]
+forbidden_skills = []
+primary_owner = "cfo-campbell"
+max_personas = 4
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "jdm-import-eligibility"
+task = "Verify whether a specified Japanese vehicle is currently eligible for import into Australia and cite authoritative sources."
+mode = "research"
+family = "jdm-import"
+required_personas = ["research-thompson"]
+preferred_personas = ["critic-munger"]
+forbidden_personas = ["cfo-campbell", "marketing-godin"]
+required_skills = []
+preferred_skills = ["deep-research"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "jdm-customs-gst"
+task = "Research the authoritative Australian customs-value, duty and import-GST treatment for a JDM vehicle scenario; separate facts from unresolved interpretation."
+mode = "research"
+family = "jdm-import"
+required_personas = ["research-thompson"]
+preferred_personas = ["cfo-campbell", "critic-munger"]
+forbidden_personas = ["ui-duarte"]
+required_skills = []
+preferred_skills = ["deep-research", "scientific-critical-thinking"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 3
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "jdm-auction-data"
+task = "Find and validate historical Japanese auction-result sources for a specified model/grade/odometer range."
+mode = "research"
+family = "jdm-import"
+required_personas = ["research-thompson"]
+preferred_personas = []
+forbidden_personas = ["marketing-godin", "ui-duarte"]
+required_skills = ["deep-research"]
+preferred_skills = ["deep-research", "web-scraping"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = true
+
+[[cases]]
+id = "jdm-sourcing-workflow"
+task = "Design an operating workflow from buyer requirement through auction sourcing, inspection, bidding, export, shipping and Australian hand-off."
+mode = "design"
+family = "jdm-import"
+required_personas = ["operations-pg"]
+preferred_personas = ["research-thompson", "critic-munger"]
+forbidden_personas = ["ui-duarte", "devops-hightower"]
+required_skills = []
+preferred_skills = ["premortem"]
+forbidden_skills = []
+primary_owner = "operations-pg"
+max_personas = 3
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "jdm-pilot-one-car"
+task = "Design a low-risk one-car JDM import pilot with learning objectives, capital limits and stop conditions."
+mode = "decision"
+family = "jdm-import"
+required_personas = ["operations-pg", "cfo-campbell"]
+preferred_personas = ["research-thompson", "critic-munger"]
+forbidden_personas = ["ui-duarte"]
+required_skills = ["financial-unit-economics"]
+preferred_skills = ["premortem"]
+forbidden_skills = []
+primary_owner = "operations-pg"
+max_personas = 4
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "jdm-supplier-comparison"
+task = "Compare two Japanese sourcing/export partners on evidence, fees, process risk and landed-cost implications."
+mode = "decision"
+family = "jdm-import"
+required_personas = ["research-thompson", "cfo-campbell"]
+preferred_personas = ["operations-pg"]
+forbidden_personas = ["ui-duarte", "fullstack-dhh"]
+required_skills = ["financial-unit-economics"]
+preferred_skills = []
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 3
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "jdm-warranty-risk"
+task = "Model the effect of Australian warranty/repair reserve assumptions on per-vehicle economics and break-even."
+mode = "decision"
+family = "jdm-import"
+required_personas = ["cfo-campbell"]
+preferred_personas = ["research-thompson", "critic-munger"]
+forbidden_personas = ["marketing-godin"]
+required_skills = ["financial-unit-economics"]
+preferred_skills = ["premortem"]
+forbidden_skills = []
+primary_owner = "cfo-campbell"
+max_personas = 3
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "jdm-sales-channel"
+task = "Choose an initial sales channel and buyer-acquisition approach for a small JDM import pilot."
+mode = "decision"
+family = "jdm-import"
+required_personas = ["marketing-godin"]
+preferred_personas = ["sales-ross", "research-thompson", "cfo-campbell"]
+forbidden_personas = ["devops-hightower"]
+required_skills = []
+preferred_skills = ["market-sizing-analysis"]
+forbidden_skills = []
+primary_owner = "marketing-godin"
+max_personas = 4
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "jdm-portal-build"
+task = "Define and build a buyer portal for JDM sourcing while preserving the existing domain/compliance rules as requirements."
+mode = "mixed"
+family = "jdm-import"
+required_personas = ["product-norman", "fullstack-dhh"]
+preferred_personas = ["cto-vogels", "qa-bach", "interaction-cooper"]
+forbidden_personas = ["marketing-godin"]
+required_skills = []
+preferred_skills = ["senior-qa"]
+forbidden_skills = []
+primary_owner = "product-norman"
+max_personas = 4
+research_required = false
+critic_required = false
+qa_required = true
+runtime_required = false
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+# ATAR / GENERAL IMPORT  (8 cases)
+#
+#   Fragrance and general goods importing: demand, supplier selection, pricing, positioning, pilot design.
+#
+#   Same evidence-first shape as jdm-import but smaller and more marketing-adjacent; marketing-godin and
+#   product-norman appear where jdm-import would use operations-pg.
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[[cases]]
+id = "atar-demand"
+task = "Research current Australian demand, competitors, price points and customer segments for atar/perfume products."
+mode = "research"
+family = "atar-import"
+required_personas = ["research-thompson"]
+preferred_personas = ["marketing-godin", "cfo-campbell"]
+forbidden_personas = ["devops-hightower"]
+required_skills = ["competitive-intelligence-analyst"]
+preferred_skills = ["deep-research", "market-sizing-analysis"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 3
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "atar-landed-cost"
+task = "Assess landed unit economics for importing atar including MOQ, freight, duties/GST, packaging, payment fees, CAC allowance and spoilage/damage reserve."
+mode = "decision"
+family = "atar-import"
+required_personas = ["cfo-campbell", "research-thompson"]
+preferred_personas = ["operations-pg", "critic-munger"]
+forbidden_personas = ["ui-duarte"]
+required_skills = ["financial-unit-economics"]
+preferred_skills = ["deep-research", "premortem"]
+forbidden_skills = []
+primary_owner = "cfo-campbell"
+max_personas = 4
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "atar-supplier"
+task = "Compare UAE, Indian and other suppliers using product evidence, MOQ, landed cost, lead time and supply risk."
+mode = "decision"
+family = "atar-import"
+required_personas = ["research-thompson", "cfo-campbell"]
+preferred_personas = ["operations-pg"]
+forbidden_personas = ["ui-duarte"]
+required_skills = ["financial-unit-economics"]
+preferred_skills = ["deep-research"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 3
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "atar-import-regulation"
+task = "Research Australian import, labelling and product compliance requirements relevant to importing and selling atar/perfume."
+mode = "research"
+family = "atar-import"
+required_personas = ["research-thompson"]
+preferred_personas = ["critic-munger"]
+forbidden_personas = ["marketing-godin"]
+required_skills = []
+preferred_skills = ["deep-research"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "atar-pilot"
+task = "Design a small atar import pilot with SKU count, MOQ, budget, sales test, success thresholds and stop conditions."
+mode = "decision"
+family = "atar-import"
+required_personas = ["operations-pg", "cfo-campbell"]
+preferred_personas = ["research-thompson", "marketing-godin", "critic-munger"]
+forbidden_personas = ["devops-hightower"]
+required_skills = ["financial-unit-economics"]
+preferred_skills = ["premortem"]
+forbidden_skills = []
+primary_owner = "operations-pg"
+max_personas = 4
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "atar-positioning"
+task = "Develop market positioning and launch messaging from established research and target-customer evidence."
+mode = "design"
+family = "atar-import"
+required_personas = ["marketing-godin"]
+preferred_personas = ["research-thompson"]
+forbidden_personas = ["devops-hightower", "qa-bach"]
+required_skills = ["content-strategy"]
+preferred_skills = ["user-persona-creation"]
+forbidden_skills = []
+primary_owner = "marketing-godin"
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "atar-pricing"
+task = "Set retail pricing and pack sizes for atar based on value perception, competitor evidence and unit economics."
+mode = "decision"
+family = "atar-import"
+required_personas = ["cfo-campbell"]
+preferred_personas = ["marketing-godin", "research-thompson"]
+forbidden_personas = ["devops-hightower"]
+required_skills = ["pricing-strategy", "financial-unit-economics"]
+preferred_skills = []
+forbidden_skills = []
+primary_owner = "cfo-campbell"
+max_personas = 3
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "generic-import-pilot"
+task = "Assess a new physical-product import opportunity and design a small pilot without assuming JDM-specific rules."
+mode = "decision"
+family = "atar-import"
+required_personas = ["research-thompson", "cfo-campbell", "operations-pg"]
+preferred_personas = ["critic-munger"]
+forbidden_personas = ["ui-duarte"]
+required_skills = ["financial-unit-economics"]
+preferred_skills = ["market-sizing-analysis", "premortem"]
+forbidden_skills = []
+primary_owner = "operations-pg"
+max_personas = 4
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+# BUSINESS / RESEARCH  (8 cases)
+#
+#   Pricing, market sizing, competitor and current-fact research, forecasting, GTM content.
+#
+#   Scored best in the 2026-09-01 baseline with ZERO genuine routing errors — its failures were entirely gate-flag
+#   misses. Useful as a control: a regression here implicates the harness or catalogue, not the router.
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[[cases]]
+id = "saas-pricing"
+task = "Redesign SaaS pricing tiers and determine whether the new model improves unit economics."
+mode = "decision"
+family = "business-research"
+required_personas = ["cfo-campbell"]
+preferred_personas = ["marketing-godin", "research-thompson"]
+forbidden_personas = ["devops-hightower", "ui-duarte"]
+required_skills = ["pricing-strategy", "financial-unit-economics"]
+preferred_skills = []
+forbidden_skills = []
+primary_owner = "cfo-campbell"
+max_personas = 3
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "startup-forecast"
+task = "Build a scenario-based 24-month startup forecast including runway and downside case."
+mode = "decision"
+family = "business-research"
+required_personas = ["cfo-campbell"]
+preferred_personas = []
+forbidden_personas = ["ui-duarte", "devops-hightower"]
+required_skills = ["startup-financial-modeling"]
+preferred_skills = []
+forbidden_skills = []
+primary_owner = "cfo-campbell"
+max_personas = 1
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "business-model"
+task = "Compare three revenue models for a proposed service and select one using strategic and financial constraints."
+mode = "decision"
+family = "business-research"
+required_personas = ["ceo-bezos", "cfo-campbell"]
+preferred_personas = ["critic-munger"]
+forbidden_personas = ["ui-duarte"]
+required_skills = ["startup-business-models"]
+preferred_skills = ["premortem"]
+forbidden_skills = []
+primary_owner = "ceo-bezos"
+max_personas = 3
+research_required = false
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "market-size"
+task = "Estimate TAM/SAM/SOM for a new service using explicit evidence and assumptions."
+mode = "research"
+family = "business-research"
+required_personas = ["research-thompson"]
+preferred_personas = ["cfo-campbell"]
+forbidden_personas = ["devops-hightower"]
+required_skills = ["market-sizing-analysis"]
+preferred_skills = []
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "competitor-current"
+task = "Research current competitors, pricing, product differences and credible market gaps with sources."
+mode = "research"
+family = "business-research"
+required_personas = ["research-thompson"]
+preferred_personas = ["marketing-godin"]
+forbidden_personas = ["qa-bach", "devops-hightower"]
+required_skills = ["competitive-intelligence-analyst"]
+preferred_skills = ["deep-research"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "sales-process"
+task = "Design an outbound qualification and sales pipeline for an already-defined B2B offer."
+mode = "design"
+family = "business-research"
+required_personas = ["sales-ross"]
+preferred_personas = ["marketing-godin"]
+forbidden_personas = ["cto-vogels", "qa-bach"]
+required_skills = []
+preferred_skills = ["cold-email-sequence-generator"]
+forbidden_skills = []
+primary_owner = "sales-ross"
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "content-plan"
+task = "Create a content strategy for an established audience and positioning."
+mode = "design"
+family = "business-research"
+required_personas = ["marketing-godin"]
+preferred_personas = []
+forbidden_personas = ["cto-vogels", "qa-bach"]
+required_skills = ["content-strategy"]
+preferred_skills = []
+forbidden_skills = []
+primary_owner = "marketing-godin"
+max_personas = 1
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "current-llm-market"
+task = "Research current LLM API options, pricing, privacy posture and performance trade-offs using current sources."
+mode = "research"
+family = "business-research"
+required_personas = ["research-thompson"]
+preferred_personas = ["cto-vogels", "cfo-campbell"]
+forbidden_personas = ["ui-duarte"]
+required_skills = []
+preferred_skills = ["deep-research", "competitive-intelligence-analyst"]
+forbidden_skills = []
+primary_owner = "research-thompson"
+max_personas = 3
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+# DIRECT / ADVERSARIAL  (7 cases)
+#
+#   Deliberate traps. Narrow tasks a single skill should answer, ambiguous asks, and weak-evidence decisions.
+#
+#   THE CANARY FOR OVER-ROUTING. Several cases set primary_owner = null and max_personas = 1, so selecting any persona
+#   fails them outright. Check this family first after any change that could make the router more eager to add
+#   personas — a gate-satisfaction change is exactly that kind of change.
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[[cases]]
+id = "direct-premortem"
+task = "Run a pre-mortem on this plan only."
+mode = "review"
+family = "direct-adversarial"
+required_personas = []
+preferred_personas = []
+forbidden_personas = ["ceo-bezos", "cto-vogels", "ui-duarte"]
+required_skills = ["premortem"]
+preferred_skills = []
+forbidden_skills = []
+max_personas = 1
+research_required = false
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "direct-seo"
+task = "Audit this website for technical SEO issues only."
+mode = "review"
+family = "direct-adversarial"
+required_personas = []
+preferred_personas = []
+forbidden_personas = ["cto-vogels", "cfo-campbell", "sales-ross"]
+required_skills = ["seo-audit"]
+preferred_skills = []
+forbidden_skills = []
+max_personas = 1
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "direct-deep-reading"
+task = "Analyse this supplied long report deeply; do not research outside it."
+mode = "review"
+family = "direct-adversarial"
+required_personas = []
+preferred_personas = []
+forbidden_personas = ["marketing-godin", "sales-ross"]
+required_skills = ["deep-reading-analyst"]
+preferred_skills = []
+forbidden_skills = ["deep-research"]
+max_personas = 1
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "ambiguous-best-nas"
+task = "Recommend the best NAS for stated backup, media, VM and container requirements using current product evidence."
+mode = "decision"
+family = "direct-adversarial"
+required_personas = ["research-thompson", "cto-vogels"]
+preferred_personas = ["critic-munger"]
+forbidden_personas = ["marketing-godin", "sales-ross"]
+required_skills = []
+preferred_skills = ["deep-research"]
+forbidden_skills = []
+primary_owner = "cto-vogels"
+max_personas = 3
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "avoid-team-inflation"
+task = "Explain what contribution margin means for a single product."
+mode = "review"
+family = "direct-adversarial"
+required_personas = []
+preferred_personas = []
+forbidden_personas = ["ceo-bezos", "cto-vogels", "marketing-godin", "operations-pg"]
+required_skills = ["financial-unit-economics"]
+preferred_skills = []
+forbidden_skills = []
+max_personas = 1
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "weak-evidence-go-no-go"
+task = "Make a GO/NO-GO investment recommendation where the supplied market evidence is sparse and contradictory."
+mode = "decision"
+family = "direct-adversarial"
+required_personas = ["cfo-campbell", "critic-munger"]
+preferred_personas = ["research-thompson"]
+forbidden_personas = ["ui-duarte"]
+required_skills = []
+preferred_skills = ["premortem"]
+forbidden_skills = []
+primary_owner = "cfo-campbell"
+max_personas = 3
+research_required = true
+critic_required = true
+qa_required = false
+runtime_required = false
+
+[[cases]]
+id = "current-regulation-no-finance"
+task = "Verify a current import regulation and cite the authoritative rule; do not analyse profitability."
+mode = "research"
+family = "direct-adversarial"
+required_personas = ["research-thompson"]
+preferred_personas = ["critic-munger"]
+forbidden_personas = ["cfo-campbell", "marketing-godin"]
+required_skills = []
+preferred_skills = ["deep-research"]
+forbidden_skills = ["financial-unit-economics"]
+primary_owner = "research-thompson"
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false

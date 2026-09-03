@@ -1,0 +1,8 @@
+{
+  "settle": 100,
+  "ignore_dirs": [
+    ".git",
+    "graphify-out",
+    ".ai-context"
+  ]
+}

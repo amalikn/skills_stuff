@@ -1,0 +1,289 @@
+version: 1
+
+project:
+  name: agent-stack
+  context_policy: "AI_NAVIGATION.md is the human-readable router; this file is the machine-readable routing map."
+  summary: >
+    English-only extraction of Auto Company's personas and skill library, delivered as a manifest-driven,
+    symlink-only global install. Deliberately excludes the upstream autonomous loop, consensus mechanism,
+    and daemon.
+
+bootstrap:
+  required_first_read:
+    - AGENTS.md
+    - AI_NAVIGATION.md
+    - context-map.yaml
+    - CHANGELOG.md
+
+authority_order:
+  - path: "AGENTS.md"
+    type: agent_instructions
+    authority: highest
+    note: "Includes the safety model. Imported upstream instructions never override it."
+  - path: "CLAUDE.md"
+    type: claude_specific_instructions
+    authority: highest
+  - path: "manifest.yaml"
+    type: install_contract
+    authority: highest
+    note: "Authority on what the library contains. install_global.py symlinks from it."
+  - path: "routing.toml"
+    type: routing_catalogue
+    authority: highest
+    note: "Authority on dispatch: capability registry, gates resolved by required_capability and minimum_strength, ownership precedence, route invariants, intents, execution class, prerequisites."
+  - path: "SKILL_STANDARD.md"
+    type: skill_quality_contract
+    authority: high
+  - path: "RUNTIME.md"
+    type: runtime_contract
+    authority: high
+  - path: "AI_NAVIGATION.md"
+    type: context_router
+    authority: high
+  - path: "context-map.yaml"
+    type: machine_routing_map
+    authority: high
+  - path: "translation-policy.md"
+    type: sync_translation_rules
+    authority: high
+  - path: "CHANGELOG.md"
+    type: project_history
+    authority: medium_high
+  - path: "REVISION_NOTES.md"
+    type: revision_record
+    authority: medium_high
+    note: "Records what the last revision deliberately did NOT change. Read before acting on an audit finding."
+  - path: "ARCHITECTURE.md"
+    type: architecture_overview
+    authority: medium_high
+  - path: "audit-agent-stack-full-20260901_1010.md"
+    type: audit_findings
+    authority: evidence
+    note: "Findings and recommendations, not accepted decisions."
+  - path: "SCRATCHPAD.md"
+    type: transient_notes
+    authority: low
+
+context_sources:
+  archcore:
+    enabled: true
+    root: ".archcore"
+    status: "29 documents accepted 20260902_0300"
+    index_file: ".archcore/README.md"
+    note: >
+      Contracts currently live in manifest.yaml, routing.toml, SKILL_STANDARD.md, and RUNTIME.md. Promotion candidates
+      were promoted on 20260902_0245. `.archcore/README.md` is the durable index; the candidate queue is transient and was
+      deleted by promote, per contract. `.archcore/` is now highest authority for decisions, rules and contracts.
+
+  memory_bank:
+    enabled: false
+    reason: "SCRATCHPAD.md plus memory-keeper channel `agent-stack` cover working state."
+
+  memory_systems:
+    memory_keeper_channel: "agent-stack"
+    project_context_project: "skills_stuff"
+
+  generated:
+    repomix:
+      enabled: true
+      root: ".ai-context"
+      command: "just context-pack"
+      preferred_files:
+        - ".ai-context/governance-pack.md"
+    graphify:
+      enabled: true
+      root: "graphify-out"
+      preferred_files:
+        - "graphify-out/GRAPH_REPORT.md"
+
+routing:
+  library_change:
+    description: "Adding, removing, renaming, or editing a persona or skill package."
+    read:
+      - "manifest.yaml"
+      - "routing.toml"
+      - "SKILL_STANDARD.md"
+      - "personas/**"
+      - "skills/**"
+    rules:
+      - "A library change is incomplete until manifest row, routing entry, and SKILL.md all agree."
+      - "Run just check and just governance before claiming completion."
+
+  orchestration:
+    description: "Dispatch behaviour, persona selection, team composition, routing gates."
+    read:
+      - "routing.toml"
+      - "skills/orchestrator/SKILL.md"
+      - "skills/team/SKILL.md"
+      - "personas/orchestrator-follett.md"
+      - "ROUTING_EVALS.md"
+      - "evals/routing-cases.toml"
+      - "scripts/evaluate_routing.py"
+    corpus:
+      cases: 60
+      families:
+        - networking-infrastructure
+        - software-ai-engineering
+        - jdm-import
+        - atar-import
+        - business-research
+        - direct-adversarial
+      asserts:
+        - primary ownership
+        - forbidden skills
+        - maximum team size
+        - Research/Critic/QA/runtime gates
+        - preferred-route diagnostics
+    rules:
+      - "Routing changes require a regression case in evals/routing-cases.toml."
+      - "Prefer the narrowest sufficient route; anti-team-inflation rules are in the orchestrator skill."
+      - "just routing-eval-check validates the corpus with no model call and belongs in every preflight."
+      - "just routing-eval <cli> is behavioural: it spawns an operator-supplied CLI per case. review-required, long-running."
+
+  upstream_sync:
+    description: "Comparing, translating, and applying upstream Auto Company changes."
+    read:
+      - "translation-policy.md"
+      - "scripts/sync_auto_company.py"
+      - "upstream-state.json"
+      - "translation-memory.json"
+    rules:
+      - "Report-first. Only safe_add and safe_replace apply automatically."
+      - "translation_required, manual_merge, and remove_review are human review proposals."
+      - "Audit findings A1 (non-atomic apply) and A2 (symlink escape) are OPEN — read before changing apply logic."
+      - "Never run record-current against a checkout already symlinked to Agent Stack."
+
+  installation:
+    description: "Global symlink installation, uninstall, and consumer discovery paths."
+    read:
+      - "RUNTIME.md"
+      - "scripts/install_global.py"
+      - "manifest.yaml"
+      - "justfile"
+    rules:
+      - "Symlink-only. Never copy source content as a delivery step."
+      - "Never overwrite a pre-existing global entry."
+      - "skill-creator is excluded by default."
+
+  runtime:
+    description: "Interpreter pinning, venv placement, dependency declaration."
+    read:
+      - "RUNTIME.md"
+      - ".mise.toml"
+      - "requirements-dev.txt"
+      - "justfile"
+    rules:
+      - "The venv lives at skills-working-cache/agent-stack/venv, never inside this repo."
+      - "Recipes go through `mise exec --` or `mise run`, never a bare interpreter."
+      - "scripts/check_governance.py stays stdlib-only so the gate cannot fail for environment reasons."
+
+  governance:
+    description: "Agent behaviour, project rules, file update rules, coherence gate."
+    read:
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - "AI_NAVIGATION.md"
+      - "context-map.yaml"
+      - "CHANGELOG.md"
+      - "scripts/check_governance.py"
+
+  scripts:
+    purpose: "Project-local scripts, automation, and task entrypoints."
+    read_first:
+      - "justfile"
+      - "scripts/README.md"
+    rules:
+      - "Prefer just --list and just <task>."
+      - "Treat uncataloged scripts as unknown safety."
+      - "upstream-apply, global-install, global-uninstall, and record-current are review-required."
+
+update_rules:
+  library_change:
+    update:
+      - "manifest.yaml"
+      - "routing.toml"
+    also_consider:
+      - "README.md"
+      - "CHANGELOG.md"
+
+  routing_behaviour_change:
+    update:
+      - "routing.toml"
+      - "skills/orchestrator/SKILL.md"
+      - "evals/routing-cases.toml"
+
+  skill_quality_rule_change:
+    update:
+      - "SKILL_STANDARD.md"
+    also_consider:
+      - "skills/skill-creator/scripts/quick_validate.py"
+
+  runtime_rule_change:
+    update:
+      - "RUNTIME.md"
+      - ".mise.toml"
+      - "justfile"
+
+  script_or_task_change:
+    update:
+      - "scripts/README.md"
+      - "justfile"
+
+  routing_map_change:
+    update:
+      - "AI_NAVIGATION.md"
+      - "context-map.yaml"
+      - "AGENTS.md"
+
+  governance_history:
+    update:
+      - "CHANGELOG.md"
+
+validation:
+  commands:
+    bootstrap: "just bootstrap"
+    contracts: "just check"
+    tests: "just test"
+    governance: "just governance"
+    routing_corpus: "just routing-eval-check"
+    routing_behavioural: "just routing-eval \"<local agent CLI>\""
+    runtimes: "just runtimes"
+    all: "just preflight"
+  rules:
+    - "just bootstrap must run before check or test — they need PyYAML from requirements-dev.txt."
+    - "just governance is stdlib-only and falls back to the system interpreter, so it runs without bootstrap."
+    - "Recipes address the venv interpreter by path via {{py}} and depend on _require-venv; never a bare or implicit interpreter."
+    - "just runtimes prints declared vs resolved interpreter — the quickest confirmation that pinning holds."
+
+drift_policy:
+  on_conflict:
+    action: "stop_and_report"
+    required_output:
+      - conflicting_files
+      - higher_authority_source
+      - recommended_fix
+      - assumptions
+
+  scratchpad_rule:
+    authoritative: false
+    promotion_required_for_durable_truth: true
+
+  audit_rule:
+    authoritative: false
+    note: "Audit findings are evidence. Check REVISION_NOTES.md for what was deliberately deferred before acting."
+
+generated_context_policy:
+  regenerate_after:
+    - library_change
+    - routing_change
+    - contract_change
+    - major_doc_change
+  commands:
+    repomix_governance: "just context-pack"
+    graphify: "graphify update ."
+
+answer_contract:
+  require_source_paths: true
+  unsupported_answer: "not found in project context"
+  distinguish_assumptions: true
+  do_not_invent_state: true

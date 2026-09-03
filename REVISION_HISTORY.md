@@ -26,3 +26,9 @@ Change log for the `skills_stuff` parent repository.
 | 2026-03-28T23:48:26.796690+00:00 | main | origin | `f1c31bf70930` | skills_stuff: publish new project specialists and codex exports |
 | 2026-03-28T23:56:10.309731+00:00 | main | origin | `7447d4bbe01e` | docs(revision): record published skills_stuff checkpoint |
 | 2026-03-29T00:12:51.388575+00:00 | main | origin | `d96f9ac7f92b` | skills_stuff: record follow-up parent publish checkpoint |
+
+## 2026-05-24
+- Created `skills/skill-project-wiki-rag-bridge/` — reusable multi-project bridge skill (48 files): SKILL.md, README, CHANGELOG, 14 templates, 10 numbered prompts, 4 schemas, 6 checklists, 7 docs, 2 example projects (Vocus + generic). Governs wiki setup → domain creation → RAG tools validation → project bridge → policy validation → indexing → retrieval validation → troubleshooting.
+- Updated `README.md` to add "Reusable Skills — skills/" section with table entry for `skill-project-wiki-rag-bridge`.
+- Updated `AGENTS.md` Regular Skills table to register `skill-project-wiki-rag-bridge` and `skill-slurp-chat`.
+- Created `_wiki/CLAUDE.md` governance wrapper (thin `@AGENTS.md` import, fixes missing entrypoint for wiki vault).

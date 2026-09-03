@@ -5,6 +5,23 @@ description: |
   Activate on `websh` command, shell-style web navigation, or when treating URLs as a filesystem.
 ---
 
+## Agent Stack Safety Adaptation — Overrides Upstream Autonomy
+
+This imported skill contains upstream descriptions of eager crawling, background subagents, and implicit `.websh` persistence. **Those behaviours are disabled in Agent Stack unless the operator or project explicitly authorises them.**
+
+Default Agent Stack behaviour:
+
+- fetch/extract only the page or bounded set of pages needed for the current task;
+- run work synchronously/foreground unless the runtime's normal tool execution is itself asynchronous;
+- do not spawn background subagents or recursive crawl chains;
+- do not create `.websh` state/cache automatically outside project-owned or operator-approved paths;
+- do not prefetch links merely for convenience;
+- ask/stop before any persistent crawl, large traversal, or material external action;
+- project-local safety and the Orchestrator override all more permissive instructions later in this skill or its `state/` references.
+
+When an upstream section says "automatically", "background", "eager crawl", or "never block on setup", reinterpret it as **explicit, bounded, foreground work only when required by the current task**.
+
+
 # websh Skill
 
 websh is a shell for the web. URLs are paths. The DOM is your filesystem. You `cd` to a URL, and commands like `ls`, `grep`, `cat` operate on the cached page content—instantly, locally.

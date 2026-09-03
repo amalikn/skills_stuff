@@ -1,0 +1,402 @@
+version = 1
+description = """
+UNSEEN HOLDOUT — 24 cases, authored 20260902 without opening evals/routing-cases.toml.
+
+WHAT THIS IS. Independent evidence about routing quality. The development 60 are frozen because a better score on them is evidence of fitting the corpus; these
+24 were written blind to that corpus to escape exactly that. The only thing read from the frozen file during authoring was its SCHEMA — the key names, the six
+`mode` values and the observed `max_personas` range — printed by a script that displayed no task, no id and no route expectation.
+
+HOW IT WAS AUTHORED. Task text first, in full, describing work that would plausibly arrive from this operator. Ownership, gates and capabilities were assigned
+afterwards, from the task as written. No case was constructed backwards from a route worth testing, and gate coverage was NOT balanced deliberately — 13 of the
+24 assert no gate at all, which is what the tasks produced rather than a target.
+
+SINGLE USE. These are spent the moment they are executed. Tuning anything against their failures converts them into development cases and destroys the property
+that makes them worth running. If a case is later found to be wrong ON ITS OWN TERMS — self-contradictory, or asserting something the catalogue cannot express —
+retire it explicitly and record why; do not quietly re-tune it into agreement with the router.
+
+SELF-CONSISTENCY RULE APPLIED THROUGHOUT. `runtime_required` is computed from the selected skills, so a case asserts it only where it also REQUIRES a tool-class
+skill (spec 0005). The converse now matters too: since 2026-09-02 a route is penalised for over-asserting a gate, so a case must not assert `runtime_required =
+false` while expecting a route whose natural provider is tool-class. Every case below was checked in both directions.
+"""
+
+# =============================================================================================================================================================
+# networking-infrastructure — 5
+# =============================================================================================================================================================
+
+# Narrow operational diagnosis against evidence already in hand. No gate should fire: nothing external is being established, nothing is being committed, and no
+# artefact is being validated. A route that adds a critic or a researcher here is over-routing.
+[[cases]]
+id = "hnet-wifi-roaming"
+family = "networking-infrastructure"
+mode = "review"
+task = "Clients on our campus WiFi hold onto distant APs instead of roaming. 802.11r is enabled on all SSIDs but handoffs still take three to five seconds, and voice calls drop during them. We have four weeks of controller logs, the original site survey, and per-client RSSI histories. Work out what is causing the sticky-client behaviour and what to change."
+primary_owner = "cto-vogels"
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# Architecture design with a hard cutover constraint. Expensive and painful to reverse once hardware is ordered and addressing is committed, so independent
+# challenge is a genuine obligation. The PROVIDER is deliberately left to the route: premortem is only preferred, so the case tests whether the model closes the
+# gate at all rather than whether it picks the same closer we would.
+[[cases]]
+id = "hnet-fabric-refresh"
+family = "networking-infrastructure"
+mode = "design"
+task = "Design the replacement leaf-spine fabric for our two datacentre halls: EVPN-VXLAN, dual-homed hosts, and a migration path off the existing MLAG pairs. No single maintenance window may exceed thirty minutes, and we cannot take both halls down in the same night. Hardware is ordered against whatever this design says."
+primary_owner = "cto-vogels"
+preferred_personas = ["devops-hightower"]
+preferred_skills = ["premortem"]
+max_personas = 3
+research_required = false
+critic_required = true
+qa_required = false
+runtime_required = false
+
+# External current facts held by third parties, where the vendors' own claims are the thing in doubt. Research is the deliverable, so Research owns it and the
+# network specialist advises. deep-research is tool-class, so runtime is asserted and earned.
+[[cases]]
+id = "hnet-carrier-diversity"
+family = "networking-infrastructure"
+mode = "research"
+task = "Both of our upstream transit providers advertise diverse paths, but we suspect they terminate in the same building and may share conduit. Establish from current public route and facility information, plus the carriers' own published documentation, whether the diversity we are paying for is real, and tell us what our actual exposure is."
+primary_owner = "research-thompson"
+required_skills = ["deep-research"]
+preferred_personas = ["cto-vogels"]
+max_personas = 3
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = true
+
+# Post-incident analysis, evidence supplied. Operability and corrective action are the deliverable, which is DevOps rather than architecture. No gate: the
+# outage already happened, nothing is being decided or released, and every input is in hand.
+[[cases]]
+id = "hnet-radius-postmortem"
+family = "networking-infrastructure"
+mode = "review"
+task = "RADIUS authentication failed for forty minutes across three sites last night. We have the syslog bundle from both servers, the configuration diff applied that afternoon, the vendor release notes for the version we are on, and the switch logs from one affected site. Produce the post-incident analysis and the corrective actions."
+primary_owner = "devops-hightower"
+preferred_personas = ["cto-vogels"]
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# Implementation whose deliverable EXPLICITLY includes proving equivalence. Validation is not a nicety here, it is half the ask, so the QA gate is asserted and
+# its tool-class provider is required — which earns runtime. Ownership follows artefact-vs-domain-review: this is code with a firewall context, not a security
+# posture review, so Full-Stack owns it.
+[[cases]]
+id = "hnet-firewall-consolidation"
+family = "networking-infrastructure"
+mode = "implementation"
+task = "Consolidate roughly 1,400 legacy firewall rules into a policy set for the new platform. Produce the rule-generation script and the equivalence checks that demonstrate the new set admits and denies exactly what the old one did, including the shadowed rules we expect to find."
+primary_owner = "fullstack-dhh"
+required_skills = ["senior-qa"]
+max_personas = 3
+research_required = false
+critic_required = false
+qa_required = true
+runtime_required = true
+
+# =============================================================================================================================================================
+# software-ai-engineering — 4
+# =============================================================================================================================================================
+
+# Deliberately narrow. The task states that behaviour is already covered by tests, which removes the validation obligation rather than merely making it
+# inconvenient. A route that asserts qa here is reading the domain, not the task.
+[[cases]]
+id = "hsw-parser-refactor"
+family = "software-ai-engineering"
+mode = "implementation"
+task = "Our log parser has grown three near-identical branches, one per appliance firmware version, and they have started to drift. Refactor it into one parser with a version adapter. The existing test suite already asserts the output format for all three versions and must keep passing unchanged."
+primary_owner = "fullstack-dhh"
+max_personas = 1
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# Design of tooling, not of the orchestrator itself, so component-cannot-architect-itself does not apply and the CTO owns it straightforwardly. Reversible and
+# internal: no gate.
+[[cases]]
+id = "hsw-token-budget-design"
+family = "software-ai-engineering"
+mode = "design"
+task = "Design how our MCP tooling should stay inside a token budget: which call results get summarised in the sandbox before returning, which return raw, how the caller learns that something was truncated, and what the caller can do about it. We control both ends."
+primary_owner = "cto-vogels"
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# Security POSTURE as the deliverable, which artefact-vs-domain-review puts with the CTO even though the artefact under review is code. The QA gate is NOT
+# asserted: nothing is being released or validated, the ask is an assessment. security-audit declares security-review and validation at primary strength and is
+# analysis-class, so no runtime.
+[[cases]]
+id = "hsw-auth-secrets-review"
+family = "software-ai-engineering"
+mode = "review"
+task = "Review the authentication and secrets handling in our internal portal: token lifetimes and refresh, where credentials sit at rest, what the service account can reach, and what an attacker with read access to the repository could obtain. Tell us what is actually exposed, not a checklist."
+primary_owner = "cto-vogels"
+required_skills = ["security-audit"]
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# A technology selection resting on current external product behaviour that changes release to release. Research is required and earned through a tool-class
+# provider. The verdict is technical rather than financial, so the CTO owns and Research advises — the mirror of hnet-carrier-diversity, where the evidence was
+# the deliverable.
+[[cases]]
+id = "hsw-vector-store-choice"
+family = "software-ai-engineering"
+mode = "decision"
+task = "Choose the vector store for our retrieval layer. The shortlist is Qdrant, pgvector and LanceDB. We need current limits on filtered search, hybrid retrieval and the operational footprint of each, then a recommendation we will live with for at least a year. Our corpus is about two million chunks with heavy metadata filtering."
+primary_owner = "cto-vogels"
+required_skills = ["deep-research"]
+preferred_personas = ["research-thompson"]
+max_personas = 3
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = true
+
+# =============================================================================================================================================================
+# jdm-import — 5
+# =============================================================================================================================================================
+
+# Current regulation held entirely outside the business, and the research gate's persona_mandatory_when_tags includes `regulatory`, so Research owning it is the
+# contract's own answer rather than a preference.
+[[cases]]
+id = "hjdm-compliance-pathway"
+family = "jdm-import"
+mode = "research"
+task = "For a 1999 Nissan Stagea brought in under the twenty-five-year rule, establish the current Australian requirements end to end: which approval pathway applies, what the asbestos declaration demands and who can sign it, and which modifications are mandatory before it can be registered in Victoria. We need what is in force now, not what applied when we last imported."
+primary_owner = "research-thompson"
+required_skills = ["deep-research"]
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = true
+
+# Operating mechanism design against a known throughput. Nothing external, nothing irreversible, nothing to validate.
+[[cases]]
+id = "hjdm-workshop-flow"
+family = "jdm-import"
+mode = "design"
+task = "Design the workshop flow for compliance work at eight cars a month: bay allocation, the parts lead-time buffer that keeps a car from occupying a bay while it waits, and how a car that fails inspection re-enters the queue without blocking the line behind it. We have three bays and two technicians."
+primary_owner = "operations-pg"
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# A financial verdict on a twelve-month commitment with a standing empty-slot exposure. research-vs-economics puts the verdict with the CFO. The commitment is
+# what makes independent challenge an obligation rather than a courtesy; the provider is left to the route.
+[[cases]]
+id = "hjdm-freight-commitment"
+family = "jdm-import"
+mode = "decision"
+task = "We can keep booking RoRo per car or commit to a shared forty-foot container every six weeks. The container is materially cheaper per unit but we pay for empty slots when volume dips, and the booking is a twelve-month commitment. Our last eighteen months of booking and volume history is attached. Which do we commit to?"
+primary_owner = "cfo-campbell"
+required_skills = ["financial-unit-economics"]
+preferred_skills = ["premortem"]
+max_personas = 3
+research_required = false
+critic_required = true
+qa_required = false
+runtime_required = false
+
+# Model-building against an internal calibration set. Deliberately NOT asserting qa: the task asks for the model, and calibration is part of building it, not a
+# separate validation deliverable. This case is one of the ones most likely to draw an unnecessary QA gate.
+[[cases]]
+id = "hjdm-auction-grade-model"
+family = "jdm-import"
+mode = "implementation"
+task = "Build the scoring model that turns Japanese auction sheet grades and the inspector's free-text notes into our own condition score. Calibrate it against the three hundred cars we have already landed, where we know what each actually needed once it arrived."
+primary_owner = "fullstack-dhh"
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# DELIBERATELY AMBIGUOUS OWNERSHIP. Channel design, margin sustainability and a three-month learning test all sit in one ask; Sales, CFO and Operations each own
+# part of it. Recorded expectation is Sales, because the deliverable is a repeatable channel offer and the margin and the test are attributes of that offer. If
+# this case fails, read it as a boundary question rather than a router defect, and resolve it in the precedence table or not at all.
+[[cases]]
+id = "hjdm-workshop-channel"
+family = "jdm-import"
+mode = "mixed"
+task = "We want to sell through two performance workshops rather than direct to consumer. Define what the offer to a workshop actually is, the margin split we can sustain given our current landed costs, and how we would know within three months whether to continue or pull it."
+primary_owner = "sales-ross"
+preferred_personas = ["cfo-campbell", "operations-pg"]
+max_personas = 3
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# =============================================================================================================================================================
+# atar-import — 4
+# =============================================================================================================================================================
+
+# Product definition in its own right: who it is for, and what would make us reject a submission. No gate.
+[[cases]]
+id = "hatar-product-brief"
+family = "atar-import"
+mode = "design"
+task = "Write the product brief for our next three attars: who each one is for, the occasion it is worn for, the note profile in plain language a perfumer can work from, and the criteria that would make us reject a submission outright rather than iterate on it."
+primary_owner = "product-norman"
+preferred_skills = ["user-persona-creation"]
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# A pricing decision on internal data. Repriceable, so no independent-challenge obligation — this case tests whether "pricing" alone is enough to summon a
+# critic that the reversibility of the decision does not warrant.
+[[cases]]
+id = "hatar-gift-set-price"
+family = "atar-import"
+mode = "decision"
+task = "Price a three-bottle gift set against our single-bottle line without cannibalising it. We have nine months of single-bottle sales with unit margins, the bundle's packaging cost, and the fact that roughly a third of single-bottle orders are already bought as gifts."
+primary_owner = "cfo-campbell"
+required_skills = ["pricing-strategy"]
+preferred_personas = ["marketing-godin"]
+max_personas = 3
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# Experiment design plus the fulfilment mechanism that makes it survivable. Operating mechanism, internally decided.
+[[cases]]
+id = "hatar-sample-programme"
+family = "atar-import"
+mode = "mixed"
+task = "Decide whether free two-millilitre samples actually convert. Define the test, the sample size we would need before believing the result either way, and an operational way to fulfil samples that does not mean someone hand-filling vials for every order."
+primary_owner = "operations-pg"
+preferred_personas = ["marketing-godin"]
+max_personas = 3
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# External and adversarial: a regulator is disputing our position, so the evidence is both current and contested. Research owns it under the same
+# `regulatory` mandatory tag as hjdm-compliance-pathway, and the tool-class provider earns runtime.
+[[cases]]
+id = "hatar-valuation-dispute"
+family = "atar-import"
+mode = "research"
+task = "Customs has questioned the declared value on our last two shipments, citing our relationship with the supplier. Establish how related-party valuation is actually assessed for imports of this kind, what evidence is normally accepted to support a declared price, and what documentation would settle this without a formal dispute."
+primary_owner = "research-thompson"
+required_skills = ["deep-research"]
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = true
+
+# =============================================================================================================================================================
+# business-research — 3
+# =============================================================================================================================================================
+
+# External market facts that move, gathered to set our own price. Research owns; no commitment is being made in this task, so no critic.
+[[cases]]
+id = "hbiz-contract-rate-benchmark"
+family = "business-research"
+mode = "research"
+task = "What are current day rates in Australia for contract network automation engineers, split by seniority, and how have they moved over the last eighteen months? Distinguish advertised rates from rates actually transacted where the evidence allows. We will use this to set our own."
+primary_owner = "research-thompson"
+required_skills = ["deep-research"]
+max_personas = 2
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = true
+
+# Irreversible in the way that matters: customers are told, staff are reassigned, and the line cannot be restarted cheaply. Both `high-consequence` and
+# `irreversible` sit in the critic gate's persona_mandatory_when_tags, so the critic PERSONA is required here rather than merely the capability — the one case in
+# this holdout where independence of judgement is itself part of the deliverable.
+[[cases]]
+id = "hbiz-service-line-exit"
+family = "business-research"
+mode = "decision"
+task = "Our managed-WiFi service line is fourteen per cent of revenue and consumes about forty per cent of support hours. Decide whether we exit it. If we do, work out what we owe existing customers through a wind-down and how long that obligation runs. Three of the six customers are on multi-year agreements."
+primary_owner = "ceo-bezos"
+required_personas = ["ceo-bezos", "critic-munger"]
+preferred_personas = ["cfo-campbell"]
+max_personas = 4
+research_required = false
+critic_required = true
+qa_required = false
+runtime_required = false
+
+# Commercial mechanism design. Anti-gaming is a design property here, not an independent-challenge obligation.
+[[cases]]
+id = "hbiz-referral-terms"
+family = "business-research"
+mode = "design"
+task = "Design the referral arrangement we offer two integrator partners: what event triggers a fee, how the referral is attributed and measured, when it is paid, and what stops the arrangement being gamed by a partner registering leads we already had."
+primary_owner = "sales-ross"
+preferred_personas = ["cfo-campbell"]
+max_personas = 2
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# =============================================================================================================================================================
+# direct-adversarial — 3
+# =============================================================================================================================================================
+
+# One narrow procedural skill, one screen, no decision. Anything beyond the skill is inflation.
+[[cases]]
+id = "hdirect-order-tracking-audit"
+family = "direct-adversarial"
+mode = "review"
+task = "Run a usability audit of the order-tracking screen in our customer portal and list the concrete problems a customer hits, in the order they hit them."
+required_skills = ["ux-audit-rethink"]
+max_personas = 1
+research_required = false
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# Research IS required — the facts are external and current — but the narrowest provider declares research at primary strength and is analysis-class, so the
+# gate closes with no persona and no runtime. This case exists to separate "the gate is true" from "therefore add the researcher and a tool".
+[[cases]]
+id = "hdirect-competitor-pricing-scan"
+family = "direct-adversarial"
+mode = "research"
+task = "Give me a current picture of what three named competitors are charging and claiming on their public pricing pages, side by side with ours. Public pages only — I am not asking anyone to infer their discounting."
+required_skills = ["competitive-intelligence-analyst"]
+max_personas = 1
+research_required = true
+critic_required = false
+qa_required = false
+runtime_required = false
+
+# Independence of judgement IS the deliverable, so the critic gate is genuinely true — but a skill declaring independent-challenge at primary strength discharges
+# it, and nothing here is being committed to. A route that adds a persona is not wrong on the gate; it is wrong on the size of the answer.
+[[cases]]
+id = "hdirect-vendor-claim-teardown"
+family = "direct-adversarial"
+mode = "review"
+task = "A vendor claims their SD-WAN will cut our WAN spend by forty per cent. Tear the claim apart: where can that number have come from, what would have to be true of our traffic and contracts for it to hold, and which parts are unfalsifiable as stated."
+required_skills = ["scientific-critical-thinking"]
+max_personas = 2
+research_required = false
+critic_required = true
+qa_required = false
+runtime_required = false

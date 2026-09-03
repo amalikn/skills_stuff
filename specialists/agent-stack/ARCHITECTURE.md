@@ -1,0 +1,98 @@
+# Architecture — Agent Stack
+
+## Overview
+
+Agent Stack is prompt/source material plus a small maintenance toolchain. It holds two content layers — **personas** (judgement contracts) and **skills** (repeatable procedures) — and three mechanisms
+that act on them: a manifest-driven symlink installer, a routing catalogue, and a report-first upstream sync tool.
+
+Nothing here runs as a service. There is no daemon, no loop, and no background agent; every mechanism is an operator-invoked task.
+
+## Components
+
+| Component                         | Role                                                                                                                                                             |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `personas/`                       | 15 specialist judgement contracts — mandate, use/non-use boundaries, decision lens, required questions, method, preferred skills, hand-offs, quality bar, output |
+|                                   |   contract                                                                                                                                                       |
+| `skills/`                         | 36 skill packages plus one single-file skill; each package carries a `SKILL.md` meeting `SKILL_STANDARD.md`                                                      |
+| `manifest.yaml`                   | The install contract and classification inventory: every capability's id, kind, path, and portability                                                            |
+| `routing.toml`                    | The routing catalogue: persona domains and decision ownership, skill intents, `analysis` vs `tool` execution class, runtime prerequisites, safety notes,         |
+|                                   |   mandatory gates                                                                                                                                                |
+| `scripts/install_global.py`       | Symlink-only installer into the four consumer discovery paths                                                                                                    |
+| `scripts/sync_auto_company.py`    | Report-first upstream comparison and conservative apply                                                                                                          |
+| `scripts/validate_agent_stack.py` | Static contract validation of capabilities, routing coverage, and persona depth                                                                                  |
+| `scripts/check_governance.py`     | Stdlib-only governance coherence gate over the documentation surfaces                                                                                            |
+| `evals/routing-cases.toml`        | 60-case routing regression corpus across six workload families                                                                                                   |
+| `ROUTING_EVALS.md`                | Corpus coverage, the assertion types a case may use, and how to run static vs behavioural evaluation                                                             |
+| `scripts/evaluate_routing.py`     | Corpus validator and behavioural evaluator — scores a real model's returned routing plan against each case's assertions                                          |
+| `.mise.toml` / `justfile`         | Pinned maintenance runtime and the task catalogue                                                                                                                |
+
+## Dispatch flow
+
+`orchestrator` is the single normal entry point. A task goes to it; it does not require the operator to pick a specialist first.
+
+1. Classify the task and identify decision ownership from `routing.toml`.
+2. Choose the narrowest sufficient route — a direct skill for a narrow procedure, one persona plus skills for a single-domain decision, or a small sequenced team for genuinely cross-domain work.
+3. Check runtime prerequisites for any `tool`-class skill before selecting it.
+4. Evaluate the four gates in `routing.toml` `[[gates]]` — `research_required`, `critic_required`, `qa_required` (judged) and `runtime_required` (computed from selected skills' execution class). Each
+   names a `required_capability` and a `minimum_strength`; the route satisfies it when a selected skill or persona declares that capability at primary strength. Domain gates for economics,
+   architecture and delivery readiness still apply on the same obligation-not-persona basis.
+5. Close the route deterministically. `scripts/close_route.py` adds the minimum provider for any gate the route left open, escalates to the gate's persona where the task's tags demand independence,
+   and recomputes `runtime_required`. The model judges; the system satisfies constraints. Measured 2026-09-01: closure alone moves the 60-case corpus from 34/60 to 47/60 with no regressions, where
+   stating the same rule in the prompt moved nothing across three models.
+6. Separate evidence from inference, preserve disagreement rather than averaging it, and return one synthesis.
+
+`personas/orchestrator-follett.md` is the companion persona for runtimes that support persona discovery. Neither the skill nor the persona starts a background process or persists cross-project state.
+
+## Installation flow
+
+Installation is **symlink-only**, and the canonical checkout is always the link target.
+
+```
+manifest.yaml ──► install_global.py ──► ~/.claude/agents      (personas)
+                                    ├─► ~/.claude/skills      (skills)
+                                    ├─► ~/.codex/skills
+                                    └─► ~/.agents/skills
+```
+
+The installer preflights for collisions, preserves any pre-existing global entry, never copies source content, and removes only links that still point exactly at Agent Stack. `skill-creator` is
+excluded by default as a duplicate of the consuming runtimes' own.
+
+## Upstream sync flow
+
+```
+MaxMiksa/Auto-Company ──fetch──► disposable mirror (skills-working-cache)
+                                        │
+                                        ▼
+                          classify against upstream-state.json
+                                        │
+        ┌───────────────────────────────┼───────────────────────────────┐
+        ▼                               ▼                               ▼
+   safe_add / safe_replace      translation_required            manual_merge / remove_review
+   (applied automatically)      (review proposal +              (review proposal only)
+                                 translation-brief.md)
+```
+
+`upstream-state.json` records both the last upstream hash and the canonical English hash for every file. A source change to a translated file always becomes `translation_required`, even when the new
+source happens to be English — it is never treated as a byte-for-byte replacement. The existing canonical English file acts as translation memory so a reviewer preserves unchanged wording.
+
+## Key decisions
+
+- **Autonomy is excluded by design.** The upstream's loop, consensus mechanism, and daemon are not missing features; leaving them out is the reason this extraction exists.
+- **Canonical source, symlinked delivery.** Runtime installs are never an authoring surface, which is what keeps three agent runtimes from drifting apart.
+- **The manifest is the contract.** Installer, validator, and routing all derive from it, so an unregistered capability fails visibly rather than shipping as an orphan file.
+- **Sync is report-first.** Automatic application is restricted to English additions and unchanged canonical replacements; everything else is a human review proposal.
+- **The maintenance runtime is isolated and external.** The venv lives in the working-cache peer, not the repo, and global installation never activates it inside a consuming project.
+- **The governance gate is stdlib-only.** A check that cannot run is indistinguishable from a check that passes.
+- **Interpreters are addressed explicitly, never implicitly.** Recipes reach Python through `{{py}}` by path and depend on `_require-venv`. `mise exec -- python` resolves correctly today but hides the
+  dependency at the call site and degrades silently to the host interpreter if activation stops applying.
+- **Routing is evaluated behaviourally, not only structurally.** Validating that `routing.toml` is internally consistent proves the catalogue parses; it does not prove a model routes correctly against
+  it. `scripts/evaluate_routing.py` closes that gap by scoring a real model's plan against 60 cases — the difference between a schema check and a behaviour check.
+
+## Known architectural gaps
+
+Tracked in `SCRATCHPAD.md`, sourced from `docs/audit-agent-stack-full-20260901_1010.md`, and deliberately deferred by `REVISION_NOTES.md`:
+
+- **A1** — sync apply is non-atomic; a failure between copy and state write can split source and state, forcing `manual_merge` on recovery.
+- **A2** — sync follows symlinks through `is_file`, reads, and `copy2`, so a Git-supplied or local symlink can escape the intended roots.
+
+Both concern the sync tool's failure behaviour and are best fixed together.

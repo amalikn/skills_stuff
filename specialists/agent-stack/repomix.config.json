@@ -1,0 +1,47 @@
+{
+  "output": {
+    "filePath": ".ai-context/governance-pack.md",
+    "style": "markdown"
+  },
+  "include": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "AI_NAVIGATION.md",
+    "README.md",
+    "ARCHITECTURE.md",
+    "SKILL_STANDARD.md",
+    "RUNTIME.md",
+    "REVISION_NOTES.md",
+    "ROUTING_EVALS.md",
+    "SCRATCHPAD.md",
+    "CHANGELOG.md",
+    "translation-policy.md",
+    "ARCHCORE_PROMOTION_CANDIDATES.md",
+    ".archcore/**/*.md",
+    "context-map.yaml",
+    "manifest.yaml",
+    "routing.toml",
+    "justfile",
+    ".mise.toml",
+    "requirements-dev.txt",
+    "scripts/README.md",
+    "scripts/*.py",
+    "evals/*.toml",
+    "personas/*.md",
+    "skills/*/SKILL.md",
+    "skills/*.md"
+  ],
+  "ignore": [
+    "node_modules/**",
+    ".git/**",
+    "__pycache__/**",
+    ".venv/**",
+    ".ai-context/**",
+    "graphify-out/**",
+    "upstream-state.json",
+    "translation-memory.json",
+    "audit-agent-stack*.md",
+    "skills/*/references/**",
+    "skills/*/assets/**"
+  ]
+}

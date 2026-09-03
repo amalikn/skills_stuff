@@ -1,0 +1,6 @@
+.DS_Store
+.remember/logs/
+graphify-out/
+.ai-context/
+__pycache__/
+*.pyc

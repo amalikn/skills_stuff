@@ -1,0 +1,12 @@
+.venv/
+.pytest_cache/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Rebuildable generated context — never canonical truth, per AGENTS.md
+.ai-context/
+graphify-out/
+
+# Upstream-sync backups: disposable snapshots taken before an apply
+.agent-stack-update-backups/

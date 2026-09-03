@@ -1,0 +1,846 @@
+version = 1
+purpose = "Canonical Agent Stack routing catalogue. Personas own judgement; skills provide repeatable procedures or tools."
+
+[routing]
+default_entry = "orchestrator"
+normal_persona_min = 1
+normal_persona_max = 4
+critic_on_material_decisions = true
+prefer_narrow_skill_for_narrow_task = true
+require_runtime_match_for_tool_skills = true
+
+# Persona records intentionally describe decision ownership, not biography/style.
+[[personas]]
+id = "ceo-bezos"
+domains = ["strategy", "business", "leadership"]
+intents = ["strategy", "prioritisation", "resource-allocation", "operating-model", "executive-decision"]
+owns = ["enterprise-direction", "strategic-priority", "resource-allocation"]
+primary_capabilities = ["commercial-strategy"]
+supporting_capabilities = ["risk-analysis", "financial-analysis"]
+
+[[personas]]
+id = "cfo-campbell"
+domains = ["finance", "business", "import-economics"]
+intents = ["pricing", "unit-economics", "financial-model", "capital-allocation", "cash-risk", "monetisation", "landed-cost", "import-economics", "margin", "inventory-risk", "warranty-reserve", "freight-economics", "supplier-cost-comparison", "go-no-go-economics"]
+owns = ["economic-viability", "financial-guardrail", "pricing-economics"]
+primary_capabilities = ["financial-analysis"]
+supporting_capabilities = ["risk-analysis", "commercial-strategy"]
+
+[[personas]]
+id = "critic-munger"
+domains = ["decision-quality", "risk"]
+intents = ["critique", "premortem", "red-team", "assumption-review", "inversion"]
+owns = ["independent-challenge"]
+primary_capabilities = ["independent-challenge", "risk-analysis", "evidence-critique"]
+supporting_capabilities = []
+
+[[personas]]
+id = "cto-vogels"
+domains = ["technology", "architecture", "engineering", "networking", "systems"]
+intents = ["architecture", "technical-strategy", "scalability", "reliability", "integration", "migration", "network-design", "routing", "switching", "bgp", "ospf", "pppoe", "radius", "dns", "network-troubleshooting", "capacity-planning", "network-migration", "vendor-platform", "nas", "storage-architecture", "virtualisation"]
+owns = ["technical-architecture", "technology-strategy"]
+primary_capabilities = ["architecture-analysis", "security-review"]
+supporting_capabilities = ["migration-planning", "network-analysis", "risk-analysis"]
+
+[[personas]]
+id = "devops-hightower"
+domains = ["delivery", "infrastructure", "operations", "systems"]
+intents = ["deployment", "cicd", "infrastructure", "observability", "sre", "rollback", "cloud", "containers", "linux-operations", "monitoring", "logging", "backup", "restore", "infrastructure-automation", "ansible", "service-operations", "incident-response"]
+owns = ["delivery-mechanism", "operational-readiness"]
+primary_capabilities = ["release-readiness", "migration-planning"]
+supporting_capabilities = ["implementation", "validation"]
+
+[[personas]]
+id = "fullstack-dhh"
+domains = ["engineering", "implementation"]
+intents = ["implement", "refactor", "application-design", "api", "frontend", "backend", "code-change"]
+owns = ["application-implementation"]
+primary_capabilities = ["implementation", "code-quality-review"]
+supporting_capabilities = ["architecture-analysis"]
+
+[[personas]]
+id = "interaction-cooper"
+domains = ["ux", "interaction"]
+intents = ["user-flow", "workflow", "interaction-model", "navigation", "form-design", "state-design"]
+owns = ["interaction-behaviour"]
+primary_capabilities = ["product-definition"]
+supporting_capabilities = []
+
+[[personas]]
+id = "marketing-godin"
+domains = ["marketing", "growth"]
+intents = ["positioning", "content", "seo", "launch", "audience", "campaign", "community-growth"]
+owns = ["market-message", "marketing-channel"]
+primary_capabilities = ["commercial-strategy"]
+supporting_capabilities = ["market-analysis"]
+
+[[personas]]
+id = "operations-pg"
+domains = ["operations", "startup", "execution", "imports", "supply-chain"]
+intents = ["pilot", "validation", "process", "customer-learning", "pmf", "operating-workflow", "import-workflow", "supplier-selection", "sourcing", "inspection", "freight", "customs-process", "inventory-process", "fulfilment", "supply-chain", "auction-sourcing"]
+owns = ["operating-process", "pilot-design"]
+primary_capabilities = ["operations-design"]
+supporting_capabilities = ["risk-analysis", "product-definition"]
+
+[[personas]]
+id = "product-norman"
+domains = ["product", "ux"]
+intents = ["product-strategy", "requirements", "prioritisation", "roadmap", "feature-definition", "product-discovery"]
+owns = ["product-outcome", "product-scope"]
+primary_capabilities = ["product-definition"]
+supporting_capabilities = ["market-analysis"]
+
+[[personas]]
+id = "qa-bach"
+domains = ["quality", "testing"]
+intents = ["qa", "test-strategy", "release-readiness", "defect", "coverage", "exploratory-testing"]
+owns = ["quality-risk", "release-confidence"]
+primary_capabilities = ["validation", "release-readiness"]
+supporting_capabilities = ["risk-analysis"]
+
+[[personas]]
+id = "research-thompson"
+domains = ["research", "evidence", "regulatory-research", "market-intelligence"]
+intents = ["research", "fact-finding", "market-research", "competitive-research", "source-validation", "evidence", "current-facts", "regulatory-research", "import-regulation", "customs-research", "tariff-research", "eligibility-research", "supplier-research", "auction-data", "market-pricing", "demand-research", "vendor-documentation"]
+owns = ["evidence-synthesis"]
+primary_capabilities = ["research", "source-validation"]
+supporting_capabilities = ["market-analysis", "regulatory-analysis"]
+
+[[personas]]
+id = "sales-ross"
+domains = ["sales", "commercial"]
+intents = ["sales", "pipeline", "qualification", "outbound", "objection", "conversion"]
+owns = ["sales-process", "qualification"]
+primary_capabilities = ["commercial-strategy"]
+supporting_capabilities = []
+
+[[personas]]
+id = "ui-duarte"
+domains = ["ui", "design"]
+intents = ["visual-design", "design-system", "interface-hierarchy", "dashboard-design", "responsive-ui"]
+owns = ["visual-interface"]
+primary_capabilities = ["product-definition"]
+supporting_capabilities = []
+
+# Skills: intents drive selection; personas are likely judgement owners/consumers.
+# execution = "analysis" means no special local runtime is inherently required.
+# execution = "tool" means runtime/tool availability must be checked before selection.
+
+[[skills]]
+id = "agent-browser"
+intents = ["browser-automation", "website-interaction", "form-automation", "capture-web-workflow"]
+personas = ["research-thompson", "qa-bach"]
+execution = "tool"
+requires_any = ["agent-browser-cli"]
+primary_capabilities = ["tool-execution"]
+supporting_capabilities = ["research"]
+
+[[skills]]
+id = "code-review-security"
+intents = ["secure-code-review", "code-vulnerability-review", "security-code-scan"]
+personas = ["cto-vogels", "fullstack-dhh", "qa-bach"]
+execution = "analysis"
+primary_capabilities = ["code-quality-review", "validation"]
+supporting_capabilities = ["security-review"]
+
+[[skills]]
+id = "cold-email-sequence-generator"
+intents = ["cold-email", "outbound-sequence", "prospecting-email"]
+personas = ["sales-ross", "marketing-godin"]
+execution = "analysis"
+primary_capabilities = ["commercial-strategy"]
+supporting_capabilities = []
+
+[[skills]]
+id = "community-led-growth"
+intents = ["community-growth", "community-strategy", "community-acquisition", "retention-community"]
+personas = ["marketing-godin", "operations-pg"]
+execution = "analysis"
+primary_capabilities = ["commercial-strategy"]
+supporting_capabilities = ["market-analysis"]
+
+[[skills]]
+id = "competitive-intelligence-analyst"
+intents = ["competitor-analysis", "competitive-intelligence", "feature-benchmark", "pricing-benchmark", "market-gap"]
+personas = ["research-thompson", "marketing-godin", "ceo-bezos"]
+execution = "analysis"
+primary_capabilities = ["research", "market-analysis"]
+supporting_capabilities = ["source-validation"]
+
+[[skills]]
+id = "content-strategy"
+intents = ["content-strategy", "editorial-plan", "content-topics", "content-funnel"]
+personas = ["marketing-godin"]
+execution = "analysis"
+primary_capabilities = ["commercial-strategy"]
+supporting_capabilities = ["market-analysis"]
+
+[[skills]]
+id = "deep-analysis"
+intents = ["deep-analysis", "structured-analysis", "complex-review", "multi-angle-analysis"]
+personas = ["critic-munger", "cto-vogels", "research-thompson"]
+execution = "analysis"
+primary_capabilities = ["evidence-critique"]
+supporting_capabilities = ["risk-analysis", "code-quality-review"]
+
+[[skills]]
+id = "deep-reading-analyst"
+intents = ["deep-reading", "document-analysis", "paper-analysis", "longform-analysis"]
+personas = ["research-thompson", "critic-munger"]
+execution = "analysis"
+primary_capabilities = ["evidence-critique"]
+supporting_capabilities = ["source-validation"]
+
+[[skills]]
+id = "deep-research"
+intents = ["deep-research", "multi-source-research", "citation-research", "comprehensive-research", "regulatory-research", "supplier-research", "auction-research", "vendor-documentation-research"]
+personas = ["research-thompson"]
+execution = "tool"
+requires_any = ["python>=3.10"]
+safety_notes = ["No continuation agents, viewer launch, or implicit persistent output unless operator/project explicitly authorises it."]
+primary_capabilities = ["research", "source-validation", "tool-execution"]
+supporting_capabilities = ["regulatory-analysis"]
+
+[[skills]]
+id = "devops"
+intents = ["cloud-deploy", "docker", "kubernetes", "cicd", "infrastructure", "operational-readiness"]
+personas = ["devops-hightower", "cto-vogels"]
+execution = "tool"
+requires_any = ["relevant-provider-cli"]
+primary_capabilities = ["implementation", "tool-execution"]
+supporting_capabilities = ["validation", "release-readiness", "migration-planning"]
+
+[[skills]]
+id = "email-sequence"
+intents = ["email-sequence", "drip-campaign", "lifecycle-email", "automated-email-flow"]
+personas = ["marketing-godin", "sales-ross"]
+execution = "analysis"
+primary_capabilities = ["commercial-strategy"]
+supporting_capabilities = []
+
+[[skills]]
+id = "financial-unit-economics"
+intents = ["unit-economics", "cac-ltv", "contribution-margin", "payback", "transaction-economics", "landed-cost", "import-margin", "inventory-economics", "warranty-reserve", "downside-scenario"]
+personas = ["cfo-campbell"]
+execution = "analysis"
+primary_capabilities = ["financial-analysis"]
+supporting_capabilities = ["risk-analysis"]
+
+[[skills]]
+id = "find-skills"
+intents = ["find-skill", "discover-skill", "extend-agent-capability"]
+personas = ["orchestrator-follett"]
+execution = "tool"
+safety_notes = ["Discovery is allowed; installation requires explicit operator authority."]
+primary_capabilities = ["tool-execution"]
+supporting_capabilities = []
+
+[[skills]]
+id = "frontend-design"
+intents = ["frontend-design", "ui-implementation-design", "interface-composition"]
+personas = ["ui-duarte", "fullstack-dhh"]
+execution = "analysis"
+primary_capabilities = ["implementation"]
+supporting_capabilities = ["product-definition"]
+
+[[skills]]
+id = "github-explorer"
+intents = ["github-repository-research", "repository-exploration", "github-code-discovery"]
+personas = ["research-thompson", "cto-vogels", "fullstack-dhh"]
+execution = "tool"
+requires_any = ["github-access"]
+primary_capabilities = ["research", "tool-execution"]
+supporting_capabilities = ["architecture-analysis"]
+
+[[skills]]
+id = "market-sizing-analysis"
+intents = ["market-sizing", "tam", "sam", "som", "market-opportunity", "import-market-demand", "addressable-demand"]
+personas = ["research-thompson", "cfo-campbell", "ceo-bezos"]
+execution = "analysis"
+primary_capabilities = ["market-analysis", "research"]
+supporting_capabilities = ["source-validation", "financial-analysis"]
+
+[[skills]]
+id = "micro-saas-launcher"
+intents = ["micro-saas", "small-saas-launch", "indie-launch", "rapid-saas-validation"]
+personas = ["operations-pg", "product-norman", "marketing-godin"]
+execution = "analysis"
+primary_capabilities = ["commercial-strategy"]
+supporting_capabilities = ["product-definition"]
+
+[[skills]]
+id = "orchestrator"
+intents = ["multi-domain", "orchestration", "complex-decision", "integrated-review"]
+personas = ["orchestrator-follett"]
+execution = "analysis"
+primary_capabilities = []
+supporting_capabilities = []
+
+[[skills]]
+id = "ph-community-outreach"
+intents = ["product-hunt-outreach", "launch-community-outreach"]
+personas = ["marketing-godin"]
+execution = "analysis"
+primary_capabilities = ["commercial-strategy"]
+supporting_capabilities = []
+
+[[skills]]
+id = "premortem"
+intents = ["premortem", "failure-analysis", "launch-risk", "decision-risk"]
+personas = ["critic-munger"]
+execution = "analysis"
+primary_capabilities = ["independent-challenge", "risk-analysis"]
+supporting_capabilities = ["evidence-critique"]
+
+[[skills]]
+id = "pricing-strategy"
+intents = ["pricing", "packaging", "monetisation", "pricing-tier", "value-metric"]
+personas = ["cfo-campbell", "marketing-godin"]
+execution = "analysis"
+primary_capabilities = ["commercial-strategy", "financial-analysis"]
+supporting_capabilities = ["market-analysis"]
+
+[[skills]]
+id = "product-strategist"
+intents = ["product-strategy", "gtm-product", "product-positioning", "roadmap-strategy"]
+personas = ["product-norman", "ceo-bezos"]
+execution = "analysis"
+primary_capabilities = ["product-definition", "commercial-strategy"]
+supporting_capabilities = ["market-analysis"]
+
+[[skills]]
+id = "scientific-critical-thinking"
+intents = ["research-rigor", "scientific-evidence", "methodology-review", "statistical-validity", "bias-review"]
+personas = ["research-thompson", "critic-munger"]
+execution = "analysis"
+primary_capabilities = ["independent-challenge", "evidence-critique"]
+supporting_capabilities = ["source-validation"]
+
+[[skills]]
+id = "security-audit"
+intents = ["security-audit", "owasp", "dependency-security", "auth-security", "api-security", "secret-security"]
+personas = ["cto-vogels", "qa-bach"]
+execution = "analysis"
+primary_capabilities = ["security-review", "validation"]
+supporting_capabilities = []
+
+[[skills]]
+id = "senior-qa"
+intents = ["test-strategy", "test-automation", "qa", "coverage-analysis", "e2e-testing"]
+personas = ["qa-bach"]
+execution = "tool"
+requires_any = ["python>=3.10"]
+primary_capabilities = ["validation", "tool-execution"]
+supporting_capabilities = ["release-readiness"]
+
+[[skills]]
+id = "seo-audit"
+intents = ["seo-audit", "technical-seo", "search-performance-diagnosis"]
+personas = ["marketing-godin"]
+execution = "analysis"
+primary_capabilities = []
+supporting_capabilities = ["validation"]
+
+[[skills]]
+id = "seo-content-strategist"
+intents = ["seo-content", "keyword-strategy", "content-cluster", "pillar-page"]
+personas = ["marketing-godin"]
+execution = "analysis"
+primary_capabilities = ["commercial-strategy"]
+supporting_capabilities = ["market-analysis"]
+
+[[skills]]
+id = "skill-creator"
+intents = ["create-skill", "update-skill", "validate-skill", "skill-design"]
+personas = ["orchestrator-follett"]
+execution = "tool"
+requires_any = ["python>=3.10", "pyyaml"]
+primary_capabilities = ["implementation", "tool-execution"]
+supporting_capabilities = ["validation"]
+
+[[skills]]
+id = "startup-business-models"
+intents = ["business-model", "revenue-model", "startup-economics", "packaging-model"]
+personas = ["ceo-bezos", "cfo-campbell", "operations-pg"]
+execution = "analysis"
+primary_capabilities = ["commercial-strategy", "financial-analysis"]
+supporting_capabilities = []
+
+[[skills]]
+id = "startup-financial-modeling"
+intents = ["financial-projection", "startup-forecast", "budget-model", "runway", "scenario-model"]
+personas = ["cfo-campbell"]
+execution = "analysis"
+primary_capabilities = ["financial-analysis"]
+supporting_capabilities = ["risk-analysis"]
+
+[[skills]]
+id = "tailwind-v4-shadcn"
+intents = ["tailwind-v4", "shadcn", "frontend-component", "design-system-implementation"]
+personas = ["ui-duarte", "fullstack-dhh"]
+execution = "tool"
+requires_any = ["node", "tailwind-v4", "shadcn"]
+primary_capabilities = ["implementation", "tool-execution"]
+supporting_capabilities = []
+
+[[skills]]
+id = "team"
+intents = ["persona-selection", "team-formation", "role-routing"]
+personas = ["orchestrator-follett"]
+execution = "analysis"
+primary_capabilities = []
+supporting_capabilities = []
+
+[[skills]]
+id = "user-persona-creation"
+intents = ["user-persona", "customer-persona", "research-persona"]
+personas = ["product-norman", "interaction-cooper", "marketing-godin", "sales-ross"]
+execution = "analysis"
+primary_capabilities = ["product-definition"]
+supporting_capabilities = ["market-analysis"]
+
+[[skills]]
+id = "user-research-synthesis"
+intents = ["user-research", "interview-synthesis", "research-insights", "opportunity-synthesis"]
+personas = ["research-thompson", "product-norman", "interaction-cooper"]
+execution = "analysis"
+primary_capabilities = ["product-definition"]
+supporting_capabilities = ["evidence-critique"]
+
+[[skills]]
+id = "ux-audit-rethink"
+intents = ["ux-audit", "usability-review", "experience-redesign", "interaction-audit"]
+personas = ["product-norman", "interaction-cooper", "ui-duarte"]
+execution = "analysis"
+primary_capabilities = ["product-definition"]
+supporting_capabilities = ["validation"]
+
+[[skills]]
+id = "web-scraping"
+intents = ["web-scraping", "content-extraction", "site-data-extraction", "undocumented-api"]
+personas = ["research-thompson"]
+execution = "tool"
+requires_any = ["web-access"]
+primary_capabilities = ["research", "tool-execution"]
+supporting_capabilities = ["source-validation"]
+
+[[skills]]
+id = "websh"
+intents = ["websh", "web-crawl", "web-cache", "web-shell"]
+personas = ["research-thompson"]
+execution = "tool"
+requires_any = ["websh-runtime"]
+safety_notes = ["No background agents, eager crawl, or implicit persistent .websh state without explicit operator/project authorisation."]
+primary_capabilities = ["research", "tool-execution"]
+supporting_capabilities = ["source-validation"]
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+# ROUTING RULES — ADVISORY KEYWORD HINTS ONLY
+#
+# These predate the capability model and are now strictly SUGGESTIONS: they nudge which persona is likely relevant when a task matches their keywords. Nothing
+# here is mandatory. Mandatory-ness lives in exactly three places — `[[gates]]` (what the route owes), `[[precedence]]` (who owns a contested decision), and
+# `[[route_invariants]]` (what makes a finished route invalid).
+#
+# WHY THIS WAS CHANGED, 2026-09-02. Seven of these rules carried `require_personas`, which made them a second, contradictory persona model living in the same
+# file as the first: `material-independent-challenge` REQUIRED critic-munger on any keyword match while `critic-gate` said `persona_mandatory = false`; two rules
+# were even named `*-gate`, colliding with the real gate table. `architecture-owner` versus `implementation-owner`, and `product-experience-chain` versus
+# `implementation-owner`, were the very conflicts `[[precedence]]` had just been written to rank — still asserted unranked, three lines apart.
+#
+# The whole catalogue goes into the routing prompt, so the model received BOTH instruction sets. That is a live explanation for the ten cases that failed on both
+# production-tier models and for two capable models agreeing on only 35% of routes. Found by per-artifact reasoning, not by grep: nothing was stale as a string
+# and the whole suite was green. `require_personas` is now rejected by the validator so the contradiction cannot return.
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[[routing_rules]]
+id = "research-first"
+when_any = ["research", "market-research", "competitive-research", "source-validation", "evidence"]
+prefer_personas = ["research-thompson"]
+
+[[routing_rules]]
+id = "economics-owner"
+when_any = ["pricing", "profitability", "unit-economics", "financial-model", "capital-allocation", "business-viability"]
+prefer_personas = ["cfo-campbell"]
+
+[[routing_rules]]
+id = "architecture-owner"
+when_any = ["architecture", "technical-strategy", "migration", "scalability", "reliability"]
+prefer_personas = ["cto-vogels"]
+
+[[routing_rules]]
+id = "implementation-owner"
+when_any = ["implement", "code-change", "refactor", "application-design"]
+prefer_personas = ["fullstack-dhh"]
+
+[[routing_rules]]
+id = "release-quality"
+when_any = ["release", "test-strategy", "qa", "regression", "coverage"]
+prefer_personas = ["qa-bach"]
+
+[[routing_rules]]
+id = "material-independent-challenge"
+when_any = ["irreversible", "high-cost", "high-risk", "security-sensitive", "weak-evidence", "go-no-go"]
+prefer_personas = ["critic-munger"]
+
+[[routing_rules]]
+id = "product-experience-chain"
+when_any = ["product-change", "feature-definition", "user-flow", "ux", "ui"]
+prefer_personas = ["product-norman"]
+notes = "Add interaction-cooper for behavioural flow, ui-duarte for visual treatment, and fullstack-dhh only when implementation is in scope."
+
+[[routing_rules]]
+id = "network-technical-owner"
+when_any = ["network-design", "routing", "switching", "bgp", "ospf", "pppoe", "radius", "dns", "network-troubleshooting", "capacity-planning", "network-migration", "vendor-platform"]
+prefer_personas = ["cto-vogels"]
+notes = "Add DevOps only for operational delivery/automation/observability; add QA only for validation/release confidence."
+
+[[routing_rules]]
+id = "import-evidence-first"
+when_any = ["import-business", "supplier-selection", "auction-sourcing", "customs", "tariff", "import-regulation", "vehicle-eligibility", "market-pricing", "demand-research"]
+prefer_personas = ["research-thompson"]
+notes = "Regulatory/legal-adjacent questions remain evidence/research tasks; do not imply legal advice persona capability."
+
+[[routing_rules]]
+id = "import-economics-owner"
+when_any = ["landed-cost", "import-economics", "margin", "inventory-risk", "warranty-reserve", "freight-economics", "go-no-go-economics"]
+prefer_personas = ["cfo-campbell"]
+
+[[routing_rules]]
+id = "import-operations-owner"
+when_any = ["import-workflow", "sourcing", "inspection", "freight", "customs-process", "inventory-process", "fulfilment", "auction-sourcing", "pilot"]
+prefer_personas = ["operations-pg"]
+
+[[routing_rules]]
+id = "current-facts-research"
+when_any = ["current-facts", "current-price", "current-regulation", "current-availability", "vendor-documentation"]
+prefer_personas = ["research-thompson"]
+
+[[personas]]
+id = "orchestrator-follett"
+domains = ["coordination", "routing"]
+intents = ["orchestration", "multi-domain", "team-selection", "skill-selection", "synthesis"]
+owns = ["routing", "coordination", "synthesis"]
+primary_capabilities = []
+supporting_capabilities = []
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+# CAPABILITY REGISTRY
+#
+# One taxonomy, declared once. Before this existed there were two — the skills' own routing metadata, and a hand-maintained `satisfied_by_skills` list inside
+# each
+# gate — and nothing kept them in step. A capability is now declared on the provider that has it, and a gate names the capability it needs; the resolver joins
+# them. Adding a skill therefore cannot silently fail to satisfy a gate it genuinely serves, and a gate cannot quietly drift from the skill set it describes.
+#
+# STRENGTH. `primary` means the capability is one of the provider's explicit operating purposes and may satisfy a gate alone. `supporting` means it is
+# incidental
+# — it improves route quality but does not discharge a hard obligation. The distinction exists to protect one invariant:
+#
+#     analysis != independent challenge
+#
+# A CFO modelling unit economics is doing risk-adjacent analysis; it is not an independent critic of its own conclusion. Without strength, every analytical
+# skill
+# drifts into `independent-challenge` and the critic gate stops meaning anything.
+#
+# Create a capability only when several providers can offer it, or a gate or routing rule needs to reason about it. Do not add micro-capabilities in advance of
+# a
+# rule that consumes them.
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# --- gate-facing: each is the required_capability of exactly one gate ---
+
+[[capabilities]]
+id = "research"
+description = "Acquire external evidence not already supplied — prices, regulation, vendor documentation, availability, market data."
+
+[[capabilities]]
+id = "independent-challenge"
+description = "Deliberately challenge assumptions or conclusions: search for failure modes, construct adversarial alternatives, invert the case."
+
+[[capabilities]]
+id = "validation"
+description = "Verify correctness, fitness, readiness or conformance of an artefact."
+
+[[capabilities]]
+id = "tool-execution"
+description = "Requires an executable runtime or tool environment. Declared by every skill whose execution class is `tool`, and by no other."
+
+# --- supporting: routing and ranking only; no gate requires them today ---
+
+[[capabilities]]
+id = "architecture-analysis"
+description = "Technical architecture, system boundaries and their trade-offs."
+
+[[capabilities]]
+id = "implementation"
+description = "Build or modify code, configuration or artefacts."
+
+[[capabilities]]
+id = "code-quality-review"
+description = "Correctness and maintainability review of code as an artefact."
+
+[[capabilities]]
+id = "security-review"
+description = "Security posture, threats and controls."
+
+[[capabilities]]
+id = "risk-analysis"
+description = "Identify operational, business or technical risk. Not the same as challenging a conclusion — see independent-challenge."
+
+[[capabilities]]
+id = "financial-analysis"
+description = "Unit economics, margin, ROI, landed cost."
+
+[[capabilities]]
+id = "market-analysis"
+description = "Market size, demand, competition."
+
+[[capabilities]]
+id = "regulatory-analysis"
+description = "Law, compliance, import rules, policy."
+
+[[capabilities]]
+id = "operations-design"
+description = "Workflows, sourcing, logistics, operating process."
+
+[[capabilities]]
+id = "product-definition"
+description = "Requirements, user workflow, scope."
+
+[[capabilities]]
+id = "commercial-strategy"
+description = "Pricing, channel, positioning, business model."
+
+[[capabilities]]
+id = "evidence-critique"
+description = "Evaluate the quality and strength of evidence already supplied."
+
+[[capabilities]]
+id = "source-validation"
+description = "Corroborate, triangulate and authenticate sources."
+
+[[capabilities]]
+id = "release-readiness"
+description = "Rollout, rollback, acceptance, ship / no-ship."
+
+[[capabilities]]
+id = "migration-planning"
+description = "Staged technical transition."
+
+[[capabilities]]
+id = "network-analysis"
+description = "Routing, switching, protocol and network behaviour."
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+# GATE CLASSES
+#
+# A gate is an OBLIGATION ON THE ROUTE, not an instruction to add a persona. "This task needs research evidence" and "this task needs an independent Research
+# persona" are different claims: a CTO checking vendor documentation with a research skill satisfies the first without the second. Personas become mandatory
+# only where INDEPENDENCE of judgement is the point. Keeping these separate is what stops gates causing persona inflation, which the direct-adversarial eval
+# family exists to catch.
+#
+# Division of labour, so the model is not asked to self-report what a program can compute:
+#   the model judges    -> does the TASK trigger this gate?  (research, critic, qa — genuine judgement)
+#   the system computes -> does the ROUTE satisfy it?        (capability present, prerequisites met)
+#                       -> runtime_required                   (purely mechanical, never a judgement)
+#
+# SATISFACTION RULE: a gate whose capability is already supplied by the selected route is SATISFIED, not a demand for more. If critic-munger is already the
+# primary owner, critic_required is met — do not add a second challenger.
+#
+# TAGS ARE NOT `required_personas`, AND NEITHER IS DERIVED FROM THE OTHER.
+#
+#   tags               = semantic characteristics of the TASK, judged by the model: security-sensitive, release-readiness, production-change, irreversible,
+#                        high-consequence, thin-evidence-high-commitment. They say WHY a generic routing policy applies.
+#   required_personas  = a case-specific expectation in the eval corpus. It says WHAT this particular route must contain.
+#
+# A task tagged `security-sensitive` activates the QA gate's escalation; a case requiring `cto-vogels` is asserting ownership of that specific case. The two
+# Tags stay a MODEL judgement rather than a computed field for a measured reason: on 2026-09-01 a pattern-match over task text agreed with the corpus's own
+# expectations on only 5 of 21 relevant cases — `auth` matching "authoritative", and worse. A cheap proxy would manufacture failures, so the escalation is
+# corpus's ability to test task understanding separately from route correctness.
+#
+# Tags stay a MODEL judgement rather than a computed field for a measured reason: on 2026-09-01 a pattern-match over task text agreed with the corpus's own
+# expectations on only 5 of 21 relevant cases — `auth` matching "authoritative", and worse. A cheap proxy here would manufacture failures, so the escalation is
+# implemented in scripts/close_route.py and fed by whatever the model reports.
+
+# CANONICAL PROVIDER: each judged gate also names a `default_skill` — the provider to reach for when the route has left the gate open and nothing in the task
+# points at a narrower one. Without it, deterministic closure was choosing lexicographically among equally-qualified providers and reaching for
+# `code-review-security` where `senior-qa` was plainly meant. `default_skill` is the canonical general-purpose provider; `default_persona` is who carries the
+# capability when only a persona will do. Naming both is what lets closure prefer a skill and escalate to a persona only on the gate's own tags.
+#
+# HOW SATISFACTION IS RESOLVED: each gate names a `required_capability` and a `minimum_strength`. The route satisfies it when any selected skill or persona
+# declares that capability at or above that strength. Gates no longer carry hand-written skill lists — those were a second copy of the taxonomy and drifted from
+# the first. `minimum_strength = "primary"` on all three judged gates is deliberate: a supporting capability improves a route without discharging an obligation.
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[[gates]]
+id = "research-gate"
+flag = "research_required"
+description = "The route depends on external facts that have not yet been gathered."
+required_capability = "research"
+minimum_strength = "primary"
+default_skill = "deep-research"
+default_persona = "research-thompson"
+persona_mandatory = false
+persona_mandatory_when_tags = ["contested-evidence", "regulatory", "source-validation", "market-sizing"]
+set_true_when_any = [
+  "the answer rests on current external facts (prices, regulation, vendor documentation, availability, market data)",
+  "a decision must be grounded in evidence that has not yet been gathered",
+  "source validation or triangulation is part of the work",
+]
+set_false_when_any = [
+  "all evidence needed is already contained in the task or in the artefact under review",
+  "the work is implementation against agreed criteria",
+]
+notes = "Means 'further external evidence must be acquired'. It does NOT stay true merely because the answer rests on facts already supplied."
+
+[[gates]]
+id = "critic-gate"
+flag = "critic_required"
+description = "The route reaches a consequential or hard-to-reverse conclusion."
+required_capability = "independent-challenge"
+minimum_strength = "primary"
+default_skill = "premortem"
+default_persona = "critic-munger"
+persona_mandatory = false
+persona_mandatory_when_tags = ["high-consequence", "irreversible", "security-sensitive", "thin-evidence-high-commitment"]
+set_true_when_any = [
+  "a go/no-go, commitment, or selection with material cost",
+  "an architecture or design decision whose failure mode is expensive or hard to reverse",
+  "the task is security-sensitive or irreversible",
+  "evidence is thin or contested relative to the size of the commitment",
+]
+set_false_when_any = [
+  "the work is gathering or summarising evidence rather than committing to it",
+  "the change is small, reversible, and cheap to correct",
+]
+notes = "Consequence is the primary trigger; disagreement between selected personas is secondary. A structured adversarial skill (premortem, scientific-critical-thinking) discharges the obligation for ordinary consequential work; the persona is escalated to only where INDEPENDENCE of judgement is itself the deliverable, per persona_mandatory_when_tags."
+
+[[gates]]
+id = "qa-gate"
+flag = "qa_required"
+description = "Code, configuration, or a release is created, changed, or judged fit to ship."
+required_capability = "validation"
+minimum_strength = "primary"
+default_skill = "senior-qa"
+default_persona = "qa-bach"
+persona_mandatory = false
+persona_mandatory_when_tags = ["release-readiness", "go-no-go", "security-sensitive", "irreversible-rollout", "production-change"]
+set_true_when_any = [
+  "code or configuration will be written or modified",
+  "existing code, configuration, or security posture is reviewed for defects",
+  "release, rollout, or migration readiness is being judged",
+  "the route must state how the change is validated or rolled back",
+]
+set_false_when_any = [
+  "the output is analysis, research, or strategy with no artefact change",
+  "the design commits to no rollout or change-validation mechanism and is not itself being approved for implementation",
+]
+notes = "An independent QA persona is required for release, security-sensitive and irreversible work; a validation skill suffices otherwise."
+
+[[gates]]
+id = "runtime-gate"
+flag = "runtime_required"
+description = "The route selects at least one skill whose execution class is `tool`."
+required_capability = "tool-execution"
+persona_mandatory = false
+computed = true
+set_true_when_any = ["any selected skill declares execution = \"tool\""]
+notes = "NOT a judgement. Computed from the selected skills' `execution` field; each such skill's `requires_any` prerequisites must then be checked."
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+# OWNERSHIP PRECEDENCE
+#
+# Two personas whose `owns` fields both plausibly cover a task is not a catalogue defect — it is the normal case for mixed work. What was missing was a
+# DISCRIMINATOR, so the router was left to infer ownership from overlapping prose and picked inconsistently across near-identical tasks. Each rule below names
+# the discriminating question and both answers, so the same task shape resolves the same way every time.
+#
+# These decide the PRIMARY OWNER only. The losing persona is normally still a consulted participant — precedence is about accountability for the decision, not
+# about excluding expertise from the route.
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Resolves the `mixed`-mode family (frontend-workflow, jdm-portal-build), where the router kept handing the decision to Full-Stack because implementation was
+# the larger share of the WORK. Share of work is not the discriminator: who is accountable for the requirements is.
+[[precedence]]
+id = "product-vs-implementation"
+applies_when = "the task both decides what to build and why, and implements how"
+discriminator = "are the requirements still open?"
+owner_a = "product-norman"
+owner_a_when = "requirements, user workflow, scope or success criteria are still being defined"
+owner_b = "fullstack-dhh"
+owner_b_when = "requirements are already settled and the remaining work is implementation against them"
+notes = "A `mixed` mode task that opens with 'define and build' is defining first; Product owns it. Full-Stack owns 'build this agreed spec'."
+
+# Resolves network-code-review and its shape generally. Domain keywords in a task ("network", "BGP", "billing") pull the router toward the domain persona even
+# when the deliverable is a verdict on code. Invert it: the artefact under judgement picks the owner, the domain picks the consultant.
+#
+# The security carve-out is not an exception bolted on — it is the same discriminator applied honestly. Security POSTURE is an architectural property, so a
+# review whose deliverable is "is this safe" is CTO-owned however code-shaped the artefact is; a review whose deliverable is "is this good code", security
+# included among its dimensions, is Full-Stack's. The corpus already draws this line (security-code-scan and net-security-review to CTO, network-code-review to
+# Full-Stack) and an earlier draft of this rule contradicted it in two cases — which is exactly the failure precedence exists to remove, so it is stated here.
+[[precedence]]
+id = "artefact-vs-domain-review"
+applies_when = "a review sits inside a technical domain but judges an artefact produced in another discipline"
+discriminator = "what is actually being judged — the code as an artefact, or the design and posture it expresses?"
+owner_a = "fullstack-dhh"
+owner_a_when = "the judgement is on code quality: correctness, maintainability, defects, with security as one dimension among several"
+owner_b = "cto-vogels"
+owner_b_when = "the judgement is on the architecture, or on security posture as the deliverable in its own right"
+notes = "Artefact responsibility outranks domain context: 'review Python network automation for defects' is a code review with network context, not a network review. But security POSTURE is architecture, not code quality — a focused secure-code review of auth and secrets handling is CTO-owned even though the artefact is code (corpus: security-code-scan, net-security-review vs network-code-review)."
+
+# Resolves agent-routing-design. The router selected orchestrator-follett because the task's subject was orchestration — the same keyword-match reflex, applied
+# reflexively to itself. Self-review is the one case where subject-matter proximity is a reason to NOT own the verdict, so it is stated as an absolute.
+[[precedence]]
+id = "component-cannot-architect-itself"
+applies_when = "the task is architectural review or redesign of part of the agent/orchestration system"
+discriminator = "is the candidate owner the component under review?"
+owner_a = "cto-vogels"
+owner_a_when = "always, for design or review OF the orchestration machinery"
+owner_b = "orchestrator-follett"
+owner_b_when = "the task is coordinating real work, not designing the coordinator"
+notes = "A component does not own architectural review of itself. Orchestrator participates as subject-matter expert; it does not own the verdict on its own design."
+
+# Resolves atar-supplier and jdm-supplier-comparison. Both personas are legitimately in the route; only the ORDER was unstable, because a supplier comparison
+# reads as a money question and an evidence question at once. The deliverable settles it: evidence first means Research owns and CFO prices the shortlist.
+[[precedence]]
+id = "research-vs-economics"
+applies_when = "supplier, vendor or option selection rests on both evidence gathering and financial comparison"
+discriminator = "is the deliverable the evidence, or the financial verdict?"
+owner_a = "research-thompson"
+owner_a_when = "finding options, collecting and triangulating evidence, validating claims, comparing non-financial attributes"
+owner_b = "cfo-campbell"
+owner_b_when = "landed cost, margin, unit economics, ROI or a financially driven selection is the deliverable"
+notes = "The discriminator is the QUESTION ASKED, not the vocabulary used. 'Compare suppliers on product evidence, MOQ, landed cost, lead time and supply risk' is Research-owned — it asks what the evidence shows, and financial terms appear as attributes being compared. 'Given these suppliers, which should we choose to maximise margin within our risk limits' is CFO-owned — it asks for a financial verdict. Do not route on the presence of words like 'landed cost'; an earlier keyword rule requiring cfo-campbell on exactly that match made all three models misroute atar-supplier until it was removed 2026-09-02."
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+# ROUTE INVARIANTS
+#
+# A gate says what the route owes. Until 2026-09-01 nothing said what happens when the route does not pay: the orchestrator judged the gate, wrote it down, and
+# returned a route that discharged nothing. Baseline v2 made the cost visible — all 22 gate-unsatisfied failures were that exact shape, the model reasoning
+# correctly about the obligation and then finishing without meeting it, while a satisfying provider sat unselected in the catalogue.
+#
+# An invariant is not advice. A route that breaks one is INVALID and must be repaired before it is returned, the same way a plan that names a non-existent skill
+# is invalid. Stating it as a property of the route rather than as a step in a procedure is the point: a procedure can be followed partially and still feel
+# complete, whereas an invariant is either true of the finished route or it is not.
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[[route_invariants]]
+id = "gate-capability-closure"
+statement = "For every gate the route sets true, some selected skill or persona declares that gate's required_capability at its minimum_strength."
+applies_to = "every non-computed gate whose flag the route sets true"
+repair = "Add the narrowest skill declaring the capability as primary. Add the gate's default_persona only where independence is the deliverable, or where no skill provides the capability."
+violation = "gate-unsatisfied"
+notes = "The commonest way to break this is to satisfy the gate with a plausible neighbour — financial-unit-economics for research, deep-analysis for independent-challenge. Adjacency is not provision; check the declaration, not the vibe."
+
+[[route_invariants]]
+id = "gate-strength-closure"
+statement = "A supporting capability never discharges a gate that requires primary strength."
+applies_to = "every non-computed gate whose flag the route sets true"
+repair = "Treat the supporting provider as not counting, and satisfy the gate as though nothing carried the capability at all."
+violation = "capability-strength-insufficient"
+notes = "This is the invariant that keeps `analysis != independent challenge` true. Without it, any skill that touches risk eventually reads as a critic."
+
+[[route_invariants]]
+id = "runtime-prerequisite-closure"
+statement = "Every selected tool-class skill has its requires_any prerequisites checked before the route is offered."
+applies_to = "every selected skill whose execution class is tool"
+repair = "Confirm the prerequisite, route to an analysis-class alternative, or report the blocker. Do not offer a route that cannot run."
+violation = "runtime-prerequisite-missing"
+notes = "A route that cannot execute is not a cheaper route, it is a wrong answer delivered confidently."

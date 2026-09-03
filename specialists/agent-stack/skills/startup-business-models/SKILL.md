@@ -50,10 +50,14 @@ If numbers are missing, proceed with ranges + explicit assumptions and highlight
 
 ## Related Skills (Routing)
 
-- [startup-idea-validation](../startup-idea-validation/)
-- [startup-competitive-analysis](../startup-competitive-analysis/)
-- [startup-fundraising](../startup-fundraising/)
-- [startup-go-to-market](../startup-go-to-market/)
+Use only skills that exist in this Agent Stack:
+
+- `market-sizing-analysis` — market opportunity and TAM/SAM/SOM.
+- `competitive-intelligence-analyst` — competitor and alternative evidence.
+- `pricing-strategy` — pricing/value-metric and packaging decision.
+- `financial-unit-economics` — contribution margin, CAC/LTV, payback, and sensitivity.
+- `startup-financial-modeling` — integrated forecast/runway scenarios.
+- `micro-saas-launcher` — narrow SaaS validation/launch workflow when applicable.
 
 ## Pricing Change Measurement & Experiment Design
 Use this when you are changing pricing, packaging, value metric, limits, discounts, or billing cadence.

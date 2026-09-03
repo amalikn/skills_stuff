@@ -1,2 +1,37 @@
+min_version = "2024.9.5"
+
 [tools]
 python = "3.14"
+uv = "latest"
+
+[env]
+# The venv is rebuildable runtime state and lives in the skills-working-cache peer, never
+# inside skills_stuff/. Required by skills_stuff/AGENTS.md ("venv + ephemeral runtime
+# placement", 2026-04-23) and the storage-routing-guide. Asserted by
+# scripts/check_governance.py::check_venv_outside_repo — do not revert to a bare ".venv".
+_.python.venv = { path = "/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/venv", create = true }
+
+[tasks.bootstrap]
+description = "Create the project virtualenv and install Agent Stack validation/test dependencies"
+run = "uv pip install -r requirements-dev.txt"
+
+# These tasks address the venv interpreter by absolute path rather than relying on the
+# activation above. Same reasoning as the justfile: an implicit resolution is one that can
+# fail silently to the host interpreter. The justfile is the primary entrypoint; these exist
+# for `mise run` users and must not drift from it.
+
+[tasks.check]
+description = "Validate Agent Stack contracts and routing catalogue"
+run = "/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/venv/bin/python scripts/validate_agent_stack.py"
+
+[tasks.test]
+description = "Run root unit tests and routing/contract tests"
+run = "/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/venv/bin/python -m unittest discover -s tests -v"
+
+[tasks.routing-eval-check]
+description = "Validate the 60-case routing evaluation corpus without invoking a model"
+run = "/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/venv/bin/python scripts/evaluate_routing.py --validate-only"
+
+[tasks.routing-eval-smoke]
+description = "Run a small behavioral routing sample; set AGENT_STACK_EVAL_COMMAND to a CLI that reads the prompt from stdin"
+run = '''test -n "${AGENT_STACK_EVAL_COMMAND:-}" && /Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/venv/bin/python scripts/evaluate_routing.py --command "$AGENT_STACK_EVAL_COMMAND" --limit 6'''

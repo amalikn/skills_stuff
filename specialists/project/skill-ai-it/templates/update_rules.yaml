@@ -1,0 +1,36 @@
+# Default update_rules for governance companion-file consistency
+
+# This file defines the expected companion-file relationships for
+# governance/navigation files in skill-ai-it projects.
+# Used by scripts/upgrade_navigation_control_layer.py and
+# scripts/validate_navigation_control_layer.py.
+
+update_rules:
+  governance_navigation:
+    AGENTS.md:
+      companions:
+        - AI_NAVIGATION.md
+        - context-map.yaml
+        - scripts/README.md
+    AI_NAVIGATION.md:
+      companions:
+        - context-map.yaml
+    context-map.yaml:
+      companions:
+        - AI_NAVIGATION.md
+    scripts/README.md:
+      companions:
+        - AGENTS.md
+        - context-map.yaml
+    new_script_added:
+      companions:
+        - scripts/README.md
+        - AGENTS.md
+        - justfile
+        - scripts/check_governance.py
+    # A new artifact class, generated output, or constant restated across files needs the checker's registries
+    # extended in the same pass — otherwise the checker measures the project as it was, not as it is.
+    new_artifact_class_added:
+      companions:
+        - scripts/check_governance.py
+        - AGENTS.md

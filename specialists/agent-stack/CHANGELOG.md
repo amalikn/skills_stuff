@@ -1,0 +1,625 @@
+# Changelog — Agent Stack
+
+## 20260903_0030
+
+### Added — the gate question is answered
+
+- **A / B1 / B2 run to completion on DeepSeek Flash** ([full record](docs/gate-only-analysis-20260903_0030.md), [`scripts/gate_eval.py`](scripts/gate_eval.py)). **Isolated gate judgement is a real
+  classifier on two model tiers** — predicted-positive rate 0.48/0.37/0.20 on Flash against base rates 0.50/0.37/0.22, and 0.37/0.53/0.38 on Claude — while the **integrated router sits at 1.00 on all
+  four gates**. The gate-semantics hypothesis is dead: the definitions are learnable, and judging them while constructing a route is what destroys the signal.
+- **The aggregate result is misleading and the conditional breakdown reverses it.** B2 beats B1 by +9 cases and +5.38 mean, which reads as "gate errors contaminate routing". Split by stage-A error
+  type: correct 17% B1-failure, **over-asserted 30% (n=10), under-asserted 100% (n=11), both 100% (n=3)**. Where stage A was right, B1 30/36 versus B2 29/36 — indistinguishable. `missing gate` hard
+  failures: B1 17, B2 1. **Over-assertion is not detectably costly; under-assertion is fatal.**
+- **Production makes only the harmless error**, because an always-true router has recall ~1.0 and zero false negatives by construction. For production's error profile this is spec 0007's **B1 ≈ B2**
+  row, reached conditionally. The collapse costs tokens, team size and operator signal — not accuracy — and drops down the queue.
+- **Recorded as a standing warning: the naive fix is dangerous.** "Make the router less trigger-happy" trades precision for recall, swapping a free error for a fatal one. Any calibration work must
+  hold recall at 1.0.
+- **[Rule 0011](.archcore/rules/0011-gate-errors-are-asymmetric.md) independently confirmed.** Its −20 hard / −5 soft split was chosen on judgement before any of this was measured; the measured
+  downstream ratio is 100%-failure against indistinguishable-from-baseline.
+
+### Changed — Claude Code retired as this project's runner
+
+- **`claude -p` is session-limited, not token-metered.** A full routing prompt is ~49,000 characters, so a sweep dies after roughly five calls. Measured twice: holdout 24 lost 5 of 24 silently, and
+  gate-only B1 lost **55 of 60** — named this time, because the harness now reports stdout: `You've hit your session limit`. Default arm is now `deepseek-v4-flash` via Hermes, with the reason recorded
+  inline in the justfile.
+- **Flash qualified 60/60 at realistic payload** (44,066-char probes, median 14.6s). Across 120 routing calls its only faults were 5 transient parse failures, all of which succeeded on retry.
+- **[Spec 0006 Amendment 1](.archcore/specs/0006-runner-qualification.md) was validated by events within the hour.** Written on theoretical grounds — that trivial probes are 761× smaller than a real
+  prompt and so never test quota headroom — it then described the live Claude failure exactly.
+
+### Fixed
+
+- **Recipe quoting defect, caught by qualification before it reached a corpus.** `qualify-runner` interpolated `{{command}}` inside double quotes, so a `$(cat)` in the command expanded against the
+  recipe's own empty stdin: 0/60 calls, one identical 0.34s failure signature. Had this shipped into a sweep, 60 cases would have scored 0.0 and the arm would have looked dead rather than mis-invoked.
+  Fixed in `qualify-runner` and `holdout`.
+- **`scripts/gate_eval.py` gains `--case` + `--merge-into`** for targeted repair of a sweep that lost cases, **recording the repair** in the artifact's provenance so a merged artifact can never read as a
+  single clean sweep. Used twice: B1 (2 parse faults) and B2 (3).
+- **All output flushed per line.** B1 ran 40 minutes completely dark because ~2 KB of output sat under Python's 8 KB buffer; during the Claude collapse, per-case failures only surfaced after 55 had
+  burned.
+
+### Notes
+
+- **Ownership is now the leading open routing defect.** B1 and B2 both carry ~10 `missing required persona` failures, unchanged between them — untouched by gates, and the same class as all three
+  holdout 24 failures. Evidence must come from replay or shadow-mode, never from the spent 24. Governance 672 → 692 checks.
+
+## 20260902_1240
+
+### Added — the runner is now qualified before it carries evidence
+
+- **[`scripts/qualify_runner.py`](scripts/qualify_runner.py) and `just qualify-runner`.** Sends N disposable prompts down the same path a real run uses — stdin, invoke, the harness's own
+  `extract_json` — and names every outcome: `ok`, `timeout`, `nonzero-exit`, `silent-failure`, `unparseable`. Five checks, **each negative-tested against a fake runner**: a silent-failing runner fails
+  sequence reliability, a prose-returning runner fails parse reliability, an unlabelled run fails labels. The failure-legibility probe is offline (`exit 7`) and costs no model call.
+- **`just holdout` now depends on `_require-qualified` as well as `_require-freeze`**, and the receipt records `qualified_for_corpus_size`. Verified: with no receipt the run refuses; with a receipt
+  covering 5 calls it refuses a 24-case run with `receipt covers 5 calls, this run needs 24`. Qualification is perishable — it expires when the runner, its credentials, its quota state or the harness
+  changes.
+- **The observability half of the defect is fixed** ([plan 0003](.archcore/plans/0003-holdout-two-protocol.md) precondition 2). `run_command` now reports **both** streams on a non-zero exit, and says
+  so explicitly when both are empty: `both streams empty — the runner exited without explaining itself (quota, session limit or transport are the usual causes)`. Holdout 24's five losses produced
+  `command exited 1:` with nothing after the colon, which is not a diagnostic.
+
+### Changed
+
+- **[Spec 0007](.archcore/specs/0007-gate-only-evaluation.md) refined to three measurements**: A (gates alone), B1 (route with the model's own gates), B2 (route with ground-truth gates), with an
+  interpretation matrix mapping each outcome pattern to a located defect. The row worth stating in advance is **B1 ≈ B2**: gate over-assertion may be real, measurable and cost the route nothing
+  downstream, in which case the finding is recalibrated rather than acted on.
+- **Thresholds pre-registered before any run**: per-gate recall ≥ 0.80, precision ≥ 0.75, specificity ≥ 0.80, macro F1 ≥ 0.78. A gate missing any threshold fails, and a failing gate fails the
+  measurement — no aggregate may rescue it, because aggregate F1 is exactly what would hide a classifier that is constant on one gate. Moving a threshold after seeing a result requires a dated,
+  reasoned amendment recorded before the next run.
+- **Predicted-positive rate added as the anti-degeneracy check.** It is the one number class imbalance cannot flatter; it must sit strictly inside (0.05, 0.95) on every gate, and outside that the run
+  fails regardless of the other four metrics. On holdout 24 it was **1.00 on all four gates**.
+- **Runner qualification sequenced ahead of the gate-only sweep**, even though the development 60 cannot be spent: an execution error is excluded from the denominators, so an unstable runner silently
+  changes which cases precision and recall are computed over, and a metric on a shifting subset cannot be judged against a pre-registered threshold.
+- **Freeze re-recorded at 20260902_1240** — `harness_sha` `5f15fb18ffed3f3b` → `f4e9a470c84e2a6a` for the both-streams fix. `freeze-check` refused the holdout in between, as designed. Governance 657 →
+  672 checks.
+
+### Notes
+
+- **Nothing in the routing catalogue, the gates, the precedence table, the closure module, the scorer or any case was changed.** The routing-development phase stays closed. The open question is
+  narrower than routing quality: can the model discriminate gate truth when gate classification is isolated from routing? If it cannot, some gates should stop being model judgement.
+
+## 20260902_1215
+
+### Added — status is derived now, not restated
+
+- **`evals/runs.toml` and [`scripts/index_runs.py`](scripts/index_runs.py)**: one record per evaluation run, **40 backfilled** from the stored rows. Every metric is computed — counts, pass rate, mean,
+  gate error classes, a failure-class histogram, and the five provenance hashes the rows already stamp. The authored fields (`purpose`, `status`, `interpretation`, `supersedes`, `notes`) are written
+  by a person and verified to survive regeneration.
+- **`just runs-check` re-derives everything and fails on drift**, and is now part of `preflight`. Negative-tested: changing one recorded metric produces `index says 12, evidence says 62`; an unindexed
+  result file is reported too. Because results live in the rebuildable working cache, a record whose evidence is absent is reported **UNVERIFIABLE** rather than failed — verified by pointing the tool
+  at an empty directory, which exits 0 and names every unverifiable run.
+- **The index resolves each run's corpus from its stamped hash**, and says so when it cannot: **39 of 40 runs stamp a corpus hash that no longer resolves to any file in the tree**, because the
+  development corpus has been edited repeatedly since. That is not a defect — it is the honest statement that those runs are not reproducible against today's file, and it was previously invisible.
+- **[Spec 0007 — gate-only evaluation and precision/recall scoring](.archcore/specs/0007-gate-only-evaluation.md)** (proposed). Separates gate classification from route construction so the collapse
+  can be localised: if gate-only is also all-true the defect is in the gate semantics, if gate-only is good the defect is instruction load. Scores precision, recall, F1 and specificity per gate,
+  because pass/fail is the wrong instrument for a classifier — an always-true router scores recall 1.0, precision ~0.25, **F1 ~0.40**, and only a discriminating one scores well.
+
+### Changed
+
+- **Interpretation of every baseline from `v1 after gate defs` onward is formally superseded**, in place, with the measurements left untouched. Gate recall in all of them was bought by destroying gate
+  precision, so **v4's 79–80% is not evidence of balanced gate routing** — it is good ownership and skill selection plus a gate classifier that always answers yes. Ownership/skill findings and gate
+  findings are reported separately from here on.
+- **`holdout24-claude-20260902` recorded as `status = "spent"`** with its purpose and interpretation authored, and its three evidence paths (JSONL, log, freeze receipt) recorded.
+
+### Notes
+
+- **The run index is the durable fix for the drift this session hit**: holdout 24 produced evidence while three hand-maintained surfaces still called it unexecuted. A status restated in three places
+  drifts; a status derived from rows and checked in `preflight` does not. Governance 646 → 657 checks.
+
+## 20260902_1140
+
+### Changed — Holdout 24 executed and SPENT
+
+- **16/19 passed (84.2%), mean 71.1, five runner failures excluded.** Claude arm, `--repair` on, freeze verified and captured immediately before launch at git HEAD `1201e42`. Evidence in the working
+  cache: `routing-results/holdout24-claude-20260902.{jsonl,log,freeze.txt}`. Full classification: [docs/holdout24-analysis-20260902_1120.md](docs/holdout24-analysis-20260902_1120.md).
+- **Nothing was changed in response to the result.** No expectation, catalogue entry, gate, precedence rule, closure behaviour, scorer or case was edited. The three ownership failures stand exactly as
+  authored, including `hjdm-workshop-channel`, which was pre-registered as ambiguous before the run and failed in precisely the predicted direction.
+- **Status reconciled.** `MEMORY.md` and `SCRATCHPAD.md` described the holdout as unexecuted while the result files proved otherwise — the same class of defect as a stale constant, a claim nothing
+  verifies. Both now record the result, the evidence paths and the spent status.
+
+### Added
+
+- **The finding that matters: gate judgement has collapsed to always-true across every arm.** All 19 scored cases set all four gates true. Re-analysing every stored result set — no model calls, the
+  exact use [rule 0011](.archcore/rules/0011-gate-errors-are-asymmetric.md) was built for — shows `full` (before gates were defined) at **0/60** all-true with 41 missed gates, and everything after it
+  at 53–58/60 all-true with 2.4–3.3 false positives per row, on Flash, Pro and Claude alike. Defining the gates on 2026-09-01 converted a systematic false-negative problem into a systematic
+  false-positive one, and it stayed invisible for a day because the scorer penalised only one direction. The v4 79–80% headline measured a router that discriminates ownership and skills well and does
+  not discriminate gates at all.
+- **[Spec 0006 — runner qualification](.archcore/specs/0006-runner-qualification.md)** (proposed). No single-use corpus goes through an unqualified runner. Five consecutive `claude -p` calls exited 1
+  with empty stderr, costing 21% of a one-shot corpus to a fault the evidence cannot even classify. Requires sequence reliability at corpus size, parse reliability, legible failures, timeout behaviour
+  and labels — all on disposable cases.
+- **[Plan 0003 — Holdout 2 protocol](.archcore/plans/0003-holdout-two-protocol.md)** (proposed). Preconditions before a second blind corpus, and what the spent 24 may and may not be used for.
+- **`docs/` and its index**, registered in `CATALOGS` and negative-tested in both halves. The project root now carries governance and contract entrypoints only; audits, proposals, classifications and
+  evaluation records live in `docs/`. Path resolution caught all ten references broken by the move, which is the check behaving exactly as its rule promises. Governance 599 → 643 checks.
+
+### Notes
+
+- **The pass rate is the least informative number in the run.** 84.2% sits in the pre-registered strong band, but it survives only because over-assertion is soft by design; the mean of 71.1 against a
+  ceiling of ~90 is the honest summary. Read the mechanism, not the headline.
+- **All three genuine failures are ownership**, and two cite the precedence table and reach a different answer from the author with a stated rationale. That is a contract question, not a routing
+  defect. `hnet-radius-postmortem` exposes a boundary the table does not cover at all: incident root-cause versus operational corrective action.
+
+## 20260902_1015
+
+### Added — the unseen holdout, authored and frozen, NOT executed
+
+- **`evals/holdout-cases.toml`: 24 cases** — 5 networking-infrastructure, 5 jdm-import, 4 software-ai-engineering, 4 atar-import, 3 business-research, 3 direct-adversarial. Authored blind to the
+  frozen 60. The only thing read from that corpus was its SCHEMA — key names, the six `mode` values, the observed `max_personas` range — printed by a script that displayed no task, no id and no route
+  expectation, so the prompt shape matches the development corpus without any case reaching the author.
+- **Task text first, expectations second.** Every case was written as work that would plausibly arrive from this operator, then had ownership, gates and capabilities assigned from the task as written.
+  No case was built backwards from a route worth testing.
+- **Gate coverage was not balanced deliberately** and came out lopsided: 13 of 24 assert no gate at all, 6 research, 4 critic, 1 QA, 6 runtime. Forcing an even spread would measure the router against
+  a design instead of against the job, and 13 no-gate cases is a stronger over-routing test than a balanced set would have been.
+- **`--cases` on the evaluator**, so the holdout is scored by exactly the scorer the baselines were scored by rather than a forked harness. The stamped `eval_corpus_sha` follows the flag, so a holdout
+  row can never be mistaken for a development-corpus row.
+- **`just holdout`**, guarded by `_require-freeze` and refusing to run without provider/model/output labels — an unlabelled holdout row is not comparable to anything, and the corpus is single-use.
+- **Three integrity tests over the holdout**, negative-tested: the declared shape and resolvable references, `runtime_required` earned in BOTH directions, and every asserted gate closable by the
+  case's own required + preferred contract. Suite 52 → 55; governance 589 → 598 checks.
+
+### Changed
+
+- **Freeze re-recorded at 20260902_1015** and extended to six artifacts. `harness_sha` moved for the `--cases` flag; `holdout_corpus_sha` is new and is hashed locally by `scripts/check_freeze.py`
+  rather than stamped by a run, because until the holdout is executed no result row carries it.
+- **The under-statement direction of `runtime_required` is now a defect too.** Spec 0005 required an asserted flag to be earned; since gate over-assertion started costing 5 points, a case asserting
+  `false` while expecting a tool-class provider penalises the route for an error the case itself caused. Both directions are asserted for all 24.
+
+### Notes
+
+- **`just freeze-check` caught the `--cases` edit against the 0935 record before anything ran** — the exact drift guide 0003 step 1 describes, and the first time here that a tool rather than an
+  agent's memory caught it. The freeze was then re-recorded after the last edit, which is what step 1 actually asks for.
+- **Nothing was executed.** No model was called against any holdout case. `just --dry-run holdout` was used to verify the recipe's interpolation and guard ordering without spending the corpus.
+
+## 20260902_0950
+
+### Added — the freeze is now checkable
+
+- **`scripts/check_freeze.py` and `just freeze-check`.** Recomputes the five stamped hashes and compares them to the table `MEMORY.md` records, printing per-artifact OK/drift and exiting non-zero with
+  the artifact that moved. Negative-tested by appending a comment to `scripts/close_route.py`: the run went red naming `closure` alone, and green again on restore.
+- **It imports `run_provenance` from the evaluator rather than hashing the files itself.** A second implementation would drift from the stamping one and could then verify a freeze that no result row
+  was ever measured against.
+- **It parses `MEMORY.md` rather than a second data file.** `.archcore/README.md` gives `MEMORY.md` ownership of measured figures; duplicating the hashes into a machine-readable copy would create two
+  records of one fact and let the human-readable one go stale while the check passed. The row pattern anchors on `^\|\s*` so the mandated table formatter's alignment padding cannot break it.
+- **`_require-freeze`**, a private justfile guard for recipes that record a comparable run. Depend on it from a baseline or holdout recipe; never from a smoke recipe.
+- **Two tests covering the RECORD, not the verdict** — five well-formed stamps, and every stamp still one the harness actually writes. Asserting the checkout currently matches the freeze would put a
+  drift failure inside `preflight`, which is the coupling this design exists to avoid. Negative-tested by renaming a stamp in the record. Suite 50 → 52.
+
+### Changed
+
+- **[Rule 0011](.archcore/rules/0011-gate-errors-are-asymmetric.md) accepted by the operator**, `proposed` → `accepted`, stamped `Accepted: 20260902_0950 by operator`.
+- **[Guide 0003](.archcore/guides/0003-running-a-routing-baseline.md)** now names `just freeze-check` in step 1, describes the coverage line in step 3, and gains a section stating that the scorer is
+  part of the freeze — fix a scoring defect BEFORE authoring a single-use holdout, never after, because a holdout scored under a scorer you then correct has been spent and has answered nothing.
+
+### Notes
+
+- **`freeze-check` is deliberately absent from `preflight`.** Preflight answers "is this repository internally valid"; freeze-check answers "does it match one particular evaluation snapshot". A
+  legitimate catalogue change must be able to pass the first while failing the second — wiring them together would convert a historical reference into a standing prohibition on ever changing the
+  catalogue, which this project's rule against enforcing history forbids. Governance 573 → 587 checks.
+
+## 20260902_0935
+
+### Changed — measurement integrity, before any unseen holdout is authored
+
+- **Gate scoring is now asymmetric**, negative-tested in both directions. A false negative (case requires the gate, route omits it) stays a hard `-20` that decides pass/fail; a false positive (route
+  fires a gate the case does not require) is a soft `-5` that never does. Until now over-assertion cost **nothing**, so "set all four flags true" was a free strategy that beat honest routing on every
+  case with a required gate — Claude did exactly that on `market-size` in Baseline v4 and paid no penalty. Measured on that case: an all-gates-true route scored 90.0 before and scores 80.0 now, while
+  an honest route is unmoved at 90.0. See [rule 0011](.archcore/rules/0011-gate-errors-are-asymmetric.md), status `proposed`.
+- **The two classes are counted separately**, not folded into one gate-error total: `gate_false_negatives` and `gate_false_positives` land in every stored result row and are totalled in the run
+  summary, so a stored baseline can be re-analysed for over-assertion without calling a model again.
+- **Coverage is reported rather than inferred.** Every run prints `covered X/Y cases` measured against the pool BEFORE `--limit` applies, plus `WARNING: partial corpus run` when the limit truncated
+  it. The first Baseline v2 pass ran `--limit 10` per family, covered 53 of 60 because two families are larger than 10, and printed per-family lines that read as complete.
+- **`GATE_FLAGS` is named once** and consumed by both use sites in the evaluator. The tuple was previously restated at each one, which is how a flag quietly stops being covered at one site while the
+  others still cover it.
+
+### Added
+
+- **`closure_sha` in the run provenance stamp.** `scripts/close_route.py` rewrites the route before scoring under `--repair` — measured at +13 cases on the frozen 60 — and was covered by no hash at
+  all, so a repaired run was not reproducible from its own row. It is stamped but deliberately absent from `prompt_inputs`: it reaches the score, not the prompt. Same reasoning as [rule
+  0009](.archcore/rules/0009-provenance-covers-inputs.md), found while freezing the measurement contract rather than by a check.
+- **Four regression tests**, each verified to go red against a deliberate break: the `-5` per surplus gate, over-assertion never flipping the verdict, a missing gate still failing hard, and
+  `select_cases` reporting the pool it drew from. Suite 46 → 50; governance 566 → 570 checks.
+
+### Notes
+
+- **Baselines measured before this change are not comparable to ones measured after**, for any case where a route over-asserted. Compare stored rows by re-scoring them with `--rescore`, never by
+  putting the two published means side by side.
+- **`runtime_required` cannot be over-asserted.** It is scored against the computed value — true exactly when a selected skill declares `execution = "tool"` — so a model reporting it without selecting
+  a tool skill is corrected, not penalised. Only the three judged gates carry the soft penalty.
+
+## 20260902_0300
+
+### Changed
+
+- **All 29 `.archcore/` documents accepted by the operator.** `Status: proposed` → `accepted`, each stamped `Accepted: 20260902_0300 by operator`. `.archcore/` is now the highest-authority statement
+  of what this project has decided, and `AI_NAVIGATION.md`, `context-map.yaml` and `.archcore/README.md` say so.
+- **A new check keeps the status field honest**, negative-tested in both halves: every `.archcore/` document must declare a status in `{proposed, accepted, superseded}` and carry a `Source:` line
+  naming what it was promoted from. Without it, "accepted" is a word nothing verifies and a document's provenance can be lost by a careless edit. Governance 502 → 560 checks.
+
+### Notes
+
+- **`superseded` is deliberately in the allowed set.** An accepted document is superseded **in place** with a dated banner naming what replaced it and what still stands — never deleted, because the
+  superseded reasoning is usually the part a later reader needs. [ADR 0009](.archcore/adr/0009-sync-apply-is-atomic.md) is the worked example: it supersedes a deferral recorded in `REVISION_NOTES.md`
+  and says so in the document.
+
+## 20260902_0245
+
+### Added — Archcore promotion
+
+- **29 `.archcore/` documents promoted**: 9 decisions, 10 rules, 5 contracts, 3 guides, 2 plans, each with a provenance header and `Status: proposed`. `.archcore/README.md` is the durable index and
+  carries the never-promote table out of the candidate queue.
+- **The candidate queue was REGENERATED before promoting, not promoted as found.** The 20260901_1255 queue predated the capability registry, ownership precedence, route invariants and deterministic
+  closure — it contained zero mentions of any of them. Promoting it would have written the architecture as it stood before the work that defines it. Regenerating surfaced three concrete errors it
+  would otherwise have carried in: a rule quoting the superseded `mise exec --` interpreter form, a deferral of atomic sync work that had been implemented hours earlier, and a never-promote entry
+  saying the audit-prompt/audit-report supersession was unresolved when it had been resolved.
+- **`ARCHCORE_PROMOTION_CANDIDATES.md` deleted**, as `promote` requires — it is a proposal queue, not a record. It was already registered in the checker's `CONDITIONAL_PATHS` at bootstrap, so
+  historical mentions in this file still resolve.
+- **Catalog coverage for `.archcore/`**, negative-tested: an uncataloged document there now fails the build. The glob is `**/*.md` deliberately — the documents live in subfolders, and a non-recursive
+  glob would have reported full coverage while checking nothing. Governance 441 → 501 checks.
+
+### Changed
+
+- `AI_NAVIGATION.md` and `context-map.yaml` route to `.archcore/README.md` as **highest authority** and no longer mention the candidate queue.
+
+### Notes
+
+- **The division of labour with `MEMORY.md` is stated in the index rather than left implicit**, because duplicating it is the two-taxonomies problem this project already paid for once with
+  `satisfied_by_skills`. `.archcore/` holds decisions, rules and contracts — the shape of the system; `MEMORY.md` holds measured baselines, metric definitions and traps. **Every measured figure is on
+  the never-promote list**: a re-run moves it, and a promoted copy would be stale within a day and would then contradict its source. The test applied to each candidate: *would it still read as true
+  after the next three baselines?*
+- Generated by `skill-ai-it` in `promote` mode, following a `refresh`-style regeneration of the queue in the same session.
+
+## 20260902_0130
+
+### Changed — one persona model, relaxed contracts, corpus frozen
+
+- **P1 RESOLVED: `routing.toml` now carries ONE persona model.** All twelve `[[routing_rules]]` are explicitly advisory keyword hints; the seven that used `require_personas` now use `prefer_personas`.
+  `economics-gate` and `import-economics-gate` are renamed `economics-owner` / `import-economics-owner` so nothing in that table pretends to be a gate. Mandatory-ness now lives in exactly three
+  places: `[[gates]]` (what the route owes), `[[precedence]]` (who owns a contested decision), `[[route_invariants]]` (what makes a route invalid). **Two validator guards, both negative-tested**,
+  reject a `require_personas` or a `*-gate` id in that table, so the contradiction cannot return.
+- **`required_personas` is for mandatory ownership, not an ideal team** — policy now stated in the corpus header. Three cases relaxed under it: `net-security-review` keeps `cto-vogels` (the
+  deliverable IS security posture) but drops `qa-bach`, because the case already requires `security-audit`, which provides validation at primary strength; `python-feature` is ordinary implementation
+  against settled criteria, so a validation capability suffices; `jdm-portal-build` keeps `product-norman` ("define and build" means requirements are open) and drops the rest of its four-persona team
+  to preferred.
+- **The 60-case corpus is FROZEN as a development set**, with the reasoning in an in-file banner. It took routing from a specification failure through ownership precedence to a measured architecture,
+  and proved deterministic closure worth +25 to +40 points across three models. Past this point a better score on these 60 is evidence of fitting the corpus, not of better routing. Next evidence must
+  come from an unseen holdout and real-task replay.
+- **P2: audit receipts archived out of the repository** to the working cache under audit-archive/20260901 with a README recording that the gate ended FAILED and why. They were blocking the next audit
+  run, which is correct behaviour — so they moved rather than being deleted. The now-stale `.gitignore` entry is removed.
+
+### Notes
+
+- **A recommendation was declined on evidence, not preference.** The advice to give `atar-supplier` to `cfo-campbell` rested on all three arms independently choosing CFO — true of the pre-closure
+  runs. Since closure and the shared contract landed, **all three arms choose `research-thompson` and pass** (v4 ×3 and v5). The earlier disagreement looks like a symptom of the `routing_rules`
+  contradiction: `economics-owner` was *requiring* `cfo-campbell` on any keyword match, and "landed cost" is such a match. Changing the corpus now would break a case four consecutive runs agree on.
+  Raised rather than executed.
+- Static effect of the relaxations, measured with closure and no model calls: stored v3 routes **47/60 → 50/60**, v4 Claude holdout **16/20 → 19/20**. Stated plainly: that gain is a contract decision
+  about what the corpus asserts, not an improvement in routing capability.
+
+## 20260902_0015
+
+### Added — Baseline v4, and the eval now measures the contract production uses
+
+- **Baseline v4: the same 20-case holdout, all three arms, live, with deterministic closure.** Flash **13/20 (65.0%)** mean 85.7 · Pro **15/19 (78.9%)** mean 89.1 · Claude **16/20 (80.0%)** mean 89.2,
+  against 40.0 / 50.0 / 40.0 without closure. **Every arm gains 25–40 points**, every mean rises to ~89, and the two production arms converge near 80%. Model tier still matters, but far less once
+  closure is deterministic.
+- **The behavioural eval now builds its prompt from the PRODUCTION orchestrator skill.** A marked `eval-routing-contract` block in `skills/orchestrator/SKILL.md` is read verbatim by
+  `scripts/evaluate_routing.py`; the routing principles that were a literal inside the evaluator are gone. Until now the eval could have scored a contract production did not use, and **no check would
+  have noticed** — an eval that drifts from the artefact it measures is worse than no eval, because it reports confidence about the wrong thing. Prompt version `AGENT_STACK_ROUTING_EVAL_V3`.
+- **A validator guard, negative-tested**, refuses a missing or renamed contract block, so the arrangement cannot be silently undone. Missing markers raise rather than fall back to a default: a silent
+  fallback would restore exactly the drift this removes.
+- **Provenance now distinguishes inputs from neighbours.** Rows carry `prompt_inputs`, naming which stamped files actually reach the model. `orchestrator_sha` previously recorded a file the prompt
+  never read — it raised an alarm while proving nothing; it is now a genuine input.
+
+### Changed
+
+- **Tags and `required_personas` are formally separated in `routing.toml`, and neither is derived from the other.** Tags are semantic characteristics of the task, judged by the model, and say *why* a
+  generic policy applies. `required_personas` is a case-specific expectation and says *what* this route must contain. Deriving tags from the expected answer would destroy the corpus's ability to test
+  task understanding separately from route correctness. Tags stay a judgement because a pattern-match over task text agreed with the corpus on only 5 of 21 cases.
+
+### Notes
+
+- **I walked a recorded trap a second time.** The v4 frozen set was published, then `skills/orchestrator/SKILL.md` was edited mid-run — the exact failure MEMORY.md already lists. It changed the stamp,
+  not the experiment, because that file was not a prompt input at the time, and all three arms stamp identical provenance so the comparison is internally valid. Knowing the rule did not prevent it;
+  the per-row stamp did, by making the drift visible in seconds. The stamp being wrong in *design* — covering a neighbour rather than an input — is fixed above.
+- Static regression after the contract move: closure on the stored v3 routes is unchanged at 34/60 → 47/60, confirming the refactor moved the source of the text and nothing else.
+
+## 20260901_2130
+
+### Added
+
+- **`scripts/close_route.py` — deterministic route closure, and it works.** The model proposes owner / personas / skills / gates; the system then adds the minimum provider declaring each unmet
+  `required_capability` at the required strength, escalates to the gate's persona where the task's tags demand independence, recomputes `runtime_required` from the selected skills, reports unmet tool
+  prerequisites, and refuses to breach the team cap rather than trade one hard failure for another. It never overrules a judgement — it does not set `primary_owner`, does not decide which gates are
+  true, and removes nothing.
+- **Measured on the stored v3 routes with no model calls: 34/60 → 47/60 (78.3%), zero regressions.** On the 20-case holdout: Flash 8→14, Pro 10→15, Claude 8→15. The two production arms land
+  identically and the model spread narrows from 10 points to 5. This clears the ≥70% target that prompt-based closure missed by thirteen points, and it settles the v3 null result: the fix was real,
+  the mechanism was wrong.
+- **`--repair` on `scripts/evaluate_routing.py`**, in both live and rescore modes, so closure can be measured on already-stored routes before being trusted in a live run.
+- **`default_skill` on each judged gate** — the canonical general-purpose provider. Without it closure chose lexicographically among equally-qualified providers and reached for `code-review-security`
+  where `senior-qa` was plainly meant.
+- **Nine regression tests** for closure (46 total, up from 37), each tied to an observed defect or a promise the module makes rather than restating the implementation.
+
+### Changed
+
+- **The execution-error denominator is fixed.** Scored cases are valid parsed results only; execution errors are counted separately, with the uncorrected figure printed beside the corrected one so
+  published numbers stay reconcilable. Re-reporting every run under both denominators shows the correction bites in exactly one place — **v2, whose published mean of 81.6 was depressed by its own
+  `ui-only` timeout; corrected it is 83.0, identical to v3's.** That *strengthens* the v3 null result: on corrected means the two baselines are exactly equal, and v3's apparent +1.4 was a v2 artefact.
+- **`runtime_required` assertions must be earned, and 4 of 7 were not.** The flag is computed from the selected skills, so asserting it hard while only preferring the tool skill that causes it is a
+  case contradicting itself — and it made `net-dns-migration` unfixable by any route the case permitted. `net-dns-migration` and `net-monitoring-stack` are planning and design tasks and now assert
+  false; `net-ansible-automation` and `jdm-auction-data` genuinely need the tool and now require it. A validator check enforces the invariant, proven able to fail.
+
+### Notes
+
+- **Tags stay a model judgement, deliberately.** Closure implements the gates' `persona_mandatory_when_tags` escalation, but the corpus carries no tags and a pattern-match over task text agrees with
+  human judgement on **only 5 of 21** cases — `auth` matching "authoritative", and so on. Deriving tags from `required_personas` would have been fitting tags to the answer, so it was not done. The
+  outstanding operator decision is whether to author tags per case or relax the four `required_personas` that the escalation would otherwise satisfy.
+- **Six of the ten contract cases survive closure** and are the genuine ambiguities: `atar-supplier` (both production models overrule the research-vs-economics precedence rule), `jdm-portal-build`,
+  `net-security-review`, `python-feature` (all three want the QA persona where a capability would do), and `release-readiness` (now resolved by `default_skill`). Four were resolved by closure alone.
+
+## 20260901_2015
+
+### Changed — staleness audit
+
+- **Seven staleness defects found and fixed.** Three materially misleading: `MEMORY.md`'s baselines table still read `v3 | in flight` after v3 completed (the worst thing a designated truth document
+  can do); its "what is still open" section posed the v3 question as unanswered; and `docs/gate-definitions-proposal-20260901_1600.md` still carried `Status: proposal, not applied` months of work
+  after the gates were applied. Two enforcement-level: `docs/routing-failure-classification-20260901_1842.md` recommended the route invariant as the fix **after** that fix had been built and measured
+  ineffective, and `ARCHITECTURE.md` described a gate model that predates the four-flag capability system. Two governance: a stale `Last reviewed` on `AGENTS.md`, and a long-carried open item that was
+  simply **mis-framed** — `docs/audit-agent-stack.md` is the audit *prompt*, not a duplicate report, so no supersession was ever needed.
+- **Supersession banners** added in place on the two superseded documents, each naming what replaced it **and what still stands** — the capability model and corpus-derived triggers in the proposal;
+  the classification itself in the failure analysis. Neither document is deleted; only their stale recommendations are fenced.
+- **New governance check `check_status_markers_resolved`**, proven able to fail: no table row in `MEMORY.md` or `SCRATCHPAD.md` may report `in flight`, `pending`, `TBD` or `awaiting`. Narrow by design
+  — prose may legitimately describe a past in-flight run, and `count:asat` lines are dated records. Governance 374 → 430 checks.
+
+### Changed — coherence pass
+
+- **Three routing-description surfaces still described the pre-capability model** and now name the four cooperating tables: `README.md` "Intelligent routing", the `routing.toml` row in
+  `AI_NAVIGATION.md`, and the dispatch note in `context-map.yaml`. None was false; each was incomplete in the way that matters — a reader would not have learned that gates resolve by capability or
+  that precedence ranks ownership.
+- **`evals/routing-cases.toml` carried a `KNOWN CONFLICT (2026-09-01, unresolved)` note describing a contradiction this session resolved.** Rewritten to record the resolution. Comment-only: parsed
+  data verified byte-identical, so no score is affected, but `eval_corpus_sha` moves `10451dc9fc71c942` → `1fff2b158a2c3909` and that is recorded in `MEMORY.md` so a v3 row stamping the older value
+  still reconciles.
+
+### Notes
+
+- **The most important finding is unfixed, deliberately: `routing.toml` carries two contradictory persona models at once.** Seven `[[routing_rules]]` entries **require** a persona on keyword match —
+  `material-independent-challenge` → `critic-munger`, `economics-gate`/`import-economics-gate` → `cfo-campbell`, `architecture-owner`/`network-technical-owner` → `cto-vogels`,
+  `import-evidence-first`/`current-facts-research` → `research-thompson` — which is exactly the gate-summons-a-persona model the capability refactor replaced, while `[[gates]]` sets `persona_mandatory
+  = false`. `architecture-owner` vs `implementation-owner`, and `product-experience-chain` vs `implementation-owner`, are the same conflicts `[[precedence]]` ranks, still asserted unranked. The whole
+  catalogue goes into the prompt, so the model receives both. This is a live hypothesis for the ten cases failing on both production models and for Pro/Claude agreeing on only 35% of routes. Not fixed
+  here because retiring or subordinating `routing_rules` changes the catalogue the frozen baselines were measured against — an operator decision, not an audit edit.
+- Found in **Phase 4**, per-artifact reasoning, from `tests/test_routing_contract.py` asserting `economics-gate` exists. No grep would have found it: nothing is stale as a string, and the suite is
+  green. This is the phase that a defect-string sweep structurally cannot discharge.
+- **The exit gate FAILED and is reported as such.** Two residuals, both tool-vs-project mismatches: a vendored TypeScript `tsconfig.app` config is JSONC and unparseable by a strict JSON loader, and
+  the inverse sweep flags 11 package-internal resource directories plus `personas/`, all of which are correctly catalogued by this project's own contract. Engineering a pass would have been the
+  defect.
+- The staleness-audit inverse sweep gained `manifest.yaml` as a default catalog source — a package-structured project registers every unit by path there. That removed 44 false orphans without
+  weakening the check, which still found the 12 above.
+- Attempting to add a README under `personas/` was **rejected by this project's own checker** — that directory contractually holds registered capabilities only. The check was right and the generic
+  heuristic was wrong.
+
+## 20260901_1900
+
+### Added
+
+- **Capability registry in `routing.toml`** — 20 routing capabilities, 4 gate-facing (`research`, `independent-challenge`, `validation`, `tool-execution`) and 16 supporting. Every skill and every
+  persona now declares `primary_capabilities` and `supporting_capabilities`; gates name a `required_capability` and a `minimum_strength`. The hand-maintained `satisfied_by_skills` lists are gone.
+  Implements steps 2-5 of [agent-stack-capability-taxonomy-and-scoring.md](../agent-stack-capability-taxonomy-and-scoring.md).
+- **Strength semantics.** `primary` means the capability is one of the provider's explicit purposes and may satisfy a gate alone; `supporting` means it is incidental and never discharges a hard
+  obligation. All three judged gates require `primary`. This is what protects `analysis != independent challenge`: without it, every analytical skill drifts into `independent-challenge` and the critic
+  gate stops meaning anything.
+- **`--rescore '<glob>'`** on `scripts/evaluate_routing.py` — re-scores plans a previous run already produced against the current catalogue, with no model calls. It holds the routes fixed, so any
+  movement is attributable to the catalogue alone. Re-running the corpus cannot answer that, because the catalogue and the model's behaviour both change at once.
+- **Six validator checks**, each proven able to fail by breaking the catalogue deliberately: unknown capability referenced by a skill, persona or gate; capability declared both primary and supporting;
+  `tool-execution` disagreeing with a skill's `execution` class in either direction; a persona declaring `tool-execution`; a gate whose `required_capability` no provider offers at primary strength;
+  and a gate still carrying a `satisfied_by_skills` list.
+- `capability-strength-insufficient` is now reported separately from `gate-unsatisfied`. They call for opposite fixes — the first says the route brought something adjacent and the strength rule
+  rejected it, the second says it brought nothing.
+
+### Notes
+
+- **The 22 unsatisfied failures were classified before any catalogue edit** — [docs/routing-failure-classification-20260901_1842.md](docs/routing-failure-classification-20260901_1842.md). **All 22 are
+  ROUTING DEFECTS. Zero capability-mapping, zero gate-trigger, zero corpus, zero scoring.** In every case the router judged the gate correctly and then equipped the route with neither a satisfying
+  provider nor the gate's persona, while the corpus lists that persona as required or preferred.
+- **Predicted re-score gain was therefore zero, and the re-score confirmed it: 33/59 before, 33/59 after, no case changed verdict.** The refactor is a maintainability change — one taxonomy instead of
+  two that drift — not a scoring change. It was stated as a falsifiable prediction first so that step 6 tested the classification rather than celebrating it.
+- **The annotation was verified faithful before the satisfier lists were deleted**: resolving each gate through the new capability metadata reproduces its old skill list exactly — nothing gained,
+  nothing lost, on all three judged gates. That is what made the deletion safe rather than hopeful.
+- Two corpus-level checks were run to try to falsify the classification and failed to: no case asserts a gate its own required + preferred contract cannot satisfy (0 of 60), and no Baseline v2 plan
+  names a skill absent from the catalogue (`team` looked like a hallucination and is a real entry).
+- **What actually moves the 22 is still unbuilt:** gate satisfaction is advice, not an invariant. A true gate with no primary provider and no gate persona should be an invalid route the router must
+  repair before returning it.
+
+## 20260901_1730
+
+### Changed
+
+- **`persona_mandatory` resolved in favour of capability-first.** `critic-gate` dropped from `persona_mandatory = true` to `false` with escalation tags (`high-consequence`, `irreversible`,
+  `security-sensitive`, `thin-evidence-high-commitment`); `qa-gate` gained `production-change`. No gate is unconditionally mandatory any more. The obligation must be satisfied; a persona is not the
+  only way to satisfy it.
+- **The scorer no longer penalises a direct-skill route for naming an owner.** The `direct-skill case unnecessarily selected persona` hard failure is removed: a direct route's real contract is right
+  skill / no forbidden persona / no team, and all three were already hard-scored. It punished one accountable owner as harshly as a four-persona committee — the opposite of what the
+  `direct-adversarial` family measures.
+- **Gate satisfaction is now explicitly skill-first** in both the orchestrator and the eval prompt, as an ordered four-step rule: a skill already selected satisfies it → add the narrowest satisfying
+  skill → add the persona only where independence is the deliverable → never add a persona because it is the gate's `default_persona`.
+
+### Added
+
+- **`[[precedence]]` in `routing.toml`** — four ownership tie-breaks, each naming the discriminating question and both answers, replacing inference from overlapping `owns` prose:
+  product-vs-implementation, artefact-vs-domain-review, component-cannot-architect-itself, research-vs-economics. Mirrored as a table in `skills/orchestrator/SKILL.md` Step 3.
+- **Structural validation of precedence rules** in `scripts/validate_agent_stack.py`: both branches must resolve to real and *different* personas, ids must be unique, and all four prose fields must be
+  present. Proven able to fail by pointing both branches of `research-vs-economics` at the same persona.
+
+### Results — Baseline v2
+
+- **33/60 (55.0%), mean 81.6**, all 60 cases, Hermes/DeepSeek `deepseek-v4-flash`, against v1's 28/60 (46.7%) mean 80.6 (76.4 was the earlier 23/60 run, not this one). Per family, v2 vs v1:
+  direct-adversarial 5/7 vs 3/7 · business-research 6/8 vs 6/8 · jdm-import 6/12 vs 6/12 · networking-infrastructure 6/15 vs 4/15 · atar-import 5/8 vs 4/8 · software-ai-engineering 5/10 vs 5/10.
+- **Failure classes moved where the changes were aimed.** `wrong-owner` 6 → 3, `missing-gate` 43 → 3, team inflation 3 → 1, forbidden persona/skill 0, runtime prerequisite failures 0. The three cases
+  the new rules target all resolved to the corpus owner: `network-code-review` PASS 90.0 to `fullstack-dhh`, `jdm-portal-build` correctly to `product-norman` (now failing only on a thin team),
+  `agent-routing-design` no longer failing on ownership at all.
+- **Removing the direct-skill persona penalty did not let committees through.** `direct-adversarial` went 3/7 → 5/7 with zero team-inflation and zero forbidden-persona failures, and
+  `network-change-premortem` still fails on `team inflation: 2>1` — the genuine defect fires, the duplicate no longer does.
+- **`unsatisfied` barely moved: 24 → 22, now 22 of 39 hard failures, and the root-cause split is the finding.** 15 of 22 are *skills selected but none satisfy*; only 5 are *no skills at all*. The
+  router is not omitting capability — it picks skills that are not on the gate's `satisfied_by_skills` list. `critic_required` alone accounts for 11. A must-select invariant would fix the 5 and miss
+  the 15; the next fix belongs in `routing.toml` visibility.
+- **Run defect, recorded because it nearly shipped as a baseline.** The first pass used `--limit 10` per family and so covered 53 of 60 — `networking-infrastructure` has 15 cases and `jdm-import` has
+  12. The 7 omitted included `network-code-review`, `jdm-portal-build` and `network-change-premortem`, the three cases that test this session's changes most directly. They were run separately against
+the unchanged frozen set and merged.
+- One row is not a routing result: `ui-only` scored 0.0 with `execution-error: no routing JSON object found in command output`, a model-side parse failure worth about 1.4 points of overall mean.
+
+### Added
+
+- **`scripts/analyze_routing_results.py`** and `just routing-matrix` — the failure matrix used to read Baseline v2, promoted out of scratch so the next baseline is analysed the same way. Family x
+  failure class, plus the root-cause split that distinguishes a gate unsatisfied because the route selected **no** skills from one unsatisfied because it selected skills absent from that gate's
+  `satisfied_by_skills` list. Stdlib-only, read-only, cataloged in `scripts/README.md`. `ROUTING_RESULTS='<glob>' just routing-matrix` analyses any other run — v1 reads back as 28/60 (46.7%) mean
+  80.6.
+- It prints coverage against the corpus (`corpus has 60 cases; N not present`), which is the line that would have caught the `--limit` truncation instead of leaving a 53-case run looking complete.
+
+### Renamed
+
+- **`attar` → `atar` throughout**, on operator instruction: the `atar-import` family, its 8 case ids, all task prose, 12 authored files, the generated context pack, and — also on instruction — the
+  historical CHANGELOG and SCRATCHPAD entries and the v1/v2 result files, both their names and their row contents.
+- **Provenance consequence, recorded rather than hidden.** Baseline v2 ran against the pre-rename corpus. Renamed result rows now carry `atar-*` case ids beside an `eval_corpus_sha` that stamps the
+  corpus as it was at run time, so the two disagree by design. Frozen set at run time: routing `ed2408a5d8e36cd4` · corpus `3b936cd190b41218` · orchestrator `dd84864e3df0cb30` · harness
+  `f692b8966db9efe1`. After the rename: routing `ea01bf2c24054ad0` · corpus `10451dc9fc71c942` · orchestrator `297fa237fe91e291` · harness unchanged. Reconcile a v2 row through this pair.
+
+### Notes
+
+- **A draft of `artefact-vs-domain-review` contradicted the corpus in two cases and was caught before it shipped.** Written as "code quality, correctness, maintainability *or security* → Full-Stack",
+  it took ownership of `security-code-scan` and `net-security-review` away from `cto-vogels`, which the corpus assigns to CTO. The rule now splits on the deliverable: code quality is Full-Stack's;
+  security *posture* is architecture and stays with CTO however code-shaped the artefact. This is why the corpus is cross-checked against a new rule before a run, not after.
+- The run in flight when that contradiction was found was **killed rather than allowed to finish**. Its `routing_catalogue_sha` would have described a catalogue that was about to change, and a
+  provenance stamp that needs an argument to defend is not doing its job.
+
+## 20260901_1600
+
+### Added
+
+- First complete behavioural routing baseline — all 60 corpus cases against Hermes/DeepSeek: **23/60 (38.3%), mean 76.4**. Results (6 files, 60 rows) in
+  `/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/routing-results/`, which is working-cache and rebuildable; the repo carries the findings, not the result sets.
+- `docs/gate-definitions-proposal-20260901_1600.md` — proposed `[[gates]]` definitions for the four flags, with triggers **derived from the corpus** rather than invented, the two
+  `scripts/evaluate_routing.py` prompt fixes, expected effect, and four open policy questions. **Nothing applied** — the trigger conditions encode policy and need an operator call.
+
+### Notes
+
+- Generated by `skill-ai-it` in `refresh` mode; gate green at 360 checks. <!-- count:asat -->
+- **The headline pass rate mostly measures the specification gap, not routing quality.** Of 62 hard failures, 43 are gate-flag misses against flags `routing.toml` never defines; excluding them, 45/60
+  (75%) would pass. The 19 remaining are genuine: 10 missing-required-persona, 6 wrong-primary-owner, 3 team-inflation on direct-skill cases.
+- Per family, pass / mean / gate / non-gate: business-research 6/8 88.4 (2/0) · direct-adversarial 3/7 82.1 (3/2) · atar-import 3/8 78.1 (6/2) · software-ai-engineering 3/10 75.0 (7/4) ·
+  networking-infrastructure 4/15 71.7 (15/5) · jdm-import 4/12 71.1 (10/6). `business-research` has zero genuine routing errors; the real ones cluster where persona ownership overlaps.
+- **Baseline validity checked, not assumed.** The operator's internet dropped mid-session. Hermes' fallback chain is `deepseek-v4-flash` → `qwen3.5:35b` (local), and `qwen3.5` appears zero times in
+  Hermes logs across 13:00–15:30, so the fallback never fired and all 60 came from DeepSeek. The outage killed only the first `jdm-import` attempt, which produced no results and was re-run cleanly.
+- **Harness gap found:** result rows carry no model/provider field, so a silent fallback would contaminate a baseline undetectably. Recorded as an open item; stamp model+provider per row before the
+  next run.
+- **Operational lesson:** a foreground Bash tool timeout does not kill the process. The first `jdm-import` run kept running 58 minutes after its call "timed out" and competed with a later background
+  run on the same family. Long foreground work needs an explicit `pkill` after a timeout.
+
+## Contents
+
+- [20260903_0030](#20260903_0030)
+- [20260902_1240](#20260902_1240)
+- [20260902_1215](#20260902_1215)
+- [20260902_1140](#20260902_1140)
+- [20260902_1015](#20260902_1015)
+- [20260902_0950](#20260902_0950)
+- [20260902_0935](#20260902_0935)
+- [20260902_0300](#20260902_0300)
+- [20260902_0245](#20260902_0245)
+- [20260902_0130](#20260902_0130)
+- [20260902_0015](#20260902_0015)
+- [20260901_2130](#20260901_2130)
+- [20260901_2015](#20260901_2015)
+- [20260901_1900](#20260901_1900)
+- [20260901_1730](#20260901_1730)
+- [20260901_1600](#20260901_1600)
+- [20260901_1420](#20260901_1420)
+- [20260901_1315](#20260901_1315)
+- [20260901_1240](#20260901_1240)
+
+---
+
+## 20260901_1420
+
+### Added
+
+- `scripts/eval_model_adapter.py` — stdlib-only adapter bridging `scripts/evaluate_routing.py` to any OpenAI-compatible `/chat/completions` endpoint. The evaluator can only run shell commands, so an
+  HTTP model needed an adapter. Written as a **protocol** adapter rather than a provider one, so `ROUTING_EVALS.md`'s "no hard-coded provider syntax" rule still holds: local Ollama, a LiteLLM gateway,
+  and cloud APIs differ only by `EVAL_BASE_URL` / `EVAL_MODEL`. Strips `<think>` blocks, because reasoning models emit scratchpad containing draft JSON that the evaluator's extractor would otherwise
+  pick up.
+- `just` recipes: `routing-eval-ping` (connectivity check before spending a corpus run), `routing-eval-local`, `routing-eval-remote`, and `routing-eval-hermes` (routes through the Hermes runtime,
+  which already carries its own DeepSeek provider and key — `hermes -z` prints only the final response, matching the evaluator's contract).
+- `scripts/README.md` — cataloged the adapter and all five new recipes with safety labels.
+
+### Changed
+
+- `justfile` — replaced deprecated `env_var_or_default` with `env`, and documented the `$(cat)` quoting trap on the generic `routing-eval` recipe: because `{{command}}` interpolates inside double
+  quotes, a stdin-to-argument bridge is expanded by the recipe's shell instead of the evaluator's and the CLI receives an empty prompt. The purpose-built wrappers avoid it by single-quoting.
+
+### Notes
+
+- Generated by `skill-ai-it` in `refresh` mode; gate green at 357 checks. <!-- count:asat -->
+- **Behavioural finding, now recorded in `SCRATCHPAD.md`:** across three routes (Claude Code 96.7/80.0, Hermes-DeepSeek 80.0/80.0, local `deepseek-r1:14b` 60.0/60.0) no model set the routing gate
+  flags reliably, and the strongest still missed `critic_required` on an architecture decision. A failure surviving three very different models points at the gate definitions in `routing.toml` or the
+  orchestrator prompt, not at model capability.
+- Only 2 of the 60 cases have been run on any model; these are smoke results, not a baseline.
+
+## 20260901_1315
+
+### Added
+
+- Applied the routing-evals delta update (`/Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack-update`, 50 files verified). New: `ROUTING_EVALS.md`, `scripts/evaluate_routing.py`,
+  `tests/test_routing_behavior.py`, and the `routing-eval-check` / `routing-eval` / `routing-eval-smoke` tasks. `evals/routing-cases.toml` expanded from 6 representative cases to 60 real-workload
+  cases across six families (`networking-infrastructure`, `software-ai-engineering`, `jdm-import`, `atar-import`, `business-research`, `direct-adversarial`); `routing.toml` gained network,
+  infrastructure, import-evidence, import-economics, supply-chain, current-fact and regulatory-research intents and gates.
+- `scripts/README.md` — cataloged `scripts/evaluate_routing.py` with safety labels. The coverage check caught the new script and failed the gate until it was cataloged, which is the intended workflow.
+
+### Changed
+
+- **Interpreter resolution made explicit.** The `justfile` now defines `py := <working-cache venv>/bin/python` and every Python recipe addresses `{{py}}` by path and depends on `_require-venv`;
+  `.mise.toml` tasks carry the absolute venv path too, so the two entrypoints cannot resolve differently. Previously every recipe used `mise exec -- python`, which *did* resolve to the venv — but only
+  implicitly, via `_.python.venv` activation. That form hides the dependency at the call site and degrades silently to the host interpreter if activation stops applying; it also made the in-repo venv
+  violation invisible at every call site while it existed.
+- `scripts/check_governance.py` — `check_no_bare_interpreter` replaced by `check_interpreter_pinning`, which now also fails an implicit `mise exec -- python`. Proven to fail by deliberate breakage.
+  `ROUTING_EVALS.md` and `ARCHITECTURE.md` added to `SURFACES`.
+- Re-applied after the update overwrote them: the venv path in `.mise.toml`, the governance recipes and pointers in `justfile` and `README.md`, and the `skills/` path prefix in `SKILL_STANDARD.md` and
+  `REVISION_NOTES.md`.
+- `AI_NAVIGATION.md`, `context-map.yaml`, `ARCHITECTURE.md`, `repomix.config.json` — routed for the new routing-eval surface.
+
+### Notes
+
+- Generated by `skill-ai-it` in `refresh` mode.
+- The update package's base was the ORIGINAL `agent-stack.zip`, so it validated 10 files as diverged and refused to apply. Run with `--force` on explicit operator approval, taking the newer library
+  content and re-applying the governance deltas on top. Update backups: `.agent-stack-update-backups/20260901_130323/`; pre-update copies of the five files I had modified:
+  `/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/_pre-update-mine-20260901/`.
+- The lesson above was promoted into the canonical skill: `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it` gained the implicit-resolution rule in `SKILL.md` (runtime isolation
+  section, conventions, and quality checklist), in that skill's `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/templates/justfile` RUNTIME PINNING header, and as a new Tier 2
+  `check_interpreter_pinning` in its `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/templates/check_governance.py`, so every future bootstrapped project inherits the rule.
+  Both template paths are relative to the skill package directory named above, not to this repo.
+- Verified: `just preflight` green — interpreter resolving to the working-cache venv (3.14.5), contract validation PASS (52 capabilities; 15 personas; 37 skills), 334 governance checks PASS, routing
+  corpus PASS (60 cases), 37 unit tests PASS. The suite grew from 32 to 37 with the update's routing-behaviour tests. <!-- count:asat -->
+
+
+## 20260901_1240
+
+### Added
+
+- Initial governance scaffold: `AGENTS.md`, `CLAUDE.md`, `SCRATCHPAD.md`, `CHANGELOG.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `ARCHITECTURE.md`, `scripts/README.md`, `repomix.config.json`.
+- `scripts/check_governance.py` — stdlib-only governance coherence gate, wired into `just governance` and `just preflight`. Six project-specific Tier 3 checks beyond the universal set:
+  - `check_manifest_paths_exist` — every `manifest.yaml` capability path resolves.
+  - `check_manifest_covers_library` — nothing in `personas/` or `skills/` is missing from the manifest (the orphan direction).
+  - `check_package_skills_have_skill_md` — every `package` capability carries a `SKILL.md`, per `SKILL_STANDARD.md`.
+  - `check_library_counts` — prose counts of skills and capabilities match the manifest.
+  - `check_venv_outside_repo` — regression guard for the venv placement rule below.
+  - `check_no_bare_interpreter` — no `justfile` recipe calls a bare `python`/`node`.
+- `just` recipes: `governance`, `runtimes`, `preflight`, `context-pack`, `audit-scripts`.
+
+### Changed
+
+- `.mise.toml` — maintenance venv moved from `.venv` (inside the repo) to `/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/venv`. Required by the venv placement rule in
+  [../../AGENTS.md](../../AGENTS.md) rule (2026-04-23), which forbids a venv inside `skills_stuff/<skill>/`. The in-repo venv was hidden by `.gitignore`, so it was invisible to `git status` and to
+  every existing check; the new `check_venv_outside_repo` assertion is what makes the rule observable.
+- `SKILL_STANDARD.md`, `REVISION_NOTES.md` — corrected two references to `skills/skill-creator/scripts/quick_validate.py` that dropped the `skills/` path prefix and therefore resolved to nothing.
+- `README.md` — added a Governance pointers section and validation-command update.
+
+- Initialized `.archcore/` (settings only — no content documents written) and emitted `ARCHCORE_PROMOTION_CANDIDATES.md` listing 22 candidates across adr/rules/specs/guides/plans, plus a *never
+  promote* table. Run `/skill-ai-it promote` to authorize writing Archcore content.
+
+### Notes
+
+- Generated by `skill-ai-it` in `bootstrap` mode.
+- Verified at time of writing: 32 unit tests PASS; `scripts/validate_agent_stack.py` PASS (52 capabilities; 15 personas; 37 skills); `scripts/check_governance.py` PASS. <!-- count:asat -->
+- Audit findings A1 (non-atomic sync apply) and A2 (symlink escape in sync) remain open and are tracked in `SCRATCHPAD.md`. This run did not touch the sync transaction model.

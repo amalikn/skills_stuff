@@ -35,8 +35,18 @@ def git_output(args: list[str]) -> str:
 
 
 def canonical_install_root() -> Path:
-    """Find this path in the repository's primary checkout, not a linked worktree."""
-    checkout_root = Path(git_output(["rev-parse", "--show-toplevel"])).resolve()
+    """Find the primary Git checkout, or use this extracted archive as its own canonical root.
+
+    Git worktree protection is preserved when Git metadata exists. A distributed ZIP/tar
+    intentionally has no worktree graph, so the extracted Agent Stack directory is the only
+    available canonical source and is safe to use as such.
+    """
+    try:
+        checkout_root = Path(git_output(["rev-parse", "--show-toplevel"])).resolve()
+    except ValueError as exc:
+        if "not a git repository" in str(exc).lower():
+            return SCRIPT_ROOT.resolve()
+        raise
     relative = SCRIPT_ROOT.resolve().relative_to(checkout_root)
     primary_line = next((line for line in git_output(["worktree", "list", "--porcelain"]).splitlines() if line.startswith("worktree ")), None)
     if primary_line is None:

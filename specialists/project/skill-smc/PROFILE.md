@@ -6,7 +6,7 @@
 - Slug: skill-smc
 
 ## What an SMC Box Is
-An SMC (Small Cell Management) box is a managed Linux appliance deployed as a WiFi hotspot and network gateway. Hardware is either an **x86 PC** or an **ARM64 Raspberry Pi** (aarch64), running **Ubuntu 20.04+ (22.04 seen in production)**. All remote management access goes through **Teleport** via a persistent autossh reverse SSH tunnel. The port used on the Teleport server is `50000 + site_eclipse_siteid`.
+An SMC (Site Management Controller) box is a managed Linux appliance deployed as a WiFi hotspot and network gateway. Hardware is either an **x86 PC** or an **ARM64 Raspberry Pi** (aarch64), running **Ubuntu 20.04+ (22.04 seen in production)**. All remote management access goes through **Teleport** via a persistent autossh reverse SSH tunnel. The port used on the Teleport server is `50000 + site_eclipse_siteid`.
 
 ## Inventory Flavors
 The `ansible-wifi` repo manages 7 flavors:
@@ -20,6 +20,15 @@ The `ansible-wifi` repo manages 7 flavors:
 | wh | WH network |
 | nbn_accelerate | NBN Accelerate broadband |
 | nbn_wh | NBN WH |
+
+## Related Workspaces
+
+| Path | Role |
+|---|---|
+| `/Volumes/Data/_ansible/ansible-wifi` | Canonical SMC Ansible source: roles, inventory, topology, service deployment |
+| `/Volumes/Data/_ansible/ansible-malik` | Operator SMC playbooks, including URL-capture PCAP fetch/process |
+| `/Volumes/Data/_ai/_scripts/scripts_stuff/python/dns_query` | DNS query processing and reporting for SMC URL-capture PCAPs |
+| `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi` | Local-only SMC plans, reports, OPA artifacts, and investigation notes |
 
 ## Overlayroot
 All SMC boxes run with overlayroot enabled:

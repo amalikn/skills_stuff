@@ -1,44 +1,243 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 
+# Interpreters are addressed EXPLICITLY, never as a bare `python`.
+#
+# `mise exec -- python` does resolve to the venv below, but only implicitly — via the `_.python.venv` activation in .mise.toml. That is invisible at the call
+# site and it fails SILENTLY to the host interpreter if the activation ever stops applying. Going through {{py}} makes the dependency explicit and, with
+# _require-venv, makes a missing venv a loud error with a fix attached.
+#
+# The venv is rebuildable runtime state and lives in the skills-working-cache peer, never in this repo — see .mise.toml and
+# scripts/check_governance.py::check_venv_outside_repo.
+
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack"
+py := wc + "/venv/bin/python"
+
+# System interpreter, used ONLY as the governance gate's last resort (see `governance`).
+sys_py := "/usr/bin/python3"
+
+# List available tasks
+default:
+    @just --list
+
+# Fail early rather than falling back to the host interpreter.
+_require-venv:
+    @test -x "{{py}}" || { echo "venv missing at {{py}} — run: just bootstrap" >&2; exit 1; }
+
+# Create/refresh the isolated Agent Stack maintenance environment. Creates the venv, so it cannot depend on _require-venv.
+bootstrap:
+    mise run bootstrap
+    @"{{py}}" -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Report which runtime the recipes actually resolve to. Without this the pinning is unverifiable.
+runtimes:
+    @printf 'declared  {{py}}\n'
+    @printf 'resolved  '; test -x "{{py}}" && "{{py}}" -c "import sys; print(sys.version.split()[0], sys.executable)" || echo "MISSING — run: just bootstrap"
+
 # Show the current configured upstream state without mirror or network access.
-upstream-status:
-    mise exec -- python scripts/sync_auto_company.py --status
+upstream-status: _require-venv
+    "{{py}}" scripts/sync_auto_company.py --status
 
 # Compare the existing local mirror without fetching it.
-upstream-dry-run:
-    mise exec -- python scripts/sync_auto_company.py --dry-run
+upstream-dry-run: _require-venv
+    "{{py}}" scripts/sync_auto_company.py --dry-run
 
 # Fetch the official upstream into the disposable working cache and report proposed changes.
-upstream-fetch-dry-run:
-    mise exec -- python scripts/sync_auto_company.py --fetch --dry-run
+upstream-fetch-dry-run: _require-venv
+    "{{py}}" scripts/sync_auto_company.py --fetch --dry-run
 
 # Apply only safe additions and unchanged canonical replacements after explicit confirmation.
-upstream-apply confirm="":
+upstream-apply confirm="": _require-venv
     test "{{confirm}}" = "apply"
-    mise exec -- python scripts/sync_auto_company.py --fetch --apply
+    "{{py}}" scripts/sync_auto_company.py --fetch --apply
 
 # Record a reviewed local Auto Company source checkout as the current import baseline.
-record-current source:
-    mise exec -- python scripts/sync_auto_company.py --record-current --source "{{source}}"
+record-current source: _require-venv
+    "{{py}}" scripts/sync_auto_company.py --record-current --source "{{source}}"
+
+# Validate persona, skill, routing, and repository contracts.
+check: _require-venv
+    "{{py}}" scripts/validate_agent_stack.py
 
 # Run the standard-library sync tests.
-test:
-    mise exec -- python -m unittest discover -s tests -v
+test: _require-venv
+    "{{py}}" -m unittest discover -s tests -v
 
 # Report the symlink-only global installation state; skill-creator stays excluded by default.
-global-status:
-    mise exec -- python scripts/install_global.py --status
+global-status: _require-venv
+    "{{py}}" scripts/install_global.py --status
 
 # Preview the global installation without changing Claude, Codex, or compatible .agents directories.
-global-dry-run:
-    mise exec -- python scripts/install_global.py --dry-run
+global-dry-run: _require-venv
+    "{{py}}" scripts/install_global.py --dry-run
 
 # Install every non-conflicting Agent Stack entry globally through verified symlinks only.
-global-install confirm="":
+global-install confirm="": _require-venv
     test "{{confirm}}" = "install"
-    mise exec -- python scripts/install_global.py --install
+    "{{py}}" scripts/install_global.py --install
 
 # Remove only global links that still point exactly to Agent Stack sources.
-global-uninstall confirm="":
+global-uninstall confirm="": _require-venv
     test "{{confirm}}" = "uninstall"
-    mise exec -- python scripts/install_global.py --uninstall
+    "{{py}}" scripts/install_global.py --uninstall
+
+# Validate routing eval definitions without invoking any model.
+routing-eval-check: _require-venv
+    "{{py}}" scripts/evaluate_routing.py --validate-only
+
+# --- Evaluation run index ---------------------------------------------------------------------------------------------------------------------------------
+# Every metric in evals/runs.toml is DERIVED from the stored result rows; the authored fields (purpose, status, interpretation, supersedes, notes) survive
+# regeneration. Run `runs` after any evaluation; `runs-check` re-derives and fails on drift, and is part of preflight.
+runs: _require-venv
+    "{{py}}" scripts/index_runs.py --list
+
+runs-index: _require-venv
+    "{{py}}" scripts/index_runs.py
+
+runs-check: _require-venv
+    "{{py}}" scripts/index_runs.py --check
+
+# --- Runner qualification ---------------------------------------------------------------------------------------------------------------------------------
+# Disposable calls only — never a corpus case, so this can never spend evidence. Set `calls` to the corpus size you intend to run, because quota and session
+# limits are what this exists to surface, and they surface at sequence length. Qualification is PERISHABLE: it expires when the runner, its credentials, its
+# quota state or the harness changes.
+#
+#   QUAL_PROVIDER=anthropic QUAL_MODEL=claude-opus-5 QUAL_RUNNER=claude-code just qualify-runner 'claude -p' 24
+# --- Default evaluation arm -------------------------------------------------------------------------------------------------------------------------------
+# DeepSeek Flash via Hermes. Claude Code (`claude -p`) is RETIRED as a runner for this project as of 20260902: it is session-limited rather than token-metered,
+# and a full-size routing prompt is ~49,000 characters, so a sweep exhausts the session after roughly five calls. Measured that day — holdout 24 lost 5 of 24
+# cases to it (silently, before the harness reported stdout) and gate-only stage B1 lost 55 of 60 to it (named, once the harness did).
+arm_command  := env("ARM_COMMAND", 'hermes -z "$(cat)"')
+arm_provider := env("ARM_PROVIDER", "deepseek")
+arm_model    := env("ARM_MODEL", "deepseek-v4-flash")
+arm_runner   := env("ARM_RUNNER", "hermes")
+
+qual_provider := env("QUAL_PROVIDER", arm_provider)
+qual_model    := env("QUAL_MODEL", arm_model)
+qual_runner   := env("QUAL_RUNNER", arm_runner)
+qual_receipt  := env("QUAL_RECEIPT", "/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/routing-results/runner-qualification.json")
+
+# {{command}} is SINGLE-quoted here on purpose. Double quotes let the recipe's own shell expand a `$(cat)` inside the command — against empty stdin — so the
+# runner receives nothing and every call fails identically. Measured 20260902: 0/60 with double quotes, and the qualifier caught it before a corpus was spent,
+# which is the whole point of qualifying. A command containing a literal single quote must be passed some other way.
+qualify-runner command calls: _require-venv
+    "{{py}}" scripts/qualify_runner.py --command '{{command}}' --calls {{calls}} --timeout {{eval_timeout}} \
+      --provider "{{qual_provider}}" --model "{{qual_model}}" --runner "{{qual_runner}}" --output "{{qual_receipt}}"
+
+# Private guard: a corpus-spending recipe refuses unless a PASSING receipt exists that covers at least this corpus size.
+_require-qualified size cmd: _require-venv
+    @"{{py}}" scripts/check_qualification.py --receipt "{{qual_receipt}}" --size {{size}} --command "{{cmd}}"
+
+# Does this checkout still match the recorded evaluation freeze? Read-only, writes nothing, exits non-zero on drift and names the artifact that moved.
+#
+# DELIBERATELY NOT IN `preflight`. Those answer different questions: preflight says the repository is internally valid, freeze-check says it matches one
+# particular evaluation snapshot. A legitimate catalogue change must be able to pass the first while failing the second — wiring this into preflight would turn
+# a historical reference into a standing prohibition on ever changing the catalogue.
+#
+# Run it before any run whose numbers will be COMPARED to a recorded baseline or spent on a single-use holdout. Smoke runs do not need it.
+freeze-check: _require-venv
+    "{{py}}" scripts/check_freeze.py
+
+# Private guard for recipes that record a comparable run. Depend on it from a baseline or holdout recipe; never from a smoke recipe.
+_require-freeze: _require-venv
+    @"{{py}}" scripts/check_freeze.py --quiet || { echo "refusing to record a comparable run against a drifted checkout — see 'just freeze-check'" >&2; exit 1; }
+
+# --- The unseen holdout -----------------------------------------------------------------------------------------------------------------------------------
+# 24 cases authored blind to the development 60. SINGLE USE: once executed they are spent, and tuning anything against their failures converts them into
+# development cases. Guarded by _require-freeze because a holdout scored against a drifted checkout answers a question nobody asked.
+#
+# Labels are mandatory here, unlike the smoke recipes — an unlabelled holdout row cannot be compared to anything later, which defeats the point of running it:
+#
+#   HOLDOUT_PROVIDER=anthropic HOLDOUT_MODEL=claude-opus-5 HOLDOUT_RUNNER=claude-code \
+#     HOLDOUT_OUT="$AGENT_STACK_RESULTS/holdout24-claude-20260902.jsonl" just holdout 'claude -p'
+#
+# Same interpolation caveat as `routing-eval`: {{command}} is expanded inside double quotes here, so single-quote anything containing $(cat).
+holdout_provider := env("HOLDOUT_PROVIDER", "")
+holdout_model    := env("HOLDOUT_MODEL", "")
+holdout_runner   := env("HOLDOUT_RUNNER", "")
+holdout_out      := env("HOLDOUT_OUT", "")
+
+holdout command: _require-freeze (_require-qualified '24' command)
+    @test -n "{{holdout_provider}}" -a -n "{{holdout_model}}" -a -n "{{holdout_out}}" || \
+      { echo "set HOLDOUT_PROVIDER, HOLDOUT_MODEL and HOLDOUT_OUT — an unlabelled holdout row is not comparable to anything" >&2; exit 1; }
+    "{{py}}" scripts/evaluate_routing.py --cases evals/holdout-cases.toml --repair \
+      --timeout {{eval_timeout}} --provider "{{holdout_provider}}" --model "{{holdout_model}}" \
+      --runner "{{holdout_runner}}" --output "{{holdout_out}}" --command '{{command}}' 
+
+# Failure matrix for a completed routing-eval run: family x failure class, plus the root-cause split that says whether the next fix belongs in the orchestrator
+# or in routing.toml. Reads result JSONL only — it invokes no model and changes nothing. Override the default glob to analyse a different run:
+#
+#   ROUTING_RESULTS='.../routing-results/after-*.jsonl' just routing-matrix
+
+results := env("ROUTING_RESULTS", "")
+
+routing-matrix:
+    @if test -x "{{py}}"; then "{{py}}" scripts/analyze_routing_results.py {{ if results == "" { "" } else { quote(results) } }}; else "{{sys_py}}" scripts/analyze_routing_results.py {{ if results == "" { "" } else { quote(results) } }}; fi
+
+# Run behavioral routing against a local CLI command supplied by the operator.
+#
+# QUOTING: the evaluator sends the prompt on stdin, so a CLI that wants the prompt as an ARGUMENT needs a `$(cat)` bridge — and that must survive to the
+# evaluator's shell rather than being expanded by this recipe's shell. Because {{command}} is interpolated inside double quotes here, `just routing-eval 'foo -z
+# "$(cat)"'` expands $(cat) too early, against this recipe's empty stdin, and the CLI receives nothing. Use a purpose-built recipe (see routing-eval-hermes) or
+# single-quote defensively. This is why the wrappers below exist.
+routing-eval command: _require-venv
+    "{{py}}" scripts/evaluate_routing.py --command "{{command}}"
+
+# Behavioural routing through the Hermes agent runtime, which carries its own provider/model configuration and key. `hermes -z` is one-shot and prints ONLY the
+# final response text — no banner, spinner, or tool previews — which is exactly the evaluator's contract. Single quotes keep `$(cat)` intact for the evaluator's
+# shell. Model and provider come from ~/.hermes/config.yaml; override for a single run with:
+#
+#   just hermes_args='-m some-model --provider openrouter' routing-eval-hermes 10
+hermes_args := env("HERMES_ARGS", "")
+
+routing-eval-hermes limit="6": _require-venv
+    "{{py}}" scripts/evaluate_routing.py --limit {{limit}} --timeout {{eval_timeout}} \
+      --command 'hermes -z {{hermes_args}} "$(cat)"'
+
+# --- Behavioural routing through an OpenAI-compatible endpoint ----------------------------------------------------------------------------------------------
+# scripts/eval_model_adapter.py is a PROTOCOL adapter, not a provider one — Ollama, LiteLLM, DeepSeek, OpenRouter and Groq all speak /chat/completions, so the
+# vendor is configuration rather than code. The adapter inherits the variables below from the environment, so they are set once on the evaluator invocation.
+# Override any default per call:
+#
+#   just eval_model=deepseek-r1:32b routing-eval-local 10
+
+eval_base_url := env("EVAL_BASE_URL", "http://localhost:11434/v1")
+eval_model := env("EVAL_MODEL", "deepseek-r1:14b")
+eval_max_tokens := env("EVAL_MAX_TOKENS", "3000")
+eval_timeout := env("EVAL_TIMEOUT", "300")
+
+# Behavioural routing against a LOCAL model (default: Ollama). Free, no key, slower per case.
+routing-eval-local limit="6": _require-venv
+    EVAL_BASE_URL="{{eval_base_url}}" EVAL_MODEL="{{eval_model}}" EVAL_MAX_TOKENS="{{eval_max_tokens}}" \
+      "{{py}}" scripts/evaluate_routing.py --limit {{limit}} --timeout {{eval_timeout}} \
+      --command '"{{py}}" scripts/eval_model_adapter.py'
+
+# Behavioural routing against a GATEWAY or cloud endpoint. Set EVAL_BASE_URL, EVAL_MODEL and EVAL_API_KEY in the environment — never inline a key here, it would
+# land in shell history and in this file.
+routing-eval-remote limit="6": _require-venv
+    @test -n "${EVAL_API_KEY:-}" || echo "note: EVAL_API_KEY unset — fine for an unauthenticated local gateway" >&2
+    EVAL_BASE_URL="{{eval_base_url}}" EVAL_MODEL="{{eval_model}}" EVAL_MAX_TOKENS="{{eval_max_tokens}}" \
+      "{{py}}" scripts/evaluate_routing.py --limit {{limit}} --timeout {{eval_timeout}} \
+      --command '"{{py}}" scripts/eval_model_adapter.py'
+
+# Confirm the configured endpoint answers before spending a full corpus run on it.
+routing-eval-ping: _require-venv
+    @echo 'Reply with only this JSON: {"ok": true}' | \
+      EVAL_BASE_URL="{{eval_base_url}}" EVAL_MODEL="{{eval_model}}" EVAL_MAX_TOKENS="{{eval_max_tokens}}" \
+      "{{py}}" scripts/eval_model_adapter.py
+
+# Governance coherence gate. Prefers the venv, but falls back to the system interpreter on purpose: the gate is stdlib-only precisely so it still runs when
+# bootstrap has not, and a check that cannot run is indistinguishable from a check that passes.
+governance:
+    @if test -x "{{py}}"; then "{{py}}" scripts/check_governance.py; else echo "(venv absent — running gate on {{sys_py}})" >&2; "{{sys_py}}" scripts/check_governance.py; fi
+
+# Audit script/task inventory for drift against scripts/README.md.
+audit-scripts:
+    @echo "== just recipes =="; just --list
+    @echo; echo "== script files =="; find scripts -maxdepth 1 -type f -name '*.py' | sort
+
+# Rebuild the deterministic context pack for agents.
+context-pack:
+    @command -v repomix >/dev/null && repomix --config repomix.config.json || echo 'repomix not installed; skipped'
+
+# Everything safe and read-only, in one pass. Run before calling durable work complete.
+preflight: runtimes check governance routing-eval-check runs-check test

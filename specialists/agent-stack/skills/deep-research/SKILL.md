@@ -202,46 +202,18 @@ python scripts/validate_report.py --report [path]
 
 **CRITICAL: Generate COMPREHENSIVE, DETAILED markdown reports**
 
-**File Organization (CRITICAL - Clean Accessibility):**
+**File and State Policy (Agent Stack Adaptation):**
 
-**1. Create Organized Folder in Documents:**
-- ALWAYS create dedicated folder: `~/Documents/[TopicName]_Research_[YYYYMMDD]/`
-- Extract clean topic name from research question (remove special chars, use underscores/CamelCase)
-- Examples:
-  - "psilocybin research 2025" → `~/Documents/Psilocybin_Research_20251104/`
-  - "compare React vs Vue" → `~/Documents/React_vs_Vue_Research_20251104/`
-  - "AI safety trends" → `~/Documents/AI_Safety_Trends_Research_20251104/`
-- If folder exists, use it; if not, create it
-- This ensures clean organization and easy accessibility
+- Default to returning the research result in the current interaction. Create files only when the operator requests an artifact or the active project workflow requires one.
+- When files are requested, write inside the current project/workspace or another operator-approved destination. Do not default to `~/Documents` or `~/.claude/research_output`.
+- Do not create hidden tracking state, continuation state, or cross-project research memory unless the project explicitly owns that state.
+- Do not automatically open browsers, viewers, PDFs, or HTML.
+- Generate Markdown by default. Generate HTML/PDF only when requested or required by the task.
+- Use the report template when useful, but adapt structure to the operator's requested deliverable rather than forcing every format.
 
-**2. Save All Formats to Same Folder:**
-
-**Markdown (Primary Source):**
-- Save to: `[Documents folder]/research_report_[YYYYMMDD]_[topic_slug].md`
-- Also save copy to: `~/.claude/research_output/` (internal tracking)
-- Full detailed report with all findings
-
-**HTML (McKinsey Style - ALWAYS GENERATE):**
-- Save to: `[Documents folder]/research_report_[YYYYMMDD]_[topic_slug].html`
-- Use McKinsey template: [mckinsey_template](./templates/mckinsey_report_template.html)
-- Design principles: Sharp corners (NO border-radius), muted corporate colors (navy #003d5c, gray #f8f9fa), ultra-compact layout, info-first structure
-- Place critical metrics dashboard at top (extract 3-4 key quantitative findings)
-- Use data tables for dense information presentation
-- 14px base font, compact spacing, no decorative gradients or colors
-- **Attribution Gradients (2025):** Wrap each citation [N] in `<span class="citation">` with nested tooltip div showing source details
-- OPEN in browser automatically after generation
-
-**PDF (Professional Print - ALWAYS GENERATE):**
-- Save to: `[Documents folder]/research_report_[YYYYMMDD]_[topic_slug].pdf`
-- Use generating-pdf skill (via Task tool with general-purpose agent)
-- Professional formatting with headers, page numbers
-- OPEN in default PDF viewer after generation
-
-**3. File Naming Convention:**
-All files use same base name for easy matching:
-- `research_report_20251104_psilocybin_2025.md`
-- `research_report_20251104_psilocybin_2025.html`
-- `research_report_20251104_psilocybin_2025.pdf`
+**File Naming Convention (when artifacts are requested):**
+- Prefer `research_report_[YYYYMMDD]_[topic_slug].md` or the project's own naming convention.
+- Keep all generated formats together in the operator-approved project/output directory.
 
 **Length Requirements (UNLIMITED with Progressive Assembly):**
 - Quick mode: 2,000+ words (baseline quality threshold)
@@ -434,181 +406,19 @@ The FILE grows to 15,000 words, but no single tool call exceeds limits
    - Tool: Edit (append to file)
    - Progress: "Generated Methodology ✓"
 
-**Phase 8.3: Auto-Continuation Decision Point**
+**Phase 8.3: Bounded Continuation Policy (Agent Stack Adaptation)**
 
-After generating sections, check word count:
+Do not spawn continuation agents or create hidden continuation state automatically. If the requested report is too large for one pass:
 
-**If total output ≤18,000 words:** Complete normally
-- Generate Bibliography (all citations)
-- Generate Methodology
-- Verify complete report
-- Save copy to ~/.claude/research_output/
-- Done! ✓
+1. Complete the highest-value coherent portion first.
+2. Preserve citation numbering and an explicit section-completion checklist in the visible/project-owned artifact when one exists.
+3. Continue within the current execution only while the runtime permits and useful completion is still possible.
+4. If further continuation requires another run or operator decision, stop cleanly and report exactly what remains.
+5. Never create a daemon, background task, recursive agent chain, or `~/.claude/research_output/continuation_state_*` file.
 
-**If total output will exceed 18,000 words:** Auto-Continuation Protocol
+**Phase 8.4: Quality Across Large Reports**
 
-**Step 1: Save Continuation State**
-Create file: `~/.claude/research_output/continuation_state_[report_id].json`
-
-```json
-{
-  "version": "2.1.1",
-  "report_id": "[unique_id]",
-  "file_path": "[absolute_path_to_report.md]",
-  "mode": "[quick|standard|deep|ultradeep]",
-
-  "progress": {
-    "sections_completed": [list of section IDs done],
-    "total_planned_sections": [total count],
-    "word_count_so_far": [current word count],
-    "continuation_count": [which continuation this is, starts at 1]
-  },
-
-  "citations": {
-    "used": [1, 2, 3, ..., N],
-    "next_number": [N+1],
-    "bibliography_entries": [
-      "[1] Full citation entry",
-      "[2] Full citation entry",
-      ...
-    ]
-  },
-
-  "research_context": {
-    "research_question": "[original question]",
-    "key_themes": ["theme1", "theme2", "theme3"],
-    "main_findings_summary": [
-      "Finding 1: [100-word summary]",
-      "Finding 2: [100-word summary]",
-      ...
-    ],
-    "narrative_arc": "[Current position in story: beginning/middle/conclusion]"
-  },
-
-  "quality_metrics": {
-    "avg_words_per_finding": [calculated average],
-    "citation_density": [citations per 1000 words],
-    "prose_vs_bullets_ratio": [e.g., "85% prose"],
-    "writing_style": "technical-precise-data-driven"
-  },
-
-  "next_sections": [
-    {"id": N, "type": "finding", "title": "Finding X", "target_words": 1500},
-    {"id": N+1, "type": "synthesis", "title": "Synthesis", "target_words": 1000},
-    ...
-  ]
-}
-```
-
-**Step 2: Spawn Continuation Agent**
-
-Use Task tool with general-purpose agent:
-
-```
-Task(
-  subagent_type="general-purpose",
-  description="Continue deep-research report generation",
-  prompt="""
-CONTINUATION TASK: You are continuing an existing deep-research report.
-
-CRITICAL INSTRUCTIONS:
-1. Read continuation state file: ~/.claude/research_output/continuation_state_[report_id].json
-2. Read existing report to understand context: [file_path from state]
-3. Read LAST 3 completed sections to understand flow and style
-4. Load research context: themes, narrative arc, writing style from state
-5. Continue citation numbering from state.citations.next_number
-6. Maintain quality metrics from state (avg words, citation density, prose ratio)
-
-CONTEXT PRESERVATION:
-- Research question: [from state]
-- Key themes established: [from state]
-- Findings so far: [summaries from state]
-- Narrative position: [from state]
-- Writing style: [from state]
-
-YOUR TASK:
-Generate next batch of sections (stay under 18,000 words):
-[List next_sections from state]
-
-Use Write/Edit tools to append to existing file: [file_path]
-
-QUALITY GATES (verify before each section):
-- Words per section: Within ±20% of [avg_words_per_finding]
-- Citation density: Match [citation_density] ±0.5 per 1K words
-- Prose ratio: Maintain ≥80% prose (not bullets)
-- Theme alignment: Section ties to key_themes
-- Style consistency: Match [writing_style]
-
-After generating sections:
-- If more sections remain: Update state, spawn next continuation agent
-- If final sections: Generate complete bibliography, verify report, cleanup state file
-
-HANDOFF PROTOCOL (if spawning next agent):
-1. Update continuation_state.json with new progress
-2. Add new citations to state
-3. Add summaries of new findings to state
-4. Update quality metrics
-5. Spawn next agent with same instructions
-"""
-)
-```
-
-**Step 3: Report Continuation Status**
-Tell user:
-```
-📊 Report Generation: Part 1 Complete (N sections, X words)
-🔄 Auto-continuing via spawned agent...
-   Next batch: [section list]
-   Progress: [X%] complete
-```
-
-**Phase 8.4: Continuation Agent Quality Protocol**
-
-When continuation agent starts:
-
-**Context Loading (CRITICAL):**
-1. Read continuation_state.json → Load ALL context
-2. Read existing report file → Review last 3 sections
-3. Extract patterns:
-   - Sentence structure complexity
-   - Technical terminology used
-   - Citation placement patterns
-   - Paragraph transition style
-
-**Pre-Generation Checklist:**
-- [ ] Loaded research context (themes, question, narrative arc)
-- [ ] Reviewed previous sections for flow
-- [ ] Loaded citation numbering (start from N+1)
-- [ ] Loaded quality targets (words, density, style)
-- [ ] Understand where in narrative arc (beginning/middle/end)
-
-**Per-Section Generation:**
-1. Generate section content
-2. Quality checks:
-   - Word count: Within target ±20%
-   - Citation density: Matches established rate
-   - Prose ratio: ≥80% prose
-   - Theme connection: Ties to key_themes
-   - Style match: Consistent with quality_metrics.writing_style
-3. If ANY check fails: Regenerate section
-4. If passes: Write to file, update state
-
-**Handoff Decision:**
-- Calculate: Current word count + remaining sections × avg_words_per_section
-- If total < 18K: Generate all remaining sections + finish
-- If total > 18K: Generate partial batch, update state, spawn next agent
-
-**Final Agent Responsibilities:**
-- Generate final content sections
-- Generate COMPLETE bibliography using ALL citations from state.citations.bibliography_entries
-- Read entire assembled report
-- Run validation: python scripts/validate_report.py --report [path]
-- Delete continuation_state.json (cleanup)
-- Report complete to user with metrics
-
-**Anti-Fatigue Built-In:**
-Each agent generates manageable chunks (≤18K words), maintaining quality.
-Context preservation ensures coherence across continuation boundaries.
+For multi-part assembly, maintain the same research question, evidence standard, citation sequence, terminology, and narrative structure. Before adding a section, review the preceding relevant material and verify that new claims are sourced and non-duplicative.
 
 **Generate HTML (McKinsey Style)**
 1. Read McKinsey template from `./templates/mckinsey_report_template.html`
@@ -827,7 +637,6 @@ Every report must:
 **Do not inline these - reference only:**
 - [Complete Methodology](./reference/methodology.md) - 8-phase details
 - [Report Template](./templates/report_template.md) - Output structure
-- [README](./README.md) - Usage docs
 - [Quick Start](./QUICK_START.md) - Fast reference
 - [Competitive Analysis](./COMPETITIVE_ANALYSIS.md) - vs OpenAI/Gemini
 
@@ -854,3 +663,8 @@ Every report must:
 [Findings, synthesis, and report content generated here]
 
 **Note:** This section remains empty in the skill definition. Content populated during runtime only.
+
+## Runtime / Environment
+
+For Agent Stack-owned Python helper scripts, prefer the repository root `mise` + `.venv` environment (see `../../RUNTIME.md` from this skill directory). Do not assume globally installed Python packages and do not install global dependencies silently. If this skill has skill-local requirements, install them into an approved isolated environment and keep consumer-project dependencies under that project's control.
+

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -48,8 +49,15 @@ def read_json(path: Path) -> dict[str, Any]:
 
 
 def write_json(path: Path, value: dict[str, Any]) -> None:
-    """Write deterministic, reviewable JSON."""
-    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    """Write deterministic, reviewable JSON ATOMICALLY.
+
+    AUDIT FINDING A1, half one. `write_text` truncates before it writes, so an interruption mid-write leaves the state file empty or half-written — and this file
+    is the only record of what has already been imported. Write a sibling temp file and rename it: on POSIX `os.replace` is atomic, so a reader sees either the
+    old state or the new one and never a partial one.
+    """
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    os.replace(tmp, path)
 
 
 def run_git(args: list[str], cwd: Path | None = None) -> str:
@@ -96,10 +104,20 @@ def source_files(source_root: Path) -> dict[str, Path]:
         source_dir = source_root / source_prefix
         if not source_dir.is_dir():
             raise ValueError(f"Expected source directory is missing: {source_dir}")
+        resolved_root = source_dir.resolve()
         for path in sorted(source_dir.rglob("*")):
-            if path.is_file():
-                relative = path.relative_to(source_dir).as_posix()
-                files[f"{canonical_prefix}/{relative}"] = path
+            # AUDIT FINDING A2. `is_file()` FOLLOWS symlinks, and so does rglob into a symlinked directory, so a link supplied by the upstream repository could
+            # make this loop read and copy a file anywhere on the machine — copy2 copies content, not the link. Refuse symlinks outright rather than trying to
+            # decide which are benign, and additionally require that what we resolved is genuinely inside the source root, which catches a directory link that
+            # slipped through by another route.
+            if path.is_symlink():
+                raise ValueError(f"Refusing to sync through a symlink: {path}")
+            if not path.is_file():
+                continue
+            if not path.resolve().is_relative_to(resolved_root):
+                raise ValueError(f"Source file escapes the source root after resolution: {path}")
+            relative = path.relative_to(source_dir).as_posix()
+            files[f"{canonical_prefix}/{relative}"] = path
     return files
 
 
@@ -108,6 +126,11 @@ def canonical_path(relative: str) -> Path:
     candidate = PurePosixPath(relative)
     if candidate.is_absolute() or ".." in candidate.parts:
         raise ValueError(f"Unsafe tracked path: {relative}")
+    # The string check above cannot see a symlink already sitting at the destination: writing through it would land outside the stack while every path component
+    # still looks ordinary. Check the resolved parent, since the leaf itself may legitimately not exist yet.
+    resolved_parent = (SCRIPT_ROOT / candidate).parent
+    if resolved_parent.exists() and not resolved_parent.resolve().is_relative_to(SCRIPT_ROOT.resolve()):
+        raise ValueError(f"Tracked path resolves outside the canonical stack root: {relative}")
     return SCRIPT_ROOT / candidate
 
 
@@ -179,14 +202,31 @@ def classify(
 
 
 def apply_safe_changes(source: dict[str, Path], changes: list[dict[str, str]]) -> list[str]:
-    """Copy only explicitly safe upstream files into the canonical source tree."""
+    """Copy only explicitly safe upstream files into the canonical source tree, staging first so a failure cannot leave a half-applied tree.
+
+    AUDIT FINDING A1, half two. The previous version copied straight into the tree one file at a time, so a failure on file 7 of 12 left six files updated, six
+    stale, and the state file describing neither — and recovery from that state forces `manual_merge` on files that were never in conflict. Stage every file
+    beside its destination first, then promote them all with `os.replace`. Promotion is a rename per file rather than one transaction, which POSIX cannot give us
+    across a directory tree, but it removes the slow part (reading and writing content) from the window where a failure does damage: what remains is a sequence
+    of renames, each atomic, on a set already known to be complete and readable.
+    """
+    selected = [c for c in changes if c["classification"] in {"safe_add", "safe_replace"}]
+    staged: list[tuple[Path, Path]] = []
+    try:
+        for change in selected:
+            target = canonical_path(change["path"])
+            target.parent.mkdir(parents=True, exist_ok=True)
+            stage = target.with_name(target.name + ".sync-staged")
+            shutil.copy2(source[change["path"]], stage)
+            staged.append((stage, target))
+    except Exception:
+        # Nothing has been promoted yet, so the tree is untouched; remove the partial staging and let the caller see the original error.
+        for stage, _ in staged:
+            stage.unlink(missing_ok=True)
+        raise
     applied: list[str] = []
-    for change in changes:
-        if change["classification"] not in {"safe_add", "safe_replace"}:
-            continue
-        target = canonical_path(change["path"])
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source[change["path"]], target)
+    for (stage, target), change in zip(staged, selected):
+        os.replace(stage, target)
         applied.append(change["path"])
     return applied
 

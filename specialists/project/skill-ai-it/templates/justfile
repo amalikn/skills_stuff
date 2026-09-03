@@ -1,0 +1,107 @@
+# just task catalog for this project.
+# Purpose:
+# - expose safe, documented project tasks to humans and AI agents
+# - avoid agents running arbitrary scripts without context
+# - keep runnable entrypoints simple and readable
+#
+# List tasks:
+#   just --list
+#
+# Run task:
+#   just <task>
+#
+# Safety:
+# - Prefer safe/read-only tasks by default.
+# - Mark destructive tasks clearly and require review.
+# - Keep detailed inputs/outputs/safety notes in scripts/README.md.
+#
+# RUNTIME PINNING — do not replace {{py}} / {{nd}} with bare `python3` or `node`.
+# A bare interpreter resolves to whatever the host has on PATH, which is NOT what .mise.toml pins. That works until the
+# host changes underneath it and then fails in a way that reads like a code bug. Recipes go through the variables below
+# so no recipe depends on the ambient interpreter, and `just runtimes` makes the resolved versions visible.
+#
+# The venv lives in the WORKING-CACHE PEER, never in this repo — a repo carries source, not rebuildable runtime.
+# Path mapping (see the global runtime-isolation policy):
+#   project_stuff/<group>/<project>  ->  project-working-cache/<group>/<project>
+#   mcp_stuff/<project>              ->  mcp-working-cache/<project>
+#   skills_stuff/<project>           ->  skills-working-cache/<project>
+#   tools_stuff/<project>            ->  tools-working-cache/<project>
+#
+# `uv run` is deliberately NOT the primary path: it resolves its own interpreter independently of mise, which is the
+# same class of drift this pinning removes. Use it only where a recipe needs throwaway third-party packages.
+
+set dotenv-load := false
+
+# Replace {{WORKING_CACHE}} with this project's working-cache peer when generating from this template.
+wc := "{{WORKING_CACHE}}"
+py := wc + "/.venv/bin/python"
+nd := "mise exec -- node"
+
+# Build the working-cache venv from the mise-pinned runtimes. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @test -f requirements.txt && {{py}} -m pip install --quiet --upgrade pip -r requirements.txt || true
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Fail early and legibly rather than falling back to the host interpreter
+_require-venv:
+    @test -x "{{py}}" || { echo "venv missing at {{py}} — run: just bootstrap" >&2; exit 1; }
+
+# Report which runtimes the recipes will actually use
+runtimes:
+    @printf 'python  '; {{py}} -c "import sys; print(sys.version.split()[0], sys.executable)" 2>/dev/null || echo "MISSING — run: just bootstrap"
+    @printf 'node    '; {{nd}} --version 2>/dev/null || echo "MISSING — pin node in .mise.toml"
+
+# List available tasks and show script inventory when present
+inventory:
+    @just --list
+    @test -f scripts/README.md && sed -n '1,220p' scripts/README.md || true
+
+# Audit script/task inventory for obvious drift
+audit-scripts:
+    @echo "== just recipes =="
+    @just --list || true
+    @echo
+    @echo "== script files =="
+    @find scripts -maxdepth 2 -type f 2>/dev/null | sort || true
+    @echo
+    @echo "== uncataloged script candidates =="
+    @if [ -d scripts ] && [ -f scripts/README.md ]; then \
+      find scripts -maxdepth 2 -type f | sort | while read -r f; do \
+        grep -Fq "$f" scripts/README.md || echo "$f"; \
+      done; \
+    fi
+
+# Must exit 0 before durable work is called complete. Fix the project when it fails, never the check.
+# Governance coherence checks — assert this project's governance claims against reality
+check: _require-venv
+    @{{py}} scripts/check_governance.py
+
+# Run safe local preflight checks
+preflight: runtimes audit-scripts check lint-md
+
+# Lint Markdown files when markdownlint-cli2 is available
+lint-md:
+    @command -v markdownlint-cli2 >/dev/null && markdownlint-cli2 '**/*.md' || echo 'markdownlint-cli2 not installed; skipped'
+
+# The navigation-control scripts live in the skill package, NOT in this project. Override on the
+# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav-validate
+skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
+
+# Upgrade navigation control layer (dry-run preview)
+nav-upgrade-dry-run: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
+
+# Upgrade navigation control layer (apply changes) — review the dry-run first
+nav-upgrade: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
+
+# Validate navigation control layer
+nav-validate: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
+
+# Check only expected files changed after upgrade (requires a git repo)
+nav-check-diff: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .

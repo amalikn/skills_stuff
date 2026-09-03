@@ -355,3 +355,8 @@ After testing the skill, users may request improvements. Often this happens righ
 2. Notice struggles or inefficiencies
 3. Identify how SKILL.md or bundled resources should be updated
 4. Implement changes and test again
+
+## Runtime / Environment
+
+For Agent Stack-owned Python helper scripts, prefer the repository root `mise` + `.venv` environment (see `../../RUNTIME.md` from this skill directory). Do not assume globally installed Python packages and do not install global dependencies silently. If this skill has skill-local requirements, install them into an approved isolated environment and keep consumer-project dependencies under that project's control.
+
