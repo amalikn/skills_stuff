@@ -102,6 +102,16 @@ def report(args: argparse.Namespace) -> int:
 
     print(f"field entries: {len(rows)}   projects: {', '.join(sorted({r.get('project', '?') for r in rows}))}\n")
 
+    # Coverage first, because every figure below is computed over whatever subset happens to carry the field. An entry written against an older template, or by
+    # an agent that skipped a flag, is silently absent from its statistic — and a rate over 2 of 9 entries reads exactly like a rate over 9 unless this is shown.
+    FIELDS = ("route_mode", "owner", "personas", "skills", "gates", "closure_changed", "dispatched", "tokens_estimated", "followed", "overrode", "helped")
+    cov = {f: sum(1 for r in rows if r.get(f) not in (None, "", [])) for f in FIELDS}
+    thin = [f for f, n in cov.items() if n == 0]
+    print("field coverage: " + "  ".join(f"{f}={n}/{len(rows)}" for f, n in cov.items() if n))
+    if thin:
+        print(f"  NEVER RECORDED: {', '.join(thin)} — every statistic below that needs one of these is absent, not zero")
+    print()
+
     for field, values in (("followed", FOLLOWED), ("helped", HELPED)):
         counts = Counter(r.get(field) for r in rows if r.get(field))
         n = sum(counts.values())
