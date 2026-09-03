@@ -184,4 +184,33 @@ class RoutingBehaviorTests(unittest.TestCase):
                 self.assertGreaterEqual(got, need,
                                         f"{case['id']} asserts {gate['flag']} but cannot provide {gate['required_capability']}")
 
+    # --- Field log: the override statistic -----------------------------------------------------------------------------------------------------------
+
+    def test_field_log_does_not_count_a_stated_non_override(self):
+        """A recorder asked "what did you override?" answers "nothing" in prose rather than omitting the flag.
+
+        Counting that as an override corrupts the one statistic the field log exists to produce, silently and in the flattering direction — every clean route
+        would inflate the override rate. Observed on the first real entry ever logged: `--overrode "none - direct route, no gates true (read-only)"`.
+        """
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("field_log", ROOT / "scripts" / "field_log.py")
+        fl = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = fl
+        spec.loader.exec_module(fl)
+        for value in ("none - direct route, no gates true (read-only)", "N/A", "nothing to change", "-", "no override", "no-override-needed", "", "   ", None):
+            self.assertFalse(fl.is_override(value), f"{value!r} should not count as an override")
+
+    def test_field_log_counts_a_real_departure_even_when_it_starts_with_a_negation(self):
+        """A leading "none" must not hide a stated change — a prefix rule alone gets this wrong in both directions."""
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("field_log", ROOT / "scripts" / "field_log.py")
+        fl = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = fl
+        spec.loader.exec_module(fl)
+        for value in ("none of the skills fit so I swapped owner to devops-hightower",
+                      "Ran the CTO review inline instead of dispatching cto-vogels",
+                      "swapped owner to devops-hightower",
+                      "Corrects the prior entry - critic gate was dispatched after all"):
+            self.assertTrue(fl.is_override(value), f"{value!r} should count as an override")
+
 if __name__ == "__main__": unittest.main()

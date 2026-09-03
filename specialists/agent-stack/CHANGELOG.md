@@ -1,5 +1,27 @@
 # Changelog — Agent Stack
 
+## 20260903_1400
+
+### Fixed — the field log's override statistic, caught by its own first three entries
+
+- **A stated non-override was being counted as an override.** The first real entry ever logged carried `--overrode "none - direct route, no gates true (read-only)"` — a description of *not*
+  overriding. The report read it as a change and showed **overridden on 3/3 uses**; corrected, it reads 2/3. The failure direction matters: every clean route would have inflated the override rate, so
+  the log's one statistic degraded silently and flatteringly as it grew.
+- **Fixed on both sides.** `skill-agent-stack` Step 10 now says to OMIT `--overrode` when the route was followed and never to pass `"none"`; `field_log.py` normalises such values on read as well as
+  refusing them on write, because the file already contains one and future recorders include agents that will not have read the skill.
+- **A prefix rule alone gets this wrong in both directions**, which is why change-verbs are checked first: *"none of the skills fit so I swapped owner to devops-hightower"* is a real override that
+  starts with a negation, and hiding it would be the worse error — understating the defect signal rather than inflating it.
+- **Two regression tests, negative-tested** across 15 boundary cases including `-`, `n/a`, `no-override-needed` and the two "none"-prefixed opposites. Two pattern defects were caught by running them
+  rather than by reading the regex: `-{1,3}\b` never matched a bare `-`, and `(?![\w-])` blocked its own match on `no-override-needed`. Suite 55 → 57.
+
+### Notes
+
+- **The three real entries are the first field evidence this project has.** One direct read-only route followed clean; one where the agent ran the CTO and critic passes inline rather than dispatching
+  personas, judging dispatch cost above benefit; and one **correcting that entry** — the critic gate was dispatched after all, and found three defects the inline pass missed while overturning one of
+  its findings. The agent logged its own correction rather than leaving the flattering record standing, which is exactly what Step 10 asks for and the only reason the log is worth anything. n=3, one
+  project, self-reported: an anecdote, and the report says so in its own output.
+- Freeze re-recorded 20260903_1400 (`orchestrator_sha` → `ef66ffacb2918e6d`). 711 governance checks, 57 tests, freeze PASS.
+
 ## 20260903_0330
 
 ### Changed — the `orchestrator` skill package is now `skill-agent-stack`
@@ -587,6 +609,7 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260903_1400](#20260903_1400)
 - [20260903_0330](#20260903_0330)
 - [20260903_0230](#20260903_0230)
 - [20260903_0200](#20260903_0200)

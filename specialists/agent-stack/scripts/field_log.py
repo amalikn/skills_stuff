@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from collections import Counter
 from datetime import datetime, timezone
@@ -29,6 +30,32 @@ LOG = ROOT / "evals" / "field-log.jsonl"
 HELPED = ("better", "neutral", "worse")  # operator-supplied only
 FOLLOWED = ("full", "partial", "no")
 
+# A recorder asked "what did you override?" tends to answer "nothing" in prose rather than leave the flag off. Observed on the first real entry:
+# `--overrode "none - direct route, no gates true (read-only)"`. Counting that as an override corrupts the ONE statistic this log exists to produce, and it does
+# so silently and in the flattering direction — every clean route inflating the override rate. Normalised on read as well as refused on write, because the log
+# already contains such an entry and future recorders include agents that will not have read this file.
+NOT_AN_OVERRIDE = re.compile(r"^\s*(none|n/?a|nothing|no[\s_-]override|did not override|-{1,3})(?!\w)", re.I)
+
+# Checked FIRST, because a prefix rule alone gets it wrong in both directions. "none - direct route, no gates true" is not an override; "none of the skills fit
+# so I swapped owner to devops-hightower" is one, and both start with "none". A stated change beats a leading negation.
+CHANGED = re.compile(r"\b(swap\w*|replac\w*|instead|dropp?e?d|added|skipp?e?d|chose|switch\w*|substitut\w*)\b", re.I)
+
+
+def is_override(value: str | None) -> bool:
+    """True only when the text describes a real departure from the route.
+
+    Exists because a recorder asked "what did you override?" answers "nothing" in prose rather than leaving the flag off. Observed on the first real entry:
+    `--overrode "none - direct route, no gates true (read-only)"`. Counting that as an override corrupts the ONE statistic this log exists to produce, silently
+    and in the flattering direction, since every clean route would inflate the override rate.
+
+    Normalised on read as well as refused on write: the file already contains such an entry, and future recorders include agents that will not have read this.
+    """
+    if not value or not value.strip():
+        return False
+    if CHANGED.search(value):
+        return True
+    return not NOT_AN_OVERRIDE.match(value)
+
 
 def add(args: argparse.Namespace) -> int:
     entry = {
@@ -39,7 +66,8 @@ def add(args: argparse.Namespace) -> int:
         "personas": args.persona,
         "skills": args.skill,
         "followed": args.followed,
-        "overrode": args.overrode,
+        # Stored only when it describes a real departure; "none" and its variants are dropped so the field means one thing.
+        "overrode": args.overrode if is_override(args.overrode) else None,
         "helped": args.helped,
         "gates_useful": args.gates_useful,
         "note": args.note,
@@ -77,7 +105,7 @@ def report(args: argparse.Namespace) -> int:
         print(f"{'gates':9} " + "  ".join(f"{k}={v}" for k, v in sorted(gates.items())))
 
     # The signal worth having. An override repeated is a defect; an override once is a preference.
-    overrides = [r for r in rows if r.get("overrode")]
+    overrides = [r for r in rows if is_override(r.get("overrode"))]
     print(f"\noverridden on {len(overrides)}/{len(rows)} uses")
     if overrides:
         by_owner = Counter(r.get("owner") for r in overrides if r.get("owner"))
@@ -105,7 +133,9 @@ def main() -> int:
     a.add_argument("--persona", action="append", default=[])
     a.add_argument("--skill", action="append", default=[])
     a.add_argument("--followed", choices=FOLLOWED, required=True)
-    a.add_argument("--overrode", help="WHAT you changed and why. The most valuable field here — a repeated override is a defect.")
+    a.add_argument("--overrode",
+                   help="WHAT you changed about the route and why. The most valuable field here — a repeated override is a defect. OMIT IT ENTIRELY if you "
+                        "followed the route; do not pass \"none\", which would count as an override and inflate the very statistic this log exists to produce.")
     a.add_argument("--helped", choices=HELPED,
                    help="OPERATOR judgement, and optional. An agent must not fill this in about its own work: self-assessed helpfulness is the one field "
                         "where the recorder has an interest in the answer. Absent is the honest default.")

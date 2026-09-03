@@ -117,6 +117,10 @@ cover 53 of 60 silently. Rows whose case id is no longer in the corpus are liste
 `--followed` and `--overrode` are filled in by whoever did the work, because only they know what was actually used. **`--helped` is operator-only and an agent must never fill it in about its own
 work** — self-assessed helpfulness is the one field where the recorder has an interest in the answer, so absent is the honest default and the report says so rather than showing a blank column.
 
+**Omit `--overrode` when the route was followed.** A prose "none" or "nothing to change" would count as an override and inflate the one statistic the log exists to produce — silently, and in the
+flattering direction, since every clean route would add to it. Observed on the first real entry ever logged. The tool normalises such values on read as well as refusing them on write, because the file
+already contains one and future recorders include agents.
+
 **The field that matters is `overrode`** — what you CHANGED about the route and why. A route you followed only tells you that you did not disagree. A route repeatedly overridden the same way is a
 routing defect; overridden once, it is a preference. The report flags any owner overridden three or more times.
 

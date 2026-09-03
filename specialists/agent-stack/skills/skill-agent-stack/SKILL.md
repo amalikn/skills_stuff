@@ -305,6 +305,11 @@ instrument for it, and only if it is written down at the time.
 
 - **`--followed` and `--overrode` are yours to fill in**, because you are the one who did the work and you know what you actually used. Record the route you
   DEPARTED from as readily as one you kept — a departure is the valuable entry, and hiding it makes the log worthless.
+- **If you followed the route, OMIT `--overrode` entirely. Do not pass `"none"`, `"n/a"` or a sentence explaining that you changed nothing.** The override rate
+  is the one statistic this log exists to produce, and a prose "nothing to change" counts as a change — inflating it silently, and in the flattering direction,
+  because every clean route would add to it. Observed on the first real entry ever logged.
+- **Correcting an earlier entry is itself a valid entry.** Log the correction rather than leaving a flattering record standing; the log is worth something only
+  because it contains the times the route was not followed.
 - **`--helped` is the operator's, and you must not fill it in about your own work.** Self-assessed helpfulness is the one field where the recorder has an
   interest in the answer. Leave it absent; the report says so plainly rather than pretending the column is missing data.
 - **Log the route you gave, not the route you wish you had given.** If you named `cto-vogels` and then used `devops-hightower`, that is the entry.

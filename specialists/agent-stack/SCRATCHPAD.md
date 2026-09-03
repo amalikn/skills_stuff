@@ -222,6 +222,13 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ## Session history (summaries — full detail in memory-keeper)
 
+- **20260903 — entry-point skill renamed to `skill-agent-stack`.** Identity changed in the four places that define a package (directory, frontmatter name, `routing.toml` id/default_entry, manifest)
+  plus paths and live installs. The `orchestrator-follett` persona and the `orchestrator_sha` stamp were deliberately left alone — the stamp appears in 40 indexed runs and renaming it would break
+  their comparability for a cosmetic change.
+- **The rename exposed a false-confidence check and it was fixed rather than worked around.** Three broken symlinks survived while `global-status` reported "123 correct", because a status built only
+  from declared links cannot see a link nothing declares. `scripts/install_global.py` gained orphan detection — and its first implementation iterated a dict's keys, scanned a directory that does not
+  exist, and reported nothing until the negative test caught it.
+
 - **20260902/03 — holdout spent, gate collapse localised, pivot to field use.** Fixed the scorer's one-sided gate penalty and made coverage and the freeze checkable BEFORE spending evidence; authored
   24 blind holdout cases and spent them (16/19, all three failures ownership); found gate over-assertion is system-wide since gates were defined, then localised it with A/B1/B2 — isolated judgement is
   a real classifier, integrated it is a constant, and the collapse costs routing nothing because production makes only the harmless error.
@@ -343,6 +350,10 @@ Do **not** tune against the frozen 60. Add a case only to cover a new routing co
 ---
 
 ## Memory pointers (navigation only — content is above)
+
+**Added 20260903 (rename pass)**, memory-keeper channel `agent-stack`: `agent-stack.skill-rename-and-orphan-check` — the `orchestrator` → `skill-agent-stack` rename, the three things deliberately not
+renamed and why, and the false-confidence status check it exposed. Checkpoints: memory-keeper `slurp-20260903-skill-rename` (33bf03af) · mcp-project-context `slurp-20260903-skill-rename` (999bcf1a),
+with an addendum note on the same channel. **Every memory entry written before 20260903 calls the entry-point package `orchestrator`; it is now `skill-agent-stack`.**
 
 **Added 20260903**, memory-keeper channel `agent-stack`: `agent-stack.asymmetric-gate-scoring` (rule 0011, coverage reporting, closure_sha, the freeze made checkable) · `agent-stack.holdout24-spent`
 (blind authoring, 16/19, the three ownership failures, status drift caught) · `agent-stack.gate-collapse-finding` (system-wide over-assertion, A/B1/B2, the conditional breakdown that reverses the
