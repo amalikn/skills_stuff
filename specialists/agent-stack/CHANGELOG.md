@@ -1,5 +1,35 @@
 # Changelog — Agent Stack
 
+## 20260903_1830
+
+### Added — two precedence rules, from holdout evidence
+
+- **`incident-explanation-vs-correction`** and **`policy-as-artefact`**, closing the two ownership boundaries the spent holdout exposed. In both, `hnet-radius-postmortem` and
+  `hnet-firewall-consolidation`, the model **cited the existing rule and reached the other answer with a stated rationale** — the signature of an underdetermined rule rather than a bad route.
+  Evidenced by **unseen** data, which is what makes fixing them legitimate under [spec 0008](.archcore/specs/0008-replay-corpus-contract.md) rather than corpus-fitting. Precedence rules 4 → 6.
+
+### Added — the synthesis is written into the project
+
+- **Step 9.5.** The most valuable thing the stack produces was evaporating unless the consuming project happened to have a convention of its own. Established by checking: `skill-agent-stack` had no
+  report-persistence instruction at all, and the atar assessment of 20260903_1619 exists because the ATAR project defines a docs/reports directory, not because this skill asked for it.
+- **The project decides where, not the skill**: follow an existing reports convention exactly; otherwise `docs/` and say so; never invent a parallel structure beside one that exists. Named
+  `<slug>-YYYYMMDD_hhmm.md` per the operator's global convention.
+- **Only when it will be referred back to** — a GO/NO-GO, preserved disagreement, evidence someone will re-check, or reasoning a later session would otherwise redo. Not for narrow work; a document per
+  task is noise.
+- **The report records its own route.** That connects a decision to the reasoning path that produced it, and is the only artefact that does.
+
+### Notes — what "fix it all" could and could not honestly mean
+
+Full classification of all 27 production-shape failures: [docs/routing-failure-classification-20260903_1800.md](docs/routing-failure-classification-20260903_1800.md).
+
+- **20 of 27 were already fixed** by wiring closure in earlier the same day — `gate_unsatisfied` 18 plus `strength_insufficient` 2 are exactly what it repairs.
+- **10 corpus cases contradict [rule 0006](.archcore/rules/0006-required-personas-is-ownership.md)**, found by testing the whole corpus rather than the failures — and **3 of the 10 currently pass**,
+  which is the evidence it was found by rule and not by score. The cause is structural: the corpus has no `tags` field, so tag-driven escalation is encoded in `required_personas` instead. **Not
+  changed** — it edits a frozen corpus and rule 0006 forbids deriving tags from `required_personas`, which is the tempting shortcut. This is the decision left open on 2026-09-02.
+- **Skill under-selection is a router limitation, not a discoverability defect** — verified: `financial-unit-economics` already declares the `unit-economics` and `landed-cost` intents, `devops`
+  declares `cicd`. Tuning the catalogue or corpus until these pass is corpus-fitting, which [spec 0005](.archcore/specs/0005-eval-corpus-contract.md) exists to forbid. **Not done.**
+- Freeze re-recorded at 20260903_1830.
+
 ## 20260903_1600
 
 ### Changed — upstream sync retired; Agent Stack is its own project
@@ -26,15 +56,15 @@
 
 - **26,063 → 20,276 chars (~6,479 → ~5,069 tokens), paid on every single invocation.** The skill violated its own `SKILL_STANDARD.md`, which says keep `SKILL.md` procedural and put detailed knowledge
   in `references/`.
-- **Rationale moved, not deleted**, into three reference files each carrying its own trigger condition so an agent loads it only when relevant: `skills/skill-agent-stack/references/gate-model.md` (why gates are shaped this
-  way, the adjacent-capability trap, why closure is code), `skills/skill-agent-stack/references/domain-profiles.md` (networking and physical-product heuristics — read when the task is in that domain),
-  `skills/skill-agent-stack/references/field-log.md` (why the log exists and how to read it).
+- **Rationale moved, not deleted**, into three reference files each carrying its own trigger condition so an agent loads it only when relevant: `skills/skill-agent-stack/references/gate-model.md` (why
+  gates are shaped this way, the adjacent-capability trap, why closure is code), `skills/skill-agent-stack/references/domain-profiles.md` (networking and physical-product heuristics — read when the
+  task is in that domain), `skills/skill-agent-stack/references/field-log.md` (why the log exists and how to read it).
 - **The `eval-routing-contract` block is byte-identical** — `routing_contract()` still hashes to `d4a8b8cb7c58b945`, verified before and after, so every prior evaluation stays comparable.
 
 ### Notes
 
-- **The closure wiring added earlier today is running in live use.** Field entry 4, written by another session at 05:32Z, records `scripts/close_route.py` being run, escalating `critic-munger` and `qa-bach`
-  on production-change and high-consequence tags, and the agent honestly logging a partial follow because it held both undispatched for a design-only turn.
+- **The closure wiring added earlier today is running in live use.** Field entry 4, written by another session at 05:32Z, records `scripts/close_route.py` being run, escalating `critic-munger` and
+  `qa-bach` on production-change and high-consequence tags, and the agent honestly logging a partial follow because it held both undispatched for a design-only turn.
 - Freeze re-recorded at 20260903_1600 (`orchestrator_sha` → `1369bf235408a4d1`).
 
 ## 20260903_1400
@@ -661,6 +691,7 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260903_1830](#20260903_1830)
 - [20260903_1600](#20260903_1600)
 - [20260903_1400](#20260903_1400)
 - [20260903_0330](#20260903_0330)

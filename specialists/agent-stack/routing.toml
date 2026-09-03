@@ -758,6 +758,31 @@ notes = "NOT a judgement. Computed from the selected skills' `execution` field; 
 
 # Resolves the `mixed`-mode family (frontend-workflow, jdm-portal-build), where the router kept handing the decision to Full-Stack because implementation was
 # the larger share of the WORK. Share of work is not the discriminator: who is accountable for the requirements is.
+# Added 20260903 from HOLDOUT evidence, not from the development corpus. `hnet-radius-postmortem` failed because nothing here covered it: the model chose the
+# platform specialist who explains the behaviour, the case expected the operator who prevents it happening again. Both readings were defensible, which is what
+# an uncovered boundary looks like.
+[[precedence]]
+id = "incident-explanation-vs-correction"
+applies_when = "post-incident work on a system that has already failed"
+discriminator = "is the deliverable an explanation of what happened, or the change that stops it recurring?"
+owner_a = "cto-vogels"
+owner_a_when = "the output is an account of protocol, platform or design behaviour — why the system did what it did"
+owner_b = "devops-hightower"
+owner_b_when = "the output is a corrective action: a config change, a runbook edit, an alert, a rollback path"
+notes = "Most post-incident asks are BOTH, and then the deliverable decides: a report that ends in changes is DevOps-owned with CTO explaining; a report that ends in understanding is CTO-owned. `hnet-radius-postmortem` supplied the syslog bundle, the config diff and the release notes and asked for the analysis AND the corrective actions — the corrective action is the deliverable, so DevOps owns it."
+
+# Added 20260903 from HOLDOUT evidence. `hnet-firewall-consolidation` failed because artefact-vs-domain-review reads both ways when the artefact IS policy: the
+# model cited that rule and reached the opposite answer with a stated rationale, which is the signature of an underdetermined rule rather than a bad route.
+[[precedence]]
+id = "policy-as-artefact"
+applies_when = "the artefact under review or construction is itself a security or access policy — firewall rules, ACLs, IAM, RBAC"
+discriminator = "is the deliverable the policy DECISION, or a program that transforms policy?"
+owner_a = "cto-vogels"
+owner_a_when = "what to permit and deny is being decided or judged — the posture itself is the output"
+owner_b = "fullstack-dhh"
+owner_b_when = "the posture is already settled and the work is code that transforms, migrates or verifies it"
+notes = "artefact-vs-domain-review says artefact responsibility outranks domain context, and that still holds. This rule resolves the case that rule cannot: when the artefact IS the policy, the artefact test returns both answers. `hnet-firewall-consolidation` asked for the rule-generation script and the equivalence checks — a program over a settled posture — so Full-Stack owns it."
+
 [[precedence]]
 id = "product-vs-implementation"
 applies_when = "the task both decides what to build and why, and implements how"

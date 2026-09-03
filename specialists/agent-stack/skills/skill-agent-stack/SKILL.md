@@ -306,6 +306,33 @@ Trust owner and skill selection — that is the part with unseen-holdout evidenc
 rate is 1.00 on all four, so a broad or all-true gate set is not authority to expand the team. See
 [rule 0012](/Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/.archcore/rules/0012-gate-flags-are-advisory-until-localised.md).
 
+## Step 9.5 — Persist the Synthesis Into the Project
+
+**When the route produced a verdict, an assessment or a decision the project will refer back to, write it into the project as a file.** Not for narrow or
+routine work — a usability list or a config fix does not need a document, and producing one for every task is noise.
+
+Do it when any of these hold: the output is a GO/NO-GO or a recommendation; personas disagreed and the disagreement is part of the answer; the finding rests on
+evidence someone will want to re-check; or a later session would otherwise have to redo the reasoning.
+
+**Where — look before you write. The project decides, not this skill.**
+
+1. If the project already has a reports convention, follow it exactly (`docs/reports/`, `reports/`, or whatever its `AGENTS.md` names).
+2. Otherwise put it in `docs/` and say in your answer that you created that location.
+3. Never invent a parallel structure beside one that already exists.
+
+**Name it** `<slug>-YYYYMMDD_hhmm.md` — the operator's global convention.
+
+**Contents that make it usable as a reference later**, rather than a transcript:
+
+- the verdict or recommendation in its own sentence, first;
+- what the finding rests on, with figures and their source, separated from inference;
+- **disagreement preserved, not averaged** — where two personas reached different conclusions, record both and what each turned on;
+- what would change the answer, stated concretely enough to act on;
+- the route that produced it: the primary owner, the personas and skills used, and which gates fired.
+
+That last line matters more than it looks. A report that records its own route can be re-read later against what the router did, and is the only artefact that
+connects a decision to the reasoning path that produced it.
+
 ## Routing Self-Check
 
 Before finalising, verify:
