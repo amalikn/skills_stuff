@@ -3,7 +3,7 @@
 ## Overview
 
 Agent Stack is prompt/source material plus a small maintenance toolchain. It holds two content layers — **personas** (judgement contracts) and **skills** (repeatable procedures) — and three mechanisms
-that act on them: a manifest-driven symlink installer, a routing catalogue, and a report-first upstream sync tool.
+that act on them: a manifest-driven symlink installer, a routing catalogue, deterministic route closure, and an evaluation harness.
 
 Nothing here runs as a service. There is no daemon, no loop, and no background agent; every mechanism is an operator-invoked task.
 
@@ -18,7 +18,6 @@ Nothing here runs as a service. There is no daemon, no loop, and no background a
 | `routing.toml`                    | The routing catalogue: persona domains and decision ownership, skill intents, `analysis` vs `tool` execution class, runtime prerequisites, safety notes,         |
 |                                   |   mandatory gates                                                                                                                                                |
 | `scripts/install_global.py`       | Symlink-only installer into the four consumer discovery paths                                                                                                    |
-| `scripts/sync_auto_company.py`    | Report-first upstream comparison and conservative apply                                                                                                          |
 | `scripts/validate_agent_stack.py` | Static contract validation of capabilities, routing coverage, and persona depth                                                                                  |
 | `scripts/check_governance.py`     | Stdlib-only governance coherence gate over the documentation surfaces                                                                                            |
 | `evals/routing-cases.toml`        | 60-case routing regression corpus across six workload families                                                                                                   |
@@ -59,25 +58,12 @@ excluded by default as a duplicate of the consuming runtimes' own.
 
 ## Upstream sync flow
 
-```
-MaxMiksa/Auto-Company ──fetch──► disposable mirror (skills-working-cache)
-                                        │
-                                        ▼
-                          classify against upstream-state.json
-                                        │
-        ┌───────────────────────────────┼───────────────────────────────┐
-        ▼                               ▼                               ▼
-   safe_add / safe_replace      translation_required            manual_merge / remove_review
-   (applied automatically)      (review proposal +              (review proposal only)
-                                 translation-brief.md)
-```
 
-`upstream-state.json` records both the last upstream hash and the canonical English hash for every file. A source change to a translated file always becomes `translation_required`, even when the new
 source happens to be English — it is never treated as a byte-for-byte replacement. The existing canonical English file acts as translation memory so a reviewer preserves unchanged wording.
 
 ## Key decisions
 
-- **Autonomy is excluded by design.** The upstream's loop, consensus mechanism, and daemon are not missing features; leaving them out is the reason this extraction exists.
+- **Autonomy is excluded by design.** Loops, consensus mechanisms and daemons are not missing features; leaving them out is the reason this project exists.
 - **Canonical source, symlinked delivery.** Runtime installs are never an authoring surface, which is what keeps three agent runtimes from drifting apart.
 - **The manifest is the contract.** Installer, validator, and routing all derive from it, so an unregistered capability fails visibly rather than shipping as an orphan file.
 - **Sync is report-first.** Automatic application is restricted to English additions and unchanged canonical replacements; everything else is a human review proposal.

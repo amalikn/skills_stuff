@@ -104,6 +104,13 @@ CONDITIONAL_PATHS: frozenset[str] = frozenset({
     "memory-bank/progress.md",
     "memory-bank/decisionLog.md",
     "translation-brief.md",            # emitted by a sync run into the working cache, not committed here
+    # RETIRED 20260903 when upstream sync was removed. Registered rather than unbackticked because a changelog recording a removal must be able to NAME what it
+    # removed, and the .archcore records superseded in place still describe how these worked. Same reasoning that put ARCHCORE_PROMOTION_CANDIDATES.md here.
+    "scripts/sync_auto_company.py",
+    "upstream-state.json",
+    "translation-memory.json",
+    "translation-policy.md",
+    "tests/test_sync_auto_company.py",
     # Paths that are real, and deliberately NOT inside this repo. Registered with a reason rather than ignore-listed so the exemption stays reviewable.
     ".agents/skills",                              # consumer-side discovery path created by install_global.py
     "skills-working-cache/agent-stack/update-reports",  # sync reports land in the working-cache peer, never in source

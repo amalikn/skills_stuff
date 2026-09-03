@@ -103,6 +103,23 @@ system satisfies constraints.**
 It reports coverage against the corpus (`corpus has 60 cases; N not present in these results`), which is the check that would have caught the `--limit` truncation that made the first Baseline v2 pass
 cover 53 of 60 silently. Rows whose case id is no longer in the corpus are listed rather than crashed on, so a renamed or retired case does not take the analysis down with it.
 
+### `propose_evolution.py`
+
+- **Purpose:** turns field evidence into dated **proposals** for the operator. This is what replaced the upstream sync retired on 2026-09-03 as the way the stack grows: evidence in, proposals out, you
+  decide. It detects repeatedly overridden owners, routes the operator rated *worse*, capabilities never selected, and dispatch cost that has not yet bought anything.
+- **Run with:** `just evolve` (stdout) or `just evolve <path>` (writes the document)
+- **Inputs:** `evals/field-log.jsonl`, `routing.toml`
+- **Outputs:** a review document; **it changes nothing**
+- **Requires:** standard library only
+- **Safety:** `safe` — read-only against the catalogue, calls no model
+- **Idempotent:** yes for the same evidence
+
+**It proposes and never applies, deliberately.** [Rule 0001](../.archcore/rules/0001-safety-model.md) excludes material change without explicit operator authority, and field data is the weakest
+evidence in the project — self-reported, confounded, small-n. A tool that rewrote `routing.toml` from it would breach the safety model using the least trustworthy input available. The retired sync had
+the right shape (apply the safe classes, propose the rest) and it is worth keeping now the tool is gone; here nothing qualifies as safe, so everything is a proposal.
+
+Below 10 entries it proposes nothing and says why. That is the correct output, not a failure. It will not invent a skill or write a persona — authoring is `skill-creator`'s job.
+
 ### `field_log.py`
 
 - **Purpose:** records what the router actually did on **real work**, and reports the pattern. Every other measurement in this project tests agreement with a corpus — necessary, but not sufficient,
@@ -238,54 +255,3 @@ JSON extractor would otherwise latch onto. An unterminated block means the model
 
 Uninstall removes only links that still point exactly at Agent Stack sources. `skill-creator` is excluded by default; pass `--include skill-creator` only after deliberately reconciling the duplicate.
 
-### `sync_auto_company.py`
-
-- **Purpose:** conservative comparison against the upstream `MaxMiksa/Auto-Company` repository, using a disposable mirror in the working cache. Report-first: it classifies each change and applies only
-  the safe English ones.
-- **Run with:** `just upstream-status`, `just upstream-dry-run`, `just upstream-fetch-dry-run`, `just upstream-apply apply`, `just record-current <checkout>`
-- **Inputs:** `upstream-state.json`, `translation-memory.json`, `translation-policy.md`, the upstream mirror
-- **Outputs:** classification report; timestamped reports under `skills-working-cache/agent-stack/update-reports/`; updated `upstream-state.json` on apply
-- **Safety:** `safe` for `--status`; `external-network` and `long-running` for `--fetch`; `review-required` and `modifies-files` for `--apply` and `--record-current`
-- **Idempotent:** comparison yes; apply advances the recorded baseline
-
-Only `safe_add` and `safe_replace` apply automatically. `translation_required`, `manual_merge`, and `remove_review` are written as review proposals. Audit findings **A1** (non-atomic apply) and **A2**
-(symlink escape) are open against this script — read them before changing apply logic.
-
-Never run `record-current` against an Auto Company checkout that has already been symlinked to Agent Stack; that records Agent Stack's own content as the upstream baseline.
-
-## Task-to-script map
-
-| Task                                             | Script                                                    | Safety                 |
-| ------------------------------------------------ | --------------------------------------------------------- | ---------------------- |
-| `just bootstrap`                                 | — (mise task; installs `requirements-dev.txt`)            | `safe`                 |
-| `just check`                                     | `validate_agent_stack.py`                                 | `safe`                 |
-| `just governance`                                | `check_governance.py`                                     | `safe`                 |
-| `just test`                                      | — (unittest over `tests/`)                                | `safe`                 |
-| `just runtimes`                                  | — (prints resolved interpreter)                           | `safe`                 |
-| `just preflight`                                 | `validate_agent_stack.py` + `check_governance.py` + tests | `safe`                 |
-| `just audit-scripts`                             | — (inventory drift report)                                | `safe`                 |
-| `just context-pack`                              | — (repomix)                                               | `modifies-files`       |
-| `just global-status` / `just global-dry-run`     | `install_global.py`                                       | `safe`                 |
-| `just global-install install`                    | `install_global.py`                                       | `review-required`      |
-| `just global-uninstall uninstall`                | `install_global.py`                                       | `review-required`      |
-| `just upstream-status` / `just upstream-dry-run` | `sync_auto_company.py`                                    | `safe`                 |
-| `just upstream-fetch-dry-run`                    | `sync_auto_company.py`                                    | `external-network`     |
-| `just upstream-apply apply`                      | `sync_auto_company.py`                                    | `review-required`      |
-| `just record-current <checkout>`                 | `sync_auto_company.py`                                    | `review-required`      |
-| `just routing-eval-check`                        | `evaluate_routing.py`                                     | `safe`                 |
-| `just routing-matrix`                            | `analyze_routing_results.py`                              | `safe`                 |
-| (via `--repair`)                                 | `close_route.py`                                          | `safe`                 |
-| `just routing-eval-ping`                         | `eval_model_adapter.py`                                   | `external-network`     |
-| `just routing-eval-local [limit]`                | `evaluate_routing.py` + `eval_model_adapter.py`           | `long-running`         |
-| `just routing-eval-remote [limit]`               | `evaluate_routing.py` + `eval_model_adapter.py`           | `requires-credentials` |
-| `just routing-eval-hermes [limit]`               | `evaluate_routing.py` via the `hermes` CLI                | `external-network`     |
-| `just routing-eval "<cli>"`                      | `evaluate_routing.py`                                     | `review-required`      |
-
-## Review-required tasks
-
-These four mutate state outside a dry run and all require an explicit confirmation word or argument. Do not run them without review:
-
-- `just global-install install`
-- `just global-uninstall uninstall`
-- `just upstream-apply apply`
-- `just record-current <reviewed-checkout>`

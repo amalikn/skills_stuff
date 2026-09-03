@@ -64,9 +64,6 @@ recommendation as an accepted decision without checking the revision notes first
 | `ARCHITECTURE.md`                         | Component and data-flow overview                                                                                        | Medium-high                  |
 | `CHANGELOG.md`                            | Durable project/governance change history                                                                               | Medium-high                  |
 | `REVISION_NOTES.md`                       | What the last revision changed and deliberately did not change                                                          | Medium-high                  |
-| `translation-policy.md`                   | Rules for non-English upstream content                                                                                  | High for sync work           |
-| `upstream-state.json`                     | Sync baseline — last upstream hash and canonical English hash per file                                                  | Generated state              |
-| `translation-memory.json`                 | Translation memory for the sync tool                                                                                    | Generated state              |
 | `evals/routing-cases.toml`                | 60-case routing regression corpus across 6 workload families                                                            | Medium-high                  |
 | `ROUTING_EVALS.md`                        | Corpus coverage, case assertion types, static vs behavioural running                                                    | Medium-high                  |
 | `docs/audit-agent-stack-full-20260901_1010.md` | Full repository audit and findings                                                                                      | Evidence                     |
@@ -99,7 +96,6 @@ operator-supplied local agent CLI once per case and scores the returned plan. Tr
 
 ### Upstream sync and translation
 
-Read [translation-policy.md](translation-policy.md), `scripts/sync_auto_company.py`, then `upstream-state.json`.
 
 Sync is report-first. `translation_required`, `manual_merge`, and `remove_review` are proposals for a human, never automatic. Audit findings A1 and A2 concern this tool's failure behaviour and are
 open — read them before changing apply logic.
@@ -143,7 +139,6 @@ If files disagree:
 | Routing or dispatch behaviour changed       | `routing.toml`, `skills/skill-agent-stack/SKILL.md`, `evals/routing-cases.toml`, then `just routing-eval-check` |
 | Skill quality rule changed                  | `SKILL_STANDARD.md`, and `skills/skill-creator/scripts/quick_validate.py` if the accepted key set moved    |
 | Runtime or environment rule changed         | `RUNTIME.md`, `.mise.toml`, `justfile`                                                                     |
-| Upstream baseline re-recorded               | `upstream-state.json` via `just record-current`, never by hand                                             |
 | Script or task added/changed                | `scripts/README.md` and `justfile`                                                                         |
 | Context routing changed                     | `AI_NAVIGATION.md` and `context-map.yaml`                                                                  |
 | Any durable governance/navigation change    | `CHANGELOG.md`                                                                                             |
@@ -156,7 +151,6 @@ Generated files are useful but not authoritative by themselves.
 | -------------------------------- | --------------------------------------------------------------- |
 | `.ai-context/governance-pack.md` | Deterministic context bundle — rebuild with `just context-pack` |
 | `graphify-out/GRAPH_REPORT.md`   | Relationship/navigation overview                                |
-| `upstream-state.json`            | Sync baseline; written by the sync tool, not by hand            |
 
 Regenerate after large documentation, contract, or library changes.
 

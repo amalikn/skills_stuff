@@ -187,49 +187,43 @@ the runtime and the eval cannot drift apart.
 
 ### A gate is an obligation, not a persona
 
-Satisfy each true gate with the **cheapest sufficient** means:
+Satisfy each true gate with the **cheapest sufficient** means, stopping at the first that works:
 
-1. **Check what you already selected.** Each gate names a `required_capability` and a `minimum_strength`. If any skill or persona already in the route declares that capability in its
-   `primary_capabilities`, the gate is met. Add nothing.
-2. **Otherwise add the narrowest skill whose `primary_capabilities` include it.** A CTO checking vendor documentation with `deep-research` satisfies `research_required` without a second persona. A
-   `supporting_capabilities` entry does **not** discharge a gate — it is incidental to that provider's purpose, and treating it as sufficient is how ordinary analysis quietly starts counting as
-   independent challenge.
-3. **Add the gate's persona only where independence of judgement is itself the deliverable** — where the gate sets `persona_mandatory`, or the task matches its `persona_mandatory_when_tags`.
-4. **Never add a persona because it is the gate's `default_persona`.** `default_persona` names who would carry the capability if a persona were needed; it is not an instruction that one is.
+1. **Already selected?** If any skill or persona in the route declares the gate's `required_capability` in its `primary_capabilities`, the gate is met. Add nothing.
+2. **Otherwise add the narrowest skill** whose `primary_capabilities` include it. A `supporting_capabilities` entry does **not** discharge a gate.
+3. **Add the gate's persona only where independence is the deliverable** — `persona_mandatory`, or a task tag matching `persona_mandatory_when_tags`.
+4. **Never add a persona because it is the gate's `default_persona`.**
 
-A gate already satisfied by the route is met: if `critic-munger` is already the primary owner, `critic_required` is satisfied — do not add a second challenger.
-
-No gate's persona is unconditionally mandatory. Each escalates to its persona only on its own tags: `critic_required` for high-consequence, irreversible, security-sensitive or
-thin-evidence-high-commitment work; `research_required` for contested evidence, regulatory work, source validation or market sizing; `qa_required` for release readiness, go/no-go, security-sensitive,
-irreversible rollout or production change.
-
-**Do not inflate the team to satisfy a gate.** Gate-driven persona inflation is a routing failure in its own right and the `direct-adversarial` eval family exists to catch it.
+**Do not inflate the team to satisfy a gate.** Why each rule is shaped this way, and the adjacent-capability trap that caused every gate failure in one baseline:
+[references/gate-model.md](references/gate-model.md).
 
 ### Closure is performed by the system, not remembered by you
 
-`scripts/close_route.py` repairs a route that leaves a gate open: it adds the minimum provider declaring the missing capability, escalates to the gate's persona where the task's tags demand
-independence, and recomputes `runtime_required`. **You are still responsible for judging which gates are true and who owns the decision** — those are judgements, and the closure layer never overrules
-them. It only discharges obligations you have already asserted.
+`scripts/close_route.py` adds the minimum provider for an open gate, escalates to the gate's persona on task tags, and recomputes `runtime_required`. **You still judge which gates are true and who
+owns the decision** — closure never overrules those; it only discharges obligations you asserted.
 
-This split was measured, not assumed. Stating closure as an instruction moved nothing across three different models; running it as code moved the corpus from 34/60 to 47/60 with no regressions. Where
-a rule is a lookup against a finite catalogue, a program does it exactly and a model does it sometimes.
+### RUN IT. Do not simulate it.
 
-**Report the task's characteristics** — `security-sensitive`, `release-readiness`, `production-change`, `irreversible`, `high-consequence`, `thin-evidence-high-commitment` — because those are genuine
-judgements and they are what escalates a gate from "any qualifying provider" to "this persona specifically". A pattern-match over the task text agrees with human judgement on only about a quarter of
-cases, which is why this stays with you.
+Once you have judged owner, personas, skills and gates, pipe the draft route through closure and **use what comes back**:
+
+```bash
+echo '{"route_mode":"...","primary_owner":"...","personas":[...],"skills":[...],
+       "research_required":false,"critic_required":false,"qa_required":false,"runtime_required":false,"reason":"..."}' \
+  | python3 /Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/scripts/close_route.py --explain
+```
+
+`--max-personas N` caps the team; `--tag security-sensitive` (repeatable) passes each characteristic you judged; `--explain` prints what changed, to stderr.
+
+**Reading this and satisfying the gates yourself is not the same thing, and the difference is measured** — see [references/gate-model.md](references/gate-model.md). Fast, deterministic, no model call.
 
 ### Satisfaction is an invariant, not a step
 
-`routing.toml` `[[route_invariants]]` states this as a property of the finished route rather than a stage in this procedure, because a procedure can be followed partially and still feel complete:
+`routing.toml` `[[route_invariants]]` states this as a property of the finished route, not a stage in this procedure:
 
 > For every gate the route sets true, some selected skill or persona declares that gate's `required_capability` at its `minimum_strength`.
 
-**A route that breaks this is invalid and must be repaired before it is offered** — as invalid as one naming a skill that does not exist. Before returning any route, walk the gates you set true and
-confirm each one is closed. If a gate is open, repair it: add the narrowest skill declaring the capability as primary, or the gate's persona where independence is genuinely the deliverable.
-
-The commonest way to break it is to close a gate with a plausible neighbour. `financial-unit-economics` does not provide `research`; it analyses assumptions you already hold. `deep-analysis` does not
-provide `independent-challenge`; it examines what is in front of it. **Check the declaration, not the resemblance.** On the 2026-09-01 baseline this single mistake accounted for every one of the 22
-gate failures — the gate judged correctly, then closed with something adjacent or with nothing at all.
+**A route that breaks this is invalid** — as invalid as one naming a skill that does not exist. Walk the gates you set true before returning, and repair any that is open. **Check the declaration, not
+the resemblance**: the adjacent-capability trap and its measured cost are in [references/gate-model.md](references/gate-model.md).
 
 ### Domain gates
 
@@ -297,22 +291,14 @@ python3 /Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/scripts/f
 
 ### Why this exists
 
-Every measurement this stack has made tests whether routing agrees with a corpus. That is necessary and **not sufficient**: a route can be perfectly
-corpus-correct and still not make the work better, and no corpus can detect that, because the corpus is the thing being agreed with. Real use is the only
-instrument for it, and only if it is written down at the time.
+Corpus agreement is necessary and not sufficient; only real use shows whether a correct route made the work better. Full rationale and how to read the log: [references/field-log.md](references/field-log.md).
 
 ### What to record, and what not to
 
-- **`--followed` and `--overrode` are yours to fill in**, because you are the one who did the work and you know what you actually used. Record the route you
-  DEPARTED from as readily as one you kept — a departure is the valuable entry, and hiding it makes the log worthless.
-- **If you followed the route, OMIT `--overrode` entirely. Do not pass `"none"`, `"n/a"` or a sentence explaining that you changed nothing.** The override rate
-  is the one statistic this log exists to produce, and a prose "nothing to change" counts as a change — inflating it silently, and in the flattering direction,
-  because every clean route would add to it. Observed on the first real entry ever logged.
-- **Correcting an earlier entry is itself a valid entry.** Log the correction rather than leaving a flattering record standing; the log is worth something only
-  because it contains the times the route was not followed.
-- **`--helped` is the operator's, and you must not fill it in about your own work.** Self-assessed helpfulness is the one field where the recorder has an
-  interest in the answer. Leave it absent; the report says so plainly rather than pretending the column is missing data.
-- **Log the route you gave, not the route you wish you had given.** If you named `cto-vogels` and then used `devops-hightower`, that is the entry.
+- **`--followed` and `--overrode` are yours** — you did the work. Record a route you DEPARTED from as readily as one you kept; a departure is the valuable entry.
+- **If you followed the route, OMIT `--overrode`.** Never pass `"none"` — it counts as a change and inflates the one statistic the log exists to produce.
+- **Never fill in `--helped`** about your own work. It is operator-only.
+- **Correcting an earlier entry is itself a valid entry.**
 
 ### Standing caveat while using the route
 
@@ -352,30 +338,8 @@ When useful, expose this compact summary:
 
 ## Domain Routing Profiles
 
-These profiles are routing priors, not forced teams. Apply the ownership and minimal-team rules above first.
-
-### Networking / infrastructure
-
-- Network architecture, routing protocols, BNG/PPPoE, DNS/RADIUS design, capacity, migration and vendor-platform decisions → **CTO** owns the technical decision.
-- Deployment automation, Linux/service operations, observability, CI/CD and rollback mechanics → **DevOps** owns operational delivery; add CTO only when architecture boundaries change.
-- Code implementation → **Full-Stack**; add QA for material behaviour/regression risk.
-- Current vendor behaviour/documentation → **Research first**, with CTO consuming the evidence.
-- Release/migration GO/NO-GO → CTO + QA; DevOps when operational rollout is material; Critic for high-risk/irreversible change.
-
-Do not route a network troubleshooting task to generic business personas merely because cost or customer impact is mentioned incidentally.
-
-### Physical-product / import decisions
-
-Decompose import work into distinct ownership rather than treating “import” as one domain:
-
-- current regulation, tariff/customs treatment, eligibility, market evidence, supplier/auction evidence → **Research** owns evidence gathering;
-- landed cost, margin, reserves, capital exposure, downside economics → **CFO** owns economic viability;
-- sourcing, inspection, freight, customs workflow, fulfilment and pilot process → **Operations** owns execution design;
-- positioning/channels/acquisition → **Marketing/Sales** only when the task actually concerns demand generation;
-- material GO/NO-GO → add **Critic** after evidence/economics/operations inputs.
-
-JDM and atar/perfume tasks use the same ownership decomposition while retaining their domain-specific evidence and regulatory requirements. Do not invent a legal/compliance persona: legal-adjacent
-conclusions stay explicitly evidence-based and bounded by authoritative-source quality.
+Networking/infrastructure and physical-product/import work each carry routing heuristics distilled from evaluation, including two known ambiguous ownership boundaries. **Read
+[references/domain-profiles.md](references/domain-profiles.md) when the task is in either domain**; skip it otherwise.
 
 ## Routing Preflight
 

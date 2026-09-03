@@ -1,10 +1,14 @@
 Title: ADR 0009 — Upstream sync apply is staged, then promoted
 Category: architecture-decision
-Status: accepted
+Status: superseded
 Promoted: 20260902_0245 by skill-ai-it promote
 Accepted: 20260902_0300 by operator
 Source: scripts/sync_auto_company.py, audit finding A1
 Summary: Files are staged beside their destinations and promoted by rename; state is written atomically. Implemented 2026-09-02, closing audit finding A1.
+> **SUPERSEDED 20260903 — upstream sync retired.** Agent Stack is maintained as its own project now; there is no upstream to sync from, so `scripts/sync_auto_company.py`, `upstream-state.json` and
+> `translation-memory.json` are removed. Kept as the record of a decision that was made and implemented, not as a live rule. The reasoning about report-first application, atomic promotion and symlink
+> refusal remains correct for any future tool that copies files into this tree.
+
 
 # ADR 0009 — Upstream sync apply is staged, then promoted
 

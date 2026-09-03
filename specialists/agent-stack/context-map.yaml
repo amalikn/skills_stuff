@@ -43,7 +43,6 @@ authority_order:
   - path: "context-map.yaml"
     type: machine_routing_map
     authority: high
-  - path: "translation-policy.md"
     type: sync_translation_rules
     authority: high
   - path: "CHANGELOG.md"
@@ -143,10 +142,6 @@ routing:
   upstream_sync:
     description: "Comparing, translating, and applying upstream Auto Company changes."
     read:
-      - "translation-policy.md"
-      - "scripts/sync_auto_company.py"
-      - "upstream-state.json"
-      - "translation-memory.json"
     rules:
       - "Report-first. Only safe_add and safe_replace apply automatically."
       - "translation_required, manual_merge, and remove_review are human review proposals."

@@ -1,5 +1,42 @@
 # Changelog — Agent Stack
 
+## 20260903_1600
+
+### Changed — upstream sync retired; Agent Stack is its own project
+
+- **Operator decision: there is no upstream and no sync.** The project has evolved well past what it was extracted from — a routing catalogue, gates, deterministic closure, an evaluation harness and a
+  governance layer the original never had. Removed: `scripts/sync_auto_company.py`, its 11 tests, `upstream-state.json`, `translation-memory.json`, `translation-policy.md`, the four `upstream-*`
+  recipes, and the `upstream_sync` manifest block.
+- **The three sync records are SUPERSEDED IN PLACE, not deleted** — report-first application, atomic promotion and symlink refusal were real decisions that were implemented, and the reasoning still
+  applies to any future tool that copies files into this tree. Governance 711 → 690 checks and tests 57 → 46, both from removing real coverage of a real tool rather than from anything breaking.
+
+### Added — the stack's own growth mechanism, and cost measurement
+
+- **`scripts/propose_evolution.py` and `just evolve`.** Retiring sync removed the only mechanism that ever ADDED to this stack; without a replacement the library freezes at whatever it happens to
+  contain while the field log accumulates evidence nobody acts on. It detects repeatedly overridden owners, routes rated *worse*, capabilities never selected, and dispatch cost that has not yet bought
+  anything — and writes a dated review document.
+- **It proposes and never applies, deliberately.** [Rule 0001](.archcore/rules/0001-safety-model.md) excludes material change without explicit operator authority, and field data is the weakest
+  evidence in the project. A tool rewriting the catalogue from self-reported, confounded, small-n data would breach the safety model using the least trustworthy input available. The retired sync had
+  the right shape — apply the safe classes, propose the rest — and it is worth keeping now the tool is gone; here nothing qualifies as safe, so everything is a proposal. Below 10 entries it proposes
+  nothing and says why.
+- **The field log now records cost two ways**: `tokens_estimated` (the agent's estimate, unverifiable by construction) and `dispatched` (a COUNT of subagents actually spawned, which is a fact and the
+  dominant cost driver). When the two disagree, believe the count. The report splits median cost by dispatch and states the multiplier.
+
+### Changed — SKILL.md trimmed 21%, with no capability lost
+
+- **26,063 → 20,276 chars (~6,479 → ~5,069 tokens), paid on every single invocation.** The skill violated its own `SKILL_STANDARD.md`, which says keep `SKILL.md` procedural and put detailed knowledge
+  in `references/`.
+- **Rationale moved, not deleted**, into three reference files each carrying its own trigger condition so an agent loads it only when relevant: `skills/skill-agent-stack/references/gate-model.md` (why gates are shaped this
+  way, the adjacent-capability trap, why closure is code), `skills/skill-agent-stack/references/domain-profiles.md` (networking and physical-product heuristics — read when the task is in that domain),
+  `skills/skill-agent-stack/references/field-log.md` (why the log exists and how to read it).
+- **The `eval-routing-contract` block is byte-identical** — `routing_contract()` still hashes to `d4a8b8cb7c58b945`, verified before and after, so every prior evaluation stays comparable.
+
+### Notes
+
+- **The closure wiring added earlier today is running in live use.** Field entry 4, written by another session at 05:32Z, records `scripts/close_route.py` being run, escalating `critic-munger` and `qa-bach`
+  on production-change and high-consequence tags, and the agent honestly logging a partial follow because it held both undispatched for a design-only turn.
+- Freeze re-recorded at 20260903_1600 (`orchestrator_sha` → `1369bf235408a4d1`).
+
 ## 20260903_1400
 
 ### Fixed — the field log's override statistic, caught by its own first three entries
@@ -624,6 +661,7 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260903_1600](#20260903_1600)
 - [20260903_1400](#20260903_1400)
 - [20260903_0330](#20260903_0330)
 - [20260903_0230](#20260903_0230)

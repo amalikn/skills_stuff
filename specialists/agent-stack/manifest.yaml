@@ -66,8 +66,3 @@ capabilities:
   - {id: ux-audit-rethink, kind: package, path: skills/ux-audit-rethink, portability: general}
   - {id: web-scraping, kind: package, path: skills/web-scraping, portability: general}
   - {id: websh, kind: package, path: skills/websh, portability: tool-specific}
-upstream_sync:
-  script: scripts/sync_auto_company.py
-  state: upstream-state.json
-  translation_policy: translation-policy.md
-  policy: report-first; apply only safe English additions or unchanged canonical replacements

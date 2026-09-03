@@ -127,7 +127,7 @@ judges the gate correctly and then finishes the route without closing the obliga
 [docs/routing-failure-classification-20260901_1842.md](docs/routing-failure-classification-20260901_1842.md). Two checks were run to falsify it and did not: no case asserts a gate its own required +
 preferred contract cannot satisfy (0 of 60), and no plan names a skill absent from the catalogue.
 
-### Frozen measurement contract — 20260903_1400
+### Frozen measurement contract — 20260903_1600
 
 Frozen BEFORE the unseen holdout is authored, so the holdout is scored once against a contract that will not move under it. Any run whose rows carry a different value in one of these is not comparable
 to the holdout and must be re-scored (`--rescore`) rather than compared directly.
@@ -136,7 +136,7 @@ to the holdout and must be re-scored (`--rescore`) rather than compared directly
 | ----------------------- | ------------------ | ------------------------------------------------------ |
 | `routing_catalogue_sha` | `05764312edad68e8` | `routing.toml` — capabilities, gates, precedence       |
 | `eval_corpus_sha`       | `cb548b83cf203346` | `evals/routing-cases.toml` — the frozen 60             |
-| `orchestrator_sha`      | `ef66ffacb2918e6d` | the production routing contract the prompt sources     |
+| `orchestrator_sha`      | `1369bf235408a4d1` | the production routing contract the prompt sources     |
 | `harness_sha`           | `dc1c8665417fecd1` | `scripts/evaluate_routing.py` — prompt AND scorer      |
 | `closure_sha`           | `bdb17d3c8fbd0e7c` | `scripts/close_route.py` — deterministic repair        |
 | `holdout_corpus_sha`    | `7470773e7212933d` | `evals/holdout-cases.toml` — the unseen 24, single use |

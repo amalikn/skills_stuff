@@ -71,6 +71,11 @@ def add(args: argparse.Namespace) -> int:
         "overrode": args.overrode if is_override(args.overrode) else None,
         "helped": args.helped,
         "gates_useful": args.gates_useful,
+        # Cost, recorded two ways on purpose. `tokens` is the agent's ESTIMATE and is unverifiable; `dispatched` is a COUNT of subagents actually spawned and
+        # is a fact. The count is also the dominant cost driver, since each subagent is a fresh context doing real work — so when the two disagree, believe the
+        # count. Recording only the estimate would give a number nothing can check; recording only the count would lose the magnitude.
+        "tokens_estimated": args.tokens,
+        "dispatched": args.dispatched,
         "note": args.note or (f"no override: {args.overrode}" if args.overrode and not is_override(args.overrode) else None),
     }
     LOG.parent.mkdir(parents=True, exist_ok=True)
@@ -104,6 +109,23 @@ def report(args: argparse.Namespace) -> int:
     gates = Counter(r.get("gates_useful") for r in rows if r.get("gates_useful"))
     if gates:
         print(f"{'gates':9} " + "  ".join(f"{k}={v}" for k, v in sorted(gates.items())))
+
+    # Cost. Split by whether personas were dispatched, because that is where the money goes and it is the decision the operator actually makes.
+    costed = [r for r in rows if isinstance(r.get("tokens_estimated"), int)]
+    if costed:
+        def med(xs):
+            xs = sorted(xs)
+            return xs[len(xs) // 2] if xs else 0
+        inline = [r["tokens_estimated"] for r in costed if not r.get("dispatched")]
+        team = [r["tokens_estimated"] for r in costed if r.get("dispatched")]
+        print(f"\ncost (estimated tokens, {len(costed)}/{len(rows)} entries rated):")
+        if inline:
+            print(f"  no dispatch      n={len(inline):2}  median {med(inline):>8,}")
+        if team:
+            disp = [r.get("dispatched", 0) for r in costed if r.get("dispatched")]
+            print(f"  with dispatch    n={len(team):2}  median {med(team):>8,}   median subagents {med(disp)}")
+        if inline and team:
+            print(f"  dispatching multiplies the routed cost by about {med(team) / max(med(inline), 1):.1f}x on this sample")
 
     # The signal worth having. An override repeated is a defect; an override once is a preference.
     overrides = [r for r in rows if is_override(r.get("overrode"))]
@@ -141,6 +163,10 @@ def main() -> int:
                    help="OPERATOR judgement, and optional. An agent must not fill this in about its own work: self-assessed helpfulness is the one field "
                         "where the recorder has an interest in the answer. Absent is the honest default.")
     a.add_argument("--gates-useful", choices=("yes", "no", "ignored"), help="were the research/critic/qa flags worth anything")
+    a.add_argument("--tokens", type=int,
+                   help="ESTIMATE of tokens the routed work consumed, including subagents. Unverifiable by construction — record your best estimate, or omit it.")
+    a.add_argument("--dispatched", type=int,
+                   help="How many subagents you actually spawned. A COUNT, not an estimate, and the dominant cost driver. Record 0 when you did the work inline.")
     a.add_argument("--note")
     a.set_defaults(fn=add)
 

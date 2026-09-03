@@ -33,23 +33,6 @@ runtimes:
     @printf 'declared  {{py}}\n'
     @printf 'resolved  '; test -x "{{py}}" && "{{py}}" -c "import sys; print(sys.version.split()[0], sys.executable)" || echo "MISSING — run: just bootstrap"
 
-# Show the current configured upstream state without mirror or network access.
-upstream-status: _require-venv
-    "{{py}}" scripts/sync_auto_company.py --status
-
-# Compare the existing local mirror without fetching it.
-upstream-dry-run: _require-venv
-    "{{py}}" scripts/sync_auto_company.py --dry-run
-
-# Fetch the official upstream into the disposable working cache and report proposed changes.
-upstream-fetch-dry-run: _require-venv
-    "{{py}}" scripts/sync_auto_company.py --fetch --dry-run
-
-# Apply only safe additions and unchanged canonical replacements after explicit confirmation.
-upstream-apply confirm="": _require-venv
-    test "{{confirm}}" = "apply"
-    "{{py}}" scripts/sync_auto_company.py --fetch --apply
-
 # Record a reviewed local Auto Company source checkout as the current import baseline.
 record-current source: _require-venv
     "{{py}}" scripts/sync_auto_company.py --record-current --source "{{source}}"
@@ -110,6 +93,12 @@ used *args: _require-venv
 
 field-report: _require-venv
     "{{py}}" scripts/field_log.py report
+
+# Turn field evidence into dated PROPOSALS. Changes nothing — rule 0001 excludes material change without operator authority, and observational self-reported
+# data is the weakest evidence here, so nothing is safe enough to apply automatically. This replaces the upstream sync retired on 2026-09-03 as the way the
+# stack grows: evidence in, proposals out, you decide.
+evolve out="": _require-venv
+    "{{py}}" scripts/propose_evolution.py {{ if out == "" { "" } else { "--output " + quote(out) } }}
 
 # --- Runner qualification ---------------------------------------------------------------------------------------------------------------------------------
 # Disposable calls only — never a corpus case, so this can never spend evidence. Set `calls` to the corpus size you intend to run, because quota and session
