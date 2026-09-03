@@ -73,7 +73,7 @@ deterministic validation and repair to finite catalogue rules.
 | `manifest.yaml` | Inventory and installation contract | Authoritative for shipped personas and skills |
 | `routing.toml` | Routing catalogue | Authoritative for provider capabilities, gates, precedence, and invariants |
 | `personas/` and `skills/` | Canonical content | Authoritative source material |
-| `skills/orchestrator/SKILL.md` | Production routing procedure | Its marked contract block is consumed by the evaluator |
+| `skills/skill-agent-stack/SKILL.md` | Production routing procedure | Its marked contract block is consumed by the evaluator |
 | `scripts/` and `tests/` | Executable validation and maintenance tooling | Current implementation evidence |
 | `evals/routing-cases.toml` | Frozen 60-case development corpus | Regression data, not unseen evidence |
 | `evals/holdout-cases.toml` | 24-case holdout | Now spent; see section 17 |
@@ -209,7 +209,7 @@ capability promotion from keyword similarity.
 | Runtime | Any selected tool-class skill | tool execution | computed | never | Flag calculation and prerequisite check | Offering an unavailable tool route |
 
 FACT: Research means external evidence still needs acquisition, not merely that the answer cites evidence. Critic tracks consequential judgement. QA tracks validation and release/change readiness.
-Runtime is computed from the selected skill classes. Evidence: [routing.toml](routing.toml#L673-L746) and [skills/orchestrator/SKILL.md](skills/orchestrator/SKILL.md#L181-L211).
+Runtime is computed from the selected skill classes. Evidence: [routing.toml](routing.toml#L673-L746) and [skills/skill-agent-stack/SKILL.md](skills/skill-agent-stack/SKILL.md#L181-L211).
 
 FACT: The evaluator treats a missing expected gate as a hard failure and an extra asserted gate as a soft five-point penalty. It tracks both separately. Runtime uses the computed value rather than
 model self-report. Evidence: [scripts/evaluate_routing.py](scripts/evaluate_routing.py#L264-L307) and [tests/test_routing_behavior.py](tests/test_routing_behavior.py#L67-L102).

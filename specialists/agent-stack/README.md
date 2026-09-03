@@ -30,7 +30,7 @@ approval.
 
 ### Orchestrator
 
-`orchestrator` is the normal single entry point for Agent Stack. Give the task to it; do not first decide which specialist to call. It selects the smallest useful roles and skills, separates evidence
+`skill-agent-stack` is the normal single entry point for Agent Stack. Give the task to it; do not first decide which specialist to call. It selects the smallest useful roles and skills, separates evidence
 from inference, highlights disagreement, and returns one synthesis. The installed specialist skills remain its internal library. Call one directly only when you explicitly want a narrow,
 single-specialist task.
 
@@ -46,13 +46,13 @@ mkdir -p <project>/.agents
 ln -s /path/to/agent-stack/skills <project>/.agents/skills
 ```
 
-`.agents` has no universal persona-discovery convention. Use `orchestrator` everywhere; additionally link or reference `personas/orchestrator-follett.md` only when that runtime documents a persona
+`.agents` has no universal persona-discovery convention. Use `skill-agent-stack` everywhere; additionally link or reference `personas/orchestrator-follett.md` only when that runtime documents a persona
 path. Project-local instructions remain authoritative.
 
 ## Contents
 
 - `personas/`: 15 on-demand specialist personas, including `orchestrator-follett`.
-- `skills/`: 37 current packages, including `orchestrator`, classified in `manifest.yaml` as `project_agnostic` or `tool_specific`.
+- `skills/`: 37 current packages, including `skill-agent-stack`, classified in `manifest.yaml` as `project_agnostic` or `tool_specific`.
 - `manifest.yaml`: source paths, install convention, and the classification inventory.
 - `scripts/sync_auto_company.py`: conservative upstream comparison and update tool.
 - `routing.toml`: machine-readable persona/skill routing catalogue and mandatory gates.
@@ -100,7 +100,7 @@ manually translating, merging, or accepting removals.
 
 ## Intelligent routing
 
-`orchestrator` remains the normal entry point, but routing is no longer based only on a short role matrix. Root `routing.toml` defines decision ownership, task intents, skill execution class, runtime
+`skill-agent-stack` remains the normal entry point, but routing is no longer based only on a short role matrix. Root `routing.toml` defines decision ownership, task intents, skill execution class, runtime
 prerequisites, safety notes, and mandatory routing gates. Persona files define the judgement contract for each specialist; skills define repeatable procedures/tools.
 
 Since 2026-09-01 the catalogue carries four cooperating tables. `[[capabilities]]` is the single taxonomy — 20 routing capabilities, declared on the skills and personas that actually provide them,

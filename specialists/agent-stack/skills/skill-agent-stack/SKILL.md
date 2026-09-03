@@ -1,5 +1,5 @@
 ---
-name: orchestrator
+name: skill-agent-stack
 description: Use as the normal Agent Stack entry point when a request needs intelligent selection or sequencing of personas and skills, spans multiple domains, contains a material decision, or would benefit from one integrated evidence-aware synthesis. Do not use a large team for a narrow task that a single skill or persona can complete.
 ---
 

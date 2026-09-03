@@ -1,5 +1,31 @@
 # Changelog — Agent Stack
 
+## 20260903_0330
+
+### Changed — the `orchestrator` skill package is now `skill-agent-stack`
+
+- **Renamed for the surface it is actually used from**: Claude Code's skill list, where `orchestrator` said nothing about which stack it belonged to. The identity changed in the four places that
+  define it — the package directory, the `SKILL.md` frontmatter `name`, `routing.toml`'s `id` and `default_entry`, and the `manifest.yaml` registration — plus every path reference and the live
+  install.
+- **Two things deliberately NOT renamed.** The `orchestrator-follett` persona is a different capability and keeps its name. The `orchestrator_sha` provenance stamp keeps its name too: it appears in 40
+  indexed runs and in every stored result row, so renaming the field would break their comparability to record a cosmetic change. It names the routing-contract file, whatever that file is called.
+- **Dated audit documents under `docs/` keep the old id in their prose.** They are point-in-time records of what the skill was called when they were written; only their path references were updated.
+
+### Fixed — a status check that reported false confidence
+
+- **`install_global.py --status` gained orphan detection.** The rename left three broken symlinks — one per client — and `just global-status` reported **123 correct without mentioning them**, because
+  a status report built only from *declared* links cannot see a link nothing declares any more. That is the exact shape of a false-confidence check, and the project's own rule is to fix the check
+  rather than the symptom.
+- Orphans are read with `os.readlink` rather than `resolve()`, because **a broken symlink still has a target and that target is what identifies it as ours**. They are reported alongside the declared
+  links rather than folded into the same counts, so a clean report stays unambiguous.
+- **The first implementation was wrong and the negative test caught it**: `CLIENT_ROOTS[client]` is a `{purpose: path}` mapping, so iterating it yielded keys and the check looked in `~/skills`, which
+  does not exist. It reported nothing and would have passed review as working. Fixed to iterate values; re-tested by recreating a stale link and watching `orphan-broken` appear, then removing it.
+
+### Notes
+
+- Freeze re-recorded at 20260903_0330: `routing_catalogue_sha`, `orchestrator_sha` and `harness_sha` all moved. Validator PASS (52 capabilities, 15 personas, 37 skills), corpus PASS (60), 707
+  governance checks, 55 tests, run index 40/40 verified, 123/123 links correct with zero orphans.
+
 ## 20260903_0230
 
 ### Changed — field capture happens in the skill, not in a chore
@@ -348,7 +374,7 @@
 - **Baseline v4: the same 20-case holdout, all three arms, live, with deterministic closure.** Flash **13/20 (65.0%)** mean 85.7 · Pro **15/19 (78.9%)** mean 89.1 · Claude **16/20 (80.0%)** mean 89.2,
   against 40.0 / 50.0 / 40.0 without closure. **Every arm gains 25–40 points**, every mean rises to ~89, and the two production arms converge near 80%. Model tier still matters, but far less once
   closure is deterministic.
-- **The behavioural eval now builds its prompt from the PRODUCTION orchestrator skill.** A marked `eval-routing-contract` block in `skills/orchestrator/SKILL.md` is read verbatim by
+- **The behavioural eval now builds its prompt from the PRODUCTION orchestrator skill.** A marked `eval-routing-contract` block in `skills/skill-agent-stack/SKILL.md` is read verbatim by
   `scripts/evaluate_routing.py`; the routing principles that were a literal inside the evaluator are gone. Until now the eval could have scored a contract production did not use, and **no check would
   have noticed** — an eval that drifts from the artefact it measures is worse than no eval, because it reports confidence about the wrong thing. Prompt version `AGENT_STACK_ROUTING_EVAL_V3`.
 - **A validator guard, negative-tested**, refuses a missing or renamed contract block, so the arrangement cannot be silently undone. Missing markers raise rather than fall back to a default: a silent
@@ -364,9 +390,9 @@
 
 ### Notes
 
-- **I walked a recorded trap a second time.** The v4 frozen set was published, then `skills/orchestrator/SKILL.md` was edited mid-run — the exact failure MEMORY.md already lists. It changed the stamp,
-  not the experiment, because that file was not a prompt input at the time, and all three arms stamp identical provenance so the comparison is internally valid. Knowing the rule did not prevent it;
-  the per-row stamp did, by making the drift visible in seconds. The stamp being wrong in *design* — covering a neighbour rather than an input — is fixed above.
+- **I walked a recorded trap a second time.** The v4 frozen set was published, then `skills/skill-agent-stack/SKILL.md` was edited mid-run — the exact failure MEMORY.md already lists. It changed the
+  stamp, not the experiment, because that file was not a prompt input at the time, and all three arms stamp identical provenance so the comparison is internally valid. Knowing the rule did not prevent
+  it; the per-row stamp did, by making the drift visible in seconds. The stamp being wrong in *design* — covering a neighbour rather than an input — is fixed above.
 - Static regression after the contract move: closure on the stored v3 routes is unchanged at 34/60 → 47/60, confirming the refactor moved the source of the text and nothing else.
 
 ## 20260901_2130
@@ -491,7 +517,7 @@
 ### Added
 
 - **`[[precedence]]` in `routing.toml`** — four ownership tie-breaks, each naming the discriminating question and both answers, replacing inference from overlapping `owns` prose:
-  product-vs-implementation, artefact-vs-domain-review, component-cannot-architect-itself, research-vs-economics. Mirrored as a table in `skills/orchestrator/SKILL.md` Step 3.
+  product-vs-implementation, artefact-vs-domain-review, component-cannot-architect-itself, research-vs-economics. Mirrored as a table in `skills/skill-agent-stack/SKILL.md` Step 3.
 - **Structural validation of precedence rules** in `scripts/validate_agent_stack.py`: both branches must resolve to real and *different* personas, ids must be unique, and all four prose fields must be
   present. Proven able to fail by pointing both branches of `research-vs-economics` at the same persona.
 
@@ -561,6 +587,7 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260903_0330](#20260903_0330)
 - [20260903_0230](#20260903_0230)
 - [20260903_0200](#20260903_0200)
 - [20260903_0030](#20260903_0030)

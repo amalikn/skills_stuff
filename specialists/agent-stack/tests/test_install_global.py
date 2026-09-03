@@ -35,9 +35,9 @@ class GlobalInstallTests(unittest.TestCase):
         targets = INSTALL.expected_links(self.home)
 
         self.assertIn(self.home / ".claude/agents/orchestrator-follett.md", targets)
-        self.assertIn(self.home / ".claude/skills/orchestrator", targets)
-        self.assertIn(self.home / ".codex/skills/orchestrator", targets)
-        self.assertIn(self.home / ".agents/skills/orchestrator", targets)
+        self.assertIn(self.home / ".claude/skills/skill-agent-stack", targets)
+        self.assertIn(self.home / ".codex/skills/skill-agent-stack", targets)
+        self.assertIn(self.home / ".agents/skills/skill-agent-stack", targets)
 
     def test_dry_run_changes_nothing(self) -> None:
         expected = self.installed_links()
@@ -105,8 +105,8 @@ class GlobalInstallTests(unittest.TestCase):
         INSTALL.install(self.home, clients={"claude", "codex", "agents"})
 
         self.assertEqual("keep", existing.read_text(encoding="utf-8"))
-        self.assertTrue((self.home / ".codex/skills/orchestrator").is_symlink())
-        self.assertTrue((self.home / ".agents/skills/orchestrator").is_symlink())
+        self.assertTrue((self.home / ".codex/skills/skill-agent-stack").is_symlink())
+        self.assertTrue((self.home / ".agents/skills/skill-agent-stack").is_symlink())
 
     def test_explicit_include_restores_a_default_exclusion(self) -> None:
         skill_creator = self.home / ".codex/skills/skill-creator"

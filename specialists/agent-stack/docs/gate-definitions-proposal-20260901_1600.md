@@ -14,7 +14,7 @@
 > **Owner of the replacement:** [routing.toml](routing.toml) `[[gates]]` and `[[capabilities]]` are authoritative. See [MEMORY.md](MEMORY.md) for why each decision was made.
 
 Status: **APPLIED 2026-09-01, then twice revised — see the supersession banner above.** When written, this document's status field recorded the gates as unproposed-and-unapplied, and said that
-`routing.toml`, `scripts/evaluate_routing.py`, and `skills/orchestrator/SKILL.md` were unchanged. That was true on the morning of 2026-09-01 and is no longer true of any of the three.
+`routing.toml`, `scripts/evaluate_routing.py`, and `skills/skill-agent-stack/SKILL.md` were unchanged. That was true on the morning of 2026-09-01 and is no longer true of any of the three.
 
 Revision 2 (2026-09-01), incorporating operator review. Triggers are derived from the 60-case corpus, not invented. Revision 1 proposed `gate → mandatory persona`; that was rejected and is replaced by
 a capability model — see [What changed in revision 2](#what-changed-in-revision-2).
@@ -259,7 +259,7 @@ without spending another 60 model calls.
 
 ## Proposed orchestrator change
 
-`skills/orchestrator/SKILL.md` gains a gate step, so the runtime and the eval share one contract:
+`skills/skill-agent-stack/SKILL.md` gains a gate step, so the runtime and the eval share one contract:
 
 1. Classify the task and identify decision ownership (unchanged).
 2. **Evaluate the gates in `routing.toml`; record which are true and why.**

@@ -46,7 +46,7 @@ capabilities:
   - {id: github-explorer, kind: package, path: skills/github-explorer, portability: tool-specific}
   - {id: market-sizing-analysis, kind: package, path: skills/market-sizing-analysis, portability: general}
   - {id: micro-saas-launcher, kind: package, path: skills/micro-saas-launcher, portability: general}
-  - {id: orchestrator, kind: package, path: skills/orchestrator, portability: general}
+  - {id: skill-agent-stack, kind: package, path: skills/skill-agent-stack, portability: general}
   - {id: ph-community-outreach, kind: package, path: skills/ph-community-outreach, portability: general}
   - {id: premortem, kind: package, path: skills/premortem, portability: general}
   - {id: pricing-strategy, kind: package, path: skills/pricing-strategy, portability: general}

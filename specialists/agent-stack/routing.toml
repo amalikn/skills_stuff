@@ -2,7 +2,7 @@ version = 1
 purpose = "Canonical Agent Stack routing catalogue. Personas own judgement; skills provide repeatable procedures or tools."
 
 [routing]
-default_entry = "orchestrator"
+default_entry = "skill-agent-stack"
 normal_persona_min = 1
 normal_persona_max = 4
 critic_on_material_decisions = true
@@ -269,7 +269,7 @@ primary_capabilities = ["commercial-strategy"]
 supporting_capabilities = ["product-definition"]
 
 [[skills]]
-id = "orchestrator"
+id = "skill-agent-stack"
 intents = ["multi-domain", "orchestration", "complex-decision", "integrated-review"]
 personas = ["orchestrator-follett"]
 execution = "analysis"

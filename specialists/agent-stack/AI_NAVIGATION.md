@@ -88,7 +88,7 @@ documentation side.
 
 ### Orchestration and routing behaviour
 
-Read [routing.toml](routing.toml), `skills/orchestrator/SKILL.md`, `skills/team/SKILL.md`, `personas/orchestrator-follett.md`, then [ROUTING_EVALS.md](ROUTING_EVALS.md) and
+Read [routing.toml](routing.toml), `skills/skill-agent-stack/SKILL.md`, `skills/team/SKILL.md`, `personas/orchestrator-follett.md`, then [ROUTING_EVALS.md](ROUTING_EVALS.md) and
 [evals/routing-cases.toml](evals/routing-cases.toml).
 
 Routing changes need a regression case. Do not change dispatch behaviour without adding or updating an eval. The corpus holds 60 cases across six workload families — `networking-infrastructure`,
@@ -140,7 +140,7 @@ If files disagree:
 | Change type                                 | Update                                                                                                     |
 | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | Persona or skill added, removed, or renamed | `manifest.yaml`, `routing.toml`, the skill's `SKILL.md`, then `just check` and `just governance`           |
-| Routing or dispatch behaviour changed       | `routing.toml`, `skills/orchestrator/SKILL.md`, `evals/routing-cases.toml`, then `just routing-eval-check` |
+| Routing or dispatch behaviour changed       | `routing.toml`, `skills/skill-agent-stack/SKILL.md`, `evals/routing-cases.toml`, then `just routing-eval-check` |
 | Skill quality rule changed                  | `SKILL_STANDARD.md`, and `skills/skill-creator/scripts/quick_validate.py` if the accepted key set moved    |
 | Runtime or environment rule changed         | `RUNTIME.md`, `.mise.toml`, `justfile`                                                                     |
 | Upstream baseline re-recorded               | `upstream-state.json` via `just record-current`, never by hand                                             |

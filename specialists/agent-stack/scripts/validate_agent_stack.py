@@ -207,11 +207,11 @@ def main() -> int:
 
     # The behavioural eval builds its prompt from a marked block inside the orchestrator skill, so production and eval cannot state different routing contracts.
     # Deleting or renaming the markers would silently return the eval to scoring a contract nobody uses — the drift this arrangement exists to prevent.
-    orchestrator = ROOT / "skills" / "orchestrator" / "SKILL.md"
+    orchestrator = ROOT / "skills" / "skill-agent-stack" / "SKILL.md"
     if orchestrator.exists():
         text = orchestrator.read_text()
         if "<!-- BEGIN eval-routing-contract -->" not in text or "<!-- END eval-routing-contract -->" not in text:
-            fail(errors, "skills/orchestrator/SKILL.md is missing the eval-routing-contract block that scripts/evaluate_routing.py builds its prompt from")
+            fail(errors, "skills/skill-agent-stack/SKILL.md is missing the eval-routing-contract block that scripts/evaluate_routing.py builds its prompt from")
 
     # `runtime_required` is COMPUTED from the selected skills' execution class, so a case asserting it true is really asserting that a tool-class skill must be
     # selected. Asserting the flag while only PREFERRING the skill that causes it is a case contradicting itself: it hard-requires an outcome whose sole cause it

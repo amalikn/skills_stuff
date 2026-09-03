@@ -20,7 +20,7 @@ Added `routing.toml` as Agent Stack's routing catalogue:
 - runtime prerequisites and safety notes;
 - mandatory gates for economics, architecture, material-risk challenge, evidence-heavy work, and product experience.
 
-Rewrote `skills/orchestrator/SKILL.md` and `skills/team/SKILL.md` around decision ownership, direct-vs-orchestrated routing, minimal-team selection, tool prerequisite checks, sequence/hand-offs, gate
+Rewrote `skills/skill-agent-stack/SKILL.md` and `skills/team/SKILL.md` around decision ownership, direct-vs-orchestrated routing, minimal-team selection, tool prerequisite checks, sequence/hand-offs, gate
 logic, and explicit anti-team-inflation rules.
 
 Added `evals/routing-cases.toml` plus unit tests for representative routes.

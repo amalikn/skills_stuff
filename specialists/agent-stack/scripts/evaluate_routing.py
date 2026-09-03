@@ -72,7 +72,7 @@ def load_data(cases: Path | None = None) -> tuple[dict[str, Any], dict[str, Any]
     return tomllib.loads(ROUTING.read_text()), tomllib.loads((cases or CASES).read_text())
 
 
-ORCHESTRATOR = ROOT / "skills" / "orchestrator" / "SKILL.md"
+ORCHESTRATOR = ROOT / "skills" / "skill-agent-stack" / "SKILL.md"
 
 
 def _sha(path: Path) -> str | None:
@@ -318,7 +318,7 @@ def routing_contract() -> str:
 
     Until 2026-09-02 this text lived in `evaluation_prompt` as a literal. That meant the behavioural eval could score a contract production did not use, and
     nothing would detect the divergence — an eval drifting from the artefact it measures is worse than no eval, because it reports confidence about the wrong
-    thing. Sourcing it from `skills/orchestrator/SKILL.md` makes the two impossible to separate, and makes `orchestrator_sha` a genuine prompt input rather than
+    thing. Sourcing it from `skills/skill-agent-stack/SKILL.md` makes the two impossible to separate, and makes `orchestrator_sha` a genuine prompt input rather than
     an advisory neighbour.
 
     Missing markers raise rather than fall back to a default: a silent fallback would restore exactly the drift this removes.

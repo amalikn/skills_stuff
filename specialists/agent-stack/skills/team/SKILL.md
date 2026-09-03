@@ -1,13 +1,13 @@
 ---
 name: team
-description: Form the smallest sufficient temporary persona team for a task using Agent Stack routing ownership and non-overlap rules. Normally invoked by orchestrator rather than directly by the operator.
+description: Form the smallest sufficient temporary persona team for a task using Agent Stack routing ownership and non-overlap rules. Normally invoked by skill-agent-stack rather than directly by the operator.
 argument-hint: "[task description]"
 disable-model-invocation: true
 ---
 
 # Form a Temporary Agent Stack Team
 
-Use root `routing.toml` and the persona files under `personas/`. This skill chooses **personas only**; `orchestrator` separately chooses procedural skills.
+Use root `routing.toml` and the persona files under `personas/`. This skill chooses **personas only**; `skill-agent-stack` separately chooses procedural skills.
 
 ## Task
 

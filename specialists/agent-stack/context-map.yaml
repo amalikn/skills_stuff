@@ -113,7 +113,7 @@ routing:
     description: "Dispatch behaviour, persona selection, team composition, routing gates."
     read:
       - "routing.toml"
-      - "skills/orchestrator/SKILL.md"
+      - "skills/skill-agent-stack/SKILL.md"
       - "skills/team/SKILL.md"
       - "personas/orchestrator-follett.md"
       - "ROUTING_EVALS.md"
@@ -209,7 +209,7 @@ update_rules:
   routing_behaviour_change:
     update:
       - "routing.toml"
-      - "skills/orchestrator/SKILL.md"
+      - "skills/skill-agent-stack/SKILL.md"
       - "evals/routing-cases.toml"
 
   skill_quality_rule_change:

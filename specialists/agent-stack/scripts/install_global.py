@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -142,6 +143,32 @@ def link_state(target: Path, source: Path) -> str:
     return "collision"
 
 
+def orphans(home: Path, clients: set[str], declared: set[Path]) -> list[tuple[str, str]]:
+    """Links in the consumer directories that point into this checkout but are no longer declared by the manifest.
+
+    A status report built only from declared links cannot see these, so it reports every declared link "correct" while a dead one sits beside it. That is the
+    exact shape of a false-confidence check. Measured 20260903: renaming the `orchestrator` skill package left three broken links — one per client — and
+    `--status` reported 123 correct without mentioning them, because a link nothing declares is a link nothing looks at.
+
+    Read with os.readlink rather than resolve(): a broken symlink still HAS a target, and that target is what identifies it as ours.
+    """
+    found: list[tuple[str, str]] = []
+    root = str(SCRIPT_ROOT.resolve())
+    for client in sorted(clients):
+        for rel in CLIENT_ROOTS[client].values():  # values, not keys — the mapping is {purpose: path}
+            directory = home / rel
+            if not directory.is_dir():
+                continue
+            for entry in sorted(directory.iterdir()):
+                if not entry.is_symlink() or entry in declared:
+                    continue
+                target = os.readlink(entry)
+                if target.startswith(root):
+                    state = "orphan-broken" if not entry.exists() else "orphan-live"
+                    found.append((str(entry), f"{state} -> {target}"))
+    return found
+
+
 def preflight(links: dict[Path, Path]) -> tuple[list[Path], list[Path], list[Path]]:
     """Return missing, correct, and conflicting destinations before any write."""
     missing: list[Path] = []
@@ -248,10 +275,12 @@ def main() -> int:
     if args.status or args.dry_run or args.install:
         require_canonical_checkout()
     if args.status:
-        result = {
-            str(target): [link_state(target, source)]
-            for target, source in selected_links(args.home, clients, exclude, set(args.include)).items()
-        }
+        links = selected_links(args.home, clients, exclude, set(args.include))
+        result = {str(target): [link_state(target, source)] for target, source in links.items()}
+        # Reported alongside the declared links, never instead of them: an orphan is not a failure of any declared link, and hiding it inside the same counts
+        # would make a clean report ambiguous rather than complete.
+        for path, state in orphans(args.home, clients, set(links)):
+            result[path] = [state]
         print(json.dumps(result, indent=2, sort_keys=True))
     elif args.uninstall:
         print(serialise(uninstall(args.home, clients, exclude, set(args.include))))

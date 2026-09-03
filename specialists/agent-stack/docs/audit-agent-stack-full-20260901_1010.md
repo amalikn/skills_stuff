@@ -51,7 +51,7 @@ The three highest-value improvements are transactional hardened sync, a runnable
 
 **FACT:** The project is an English-only extraction of Auto Company personas and skills that intentionally excludes autonomous loops, consensus machinery, daemons, and other no-human-gate patterns (`README.md:3-4`). It contains 15 personas and 37 skills: 36 `SKILL.md` packages plus `skills/frontend-design.md`. The manifest lists 52 capabilities (`manifest.yaml:14-71`).
 
-**FACT:** `orchestrator` is the intended normal entry point. Direct specialist use is limited to a named specialist or deliberately narrow task (`skills/orchestrator/SKILL.md:10-16`). `orchestrator-follett` supplies persona-aware coordination guidance (`personas/orchestrator-follett.md:3-25`).
+**FACT:** `orchestrator` is the intended normal entry point. Direct specialist use is limited to a named specialist or deliberately narrow task (`skills/skill-agent-stack/SKILL.md:10-16`). `orchestrator-follett` supplies persona-aware coordination guidance (`personas/orchestrator-follett.md:3-25`).
 
 **FACT:** This directory is inside the parent `skills_stuff` Git checkout. Global installation resolves the primary checkout through Git before linking (`scripts/install_global.py:37-54`).
 
@@ -80,7 +80,7 @@ Claude    Codex   ~/.agents   project-local manual link
 
 **FACT:** The installer creates verified individual absolute symlinks for persona files, packages, and the frontend adapter. It rejects a non-primary worktree, reconciles manifest and source inventory, preflights all targets, and deletes only links it created in a failed install (`scripts/install_global.py:50-96, 135-208`).
 
-**FACT:** `upstream-state.json` records 186 imported upstream files, 17 in translated mode. `personas/orchestrator-follett.md` and `skills/orchestrator/SKILL.md` are intentional local extensions outside that import baseline.
+**FACT:** `upstream-state.json` records 186 imported upstream files, 17 in translated mode. `personas/orchestrator-follett.md` and `skills/skill-agent-stack/SKILL.md` are intentional local extensions outside that import baseline.
 
 **INFERENCE:** Canonical ownership is strong for global installation but weaker for project-local consumption: README gives a manual `ln -s` with no companion status, repair, or unlink workflow (`README.md:39-50`).
 
@@ -113,11 +113,11 @@ Claude    Codex   ~/.agents   project-local manual link
 4. It requires independent critique for material, irreversible, or weakly evidenced work.
 5. It returns facts, inference, disagreement, recommendation, risks, and next action as one synthesis.
 
-**FACT:** This is defined in `skills/orchestrator/SKILL.md:8-47`; `team` supplies the role matrix and two-to-five rule (`skills/team/SKILL.md:16-59`).
+**FACT:** This is defined in `skills/skill-agent-stack/SKILL.md:8-47`; `team` supplies the role matrix and two-to-five rule (`skills/team/SKILL.md:16-59`).
 
 ### Scenario B: direct specialist invocation
 
-**FACT:** Direct invocation fits a named specialist or narrow one-skill task, such as a pre-mortem or browser workflow (`skills/orchestrator/SKILL.md:15-16`). It does not fit cross-functional product, architecture, pricing, or deployment decisions.
+**FACT:** Direct invocation fits a named specialist or narrow one-skill task, such as a pre-mortem or browser workflow (`skills/skill-agent-stack/SKILL.md:15-16`). It does not fit cross-functional product, architecture, pricing, or deployment decisions.
 
 ### Scenario C: global installation
 
@@ -148,7 +148,7 @@ Claude    Codex   ~/.agents   project-local manual link
 - **FACT:** Primary-worktree validation avoids global links into expendable worktrees (`scripts/install_global.py:37-54`).
 - **FACT:** Sync protects local editorial work: divergence becomes `manual_merge`; removal becomes `remove_review`; translated updates remain review-only (`scripts/sync_auto_company.py:149-178`).
 - **FACT:** Translation policy preserves reviewed English wording instead of whole-file model regeneration (`translation-policy.md:3-18`).
-- **FACT:** Orchestrator preserves operator decision rights and prohibits loops, daemons, forced consensus, and cross-project memory (`skills/orchestrator/SKILL.md:28-34`).
+- **FACT:** Orchestrator preserves operator decision rights and prohibits loops, daemons, forced consensus, and cross-project memory (`skills/skill-agent-stack/SKILL.md:28-34`).
 
 ## 7. Architectural Findings
 
@@ -167,7 +167,7 @@ Claude    Codex   ~/.agents   project-local manual link
 | A6  | P1       | **FACT:** `startup-business-models` references six absent local resources, missing `data/sources.json`, and four absent related skills                                                  |
 |     |          |   (`skills/startup-business-models/SKILL.md:27-37, 85-109`).                                                                                                                        |
 | A7  | P1       | **INFERENCE:** Normal routing depends on model judgement because manifest lacks semantics and no behavioural eval tests selection, disagreement, or direct-vs-orchestrated routing      |
-|     |          |   (`skills/orchestrator/SKILL.md:20-22`, `manifest.yaml:14-66`).                                                                                                                    |
+|     |          |   (`skills/skill-agent-stack/SKILL.md:20-22`, `manifest.yaml:14-66`).                                                                                                                    |
 | A8  | P2       | **FACT:** Manifest says `directory-symlink`; global install creates individual links. README calls all 37 entries packages despite one single-file adapter.                             |
 | A9  | P2       | **FACT:** `orchestrator-follett` lacks YAML frontmatter. Runtime acceptance is **UNKNOWN** and untested.                                                                                    |
 | A10 | P2       | **INFERENCE:** Installer parses manifest paths with narrow regex rather than YAML, so formatting changes are brittle (`scripts/install_global.py:57-80`).                               |
@@ -180,7 +180,7 @@ Claude    Codex   ~/.agents   project-local manual link
 
 ## 8. Orchestrator Findings
 
-**FACT:** The prompt-level contract is strong: scope, decision owner, evidence, constraints, team/gates, bounded hand-offs, critique, one synthesis, and stop conditions (`skills/orchestrator/SKILL.md:18-34`).
+**FACT:** The prompt-level contract is strong: scope, decision owner, evidence, constraints, team/gates, bounded hand-offs, critique, one synthesis, and stop conditions (`skills/skill-agent-stack/SKILL.md:18-34`).
 
 **FACT:** Its inventory cannot determine routing. Manifest lacks domain, precedence, dependencies, safety tier, and tool requirements. `team` maps personas only (`skills/team/SKILL.md:16-55`).
 

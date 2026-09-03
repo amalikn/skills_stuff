@@ -131,7 +131,7 @@ venv Python by path via `{{py}}` with a `_require-venv` guard, replacing an impl
   "direct-skill case unnecessarily selected persona" rule is gone, because a direct route's real contract is right skill / no forbidden persona / no team, all already hard-scored. Skill + one
   accountable owner is now an acceptable direct route; skill + a committee is not, and `max_personas = 1` catches that.
 - [x] ~~**Tie-break rules**~~ — DONE 2026-09-01. `routing.toml` gained an `[[precedence]]` section with four rules, each naming the discriminating question and both answers: product-vs-implementation,
-  artefact-vs-domain-review, component-cannot-architect-itself, research-vs-economics. Mirrored as a table in `skills/orchestrator/SKILL.md` Step 3 and enforced structurally by
+  artefact-vs-domain-review, component-cannot-architect-itself, research-vs-economics. Mirrored as a table in `skills/skill-agent-stack/SKILL.md` Step 3 and enforced structurally by
   `scripts/validate_agent_stack.py` (both branches must resolve to real, *different* personas).
 - [x] ~~**Harness gap: result rows carry no model/provider field**~~ — CLOSED. Rows now stamp `run.model` / `run.provider` / `run.runner` alongside the four content SHAs; pass the provider, model and
   runner labels on every scored run.
@@ -221,6 +221,14 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 ---
 
 ## Session history (summaries — full detail in memory-keeper)
+
+- **20260902/03 — holdout spent, gate collapse localised, pivot to field use.** Fixed the scorer's one-sided gate penalty and made coverage and the freeze checkable BEFORE spending evidence; authored
+  24 blind holdout cases and spent them (16/19, all three failures ownership); found gate over-assertion is system-wide since gates were defined, then localised it with A/B1/B2 — isolated judgement is
+  a real classifier, integrated it is a constant, and the collapse costs routing nothing because production makes only the harmless error.
+- **Claude Code retired as the evaluation runner** after session limits cost 5 of 24 holdout cases silently and 55 of 60 in B1; DeepSeek Flash qualified 60/60 at realistic payload and is the default
+  arm. Runner qualification, freeze and run-index guards now gate any corpus-spending run.
+- **Operator pivot: use it on real projects.** Every eval tested agreement with a corpus, which cannot detect a correct route that fails to help. Capture moved into the orchestrator skill at Step 10
+  so it happens without operator commands; replay, shadow-mode and Holdout 2 parked and conditional on what the field log says.
 
 ### 2026-09-02 — Deterministic closure, Baseline v4, one persona model, Archcore accepted `KEEP`
 
@@ -335,6 +343,14 @@ Do **not** tune against the frozen 60. Add a case only to cover a new routing co
 ---
 
 ## Memory pointers (navigation only — content is above)
+
+**Added 20260903**, memory-keeper channel `agent-stack`: `agent-stack.asymmetric-gate-scoring` (rule 0011, coverage reporting, closure_sha, the freeze made checkable) · `agent-stack.holdout24-spent`
+(blind authoring, 16/19, the three ownership failures, status drift caught) · `agent-stack.gate-collapse-finding` (system-wide over-assertion, A/B1/B2, the conditional breakdown that reverses the
+aggregate) · `agent-stack.runner-qualification-and-claude-retirement` (spec 0006 + Amendment 1, session limits, Flash 60/60, the recipe quoting defect) · `agent-stack.field-use-and-governance-infra`
+(run index, docs reorg, field use, spec 0008, the pivot).
+
+Checkpoints: memory-keeper `slurp-20260903-holdout-gatecollapse-fielduse` (cb446cde) · mcp-project-context `slurp-20260903-holdout-gatecollapse-fielduse` (1023b9ad). Project-context ninth-pass note on
+channel `agent-stack` of parent `skills_stuff` (b8c5525e-3e2f-4fb5-bf87-e5751f3ad49c).
 
 **Added 2026-09-02**, memory-keeper channel `agent-stack`: `agent-stack.deterministic-closure` (the module, its two self-caught defects, the denominator fix and the re-report) ·
 `agent-stack.baseline-v4-and-eval-contract` (three-arm results, the contract unification, the trap walked twice) · `agent-stack.routing-rules-resolution-and-policy` (P1, the declined recommendation

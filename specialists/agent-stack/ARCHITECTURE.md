@@ -28,7 +28,7 @@ Nothing here runs as a service. There is no daemon, no loop, and no background a
 
 ## Dispatch flow
 
-`orchestrator` is the single normal entry point. A task goes to it; it does not require the operator to pick a specialist first.
+`skill-agent-stack` is the single normal entry point. A task goes to it; it does not require the operator to pick a specialist first.
 
 1. Classify the task and identify decision ownership from `routing.toml`.
 2. Choose the narrowest sufficient route — a direct skill for a narrow procedure, one persona plus skills for a single-domain decision, or a small sequenced team for genuinely cross-domain work.
