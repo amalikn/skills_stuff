@@ -1,5 +1,8 @@
 import importlib.util
+import io
+import shutil
 import sys
+import tempfile
 import tomllib
 import unittest
 from pathlib import Path
@@ -223,28 +226,40 @@ class RoutingBehaviorTests(unittest.TestCase):
         spec.loader.exec_module(m)
         return m
 
+    def _run(self, pn, argv, stdin=None):
+        """Drive the REAL parser rather than a hand-built Namespace.
+
+        A hand-built Namespace drifts from the CLI silently: adding an argument leaves the tests constructing the old shape, and they fail for a reason that has
+        nothing to do with the behaviour under test. Observed here on 20260903, when the gap arguments broke a note-writing test. Parsing argv means the tests
+        exercise the defaults the CLI actually supplies.
+        """
+        real_in, real_argv = sys.stdin, sys.argv
+        try:
+            if stdin is not None:
+                sys.stdin = io.StringIO(stdin)
+            sys.argv = ["persona_note.py", *argv]
+            return pn.main()
+        finally:
+            sys.stdin, sys.argv = real_in, real_argv
+
     def test_incomplete_run_is_visible_as_incomplete(self):
         """Dispatch recorded before the work is what separates "the run died" from "we only wanted these two"."""
-        import tempfile, argparse
         pn = self._persona_note()
         with tempfile.TemporaryDirectory() as d:
-            pn.cmd_dispatch(argparse.Namespace(run_dir=d, persona=["a", "b", "c", "d"], task="t"))
+            self._run(pn, ["dispatch", "--run-dir", d, "--task", "t",
+                           "--persona", "a", "--persona", "b", "--persona", "c", "--persona", "d"])
             m = pn.load_manifest(Path(d))
             self.assertEqual(sorted(m["dispatched"]), ["a", "b", "c", "d"])
             self.assertEqual(m["returned"], [])
             self.assertFalse(m["complete"], "a run with nothing returned must not read as complete")
 
     def test_returned_notes_survive_and_are_labelled_not_the_verdict(self):
-        import tempfile, argparse, io
         pn = self._persona_note()
         with tempfile.TemporaryDirectory() as d:
-            pn.cmd_dispatch(argparse.Namespace(run_dir=d, persona=["cfo-campbell", "critic-munger", "qa-bach"], task="t"))
-            real_stdin = sys.stdin
-            try:
-                sys.stdin = io.StringIO("break-even needs 115-134% of a 50-unit pilot")
-                pn.cmd_write(argparse.Namespace(run_dir=d, persona="cfo-campbell"))
-            finally:
-                sys.stdin = real_stdin
+            self._run(pn, ["dispatch", "--run-dir", d, "--task", "t",
+                           "--persona", "cfo-campbell", "--persona", "critic-munger", "--persona", "qa-bach"])
+            self._run(pn, ["write", "--run-dir", d, "--persona", "cfo-campbell"],
+                      stdin="break-even needs 115-134% of a 50-unit pilot")
             note = (Path(d) / "cfo-campbell.md").read_text()
             self.assertIn("115-134%", note, "the analysis itself must survive")
             self.assertIn("not the verdict", note, "a persona note must say it is not the answer")
@@ -254,15 +269,45 @@ class RoutingBehaviorTests(unittest.TestCase):
 
     def test_an_empty_analysis_is_refused(self):
         """An empty note would read as a returned persona that said nothing, which is worse than a missing one."""
-        import tempfile, argparse, io
         pn = self._persona_note()
         with tempfile.TemporaryDirectory() as d:
-            real_stdin = sys.stdin
-            try:
-                sys.stdin = io.StringIO("   \n")
-                self.assertEqual(pn.cmd_write(argparse.Namespace(run_dir=d, persona="x")), 1)
-            finally:
-                sys.stdin = real_stdin
+            self.assertEqual(self._run(pn, ["write", "--run-dir", d, "--persona", "x"], stdin="   \n"), 1)
             self.assertFalse((Path(d) / "x.md").exists())
+
+    # --- Declared gaps: the library's own record of what it was missing -----------------------------------------------------------------------------
+
+    def _proposer(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("propose_evolution", ROOT / "scripts" / "propose_evolution.py")
+        m = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = m
+        spec.loader.exec_module(m)
+        return m
+
+    def test_a_declared_gap_survives_the_project_being_deleted(self):
+        """The reason the local log exists. A gap is a statement about THIS library, so it cannot live only in a repo that may vanish or that we may not read."""
+        pn, pe = self._persona_note(), self._proposer()
+        with tempfile.TemporaryDirectory() as d:
+            log = Path(d) / "capability-gaps.jsonl"
+            pn.GAP_LOG = pe.GAP_LOG = log
+            run = Path(d) / "project" / "r1"
+            self._run(pn, ["write", "--run-dir", str(run), "--persona", "cfo-campbell", "--project", "doomed",
+                           "--gap-inadequate", "financial-unit-economics: no duty rate input"], stdin="body")
+            shutil.rmtree(Path(d) / "project")
+            gaps = pe.declared_gaps([{"run_dir": str(run), "project": "doomed"}])
+            self.assertEqual(len(gaps), 1, "a deleted project must not take the library's growth signal with it")
+            self.assertEqual(gaps[0]["project"], "doomed")
+
+    def test_a_gap_reachable_by_both_paths_is_counted_once(self):
+        """Local log and project manifest both hold it. Double-counting would carry a single anecdote over the acting threshold on its own."""
+        pn, pe = self._persona_note(), self._proposer()
+        with tempfile.TemporaryDirectory() as d:
+            log = Path(d) / "capability-gaps.jsonl"
+            pn.GAP_LOG = pe.GAP_LOG = log
+            run = Path(d) / "project" / "r1"
+            self._run(pn, ["write", "--run-dir", str(run), "--persona", "cfo-campbell", "--project", "p",
+                           "--gap-inadequate", "security-audit: no threat model step"], stdin="body")
+            self.assertTrue((run / "MANIFEST.json").is_file(), "the manifest path must genuinely still be readable")
+            self.assertEqual(len(pe.declared_gaps([{"run_dir": str(run), "project": "p"}])), 1)
 
 if __name__ == "__main__": unittest.main()

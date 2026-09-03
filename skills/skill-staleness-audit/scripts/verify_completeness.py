@@ -40,7 +40,13 @@ SWEEP_EXEMPT = ("/archive/", "CHANGELOG.md", "/.git/", "/.ai-context/", "/.remem
                 # the snapshot dir is `.staleness-audit-snapshot-<stamp>/` -- matched NEITHER
                 # ".staleness-audit/" nor "-snapshots/", so the gate scanned its own pre-fix
                 # copy for surviving old values and would fail on its own scratch (2026-08-26)
-                ".staleness-audit-snapshot")
+                ".staleness-audit-snapshot",
+                # Point-in-time backup trees. A backup records what a file SAID on a date; rewriting it to clear a
+                # surviving old value destroys the only evidence of the pre-change state, which is the same reason
+                # `source-captures/` is exempt. Added 2026-09-03 after `.agent-stack-update-backups/<stamp>/` failed
+                # the gate on a repo whose live tree was fully corrected -- and where an earlier session had already
+                # modified one such backup by accident and had to revert it.
+                "-update-backups/", "/backups/", ".backup/")
 
 HERE = Path(__file__).resolve().parent
 
@@ -66,6 +72,50 @@ def check_state(root: Path, fails: list[str], warns: list[str]) -> dict:
         if str(n) not in data.get("phases", {}):
             fails.append(f"state: phase {n} has no receipt — it was skipped or never recorded")
     return data
+
+
+def strip_jsonc_comments(raw: str) -> str:
+    r"""Remove // and /* */ comments from JSONC, WITHOUT touching string literals.
+
+    A regex cannot do this. `"@/*": ["./src/*"]` is an ordinary tsconfig path alias, and `/\*.*?\*/` starts matching inside that string and runs to the next
+    `*/` anywhere later in the file, silently destroying structure — the parse then fails with "Invalid control character", pointing at a line that is perfectly
+    fine. Observed 2026-09-03 while adding JSONC support, which is the skill's own rule about round-trip fidelity probes arriving by the short route.
+
+    So: one pass, tracking whether we are inside a string and whether the previous character escaped this one. Comments are replaced by a space rather than
+    deleted so byte offsets in any subsequent error message stay near the truth.
+    """
+    out = []
+    i, n = 0, len(raw)
+    in_str = esc = False
+    while i < n:
+        c = raw[i]
+        if in_str:
+            out.append(c)
+            if esc:
+                esc = False
+            elif c == "\\":
+                esc = True
+            elif c == '"':
+                in_str = False
+            i += 1
+            continue
+        if c == '"':
+            in_str = True
+            out.append(c)
+            i += 1
+            continue
+        if c == "/" and i + 1 < n and raw[i + 1] == "/":
+            while i < n and raw[i] != "\n":
+                i += 1
+            continue
+        if c == "/" and i + 1 < n and raw[i + 1] == "*":
+            j = raw.find("*/", i + 2)
+            i = n if j == -1 else j + 2
+            out.append(" ")
+            continue
+        out.append(c)
+        i += 1
+    return "".join(out)
 
 
 def check_old_values(root: Path, values: list[str], fails: list[str]) -> int:
@@ -121,7 +171,17 @@ def check_structured(root: Path, fails: list[str], warns: list[str]) -> int:
             continue
         try:
             if p.suffix == ".json":
-                json.loads(p.read_text(encoding="utf-8"))
+                raw = p.read_text(encoding="utf-8")
+                try:
+                    json.loads(raw)
+                except json.JSONDecodeError:
+                    # JSONC. tsconfig.json, components.json and most editor/tooling configs carry // comments and
+                    # trailing commas BY CONVENTION -- the tools that read them accept it, and strict json.loads does
+                    # not. Reporting that as a structural defect is a false positive that survived three audits on one
+                    # repo as a permanently unaccepted residual. Strip comments and trailing commas, then re-parse: a
+                    # file that still fails is genuinely malformed, which is the finding worth having.
+                    stripped = re.sub(r",(\s*[}\]])", r"\1", strip_jsonc_comments(raw))
+                    json.loads(stripped)
                 checked += 1
             elif p.suffix in {".yaml", ".yml"} and has_yaml:
                 yaml.load(p.read_text(encoding="utf-8"), Loader=NoDup)

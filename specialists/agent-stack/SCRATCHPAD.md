@@ -20,7 +20,15 @@ Agent working memory for Agent Stack. Use for: draft plans, terminal output, int
 
 ## Current state
 
-**Phase:** Routing-development phase CLOSED. Deterministic closure is built and measured, the catalogue carries one persona model, the 60-case corpus is frozen, both P1 audit findings are shut, and 29
+**Phase (20260903):** FIELD-USE phase. Every capture and self-improvement mechanism is now built and gated; none of it has consumed real evidence yet — the field log holds 6 entries and
+[evals/capability-gaps.jsonl](evals/capability-gaps.jsonl) is empty. That emptiness is the current state, not an oversight: the loop is instrumented and waiting on actual use. Upstream sync is retired
+and the project is maintained on its own.
+
+**The evolution loop, end to end.** A persona that hits a limit while working declares it (`--gap-missing` / `--gap-inadequate` on Step 7.5); the declaration is written BOTH into the consuming
+project's run manifest and into this repo's own tracked gap log; `just evolve` aggregates repeats into proposals and **never applies them**. Gaps come home because a gap is a statement about *this
+library* — a record living only in a consuming repo dies when that repo moves, is deleted, or turns out to be one Agent Stack must not read.
+
+**Phase (superseded 20260902):** Routing-development phase CLOSED. Deterministic closure is built and measured, the catalogue carries one persona model, the 60-case corpus is frozen, both P1 audit findings are shut, and 29
 Archcore documents are accepted. The next evidence must come from outside this corpus.
 
 **Where routing stands.** With deterministic closure the frozen 60 scores **50/60**, and live on the 20-case holdout: **Flash 13/20 (65.0%) · Pro 15/19 (78.9%) · Claude 16/20 (80.0%)** — every arm
@@ -222,6 +230,16 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ## Session history (summaries — full detail in memory-keeper)
 
+- **20260903 — upstream sync retired, and the residue it left.** `just record-current` still invoked a script deleted six hours earlier: listed in `just --list`, looking live, failing only for whoever
+  ran it. `check_task_recipes` verified prose-to-recipe and had no reverse direction, so a recipe pointing at a vanished script was structurally invisible. The added check fired on the defect
+  immediately. The same sweep found `.archcore/guides/0001-upstream-sync.md` still `accepted` while every recipe it documents was gone, and a false claim in AGENTS.md that `just check` runs the
+  governance gate — it does not.
+- **20260903 — gaps come home.** Declared capability gaps lived only in the consuming project's manifest, with this repo holding a `run_dir` pointer: the same defect class as the 39-of-40 indexed runs
+  whose corpus hash no longer resolves, found the same morning. Raw notes stay with the project because they hold that project's analysis; the gap declaration is about this library, so a copy is
+  tracked here. Verified by deleting an entire consuming project and watching the gap survive.
+- **20260903 — persistence steps.** Step 7.5 keeps each persona analysis as it returns (evidence retention, never resume — the resume mechanism was deliberately not built until `--returned` measures
+  how often runs actually break). Step 9.5 persists the synthesis into the consuming project, which previously happened only where the project had its own convention.
+
 - **20260903 — entry-point skill renamed to `skill-agent-stack`.** Identity changed in the four places that define a package (directory, frontmatter name, `routing.toml` id/default_entry, manifest)
   plus paths and live installs. The `orchestrator-follett` persona and the `orchestrator_sha` stamp were deliberately left alone — the stamp appears in 40 indexed runs and renaming it would break
   their comparability for a cosmetic change.
@@ -310,7 +328,43 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ---
 
+## Residual risk — staleness audit 20260903_2200
+
+A clean gate is not a verified project. What this audit did **not** settle:
+
+- **89 broken path claims remain inside `skills/`**, down from 114. They are dominated by references to a repository layout Agent Stack does not have —
+  paths of the shape ../../tools/integrations/sendgrid.md and similar — inherited at import from a stack whose skills lived beside a `tools/` tree. Not introduced here.
+  `check_skill_package_references` now covers the class that matters most (a skill promising its own scripts or references), and deliberately does not police
+  references *outside* a package, where the correct target is a judgement call rather than a lookup.
+- **`skills/websh/state/*.md` is runtime cache**, not authored content; its broken claims are URL routes (`/front`, `/ask`) that a path scanner reads as paths.
+  Left alone — rewriting a cache to satisfy a scanner is the anti-pattern this skill names.
+- **147 claims need manual verification** (48 counts, 99 uniqueness). The uniqueness claims are the live risk: they were true when written and falsify silently
+  when a second instance appears, leaving nothing to grep for. Not individually re-enumerated this run.
+- **The field log and the gap log are nearly empty** — 6 entries and 0. Every mechanism this project has built for learning from real use is unexercised, so no
+  claim about the router's field behaviour rests on anything but corpus evidence.
+- **39 of 40 indexed runs stamp a corpus hash that no longer resolves.** Known, recorded, and unfixable retrospectively — those runs are not reproducible against
+  today's corpus file.
+- **`graphify-out/GRAPH_REPORT.md`** is named in AI_NAVIGATION's generated-context table and has never been generated here. Marked optional rather than removed,
+  because the tooling exists and the row is a pointer to a capability rather than a claim that a file is present.
+
+### My own error in this audit
+
+I removed a real capability section from `skills/devops/SKILL.md` after reading `find ... | head` — truncated at ten lines — as proof the two scripts did not
+exist. They exist, with underscores where the SKILL.md wrote hyphens; the package has 29 files. Caught in Phase 4 when the artifact worksheet listed
+`skills/devops/scripts/cloudflare_deploy.py` by name, and restored as a two-character fix per line. **`| head` on a discovery command is not evidence of absence**, and absence was the
+whole basis of the finding. Every other package edited was re-verified against a complete listing afterwards.
+
 ## Next actions
+
+**The live item is unchanged and now unblocked: use Agent Stack on real projects and read what it records.** Every mechanism is built; none has evidence. Three things are waiting on the operator
+rather than on work:
+
+- **The 10 rule-0006 corpus cases** — they restate a gate's `default_personas` in `required_personas`, which the contract forbids. Relax the cases or tag them; either is defensible and it is a
+  contract call, not a bug fix.
+- **`.runs` dot-prefix visibility** — persona notes land in a hidden directory inside the consuming project. Hidden keeps it out of the way; hidden also means nobody reads it.
+- **Company-repo risk** — persona notes are the operator's working analysis and must never reach an APN or Activ8me remote. The global policy already covers this shape for `.code-context-notes`;
+  Agent Stack has no equivalent guard yet, and the gap log deliberately carries only the library-facing declaration rather than the analysis.
+
 
 The measurement contract was repaired and frozen on 2026-09-02 **before** any unseen evidence is gathered, because a holdout is single-use: scoring it under a scorer that is later corrected spends the
 holdout and answers nothing. Gate over-assertion now costs 5 points, coverage is reported, and the closure module is stamped into provenance. Frozen SHA set in [MEMORY.md](MEMORY.md), verified by

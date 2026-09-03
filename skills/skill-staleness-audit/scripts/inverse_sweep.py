@@ -56,11 +56,23 @@ from pathlib import Path
 # Files that are expected to describe the shape of the project. A directory named by ANY of them counts
 # as catalogued. Deliberately generous: the finding worth having is "nothing anywhere mentions this",
 # not "it is missing from one particular index".
-DEFAULT_CATALOGS = ("README.md", "AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md", "context-map.yaml",
-                    "SCRATCHPAD.md", "ROADMAP.md", "docs/README.md")
+# Added 2026-09-01: ARCHITECTURE.md, CONVENTIONS.md, scripts/README.md and .archcore/README.md are
+# catalogs in every project skill-ai-it bootstraps - ARCHITECTURE is the component map, scripts/README is
+# the script inventory, .archcore/README indexes the durable documents. Omitting them made a governed repo
+# report 19 orphan directories of which 15 were named in a catalog the sweep simply did not read.
+# manifest.yaml added 2026-09-01: a package-structured project registers every unit by PATH in its manifest, which IS its catalog. Without it the sweep
+# reported 44 false orphans on agent-stack — every skill package — while still correctly finding the real ones.
+DEFAULT_CATALOGS = ("README.md", "AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md", "context-map.yaml", "manifest.yaml",
+                    "SCRATCHPAD.md", "ROADMAP.md", "docs/README.md",
+                    "ARCHITECTURE.md", "CONVENTIONS.md", "scripts/README.md", ".archcore/README.md")
 
+# Build and generator output. Cataloging a compiler's output directory is never right: it is regenerated
+# on every build, it is gitignored, and naming it in a document would make the document wrong the moment the
+# build layout changed. Added 2026-09-01 after `out/` and `graphify-out/cache` were the only orphans left
+# standing on a repo whose real documentation gaps had all been closed.
 SKIP_DIR_PARTS = {".git", "__pycache__", "node_modules", ".venv", "venv", ".pytest_cache",
-                  ".ai-context", ".remember", ".serena", ".staleness-audit"}
+                  ".ai-context", ".remember", ".serena", ".staleness-audit",
+                  "out", "dist", "build", "graphify-out", "coverage", ".next", "target"}
 DOC_SUFFIXES = {".md", ".rst", ".txt"}
 
 
@@ -145,6 +157,17 @@ def find_orphan_dirs(root: Path, cats: str) -> list[str]:
         # lookbehind excludes only word chars and '-', so a normal `parent/leaf/` path still
         # matches while `draw/` does not satisfy a leaf of `raw`.
         if d in cats or f"{d}/" in cats or re.search(rf"(?<![\w-]){re.escape(leaf)}/", cats):
+            continue
+        # A directory INSIDE a catalogued unit is covered by that unit's entry. A manifest registering
+        # 'skills/devops' by path catalogues the package, and 'skills/devops/scripts/tests' is an
+        # implementation detail of it — cataloguing that individually is never right, for the same
+        # reason cataloguing a build directory is never right. Added 2026-09-03 after seven such
+        # directories were reported on every run of a package-structured repo across three audits,
+        # survived as a permanently unaccepted residual, and taught the reader to skim the findings.
+        # Deliberately requires an ANCESTOR PATH, not a leaf name: 'docs/' being mentioned in prose
+        # still does not excuse 'docs/new-subtree', so the finding this exists for is untouched.
+        parts = d.split("/")
+        if any(f"{'/'.join(parts[:i])}/" in cats or "/".join(parts[:i]) in cats for i in range(1, len(parts))):
             continue
         out.append(d)
     return out

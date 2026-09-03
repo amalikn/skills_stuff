@@ -28,14 +28,64 @@ ROUTING = ROOT / "routing.toml"
 
 # Below these counts a pattern is an anecdote. Stated as constants so the thresholds are arguable rather than buried.
 REPEATED_OVERRIDE = 3   # same owner overridden this many times before it is worth a precedence question
+REPEATED_GAP = 2        # the same skill called inadequate this many times before it is worth acting on
 UNUSED_AFTER = 20       # field uses before "never selected" means anything at all
 MIN_ENTRIES = 10        # below this the tool reports the shortfall and proposes nothing
+
+# Agent Stack's own copy of what personas said the library was missing, written at declaration time by scripts/persona_note.py and tracked here in git.
+GAP_LOG = ROOT / "evals" / "capability-gaps.jsonl"
 
 
 def load_rows() -> list[dict[str, Any]]:
     if not FIELD_LOG.is_file():
         return []
     return [json.loads(l) for l in FIELD_LOG.read_text().splitlines() if l.strip()]
+
+
+def declared_gaps(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Every gap a persona declared while working.
+
+    DECLARED, never inferred. A persona knows at the moment it works whether it needed a procedure that does not exist, or reached for one that did not deliver.
+    That judgement cannot be recovered from its prose afterwards, and pretending to recover it by matching words would manufacture findings.
+
+    READ FROM AGENT STACK'S OWN LOG FIRST. The manifests live in consuming projects, and a project can move, be deleted, or be one this library must not read —
+    at which point a gap recorded only there is gone, and the library's growth signal with it. 39 of 40 indexed runs already stamp a corpus hash that no longer
+    resolves; a pointer to evidence elsewhere is not a record. The manifests are still read when reachable, because a run captured before this log existed is
+    still evidence, and because a project may hold gaps from a run whose field-log entry was never written. Duplicates collapse on identity.
+    """
+    seen: set[tuple] = set()
+    out: list[dict[str, Any]] = []
+
+    def take(g: dict[str, Any], project: str, run_dir: str) -> None:
+        key = (g.get("kind"), g.get("persona"), g.get("text"), g.get("at"))
+        if key in seen:
+            return
+        seen.add(key)
+        out.append({**g, "project": g.get("project") or project, "run_dir": g.get("run_dir") or run_dir})
+
+    if GAP_LOG.is_file():
+        for line in GAP_LOG.read_text().splitlines():
+            if line.strip():
+                try:
+                    g = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                take(g, g.get("project", "?"), g.get("run_dir", ""))
+
+    for r in rows:
+        d = r.get("run_dir")
+        if not d:
+            continue
+        manifest = Path(d) / "MANIFEST.json"
+        if not manifest.is_file():
+            continue
+        try:
+            m = json.loads(manifest.read_text())
+        except json.JSONDecodeError:
+            continue
+        for g in m.get("gaps", []):
+            take(g, r.get("project", "?"), d)
+    return out
 
 
 def propose(rows: list[dict[str, Any]], routing: dict[str, Any]) -> list[dict[str, str]]:
@@ -75,7 +125,31 @@ def propose(rows: list[dict[str, Any]], routing: dict[str, Any]) -> list[dict[st
                         "implication": "either the catalogue describes them badly enough that routing never reaches them, or they do not earn their place. Check the description before retiring anything",
                         "examples": ", ".join(never[:12])})
 
-    # 4. Cost, which is the argument against the stack rather than for it.
+    # 4/5. What the personas said they lacked while working. This is the library's growth signal and the reason the raw notes are kept.
+    gaps = declared_gaps(rows)
+    inadequate = [g for g in gaps if g["kind"] == "inadequate"]
+    # `inadequate` gaps name a skill before the colon, so they group EXACTLY. That is a real aggregation rather than a guess at what two sentences have in common.
+    by_skill: dict[str, list[dict[str, Any]]] = {}
+    for g in inadequate:
+        skill = g["text"].split(":", 1)[0].strip()
+        by_skill.setdefault(skill, []).append(g)
+    for skill, items in sorted(by_skill.items(), key=lambda kv: -len(kv[1])):
+        if len(items) >= REPEATED_GAP:
+            out.append({"kind": "skill-inadequate", "subject": skill,
+                        "evidence": f"declared inadequate {len(items)} times by {len(({i['persona'] for i in items}))} persona(s) across {len({i['project'] for i in items})} project(s)",
+                        "implication": "the skill was reached for and did not do the job. Read the reasons before rewriting it — they may describe different jobs rather than one defect",
+                        "examples": "; ".join(i["text"].split(":", 1)[-1].strip()[:110] for i in items[:3])})
+
+    missing = [g for g in gaps if g["kind"] == "missing"]
+    if missing:
+        # NOT clustered. Two personas describing the same absent capability in different words is a judgement, and a tool that guessed at it would invent a
+        # skill nobody asked for. Listed for the operator; `skill-creator` authors it when the operator decides the cluster is real.
+        out.append({"kind": "capability-absent", "subject": f"{len(missing)} declaration(s)",
+                    "evidence": f"personas reported needing a procedure the library does not have, across {len({g['project'] for g in missing})} project(s)",
+                    "implication": "candidate NEW skills. Deliberately NOT clustered — deciding that two differently-worded needs are the same capability is your judgement, and authoring is `skill-creator`'s job",
+                    "examples": " | ".join(f"{g['persona']}: {g['text'][:100]}" for g in missing[:6])})
+
+    # 6. Cost, which is the argument against the stack rather than for it.
     costed = [r for r in rows if isinstance(r.get("tokens_estimated"), int)]
     team = [r for r in costed if r.get("dispatched")]
     if len(team) >= REPEATED_OVERRIDE:
@@ -94,7 +168,7 @@ def render(rows: list[dict[str, Any]], proposals: list[dict[str, str]]) -> str:
              f"Source: evals/field-log.jsonl ({len(rows)} entries)", f"Last reviewed: {stamp}",
              "Summary: Proposals derived from field evidence. Nothing here has been applied; every item is a question for the operator.", "",
              f"# Evolution proposals — {stamp}", "",
-             f"Derived from **{len(rows)} field entries**. **Nothing in this file has been applied.** Each item names the evidence that produced it so you can disagree with the inference rather than",
+             f"Derived from **{len(rows)} field entries** and the persona notes they point at. **Nothing in this file has been applied.** Each item names the evidence that produced it so you can disagree with the inference rather than",
              "the conclusion. Authoring a new skill is `skill-creator`'s job; changing the catalogue is yours.", ""]
     if len(rows) < MIN_ENTRIES:
         lines += [f"## Insufficient evidence", "",

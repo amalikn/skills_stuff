@@ -43,8 +43,6 @@ authority_order:
   - path: "context-map.yaml"
     type: machine_routing_map
     authority: high
-    type: sync_translation_rules
-    authority: high
   - path: "CHANGELOG.md"
     type: project_history
     authority: medium_high

@@ -126,10 +126,17 @@ Below 10 entries it proposes nothing and says why. That is the correct output, n
   a run that breaks halfway keeps what it already bought.
 - **Run with:** `dispatch --run-dir D --persona X ...` before the work; `write --run-dir D --persona X` reading the analysis on stdin; `status --run-dir D` for
   what is still pending
-- **Outputs:** one markdown note per persona, each carrying a banner saying it is **not the verdict**, plus a a MANIFEST.json recording dispatched against returned
+- **Outputs:** one markdown note per persona, each carrying a banner saying it is **not the verdict**, plus a MANIFEST.json recording dispatched against
+  returned; any `--gap-missing` / `--gap-inadequate` declaration is written to BOTH the manifest and `evals/capability-gaps.jsonl` in this repo
 - **Requires:** standard library only
-- **Safety:** `safe` and `modifies-files` — it writes into the run directory it is given and calls no model
-- **Idempotent:** re-writing a persona overwrites its note; the manifest never double-counts
+- **Safety:** `safe` and `modifies-files` — it writes into the run directory it is given, appends to this repo's gap log, and calls no model
+- **Idempotent:** re-writing a persona overwrites its note; the manifest never double-counts. The gap log is append-only, and `propose_evolution.py`
+  de-duplicates on the declaration itself rather than on where it was found
+
+**Gaps come home; notes stay with the project.** The notes hold the project's own analysis and belong to it. A declared gap is a statement about **this
+library**, so a copy is kept here: a gap recorded only in a consuming repo disappears when that repo moves, is deleted, or turns out to be one Agent Stack must
+not read, and the library's growth signal goes with it. Pointing at evidence held elsewhere is not a record — 39 of 40 indexed runs already stamp a corpus hash
+that no longer resolves.
 
 **Evidence retention, never resume.** Nothing here re-dispatches anything or continues a broken run: auto-continuation is unattended work, which
 [rule 0001](../.archcore/rules/0001-safety-model.md) excludes and which is why this project exists as a fork. Re-running is the operator's decision.

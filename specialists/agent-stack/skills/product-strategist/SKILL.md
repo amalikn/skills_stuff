@@ -354,26 +354,3 @@ CAC Payback
 = CAC / (ARPU × Gross Margin)
 = $500 / ($100 × 70%) = 7.1 months
 ```
-
-## Reference Materials
-
-- `references/market_analysis.md` - Market research frameworks
-- `references/competitive_intel.md` - Competitive analysis methods
-- `references/gtm_playbook.md` - Go-to-market strategies
-- `references/plg_guide.md` - Product-led growth tactics
-
-## Scripts
-
-```bash
-# Market sizing calculator
-python scripts/market_sizing.py --segment enterprise --geo north_america
-
-# Competitive tracker
-python scripts/competitive_tracker.py --competitors comp1,comp2,comp3
-
-# GTM timeline generator
-python scripts/gtm_timeline.py --launch-date 2024-03-01
-
-# Unit economics calculator
-python scripts/unit_economics.py --arpu 100 --margin 0.7 --lifetime 36
-```

@@ -222,6 +222,10 @@ def main() -> int:
             fail(errors, f"case {case['id']} asserts runtime_required but requires no tool-class skill; the assertion is unearned")
 
     for p in sorted((ROOT / "personas").glob("*.md")):
+        # The folder's own index is navigation, not a judgement contract. Added 20260903 with personas/README.md: without it the validator demanded a Mandate
+        # and an Output Contract from the index, which is the same category error as asking a table of contents to have a thesis.
+        if p.name == "README.md":
+            continue
         text = p.read_text()
         required = ORCHESTRATOR_REQUIRED if p.name == "orchestrator-follett.md" else REQUIRED_PERSONA_SECTIONS
         for section in required:

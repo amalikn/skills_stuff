@@ -127,7 +127,7 @@ judges the gate correctly and then finishes the route without closing the obliga
 [docs/routing-failure-classification-20260901_1842.md](docs/routing-failure-classification-20260901_1842.md). Two checks were run to falsify it and did not: no case asserts a gate its own required +
 preferred contract cannot satisfy (0 of 60), and no plan names a skill absent from the catalogue.
 
-### Frozen measurement contract — 20260903_2000
+### Frozen measurement contract — 20260903_2130
 
 Frozen BEFORE the unseen holdout is authored, so the holdout is scored once against a contract that will not move under it. Any run whose rows carry a different value in one of these is not comparable
 to the holdout and must be re-scored (`--rescore`) rather than compared directly.
@@ -136,7 +136,7 @@ to the holdout and must be re-scored (`--rescore`) rather than compared directly
 | ----------------------- | ------------------ | ------------------------------------------------------ |
 | `routing_catalogue_sha` | `51acb7902652a8d7` | `routing.toml` — capabilities, gates, precedence       |
 | `eval_corpus_sha`       | `cb548b83cf203346` | `evals/routing-cases.toml` — the frozen 60             |
-| `orchestrator_sha`      | `4340b10d851d973a` | the production routing contract the prompt sources     |
+| `orchestrator_sha`      | `67232954bbfe7c12` | the production routing contract the prompt sources     |
 | `harness_sha`           | `e6f97680e12e7c47` | `scripts/evaluate_routing.py` — prompt AND scorer      |
 | `closure_sha`           | `bdb17d3c8fbd0e7c` | `scripts/close_route.py` — deterministic repair        |
 | `holdout_corpus_sha`    | `7470773e7212933d` | `evals/holdout-cases.toml` — the unseen 24, single use |
@@ -144,6 +144,9 @@ to the holdout and must be re-scored (`--rescore`) rather than compared directly
 `harness_sha` and `closure_sha` both changed on 2026-09-02 for the asymmetric-gate and coverage work. Every v1–v5 baseline predates them. `harness_sha` moved again at 20260902_1015 for the `--cases`
 flag, which is what lets the holdout be scored by exactly this scorer instead of a forked one — `just freeze-check` caught that edit against the 0935 record before anything had been run, which is the
 failure guide 0003 step 1 describes and the first time a tool rather than memory caught it here.
+
+`orchestrator_sha` moved again at 20260903_2130 for the two gap-declaration flags in Step 7.5. `just freeze-check` caught the edit before anything was run,
+which is its whole job: the routing contract the prompt sources had changed, so any run made now is not comparable to the 2000 record without re-scoring.
 
 **The `orchestrator_sha` stamp keeps its name after the 20260903 rename** of the skill package to `skill-agent-stack`. The stamp appears in 40 indexed runs and in every stored result row; renaming the
 field would break their comparability to record a cosmetic change. It names the routing-contract file, whatever that file is called.

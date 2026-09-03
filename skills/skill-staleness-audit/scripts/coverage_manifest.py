@@ -69,7 +69,8 @@ RULES = [
     # Tooling config: real files, rarely a staleness risk, but they must be CLASSIFIED rather than
     # falling to "other" — an unclassified bulk is a coverage blind spot wearing a tidy label.
     ((".gitignore", ".gitattributes", ".editorconfig", ".watchmanconfig", ".dockerignore",
-      ".gitmodules", ".mise.toml", ".python-version", ".nvmrc"), None,
+      ".gitmodules", ".mise.toml", ".python-version", ".nvmrc", ".vscodeignore",
+      ".eslintrc.json", ".npmrc"), None,
      "tooling-config", "examined", "check referenced paths still exist"),
     (("/archive/", "/snapshots/", ".bak"), None,
      "archive", "exempt", "archives are supposed to contain superseded figures"),
@@ -111,14 +112,34 @@ RULES = [
     # variable still renders, still exits 0, and quietly produces the wrong config.
     ((), (".j2", ".jinja", ".jinja2", ".tmpl", ".tpl", ".mustache", ".erb"),
      "template", "examined", "a renamed variable renders silently — trace both directions"),
-    ((), (".py", ".sh", ".ts", ".js", ".go", ".rb", ".rs", ".java", ".ps1", ".bat"),
+    # Added 2026-09-01 on the argus VS Code extension: .tsx/.jsx (React), .mjs/.cjs (ES/CommonJS
+    # modules) and .css were unclassified, and together with the webview they were 38 of 178 files
+    # (21%) -- the entire blind spot on that repo. A frontend tree is code and must be reasoned about
+    # like code; leaving it in "other" reports coverage the audit does not have.
+    ((), (".py", ".sh", ".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".go", ".rb", ".rs",
+          ".java", ".ps1", ".bat", ".css", ".scss"),
      "code", "examined", ""),
+    # Test snapshots are GENERATED assertions of current behaviour. They are examined-special because
+    # the question is never "is this string stale" but "was this regenerated deliberately, and does
+    # the diff show only what was intended" -- the same question a generated artifact gets.
+    ((), (".snap",),
+     "test-snapshot", "examined-special",
+     "generated behavioural baseline -- verify it moved deliberately, not by grep"),
+    # Media shipped as documentation. Ungreppable, and stale only in the sense that it can depict a
+    # UI that no longer exists.
+    ((), (".mp4", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico"),
+     "media", "examined-special",
+     "audit by whether it still depicts current behaviour, not by grep"),
     ((), (".service", ".conf", ".cfg", ".inventory", ".properties", ".env"),
      "runtime-config", "examined", "check referenced hosts, paths and units still exist"),
     (("COPYING", "LICENSE", "LICENCE", "NOTICE"), (".license",),
      "licence", "exempt", "licence text, not a project claim"),
     ((), (".zip", ".tar", ".gz", ".tgz", ".7z"),
      "compressed", "exempt", "opaque bundle — audit its source, not the archive"),
+    ((), (".jsonl", ".ndjson"),
+     "evidence-log", "examined-special", "append-only record; one malformed line is silent, so parse every line"),
+    ((".env.example", ".env.sample", ".env.template"), (),
+     "config-template", "examined", "a template that gets copied — a stale value in it is a live instruction"),
     ((), (".yaml", ".yml", ".json", ".toml", ".ini"),
      "structured-config", "examined-special", "parse with a strict loader; do not read as text"),
     ((), (".md", ".rst", ".txt"), "prose", "examined", ""),
@@ -132,6 +153,7 @@ SPECIAL_METHOD = {
     "tabular-binary": "provenance → schema → row count → freshness against SOURCE, not mtime",
     "tabular-text": "header + row count + derivation; confirm the source is still current",
     "structured-config": "parse with a strict loader; check duplicate keys and misplaced keys",
+    "evidence-log": "parse EVERY line; a line the reader skips is indistinguishable from evidence that was never recorded",
     "notebook": "compare output cells against current code",
     "media": "open it; check for removed components and missing capture dates",
 }
@@ -151,6 +173,16 @@ NOT_EVIDENCE_DIRS = ("/reports/", "/logs/", "/output/", "/build/", "/dist/")
 def classify(rel: str) -> tuple[str, str, str]:
     p = "/" + rel
     ext = Path(rel).suffix.lower()
+
+    # A venv/.venv SYMLINK (not a real directory) is listed by `git ls-files -o` as a single
+    # leaf entry with no trailing slash -- e.g. rel==".venv", p=="/.venv" -- so it never matches
+    # the "/.venv/" substring rules below, which all assume a real directory git recursed into.
+    # Found 2026-08-31 on smc-file-writing-analysis: its .venv is a symlink to a working-cache
+    # venv per project convention ("the symlink is the contract"), and fell through to "other"
+    # even though the vendored/machine-state rules already intend to exempt exactly this case.
+    if Path(rel).name in (".venv", "venv") and Path(rel).is_symlink():
+        return ("tooling-config", "exempt",
+                "venv symlink to a rebuildable working-cache venv, not project content")
 
     if DATED_STEM.search(Path(rel).stem) and not any(d in p for d in NOT_EVIDENCE_DIRS):
         return ("evidence", "exempt",

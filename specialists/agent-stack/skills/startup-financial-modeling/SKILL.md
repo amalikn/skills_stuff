@@ -461,14 +461,6 @@ Share model with advisors or investors for feedback on assumptions.
 
 ## Additional Resources
 
-### Reference Files
-
-For detailed model structures and advanced techniques:
-
-- **`references/model-templates.md`** - Complete financial model templates by business model
-- **`references/unit-economics.md`** - Deep dive on CAC, LTV, payback, and efficiency metrics
-- **`references/fundraising-scenarios.md`** - Modeling funding rounds and dilution
-
 ### Example Files
 
 Working financial models with formulas:
@@ -491,4 +483,4 @@ To create a startup financial model:
 8. **Validate assumptions** - Sanity check and benchmark
 9. **Integrate fundraising** - Model funding rounds and milestones
 
-For complete templates and formulas, reference the `references/` and `examples/` files.
+The templates and formulas above are complete as written; this package carries no separate reference or example files.

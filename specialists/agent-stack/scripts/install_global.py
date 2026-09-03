@@ -76,7 +76,11 @@ def manifest_paths() -> set[str]:
 
 def canonical_entries() -> tuple[list[Path], list[Path], Path]:
     """Return persona files, package directories, and the one single-file skill."""
-    personas = sorted((SCRIPT_ROOT / "personas").glob("*.md"))
+    # README.md is the folder's index, not a persona: it is navigation, it registers no capability, and symlinking it into three clients would put a table of
+    # contents in every agent's skill list. Added 20260903 with personas/README.md — the FOURTH place needing this same exemption, after the coverage catalog,
+    # the manifest check and the persona document contract. Four is the number at which "every consumer of personas/*.md re-decides what a README is" stops
+    # being a coincidence; if a fifth appears, the glob belongs in one shared helper rather than in each caller.
+    personas = sorted(path for path in (SCRIPT_ROOT / "personas").glob("*.md") if path.name != "README.md")
     packages = sorted(path for path in (SCRIPT_ROOT / "skills").iterdir() if path.is_dir() and (path / "SKILL.md").is_file())
     frontend = SCRIPT_ROOT / "skills/frontend-design.md"
     actual_paths = {

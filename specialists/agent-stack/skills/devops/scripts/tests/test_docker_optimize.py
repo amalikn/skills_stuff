@@ -1,5 +1,5 @@
 """
-Tests for docker-optimize.py
+Tests for docker_optimize.py
 
 Run with: pytest test_docker_optimize.py -v
 """

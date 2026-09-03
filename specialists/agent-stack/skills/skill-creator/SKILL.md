@@ -4,6 +4,8 @@ description: Guide for creating effective skills. This skill should be used when
 license: Complete terms in LICENSE.txt
 ---
 
+<!-- path:example claim-scan:examples reason="illustrative file names teaching skill structure, not references to files in this package" -->
+
 # Skill Creator
 
 This skill provides guidance for creating effective skills.

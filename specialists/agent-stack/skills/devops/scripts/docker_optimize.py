@@ -6,9 +6,9 @@ Analyzes Dockerfiles for optimization opportunities including multi-stage builds
 security issues, size reduction, and best practices.
 
 Usage:
-    python docker-optimize.py Dockerfile
-    python docker-optimize.py --json Dockerfile
-    python docker-optimize.py --verbose Dockerfile
+    python docker_optimize.py Dockerfile
+    python docker_optimize.py --json Dockerfile
+    python docker_optimize.py --verbose Dockerfile
 """
 
 import argparse

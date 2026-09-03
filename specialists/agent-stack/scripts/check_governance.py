@@ -31,6 +31,7 @@ Checks:
 from __future__ import annotations
 
 import csv
+import json
 import re
 import sys
 from pathlib import Path
@@ -69,6 +70,9 @@ CATALOGS: dict[str, tuple[str, str]] = {
     # Working documents — audits, proposals, classifications, evaluation records. Registered when the root was cleared of them on 2026-09-02: the root now
     # carries governance and contract entrypoints only, and an unindexed document in docs/ would otherwise be invisible to every reader and every check.
     "docs/README.md": ("docs", "*.md"),
+    # The persona library. Registered 20260903 after the inverse sweep found personas/ was the one library layer with no index at all — 15 documents and no way
+    # in, while skills/ and .archcore/ both had one. Coverage now fails until a new persona is linked here, which is the intended workflow rather than an error.
+    "personas/README.md": ("personas", "*.md"),
 }
 
 # Files a catalog may legitimately omit (the index itself, generated output, dotfiles).
@@ -79,7 +83,9 @@ CATALOG_EXEMPT: frozenset[str] = frozenset({"README.md", "__init__.py"})
 # "personas" is countable as files; skill PACKAGES are directories, so members() cannot see them — that count is asserted against the manifest in
 # check_library_counts() instead.
 COUNT_CLAIMS: dict[str, tuple[str, str]] = {
-    "personas": ("personas", "*.md"),
+    # "[a-z]*-*.md" excludes README.md: the index is not a persona, and counting it made every "15 personas" claim in the project read as wrong
+    # the moment the index was created. The registry comment above says to choose this glob deliberately; this is that case.
+    "personas": ("personas", "[a-z]*-*.md"),
 }
 
 # Lines carrying this marker state a historical fact, not a live claim, and are exempt from count checking.
@@ -152,6 +158,16 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
 # recorded only in a prose note. Register the table here and the grain becomes an assertion instead of an intention.
 APPEND_ONLY_TABLES: dict[str, tuple[str, str]] = {
     # "data/sku-scores.csv": ("sku_id", "scored_at"),
+}
+
+# YAML surfaces whose key stream is checked for duplicates. A duplicate key parses fine and silently discards a block, so well-formedness cannot catch it.
+YAML_SURFACES: tuple[str, ...] = ("context-map.yaml", "manifest.yaml")
+
+# Tracked JSONL evidence: append-only files written by one script and read by another. A malformed or under-populated line does not raise anywhere — the writer
+# has already exited and the reader skips what it cannot parse — so evidence goes missing with no error. Maps each file to the keys every line must carry.
+JSONL_EVIDENCE: dict[str, tuple[str, ...]] = {
+    "evals/field-log.jsonl": ("ts", "task", "project", "owner", "followed"),
+    "evals/capability-gaps.jsonl": ("at", "kind", "persona", "text"),
 }
 
 # Folder of dated evidence captures, or None if the project keeps none. A capture asserts what a source said on a date.
@@ -343,6 +359,14 @@ def check_task_recipes() -> None:
             if named not in recipes:
                 fail("runner", f"{surface} names recipe `{named}` which {TASK_RUNNER} does not define")
 
+    # And the reverse: a recipe pointing at a script that no longer exists. Nothing reads a recipe until someone runs it, so a script deleted in a cleanup leaves
+    # a recipe that looks live in `just --list` and fails only for whoever tries it. Found exactly that on 20260903 — `record-current` still invoked
+    # scripts/sync_auto_company.py, deleted when upstream sync was retired, and the prose-to-recipe direction had no way to see it.
+    for m in re.finditer(r"(scripts/[\w./-]+\.py)", runner):
+        counted()
+        if not (ROOT / m.group(1)).is_file():
+            fail("runner", f"{TASK_RUNNER} invokes {m.group(1)}, which does not exist; the recipe is dead but still listed")
+
 
 # --------------------------------------------------------------------------------------------------------------- TIER 3
 # Project-specific invariants. Each check states, in its docstring, the project rule it enforces and where that rule lives. A check whose justification cannot
@@ -391,7 +415,9 @@ def check_manifest_covers_library() -> None:
         if not base.is_dir():
             continue
         for entry in sorted(base.glob(pattern)):
-            if entry.name.startswith("."):
+            # A folder's own index is navigation, not a capability. CATALOG_EXEMPT already names the same file for the coverage check, so both checks
+            # agree on what README.md is rather than each keeping a private opinion.
+            if entry.name.startswith(".") or entry.name in CATALOG_EXEMPT:
                 continue
             counted()
             if f"{folder}/{entry.name}" not in registered:
@@ -682,6 +708,161 @@ def check_evidence_provenance() -> None:
 
 # --------------------------------------------------------------------------------------------------------------- MAIN
 
+def check_jsonl_evidence_contract() -> None:
+    """Every line of a tracked JSONL evidence file parses and carries the keys its readers require.
+
+    Registered in JSONL_EVIDENCE. These files cross a process boundary: one script appends, another aggregates days later. Both failures here are silent by
+    construction — a reader skipping an unparseable line and a reader finding a key absent behave identically to a reader finding nothing to report.
+
+    The `inadequate` rule is the load-bearing one. propose_evolution.py groups those gaps on the skill id BEFORE the colon, which is what makes the aggregation
+    exact rather than a guess at what two sentences share. A declaration with no colon groups under its entire sentence, so it can never match another one, and
+    a real repeated complaint about a skill silently never reaches the threshold that would surface it.
+    """
+    for rel, required in JSONL_EVIDENCE.items():
+        path = ROOT / rel
+        counted()
+        if not path.is_file():
+            fail("jsonl-evidence", f"{rel} is registered as JSONL evidence but does not exist")
+            continue
+        for i, line in enumerate(path.read_text().splitlines(), start=1):
+            if not line.strip():
+                continue
+            counted()
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError as e:
+                fail("jsonl-evidence", f"{rel} line {i} does not parse: {e}")
+                continue
+            missing = [k for k in required if k not in row]
+            if missing:
+                fail("jsonl-evidence", f"{rel} line {i} is missing {', '.join(missing)}; a reader cannot tell it apart from no evidence at all")
+            if rel.endswith("capability-gaps.jsonl"):
+                if row.get("kind") not in ("missing", "inadequate"):
+                    fail("jsonl-evidence", f"{rel} line {i} has kind {row.get('kind')!r}; expected 'missing' or 'inadequate'")
+                if row.get("kind") == "inadequate" and ":" not in (row.get("text") or ""):
+                    fail("jsonl-evidence",
+                         f"{rel} line {i} declares a skill inadequate without naming it as '<skill-id>: <why>'; "
+                         f"the proposer groups on the id before the colon, so this can never aggregate with another report of the same skill")
+
+
+def check_skill_package_references() -> None:
+    """Every in-package path a SKILL.md names — in prose OR in a command — resolves inside that package.
+
+    THE HOLE THIS CLOSES. check_referenced_paths reads registered governance SURFACES, so until 20260903 no check had ever opened a `skills/*/SKILL.md` and asked
+    whether its own references exist. A staleness audit that day found 11 across four packages: `skills/devops/SKILL.md` advertised a `### Scripts` section
+    listing two automation scripts that were never imported, and `product-strategist` listed four reference files and four runnable scripts, none of which exist.
+    An agent invoking one of those skills is told a capability is available and reaches for something that is not there — mid-task, with no error to read.
+
+    COMMANDS INSIDE FENCES COUNT. `product-strategist`'s four were written as `python scripts/market_sizing.py ...` inside a ```bash block, which every
+    prose-oriented scanner skips by construction. Five of the sixteen findings were only visible this way, which is the argument for checking the invocation form
+    separately rather than trusting one pattern.
+
+    An `<!-- claim-scan:examples -->` marker exempts a file whose paths are ILLUSTRATIVE — `skill-creator` teaches skill structure and names `references/finance.md`
+    to show the shape, not to point at a file. The marker is the same one the audit tooling honours, so the two agree rather than each keeping a private list.
+    """
+    for md in sorted(ROOT.glob("skills/*/SKILL.md")):
+        pkg = md.parent
+        text = md.read_text(encoding="utf-8", errors="replace")
+        counted()
+        if EXAMPLE_MARKER in text:
+            continue
+        named: set[str] = set()
+        prose = without_code(text)
+        for m in re.finditer(r"`([^`\n]+)`", prose):
+            named.add(m.group(1).strip())
+        # The invocation form, read from the WHOLE file including fenced blocks — that is where it lives.
+        for m in re.finditer(r"\b(?:python3?|bash|sh|node)\s+((?:scripts|assets|bin|templates|references|resources)/[\w./-]+)", text):
+            named.add(m.group(1))
+        for tok in sorted(named):
+            if not tok.startswith(("scripts/", "assets/", "templates/", "references/", "resources/")):
+                continue
+            if not PATHLIKE.match(tok):
+                continue
+            counted()
+            # Package-relative OR repo-relative. `skill-agent-stack` correctly names scripts/close_route.py at the repo root, and reading that as a
+            # package path reported a defect that does not exist. Only a token resolving NOWHERE is a promise the agent cannot collect on.
+            if not (pkg / tok).exists() and not (ROOT / tok).exists():
+                fail("skill-refs", f"{md.relative_to(ROOT)} names {tok}, which exists neither in {pkg.name}/ nor at the repo root; "
+                                  f"an agent invoking this skill is promised a capability that is absent")
+
+
+def check_superseded_marked_in_index() -> None:
+    """A document declaring `Status: superseded` says so in the index that routes readers to it.
+
+    `.archcore/` is this project's HIGHEST authority — AI_NAVIGATION.md routes there first — so its index is the surface an agent reads before deciding which
+    document is binding. On 20260903 that index listed four retired sync documents with no indication of their state: the banners were inside the files, and a
+    reader scanning the index for the governing rule saw four live entries.
+
+    This is the Phase 3 defect inverted. The usual failure is a supersession recorded in a routing table that never reaches the superseded file; here it reached
+    the file and never reached the routing table. Both leave a reader acting on a retired rule, so both need the check.
+
+    Derived from each document's own `Status:` line rather than a hand-kept list, because a hand-kept list of what is superseded drifts exactly as the thing it
+    polices does.
+    """
+    index = ROOT / ".archcore" / "README.md"
+    if not index.is_file():
+        return
+    body = index.read_text()
+    for doc in sorted((ROOT / ".archcore").rglob("*.md")):
+        if doc.name == "README.md":
+            continue
+        counted()
+        if not re.search(r"^Status:\s*superseded\s*$", doc.read_text(encoding="utf-8", errors="replace"), re.M):
+            continue
+        rel = doc.relative_to(ROOT / ".archcore").as_posix()
+        row = re.search(rf"^\|\s*\[([^\]]+)\]\({re.escape(rel)}\)", body, re.M)
+        if row is None:
+            fail("supersession", f".archcore/{rel} is superseded but the index does not link it at all")
+        elif "SUPERSEDED" not in row.group(1).upper():
+            fail("supersession", f".archcore/{rel} declares Status: superseded, but .archcore/README.md lists it as though it were live; "
+                                 f"the index is where a reader decides which document binds")
+
+
+def check_no_duplicate_yaml_keys() -> None:
+    """No YAML mapping in this project defines the same key twice.
+
+    A duplicate key is the quietest defect a structured file can carry: every parser accepts it, the last value wins, and the discarded block leaves no trace.
+    Found on 20260903 in context-map.yaml, where the entry describing the file itself read `type: machine_routing_map` immediately followed by
+    `type: sync_translation_rules` — two lines orphaned when upstream sync was retired. The file parsed cleanly and every consumer saw context-map.yaml
+    described as a sync artifact that no longer exists, while the correct description was silently thrown away.
+
+    Well-formedness proves nothing here, which is why this asserts on the KEY STREAM rather than on whether the load succeeds. Stdlib-only, so it hand-parses
+    rather than importing PyYAML: this gate must never fail for an environment reason.
+    """
+    for rel in sorted(YAML_SURFACES):
+        path = ROOT / rel
+        counted()
+        if not path.is_file():
+            fail("yaml-keys", f"{rel} is registered as a YAML surface but does not exist")
+            continue
+        # Track keys per (indent, block). A new list item (`- `) or a dedent starts a fresh mapping.
+        stack: dict[int, dict[str, int]] = {}
+        for n, raw in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), start=1):
+            if not raw.strip() or raw.lstrip().startswith("#"):
+                continue
+            indent = len(raw) - len(raw.lstrip())
+            body = raw.lstrip()
+            fresh = body.startswith("- ")
+            if fresh:
+                body = body[2:]
+                indent += 2
+            for deeper in [k for k in stack if k > indent]:
+                del stack[deeper]
+            if fresh:
+                stack[indent] = {}
+            m = re.match(r"([A-Za-z_][\w.-]*)\s*:(?:\s|$)", body)
+            if not m:
+                continue
+            key = m.group(1)
+            block = stack.setdefault(indent, {})
+            counted()
+            if key in block:
+                fail("yaml-keys", f"{rel} line {n} repeats key {key!r} (first at line {block[key]}); "
+                                 f"YAML keeps the LAST value and discards the first without any error")
+            else:
+                block[key] = n
+
+
 CHECKS = (
     check_referenced_paths,
     check_index_links,
@@ -700,6 +881,10 @@ CHECKS = (
     check_constant_sync,
     check_append_only_grain,
     check_evidence_provenance,
+    check_jsonl_evidence_contract,
+    check_skill_package_references,
+    check_superseded_marked_in_index,
+    check_no_duplicate_yaml_keys,
 )
 
 

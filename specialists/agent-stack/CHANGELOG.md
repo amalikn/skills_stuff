@@ -1,5 +1,93 @@
 # Changelog — Agent Stack
 
+## 20260903_2230 — staleness audit
+
+Not a change-propagation pass. This one started from nothing and asked what had quietly stopped being true while 747 governance checks passed continuously.
+
+### Fixed — the skill library was promising capabilities it does not have
+
+- **`skills/devops/SKILL.md` named the two scripts as scripts/cloudflare-deploy.py and scripts/docker-optimize.py.** The files exist under those names with UNDERSCORES
+  rather than hyphens — so both references were dead while the capability was real. The scripts' own `--help` epilogs repeated the
+  wrong name 12 times, meaning anyone copying the printed example got "No such file or directory" from a script that was working fine.
+- **`product-strategist` listed four reference files and four runnable scripts; the package contains only a SKILL.md.** `startup-financial-modeling` listed three
+  references it does not have. `market-sizing-analysis` listed three of which one exists — and that survivor is what proves these are rotted indexes rather than
+  illustrative lists. `scientific-critical-thinking` documented a schematic generator that was never imported.
+- **`check_skill_package_references`** now reads every `SKILL.md`'s own references, in prose AND in fenced commands. Four of the sixteen findings were written as
+  `python scripts/market_sizing.py ...` inside a ```bash block, which every prose-oriented scanner skips by construction. Package-relative or repo-relative both
+  count; only a path resolving nowhere is a promise the agent cannot collect on.
+
+### Fixed — an index that presented retired documents as live
+
+- **`.archcore/README.md` listed four superseded sync documents with no indication of their state.** The banners were inside the files; the index that routes
+  readers to them said nothing, and `.archcore/` is declared this project's highest authority. This is the Phase 3 defect inverted — the usual failure is a
+  supersession recorded in a routing table that never reaches the file. **`check_superseded_marked_in_index`** derives the state from each document's own
+  `Status:` line, because a hand-kept list of what is superseded drifts exactly as the thing it polices does.
+
+### Fixed — a routing map that discarded a block without any error
+
+- **`context-map.yaml` defined `type` and `authority` twice in the entry describing itself**: `machine_routing_map` followed immediately by
+  `sync_translation_rules`, two lines orphaned when upstream sync was retired. YAML keeps the last value, so every consumer saw the file described as a sync
+  artifact that no longer exists while the correct description was silently thrown away. **`check_no_duplicate_yaml_keys`** asserts on the key stream rather than
+  on whether the load succeeds, because well-formedness proves nothing here. Stdlib-only, so the gate can never fail for an environment reason.
+
+### Added — personas had no way in
+
+- **[`personas/README.md`](personas/README.md)**, derived from each persona's own frontmatter and registered in `CATALOGS`, so a persona added without an index row
+  fails coverage. Found by the inverse sweep — the pass that asks what exists that no catalog names, rather than what a catalog names that has vanished. Only the
+  first grows while nobody is looking. It needed the same "a README is not a capability" exemption in **four** places (coverage catalog, manifest check, persona
+  document contract, global installer); a fifth would mean the glob belongs in one shared helper.
+
+### Also
+
+- `docs/README.md` named `translation-policy.md` as a current root entrypoint six hours after it was deleted. `.archcore/README.md` described the deleted sync
+  state files in the present tense. `AI_NAVIGATION.md` listed a generated artifact that has never been generated here, now marked optional.
+- Governance 747 → 1,073 checks; three new families, all negative-tested by breaking the project deliberately and watching them go red.
+- Gate PASSED: coverage 278 examined + 12 exempt = 290, claim matrix reconciles at 931, inverse sweep clean, `just preflight` exit 0.
+- **Three fixes went upstream into the shared audit skill**, where they had survived as permanently unaccepted residuals across three audits: package-internal
+  directories no longer report as orphans when an ancestor is catalogued; point-in-time backup trees are exempt from the old-value sweep, because a backup records
+  what a file SAID on a date; and JSONC configs parse via a string-aware comment stripper. The first regex for that stripper ate `"@/*": ["./src/*"]` — a tsconfig
+  path alias — and produced a parse error pointing at an innocent line, which is this skill's own warning about programmatic edits to structured files arriving by
+  the short route.
+
+### An error I made and corrected
+
+I deleted the devops Scripts section outright after reading `find ... | head` — truncated at ten lines — as proof the scripts were absent. The package has 29
+files. Caught in Phase 4, when the per-artifact worksheet listed `skills/devops/scripts/cloudflare_deploy.py` by name; the grep-shaped question had returned a
+technically correct "no" to the wrong question. Restored as a two-character fix per line. Recorded here because why a defect survived, and how a fix went wrong,
+is the reusable part.
+
+## 20260903_2130
+
+### Added — a declared gap is about this library, so this library keeps it
+
+- **[`evals/capability-gaps.jsonl`](evals/capability-gaps.jsonl), tracked here in git.** Persona notes are written into the *consuming* project, and yesterday's gap mechanism recorded declared gaps
+  only in that project's run manifest, with Agent Stack holding nothing but a `run_dir` pointer in the field log. That is not a record. The project can move, be deleted, or turn out to be a company
+  repo Agent Stack must not read — and the library's own growth signal goes with it. This repo already carries the proof that pointers rot: 39 of 40 indexed runs stamp a corpus hash that no longer
+  resolves, found the same day.
+- **The split is deliberate.** The raw notes stay with the project because they contain that project's analysis and belong to it. A declared gap is a statement about **this library** — "no skill takes
+  a duty rate as an input" — so a copy comes home. `scripts/persona_note.py` writes both at declaration time.
+- **`--project` on `persona_note.py write`**, so a gap in the library's own log is attributable without having to resolve a path that may no longer exist.
+- **[`scripts/propose_evolution.py`](scripts/propose_evolution.py) reads the local log first**, then still reads reachable manifests, because a run captured before this log existed is evidence too. Duplicates collapse on the declaration
+  itself — `(kind, persona, text, at)` — rather than on where it was found, so the two paths merge while two genuine repeats of the same complaint stay separate and still reach the threshold.
+
+### Added — the JSONL evidence contract
+
+- **`check_jsonl_evidence_contract`** in [`scripts/check_governance.py`](scripts/check_governance.py), registering `evals/field-log.jsonl` and `evals/capability-gaps.jsonl`. These files cross a
+  process boundary: one script appends, another aggregates days later. A malformed line and an under-populated line are both silent — the writer has exited and the reader skips what it cannot parse,
+  so evidence goes missing with no error anywhere.
+- **The colon rule is the load-bearing one.** The proposer groups `inadequate` gaps on the skill id before the colon, which is what makes that aggregation exact rather than a guess at what two
+  sentences share. A declaration written without one groups under its whole sentence, can never match another, and a genuinely repeated complaint about a skill silently never reaches the threshold
+  that would surface it. Negative-tested on all four failure modes: unparseable, unknown `kind`, missing key, and a colonless `inadequate`.
+- Governance 707 → 715 checks.
+
+### Changed
+
+- **The persona tests now drive the real argument parser instead of hand-built `Namespace` objects.** The gap arguments added yesterday broke a note-writing test that constructed the old shape by
+  hand, and the failure had nothing to do with the behaviour under test. Parsing argv means the tests exercise the defaults the CLI actually supplies.
+- Step 7.5 of `SKILL.md` now carries the two gap flags with the rule that a gap is declared only when a persona actually hit the limit while working — a guess pollutes the evidence the thresholds
+  depend on. 5,722 → 5,836 tokens.
+- Suite 49 → 51 tests. The survival test was negative-tested by disabling the local-log read and watching it go red under the old pointer-only design.
+
 ## 20260903_2000
 
 ### Added — a broken multi-persona run keeps what it already bought

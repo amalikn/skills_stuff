@@ -71,7 +71,7 @@ recommendation as an accepted decision without checking the revision notes first
 | `.archcore/`                              | Durable decisions, rules, contracts, guides, plans — **29 accepted 20260902**                                               | Highest                      |
 | `MEMORY.md`                               | Measured baselines, metric definitions, traps already hit                                                               | High                         |
 | `SCRATCHPAD.md`                           | Temporary notes and open items                                                                                          | Low                          |
-| `personas/`                               | 15 specialist judgement contracts                                                                                       | Source                       |
+| `personas/`                               | 15 specialist judgement contracts — indexed in [personas/README.md](personas/README.md)                                 | Source                       |
 | `skills/`                                 | Skill packages and one single-file skill                                                                                | Source                       |
 
 ## Task routing
@@ -119,7 +119,7 @@ For script, task, or automation questions, read in this order:
 3. Raw scripts under `scripts/`
 
 Prefer `just --list` and `just <task>`. Treat uncataloged scripts as `unknown` safety until inspected. Do not run a task labelled `destructive`, `review-required`, or `unknown` without review — in
-this project that includes every `upstream-apply`, `global-install`, `global-uninstall`, and `record-current` invocation.
+this project that includes every `global-install` and `global-uninstall` invocation.
 
 ## Drift handling
 
@@ -150,7 +150,7 @@ Generated files are useful but not authoritative by themselves.
 | Generated file                   | Purpose                                                         |
 | -------------------------------- | --------------------------------------------------------------- |
 | `.ai-context/governance-pack.md` | Deterministic context bundle — rebuild with `just context-pack` |
-| `graphify-out/GRAPH_REPORT.md`   | Relationship/navigation overview                                |
+| `graphify-out/GRAPH_REPORT.md`   | Relationship/navigation overview — OPTIONAL, never generated here; absent is normal |
 
 Regenerate after large documentation, contract, or library changes.
 

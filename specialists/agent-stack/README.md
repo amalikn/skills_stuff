@@ -50,7 +50,7 @@ persona path. Project-local instructions remain authoritative.
 
 ## Contents
 
-- `personas/`: 15 on-demand specialist personas, including `orchestrator-follett`.
+- `personas/`: 15 on-demand specialist personas, including `orchestrator-follett`. Indexed in [`personas/README.md`](personas/README.md).
 - `skills/`: 37 current packages, including `skill-agent-stack`, classified in `manifest.yaml` as `project_agnostic` or `tool_specific`.
 - `manifest.yaml`: source paths, install convention, and the classification inventory.
 - `routing.toml`: machine-readable persona/skill routing catalogue and mandatory gates.

@@ -86,6 +86,9 @@ def add(args: argparse.Namespace) -> int:
         # are different facts, and only the first says how much was salvaged. This is the measurement that decides whether a resume mechanism is ever worth
         # building — deliberately gathered before building one.
         "returned": args.returned,
+        # The path to this run's persona notes. It is what lets the evolution proposer reach the raw analyses and the gaps the personas declared while working;
+        # without it the notes sit in a project directory nothing knows to look in.
+        "run_dir": args.run_dir,
         "note": args.note or (f"no override: {args.overrode}" if args.overrode and not is_override(args.overrode) else None),
     }
     LOG.parent.mkdir(parents=True, exist_ok=True)
@@ -225,6 +228,7 @@ def main() -> int:
                    help="What close_route.py altered, from its --explain output. Empty means it changed nothing, which is itself worth recording.")
     a.add_argument("--tokens", type=int,
                    help="ESTIMATE of tokens the routed work consumed, including subagents. Unverifiable by construction — record your best estimate, or omit it.")
+    a.add_argument("--run-dir", help="The persona-notes directory for this run, if it was a multi-persona route. Links the entry to the raw analyses.")
     a.add_argument("--returned", type=int,
                    help="How many dispatched personas actually came back. Below --dispatched means the run was incomplete; the difference is what was lost.")
     a.add_argument("--dispatched", type=int,

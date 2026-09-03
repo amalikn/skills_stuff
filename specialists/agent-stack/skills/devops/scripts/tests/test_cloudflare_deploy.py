@@ -1,5 +1,5 @@
 """
-Tests for cloudflare-deploy.py
+Tests for cloudflare_deploy.py
 
 Run with: pytest test_cloudflare_deploy.py -v
 """

@@ -34,14 +34,11 @@ runtimes:
     @printf 'resolved  '; test -x "{{py}}" && "{{py}}" -c "import sys; print(sys.version.split()[0], sys.executable)" || echo "MISSING — run: just bootstrap"
 
 # Record a reviewed local Auto Company source checkout as the current import baseline.
-record-current source: _require-venv
-    "{{py}}" scripts/sync_auto_company.py --record-current --source "{{source}}"
-
 # Validate persona, skill, routing, and repository contracts.
 check: _require-venv
     "{{py}}" scripts/validate_agent_stack.py
 
-# Run the standard-library sync tests.
+# Run the standard-library test suite.
 test: _require-venv
     "{{py}}" -m unittest discover -s tests -v
 

@@ -6,8 +6,8 @@ Automates Cloudflare Worker deployments with wrangler.toml configuration handlin
 multi-environment support, and comprehensive error handling.
 
 Usage:
-    python cloudflare-deploy.py --env production --dry-run
-    python cloudflare-deploy.py --project ./my-worker --env staging
+    python cloudflare_deploy.py --env production --dry-run
+    python cloudflare_deploy.py --project ./my-worker --env staging
 """
 
 import argparse
@@ -206,11 +206,11 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python cloudflare-deploy.py
-  python cloudflare-deploy.py --env production
-  python cloudflare-deploy.py --project ./my-worker --env staging
-  python cloudflare-deploy.py --dry-run
-  python cloudflare-deploy.py --env prod --verbose
+  python cloudflare_deploy.py
+  python cloudflare_deploy.py --env production
+  python cloudflare_deploy.py --project ./my-worker --env staging
+  python cloudflare_deploy.py --dry-run
+  python cloudflare_deploy.py --env prod --verbose
         """
     )
 

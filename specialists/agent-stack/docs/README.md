@@ -8,7 +8,7 @@ Summary: Index of the project's working documents, kept out of the root so the r
 # Working documents
 
 The project root carries **governance and contract entrypoints only** — `AGENTS.md`, `README.md`, `ARCHITECTURE.md`, `AI_NAVIGATION.md`, `CHANGELOG.md`, `MEMORY.md`, `SCRATCHPAD.md`,
-`REVISION_NOTES.md`, `ROUTING_EVALS.md`, `RUNTIME.md`, `SKILL_STANDARD.md` and `translation-policy.md`. Everything else this work produces lives here.
+`REVISION_NOTES.md`, `ROUTING_EVALS.md`, `RUNTIME.md` and `SKILL_STANDARD.md`. Everything else this work produces lives here.
 
 These are **evidence and working artifacts, not policy.** Durable decisions live in [`.archcore/`](../.archcore/README.md), which is the highest authority; measured figures live in
 [`MEMORY.md`](../MEMORY.md). A document here records what was found or proposed at a point in time and is not superseded by later work unless it says so.

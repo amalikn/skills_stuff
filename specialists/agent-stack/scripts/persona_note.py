@@ -22,6 +22,12 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Agent Stack's OWN durable record of what the library was missing. The notes themselves stay in the consuming project — they contain that project's analysis
+# and belong to it — but a gap declaration is about THIS library, and if it lives only in someone else's repo then Agent Stack's growth signal disappears the
+# moment that repo moves, is deleted, or turns out to be one we cannot read. A pointer to evidence elsewhere is not a record; 39 of 40 indexed runs already
+# stamp a corpus hash that no longer resolves, which is the same defect discovered the same day.
+GAP_LOG = Path(__file__).resolve().parents[1] / "evals" / "capability-gaps.jsonl"
+
 BANNER = """> **This is ONE persona's analysis, not the verdict.** It was written before the synthesis existed and may be contradicted by another persona or by the final
 > answer. Read the run's report for the conclusion. Kept because a persona's own words are better evidence than a summary of them.
 """
@@ -35,7 +41,8 @@ def load_manifest(run_dir: Path) -> dict:
     p = manifest_path(run_dir)
     if p.is_file():
         return json.loads(p.read_text())
-    return {"task": "", "dispatched": [], "returned": [], "started": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    return {"task": "", "dispatched": [], "returned": [], "gaps": [],
+            "started": datetime.now(timezone.utc).isoformat(timespec="seconds")}
 
 
 def save_manifest(run_dir: Path, m: dict) -> None:
@@ -67,6 +74,7 @@ def cmd_write(args: argparse.Namespace) -> int:
     """One returned analysis, read from stdin."""
     run_dir = Path(args.run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
     body = sys.stdin.read()
     if not body.strip():
         print("refusing to write an empty note", file=sys.stderr)
@@ -76,7 +84,18 @@ def cmd_write(args: argparse.Namespace) -> int:
         m["dispatched"].append(args.persona)
     if args.persona not in m["returned"]:
         m["returned"].append(args.persona)
-    stamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    # DECLARED gaps only. A persona knows at the moment it works whether it needed a procedure that did not exist, or reached for one that did not deliver —
+    # and that judgement cannot be recovered from its prose afterwards by any amount of text matching. Aggregating declarations is honest; inferring them from
+    # wording would manufacture findings, which is the failure this whole project keeps guarding against.
+    m.setdefault("gaps", [])
+    for kind, items in (("missing", args.gap_missing), ("inadequate", args.gap_inadequate)):
+        for text in items:
+            g = {"kind": kind, "persona": args.persona, "text": text, "at": stamp}
+            m["gaps"].append(g)
+            # Written to BOTH: the manifest keeps it beside the analysis that produced it, and Agent Stack keeps its own copy so the signal survives the project.
+            GAP_LOG.parent.mkdir(parents=True, exist_ok=True)
+            with GAP_LOG.open("a") as fh:
+                fh.write(json.dumps({**g, "project": args.project or "", "run_dir": str(run_dir)}, sort_keys=True) + "\n")
     note = run_dir / f"{args.persona}.md"
     note.write_text(f"# {args.persona} — analysis\n\n{BANNER}\nReturned: {stamp}\n\n---\n\n{body.rstrip()}\n")
     save_manifest(run_dir, m)
@@ -100,6 +119,8 @@ def cmd_status(args: argparse.Namespace) -> int:
     if pending:
         # Stated plainly, because the value of the whole mechanism is that finished work survived. Re-dispatching is the operator's decision, never this tool's.
         print(f"\nThe {len(m['returned'])} completed analys(es) are on disk and do not need re-running. Re-dispatch only {', '.join(pending)} if you continue.")
+    for g in m.get("gaps", []):
+        print(f"  gap [{g['kind']}] {g['persona']}: {g['text'][:90]}")
     return 0
 
 
@@ -116,6 +137,11 @@ def main() -> int:
     w = sub.add_parser("write", help="store one returned analysis, read from stdin")
     w.add_argument("--run-dir", required=True)
     w.add_argument("--persona", required=True)
+    w.add_argument("--project", help="Which project this run belongs to; recorded with any gap so the library's own record is attributable.")
+    w.add_argument("--gap-missing", action="append", default=[], metavar="WHAT",
+                   help="A procedure you needed and the library does not have. Repeatable. Becomes a NEW-SKILL candidate only when several runs say the same thing.")
+    w.add_argument("--gap-inadequate", action="append", default=[], metavar="SKILL: WHY",
+                   help="A skill you selected that did not do the job, and why. Repeatable. Becomes an IMPROVE-THIS-SKILL candidate.")
     w.set_defaults(fn=cmd_write)
 
     s = sub.add_parser("status", help="what returned, what is still pending")

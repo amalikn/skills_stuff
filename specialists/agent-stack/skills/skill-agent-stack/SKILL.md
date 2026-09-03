@@ -259,12 +259,22 @@ Default to dependency order rather than parallelism when one result materially c
 NOTES=<project reports dir>/.runs/<slug>-YYYYMMDD_hhmm
 S=/Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/scripts/persona_note.py
 python3 $S dispatch --run-dir $NOTES --task "<the task>" --persona cfo-campbell --persona critic-munger
-<persona output> | python3 $S write --run-dir $NOTES --persona cfo-campbell
+<persona output> | python3 $S write --run-dir $NOTES --persona cfo-campbell --project <project>
 python3 $S status --run-dir $NOTES
 ```
 
 **Record the dispatch before the work**, or an incomplete run is indistinguishable from one that only wanted the personas that returned. This is evidence
-retention, not resume — nothing re-dispatches on its own. Why: [references/field-log.md](references/field-log.md).
+retention, not resume — nothing re-dispatches on its own.
+
+**If a persona hit a limit in the library itself, say so on the same command** — this is the only way Agent Stack learns what to build:
+
+```bash
+  --gap-missing    "<a procedure you needed and no skill provides>"
+  --gap-inadequate "<skill-id>: <what it failed to do>"
+```
+
+Declare it only if the persona actually reached the limit while working; a guess pollutes the evidence. Repeats across runs become proposals under `just evolve`.
+Why: [references/field-log.md](references/field-log.md).
 
 ## Step 8 — Handle Disagreement
 
