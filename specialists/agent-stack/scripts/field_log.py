@@ -71,6 +71,12 @@ def add(args: argparse.Namespace) -> int:
         "overrode": args.overrode if is_override(args.overrode) else None,
         "helped": args.helped,
         "gates_useful": args.gates_useful,
+        # route_mode is the dominant cost lever and one word. `gates` is the ONLY way to measure over-assertion in real use — the eval corpus can measure it
+        # because it has expected values, and the field cannot, so recording what fired is the closest available signal. `closure_changed` is free: it is what
+        # close_route.py printed, and it is the direct measure of whether the repair wired in on 20260903 is doing anything outside the harness.
+        "route_mode": args.route_mode,
+        "gates": args.gate,
+        "closure_changed": args.closure_changed,
         # Cost, recorded two ways on purpose. `tokens` is the agent's ESTIMATE and is unverifiable; `dispatched` is a COUNT of subagents actually spawned and
         # is a fact. The count is also the dominant cost driver, since each subagent is a fresh context doing real work — so when the two disagree, believe the
         # count. Recording only the estimate would give a number nothing can check; recording only the count would lose the magnitude.
@@ -109,6 +115,27 @@ def report(args: argparse.Namespace) -> int:
     gates = Counter(r.get("gates_useful") for r in rows if r.get("gates_useful"))
     if gates:
         print(f"{'gates':9} " + "  ".join(f"{k}={v}" for k, v in sorted(gates.items())))
+
+    gated = [r for r in rows if r.get("gates") is not None]
+    if gated:
+        from collections import Counter as _C
+        fired = _C(g for r in gated for g in (r.get("gates") or []))
+        print(f"\ngates fired in the field ({len(gated)} entries recording them):")
+        for g in ("research", "critic", "qa", "runtime"):
+            n = fired.get(g, 0)
+            print(f"  {g:9} {n:3}/{len(gated)}  ({n / len(gated):.0%})")
+        allfour = sum(1 for r in gated if len(r.get("gates") or []) == 4)
+        # The eval measures over-assertion against expected values; the field has none, so a high rate here is suggestive, not proof.
+        print(f"  all four   {allfour:3}/{len(gated)}  <- compare 19/19 in holdout 24; a high rate here is suggestive, not proof")
+
+    modes = Counter(r.get("route_mode") for r in rows if r.get("route_mode"))
+    if modes:
+        print("\nroute shape: " + "  ".join(f"{k}={v}" for k, v in modes.most_common()))
+
+    closed = [r for r in rows if r.get("closure_changed") is not None]
+    if closed:
+        did = sum(1 for r in closed if r["closure_changed"].strip())
+        print(f"\nclosure ran on {len(closed)} entr(ies); it changed the route in {did}")
 
     # Cost. Split by whether personas were dispatched, because that is where the money goes and it is the decision the operator actually makes.
     costed = [r for r in rows if isinstance(r.get("tokens_estimated"), int)]
@@ -163,6 +190,12 @@ def main() -> int:
                    help="OPERATOR judgement, and optional. An agent must not fill this in about its own work: self-assessed helpfulness is the one field "
                         "where the recorder has an interest in the answer. Absent is the honest default.")
     a.add_argument("--gates-useful", choices=("yes", "no", "ignored"), help="were the research/critic/qa flags worth anything")
+    a.add_argument("--route-mode", choices=("direct-skill", "single-persona", "multi-persona"),
+                   help="The route's shape. One word, and the dominant cost lever.")
+    a.add_argument("--gate", action="append", default=[], choices=("research", "critic", "qa", "runtime"),
+                   help="Each gate the route set TRUE. Repeatable. The only way to see over-assertion outside the eval corpus.")
+    a.add_argument("--closure-changed",
+                   help="What close_route.py altered, from its --explain output. Empty means it changed nothing, which is itself worth recording.")
     a.add_argument("--tokens", type=int,
                    help="ESTIMATE of tokens the routed work consumed, including subagents. Unverifiable by construction — record your best estimate, or omit it.")
     a.add_argument("--dispatched", type=int,

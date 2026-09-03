@@ -1,5 +1,29 @@
 # Changelog — Agent Stack
 
+## 20260903_1900
+
+### Fixed — the field log asked for five of the eleven fields it accepts
+
+- **`--tokens` and `--dispatched` were added and never requested.** The tool accepted eleven flags; Step 10's template asked for five, so `--persona`, `--skill`, `--tokens`, `--dispatched` and
+  `--gates-useful` were never populated. That is why the 05:32Z entry carries no token estimate — **the skill never asked for it.** Same defect class as closure being described and never run: the
+  capability existed and nothing invoked it.
+- The template now passes every field, and says which are facts (all of them but one) versus the single estimate.
+
+### Added — three fields, each answering a question the existing ones cannot
+
+- **`route_mode`** — the dominant cost lever, in one word.
+- **`gates`** — each gate the route set true. **This is the only way to see over-assertion in real use.** The eval corpus can measure it because it has expected values to compare against; the field
+  has none, so recording what fired is the closest available signal. The report prints the all-four rate beside holdout 24's 19/19 and labels it suggestive, not proof.
+- **`closure_changed`** — what `scripts/close_route.py --explain` printed. Free, and the direct measure of whether the repair wired in this morning does anything outside the harness.
+
+### Notes — what was deliberately left out, and why
+
+Recorded in the skill's `references/field-log.md`: **duration** (an agent cannot measure its own wall-clock reliably, and `dispatched` already proxies cost with a fact), **domain tags** (derivable,
+and asking invites fitting the tag to the route chosen — the error rule 0006 names), **rework** (a strong signal, but only knowable later, so it belongs to a follow-up entry), and **anything git
+already knows**.
+
+**Every added field is friction, and friction kills capture.** The log had four entries when these were chosen; the stated bar for a fifth is that it answers a question the existing ones cannot.
+
 ## 20260903_1830
 
 ### Added — two precedence rules, from holdout evidence
@@ -691,6 +715,7 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260903_1900](#20260903_1900)
 - [20260903_1830](#20260903_1830)
 - [20260903_1600](#20260903_1600)
 - [20260903_1400](#20260903_1400)

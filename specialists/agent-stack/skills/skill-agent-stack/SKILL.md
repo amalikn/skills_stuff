@@ -283,11 +283,17 @@ Stop when the completion criteria are met or when further work cannot change the
 ```bash
 python3 /Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/scripts/field_log.py add \
   "<one line: what the work actually was>" \
-  --project <repo or project name> \
-  --owner <primary_owner you named> \
+  --project <repo or project> --route-mode direct-skill|single-persona|multi-persona \
+  --owner <primary_owner you named> --persona <each one> --skill <each one> \
+  --gate research --gate critic --gate qa --gate runtime   `# ONLY the ones you set true` \
+  --closure-changed "<what close_route.py --explain printed, or empty if nothing>" \
+  --dispatched <how many subagents you actually spawned> --tokens <your estimate> \
   --followed full|partial|no \
-  --overrode "<what you actually used instead, and why>"
+  --overrode "<what you used instead, and why — OMIT if you followed the route>"
 ```
+
+Every flag above except `--tokens` is a **fact you observed**, not a judgement: pass them all. `--tokens` is an estimate and unverifiable — give your best one or omit it, but never
+omit `--dispatched`, which is a count and is what the cost analysis actually turns on.
 
 ### Why this exists
 
