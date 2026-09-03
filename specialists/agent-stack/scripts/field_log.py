@@ -66,11 +66,12 @@ def add(args: argparse.Namespace) -> int:
         "personas": args.persona,
         "skills": args.skill,
         "followed": args.followed,
-        # Stored only when it describes a real departure; "none" and its variants are dropped so the field means one thing.
+        # Stored only when it describes a real departure, so the field means one thing. A stated non-override is MOVED to `note`, never discarded: correcting
+        # a statistic is not a licence to destroy an observation, and "direct route, no gates true (read-only)" is genuinely worth knowing.
         "overrode": args.overrode if is_override(args.overrode) else None,
         "helped": args.helped,
         "gates_useful": args.gates_useful,
-        "note": args.note,
+        "note": args.note or (f"no override: {args.overrode}" if args.overrode and not is_override(args.overrode) else None),
     }
     LOG.parent.mkdir(parents=True, exist_ok=True)
     with LOG.open("a") as fh:

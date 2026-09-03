@@ -7,12 +7,27 @@
 - **A stated non-override was being counted as an override.** The first real entry ever logged carried `--overrode "none - direct route, no gates true (read-only)"` — a description of *not*
   overriding. The report read it as a change and showed **overridden on 3/3 uses**; corrected, it reads 2/3. The failure direction matters: every clean route would have inflated the override rate, so
   the log's one statistic degraded silently and flatteringly as it grew.
-- **Fixed on both sides.** `skill-agent-stack` Step 10 now says to OMIT `--overrode` when the route was followed and never to pass `"none"`; `scripts/field_log.py` normalises such values on read as well as
-  refusing them on write, because the file already contains one and future recorders include agents that will not have read the skill.
+- **Fixed on both sides.** `skill-agent-stack` Step 10 now says to OMIT `--overrode` when the route was followed and never to pass `"none"`; `scripts/field_log.py` normalises such values on read as
+  well as refusing them on write, because the file already contains one and future recorders include agents that will not have read the skill.
 - **A prefix rule alone gets this wrong in both directions**, which is why change-verbs are checked first: *"none of the skills fit so I swapped owner to devops-hightower"* is a real override that
   starts with a negation, and hiding it would be the worse error — understating the defect signal rather than inflating it.
-- **Two regression tests, negative-tested** across 15 boundary cases including a bare dash, the "n slash a" form, `no-override-needed` and the two "none"-prefixed opposites. Two pattern defects were caught by running them
-  rather than by reading the regex: `-{1,3}\b` never matched a bare `-`, and `(?![\w-])` blocked its own match on `no-override-needed`. Suite 55 → 57.
+- **Two regression tests, negative-tested** across 15 boundary cases including a bare dash, the "n slash a" form, `no-override-needed` and the two "none"-prefixed opposites. Two pattern defects were
+  caught by running them rather than by reading the regex: `-{1,3}\b` never matched a bare `-`, and `(?![\w-])` blocked its own match on `no-override-needed`. Suite 55 → 57.
+
+### Fixed — a governance check that failed on fractions
+
+- **The path check treated any backticked token containing a slash as a repo-relative path**, so `n/a` and `2/3` in prose failed the build. Three false failures in one session is enough evidence: a
+  token containing **no letters** is now exempt.
+- **The exemption is proved unable to hide a real path**: all 287 tracked paths contain at least one letter. Negative-tested afterwards — a reference to `scripts/does_not_exist.py` still fails, so the
+  check retains its actual job.
+
+### Changed — the three existing entries migrated
+
+- **The one affected entry was corrected in place**, and its text MOVED rather than deleted: `overrode: "none - direct route, no gates true (read-only)"` became `note: "no override: none - direct
+  route, no gates true (read-only)"`. Correcting a statistic is not a licence to destroy an observation — that text says WHY nothing was changed, which is worth knowing, and this is real field
+  evidence that cannot be regenerated.
+- **Verified byte-identical on everything else**: three rows, same order, same timestamps, entries 2 and 3 unchanged in content. The report moved from `overridden on 3/3 uses` to `2/3`.
+- **The write side now moves such text to `note` too** rather than dropping it, so a future recorder that ignores the instruction loses nothing either. An existing `--note` is never clobbered.
 
 ### Notes
 

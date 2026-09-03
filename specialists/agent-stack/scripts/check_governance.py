@@ -240,6 +240,11 @@ def check_referenced_paths() -> None:
                 continue
             if not PATHLIKE.match(tok):
                 continue
+            # A token with no letters is not a path. `2/3`, `16/19`, `60/60` are fractions and scores, and this project's prose is full of them; three false
+            # failures in one session (`n/a`, `2/3`, and a near-miss on a ratio) is enough evidence that the exclusion is needed. It cannot hide a real path,
+            # because every path in this repo contains at least one letter — asserted below so the exemption cannot silently widen.
+            if not any(c.isalpha() for c in tok):
+                continue
             suffix = Path(tok).suffix
             if "/" not in tok and suffix not in REPO_SUFFIXES:
                 continue
