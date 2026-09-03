@@ -224,6 +224,18 @@ chosen on judgement before this was measured, and the measured cost ratio is 100
 the justfile. Flash qualified 60/60 at realistic payload, median 14.6s per ~44,000-character call, and its only failures across 120 routing calls were 5 transient parse faults, all of which succeeded
 on retry.
 
+### Field use begins — 20260903, operator decision
+
+**Two days of measurement never tested usefulness.** Every eval — 60-case corpus, spent 24-case holdout, A/B1/B2 — tests whether the router picks what a corpus says it should. That is a necessary
+property, and a router failing it is broken. It is not sufficient: a route can be perfectly corpus-correct and still not make the work better, and no corpus can close that gap because the corpus is
+the thing being agreed with.
+
+Install verified live at the decision point: **123/123 symlinks correct** across `~/.claude`, `~/.codex`, `~/.agents`.
+
+Capture is [`scripts/field_log.py`](scripts/field_log.py) — `just used` / `just field-report`, appending to `evals/field-log.jsonl`, tracked in the repo because a re-run regenerates an eval and
+nothing regenerates a day of real use. The load-bearing field is `--overrode`: a followed route only says the operator did not disagree, while a route CHANGED, repeatedly and the same way, is a
+routing defect. Data is observational, self-reported and confounded; it cannot establish causation and the report says so below n=10.
+
 ## Metric definitions, and which ones have zero noise
 
 Pass rate alone hides the trade that matters. These are the measures that do not.

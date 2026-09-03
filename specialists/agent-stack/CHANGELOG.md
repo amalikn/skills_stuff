@@ -1,5 +1,34 @@
 # Changelog — Agent Stack
 
+## 20260903_0200
+
+### Added — field use, the measurement no corpus can make
+
+- **[`scripts/field_log.py`](scripts/field_log.py), `just used` and `just field-report`.** Records what the router actually did on real work: the route it gave, whether it was followed, whether it
+  helped, and — the load-bearing field — **what was overridden and why**. Appends to `evals/field-log.jsonl`, tracked in the repo, because a re-run regenerates an eval and nothing regenerates a day of
+  real use.
+- **The report is honest about its own weakness.** The data is observational, self-reported, confounded by task difficulty and by whatever the operator was going to do anyway; it cannot establish
+  causation. Below n=10 the report prints that in the output rather than leaving the reader to remember it. What it can surface is a pattern too consistent to be noise — the report flags any owner
+  overridden three or more times.
+- **[Spec 0008 — replay corpus contract](.archcore/specs/0008-replay-corpus-contract.md)** (proposed). Written before any mining, because the failure mode is fatal and quiet: a replay case labelled
+  from an opinion about who should have owned it is the author's routing judgement in a costume, and running the router against it measures agreement between two guesses while looking like a result.
+  Every assertion must cite an artifact that exists; omission is the correct answer for anything unevidenced.
+
+### Changed — priorities
+
+- **Field use is now the live item; replay, shadow-mode and Holdout 2 are parked behind it.** Operator decision, and the right one: two days of measurement tested whether the router agrees with a
+  corpus, which is necessary and not sufficient. A route can be perfectly corpus-correct and still not make the work better, and the corpus cannot detect that because it is the thing being agreed
+  with.
+- **Shadow-mode is largely subsumed by field use**, which collects the same disagreement signal during real work rather than as a separate exercise nobody has time to run.
+- **Holdout 2 is now conditional on the field result.** If routing genuinely helps, it is worth the tokens. If the routes are fine but the personas add little, that is a more important finding than
+  another 24 cases would have produced — and only field use can produce it.
+
+### Notes
+
+- **Install verified live at the decision point: 123/123 symlinks correct** across `~/.claude`, `~/.codex`, `~/.agents`. Nothing to install; the stack is usable as it stands.
+- **Standing guidance for that use** ([rule 0012](.archcore/rules/0012-gate-flags-are-advisory-until-localised.md)): trust the owner and skill selection, override the gate flags. Governance 698 → 704
+  checks.
+
 ## 20260903_0030
 
 ### Added — the gate question is answered
@@ -31,8 +60,8 @@
 - **Recipe quoting defect, caught by qualification before it reached a corpus.** `qualify-runner` interpolated `{{command}}` inside double quotes, so a `$(cat)` in the command expanded against the
   recipe's own empty stdin: 0/60 calls, one identical 0.34s failure signature. Had this shipped into a sweep, 60 cases would have scored 0.0 and the arm would have looked dead rather than mis-invoked.
   Fixed in `qualify-runner` and `holdout`.
-- **`scripts/gate_eval.py` gains `--case` + `--merge-into`** for targeted repair of a sweep that lost cases, **recording the repair** in the artifact's provenance so a merged artifact can never read as a
-  single clean sweep. Used twice: B1 (2 parse faults) and B2 (3).
+- **`scripts/gate_eval.py` gains `--case` + `--merge-into`** for targeted repair of a sweep that lost cases, **recording the repair** in the artifact's provenance so a merged artifact can never read
+  as a single clean sweep. Used twice: B1 (2 parse faults) and B2 (3).
 - **All output flushed per line.** B1 ran 40 minutes completely dark because ~2 KB of output sat under Python's 8 KB buffer; during the Claude collapse, per-case failures only surfaced after 55 had
   burned.
 
@@ -510,6 +539,7 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260903_0200](#20260903_0200)
 - [20260903_0030](#20260903_0030)
 - [20260902_1240](#20260902_1240)
 - [20260902_1215](#20260902_1215)

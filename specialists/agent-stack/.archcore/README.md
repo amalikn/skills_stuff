@@ -80,6 +80,7 @@ this directory is a current measurement — where one appears, it is cited as th
 | [0005 Routing eval corpus contract](specs/0005-eval-corpus-contract.md)                                 | Hard versus preferred assertions; the corpus freeze     |
 | [0006 Runner qualification before evidence is spent](specs/0006-runner-qualification.md) *(proposed)*     | Evaluation pipeline reliability                         |
 | [0007 Gate-only evaluation and precision/recall scoring](specs/0007-gate-only-evaluation.md) *(proposed)* | Localising the gate collapse                            |
+| [0008 Replay corpus contract](specs/0008-replay-corpus-contract.md) *(proposed)*                            | Evidence rules for historical-task replay               |
 
 ## Guides
 

@@ -103,6 +103,22 @@ system satisfies constraints.**
 It reports coverage against the corpus (`corpus has 60 cases; N not present in these results`), which is the check that would have caught the `--limit` truncation that made the first Baseline v2 pass
 cover 53 of 60 silently. Rows whose case id is no longer in the corpus are listed rather than crashed on, so a renamed or retired case does not take the analysis down with it.
 
+### `field_log.py`
+
+- **Purpose:** records what the router actually did on **real work**, and reports the pattern. Every other measurement in this project tests agreement with a corpus — necessary, but not sufficient,
+  because a route can be perfectly corpus-correct and still not make the work better. Only real use tests that, and only if it is written down at the time.
+- **Run with:** `just used "<task>" --project X --owner Y --followed full|partial|no --helped better|neutral|worse [--overrode "..."]`, and `just field-report`
+- **Inputs / outputs:** appends to `evals/field-log.jsonl`, which is **tracked in the repo** — a re-run regenerates an eval, and nothing regenerates a day of real use
+- **Requires:** standard library only
+- **Safety:** `safe` and `modifies-files` — it appends one line and calls no model
+- **Idempotent:** no, by design; each invocation records one event
+
+**The field that matters is `overrode`** — what you CHANGED about the route and why. A route you followed only tells you that you did not disagree. A route repeatedly overridden the same way is a
+routing defect; overridden once, it is a preference. The report flags any owner overridden three or more times.
+
+Read it honestly: the data is observational, self-reported, small-n, and confounded by task difficulty and by whatever you were going to do anyway. **It cannot establish causation** and must never be
+reported as though it could. What it can do is surface a pattern too consistent to be noise. The report prints an explicit warning below n=10.
+
 ### `gate_eval.py`
 
 - **Purpose:** the A / B1 / B2 experiment of [spec 0007](../.archcore/specs/0007-gate-only-evaluation.md). **A** judges the three gates alone; **B1** routes on the model's own gates; **B2** routes on

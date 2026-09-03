@@ -314,13 +314,17 @@ holdout and answers nothing. Gate over-assertion now costs 5 points, coverage is
      recall.
    - [Rule 0012](.archcore/rules/0012-gate-flags-are-advisory-until-localised.md) stays advice and does not become code — its premise held.
    - [Rule 0011](.archcore/rules/0011-gate-errors-are-asymmetric.md) is independently confirmed: its -20/-5 split, chosen on judgement, matches the measured cost ratio.
-4. **Replay real historical project tasks** through the router and compare against what actually happened. Now the highest-value open work.
-5. **Shadow-mode routing** alongside normal work, driving nothing.
-6. **Holdout 2**, authored blind, on a realistic-payload-qualified runner. [Plan 0003](.archcore/plans/0003-holdout-two-protocol.md).
-7. **Ownership is now the leading open routing defect.** B1 and B2 both carry ~10 `missing required persona` failures, unchanged between them — untouched by gates, and the same class as the three
-   holdout failures. Evidence must come from replay or shadow, never from the spent 24.
-8. Accept or resolve the two staleness-audit residuals so the next audit can start.
-9. Audit residue A3/A4 — inherited procedure text in `websh` and `deep-research`.
+4. **FIELD USE — now the live item, and the only one that tests a question no corpus can.** Every measurement so far tests whether the router agrees with a corpus. That is necessary and not
+   sufficient: a route can be perfectly corpus-correct and still not make the work better. Operator decision 20260903 — use it on real projects and see. Capture with `just used "<task>" --project X
+   --owner Y --followed ... --helped ...`; read with `just field-report`. The `--overrode` field is the signal.
+5. **Replay** ([spec 0008](.archcore/specs/0008-replay-corpus-contract.md)) — PARKED behind field use, not cancelled. The protocol is written; mining has not started. Default scope excludes
+   APN/company material because the corpus is committed and pushed.
+6. **Shadow-mode** — largely subsumed by field use, which collects the same disagreement signal during real work instead of as a separate exercise nobody has time to run.
+7. **Holdout 2** — only worth the tokens if field use shows the routing genuinely helps. If it shows routes are fine but personas add little, that is a more important finding than another 24 cases,
+   and only field use can produce it.
+8. **Ownership remains the leading open routing defect** — ~10 `missing required persona` failures in both B1 and B2, unchanged by gates, same class as all three holdout failures. Field overrides are
+   now the cheapest available evidence about it.
+9. Accept or resolve the two staleness-audit residuals; audit residue A3/A4.
 
 **The routing-development phase stays closed.** The open question is narrower than routing quality: *can the model discriminate gate truth at all when gate classification is isolated from routing?* If
 it cannot, some gates should stop being model judgement and become deterministic.

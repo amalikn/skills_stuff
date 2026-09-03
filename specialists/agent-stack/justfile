@@ -96,6 +96,21 @@ runs-index: _require-venv
 runs-check: _require-venv
     "{{py}}" scripts/index_runs.py --check
 
+# --- Field log: what the router did on REAL work ----------------------------------------------------------------------------------------------------------
+# Every eval so far tests agreement with a corpus, which is necessary and not sufficient — a route can be perfectly corpus-correct and still not make the work
+# better. Only real use tests that, and only if it is written down at the time. Ten seconds per use.
+#
+#   just used "landed cost for the next atar order" project=atar owner=cfo-campbell followed=full helped=better
+#
+# The field that matters is `overrode`: a route you CHANGED, and why. Repeated the same way, that is a routing defect; once, it is a preference.
+# Variadic pass-through rather than positional parameters: `just` assigns recipe parameters by position, so a mistyped order silently records the wrong field.
+# These flags are self-describing and cannot be misordered.
+used *args: _require-venv
+    "{{py}}" scripts/field_log.py add {{args}}
+
+field-report: _require-venv
+    "{{py}}" scripts/field_log.py report
+
 # --- Runner qualification ---------------------------------------------------------------------------------------------------------------------------------
 # Disposable calls only — never a corpus case, so this can never spend evidence. Set `calls` to the corpus size you intend to run, because quota and session
 # limits are what this exists to surface, and they surface at sequence length. Qualification is PERISHABLE: it expires when the runner, its credentials, its
