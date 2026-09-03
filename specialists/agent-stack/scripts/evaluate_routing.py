@@ -486,7 +486,7 @@ def rescore(pattern: str, corpus: dict[str, Any], routing: dict[str, Any], repai
             row = json.loads(line)
             stored[row["case_id"]] = row
     if not stored:
-        print(f"no stored rows matched {pattern}", file=sys.stderr)
+        print(f"no stored rows matched {pattern}", file=sys.stderr, flush=True)
         return 1
     moved: list[str] = []
     was = now = 0
@@ -506,15 +506,15 @@ def rescore(pattern: str, corpus: dict[str, Any], routing: dict[str, Any], repai
         now += after.passed
         if before != after.passed:
             moved.append(f"{'PASS->FAIL' if before else 'FAIL->PASS'} {cid}: {after.hard_failures or 'clean'}")
-    print(f"\nRe-scored {scored} stored plans against the current catalogue" + (" WITH deterministic closure applied" if repair else ""))
+    print(f"\nRe-scored {scored} stored plans against the current catalogue" + (" WITH deterministic closure applied" if repair else ""), flush=True)
     print(f"  before: {was}/{scored}")
-    print(f"  after:  {now}/{scored}")
+    print(f"  after:  {now}/{scored}", flush=True)
     if moved:
-        print(f"\n{len(moved)} case(s) changed verdict:")
+        print(f"\n{len(moved)} case(s) changed verdict:", flush=True)
         for m in moved:
-            print(f"  {m}")
+            print(f"  {m}", flush=True)
     else:
-        print("\nNo case changed verdict." + (" Closure changed nothing on these routes." if repair else " The catalogue change is behaviour-preserving on these routes."))
+        print("\nNo case changed verdict." + (" Closure changed nothing on these routes." if repair else " The catalogue change is behaviour-preserving on these routes."), flush=True)
     return 0
 
 
@@ -545,18 +545,18 @@ def main() -> int:
     errors=[]
     for case in evals["cases"]: errors.extend(validate_case(case,personas,skills))
     if errors:
-        print("Routing eval corpus: FAIL")
+        print("Routing eval corpus: FAIL", flush=True)
         for e in errors: print("-",e)
         return 1
     selected,pool=select_cases(evals["cases"],args.case,args.family,args.limit)
-    print(f"Routing eval corpus: PASS ({len(evals['cases'])} cases; selected={len(selected)})")
+    print(f"Routing eval corpus: PASS ({len(evals['cases'])} cases; selected={len(selected)})", flush=True)
     scope="corpus" if not (args.case or args.family) else (f"family {args.family}" if args.family else "selected cases")
-    print(f"covered {len(selected)}/{pool} cases ({scope})")
+    print(f"covered {len(selected)}/{pool} cases ({scope})", flush=True)
     if len(selected) < pool:
-        print(f"WARNING: partial corpus run - {len(selected)}/{pool} cases evaluated; --limit {args.limit} truncated the {scope}. Not a baseline.")
+        print(f"WARNING: partial corpus run - {len(selected)}/{pool} cases evaluated; --limit {args.limit} truncated the {scope}. Not a baseline.", flush=True)
     if args.validate_only or not (args.command or args.rescore):
         if not (args.command or args.rescore) and not args.validate_only:
-            print("No --command supplied; behavioral model execution skipped.")
+            print("No --command supplied; behavioral model execution skipped.", flush=True)
         return 0
     if args.rescore:
         return rescore(args.rescore, {c["id"]: c for c in evals["cases"]}, routing, args.repair)
@@ -574,7 +574,7 @@ def main() -> int:
         except Exception as exc:
             result=Score(case['id'],0.0,False,[f"execution-error:{exc}"],[],[],{})
         results.append(result)
-        print(f"{'PASS' if result.passed else 'FAIL'} {result.case_id}: {result.score:.1f}")
+        print(f"{'PASS' if result.passed else 'FAIL'} {result.case_id}: {result.score:.1f}", flush=True)
         for h in result.hard_failures: print(f"  ! {h}")
     if args.output:
         args.output.parent.mkdir(parents=True,exist_ok=True)
@@ -593,16 +593,16 @@ def main() -> int:
     scored=[r for r in results if r not in errored]
     passed=sum(r.passed for r in scored)
     avg=sum(r.score for r in scored)/len(scored) if scored else 0.0
-    print(f"Behavioral routing: {passed}/{len(scored)} passed; average score={avg:.1f}")
+    print(f"Behavioral routing: {passed}/{len(scored)} passed; average score={avg:.1f}", flush=True)
     fn=sum(len(r.gate_false_negatives) for r in scored)
     fp=sum(len(r.gate_false_positives) for r in scored)
-    print(f"  gate_false_negative={fn} (hard, -20 each)  gate_false_positive={fp} (soft, -5 each)")
+    print(f"  gate_false_negative={fn} (hard, -20 each)  gate_false_positive={fp} (soft, -5 each)", flush=True)
     if errored:
         raw_avg=sum(r.score for r in results)/len(results)
-        print(f"  {len(errored)} execution error(s) EXCLUDED from the denominators: {', '.join(r.case_id for r in errored)}")
+        print(f"  {len(errored)} execution error(s) EXCLUDED from the denominators: {', '.join(r.case_id for r in errored)}", flush=True)
         print(f"  uncorrected (execution errors scored 0.0 and counted): {passed}/{len(results)} passed; average score={raw_avg:.1f}")
         for r in errored:
-            print(f"    ! {r.case_id}: {r.hard_failures[0][:120]}", file=sys.stderr)
+            print(f"    ! {r.case_id}: {r.hard_failures[0][:120]}", file=sys.stderr, flush=True)
     # A run that could not execute is not a passing run, however few cases were scored.
     return 0 if (scored and passed==len(scored) and not errored) else 2
 

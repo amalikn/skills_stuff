@@ -127,7 +127,7 @@ judges the gate correctly and then finishes the route without closing the obliga
 [docs/routing-failure-classification-20260901_1842.md](docs/routing-failure-classification-20260901_1842.md). Two checks were run to falsify it and did not: no case asserts a gate its own required +
 preferred contract cannot satisfy (0 of 60), and no plan names a skill absent from the catalogue.
 
-### Frozen measurement contract — 20260903_1600
+### Frozen measurement contract — 20260903_1700
 
 Frozen BEFORE the unseen holdout is authored, so the holdout is scored once against a contract that will not move under it. Any run whose rows carry a different value in one of these is not comparable
 to the holdout and must be re-scored (`--rescore`) rather than compared directly.
@@ -137,7 +137,7 @@ to the holdout and must be re-scored (`--rescore`) rather than compared directly
 | `routing_catalogue_sha` | `05764312edad68e8` | `routing.toml` — capabilities, gates, precedence       |
 | `eval_corpus_sha`       | `cb548b83cf203346` | `evals/routing-cases.toml` — the frozen 60             |
 | `orchestrator_sha`      | `1369bf235408a4d1` | the production routing contract the prompt sources     |
-| `harness_sha`           | `dc1c8665417fecd1` | `scripts/evaluate_routing.py` — prompt AND scorer      |
+| `harness_sha`           | `e6f97680e12e7c47` | `scripts/evaluate_routing.py` — prompt AND scorer      |
 | `closure_sha`           | `bdb17d3c8fbd0e7c` | `scripts/close_route.py` — deterministic repair        |
 | `holdout_corpus_sha`    | `7470773e7212933d` | `evals/holdout-cases.toml` — the unseen 24, single use |
 
@@ -242,6 +242,25 @@ Install verified live at the decision point: **123/123 symlinks correct** across
 Capture is [`scripts/field_log.py`](scripts/field_log.py) — `just used` / `just field-report`, appending to `evals/field-log.jsonl`, tracked in the repo because a re-run regenerates an eval and
 nothing regenerates a day of real use. The load-bearing field is `--overrode`: a followed route only says the operator did not disagree, while a route CHANGED, repeatedly and the same way, is a
 routing defect. Data is observational, self-reported and confounded; it cannot establish causation and the report says so below n=10.
+
+### Production shape measured — 20260903, and what wiring closure was worth
+
+`scripts/close_route.py` was described in the skill and **never executed**: its only callers were the evaluator and its tests. So every published figure was produced with closure on, while real use ran
+without it. Measured directly — dev 60, live, Flash, no `--repair`:
+
+| Configuration                                | Result                                          |
+| -------------------------------------------- | ----------------------------------------------- |
+| **Production path before 20260903** (no closure) | **30/60 (50.0%)**, mean 68.1, zero execution errors |
+| v3 live, also without closure                | 34/60                                           |
+| Stored routes WITH closure                   | 47/60                                           |
+
+**Wiring closure into the skill is worth roughly +13 to +17 cases.** The two without-closure runs bracket each other (30 and 34), and the difference to 47 is the repair.
+
+**The failure classes confirm it mechanistically rather than by score alone**: `gate_unsatisfied` 18 and `strength_insufficient` 2 — 20 failures whose entire content is "the route asserted a gate and
+equipped nothing that declares the capability", which is precisely what closure repairs. 9 research, 8 independent-challenge, 1 validation. Remaining: 14 missing-persona, 9 missing-skill, 5
+missing-gate, 4 wrong-owner — ownership and selection, untouched by closure and still the open defect.
+
+`gate_false_positive` 125 across 60 cases (2.1 per case) is the known over-assertion, unchanged and still harmless.
 
 ## Metric definitions, and which ones have zero noise
 

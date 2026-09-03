@@ -969,3 +969,31 @@ evidence_freeze_receipt = "/Volumes/Data/_ai/_skills/skills-working-cache/agent-
 interpretation = "16/19 (84.2%) is in the pre-registered strong band and is the LEAST informative number here. All 19 scored routes set all four gates true, so the mean sits at 71.1 against a ~90 ceiling and the pass rate survives only because over-assertion is soft. Read as: ownership and skill selection good, gate discrimination absent. All three genuine failures are ownership. 5 of 24 cases lost to silent runner failures."
 notes = "Freeze verified and captured immediately before launch. Nothing was edited in response to the result; the three failing cases stand as authored."
 
+[[runs]]
+run_id = "prodshape-norepair-flash-20260903"
+timestamp = "2026-09-03T06:15:56+00:00"
+purpose = "Measure what the PRODUCTION path actually delivered before closure was wired into the skill: dev 60, live, no --repair."
+status = "complete"
+corpus = "routing-cases.toml"
+corpus_sha = "cb548b83cf203346"
+provider = "deepseek"
+model = "deepseek-v4-flash"
+runner = "hermes"
+routing_sha = "05764312edad68e8"
+orchestrator_sha = "1369bf235408a4d1"
+harness_sha = "dc1c8665417fecd1"
+closure_sha = "bdb17d3c8fbd0e7c"
+selected_cases = 60
+scored_cases = 60
+execution_errors = 0
+passes = 30
+pass_rate = 0.5
+mean_score = 68.11
+gate_false_negatives = 5
+gate_false_positives = 125
+all_gates_true_routes = 56
+failures = { gate_unsatisfied = 18, missing_gate = 5, missing_persona = 14, missing_skill = 9, strength_insufficient = 2, wrong_owner = 4 }
+evidence_jsonl = "/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/routing-results/prodshape-norepair-flash-20260903.jsonl"
+evidence_log = "/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/routing-results/prodshape-norepair-flash-20260903.log"
+interpretation = "30/60 (50.0%), mean 68.1, zero execution errors. This is the configuration real use was in until 20260903, because close_route.py was described in the skill but never executed. Compare 47/60 with closure on stored routes and 34/60 for the v3 live run without it: the fix is worth roughly +13 to +17 cases. Mechanistic confirmation, not just a score gap — 20 of the failures are unsatisfied-capability (9 research, 8 independent-challenge, 1 validation, 2 strength-insufficient), which is exactly the class closure repairs. gate_false_positive 125 across 60 cases (2.1/case) is the known over-assertion, unchanged and still harmless."
+
