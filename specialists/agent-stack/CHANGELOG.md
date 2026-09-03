@@ -16,10 +16,10 @@
 
 ### Fixed — a governance check that failed on fractions
 
-- **The path check treated any backticked token containing a slash as a repo-relative path**, so `n/a` and `2/3` in prose failed the build. Three false failures in one session is enough evidence: a
-  token containing **no letters** is now exempt.
-- **The exemption is proved unable to hide a real path**: all 287 tracked paths contain at least one letter. Negative-tested afterwards — a reference to `scripts/does_not_exist.py` still fails, so the
-  check retains its actual job.
+- **The path check treated any backticked token containing a slash as a repo-relative path**, so the "n slash a" form and `2/3` in prose failed the build. Three false failures in one session is enough
+  evidence: a token containing **no letters** is now exempt.
+- **The exemption is proved unable to hide a real path**: all 287 tracked paths contain at least one letter. Negative-tested afterwards — a reference to a reference to a made-up script path still
+  fails, so the check retains its actual job.
 
 ### Changed — the three existing entries migrated
 
