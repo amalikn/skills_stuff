@@ -315,8 +315,9 @@ holdout and answers nothing. Gate over-assertion now costs 5 points, coverage is
    - [Rule 0012](.archcore/rules/0012-gate-flags-are-advisory-until-localised.md) stays advice and does not become code — its premise held.
    - [Rule 0011](.archcore/rules/0011-gate-errors-are-asymmetric.md) is independently confirmed: its -20/-5 split, chosen on judgement, matches the measured cost ratio.
 4. **FIELD USE — now the live item, and the only one that tests a question no corpus can.** Every measurement so far tests whether the router agrees with a corpus. That is necessary and not
-   sufficient: a route can be perfectly corpus-correct and still not make the work better. Operator decision 20260903 — use it on real projects and see. Capture with `just used "<task>" --project X
-   --owner Y --followed ... --helped ...`; read with `just field-report`. The `--overrode` field is the signal.
+   sufficient: a route can be perfectly corpus-correct and still not make the work better. Operator decision 20260903 — use it on real projects and see. Capture is **automatic**: the orchestrator
+   skill records the route at Step 10 whenever Claude Code invokes it, in any project, with no operator commands. `--followed` and `--overrode` are the agent's to fill in; `--helped` is operator-only
+   and an agent must never self-assess it. Read with `just field-report`.
 5. **Replay** ([spec 0008](.archcore/specs/0008-replay-corpus-contract.md)) — PARKED behind field use, not cancelled. The protocol is written; mining has not started. Default scope excludes
    APN/company material because the corpus is committed and pushed.
 6. **Shadow-mode** — largely subsumed by field use, which collects the same disagreement signal during real work instead of as a separate exercise nobody has time to run.

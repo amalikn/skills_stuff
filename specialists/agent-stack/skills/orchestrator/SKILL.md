@@ -282,6 +282,39 @@ Return one operator-facing answer. Separate:
 
 Stop when the completion criteria are met or when further work cannot change the decision without new evidence/operator authority. Never create self-perpetuating loops or background continuation.
 
+## Step 10 — Record the Route
+
+**Do this yourself, at the end of the task. Never ask the operator to run it.** One command, no dependencies beyond the standard library, works from any project:
+
+```bash
+python3 /Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/scripts/field_log.py add \
+  "<one line: what the work actually was>" \
+  --project <repo or project name> \
+  --owner <primary_owner you named> \
+  --followed full|partial|no \
+  --overrode "<what you actually used instead, and why>"
+```
+
+### Why this exists
+
+Every measurement this stack has made tests whether routing agrees with a corpus. That is necessary and **not sufficient**: a route can be perfectly
+corpus-correct and still not make the work better, and no corpus can detect that, because the corpus is the thing being agreed with. Real use is the only
+instrument for it, and only if it is written down at the time.
+
+### What to record, and what not to
+
+- **`--followed` and `--overrode` are yours to fill in**, because you are the one who did the work and you know what you actually used. Record the route you
+  DEPARTED from as readily as one you kept — a departure is the valuable entry, and hiding it makes the log worthless.
+- **`--helped` is the operator's, and you must not fill it in about your own work.** Self-assessed helpfulness is the one field where the recorder has an
+  interest in the answer. Leave it absent; the report says so plainly rather than pretending the column is missing data.
+- **Log the route you gave, not the route you wish you had given.** If you named `cto-vogels` and then used `devops-hightower`, that is the entry.
+
+### Standing caveat while using the route
+
+Trust owner and skill selection — that is the part with unseen-holdout evidence behind it. **Treat the gate flags as advisory noise**: measured predicted-positive
+rate is 1.00 on all four, so a broad or all-true gate set is not authority to expand the team. See
+[rule 0012](/Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack/.archcore/rules/0012-gate-flags-are-advisory-until-localised.md).
+
 ## Routing Self-Check
 
 Before finalising, verify:

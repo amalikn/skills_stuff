@@ -26,7 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 LOG = ROOT / "evals" / "field-log.jsonl"
 
-HELPED = ("better", "neutral", "worse")
+HELPED = ("better", "neutral", "worse")  # operator-supplied only
 FOLLOWED = ("full", "partial", "no")
 
 
@@ -67,7 +67,10 @@ def report(args: argparse.Namespace) -> int:
         n = sum(counts.values())
         if n:
             line = "  ".join(f"{v}={counts.get(v, 0)} ({counts.get(v, 0) / n:.0%})" for v in values)
-            print(f"{field:9} {line}")
+            print(f"{field:9} {line}" + (f"   [{len(rows) - n} unrated]" if n < len(rows) else ""))
+        elif field == "helped":
+            # Said explicitly rather than left as a blank line: an agent logging its own routes cannot supply this, so an empty column is expected, not missing data.
+            print(f"{field:9} none rated — this field is operator-supplied and an agent must not fill it in about its own work")
 
     gates = Counter(r.get("gates_useful") for r in rows if r.get("gates_useful"))
     if gates:
@@ -103,7 +106,9 @@ def main() -> int:
     a.add_argument("--skill", action="append", default=[])
     a.add_argument("--followed", choices=FOLLOWED, required=True)
     a.add_argument("--overrode", help="WHAT you changed and why. The most valuable field here — a repeated override is a defect.")
-    a.add_argument("--helped", choices=HELPED, required=True)
+    a.add_argument("--helped", choices=HELPED,
+                   help="OPERATOR judgement, and optional. An agent must not fill this in about its own work: self-assessed helpfulness is the one field "
+                        "where the recorder has an interest in the answer. Absent is the honest default.")
     a.add_argument("--gates-useful", choices=("yes", "no", "ignored"), help="were the research/critic/qa flags worth anything")
     a.add_argument("--note")
     a.set_defaults(fn=add)

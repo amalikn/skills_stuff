@@ -107,11 +107,15 @@ cover 53 of 60 silently. Rows whose case id is no longer in the corpus are liste
 
 - **Purpose:** records what the router actually did on **real work**, and reports the pattern. Every other measurement in this project tests agreement with a corpus — necessary, but not sufficient,
   because a route can be perfectly corpus-correct and still not make the work better. Only real use tests that, and only if it is written down at the time.
-- **Run with:** `just used "<task>" --project X --owner Y --followed full|partial|no --helped better|neutral|worse [--overrode "..."]`, and `just field-report`
+- **Run with:** normally **by the orchestrator skill itself**, at Step 10, with no operator involvement — `python3 <abs path>/scripts/field_log.py add ...`. `just used` is the operator path for adding
+  `--helped` afterwards; `just field-report` reads the log.
 - **Inputs / outputs:** appends to `evals/field-log.jsonl`, which is **tracked in the repo** — a re-run regenerates an eval, and nothing regenerates a day of real use
 - **Requires:** standard library only
 - **Safety:** `safe` and `modifies-files` — it appends one line and calls no model
 - **Idempotent:** no, by design; each invocation records one event
+
+`--followed` and `--overrode` are filled in by whoever did the work, because only they know what was actually used. **`--helped` is operator-only and an agent must never fill it in about its own
+work** — self-assessed helpfulness is the one field where the recorder has an interest in the answer, so absent is the honest default and the report says so rather than showing a blank column.
 
 **The field that matters is `overrode`** — what you CHANGED about the route and why. A route you followed only tells you that you did not disagree. A route repeatedly overridden the same way is a
 routing defect; overridden once, it is a preference. The report flags any owner overridden three or more times.

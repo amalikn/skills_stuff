@@ -1,5 +1,27 @@
 # Changelog — Agent Stack
 
+## 20260903_0230
+
+### Changed — field capture happens in the skill, not in a chore
+
+- **The orchestrator skill gained Step 10 — Record the Route.** When Claude Code invokes the skill in any project, the agent logs the route itself at the end of the task: what the work was, who it
+  named as owner, whether it followed its own route, and what it used instead. One stdlib-only command, absolute path, no operator involvement. Operator decision 20260903: the `just` recipes would not
+  have been run, and a capture mechanism nobody runs collects nothing.
+- **`--helped` is now operator-only and optional.** An agent must not self-assess whether its own routing helped — that is the one field where the recorder has an interest in the answer. Absent is the
+  honest default, and the report prints *"none rated — this field is operator-supplied"* rather than showing a blank column that reads as missing data.
+- **`--followed` and `--overrode` stay with whoever did the work**, because only they know what was actually used. The skill says explicitly to record a departure as readily as a kept route: a
+  departure is the valuable entry, and hiding it makes the log worthless.
+- **The skill also carries the standing caveat at the point of use** — trust owner and skill selection, treat the gate flags as advisory noise ([rule
+  0012](.archcore/rules/0012-gate-flags-are-advisory-until-localised.md)).
+
+### Notes
+
+- **Step 10 sits at line 285, far below the `eval-routing-contract` block that ends at line 47**, so evaluation prompts are unchanged — verified by hashing `routing_contract()` directly. The live
+  install picked the change up immediately, the install being symlinks rather than copies.
+- **Freeze re-recorded at 20260903_0230**; `orchestrator_sha` `283664a753137a61` → `ebb6872c60f95444`. Recorded alongside it, a known imprecision left deliberately unfixed: that stamp hashes the whole
+  skill file while only the marked block is a prompt input, so an edit elsewhere trips `freeze-check` for a change that cannot affect a measurement. Stamping the block would be more precise and would
+  make new stamps incomparable to every one already recorded. **Over-coverage produces false alarms; the alternative risks false confidence.** Governance 704 → 707 checks.
+
 ## 20260903_0200
 
 ### Added — field use, the measurement no corpus can make
@@ -539,6 +561,7 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260903_0230](#20260903_0230)
 - [20260903_0200](#20260903_0200)
 - [20260903_0030](#20260903_0030)
 - [20260902_1240](#20260902_1240)
