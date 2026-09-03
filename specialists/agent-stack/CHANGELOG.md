@@ -7,11 +7,11 @@
 - **A stated non-override was being counted as an override.** The first real entry ever logged carried `--overrode "none - direct route, no gates true (read-only)"` — a description of *not*
   overriding. The report read it as a change and showed **overridden on 3/3 uses**; corrected, it reads 2/3. The failure direction matters: every clean route would have inflated the override rate, so
   the log's one statistic degraded silently and flatteringly as it grew.
-- **Fixed on both sides.** `skill-agent-stack` Step 10 now says to OMIT `--overrode` when the route was followed and never to pass `"none"`; `field_log.py` normalises such values on read as well as
+- **Fixed on both sides.** `skill-agent-stack` Step 10 now says to OMIT `--overrode` when the route was followed and never to pass `"none"`; `scripts/field_log.py` normalises such values on read as well as
   refusing them on write, because the file already contains one and future recorders include agents that will not have read the skill.
 - **A prefix rule alone gets this wrong in both directions**, which is why change-verbs are checked first: *"none of the skills fit so I swapped owner to devops-hightower"* is a real override that
   starts with a negation, and hiding it would be the worse error — understating the defect signal rather than inflating it.
-- **Two regression tests, negative-tested** across 15 boundary cases including `-`, `n/a`, `no-override-needed` and the two "none"-prefixed opposites. Two pattern defects were caught by running them
+- **Two regression tests, negative-tested** across 15 boundary cases including a bare dash, the "n slash a" form, `no-override-needed` and the two "none"-prefixed opposites. Two pattern defects were caught by running them
   rather than by reading the regex: `-{1,3}\b` never matched a bare `-`, and `(?![\w-])` blocked its own match on `no-override-needed`. Suite 55 → 57.
 
 ### Notes
