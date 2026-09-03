@@ -18,7 +18,7 @@
 
 ### Notes — what was deliberately left out, and why
 
-Recorded in the skill's `references/field-log.md`: **duration** (an agent cannot measure its own wall-clock reliably, and `dispatched` already proxies cost with a fact), **domain tags** (derivable,
+Recorded in the skill's `skills/skill-agent-stack/references/field-log.md`: **duration** (an agent cannot measure its own wall-clock reliably, and `dispatched` already proxies cost with a fact), **domain tags** (derivable,
 and asking invites fitting the tag to the route chosen — the error rule 0006 names), **rework** (a strong signal, but only knowable later, so it belongs to a follow-up entry), and **anything git
 already knows**.
 
