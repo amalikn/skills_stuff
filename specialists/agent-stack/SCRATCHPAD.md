@@ -626,10 +626,11 @@ Do **not** tune against the frozen 60. Add a case only to cover a new routing co
 
 ## Memory pointers (navigation only — content is above)
 
-**Added 20260904 (tenth segment) — best-of-agent-harnesses survey.** memory-keeper channel `agent-stack`: `agent-stack.best-of-agent-harnesses-survey-20260904` (progress) ·
-`agent-stack.governance-false-positive-backticked-external-refs` (error). Project-context note (tenth segment) on channel `agent-stack` of parent `skills_stuff` (b8c5525e-3e2f-4fb5-bf87-e5751f3ad49c).
-Checkpoints: memory-keeper `slurp-20260904-best-of-agent-harnesses-survey` (6201f9c4) · mcp-project-context `slurp-20260904-best-of-agent-harnesses-survey` (436582c9-f592-4cc5-9226-726fb5624355).
-Commit: pending — staleness-audit, project-coherence, and commit+push are still queued this session; this pointer is updated once they land.
+**Added 20260904 (tenth segment) — best-of-agent-harnesses survey, staleness audit, coherence pass.** memory-keeper channel `agent-stack`: `agent-stack.best-of-agent-harnesses-survey-20260904`
+(progress) · `agent-stack.governance-false-positive-backticked-external-refs` (error) · `agent-stack.staleness-audit-20260904-tenth-segment` (progress) ·
+`agent-stack.project-coherence-20260904-tenth-segment` (progress) · `session.closeout.20260904.best-of-agent-harnesses-survey` (progress, high, full closeout template). Project-context: 5 notes (tenth
+segment) on channel `agent-stack` of parent `skills_stuff` (b8c5525e-3e2f-4fb5-bf87-e5751f3ad49c). Checkpoints: memory-keeper `slurp-20260904-best-of-agent-harnesses-survey` (6201f9c4) ·
+mcp-project-context `slurp-20260904-best-of-agent-harnesses-survey` (436582c9-f592-4cc5-9226-726fb5624355). Committed as `17d73a4` (pushed, `4662762..17d73a4`).
 
 **Added 20260904 (ninth segment) — provenance detail, three diagrams, coherence review.** memory-keeper channel `agent-stack`: `agent-stack.phased-plan.provenance-detail-and-diagrams-20260904`
 (progress) · `agent-stack.phased-plan.current-state-diagram-added-20260904` (progress) · `agent-stack.phased-plan.coherence-review-20260904` (progress) · `agent-stack.contents-autosync-hook-behavior`
