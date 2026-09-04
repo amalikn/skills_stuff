@@ -14,6 +14,7 @@ Summary: This document is inert until an operator names the evidence trigger for
 - [Tool and feature provenance](#tool-and-feature-provenance)
 - [Provenance detail — feature, pick, effect, benefit](#provenance-detail-feature-pick-effect-benefit)
 - [Harness-agnostic design](#harness-agnostic-design)
+- [Current-state flow — what actually runs today](#current-state-flow-what-actually-runs-today)
 - [Target-state flow — all five phases together](#target-state-flow-all-five-phases-together)
 - [Standing rule for every phase](#standing-rule-for-every-phase)
 - [Common verification commands](#common-verification-commands)
@@ -234,6 +235,43 @@ consume the *same* files through the *same* symlinked install, so no phase in th
 - Phase 1 is the only phase that names harnesses explicitly, and it does so as **registry rows**, not as code branches: adding a fourth harness that reads generic `.agents/` conventions is a new
   `[[harnesses]]` entry in `harness-capabilities.toml`, never a new function or a conditional in `scripts/validate_harness_capabilities.py`. The standing rule below makes that an explicit requirement,
   not an assumption.
+
+## Current-state flow — what actually runs today
+
+Before reading the target state below, this is what is live right now, with none of the five phases built. It exists so the two diagrams can be read side by side: what runs today, and what the target
+state would add on top of it — never replace.
+
+```text
+WHAT ACTUALLY RUNS TODAY — before any of the five phases exists
+
+routing.toml + close_route.py                           ← single authority for ownership + gates, live
+        │
+        ▼
+route dispatched → persona(s) / skill(s) run
+        │
+        ├── persona_note.py writes MANIFEST.json          (live — a per-run snapshot; nothing reads it back yet)
+        │
+        └── the orchestrator skill records the route automatically, in any project, with no operator command
+                    │
+                    ▼
+            evals/field-log.jsonl                          (live — 6 entries, 1 multi-persona, as of 20260904)
+                    │
+                    ▼
+            evals/capability-gaps.jsonl                     (live — 0 entries: no named gap has been logged)
+                    │
+                    ▼
+            propose_evolution.py                            (live, gated at a 10-entry minimum — not yet reached)
+                    │
+                    ▼
+            NO PROPOSAL YET — below threshold, correctly produces nothing        <!-- count:asat 20260904 -->
+
+Not present anywhere in this flow today:
+  - a harness-capabilities registry or execution receipt            (would be Phase 1)
+  - a consumes/produces/will_not contract or a [[handoffs]] entry   (would be Phase 2)
+  - a read-only audit comparing a route to its recorded output      (would be Phase 3)
+  - a typed access-request ledger                                   (would be Phase 4)
+  - anything beyond the existing five-step promotion ladder above   (would be a Phase 5 extension)
+```
 
 ## Target-state flow — all five phases together
 
