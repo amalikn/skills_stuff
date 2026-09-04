@@ -80,10 +80,10 @@ venv Python by path via `{{py}}` with a `_require-venv` guard, replacing an impl
 - [x] ~~**NEXT PHASE — evidence from outside the frozen 60**~~ — FIRST EVIDENCE IN, 20260902. The 24-case holdout is authored, executed and SPENT: 16/19 passed, 5 runner failures, 0 missed gates, 62
   over-asserted ones. Replay and shadow-mode remain. Superseded detail: Author an unseen holdout of 20–30 cases without reference to the development corpus; replay real historical project tasks; then
   shadow-mode routing alongside normal work. Only after that decide whether more routing taxonomy or personas are needed. See [plan 0001](.archcore/plans/0001-next-evaluation-phase.md).
-- [ ] **`policy_guard.py enforce` pre-commit hook blocks every commit in `skills_stuff`** — unrelated to agent-stack: `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md` are both missing required
-  global-governance phrases (Commit Message Governance, Tier 1/2/3, Mandatory closeout persistence policy, Global Sub-Agent Execution Governance, etc.). Bypassed once with `--no-verify` on 2026-09-04
-  as an explicit operator exception, not a standing practice. Fix the two global files (or reconcile the policy's expected-phrase list, if it is the policy that is stale) before the next commit needs
-  the same judgment call.
+- [x] ~~**`policy_guard.py enforce` pre-commit hook blocks every commit in `skills_stuff`**~~ — RESOLVED 2026-09-04 (later same day), in `scripts_stuff` not here: the required governance phrases
+  (Commit Message Governance, Tier 1/2/3, etc.) all genuinely exist, but only in ~/.agents/AGENTS.playbook.md, the on-demand file the thin global `AGENTS.md`/`CLAUDE.md` deliberately split this
+  content into — the checker's `@`-import resolver never followed the markdown-link reference to it, so it predated that architecture split. Fixed the checker (not the files, avoiding the content
+  duplication that would have re-created) in `scripts_stuff`, commit `df86024`, not this repo. `policy_guard.py enforce` now reports 130/130 PASS. No more `--no-verify` judgment call needed.
 - [ ] **Two staleness-audit residuals remain formally unaccepted** — a vendored TypeScript config that is JSONC and unparseable by a strict loader, and the inverse sweep flagging package-internal
   resource directories this project catalogues by package. Receipts are archived under the working cache; accept or resolve them before the next audit run.
 
@@ -219,6 +219,9 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ## Recent decisions
 
+- **2026-09-04 — When a commit hook blocks on a known, previously-bypassed issue, ask before repeating the bypass.** The global policy_guard.py blocker recurred; rather than silently reusing the prior
+  `--no-verify` exception, asked the operator, who chose to fix the root cause instead. Led to finding the checker predated the thin-wrapper + on-demand-playbook architecture split, fixed in
+  `scripts_stuff` (commit `df86024`) rather than duplicating content into three global files. `KEEP`
 - **2026-09-04 — "Do it on your own" does not waive the evidence-gate rule.** Asked to write an implementation-and-verification plan the agent "will do on their own," the request was read as
   authorship/execution ownership, not as license to skip the operator-named-trigger + operator-approval requirement in the reliability adaptation proposal. Wrote the plan as a ready-to-execute
   reference; explicitly did not treat writing it as permission to begin any phase. `KEEP`
@@ -261,6 +264,10 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ## Session history (summaries — full detail in memory-keeper)
 
+- **20260904 (closeout) — Staleness audit, project coherence, a cross-repo governance fix, and a commit+push closed out the day's queue. KEEP.** Staleness audit (scoped, partial) re-verified the prior
+  register and fixed two small defects; project coherence added one missing cross-reference. Committing hit the same global policy_guard.py blocker as earlier today — asked rather than re-bypassing,
+  found the checker predated the AGENTS.md/AGENTS.playbook.md split, fixed it in `scripts_stuff` (`df86024`) after surfacing the duplicate-content-vs-fix-the-checker tradeoff to the operator. Agent
+  Stack's own work committed and pushed as `a393c75`. `just governance`/`just preflight` green throughout.
 - **20260904 — Operator's felt gap (routing quality, persona hand-offs) turned into an evidence audit and a ready-to-execute plan, not a design. KEEP.** Operator said the orchestrator felt ineffective
   and personas felt uncoordinated. Checked field-log/capability-gaps evidence rather than accepting the feeling: 6 field-log entries (1 multi-persona), 0 capability gaps — neither Phase 2 nor Phase
   3's trigger is met. Confirmed the 2026-09-02 routing.toml fix still holds live. Quantified the routing-quality concern as real (gate eval B1 61.7%, closure-lifted holdout scores). Mapped which of
@@ -552,6 +559,12 @@ Do **not** tune against the frozen 60. Add a case only to cover a new routing co
 ---
 
 ## Memory pointers (navigation only — content is above)
+
+**Added 20260904 (closeout) — staleness audit, coherence pass, cross-repo governance fix, commits.** memory-keeper channel `agent-stack`: `agent-stack.staleness-audit-and-coherence-pass-20260904`
+(progress) · `agent-stack.global-governance-checker-fix-cross-repo` (decision, high) · `agent-stack.session-commits-20260904-1230` (progress) ·
+`session.closeout.20260904.agent-stack-gap-audit-and-commit` (progress, high, full closeout template). Project-context note (eighth segment) on channel `agent-stack` of parent `skills_stuff`
+(b8c5525e-3e2f-4fb5-bf87-e5751f3ad49c). Checkpoints: memory-keeper `slurp-20260904-close-staleness-coherence-commit` (a17a96bb) · mcp-project-context `slurp-20260904-close-staleness-coherence-commit`
+(0f164b9b-8eaa-47e8-8188-28edb5fca10c). Committed as `a393c75` (pushed) and, in `scripts_stuff`, `df86024` (not pushed).
 
 **Added 20260904 (later same day) — gap evidence audit and phased plan.** memory-keeper channel `agent-stack`: `agent-stack.reliability-gap-evidence-audit-and-repo-mapping` (decision, high) ·
 `agent-stack.phased-implementation-plan-authored` (progress, high) · `agent-stack.provenance-table-formatter-bug-recurrence` (error, high). Project-context note (seventh segment) on channel
