@@ -1,5 +1,50 @@
 # Changelog — Agent Stack
 
+## 20260904_1710 — Scoped staleness audit on the new survey document; a stale entry found in the standing 2026-09-01 residual register
+
+### Fixed
+
+- The best-of-agent-harnesses survey (20260904_1654 entry below) originally stated a summed-total arithmetic error — "78 of 160 in-lane / 82 out of scope" where the correct sums of its own
+  (individually correct) per-category counts are 77 and 83 — restated identically across six surfaces: the document's own frontmatter and body, this file, SCRATCHPAD.md, and both memory-keeper and
+  mcp-project-context. Corrected everywhere; the 20260904_1654 entry below reflects the corrected figures directly, since it was not yet committed when the error was caught. Also corrected: an
+  omnigent citation off by one line (README.md:11 -> the alpha-status badge is actually at README.md:12), and an approximation ("roughly 30 relevant projects") that undercounted a script-verified
+  total of 40 named/individually-reasoned projects by a third.
+- SCRATCHPAD.md's standing "Residual risk after the 2026-09-01 staleness audit" register: found stale during this audit's "confirm still valid" step, not introduced by anything in this entry. It
+  described `personas/README.md` as absent, with "adding a README failed `just governance` immediately" — but that file was added and registered in `scripts/check_governance.py`'s `CATALOGS` on
+  2026-09-03 (commit `c623350`), two days after the register was written and never updated to say so. Per the staleness-audit skill's own Phase 3 (supersession banners, don't rewrite history), the
+  original paragraph is left as written with a `RESOLVED 2026-09-03` note appended in place. The matching Open Items checkbox was updated from "two residuals remain formally unaccepted" to "one" —
+  only `skills/tailwind-v4-shadcn/templates/tsconfig.app.json`'s JSONC-vs-strict-JSON mismatch is still genuinely open.
+- A second occurrence of the same-day governance false positive (backticking an external filename inside a governance "surface" file trips `check_referenced_paths()`'s path-existence check) — this
+  time in SCRATCHPAD.md itself, same fix as the CHANGELOG.md occurrence below: write the external filename in plain prose, don't backtick it.
+
+### Project coherence
+
+Ran a coherence pass after the fixes above (change: corrected counts + one resolved-residual annotation). Checked AI_NAVIGATION.md, context-map.yaml, AGENTS.md, CLAUDE.md, `.archcore/`, and
+`skills/skill-agent-stack/SKILL.md` for any reference to the survey's counts or to the personas/README residual — none found; `AI_NAVIGATION.md` already correctly points at `personas/README.md` as the
+index (consistent with the 2026-09-03 fix, no update needed there). A repo-wide grep for the old figures found only the expected, correctly-framed audit-trail mentions in SCRATCHPAD.md's own "were
+wrong" / "undercounted" sentences — no unexpected hits in active files. Did not propagate the new survey's own proposed-next-step candidates (Gemini CLI, opencode, aider, etc.) into the phased
+implementation plan or the reliability-adaptation proposal — per this project's own standing rule, the external adaptation backlog is not implemented pre-emptively, only when an operator names a
+triggering gap. Did not regenerate `.ai-context/`/`graphify-out/` — this change is a working document plus a corrected count and a residual-register annotation, not a structural change to
+personas/skills/routing for either generator to re-map.
+
+Verified: `just governance` (1118 checks, up from 1115 at the prior slurp checkpoint) and `just preflight` (51 tests) both green after every fix in this pass.
+
+## 20260904_1654 — New document: best-of-agent-harnesses survey, screening a 160-project external list for relevance
+
+### Added
+
+- docs/reliability-adaptation/best-of-agent-harnesses-survey-20260904_1646.md: a source-verified screen of every project in ryanalberts/best-of-Agent-Harnesses (fetched directly as its own
+  harnesses.json data file and README.md via `raw.githubusercontent.com`, not from a lossy HTML-to-markdown preview) against Agent Stack's own scope. 5 of 12 categories (77 of 160 projects) are
+  in-lane; 40 are named and individually reasoned about in the findings table, each given a STEAL/ADAPT/CONFIRM/USE/WATCH/ALREADY-ASSESSED/SKIP verdict matching the vocabulary of the prior
+  external-orchestrator-survey. The other 7 categories (83 projects) are recorded as confirmed-not-guessed out of scope. Two multi-agent projects not covered by the prior 25-repo survey (`omnigent`,
+  `openai-agents-python`) were opened and quoted with file/line at operator request rather than left at description-only depth — `omnigent`'s "meta-harness" tagline turned out to wrap an always-on
+  collaborative session server (STEAL idea-only, same daemon caveat as MetaGPT/AutoGen); `openai-agents-python`'s `handoff()` carries a typed `input_type` payload schema and a dynamic `is_enabled`
+  legality gate (ADAPT), a narrower pair of primitives than Agency Swarm's already-assessed `extra_params_model` for the same handoff-legality declaration Phase 2 of the reliability-adaptation
+  proposal sketches.
+- docs/README.md: registered the new document in the Reliability adaptation table.
+
+Verified: `just governance` (1113 checks) and `just preflight` (51 tests) both green.
+
 ## 20260904_1630 — Provenance detail section added to the phased implementation plan, at operator request
 
 ### Added
@@ -1074,6 +1119,8 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260904_1710 — Scoped staleness audit on the new survey document; a stale entry found in the standing 2026-09-01 residual register](#20260904_1710-scoped-staleness-audit-on-the-new-survey-document-a-stale-entry-found-in-the-standing-2026-09-01-residual-register)
+- [20260904_1654 — New document: best-of-agent-harnesses survey, screening a 160-project external list for relevance](#20260904_1654-new-document-best-of-agent-harnesses-survey-screening-a-160-project-external-list-for-relevance)
 - [20260904_1630 — Provenance detail section added to the phased implementation plan, at operator request](#20260904_1630-provenance-detail-section-added-to-the-phased-implementation-plan-at-operator-request)
 - [20260904_1230 — Scoped staleness re-audit: two path defects fixed, prior 20260903_2200 register re-verified](#20260904_1230-scoped-staleness-re-audit-two-path-defects-fixed-prior-20260903_2200-register-re-verified)
 - [20260904_1208 — Phased implementation and self-verification plan added, inert pending an operator-named trigger](#20260904_1208-phased-implementation-and-self-verification-plan-added-inert-pending-an-operator-named-trigger)
