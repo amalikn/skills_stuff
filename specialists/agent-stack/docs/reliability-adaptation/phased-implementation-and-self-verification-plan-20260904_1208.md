@@ -13,6 +13,7 @@ Summary: This document is inert until an operator names the evidence trigger for
 - [What this document is and is not](#what-this-document-is-and-is-not)
 - [Tool and feature provenance](#tool-and-feature-provenance)
 - [Provenance detail — feature, pick, effect, benefit](#provenance-detail-feature-pick-effect-benefit)
+- [Harness-agnostic design](#harness-agnostic-design)
 - [Standing rule for every phase](#standing-rule-for-every-phase)
 - [Common verification commands](#common-verification-commands)
 - [Phase 1 — portability and execution receipts](#phase-1-portability-and-execution-receipts)
@@ -192,6 +193,47 @@ the table above is already guarding against.
 - Effect: adds a new optional evidence input into the existing, already-active evidence-gated learning pipeline above — feeds proposals only, never edits anything itself.
 - Benefit: gives the existing proposal pipeline a richer, still privacy-safe source of "what's actually going wrong" evidence, without ever centralising raw persona notes across projects.
 
+## Harness-agnostic design
+
+Every mechanism in this document operates on plain repo files — TOML, JSON, Markdown — never on a harness-specific API, hook format, or plugin protocol. This is not a new property Phase 1 introduces;
+it is how Agent Stack already delivers itself, per [../../AGENTS.md](../../AGENTS.md)'s symlink-only rule. Claude Code, Codex, and any other coding agent that reads `AGENTS.md`/`.agents/` conventions
+consume the *same* files through the *same* symlinked install, so no phase in this plan requires a harness-specific code path.
+
+```text
+                    agent-stack (this repo) — canonical source, never copied
+     ┌───────────────────────────────────────────────────────────────────┐
+     │ personas/   skills/   routing.toml   close_route.py                │
+     │ persona_note.py   field_log.py   harness-capabilities.toml (Ph.1) │
+     └───────────────────────────────┬─────────────────────────────────────┘
+                                      │ symlink install (manifest-driven, never a copy)
+              ┌───────────────────────┼───────────────────────┐
+              ▼                       ▼                       ▼
+     ~/.claude/skills         ~/.codex/skills         ~/.agents/skills
+     (Claude Code)            (Codex)                 (any other coding agent
+                                                         that reads .agents/
+                                                         conventions)
+              │                       │                       │
+              └───────────────────────┼───────────────────────┘
+                                      ▼
+     every harness runs the identical routing.toml + close_route.py +
+     persona/skill files — there is no per-harness branch inside the
+     routing, hand-off, audit, or access-request logic itself
+                                      │
+                                      ▼
+     harness-capabilities.toml (Phase 1) records only WHERE a harness
+     differs (hooks, tool allowlists, skill-body size limits) — it is a
+     fact registry about the harnesses, never a second implementation
+     of the mechanism
+```
+
+**Why this makes the plan agent-agnostic by construction, not by promise:**
+
+- Phases 2–5 (hand-offs, post-dispatch audit, access requests, evidence-gated learning) touch only `routing.toml`, `close_route.py`, `persona_note.py`, and `field_log.py` — repo-side Python/TOML with
+  no harness dependency at all. They need no separate agnosticism guarantee because they never branch on which harness is running.
+- Phase 1 is the only phase that names harnesses explicitly, and it does so as **registry rows**, not as code branches: adding a fourth harness that reads generic `.agents/` conventions is a new
+  `[[harnesses]]` entry in `harness-capabilities.toml`, never a new function or a conditional in `scripts/validate_harness_capabilities.py`. The standing rule below makes that an explicit requirement,
+  not an assumption.
+
 ## Standing rule for every phase
 
 Before starting any phase's implementation:
@@ -201,6 +243,8 @@ Before starting any phase's implementation:
 3. Work happens on a feature branch or in a clearly reversible working-tree state; nothing is squashed into an existing accepted commit.
 4. Each phase is implemented and verified as its own unit before the next phase starts. Phases are not batched.
 5. If a verification step in this document and the actual behaviour of a check disagree, the check's actual behaviour governs — this document is updated to match, not the other way around.
+6. No phase mechanism may be hardcoded to a single named harness. Any script or schema that distinguishes harnesses (starting with `harness-capabilities.toml` in Phase 1) must treat every
+   `.agents`-consuming coding agent as an addressable registry entry on the same footing as Claude Code and Codex — adding a new harness is a data row, never a code change to the mechanism itself.
 
 No phase begins from this document alone. Every phase section below starts with its trigger restated for that reason: to make it impossible to execute a phase by skimming past the gate.
 
@@ -248,6 +292,8 @@ Compare hard-invariant scores only (gate misses, not soft routing-quality drift)
 - [ ] `just preflight` exits 0.
 - [ ] `scripts/validate_harness_capabilities.py` run against the seeded registry exits 0 on the valid case.
 - [ ] Negative fixture: an unknown harness id in the registry causes the validator to fail — confirmed by actually adding one and watching it fail, not by reading the code and assuming it would.
+- [ ] Positive fixture (Standing rule 6): a harness id outside the initially seeded set (e.g. a generic `.agents`-consuming agent, not just `codex`/`claude-code`) can be added as a new `[[harnesses]]`
+  row and validates cleanly with zero changes to `scripts/validate_harness_capabilities.py` — confirmed by actually adding one, not by assuming it from reading the code.
 - [ ] Negative fixture: a numeric limit field with no evidence comment causes the validator to fail.
 - [ ] Negative fixture: a `receipt` object missing `actual` is rejected, not silently marked `honoured`.
 - [ ] `scripts/README.md` and `manifest.yaml` (if applicable) are updated in the same commit — governance coverage check confirms this, not a manual read-through.
