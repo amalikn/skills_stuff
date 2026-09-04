@@ -14,6 +14,7 @@ Summary: This document is inert until an operator names the evidence trigger for
 - [Tool and feature provenance](#tool-and-feature-provenance)
 - [Provenance detail — feature, pick, effect, benefit](#provenance-detail-feature-pick-effect-benefit)
 - [Harness-agnostic design](#harness-agnostic-design)
+- [Target-state flow — all five phases together](#target-state-flow-all-five-phases-together)
 - [Standing rule for every phase](#standing-rule-for-every-phase)
 - [Common verification commands](#common-verification-commands)
 - [Phase 1 — portability and execution receipts](#phase-1-portability-and-execution-receipts)
@@ -233,6 +234,53 @@ consume the *same* files through the *same* symlinked install, so no phase in th
 - Phase 1 is the only phase that names harnesses explicitly, and it does so as **registry rows**, not as code branches: adding a fourth harness that reads generic `.agents/` conventions is a new
   `[[harnesses]]` entry in `harness-capabilities.toml`, never a new function or a conditional in `scripts/validate_harness_capabilities.py`. The standing rule below makes that an explicit requirement,
   not an assumption.
+
+## Target-state flow — all five phases together
+
+This is the mechanism flow *if every phase is ever triggered, approved, and built* — none is today. It is the concrete, file-level version of the proposal's own [Target
+state](agent-stack-reliability-adaptation-proposal-20260903_1943.md#target-state) diagram, drawn against this document's actual phase deliverables so the shape of the end state is reviewable before
+any phase starts.
+
+```text
+OPERATOR — names the trigger and approves each phase individually; nothing below fires on its own
+
+routing.toml + close_route.py                          ← unchanged single authority for ownership + gates
+        │
+        ├── Phase 1, before dispatch ──────────────────────────────────────────────────────────────
+        │     harness-capabilities.toml checks the target harness is actually capable
+        │     optional `receipt` on a field_log.py entry records required-vs-actual for this run
+        │
+        ├── Phase 2, before dispatch ──────────────────────────────────────────────────────────────
+        │     [[personas]] consumes / produces / will_not, plus [[handoffs]] contracts,
+        │     narrow close_route.py's legal candidates before the model proposes a route
+        ▼
+route dispatched → persona(s) / skill(s) run → persona_note.py writes MANIFEST.json
+        │
+        ├── Phase 3, after dispatch, read-only ────────────────────────────────────────────────────
+        │     scripts/audit_route.py compares the route, the Phase 2 contract (if any), and
+        │     MANIFEST.json → honoured / mismatch / incomplete / unverifiable
+        │     (never re-routes, never fixes, never chooses a new owner)
+        │
+        ├── Phase 4, whenever a boundary is hit — sits beside routing, not wired into it ──────────
+        │     agent may create a typed access-request; only the operator sets approved/denied/fulfilled
+        │     four-row action-classification table is applied as a checklist at that review, not a gate
+        ▼
+evals/field-log.jsonl + evals/capability-gaps.jsonl     ← every phase above writes evidence here, never
+        │                                                  a competing log or event store
+        ▼
+Phase 5, evidence-gated learning (already active today, independent of the other four) ────────────
+        propose_evolution.py turns repeated, evidenced signal into a proposal document — never a
+        self-edit; no task may promote itself
+        │
+        ▼
+operator review → accepted, scoped instruction change with tests → back into routing.toml / persona
+                                                                     files (the loop closes here, and
+                                                                     only here)
+```
+
+Two things this diagram is deliberately silent about, because the document above them already settles it: Phase 3 can never rewrite Phase 2's contract or Phase 1's registry, and nothing in Phases 1–4
+can reach Phase 5's promotion step directly — every path back into `routing.toml` goes through an operator-reviewed proposal, never an automatic edit. See [Invariants and failure
+behaviour](agent-stack-reliability-adaptation-proposal-20260903_1943.md#invariants-and-failure-behaviour) in the proposal for the full list this diagram must not violate.
 
 ## Standing rule for every phase
 
