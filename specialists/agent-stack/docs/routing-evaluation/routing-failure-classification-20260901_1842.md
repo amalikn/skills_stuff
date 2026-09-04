@@ -7,8 +7,10 @@ Summary: All 22 classify as ROUTING DEFECT and none as capability-mapping, so th
 
 # Baseline v2 Unsatisfied-Gate Failure Classification
 
-Step 1 of the sequence in [agent-stack-capability-taxonomy-and-scoring.md](../../agent-stack-capability-taxonomy-and-scoring.md). Its governing principle is the reason this document exists before any
-catalogue edit: *the capability taxonomy should describe what skills genuinely do, not what the eval suite wishes they had done.*
+Step 1 of the sequence in agent-stack-capability-taxonomy-and-scoring.md, a draft that was never migrated into this repository and sits untracked at the `specialists/` level above it — found stale by
+the 2026-09-04 staleness audit. Its governing principle is the reason this document exists before any catalogue edit: *the capability taxonomy should describe what skills genuinely do, not what the
+eval suite wishes they had done.* That principle is now carried forward by [Rule 0007](../../.archcore/rules/0007-capability-annotations-are-honest.md) and the capability model in
+[routing.toml](../../routing.toml); the draft itself was superseded by the Baseline v3/v4 and deterministic-closure work and should not be treated as a live governing document.
 
 ## Contents
 
@@ -47,8 +49,8 @@ against whether relabelling it would raise the score:
 |                                    |                           |   insufficient reason.                                                                                                              |
 | `premortem`                        | research                  | No. It is already the canonical `independent-challenge` provider; that does not make it an evidence-acquisition skill.              |
 | `security-audit`, `senior-qa`      | critic                    | No. Security and test review are `validation` and `security-review`, not independent challenge of a conclusion.                     |
-| `devops`                           | qa                        | No. Release checks are incidental to a deployment skill — `validation` supporting at best, which by design does not satisfy a hard  |
-|                                    |                           |   gate.                                                                                                                             |
+| `devops`                           | qa                        | No. Release checks are incidental to a deployment skill — `validation` supporting at best, which by design does not satisfy a       |
+|                                    |                           |   hard gate.                                                                                                                        |
 | `competitive-intelligence-analyst` | critic                    | No. It is already a `research` satisfier. Competitive analysis is not adversarial challenge.                                        |
 | `team`                             | critic, qa                | No. Team formation carries neither capability.                                                                                      |
 
@@ -65,47 +67,52 @@ Both were written to falsify the classification, not to support it.
 
 ## The 22
 
-| #   | Case                      | Family             | Gate     | Selected skills                    | Route shape      | Class   | Reachable fix the router missed                                  |
-| --: | ------------------------- | ------------------ | -------- | ---------------------------------- | ---------------- | ------- | ---------------------------------------------------------------- |
-| 1   | `agent-routing-design`    | software-ai        | critic   | `team`                             | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 2   | `agent-routing-design`    | software-ai        | qa       | `team`                             | non-satisfying   | ROUTING | add satisfier or `qa-bach` (corpus lists it preferred)           |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 3   | `ambiguous-best-nas`      | direct-adversarial | critic   | `competitive-intelligence-analyst` | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 4   | `atar-landed-cost`        | atar-import        | research | `financial-unit-economics`         | non-satisfying   | ROUTING | add satisfier or `research-thompson` (corpus lists it required)  |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 5   | `atar-landed-cost`        | atar-import        | critic   | `financial-unit-economics`         | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 6   | `atar-pilot`              | atar-import        | critic   | `financial-unit-economics`,        | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-|     |                           |                    |          |   `market-sizing-analysis`         |   skills         |         |                                                                  |
-| 7   | `generic-import-pilot`    | atar-import        | critic   | `financial-unit-economics`,        | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-|     |                           |                    |          |   `market-sizing-analysis`         |   skills         |         |                                                                  |
-| 8   | `infra-cicd-rollout`      | networking-infra   | qa       | `devops`                           | non-satisfying   | ROUTING | add satisfier or `qa-bach` (corpus lists it required)            |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 9   | `jdm-landed-cost`         | jdm-import         | critic   | `financial-unit-economics`,        | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-|     |                           |                    |          |   `deep-research`                  |   skills         |         |                                                                  |
-| 10  | `jdm-pilot-one-car`       | jdm-import         | research | `financial-unit-economics`         | non-satisfying   | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 11  | `jdm-pilot-one-car`       | jdm-import         | critic   | `financial-unit-economics`         | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 12  | `jdm-sales-channel`       | jdm-import         | research | *none*                             | no skills at all | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-| 13  | `jdm-sourcing-workflow`   | jdm-import         | research | *none*                             | no skills at all | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-| 14  | `jdm-sourcing-workflow`   | jdm-import         | critic   | *none*                             | no skills at all | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-| 15  | `jdm-warranty-risk`       | jdm-import         | research | `financial-unit-economics`         | non-satisfying   | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 16  | `jdm-warranty-risk`       | jdm-import         | critic   | `financial-unit-economics`         | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 17  | `nas-architecture`        | networking-infra   | research | `premortem`                        | non-satisfying   | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 18  | `net-bgp-flap`            | networking-infra   | research | *none*                             | no skills at all | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-| 19  | `net-dns-migration`       | networking-infra   | critic   | *none*                             | no skills at all | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-| 20  | `net-pppoe-capacity`      | networking-infra   | research | `deep-analysis`, `premortem`       | non-satisfying   | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-|     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 21  | `repo-architecture-audit` | software-ai        | critic   | `deep-analysis`, `security-audit`, | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
-|     |                           |                    |          |   `senior-qa`                      |   skills         |         |                                                                  |
-| 22  | `saas-pricing`            | business-research  | research | `pricing-strategy`,                | non-satisfying   | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-|     |                           |                    |          |   `financial-unit-economics`       |   skills         |         |                                                                  |
+| #   | Case                      | Family             | Gate     | Selected skills                            | Route shape         | Class   | Reachable fix the router missed                       |
+| --: | ------------------------- | ------------------ | -------- | ------------------------------------------ | ------------------- | ------- | ----------------------------------------------------- |
+| 1   | `agent-routing-design`    | software-ai        | critic   | `team`                                     | non-satisfying      | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |                                            |   skills            |         |   it preferred)                                       |
+| 2   | `agent-routing-design`    | software-ai        | qa       | `team`                                     | non-satisfying      | ROUTING | add satisfier or `qa-bach` (corpus lists              |
+|     |                           |                    |          |                                            |   skills            |         |   it preferred)                                       |
+| 3   | `ambiguous-best-nas`      | direct-adversarial | critic   | `competitive-intelligence-analyst`         | non-satisfying      | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |                                            |   skills            |         |   it preferred)                                       |
+| 4   | `atar-landed-cost`        | atar-import        | research | `financial-unit-economics`                 | non-satisfying      | ROUTING | add satisfier or `research-thompson` (corpus lists    |
+|     |                           |                    |          |                                            |   skills            |         |   it required)                                        |
+| 5   | `atar-landed-cost`        | atar-import        | critic   | `financial-unit-economics`                 | non-satisfying      | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |                                            |   skills            |         |   it preferred)                                       |
+| 6   | `atar-pilot`              | atar-import        | critic   | `financial-unit-economics`,                | non-satisfying      | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |   `market-sizing-analysis`                 |   skills            |         |   it preferred)                                       |
+| 7   | `generic-import-pilot`    | atar-import        | critic   | `financial-unit-economics`,                | non-satisfying      | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |   `market-sizing-analysis`                 |   skills            |         |   it preferred)                                       |
+| 8   | `infra-cicd-rollout`      | networking-infra   | qa       | `devops`                                   | non-satisfying      | ROUTING | add satisfier or `qa-bach` (corpus lists it required) |
+|     |                           |                    |          |                                            |   skills            |         |                                                       |
+| 9   | `jdm-landed-cost`         | jdm-import         | critic   | `financial-unit-economics`,                | non-satisfying      | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |   `deep-research`                          |   skills            |         |   it preferred)                                       |
+| 10  | `jdm-pilot-one-car`       | jdm-import         | research | `financial-unit-economics`                 | non-satisfying      | ROUTING | add satisfier or `research-thompson` (corpus lists    |
+|     |                           |                    |          |                                            |   skills            |         |   it preferred)                                       |
+| 11  | `jdm-pilot-one-car`       | jdm-import         | critic   | `financial-unit-economics`                 | non-satisfying      | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |                                            |   skills            |         |   it preferred)                                       |
+| 12  | `jdm-sales-channel`       | jdm-import         | research | *none*                                     | no skills at all    | ROUTING | add satisfier or `research-thompson` (corpus lists    |
+|     |                           |                    |          |                                            |                     |         |   it preferred)                                       |
+| 13  | `jdm-sourcing-workflow`   | jdm-import         | research | *none*                                     | no skills at all    | ROUTING | add satisfier or `research-thompson` (corpus lists    |
+|     |                           |                    |          |                                            |                     |         |   it preferred)                                       |
+| 14  | `jdm-sourcing-workflow`   | jdm-import         | critic   | *none*                                     | no skills at all    | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |                                            |                     |         |   it preferred)                                       |
+| 15  | `jdm-warranty-risk`       | jdm-import         | research | `financial-unit-economics`                 | non-satisfying      | ROUTING | add satisfier or `research-thompson` (corpus lists    |
+|     |                           |                    |          |                                            |   skills            |         |   it preferred)                                       |
+| 16  | `jdm-warranty-risk`       | jdm-import         | critic   | `financial-unit-economics`                 | non-satisfying      | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |                                            |   skills            |         |   it preferred)                                       |
+| 17  | `nas-architecture`        | networking-infra   | research | `premortem`                                | non-satisfying      | ROUTING | add satisfier or `research-thompson` (corpus lists    |
+|     |                           |                    |          |                                            |   skills            |         |   it preferred)                                       |
+| 18  | `net-bgp-flap`            | networking-infra   | research | *none*                                     | no skills at all    | ROUTING | add satisfier or `research-thompson` (corpus lists    |
+|     |                           |                    |          |                                            |                     |         |   it preferred)                                       |
+| 19  | `net-dns-migration`       | networking-infra   | critic   | *none*                                     | no skills at all    | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |                                            |                     |         |   it preferred)                                       |
+| 20  | `net-pppoe-capacity`      | networking-infra   | research | `deep-analysis`, `premortem`               | non-satisfying      | ROUTING | add satisfier or `research-thompson` (corpus lists    |
+|     |                           |                    |          |                                            |   skills            |         |   it preferred)                                       |
+| 21  | `repo-architecture-audit` | software-ai        | critic   | `deep-analysis`,                           | non-satisfying      | ROUTING | add satisfier or `critic-munger` (corpus lists        |
+|     |                           |                    |          |   `security-audit`, `senior-qa`            |   skills            |         |   it preferred)                                       |
+| 22  | `saas-pricing`            | business-research  | research | `pricing-strategy`,                        | non-satisfying      | ROUTING | add satisfier or `research-thompson` (corpus lists    |
+|     |                           |                    |          |   `financial-unit-economics`               |   skills            |         |   it preferred)                                       |
 
 ## What actually fixes these
 

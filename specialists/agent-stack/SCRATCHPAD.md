@@ -30,6 +30,11 @@ and the project is maintained on its own.
 mechanisms are a deferred, evidence-triggered backlog—not a delivery plan. A future normal-work receipt, if field evidence proves one necessary, is one JSON object per line in the existing
 `evals/field-log.jsonl` entry; the project-local run manifest remains the complete snapshot. `KEEP`
 
+**Phased implementation plan authored, still inert (20260904).** After the operator raised a felt gap (routing quality; personas not coordinating hand-offs) and asked for an implementation +
+verification plan,
+[docs/reliability-adaptation/phased-implementation-and-self-verification-plan-20260904_1208.md](docs/reliability-adaptation/phased-implementation-and-self-verification-plan-20260904_1208.md) fixes the
+exact steps and self-verification checklist per phase, plus a 17-row source-provenance table. It authorises nothing on its own — the evidence-gate rule above still applies. `KEEP`
+
 **The evolution loop, end to end.** A persona that hits a limit while working declares it (`--gap-missing` / `--gap-inadequate` on Step 7.5); the declaration is written BOTH into the consuming
 project's run manifest and into this repo's own tracked gap log; `just evolve` aggregates repeats into proposals and **never applies them**. Gaps come home because a gap is a statement about *this
 library* — a record living only in a consuming repo dies when that repo moves, is deleted, or turns out to be one Agent Stack must not read.
@@ -75,6 +80,10 @@ venv Python by path via `{{py}}` with a `_require-venv` guard, replacing an impl
 - [x] ~~**NEXT PHASE — evidence from outside the frozen 60**~~ — FIRST EVIDENCE IN, 20260902. The 24-case holdout is authored, executed and SPENT: 16/19 passed, 5 runner failures, 0 missed gates, 62
   over-asserted ones. Replay and shadow-mode remain. Superseded detail: Author an unseen holdout of 20–30 cases without reference to the development corpus; replay real historical project tasks; then
   shadow-mode routing alongside normal work. Only after that decide whether more routing taxonomy or personas are needed. See [plan 0001](.archcore/plans/0001-next-evaluation-phase.md).
+- [ ] **`policy_guard.py enforce` pre-commit hook blocks every commit in `skills_stuff`** — unrelated to agent-stack: `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md` are both missing required
+  global-governance phrases (Commit Message Governance, Tier 1/2/3, Mandatory closeout persistence policy, Global Sub-Agent Execution Governance, etc.). Bypassed once with `--no-verify` on 2026-09-04
+  as an explicit operator exception, not a standing practice. Fix the two global files (or reconcile the policy's expected-phrase list, if it is the policy that is stale) before the next commit needs
+  the same judgment call.
 - [ ] **Two staleness-audit residuals remain formally unaccepted** — a vendored TypeScript config that is JSONC and unparseable by a strict loader, and the inverse sweep flagging package-internal
   resource directories this project catalogues by package. Receipts are archived under the working cache; accept or resolve them before the next audit run.
 
@@ -210,6 +219,16 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ## Recent decisions
 
+- **2026-09-04 — "Do it on your own" does not waive the evidence-gate rule.** Asked to write an implementation-and-verification plan the agent "will do on their own," the request was read as
+  authorship/execution ownership, not as license to skip the operator-named-trigger + operator-approval requirement in the reliability adaptation proposal. Wrote the plan as a ready-to-execute
+  reference; explicitly did not treat writing it as permission to begin any phase. `KEEP`
+- **2026-09-04 — A markdown table needs single-line-under-200-char rows in this repo, or it must be re-read after every edit.** Second confirmed occurrence (first: the external-orchestrator-survey
+  table) of the repo's auto-wrap formatting hook silently corrupting a long-celled table by wrapping cells across physical rows. `just governance` does not catch this — it checks line length and
+  catalog coverage, not GFM table structure. Treat any new large table as at-risk until re-read and verified. `KEEP`
+- **2026-09-04 — Dated acceptance-batch counts are frozen at their date, not kept in sync.** README.md's "29 documents ACCEPTED... 20260902_0300" line stays as written even though six more documents
+  were accepted 2026-09-04 and the true count is higher — it is `count:asat`, a historical fact, not a live total. Do not restate it on a later acceptance pass. `KEEP`
+- **2026-09-04 — A token-optimization-doc row moves from candidate-verdict to adopted-record once its recommendation is actually implemented.** Applied to the Sentry Skills/Prompt Optimizer row after
+  rule 0013 landed, matching the earlier Token Optimizer row upgrade. Applies to any future row in that doc (e.g. Skill Optimizer's "PILOT cautiously") once acted on. `KEEP`
 - **2026-09-03 — External mechanisms are research leads, not a roadmap.** The source-level assessment of 25 repositories records an exact upstream file and symbol for every candidate or an explicit
   no-component finding. No control is to be built until a named field/replay counterexample proves that the existing field log, run manifest, or evaluation provenance cannot answer the required
   question. `KEEP`
@@ -242,6 +261,26 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ## Session history (summaries — full detail in memory-keeper)
 
+- **20260904 — Operator's felt gap (routing quality, persona hand-offs) turned into an evidence audit and a ready-to-execute plan, not a design. KEEP.** Operator said the orchestrator felt ineffective
+  and personas felt uncoordinated. Checked field-log/capability-gaps evidence rather than accepting the feeling: 6 field-log entries (1 multi-persona), 0 capability gaps — neither Phase 2 nor Phase
+  3's trigger is met. Confirmed the 2026-09-02 routing.toml fix still holds live. Quantified the routing-quality concern as real (gate eval B1 61.7%, closure-lifted holdout scores). Mapped which of
+  the 25 surveyed repos actually serve each of the two named gaps (AutoGen `candidate_func` is the only real hit for routing accuracy; hand-offs are well covered by 8 repos). Authored
+  [phased-implementation-and-self-verification-plan-20260904_1208.md](docs/reliability-adaptation/phased-implementation-and-self-verification-plan-20260904_1208.md) with per-phase steps,
+  self-verification checklists, and a 17-row provenance table — held the evidence-gate rule despite ambiguous "on your own" phrasing. Hit and fixed a second occurrence of the auto-wrap
+  table-corruption bug. `just governance`/`just preflight` green throughout.
+- **20260904 — Rule 0013 written and accepted; six proposed archcore docs batch-accepted; two doc rows corrected/upgraded. KEEP.** User pointed at the token-optimization doc's Sentry Skills/Prompt
+  Optimizer row ("ADAPT the method, not the tool") and said to adapt it. Fetched the real getsentry/skills prompt-optimizer method from GitHub rather than trust the doc's summary (baseline → failure
+  clustering → textual gradients → candidate beam with a minimal-diff option → compare on the same slice → append-only reflective-memory log → holdout validation). Wrote [rule
+  0013](.archcore/rules/0013-trim-against-the-frozen-corpus-as-a-gate.md): any token-cost trim to a SKILL.md/persona/routing.toml entry is bracketed by evaluate_routing.py against the frozen 60-case
+  corpus, gating on hard invariants only, never score. Mid-turn the user also pointed at the Mem0 row and asked what logic to pick up from it — fetched Mem0's actual README and found its April 2026
+  algorithm dropped write-time ADD/UPDATE/DELETE for append-only writes resolved at retrieval time, which is this project's own existing `count:asat` convention; specified rule 0013's round log the
+  same way and corrected the doc's stale "retrieve-don't-dump" characterization. User then saw `.archcore/README.md` open (listing every `*(proposed)*` item) and said "accept all" — read all six
+  proposed docs in full first (none were still-open questions), then flipped rules 0012+0013, specs 0006/0007/0008, and plan 0003 to `Status: accepted`. Deliberately left the historical "29 documents
+  ACCEPTED... 20260902_0300" line in README.md untouched — a dated fact, not a live count. Asked "what's next" — surveyed git status rather than guess, found the Sentry row now stale (recommendation
+  done but still phrased as open) and a large uncommitted tree; upgraded the row to an adopted record pointing at rule 0013 (same treatment the Token Optimizer row got earlier), then committed
+  everything under specialists/agent-stack/ as one commit (`aa52305`, 55 files) after the user chose that scope over a risky hunk-split of tables that already had one content-loss bug today. Blocked
+  once by a pre-commit hook checking global config (`~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`) unrelated to this repo — bypassed with `--no-verify` as an explicit one-off after asking; the global
+  drift itself is still open (see Open items). `just governance` clean (1105/1105) throughout.
 - **20260904 — Token Optimizer actually installed (Claude Code + Codex); a content-DELETION bug, worse than the earlier formatting ones. KEEP.** Installed on request, via each CLI's own native plugin
   manager (never the raw 1,639-line install.sh, read in full first). Claude Code: `claude plugin marketplace add`/`install`, scope `user`; `claude plugin details` confirmed all 10 hooks live
   immediately. Codex: `codex plugin marketplace add`/`add`, then `codex-install --global --profile balanced` from the installed plugin's cache path, writing to `~/.codex/hooks.json`; `codex-doctor`
@@ -254,9 +293,9 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
   corrupt. Separately: the operator asked whether 18 hooks Codex flagged for review were all Token Optimizer's. Traced it properly rather than guessing — cross-referenced the plugin's own bundled hook
   manifest (15 hooks) against the 5 it wrote to the global hooks.json, against the pre-existing OPA-gate/context-limit-guard hooks (already Active, unaffected) — every per-event number reconciled
   exactly against what Codex's UI showed. Answer: yes, effectively all 18 are the new plugin; did not approve them, since running-hook trust is the operator's call, not mine. Also fixed one governance
-  false positive along the way: a python3 command with a real skills/ subpath in prose was read by `check_library_counts()` as though it stated a numeric skills count (the checker's `without_code()` only strips fenced blocks, not inline
-  backticks, and fixing that shared helper would break the path-checker which relies on inline backticks being visible) — fixed by adding `./` to the path in prose, not by touching the checker. `just
-  preflight` clean throughout every pass (final: 51 tests, 1,100 governance checks).
+  false positive along the way: a python3 command with a real skills/ subpath in prose was read by `check_library_counts()` as though it stated a numeric skills count (the checker's `without_code()`
+  only strips fenced blocks, not inline backticks, and fixing that shared helper would break the path-checker which relies on inline backticks being visible) — fixed by adding `./` to the path in
+  prose, not by touching the checker. `just preflight` clean throughout every pass (final: 51 tests, 1,100 governance checks).
 - **20260904 — token-optimization doc: feasibility column, two unrelated table bugs, one real architecture question. KEEP.** Merged a "Feasibility for Agent Stack" column into the existing
   verification table (operator's call, correctly preferred over a redundant third table) — verdicts reasoned against Agent Stack's actual constraints, not generic quality: ADOPT (Token Optimizer),
   PILOT (Skill Optimizer), ADAPT-the-method (Sentry Prompt Optimizer, via Agent Stack's own 60-case corpus as gate), SKIP (LLMLingua/Mem0/Letta/Zep — each conflicts with a specific constraint: no live
@@ -426,6 +465,35 @@ I removed a real capability section from `skills/devops/SKILL.md` after reading 
 the SKILL.md wrote hyphens; the package has 29 files. Caught in Phase 4 when the artifact worksheet listed `skills/devops/scripts/cloudflare_deploy.py` by name, and restored as a two-character fix per
 line. **`| head` on a discovery command is not evidence of absence**, and absence was the whole basis of the finding. Every other package edited was re-verified against a complete listing afterwards.
 
+### Re-audit 20260904 — scoped pass, register re-verified, two new defects fixed
+
+Run as part of a queued operator request ("staleness-audit in detail"), immediately after the reliability-adaptation gap-mapping work above. Snapshot, coverage manifest (296 files: 280 examined, 16
+exempt, reconciles) and a full claim scan ran via the skill's own scripts. Scope decision, stated up front rather than discovered at the end: given three more queued tasks (project-coherence,
+commit+push, slurp close), this pass re-verified the existing 20260903_2200 register and gave full materiality-ranked treatment only to claims inside this project's own core surfaces (`routing.toml`,
+`evals/`, `.archcore/`, `docs/`, `SCRATCHPAD.md`, `CHANGELOG.md`, `MEMORY.md`, `scripts/`) rather than re-triaging all ~89 pre-existing `skills/` path findings from scratch — those were sampled
+(websh, tailwind) to confirm the prior register's characterisation still holds, not re-litigated line by line. The audit skill's own completeness gate (verify-completeness) was not run to a PASS claim
+on that basis; this is a scoped, honest FAIL/incomplete state, not a clean run.
+
+**Confirmed still valid, unchanged:** all six 20260903_2200 residual-risk items above — the `skills/` inherited-layout paths, `websh/state/*.md` runtime-cache URL routes, the manual-verification
+backlog (now ~163 claims, up slightly — this session added two new documents), the empty field/gap logs, the 39 unreproducible run hashes, and the optional `graphify-out/GRAPH_REPORT.md` reference.
+
+**Two new, genuine defects found and fixed this pass (materiality G — governance/navigation drift, cheap and unambiguous):**
+- `skills/tailwind-v4-shadcn/SKILL.md` used the singular form of its own references directory name in 5 places (a typo: "reference" instead of "references") while the real directory is plural,
+  confirmed by 9 correct occurrences in the same file. Fixed all 5 to match. A skill-internal path defect, not the inherited-layout class above.
+- `docs/routing-evaluation/routing-failure-classification-20260901_1842.md:10` linked to a sibling file named agent-stack-capability-taxonomy-and-scoring.md two directories up — a Baseline-v2-era
+  draft that was never migrated into this repository and sits untracked at the `specialists/` level, superseded in substance by Rule 0007 and the current capability model in `routing.toml`. Rewrote
+  the reference as prose naming what it is and pointing at what actually stands now, rather than leaving a dead link a reader could follow expecting a governing document.
+
+**New findings this pass classified EXEMPT, not defects (naturally arising from today's own new documents, not previously seen):** the phased-implementation-and-self-verification-plan and
+reliability-adaptation-proposal docs' mentions of a future harness-capability registry, a future execution-receipt object, and future scripts named for the audit-route and hand-off-validation work are
+all explicitly prospective — artifacts the documents themselves say would be created only if a phase is triggered, never claimed as currently existing. Same treatment for the survey/off-topic docs'
+external-repo paths (MetaGPT, AutoGen, the vertical-agent-framework survey's own named files) — descriptions of other repositories' structure, not local links. The `.archcore/` ADR/rule/guide
+references to the retired upstream-sync tooling already carry proper "SUPERSEDED 20260903" banners (Phase 3 discipline already applied in an earlier session); the two `docs/audits/` reports
+referencing the same retired tooling are dated point-in-time reports, exempt as MARKED-HISTORICAL the same way this project already excludes `CHANGELOG.md` entries from candidate inspection.
+
+Verified: `just governance` and `just preflight` both green after the two fixes (see check-count line below). Snapshot and `.staleness-audit/` receipts kept, per the gate's own FAIL-state behaviour,
+since this pass is explicitly scoped and incomplete rather than a clean exit.
+
 ## Next actions
 
 **The live item is unchanged and now unblocked: use Agent Stack on real projects and read what it records.** Every mechanism is built; none has evidence. Three things are waiting on the operator
@@ -438,7 +506,10 @@ rather than on work:
   contract call, not a bug fix.
 - **`.runs` dot-prefix visibility** — persona notes land in a hidden directory inside the consuming project. Hidden keeps it out of the way; hidden also means nobody reads it.
 - **A post-dispatch boundary check is deliberately NOT built.** `scripts/persona_note.py` already persists each persona's output, so the hook exists. Building the check now would be enforcement
-  against a failure nobody has observed — the same mistake as a check that scans an empty set. Revisit only if the field log shows a persona ruling outside its `owns`.
+  against a failure nobody has observed — the same mistake as a check that scans an empty set. Revisit only if the field log shows a persona ruling outside its `owns`. **20260904: operator named this
+  exact gap as a felt concern (personas don't coordinate hand-offs); still not triggered — `evals/field-log.jsonl` has 6 entries (1 multi-persona) and `evals/capability-gaps.jsonl` is empty. Waiting
+  on the operator to name a specific instance, not on more design.** The ready-to-execute steps, once named, are in
+  [phased-implementation-and-self-verification-plan-20260904_1208.md](docs/reliability-adaptation/phased-implementation-and-self-verification-plan-20260904_1208.md) Phase 2/3.
 - **Company-repo risk** — persona notes are the operator's working analysis and must never reach an APN or Activ8me remote. The global policy already covers this shape for `.code-context-notes`; Agent
   Stack has no equivalent guard yet, and the gap log deliberately carries only the library-facing declaration rather than the analysis.
 
@@ -481,6 +552,15 @@ Do **not** tune against the frozen 60. Add a case only to cover a new routing co
 ---
 
 ## Memory pointers (navigation only — content is above)
+
+**Added 20260904 (later same day) — gap evidence audit and phased plan.** memory-keeper channel `agent-stack`: `agent-stack.reliability-gap-evidence-audit-and-repo-mapping` (decision, high) ·
+`agent-stack.phased-implementation-plan-authored` (progress, high) · `agent-stack.provenance-table-formatter-bug-recurrence` (error, high). Project-context note (seventh segment) on channel
+`agent-stack` of parent `skills_stuff` (b8c5525e-3e2f-4fb5-bf87-e5751f3ad49c). Checkpoints: memory-keeper `slurp-20260904-phased-plan-and-gap-mapping` (2d4ccdf7) · mcp-project-context
+`slurp-20260904-phased-plan-and-gap-mapping` (68e00410-86ed-47e7-adf9-44af3e69dcad). Not yet committed.
+
+**Added 20260904 — rule 0013 and six-document acceptance.** memory-keeper channel `agent-stack`: `agent-stack.rule-0013-trim-gate-and-batch-acceptance` (decision) ·
+`agent-stack.global-governance-hook-blocks-commits` (error, still open). Project-context notes on channel `agent-stack` of parent `skills_stuff` (b8c5525e-3e2f-4fb5-bf87-e5751f3ad49c). Checkpoints:
+memory-keeper `slurp-20260904-rule0013-and-acceptance` (d997eef4) · mcp-project-context `slurp-20260904-rule0013-and-acceptance` (79bf5239-97a7-40dd-95ea-4c9363f4923c). Committed as `aa52305`.
 
 **Added 20260903 — external reliability adaptation assessment.** memory-keeper key `agent-stack.reliability-adaptation-proposal`; project-context note on channel `agent-stack`; checkpoints:
 memory-keeper `slurp-20260903-reliability-adaptation` (18ab6888) and project-context `slurp-20260903-reliability-adaptation` (7542bfc4-b7a3-4b2-96dd-5e277e80df94). `KEEP`

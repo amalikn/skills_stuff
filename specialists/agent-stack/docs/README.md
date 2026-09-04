@@ -45,10 +45,11 @@ recursively — a document added anywhere under `docs/` and not linked here fail
 
 ## Reliability adaptation
 
-| Document                                                                            | What it is                                                                                               |
-| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| [reliability-adaptation/external-orchestrator-survey-20260903_1849.md](reliability-adaptation/external-orchestrator-survey-20260903_1849.md) | Source-verified survey of 25 external repos; converges on a missing post-dispatch verification subsystem |
-| [reliability-adaptation/agent-stack-reliability-adaptation-proposal-20260903_1943.md](reliability-adaptation/agent-stack-reliability-adaptation-proposal-20260903_1943.md) | Phased, safety-preserving proposal for adapting the survey's reliability mechanisms                      |
+| Document                                                                                 | What it is                                                                                                |
+| ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| [reliability-adaptation/external-orchestrator-survey-20260903_1849.md](reliability-adaptation/external-orchestrator-survey-20260903_1849.md) | Source-verified survey of 25 external repos; converges on a missing post-dispatch verification subsystem  |
+| [reliability-adaptation/agent-stack-reliability-adaptation-proposal-20260903_1943.md](reliability-adaptation/agent-stack-reliability-adaptation-proposal-20260903_1943.md) | Phased, safety-preserving proposal for adapting the survey's reliability mechanisms                       |
+| [reliability-adaptation/phased-implementation-and-self-verification-plan-20260904_1208.md](reliability-adaptation/phased-implementation-and-self-verification-plan-20260904_1208.md) | Per-phase implementation steps and self-verification checklists; inert until an operator triggers a phase |
 
 ## Off-topic
 

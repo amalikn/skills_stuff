@@ -11,3 +11,4 @@ graphify-out/
 # Upstream-sync backups: disposable snapshots taken before an apply
 .agent-stack-update-backups/
 .staleness-audit/
+.staleness-audit-snapshot-*/

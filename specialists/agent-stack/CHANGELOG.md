@@ -1,5 +1,41 @@
 # Changelog — Agent Stack
 
+## 20260904_1230 — Scoped staleness re-audit: two path defects fixed, prior 20260903_2200 register re-verified
+
+### Fixed
+
+- skills/tailwind-v4-shadcn/SKILL.md: 5 occurrences of the singular "reference/" corrected to the real "references/" directory (common-gotchas.md, dark-mode.md), matching the 9 already-correct
+  occurrences in the same file.
+- docs/routing-evaluation/routing-failure-classification-20260901_1842.md:10 no longer links to agent-stack-capability-taxonomy-and-scoring.md, an untracked Baseline-v2-era draft one level above this
+  repository that was never migrated in. Rewrote as prose naming what it is and pointing at Rule 0007 and routing.toml as what actually stands now. This resolves the residual the 20260904_0737
+  docs-reorg entry explicitly left alone ("a known residual from an earlier phase, not something this reorganisation should paper over") — that entry's relative-path correction stands; this pass gives
+  the underlying dead reference its actual resolution rather than leaving it dead indefinitely.
+
+### Changed
+
+- SCRATCHPAD.md: added a dated addendum under the existing 20260903_2200 residual-risk register (not a rewrite — history stays as written) recording this scoped re-audit's findings: the prior
+  register's six items re-verified unchanged, the two fixes above, and today's own new reliability-adaptation documents' forward-looking file mentions classified EXEMPT (prospective, not yet built)
+  rather than defects.
+
+Run via skill-staleness-audit's own scripts (snapshot, coverage manifest, claim scan) as part of an operator-queued sequence. Explicitly scoped: full materiality-ranked treatment was given to this
+project's own core surfaces; the pre-existing ~89 `skills/` path findings and ~163 manual-verification claims were sampled to confirm the existing register's characterisation still holds, not
+re-triaged individually. The audit skill's completeness gate was not run to a PASS claim on that basis — this is a stated partial pass, snapshot and receipts kept intentionally, not a clean exit.
+Verified: `just governance` (1111 checks) and `just preflight` (51 tests) both green after the fixes.
+
+## 20260904_1208 — Phased implementation and self-verification plan added, inert pending an operator-named trigger
+
+### Added
+
+- docs/reliability-adaptation/phased-implementation-and-self-verification-plan-20260904_1208.md: for each of the five phases in the reliability adaptation proposal, fixes the exact implementation
+  steps, the self-verification checklist to run afterward, and the revert behaviour on a failed check. Written at operator request after raising a felt gap (orchestrator routing quality, personas not
+  coordinating hand-offs) that the project's own evidence store (6 field-log entries, 0 capability gaps) does not yet substantiate. The document changes no code and authorises no phase on its own —
+  each phase still requires the operator to name its evidence trigger and approve that phase individually, per the proposal's existing decision.
+- A "Tool and feature provenance" table added to the same document at operator request: all 17 mechanisms named across the five phases, each row naming the exact source repo, file/symbol, and what it
+  becomes in Agent Stack. Authored as single-line, unpadded rows kept under 200 characters per row, following the survey document's own established convention, after the project's automatic prose-wrap
+  hook mis-wrapped a first draft of the table across physical rows (cosmetic column padding is fine; a wrapped, multi-line-per-row table is not — verified the fix by re-reading the file and checking
+  no row spans more than one physical line).
+- Catalogued in docs/README.md's Reliability adaptation table.
+
 ## 20260904_1155 — Sentry Skills / Prompt Optimizer row upgraded from recommendation to adopted record
 
 ### Changed
@@ -1022,6 +1058,8 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260904_1230 — Scoped staleness re-audit: two path defects fixed, prior 20260903_2200 register re-verified](#20260904_1230-scoped-staleness-re-audit-two-path-defects-fixed-prior-20260903_2200-register-re-verified)
+- [20260904_1208 — Phased implementation and self-verification plan added, inert pending an operator-named trigger](#20260904_1208-phased-implementation-and-self-verification-plan-added-inert-pending-an-operator-named-trigger)
 - [20260904_1155 — Sentry Skills / Prompt Optimizer row upgraded from recommendation to adopted record](#20260904_1155-sentry-skills-prompt-optimizer-row-upgraded-from-recommendation-to-adopted-record)
 - [20260904_1150 — Six proposed archcore documents accepted by the operator](#20260904_1150-six-proposed-archcore-documents-accepted-by-the-operator)
 - [20260904_1145 — Rule 0013 proposed: adapt Sentry's prompt-optimizer removal method to the frozen corpus; Mem0 row corrected](#20260904_1145-rule-0013-proposed-adapt-sentrys-prompt-optimizer-removal-method-to-the-frozen-corpus-mem0-row-corrected)
