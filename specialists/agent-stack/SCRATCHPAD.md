@@ -264,6 +264,14 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ## Session history (summaries — full detail in memory-keeper)
 
+- **20260904 (ninth segment) — Phased-implementation doc grew a provenance-detail section, three diagrams, and a coherence pass that caught a real evidence-gate gap. KEEP.** Operator opened
+  [phased-implementation-and-self-verification-plan-20260904_1208.md](docs/reliability-adaptation/phased-implementation-and-self-verification-plan-20260904_1208.md) in the IDE and iterated on it in
+  five rounds: (1) a "Provenance detail" section (known-for/taking/effect/benefit prose block per repo, all 17 rows — a literal 4-column table would have broken the file's own 200-char wrap-safety
+  convention); (2) a "Harness-agnostic design" section + diagram + Standing Rule 6, after confirming Phases 2-5 already touch only harness-neutral files; (3)-(4) matching "Current-state" and
+  "Target-state" flow diagrams (current-state verified directly against `evals/field-log.jsonl`/`capability-gaps.jsonl` — still 6/0); (5) a full coherence review that grepped `scripts/close_route.py`
+  directly rather than trust prior text, and found Phase 2 step 5 (AutoGen-style pre-dispatch narrowing) was the only optional sub-mechanism not gated behind its own evidence trigger — fixed to match
+  Phase 3's and Phase 5's discipline, plus stale frontmatter. Five commits, all pushed: `415a478`..`213a80d`. `just governance` (1111)/`just preflight` (51) green after every commit. Also discovered:
+  this repo's formatter hook auto-syncs `## Contents` to real headings and silently drops a Contents entry added before its heading exists — add the heading first.
 - **20260904 (closeout) — Staleness audit, project coherence, a cross-repo governance fix, and a commit+push closed out the day's queue. KEEP.** Staleness audit (scoped, partial) re-verified the prior
   register and fixed two small defects; project coherence added one missing cross-reference. Committing hit the same global policy_guard.py blocker as earlier today — asked rather than re-bypassing,
   found the checker predated the AGENTS.md/AGENTS.playbook.md split, fixed it in `scripts_stuff` (`df86024`) after surfacing the duplicate-content-vs-fix-the-checker tradeoff to the operator. Agent
@@ -559,6 +567,12 @@ Do **not** tune against the frozen 60. Add a case only to cover a new routing co
 ---
 
 ## Memory pointers (navigation only — content is above)
+
+**Added 20260904 (ninth segment) — provenance detail, three diagrams, coherence review.** memory-keeper channel `agent-stack`: `agent-stack.phased-plan.provenance-detail-and-diagrams-20260904`
+(progress) · `agent-stack.phased-plan.current-state-diagram-added-20260904` (progress) · `agent-stack.phased-plan.coherence-review-20260904` (progress) · `agent-stack.contents-autosync-hook-behavior`
+(note). Project-context note (ninth segment) on channel `agent-stack` of parent `skills_stuff` (b8c5525e-3e2f-4fb5-bf87-e5751f3ad49c). Checkpoints: memory-keeper
+`slurp-20260904-phased-plan-provenance-diagrams-coherence` (cf71dd21) · mcp-project-context `slurp-20260904-phased-plan-provenance-diagrams-coherence` (77d19978-0e2f-4f0a-85c2-d7a12ce06513). Committed
+as `415a478`, `79c154c`, `8776f95`, `73b1a1d`, `213a80d` (all pushed).
 
 **Added 20260904 (closeout) — staleness audit, coherence pass, cross-repo governance fix, commits.** memory-keeper channel `agent-stack`: `agent-stack.staleness-audit-and-coherence-pass-20260904`
 (progress) · `agent-stack.global-governance-checker-fix-cross-repo` (decision, high) · `agent-stack.session-commits-20260904-1230` (progress) ·
