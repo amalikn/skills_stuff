@@ -76,7 +76,7 @@ source happens to be English — it is never treated as a byte-for-byte replacem
 
 ## Known architectural gaps
 
-Tracked in `SCRATCHPAD.md`, sourced from `docs/audit-agent-stack-full-20260901_1010.md`, and deliberately deferred by `REVISION_NOTES.md`:
+Tracked in `SCRATCHPAD.md`, sourced from `docs/audits/audit-agent-stack-full-20260901_1010.md`, and deliberately deferred by `REVISION_NOTES.md`:
 
 - **A1** — sync apply is non-atomic; a failure between copy and state write can split source and state, forcing `manual_merge` on recovery.
 - **A2** — sync follows symlinks through `is_file`, reads, and `copy2`, so a Git-supplied or local symlink can escape the intended roots.

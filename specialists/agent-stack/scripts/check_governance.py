@@ -69,7 +69,9 @@ CATALOGS: dict[str, tuple[str, str]] = {
     ".archcore/README.md": (".archcore", "**/*.md"),
     # Working documents — audits, proposals, classifications, evaluation records. Registered when the root was cleared of them on 2026-09-02: the root now
     # carries governance and contract entrypoints only, and an unindexed document in docs/ would otherwise be invisible to every reader and every check.
-    "docs/README.md": ("docs", "*.md"),
+    # `**/*.md` since 2026-09-04: docs/ grew subfolders (audits/, routing-evaluation/, reliability-adaptation/, off-topic/) once the flat list passed a dozen
+    # files, and a non-recursive glob would report full coverage while checking nothing inside them — the same reasoning already applied to .archcore/ above.
+    "docs/README.md": ("docs", "**/*.md"),
     # The persona library. Registered 20260903 after the inverse sweep found personas/ was the one library layer with no index at all — 15 documents and no way
     # in, while skills/ and .archcore/ both had one. Coverage now fails until a new persona is linked here, which is the intended workflow rather than an error.
     "personas/README.md": ("personas", "*.md"),

@@ -124,7 +124,7 @@ catalogue differently two thirds of the time. **Prompt-only closure is the wrong
 
 **The v2 failure classification is the load-bearing finding.** All 22 `unsatisfied` failures are ROUTING DEFECTS — zero capability-mapping, zero gate-trigger, zero corpus, zero scoring. The router
 judges the gate correctly and then finishes the route without closing the obligation. Full per-case table in
-[docs/routing-failure-classification-20260901_1842.md](docs/routing-failure-classification-20260901_1842.md). Two checks were run to falsify it and did not: no case asserts a gate its own required +
+[docs/routing-evaluation/routing-failure-classification-20260901_1842.md](docs/routing-evaluation/routing-failure-classification-20260901_1842.md). Two checks were run to falsify it and did not: no case asserts a gate its own required +
 preferred contract cannot satisfy (0 of 60), and no plan names a skill absent from the catalogue.
 
 ### Frozen measurement contract — 20260903_2130
@@ -172,7 +172,7 @@ Claude arm (`claude -p`, provider `anthropic`, model `claude-opus-5`), `--repair
 | Cases setting all four gates true | **19 of 19**                                                  |
 
 Evidence, working cache and rebuildable: `routing-results/holdout24-claude-20260902.{jsonl,log,freeze.txt}`. Full classification:
-[docs/holdout24-analysis-20260902_1120.md](docs/holdout24-analysis-20260902_1120.md).
+[docs/routing-evaluation/holdout24-analysis-20260902_1120.md](docs/routing-evaluation/holdout24-analysis-20260902_1120.md).
 
 **The pass rate is the least informative number here.** Every scored case asserted every gate, which is why the mean is 71.1 rather than ~88 and why the pass rate survives at all — over-assertion is
 soft by design.
@@ -197,7 +197,7 @@ asserts everything can never miss a required gate, and until 2026-09-02 that cos
 
 ### Gate-only A/B1/B2 — 20260902/03, DeepSeek Flash
 
-Full record: [docs/gate-only-analysis-20260903_0030.md](docs/gate-only-analysis-20260903_0030.md). Run under spec 0007 against the frozen 60, after a realistic-payload runner qualification passed
+Full record: [docs/routing-evaluation/gate-only-analysis-20260903_0030.md](docs/routing-evaluation/gate-only-analysis-20260903_0030.md). Run under spec 0007 against the frozen 60, after a realistic-payload runner qualification passed
 60/60.
 
 | Stage                               | Result                                                                       |

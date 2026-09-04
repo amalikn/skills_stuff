@@ -3,7 +3,7 @@ Category: approved-plan
 Status: accepted
 Promoted: 20260902_0245 by skill-ai-it promote
 Accepted: 20260902_0300 by operator
-Source: REVISION_NOTES.md, docs/audit-agent-stack-full-20260901_1010.md
+Source: REVISION_NOTES.md, docs/audits/audit-agent-stack-full-20260901_1010.md
 Summary: Both P1 audit findings implemented 2026-09-02. Retained as the record of a closed plan.
 
 # Plan 0002 — Sync hardening (audit A1/A2) — COMPLETED

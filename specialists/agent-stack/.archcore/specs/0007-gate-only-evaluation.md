@@ -1,8 +1,9 @@
 Title: Spec 0007 — Gate-only evaluation and precision/recall scoring
 Category: design-contract
-Status: proposed
+Status: accepted
 Proposed: 20260902_1210 direct, per .archcore/README.md step 2
-Source: docs/holdout24-analysis-20260902_1120.md, MEMORY.md
+Accepted: 20260904_1150 by operator
+Source: docs/routing-evaluation/holdout24-analysis-20260902_1120.md, MEMORY.md
 Summary: Measure gate classification in isolation from route construction, score it as precision and recall rather than as pass/fail, against thresholds pre-registered before the first run.
 # Spec 0007 — Gate-only evaluation and precision/recall scoring
 
@@ -27,9 +28,9 @@ candidate causes produce identical output today:
 
 | Hypothesis       | Claim                                                                                                                       | Distinguishing prediction                           |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| **Gate semantics**   | The gate definitions or their catalogue prose make "true" the defensible answer for almost any task                         | Gate-only classification is ALSO all-true           |
-| **Instruction load** | Gate judgement is fine in isolation and degrades when judged jointly with ownership, skills, closure and an invariant to    | Gate-only classification is good; integrated is not |
-|                  |   walk                                                                                                                      |                                                     |
+| **Gate semantics** | The gate definitions or their catalogue prose make "true" the defensible answer for almost any task                         | Gate-only classification is ALSO all-true           |
+| **Instruction load** | Gate judgement is fine in isolation and degrades when judged jointly with ownership, skills, closure and an invariant       | Gate-only classification is good; integrated is not |
+|                  |   to walk                                                                                                                   |                                                     |
 
 The current harness cannot separate them, because it only ever observes gates as a by-product of a full route.
 
@@ -71,9 +72,9 @@ Pass/fail is the wrong instrument for a classifier. Report, per gate and in aggr
 
 | Metric      | Definition     | What it catches                                                                     |
 | ----------- | -------------- | ----------------------------------------------------------------------------------- |
-| **Recall**      | TP / (TP + FN) | Missed obligations. Today's routers score ~1.0 and that number is meaningless alone |
-| **Precision**   | TP / (TP + FP) | Over-assertion. **This is the number the project has never measured**                   |
-| **F1**          | harmonic mean  | The single figure that cannot be gamed by answering always-true or always-false     |
+| **Recall**  | TP / (TP + FN) | Missed obligations. Today's routers score ~1.0 and that number is meaningless alone |
+| **Precision** | TP / (TP + FP) | Over-assertion. **This is the number the project has never measured**               |
+| **F1**      | harmonic mean  | The single figure that cannot be gamed by answering always-true or always-false     |
 | **Specificity** | TN / (TN + FP) | Performance on the 13-of-24 cases where the right answer is "no gate"               |
 
 A router answering always-true scores recall 1.0, precision ≈ 0.25 and F1 ≈ 0.40. A router answering always-false scores recall 0.0 and F1 0.0. **Only a discriminating classifier scores well on F1**,

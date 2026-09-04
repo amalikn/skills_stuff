@@ -26,7 +26,7 @@ is exactly and only what `scripts/close_route.py` repairs**, and it was wired in
 ## Class 2 — fixed here, from holdout evidence (2 cases)
 
 Two ownership boundaries the precedence table did not cover. **Both are evidenced by the SPENT HOLDOUT, not by the development corpus**, which is what makes fixing them legitimate under [spec
-0008](../.archcore/specs/0008-replay-corpus-contract.md) rather than corpus-fitting.
+0008](../../.archcore/specs/0008-replay-corpus-contract.md) rather than corpus-fitting.
 
 | New rule                             | Boundary                                                                                        | Holdout case                  |
 | ------------------------------------ | ----------------------------------------------------------------------------------------------- | ----------------------------- |
@@ -46,7 +46,7 @@ jdm-landed-cost · jdm-go-no-go-car · atar-landed-cost · generic-import-pilot 
 weak-evidence-go-no-go                                                                          -> critic-munger
 ```
 
-[Rule 0006](../.archcore/rules/0006-required-personas-is-ownership.md) says `required_personas` means mandatory ownership or independent judgement, never an ideal team. But **the corpus has no `tags`
+[Rule 0006](../../.archcore/rules/0006-required-personas-is-ownership.md) says `required_personas` means mandatory ownership or independent judgement, never an ideal team. But **the corpus has no `tags`
 field**, so tag-driven escalation — the mechanism that legitimately makes a gate's persona mandatory — cannot be expressed, and it has been encoded in `required_personas` instead. Some of these are
 therefore *correct in intent*: `weak-evidence-go-no-go` is literally thin-evidence-high-commitment, and `network-migration-go-no-go` is literally go-no-go, both of which are escalation tags.
 
@@ -61,7 +61,7 @@ misses `senior-qa`; `atar-positioning` misses `content-strategy`; `infra-cicd-ro
 **Discoverability was checked and is not the cause.** The catalogue already carries the matching intents — `financial-unit-economics` declares `unit-economics` and `landed-cost`, `devops` declares
 `cicd`. The skills are findable; the router does not select them.
 
-Improving this by changing the catalogue or the corpus until these pass **is corpus-fitting**, which [spec 0005](../.archcore/specs/0005-eval-corpus-contract.md) exists to forbid: past the freeze, a
+Improving this by changing the catalogue or the corpus until these pass **is corpus-fitting**, which [spec 0005](../../.archcore/specs/0005-eval-corpus-contract.md) exists to forbid: past the freeze, a
 better score on these 60 is evidence of fitting the corpus rather than of better routing. The legitimate path is a change justified on its own merits and confirmed on the NEXT unseen corpus.
 
 Two ownership disagreements sit here too: `business-model` (CFO vs CEO) and `generic-import-pilot` (Research vs Operations). And two research cases returned **no owner at all** — which is notable,

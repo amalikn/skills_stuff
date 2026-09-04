@@ -1,6 +1,6 @@
 ---
 name: ph-community-outreach
-description: Engage Reddit, Indie Hackers, Hacker News and other communities for Product Hunt launches. Use this skill to identify relevant communities, craft appropriate posts, and drive cross-platform engagement without appearing spammy.
+description: "Engage Reddit/Indie Hackers/HN communities for Product Hunt launches."
 ---
 
 # Product Hunt Community Outreach

@@ -1,60 +1,188 @@
 # Changelog — Agent Stack
 
+## 20260904_1155 — Sentry Skills / Prompt Optimizer row upgraded from recommendation to adopted record
+
+### Changed
+
+- docs/routing-evaluation/token-optimization-tools-and-strategy.md's Sentry Skills / Prompt Optimizer row changed from ADAPT the method, not the tool (an open recommendation) to ADOPTED, as method —
+  ADAPTED (a record), pointing at accepted rule 0013. Same treatment the Token Optimizer row already got when that recommendation was acted on.
+
+## 20260904_1150 — Six proposed archcore documents accepted by the operator
+
+### Changed
+
+- Operator accepted all documents that were still carrying Status: proposed: rules 0012 (gate flags advisory) and 0013 (trim against the frozen corpus), specs 0006 (runner qualification), 0007
+  (gate-only evaluation), 0008 (replay corpus contract), and plan 0003 (Holdout 2 protocol). Each file's header now reads Status: accepted with an Accepted: 20260904_1150 by operator line alongside
+  its original Proposed line, matching the convention already used by rule 0011 and the earlier 29-document batch. The 20260902_0300 "29 documents" acceptance count in .archcore/README.md is left
+  untouched as a dated historical fact (count:asat), not restated to a new total.
+- .archcore/README.md's Rules, Contracts and Plans tables had their *(proposed)* tags removed for all six; the Holdout 2 protocol plan row now reads "Approved" to match plan 0001's existing style.
+
+## 20260904_1145 — Rule 0013 proposed: adapt Sentry's prompt-optimizer removal method to the frozen corpus; Mem0 row corrected
+
+### Added
+
+- **Rule 0013 (proposed)** at .archcore/rules/0013-trim-against-the-frozen-corpus-as-a-gate.md: any SKILL.md/persona/routing.toml edit made to cut token cost gets bracketed by evaluate_routing.py
+  against the frozen 60-case corpus (spec 0005), comparing hard invariants only, before and after. This is getsentry/skills' prompt-optimizer meta-optimization loop adapted per the token-optimization
+  doc's own verdict on that row (ADAPT the method, not the tool) — no new tool, evaluate_routing.py already does the check; the rule says when to run it. Registered in .archcore/README.md's Rules
+  table.
+- The rule's reflective-memory round log is specified as append-only (never edited or pruned in place), matching this project's own count:asat convention in AGENTS.md. That refinement came from
+  verifying Mem0's current algorithm rather than trusting the prior summary: Mem0's April 2026 release dropped write-time ADD/UPDATE/DELETE conflict resolution for single-pass ADD-only extraction with
+  conflicts resolved at retrieval time (multi-signal ranking plus temporal reasoning), not the write-time "retrieve-don't-dump" behaviour the doc previously attributed to it.
+
+### Fixed
+
+- docs/routing-evaluation/token-optimization-tools-and-strategy.md's Mem0 row corrected — the description no longer claims Mem0 sells write-time retrieve-don't-dump; it cites the verified April 2026
+  algorithm change instead. Verdict (SKIP as a tool) is unchanged; only the described mechanism was stale.
+
+## 20260904_0833 — Token Optimizer installed for Claude Code and Codex; a real content-loss bug found and fixed
+
+### Added
+
+- **Token Optimizer actually installed on this machine**, at the operator's request, for both Claude Code and Codex. Neither install ran the project's raw install.sh (1,639 lines, read in full first —
+  confirmed it has no `--codex` path at all); both went through each CLI's own native, trusted plugin manager instead.
+  - Claude Code: `claude plugin marketplace add alexgreensh/token-optimizer` + `claude plugin install token-optimizer@alexgreensh-token-optimizer` (scope `user`, applies to every session). `claude
+    plugin details` confirmed all 10 declared hooks are registered immediately — no separate setup step was needed, contrary to the README's "run `/token-optimizer` once" instruction.
+  - Codex: `codex plugin marketplace add alexgreensh/token-optimizer` + `codex plugin add token-optimizer@alexgreensh-token-optimizer`, then one hook-wiring step run from the installed plugin's own
+    cache path: `TOKEN_OPTIMIZER_RUNTIME=codex python3 ./skills/token-optimizer/scripts/measure.py codex-install --global --profile balanced`, which writes directly to `~/.codex/hooks.json`. Before
+    running it, read codex_install.py (577 lines) in full and checked for network calls or credential access — none found. Verified afterward with the tool's own `codex-doctor`: 14 OK, 2 WARN (both
+    benign), 0 FAIL.
+- **The doc's Token Optimizer row rewritten from a recommendation to an installation record** — exact commands, hook list, doctor output, and the measured always-on cost (~406 tokens per session, up
+  to ~7.1k when its audit skill fires), plus a note that a Hermes integration exists (beta) for this operator's own eval-runner harness but was not installed.
+
+### Fixed — a real content-loss bug in the rewrite, found by the operator reading the rendered file
+
+- **A Python block-replacement script located its start anchor with `next(i for i, l in enumerate(lines) if l.startswith("| Token Optimizer"))`.** The same prefix existed in an earlier, separate
+  2-column reference table in the same document. `next()` matched that earlier occurrence instead of the intended one, and the script's end-marker search then walked forward past that table's
+  remaining 8 rows, past the `## 22. Source Verification and Adaptation Feasibility` heading and its intro paragraph, and past the real target row — replacing all of it with just the rebuilt row.
+- **Every automated check passed anyway.** Line count grew (looked like a normal edit), pipe-count-per-row matched on every surviving row, and `just preflight` was clean — none of those checks can
+  detect "an entire section vanished," because they verify row structure, not section presence. The defect was caught only because the operator read the rendered file and reported missing column
+  headers.
+- **Restored** the deleted section-21 rows (Sentry Skills/Prompt Optimizer, LLMLingua, context-mem, Mem0, Letta, Zep, Skill Optimizer, Prompt Cache) and the section-22 heading, intro paragraph, and
+  table header/separator, from content already read earlier in the session. Verified by grepping for both section headings and both table headers by name, not just re-checking pipe counts — the gap in
+  what the earlier checks could catch is the actual lesson.
+- **Recorded as a new, distinct entry in the personal auto-memory `feedback_table_authoring_reflow_script`**, alongside the tool-corruption bug and the unescaped-pipe bug: a non-unique anchor string
+  in a block-replacement script is the most dangerous of the three failure modes found this session, because it deletes content rather than merely misformatting it, and nothing in this project's own
+  governance checks is positioned to catch it.
+- `just preflight` clean after the restoration: 51 tests, 1,100 governance checks, exit 0.
+
+## 20260904_0751 — token-optimization guide added and source-verified
+
+### Added
+
+- **[Token-efficient AI agent architecture](docs/routing-evaluation/token-optimization-tools-and-strategy.md)**, filed under `docs/routing-evaluation/` at operator request. A four-class information
+  taxonomy (contractual / operational / procedural / ephemeral) with a treatment rule per class, an 8-phase implementation sequence that puts lossy compression last, and a validation-metrics table
+  (requirement recall, constraint adherence, false-retrieval rate) rather than raw token-count reduction alone.
+- **Given frontmatter and a Contents TOC** matching this project's own documentation convention — the document as received had neither, despite being 906 lines.
+- **A new `## 22. Source Verification` section, added in this pass**: every one of the 9 tools/frameworks cited in the final reference table was checked directly against GitHub (description, license,
+  star count, last-push date), not repeated from the brief that produced the document. All 9 confirmed real and active.
+- **One correction found and recorded**: Zep's cited repository (getzep/zep) is GitHub's own description "Examples, Integrations, & More" — it is the examples/integrations repo, not the core memory
+  engine. Zep's actual product is a hosted service (`help.getzep.com`) with client SDKs (`zep-python`, `zep-js`, `zep-go`) in sibling repositories, not a self-hostable open-core engine in the cited
+  repo. Treat it as a hosted option, not a drop-in open-source alternative to Mem0/Letta.
+- **One earlier-draft reference confirmed fabricated and left out**: "BM629 token-optimization skill" returns zero results on a GitHub search and does not correspond to any findable project — the same
+  defect class as two names in the earlier vertical-agent survey, except this one has no real project hiding behind it at all.
+- **LightRAG, named in the fact-check request but not in the document's own reference list, confirmed to exist** (HKUDS/LightRAG, EMNLP2025, 39,365 stars) and recorded as a legitimate scope decision
+  to exclude, not an oversight — this document's scope is memory/retrieval and compression tooling, not RAG-indexing frameworks.
+- **The `docs/README.md` index entry** under Routing evaluation.
+- `just preflight` passed clean: 51 tests, 1,097 governance checks, exit 0.
+
+### Changed — feasibility verdicts merged into the verification table
+
+- **`## 22. Source Verification` retitled `## 22. Source Verification and Adaptation Feasibility`** and given a sixth column judging each option against Agent Stack's own architecture, rather than
+  adding a separate third table that would have repeated the same 9 rows. The judgement is explicit: a static, symlink-installed prompt layer with no runtime of its own, and a safety model that
+  excludes autonomous loops and implicit persistent state.
+- **Only two options verdicted adoptable as-is**: Token Optimizer as an external audit tool (no integration needed, run it against installed skill/persona files) and Skill Optimizer as a cautious
+  pilot (directly targets `SKILL.md`, but the tool itself is 0-star and unproven — gate any output through Agent Stack's own eval corpus, not the tool's own benchmark).
+- **Most of the memory frameworks verdicted SKIP or DEFER, not because they are poor projects, but because they conflict with Agent Stack's own constraints**: Mem0 and Letta are mature and
+  substantial, but an always-on memory injector conflicts with the no-implicit-persistent-state rule, and Letta's "learn and self-improve over time" framing is autonomous-loop by its own description.
+  Zep's correction (examples repo, not the core engine) compounds into a second reason to skip it: adopting the actual product means depending on an external hosted service, which needs explicit
+  operator authority under this project's own safety model.
+- **LLMLingua and Prompt Cache verdicted not applicable to Agent Stack specifically**, independent of their own quality: both assume a live prompt-assembly or inference pipeline that Agent Stack, as a
+  static file library, does not run — whatever assembles the final prompt is Claude Code or Codex, outside this project's control. The stable-prefix-first idea behind prompt caching is a convention
+  Agent Stack's persona/skill layout already follows structurally, not a tool to adopt.
+
+### Corrected — Token Optimizer's license and mechanism were both wrong
+
+- **License corrected from unrecorded to PolyForm Noncommercial 1.0.0**, found by opening the actual `LICENSE` file rather than stopping at description/stars/pushed-date. The license itself states
+  "any noncommercial purpose is a permitted purpose"; auditing one's own coding-assistant sessions plausibly qualifies even where some of that work is commercial, since the restriction targets
+  commercializing the software itself rather than gating the work done while running it as a personal dev tool — recorded as a flagged caveat, not a certified legal reading.
+- **Mechanism corrected from "run periodically" to "harness-level plugin with native hooks."** It ships as a Claude Code plugin (`/plugin marketplace add` + `/plugin install`, then `/token-optimizer`
+  once to wire up `SessionStart`/`UserPromptSubmit`/`PostToolUse`/`Stop` hooks) and, separately, a Codex plugin whose install writes hooks directly to `~/.codex/hooks.json` — which Codex's own docs
+  state it "loads for all projects regardless of trust level." This is what actually answers "how do I make sure it always runs no matter the model": the hooks fire on harness/session events, not on
+  anything the model does, so which LLM answers inside the session is irrelevant to whether the audit runs.
+- **Confirmed it sits entirely outside Agent Stack's own routing.toml/personas/skills tree** — a host-level, install-once plugin, not something for Agent Stack to route to or embed.
+- `just preflight` clean after the correction: 51 tests, 1,100 governance checks, exit 0.
+
+## 20260904_0737 — docs/ reorganized into subfolders
+
+### Changed
+
+- **`docs/` split into four subfolders** — `audits/`, `routing-evaluation/`, `reliability-adaptation/`, `off-topic/` — once the flat list passed a dozen files and grouping by content became more
+  useful than one long table, mirroring the pattern `.archcore/` already uses for its own subfolders (`adr/`, `rules/`, `specs/`, `guides/`, `plans/`).
+- **`docs/README.md` rewritten** with one heading and one table per subfolder rather than a single flat table; the off-topic vertical-agent survey keeps its own section so it never blends in with
+  genuine Agent Stack evidence.
+- **`scripts/check_governance.py`'s `docs/README.md` catalog glob changed from `*.md` to `**/*.md`.** A non-recursive glob would have reported full coverage while checking nothing inside the new
+  subfolders — the same reasoning already documented against `.archcore/README.md`'s own catalog entry, applied here for the first time since docs/ never had subfolders before.
+- **Every cross-reference to a moved document updated** — 46 occurrences across `CHANGELOG.md`, `SCRATCHPAD.md`, `ARCHITECTURE.md`, `AI_NAVIGATION.md`, `MEMORY.md`, and six files under `.archcore/`.
+  Parent-relative links (`../`) inside the five moved documents whose own prose links back to root-level files (`routing.toml`, `SCRATCHPAD.md`, `.archcore/` entries) were bumped one level deeper to
+  `../../` and each resolution verified against the filesystem, not assumed from the edit alone.
+- **One pre-existing broken link fixed in passing**: `docs/routing-evaluation/routing-failure-classification-20260901_1842.md` linked `[MEMORY.md](MEMORY.md)` with no path prefix at all — already
+  broken before this move, since a bare filename inside `docs/` never resolved to the root `MEMORY.md`. Corrected to the depth-correct relative path.
+- **One pre-existing broken link left alone, deliberately**: the same file's reference to agent-stack-capability-taxonomy-and-scoring.md points at a file that does not exist anywhere in the
+  repository, not merely at the wrong depth. Its relative-path math was kept consistent with the move (still resolves to the project root, still missing) rather than invented a target or silently
+  dropped — this is a known residual from an earlier phase, not something this reorganisation should paper over.
+- `just preflight` passed clean throughout: 51 tests, 1,094 governance checks, exit 0.
+
 ## 20260903_2230 — staleness audit
 
 Not a change-propagation pass. This one started from nothing and asked what had quietly stopped being true while 747 governance checks passed continuously.
 
 ### Fixed — the skill library was promising capabilities it does not have
 
-- **`skills/devops/SKILL.md` named the two scripts as scripts/cloudflare-deploy.py and scripts/docker-optimize.py.** The files exist under those names with UNDERSCORES
-  rather than hyphens — so both references were dead while the capability was real. The scripts' own `--help` epilogs repeated the
-  wrong name 12 times, meaning anyone copying the printed example got "No such file or directory" from a script that was working fine.
-- **`product-strategist` listed four reference files and four runnable scripts; the package contains only a SKILL.md.** `startup-financial-modeling` listed three
-  references it does not have. `market-sizing-analysis` listed three of which one exists — and that survivor is what proves these are rotted indexes rather than
-  illustrative lists. `scientific-critical-thinking` documented a schematic generator that was never imported.
-- **`check_skill_package_references`** now reads every `SKILL.md`'s own references, in prose AND in fenced commands. Four of the sixteen findings were written as
-  `python scripts/market_sizing.py ...` inside a ```bash block, which every prose-oriented scanner skips by construction. Package-relative or repo-relative both
-  count; only a path resolving nowhere is a promise the agent cannot collect on.
+- **`skills/devops/SKILL.md` named the two scripts as scripts/cloudflare-deploy.py and scripts/docker-optimize.py.** The files exist under those names with UNDERSCORES rather than hyphens — so both
+  references were dead while the capability was real. The scripts' own `--help` epilogs repeated the wrong name 12 times, meaning anyone copying the printed example got "No such file or directory"
+  from a script that was working fine.
+- **`product-strategist` listed four reference files and four runnable scripts; the package contains only a SKILL.md.** `startup-financial-modeling` listed three references it does not have.
+  `market-sizing-analysis` listed three of which one exists — and that survivor is what proves these are rotted indexes rather than illustrative lists. `scientific-critical-thinking` documented a
+  schematic generator that was never imported.
+- **`check_skill_package_references`** now reads every `SKILL.md`'s own references, in prose AND in fenced commands. Four of the sixteen findings were written as `python scripts/market_sizing.py ...`
+  inside a ```bash block, which every prose-oriented scanner skips by construction. Package-relative or repo-relative both count; only a path resolving nowhere is a promise the agent cannot collect
+  on.
 
 ### Fixed — an index that presented retired documents as live
 
-- **`.archcore/README.md` listed four superseded sync documents with no indication of their state.** The banners were inside the files; the index that routes
-  readers to them said nothing, and `.archcore/` is declared this project's highest authority. This is the Phase 3 defect inverted — the usual failure is a
-  supersession recorded in a routing table that never reaches the file. **`check_superseded_marked_in_index`** derives the state from each document's own
-  `Status:` line, because a hand-kept list of what is superseded drifts exactly as the thing it polices does.
+- **`.archcore/README.md` listed four superseded sync documents with no indication of their state.** The banners were inside the files; the index that routes readers to them said nothing, and
+  `.archcore/` is declared this project's highest authority. This is the Phase 3 defect inverted — the usual failure is a supersession recorded in a routing table that never reaches the file.
+  **`check_superseded_marked_in_index`** derives the state from each document's own `Status:` line, because a hand-kept list of what is superseded drifts exactly as the thing it polices does.
 
 ### Fixed — a routing map that discarded a block without any error
 
-- **`context-map.yaml` defined `type` and `authority` twice in the entry describing itself**: `machine_routing_map` followed immediately by
-  `sync_translation_rules`, two lines orphaned when upstream sync was retired. YAML keeps the last value, so every consumer saw the file described as a sync
-  artifact that no longer exists while the correct description was silently thrown away. **`check_no_duplicate_yaml_keys`** asserts on the key stream rather than
-  on whether the load succeeds, because well-formedness proves nothing here. Stdlib-only, so the gate can never fail for an environment reason.
+- **`context-map.yaml` defined `type` and `authority` twice in the entry describing itself**: `machine_routing_map` followed immediately by `sync_translation_rules`, two lines orphaned when upstream
+  sync was retired. YAML keeps the last value, so every consumer saw the file described as a sync artifact that no longer exists while the correct description was silently thrown away.
+  **`check_no_duplicate_yaml_keys`** asserts on the key stream rather than on whether the load succeeds, because well-formedness proves nothing here. Stdlib-only, so the gate can never fail for an
+  environment reason.
 
 ### Added — personas had no way in
 
-- **[`personas/README.md`](personas/README.md)**, derived from each persona's own frontmatter and registered in `CATALOGS`, so a persona added without an index row
-  fails coverage. Found by the inverse sweep — the pass that asks what exists that no catalog names, rather than what a catalog names that has vanished. Only the
-  first grows while nobody is looking. It needed the same "a README is not a capability" exemption in **four** places (coverage catalog, manifest check, persona
-  document contract, global installer); a fifth would mean the glob belongs in one shared helper.
+- **[`personas/README.md`](personas/README.md)**, derived from each persona's own frontmatter and registered in `CATALOGS`, so a persona added without an index row fails coverage. Found by the inverse
+  sweep — the pass that asks what exists that no catalog names, rather than what a catalog names that has vanished. Only the first grows while nobody is looking. It needed the same "a README is not a
+  capability" exemption in **four** places (coverage catalog, manifest check, persona document contract, global installer); a fifth would mean the glob belongs in one shared helper.
 
 ### Also
 
-- `docs/README.md` named `translation-policy.md` as a current root entrypoint six hours after it was deleted. `.archcore/README.md` described the deleted sync
-  state files in the present tense. `AI_NAVIGATION.md` listed a generated artifact that has never been generated here, now marked optional.
+- `docs/README.md` named `translation-policy.md` as a current root entrypoint six hours after it was deleted. `.archcore/README.md` described the deleted sync state files in the present tense.
+  `AI_NAVIGATION.md` listed a generated artifact that has never been generated here, now marked optional.
 - Governance 747 → 1,073 checks; three new families, all negative-tested by breaking the project deliberately and watching them go red.
 - Gate PASSED: coverage 278 examined + 12 exempt = 290, claim matrix reconciles at 931, inverse sweep clean, `just preflight` exit 0.
-- **Three fixes went upstream into the shared audit skill**, where they had survived as permanently unaccepted residuals across three audits: package-internal
-  directories no longer report as orphans when an ancestor is catalogued; point-in-time backup trees are exempt from the old-value sweep, because a backup records
-  what a file SAID on a date; and JSONC configs parse via a string-aware comment stripper. The first regex for that stripper ate `"@/*": ["./src/*"]` — a tsconfig
-  path alias — and produced a parse error pointing at an innocent line, which is this skill's own warning about programmatic edits to structured files arriving by
-  the short route.
+- **Three fixes went upstream into the shared audit skill**, where they had survived as permanently unaccepted residuals across three audits: package-internal directories no longer report as orphans
+  when an ancestor is catalogued; point-in-time backup trees are exempt from the old-value sweep, because a backup records what a file SAID on a date; and JSONC configs parse via a string-aware
+  comment stripper. The first regex for that stripper ate `"@/*": ["./src/*"]` — a tsconfig path alias — and produced a parse error pointing at an innocent line, which is this skill's own warning
+  about programmatic edits to structured files arriving by the short route.
 
 ### An error I made and corrected
 
-I deleted the devops Scripts section outright after reading `find ... | head` — truncated at ten lines — as proof the scripts were absent. The package has 29
-files. Caught in Phase 4, when the per-artifact worksheet listed `skills/devops/scripts/cloudflare_deploy.py` by name; the grep-shaped question had returned a
-technically correct "no" to the wrong question. Restored as a two-character fix per line. Recorded here because why a defect survived, and how a fix went wrong,
-is the reusable part.
+I deleted the devops Scripts section outright after reading `find ... | head` — truncated at ten lines — as proof the scripts were absent. The package has 29 files. Caught in Phase 4, when the
+per-artifact worksheet listed `skills/devops/scripts/cloudflare_deploy.py` by name; the grep-shaped question had returned a technically correct "no" to the wrong question. Restored as a two-character
+fix per line. Recorded here because why a defect survived, and how a fix went wrong, is the reusable part.
 
 ## 20260903_2130
 
@@ -67,8 +195,9 @@ is the reusable part.
 - **The split is deliberate.** The raw notes stay with the project because they contain that project's analysis and belong to it. A declared gap is a statement about **this library** — "no skill takes
   a duty rate as an input" — so a copy comes home. `scripts/persona_note.py` writes both at declaration time.
 - **`--project` on `persona_note.py write`**, so a gap in the library's own log is attributable without having to resolve a path that may no longer exist.
-- **[`scripts/propose_evolution.py`](scripts/propose_evolution.py) reads the local log first**, then still reads reachable manifests, because a run captured before this log existed is evidence too. Duplicates collapse on the declaration
-  itself — `(kind, persona, text, at)` — rather than on where it was found, so the two paths merge while two genuine repeats of the same complaint stay separate and still reach the threshold.
+- **[`scripts/propose_evolution.py`](scripts/propose_evolution.py) reads the local log first**, then still reads reachable manifests, because a run captured before this log existed is evidence too.
+  Duplicates collapse on the declaration itself — `(kind, persona, text, at)` — rather than on where it was found, so the two paths merge while two genuine repeats of the same complaint stay separate
+  and still reach the threshold.
 
 ### Added — the JSONL evidence contract
 
@@ -87,6 +216,36 @@ is the reusable part.
 - Step 7.5 of `SKILL.md` now carries the two gap flags with the rule that a gap is declared only when a persona actually hit the limit while working — a guess pollutes the evidence the thresholds
   depend on. 5,722 → 5,836 tokens.
 - Suite 49 → 51 tests. The survival test was negative-tested by disabling the local-log read and watching it go red under the old pointer-only design.
+
+## 20260903_2126 — vertical-agent framework fact-check
+
+### Added
+
+- **[Vertical agent framework and reference-project fact-check](docs/off-topic/vertical-agent-framework-survey-20260903_2126.md).** Off-topic for Agent Stack's own routing or safety model, filed here
+  at operator request as a working-evidence artifact: a source-verified fact-check of a separate, unverified AI-generated proposal for building new Python-based vertical domain-specialist agents
+  (Network, Infrastructure, Finance, Research), covering candidate frameworks (PydanticAI, LangGraph, CrewAI, AG2, smolagents) and reference projects (NetClaw, NetCopilot/ARIA, Netmiko MCP, FinRobot,
+  TradingAgents, finance-mcp).
+- **Corrected several claims the brief stated without verification**: AG2's "transition toward v1" is stale (v1 is the current default; the AutoGen-derived code moved to a separately maintained
+  `ag2-classic` package); LangGraph's Ollama and MCP support live in separate LangChain-ecosystem packages, not the core repo; CrewAI's dedicated tools repo is archived; NetCopilot/ARIA is Business
+  Source License 1.1, not free/open-source, and its agent is gated behind a hosted license key; the closest "Netmiko MCP" candidates carry no declared license and expose config-push, not read-only,
+  operations.
+- **The `docs/` index entry**, distinguished explicitly from every other row as off-topic-but-filed-here rather than blended in silently.
+
+### Corrected — the survey's own first pass was wrong about two of its subjects
+
+- **This document originally reported "Vertical AI Agent" and "OpenResearch Agent" as `UNVERIFIED / NOT FOUND`** after a genuine multi-strategy GitHub search by name and architectural description.
+  Both were wrong. The operator supplied direct URLs — [chetanreddyv/vertical_aiAgent](https://github.com/chetanreddyv/vertical_aiAgent) and
+  [hetu-project/openresearch-agent](https://github.com/hetu-project/openresearch-agent) — and both are real, public repositories matching the original brief's descriptions closely. The correction is
+  recorded in place in the document rather than silently fixed.
+- **The Together.ai dependency claim, previously reported as tracing only to an unrelated project, is CONFIRMED.** hetu-project/openresearch-agent's own README names Together.ai as its LLM integration
+  and requires a `TOGETHER_API_KEY`; its three-part MCP/LLM-service/storage architecture is also confirmed against the README's own diagram. License: GPL-3.0.
+- **chetanreddyv/vertical_aiAgent is the closest real match to a manager→specialist→MCP proof of concept** — a Gemini Manager decomposing requests for typed MCP-backed specialists (Email, SQL, Drive,
+  Calendar, Jira, meeting-transcript search), with a human-in-the-loop gate on mutating steps. Its README carries an MIT badge that GitHub's own license API does not back with a LICENSE file — the
+  same class of licensing gap already flagged against the Netmiko MCP candidates.
+- **Root cause, stated for the next time this check is run**: the search agents searched by name variant and architectural description, not by exact repository slug, and both real slugs
+  (`vertical_aiAgent` with an internal capital, `openresearch-agent` under an org whose name doesn't match either term) were plausible but not guessable from prose alone. A `NOT FOUND` verdict from
+  this method means "not found by this method," not "does not exist" — the rest of the survey's findings are unaffected because they were verified against repositories the search agents did find,
+  which is a stronger form of verification than name-guessing.
 
 ## 20260903_2000
 
@@ -115,6 +274,35 @@ is the reusable part.
 - **SKILL.md re-compressed after the two new steps ate the trim**: 6,013 → 5,722 tokens, against 6,479 before any of today's work. Reasoning for both new steps moved into
   `skills/skill-agent-stack/references/field-log.md`; the commands and operative rules stay inline.
 - Three regression tests, negative-tested by forcing `complete` to true and watching two go red. Suite 46 → 49; governance 706 checks.
+
+## 20260903_1943 — reliability adaptation proposal
+
+### Added
+
+- **[Agent Stack reliability adaptation proposal](docs/reliability-adaptation/agent-stack-reliability-adaptation-proposal-20260903_1943.md).** A decision-ready, non-executing proposal that compares
+  all 25 externally assessed repositories, identifies the separable mechanisms worth adapting, and sequences a post-dispatch verification layer before any learning or promotion feature. It explicitly
+  excludes daemons, autonomous loops, automatic retries, agent-controlled access approvals, and automatic guidance changes.
+- **The `docs/` index entry** for the proposal, alongside the existing external-survey entry.
+- **Corrected after project-level review.** The five mechanisms are now an evidence-triggered deferred backlog, not a delivery sequence. The proposal names the existing field log, persona run
+  manifest, evolution proposer, and evaluation receipts that a future change must reuse rather than duplicate.
+- **Source-level adaptation map.** Every surveyed repository now names the exact inspected source path and function, class, or section to study—or an explicit no-component finding.
+- **Receipt storage clarified.** If portability evidence eventually requires a normal-work receipt, it is one JSON object per line in the existing `evals/field-log.jsonl` stream; the per-run manifest
+  remains a complete snapshot rather than an event log.
+
+## 20260903_1849 — external orchestrator and skill-library survey
+
+### Added
+
+- **[External orchestrator and skill-library survey](docs/reliability-adaptation/external-orchestrator-survey-20260903_1849.md).** Five parallel research agents opened and read 25 external
+  repositories — Claude Code orchestrators, multi-agent SDKs, and plain skill libraries — against Agent Stack's existing routing catalogue, gate closure, and safety model, with instructions to quote
+  source verbatim rather than answer from memory. evanca/skills returned a confirmed 404 and is recorded as unreachable rather than assessed from a guess.
+- **The convergent finding.** Three unrelated repos independently supply one-third each of the same missing subsystem, none requiring a daemon or autonomy: MetaGPT's `_watch()` set (declare which
+  upstream artifact types a role legally consumes), Squad's atomic compare-and-swap task claim with a time-boxed lease (claim a decision so two agents cannot both rule on it), and
+  anytools-agent-skills' `required_model`/`actual_model` audit (verify after dispatch that a persona's output stayed inside what it was routed to do). This is the piece Agent Stack's field log
+  currently lacks — it records the route and the outcome, never whether the outcome honoured the route.
+- **Confirmed, not assumed, that the project's own eval harness is ahead of every eval mechanism found across all 25 repos** — every other evaluation encountered was an end-to-end task-success
+  benchmark or a single manually-invoked sample document, none an asymmetric-scored frozen corpus.
+- This document is evidence and a proposal only; it makes no durable decision. It became the assessment basis for the reliability adaptation proposal above.
 
 ## 20260903_1900
 
@@ -160,7 +348,8 @@ entry), and **anything git already knows**.
 
 ### Notes — what "fix it all" could and could not honestly mean
 
-Full classification of all 27 production-shape failures: [docs/routing-failure-classification-20260903_1800.md](docs/routing-failure-classification-20260903_1800.md).
+Full classification of all 27 production-shape failures:
+[docs/routing-evaluation/routing-failure-classification-20260903_1800.md](docs/routing-evaluation/routing-failure-classification-20260903_1800.md).
 
 - **20 of 27 were already fixed** by wiring closure in earlier the same day — `gate_unsatisfied` 18 plus `strength_insufficient` 2 are exactly what it repairs.
 - **10 corpus cases contradict [rule 0006](.archcore/rules/0006-required-personas-is-ownership.md)**, found by testing the whole corpus rather than the failures — and **3 of the 10 currently pass**,
@@ -325,9 +514,9 @@ Full classification of all 27 production-shape failures: [docs/routing-failure-c
 
 ### Added — the gate question is answered
 
-- **A / B1 / B2 run to completion on DeepSeek Flash** ([full record](docs/gate-only-analysis-20260903_0030.md), [`scripts/gate_eval.py`](scripts/gate_eval.py)). **Isolated gate judgement is a real
-  classifier on two model tiers** — predicted-positive rate 0.48/0.37/0.20 on Flash against base rates 0.50/0.37/0.22, and 0.37/0.53/0.38 on Claude — while the **integrated router sits at 1.00 on all
-  four gates**. The gate-semantics hypothesis is dead: the definitions are learnable, and judging them while constructing a route is what destroys the signal.
+- **A / B1 / B2 run to completion on DeepSeek Flash** ([full record](docs/routing-evaluation/gate-only-analysis-20260903_0030.md), [`scripts/gate_eval.py`](scripts/gate_eval.py)). **Isolated gate
+  judgement is a real classifier on two model tiers** — predicted-positive rate 0.48/0.37/0.20 on Flash against base rates 0.50/0.37/0.22, and 0.37/0.53/0.38 on Claude — while the **integrated router
+  sits at 1.00 on all four gates**. The gate-semantics hypothesis is dead: the definitions are learnable, and judging them while constructing a route is what destroys the signal.
 - **The aggregate result is misleading and the conditional breakdown reverses it.** B2 beats B1 by +9 cases and +5.38 mean, which reads as "gate errors contaminate routing". Split by stage-A error
   type: correct 17% B1-failure, **over-asserted 30% (n=10), under-asserted 100% (n=11), both 100% (n=3)**. Where stage A was right, B1 30/36 versus B2 29/36 — indistinguishable. `missing gate` hard
   failures: B1 17, B2 1. **Over-assertion is not detectably costly; under-assertion is fatal.**
@@ -429,7 +618,8 @@ Full classification of all 27 production-shape failures: [docs/routing-failure-c
 ### Changed — Holdout 24 executed and SPENT
 
 - **16/19 passed (84.2%), mean 71.1, five runner failures excluded.** Claude arm, `--repair` on, freeze verified and captured immediately before launch at git HEAD `1201e42`. Evidence in the working
-  cache: `routing-results/holdout24-claude-20260902.{jsonl,log,freeze.txt}`. Full classification: [docs/holdout24-analysis-20260902_1120.md](docs/holdout24-analysis-20260902_1120.md).
+  cache: `routing-results/holdout24-claude-20260902.{jsonl,log,freeze.txt}`. Full classification:
+  [docs/routing-evaluation/holdout24-analysis-20260902_1120.md](docs/routing-evaluation/holdout24-analysis-20260902_1120.md).
 - **Nothing was changed in response to the result.** No expectation, catalogue entry, gate, precedence rule, closure behaviour, scorer or case was edited. The three ownership failures stand exactly as
   authored, including `hjdm-workshop-channel`, which was pre-registered as ambiguous before the run and failed in precisely the predicted direction.
 - **Status reconciled.** `MEMORY.md` and `SCRATCHPAD.md` described the holdout as unexecuted while the result files proved otherwise — the same class of defect as a stale constant, a claim nothing
@@ -677,10 +867,10 @@ Full classification of all 27 production-shape failures: [docs/routing-failure-c
 ### Changed — staleness audit
 
 - **Seven staleness defects found and fixed.** Three materially misleading: `MEMORY.md`'s baselines table still read `v3 | in flight` after v3 completed (the worst thing a designated truth document
-  can do); its "what is still open" section posed the v3 question as unanswered; and `docs/gate-definitions-proposal-20260901_1600.md` still carried `Status: proposal, not applied` months of work
-  after the gates were applied. Two enforcement-level: `docs/routing-failure-classification-20260901_1842.md` recommended the route invariant as the fix **after** that fix had been built and measured
-  ineffective, and `ARCHITECTURE.md` described a gate model that predates the four-flag capability system. Two governance: a stale `Last reviewed` on `AGENTS.md`, and a long-carried open item that was
-  simply **mis-framed** — `docs/audit-agent-stack.md` is the audit *prompt*, not a duplicate report, so no supersession was ever needed.
+  can do); its "what is still open" section posed the v3 question as unanswered; and `docs/routing-evaluation/gate-definitions-proposal-20260901_1600.md` still carried `Status: proposal, not applied`
+  months of work after the gates were applied. Two enforcement-level: `docs/routing-evaluation/routing-failure-classification-20260901_1842.md` recommended the route invariant as the fix **after**
+  that fix had been built and measured ineffective, and `ARCHITECTURE.md` described a gate model that predates the four-flag capability system. Two governance: a stale `Last reviewed` on `AGENTS.md`,
+  and a long-carried open item that was simply **mis-framed** — `docs/audits/audit-agent-stack.md` is the audit *prompt*, not a duplicate report, so no supersession was ever needed.
 - **Supersession banners** added in place on the two superseded documents, each naming what replaced it **and what still stands** — the capability model and corpus-derived triggers in the proposal;
   the classification itself in the failure analysis. Neither document is deleted; only their stale recommendations are fenced.
 - **New governance check `check_status_markers_resolved`**, proven able to fail: no table row in `MEMORY.md` or `SCRATCHPAD.md` may report `in flight`, `pending`, `TBD` or `awaiting`. Narrow by design
@@ -733,9 +923,10 @@ Full classification of all 27 production-shape failures: [docs/routing-failure-c
 
 ### Notes
 
-- **The 22 unsatisfied failures were classified before any catalogue edit** — [docs/routing-failure-classification-20260901_1842.md](docs/routing-failure-classification-20260901_1842.md). **All 22 are
-  ROUTING DEFECTS. Zero capability-mapping, zero gate-trigger, zero corpus, zero scoring.** In every case the router judged the gate correctly and then equipped the route with neither a satisfying
-  provider nor the gate's persona, while the corpus lists that persona as required or preferred.
+- **The 22 unsatisfied failures were classified before any catalogue edit** —
+  [docs/routing-evaluation/routing-failure-classification-20260901_1842.md](docs/routing-evaluation/routing-failure-classification-20260901_1842.md). **All 22 are ROUTING DEFECTS. Zero
+  capability-mapping, zero gate-trigger, zero corpus, zero scoring.** In every case the router judged the gate correctly and then equipped the route with neither a satisfying provider nor the gate's
+  persona, while the corpus lists that persona as required or preferred.
 - **Predicted re-score gain was therefore zero, and the re-score confirmed it: 33/59 before, 33/59 after, no case changed verdict.** The refactor is a maintainability change — one taxonomy instead of
   two that drift — not a scoring change. It was stated as a falsifiable prediction first so that step 6 tested the classification rather than celebrating it.
 - **The annotation was verified faithful before the satisfier lists were deleted**: resolving each gate through the new capability metadata reproduces its old skill list exactly — nothing gained,
@@ -812,7 +1003,7 @@ the unchanged frozen set and merged.
 
 - First complete behavioural routing baseline — all 60 corpus cases against Hermes/DeepSeek: **23/60 (38.3%), mean 76.4**. Results (6 files, 60 rows) in
   `/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/routing-results/`, which is working-cache and rebuildable; the repo carries the findings, not the result sets.
-- `docs/gate-definitions-proposal-20260901_1600.md` — proposed `[[gates]]` definitions for the four flags, with triggers **derived from the corpus** rather than invented, the two
+- `docs/routing-evaluation/gate-definitions-proposal-20260901_1600.md` — proposed `[[gates]]` definitions for the four flags, with triggers **derived from the corpus** rather than invented, the two
   `scripts/evaluate_routing.py` prompt fixes, expected effect, and four open policy questions. **Nothing applied** — the trigger conditions encode policy and need an operator call.
 
 ### Notes
@@ -831,7 +1022,18 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260904_1155 — Sentry Skills / Prompt Optimizer row upgraded from recommendation to adopted record](#20260904_1155-sentry-skills-prompt-optimizer-row-upgraded-from-recommendation-to-adopted-record)
+- [20260904_1150 — Six proposed archcore documents accepted by the operator](#20260904_1150-six-proposed-archcore-documents-accepted-by-the-operator)
+- [20260904_1145 — Rule 0013 proposed: adapt Sentry's prompt-optimizer removal method to the frozen corpus; Mem0 row corrected](#20260904_1145-rule-0013-proposed-adapt-sentrys-prompt-optimizer-removal-method-to-the-frozen-corpus-mem0-row-corrected)
+- [20260904_0833 — Token Optimizer installed for Claude Code and Codex; a real content-loss bug found and fixed](#20260904_0833-token-optimizer-installed-for-claude-code-and-codex-a-real-content-loss-bug-found-and-fixed)
+- [20260904_0751 — token-optimization guide added and source-verified](#20260904_0751-token-optimization-guide-added-and-source-verified)
+- [20260904_0737 — docs/ reorganized into subfolders](#20260904_0737-docs-reorganized-into-subfolders)
+- [20260903_2230 — staleness audit](#20260903_2230-staleness-audit)
+- [20260903_2130](#20260903_2130)
+- [20260903_2126 — vertical-agent framework fact-check](#20260903_2126-vertical-agent-framework-fact-check)
 - [20260903_2000](#20260903_2000)
+- [20260903_1943 — reliability adaptation proposal](#20260903_1943-reliability-adaptation-proposal)
+- [20260903_1849 — external orchestrator and skill-library survey](#20260903_1849-external-orchestrator-and-skill-library-survey)
 - [20260903_1900](#20260903_1900)
 - [20260903_1830](#20260903_1830)
 - [20260903_1600](#20260903_1600)

@@ -1,6 +1,6 @@
 ---
 name: deep-analysis
-description: Analytical thinking patterns for comprehensive evaluation, code audits, security analysis, and performance reviews. Provides structured templates for thorough investigation with extended thinking support.
+description: "Analytical thinking patterns for code audits, security, performance reviews."
 allowed-tools:
   - Bash
   - Read

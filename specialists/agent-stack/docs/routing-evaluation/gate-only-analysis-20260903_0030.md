@@ -7,7 +7,7 @@ Summary: Isolated gate judgement is a real classifier on two arms; integrated it
 
 # Gate-only evaluation — A / B1 / B2 result
 
-Run under [spec 0007](../.archcore/specs/0007-gate-only-evaluation.md), against the frozen development 60, on DeepSeek Flash via Hermes, with a realistic-payload runner qualification passed
+Run under [spec 0007](../../.archcore/specs/0007-gate-only-evaluation.md), against the frozen development 60, on DeepSeek Flash via Hermes, with a realistic-payload runner qualification passed
 immediately beforehand. Thresholds were pre-registered on 20260902_1225 and are not moved here.
 
 ## Contents
@@ -66,12 +66,12 @@ the **B1 ≈ B2** row of spec 0007's matrix, reached conditionally rather than i
 
 ## What this settles
 
-- **The gate collapse is real, measurable, and is not costing routing accuracy.** Its costs are the ones [rule 0012](../.archcore/rules/0012-gate-flags-are-advisory-until-localised.md) already named:
+- **The gate collapse is real, measurable, and is not costing routing accuracy.** Its costs are the ones [rule 0012](../../.archcore/rules/0012-gate-flags-are-advisory-until-localised.md) already named:
   tokens, oversized teams, and a signal that has gone dead for the operator.
 - **It drops down the queue.** Ahead of it now: replay and shadow-mode evidence, and Holdout 2.
 - **The naive fix is dangerous and must not be attempted.** "Make the router less trigger-happy" trades precision for recall — trading a free error for a fatal one. Any future work on gate calibration
   must hold recall at 1.0 and buy precision only where it costs no recall.
-- **[Rule 0011](../.archcore/rules/0011-gate-errors-are-asymmetric.md) is independently confirmed.** Its −20 hard / −5 soft asymmetry was chosen on judgement before any of this was measured. The
+- **[Rule 0011](../../.archcore/rules/0011-gate-errors-are-asymmetric.md) is independently confirmed.** Its −20 hard / −5 soft asymmetry was chosen on judgement before any of this was measured. The
   measured downstream cost ratio is 100%-failure versus indistinguishable-from-baseline. The asymmetry we picked matches the asymmetry that exists.
 
 ## What it does not settle

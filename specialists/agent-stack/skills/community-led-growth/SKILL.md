@@ -1,6 +1,6 @@
 ---
 name: community-led-growth
-description: Expert in community-led growth (CLG) - leveraging user communities to drive acquisition, retention, and expansion. Covers building developer communities, user groups, ambassador programs, and turning customers into advocates. Knows the difference between community as a feature vs community as a growth engine, and how to measure community ROI. Use when "community-led, CLG, ambassador program, champion program, user community, developer community, word of mouth, user group, " mentioned. 
+description: "Community-led growth strategy: ambassador programs, user communities, CLG."
 ---
 
 # Community Led Growth

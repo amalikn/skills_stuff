@@ -1,8 +1,9 @@
 Title: Plan 0003 — Holdout 2 protocol
 Category: plan
-Status: proposed
+Status: accepted
 Proposed: 20260902_1140 direct, per .archcore/README.md step 2
-Source: docs/holdout24-analysis-20260902_1120.md, .archcore/specs/0006-runner-qualification.md
+Accepted: 20260904_1150 by operator
+Source: docs/routing-evaluation/holdout24-analysis-20260902_1120.md, .archcore/specs/0006-runner-qualification.md
 Summary: What must be true before a second blind corpus is authored, and the order in which it is spent.
 
 # Plan 0003 — Holdout 2 protocol

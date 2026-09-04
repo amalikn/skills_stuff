@@ -1,6 +1,6 @@
 ---
 name: startup-business-models
-description: Use when choosing or evaluating a startup revenue model, pricing/value metric, packaging/tier design, or calculating unit economics (LTV, CAC, payback, gross margin, NRR), including usage-based/credit/AI pricing and variable compute/COGS constraints.
+description: "Evaluate startup revenue models, pricing, packaging, and unit economics."
 ---
 
 # Startup Business Models

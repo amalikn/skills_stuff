@@ -7,7 +7,7 @@ Summary: All 22 classify as ROUTING DEFECT and none as capability-mapping, so th
 
 # Baseline v2 Unsatisfied-Gate Failure Classification
 
-Step 1 of the sequence in [agent-stack-capability-taxonomy-and-scoring.md](../agent-stack-capability-taxonomy-and-scoring.md). Its governing principle is the reason this document exists before any
+Step 1 of the sequence in [agent-stack-capability-taxonomy-and-scoring.md](../../agent-stack-capability-taxonomy-and-scoring.md). Its governing principle is the reason this document exists before any
 catalogue edit: *the capability taxonomy should describe what skills genuinely do, not what the eval suite wishes they had done.*
 
 ## Contents
@@ -89,17 +89,17 @@ Both were written to falsify the classification, not to support it.
 |     |                           |                    |          |                                    |   skills         |         |                                                                  |
 | 11  | `jdm-pilot-one-car`       | jdm-import         | critic   | `financial-unit-economics`         | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
 |     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 12  | `jdm-sales-channel`       | jdm-import         | research | *none*                               | no skills at all | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-| 13  | `jdm-sourcing-workflow`   | jdm-import         | research | *none*                               | no skills at all | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-| 14  | `jdm-sourcing-workflow`   | jdm-import         | critic   | *none*                               | no skills at all | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
+| 12  | `jdm-sales-channel`       | jdm-import         | research | *none*                             | no skills at all | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
+| 13  | `jdm-sourcing-workflow`   | jdm-import         | research | *none*                             | no skills at all | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
+| 14  | `jdm-sourcing-workflow`   | jdm-import         | critic   | *none*                             | no skills at all | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
 | 15  | `jdm-warranty-risk`       | jdm-import         | research | `financial-unit-economics`         | non-satisfying   | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
 |     |                           |                    |          |                                    |   skills         |         |                                                                  |
 | 16  | `jdm-warranty-risk`       | jdm-import         | critic   | `financial-unit-economics`         | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
 |     |                           |                    |          |                                    |   skills         |         |                                                                  |
 | 17  | `nas-architecture`        | networking-infra   | research | `premortem`                        | non-satisfying   | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
 |     |                           |                    |          |                                    |   skills         |         |                                                                  |
-| 18  | `net-bgp-flap`            | networking-infra   | research | *none*                               | no skills at all | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
-| 19  | `net-dns-migration`       | networking-infra   | critic   | *none*                               | no skills at all | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
+| 18  | `net-bgp-flap`            | networking-infra   | research | *none*                             | no skills at all | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
+| 19  | `net-dns-migration`       | networking-infra   | critic   | *none*                             | no skills at all | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
 | 20  | `net-pppoe-capacity`      | networking-infra   | research | `deep-analysis`, `premortem`       | non-satisfying   | ROUTING | add satisfier or `research-thompson` (corpus lists it preferred) |
 |     |                           |                    |          |                                    |   skills         |         |                                                                  |
 | 21  | `repo-architecture-audit` | software-ai        | critic   | `deep-analysis`, `security-audit`, | non-satisfying   | ROUTING | add satisfier or `critic-munger` (corpus lists it preferred)     |
@@ -115,7 +115,8 @@ Both were written to falsify the classification, not to support it.
 > doubling. A three-way Flash / Pro / Claude holdout then showed `unsatisfied` at **7 / 6 / 7** — the defect is model-invariant, and ten of twenty holdout failures occur on both production models.
 >
 > **What still stands:** the classification itself — all 22 are routing defects, none are mapping defects — and the diagnosis that the router judges the gate then finishes without closing it. What is
-> wrong is only the assumed remedy. **Prompt-level closure is the wrong mechanism; the replacement is deterministic closure** (the model proposes, a validator repairs). See [MEMORY.md](MEMORY.md).
+> wrong is only the assumed remedy. **Prompt-level closure is the wrong mechanism; the replacement is deterministic closure** (the model proposes, a validator repairs). See
+> [MEMORY.md](../../MEMORY.md).
 
 
 The router is not confused about what the skills mean. It stops one step early: it judges the gate, then completes the route without closing the obligation. Two mechanisms follow from that, and

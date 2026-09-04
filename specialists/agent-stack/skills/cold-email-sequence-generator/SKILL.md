@@ -1,6 +1,6 @@
 ---
 name: cold-email-sequence-generator
-description: Generate personalized cold email sequences (7-14 emails) with A/B test subject lines, follow-up timing recommendations, and integrated social proof. Creates multi-touch campaigns optimized for response rates. Use when users need outbound email campaigns, sales sequences, or lead generation emails.
+description: "Generate personalized cold email sequences (7-14 emails) with A/B subjects."
 ---
 
 # Cold Email Sequence Generator

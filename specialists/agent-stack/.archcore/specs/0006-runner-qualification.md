@@ -1,8 +1,9 @@
 Title: Spec 0006 — Runner qualification before evidence is spent
 Category: design-contract
-Status: proposed
+Status: accepted
 Proposed: 20260902_1140 direct, per .archcore/README.md step 2
-Source: docs/holdout24-analysis-20260902_1120.md
+Accepted: 20260904_1150 by operator
+Source: docs/routing-evaluation/holdout24-analysis-20260902_1120.md
 Summary: An external runner is qualified on disposable cases before any single-use corpus is run through it, and the harness must be able to describe a failure it did not cause.
 
 # Spec 0006 — Runner qualification before evidence is spent

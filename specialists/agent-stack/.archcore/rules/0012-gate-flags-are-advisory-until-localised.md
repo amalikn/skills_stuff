@@ -1,8 +1,9 @@
 Title: Rule 0012 — Gate flags are advisory until the collapse is localised
 Category: durable-rule
-Status: proposed
+Status: accepted
 Proposed: 20260902_1310 direct, per .archcore/README.md step 2
-Source: docs/holdout24-analysis-20260902_1120.md, MEMORY.md
+Accepted: 20260904_1150 by operator
+Source: docs/routing-evaluation/holdout24-analysis-20260902_1120.md, MEMORY.md
 Summary: In real project use, treat research/critic/qa flags as noisy advice, never as authority to expand the team. Owner and skill selection remain trustworthy.
 
 # Rule 0012 — Gate flags are advisory until the collapse is localised
@@ -14,7 +15,7 @@ For **real project use**, until [spec 0007](../specs/0007-gate-only-evaluation.m
 | Signal                                                | Standing                                               |
 | ----------------------------------------------------- | ------------------------------------------------------ |
 | `primary_owner`, `personas`, `skills`                 | **Trustworthy.** 84% on unseen cases, zero forbidden picks |
-| `research_required`, `critic_required`, `qa_required` | **Advisory and noisy.** Not authority for anything         |
+| `research_required`, `critic_required`, `qa_required` | **Advisory and noisy.** Not authority for anything     |
 | `runtime_required`                                    | Computed, not judged — unaffected                      |
 
 **When the gate set comes back broad or all-true:**

@@ -1,8 +1,9 @@
 Title: Spec 0008 — Replay corpus contract
 Category: design-contract
-Status: proposed
+Status: accepted
 Proposed: 20260903_0130 direct, per .archcore/README.md step 2
-Source: docs/gate-only-analysis-20260903_0030.md, .archcore/plans/0001-next-evaluation-phase.md
+Accepted: 20260904_1150 by operator
+Source: docs/routing-evaluation/gate-only-analysis-20260903_0030.md, .archcore/plans/0001-next-evaluation-phase.md
 Summary: Replay cases are labelled from what the work actually produced, never from what a router would say. Ownership is the target; artifacts are the ground truth.
 
 # Spec 0008 — Replay corpus contract
@@ -25,18 +26,18 @@ an absent assertion as no constraint.
 
 ## What counts as evidence
 
-| Assertion                   | Evidenced by                                                                                                                      | NOT evidenced by                   |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `research_required = true`  | The work consulted a source outside the repo — a fetched page, vendor documentation, a regulation, a figure with a cited external | The topic sounding external        |
-|                             |   origin                                                                                                                          |                                    |
-| `research_required = false` | Every input was present in the task or the repo at the time                                                                       | Nobody having happened to look     |
-|                             |                                                                                                                                   |   anything up                      |
-| `critic_required = true`    | The decision proved irreversible or high-consequence **as it played out**: money committed, a cutover executed, a contract signed     | The task sounding weighty          |
-| `qa_required = true`        | Code, config or a release was actually validated — or shipped and then found defective                                            | Code merely being present          |
-| `runtime_required`          | Computed, never asserted. A tool-class skill was genuinely executed                                                               | —                                  |
-| `primary_owner`             | The **discipline of the artifact that was produced** — a landed-cost model is financial analysis, a fabric design is architecture, a  | Who happened to be in the room     |
-|                             |   runbook is operations                                                                                                           |                                    |
-| `required_skills`           | A catalogued procedure that was actually followed                                                                                 | A skill that would have helped     |
+| Assertion                   | Evidenced by                                                                                                                          | NOT evidenced by               |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| `research_required = true`  | The work consulted a source outside the repo — a fetched page, vendor documentation, a regulation, a figure with a cited              | The topic sounding external    |
+|                             |   external origin                                                                                                                     |                                |
+| `research_required = false` | Every input was present in the task or the repo at the time                                                                           | Nobody having happened to look |
+|                             |                                                                                                                                       |   anything up                  |
+| `critic_required = true`    | The decision proved irreversible or high-consequence **as it played out**: money committed, a cutover executed, a contract signed     | The task sounding weighty      |
+| `qa_required = true`        | Code, config or a release was actually validated — or shipped and then found defective                                                | Code merely being present      |
+| `runtime_required`          | Computed, never asserted. A tool-class skill was genuinely executed                                                                   | —                              |
+| `primary_owner`             | The **discipline of the artifact that was produced** — a landed-cost model is financial analysis, a fabric design is architecture, a  | Who happened to be in the room |
+|                             |   runbook is operations                                                                                                               |                                |
+| `required_skills`           | A catalogued procedure that was actually followed                                                                                     | A skill that would have helped |
 
 ## Ownership is labelled from the artifact, not the topic
 
@@ -58,5 +59,5 @@ This is where the corpus earns its keep, and where the precedence rules that fai
 ## What a replay result licenses
 
 - **Changing a precedence rule**, where two or more independently evidenced cases agree against it — and only confirmed afterwards on Holdout 2.
-- **Nothing about gates.** Gate behaviour is settled for now by [the A/B1/B2 result](../../docs/gate-only-analysis-20260903_0030.md). Replay must not reopen it; its gate assertions exist only so
-  ownership is scored inside a realistic route rather than a stripped one.
+- **Nothing about gates.** Gate behaviour is settled for now by [the A/B1/B2 result](../../docs/routing-evaluation/gate-only-analysis-20260903_0030.md). Replay must not reopen it; its gate assertions
+  exist only so ownership is scored inside a realistic route rather than a stripped one.

@@ -1,6 +1,6 @@
 ---
 name: seo-content-strategist
-description: Expert SEO content strategy for SaaS and B2B sites. Use when doing keyword research, planning content clusters, creating pillar pages, optimizing on-page SEO, fixing technical SEO issues, building links, refreshing content, implementing programmatic SEO, mapping search intent, optimizing for SERP features, or measuring content performance. Use for SEO audits, content gap analysis, and organic growth strategy.
+description: "SEO content strategy: keyword research, clusters, pillar pages, technical SEO."
 ---
 
 # SEO Content Strategist

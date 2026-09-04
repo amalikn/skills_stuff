@@ -1,8 +1,6 @@
 ---
 name: github-explorer
-description: >
-  Deep-dive analysis of GitHub projects. Use when a user names a GitHub repository or project and asks to understand, assess, compare, or explore it.
-  Covers architecture, project health, competitive context, and community evidence.
+description: "Deep-dive analysis of a GitHub repo: architecture, health, competitive context."
 ---
 
 # GitHub Explorer — Project Deep Dive

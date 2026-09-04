@@ -40,7 +40,7 @@ When sources conflict, use this priority:
 7. [MEMORY.md](MEMORY.md) — measured baselines, metric definitions and traps already hit; read before changing anything in the routing layer
 8. [CHANGELOG.md](CHANGELOG.md) and [REVISION_NOTES.md](REVISION_NOTES.md)
 9. [ARCHITECTURE.md](ARCHITECTURE.md)
-10. `docs/audit-agent-stack-full-20260901_1010.md` — findings and recommendations, not settled decisions
+10. `docs/audits/audit-agent-stack-full-20260901_1010.md` — findings and recommendations, not settled decisions
 11. [SCRATCHPAD.md](SCRATCHPAD.md)
 
 `SCRATCHPAD.md` is temporary unless explicitly marked `KEEP`.
@@ -66,8 +66,8 @@ recommendation as an accepted decision without checking the revision notes first
 | `REVISION_NOTES.md`                       | What the last revision changed and deliberately did not change                                                          | Medium-high                  |
 | `evals/routing-cases.toml`                | 60-case routing regression corpus across 6 workload families                                                            | Medium-high                  |
 | `ROUTING_EVALS.md`                        | Corpus coverage, case assertion types, static vs behavioural running                                                    | Medium-high                  |
-| `docs/audit-agent-stack-full-20260901_1010.md` | Full repository audit and findings                                                                                      | Evidence                     |
-| `docs/audit-agent-stack.md`                    | Earlier audit — check supersession before citing                                                                        | Evidence                     |
+| `docs/audits/audit-agent-stack-full-20260901_1010.md` | Full repository audit and findings                                                                                      | Evidence                     |
+| `docs/audits/audit-agent-stack.md`                    | Earlier audit — check supersession before citing                                                                        | Evidence                     |
 | `.archcore/`                              | Durable decisions, rules, contracts, guides, plans — **29 accepted 20260902**                                               | Highest                      |
 | `MEMORY.md`                               | Measured baselines, metric definitions, traps already hit                                                               | High                         |
 | `SCRATCHPAD.md`                           | Temporary notes and open items                                                                                          | Low                          |

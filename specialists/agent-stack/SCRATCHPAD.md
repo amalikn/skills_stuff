@@ -13,6 +13,7 @@ Agent working memory for Agent Stack. Use for: draft plans, terminal output, int
 - [Key anchors](#key-anchors)
 - [Recent decisions](#recent-decisions)
 - [Session history (summaries — full detail in memory-keeper)](#session-history-summaries-full-detail-in-memory-keeper)
+- [Residual risk — staleness audit 20260903_2200](#residual-risk-staleness-audit-20260903_2200)
 - [Next actions](#next-actions)
 - [Memory pointers (navigation only — content is above)](#memory-pointers-navigation-only-content-is-above)
 
@@ -24,12 +25,17 @@ Agent working memory for Agent Stack. Use for: draft plans, terminal output, int
 [evals/capability-gaps.jsonl](evals/capability-gaps.jsonl) is empty. That emptiness is the current state, not an oversight: the loop is instrumented and waiting on actual use. Upstream sync is retired
 and the project is maintained on its own.
 
+**External reliability survey (20260903).** The 25-repository survey is now normalised in
+[docs/reliability-adaptation/agent-stack-reliability-adaptation-proposal-20260903_1943.md](docs/reliability-adaptation/agent-stack-reliability-adaptation-proposal-20260903_1943.md). Its five
+mechanisms are a deferred, evidence-triggered backlog—not a delivery plan. A future normal-work receipt, if field evidence proves one necessary, is one JSON object per line in the existing
+`evals/field-log.jsonl` entry; the project-local run manifest remains the complete snapshot. `KEEP`
+
 **The evolution loop, end to end.** A persona that hits a limit while working declares it (`--gap-missing` / `--gap-inadequate` on Step 7.5); the declaration is written BOTH into the consuming
 project's run manifest and into this repo's own tracked gap log; `just evolve` aggregates repeats into proposals and **never applies them**. Gaps come home because a gap is a statement about *this
 library* — a record living only in a consuming repo dies when that repo moves, is deleted, or turns out to be one Agent Stack must not read.
 
-**Phase (superseded 20260902):** Routing-development phase CLOSED. Deterministic closure is built and measured, the catalogue carries one persona model, the 60-case corpus is frozen, both P1 audit findings are shut, and 29
-Archcore documents are accepted. The next evidence must come from outside this corpus.
+**Phase (superseded 20260902):** Routing-development phase CLOSED. Deterministic closure is built and measured, the catalogue carries one persona model, the 60-case corpus is frozen, both P1 audit
+findings are shut, and 29 Archcore documents are accepted. The next evidence must come from outside this corpus.
 
 **Where routing stands.** With deterministic closure the frozen 60 scores **50/60**, and live on the 20-case holdout: **Flash 13/20 (65.0%) · Pro 15/19 (78.9%) · Claude 16/20 (80.0%)** — every arm
 25–40 points above the same holdout without closure, and the two production arms converged near 80%. The architecture is settled and measured rather than argued: **the model judges, the system
@@ -41,8 +47,8 @@ dispute. Resolving it, building closure, and unifying the eval contract with pro
 
 Agent Stack is the English-only extraction of Auto Company's personas and skill library, canonical at `/Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack`. The 2026-09-01 revision expanded
 all 15 personas into operational judgement contracts, added `routing.toml` as the routing catalogue, and added the `RUNTIME.md` / `SKILL_STANDARD.md` contracts. Library is 52 capabilities: 15 personas
-+ 37 skill entries (36 packages plus the single-file `frontend-design`). A full repository audit sits in `docs/audit-agent-stack-full-20260901_1010.md` with a verdict of SOUND WITH MATERIAL GAPS; its
-  P1
++ 37 skill entries (36 packages plus the single-file `frontend-design`). A full repository audit sits in `docs/audits/audit-agent-stack-full-20260901_1010.md` with a verdict of SOUND WITH MATERIAL
+  GAPS; its P1
 findings A1 (non-atomic sync) and A2 (symlink escape) were deliberately deferred out of the revision and remain open.
 
 On 2026-09-01 the governance layer was bootstrapped and a confirmed storage-routing violation fixed: `.mise.toml` was creating the maintenance venv inside the source repo, hidden by `.gitignore`. A
@@ -132,8 +138,8 @@ venv Python by path via `{{py}}` with a `_require-venv` guard, replacing an impl
   family and covered 53/60 with nothing in the output saying so.
 
 - [x] ~~Review the gate proposal~~ — APPLIED 2026-09-01 after two review rounds. Revision 1's `gate -> mandatory persona` was rejected; replaced with a capability model (Gate = obligation, Capability
-  = skill *or* persona, Persona = mandatory only where independence is the point). See [docs/gate-definitions-proposal-20260901_1600.md](docs/gate-definitions-proposal-20260901_1600.md) for the
-  settled policy.
+  = skill *or* persona, Persona = mandatory only where independence is the point). See
+  [docs/routing-evaluation/gate-definitions-proposal-20260901_1600.md](docs/routing-evaluation/gate-definitions-proposal-20260901_1600.md) for the settled policy.
 - [x] ~~**DECISION — `persona_mandatory`**~~ — RESOLVED 2026-09-01 in favour of capability-first. `critic-gate` dropped to `persona_mandatory = false` with escalation tags (`high-consequence`,
   `irreversible`, `security-sensitive`, `thin-evidence-high-commitment`); no gate is unconditionally mandatory any more. The paired corpus half was fixed in the SCORER rather than the corpus: the
   "direct-skill case unnecessarily selected persona" rule is gone, because a direct route's real contract is right skill / no forbidden persona / no team, all already hard-scored. Skill + one
@@ -147,9 +153,9 @@ venv Python by path via `{{py}}` with a `_require-venv` guard, replacing an impl
   validate, then promote atomically.
 - [ ] Audit finding **A2** — sync follows upstream and canonical symlinks through `is_file`, reads, and `copy2`; a Git-supplied or local symlink can escape the intended roots. Fix: reject symlinks,
   validate containment, write JSON atomically.
-- [x] ~~Two audit documents coexist — decide supersession~~ — **the item was MIS-FRAMED and is now closed on that basis (2026-09-01).** They are not two audits. `docs/audit-agent-stack.md` is the
-  *prompt* — it opens "You are acting as a senior AI-agent systems architect... Your task is to perform a complete evidence-based audit" — and `docs/audit-agent-stack-full-20260901_1010.md` is the
-  *report* it produced. Neither supersedes the other; a supersession banner would have been wrong. Keep both, and read the first as the brief for the second.
+- [x] ~~Two audit documents coexist — decide supersession~~ — **the item was MIS-FRAMED and is now closed on that basis (2026-09-01).** They are not two audits. `docs/audits/audit-agent-stack.md` is
+  the *prompt* — it opens "You are acting as a senior AI-agent systems architect... Your task is to perform a complete evidence-based audit" — and `docs/audits/audit-agent-stack-full-20260901_1010.md`
+  is the *report* it produced. Neither supersedes the other; a supersession banner would have been wrong. Keep both, and read the first as the brief for the second.
 - [ ] Remaining P1 audit findings: A3 `websh`, A4 `deep-research`, A5 validator, A6 startup skill. **A7 (routing metadata) is now largely addressed** by the routing-evals update — 60-case corpus,
   expanded `routing.toml` intents/gates, and behavioural evaluation via `scripts/evaluate_routing.py`. Confirm against the audit text before closing it out.
 - [ ] Behavioural routing evaluation **is now proven working** — first real run 2026-09-01 with `--command 'claude -p'`, 2 cases: `net-bgp-flap` PASS (96.7), `net-ospf-design` FAIL (80.0), average
@@ -195,7 +201,7 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 | Excluded by default | `skill-creator` (duplicate); pass `--include skill-creator` only after reconciling                         |
 | Git remote          | `https://github.com/amalikn/skills_stuff.git` (operator-owned)                                             |
 | Validation          | `just bootstrap` then `just preflight` (runtimes, check, governance, routing-eval-check, test)             |
-| After-baseline      | 28/60 (46.7%), mean 80.6 — `after-<family>-20260901.jsonl` in the results dir                |
+| After-baseline      | 28/60 (46.7%), mean 80.6 — `after-<family>-20260901.jsonl` in the results dir                              |
 | Routing corpus      | 60 cases across 6 families in `evals/routing-cases.toml`; see `ROUTING_EVALS.md`                           |
 | Eval results        | `/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/routing-results/` (working cache, rebuildable) |
 | Eval routes         | `just routing-eval-hermes` (cloud DeepSeek via Hermes), `routing-eval-local` (Ollama), `routing-eval-ping` |
@@ -203,6 +209,12 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 ---
 
 ## Recent decisions
+
+- **2026-09-03 — External mechanisms are research leads, not a roadmap.** The source-level assessment of 25 repositories records an exact upstream file and symbol for every candidate or an explicit
+  no-component finding. No control is to be built until a named field/replay counterexample proves that the existing field log, run manifest, or evaluation provenance cannot answer the required
+  question. `KEEP`
+- **2026-09-03 — Any future normal-work receipt uses the existing JSONL stream.** Store one object per line in `evals/field-log.jsonl`, preferably as a `receipt` object in the run's existing row; do
+  not add a separate receipt store. The run manifest stays a per-run snapshot. `KEEP`
 
 - **2026-09-01 — Keep the route invariant and capability index despite Baseline v3's null result.** They cost nothing at inference and improve the model's initial route; a deterministic closure layer
   supplements them rather than replacing them. Recorded explicitly so a future agent does not read "the invariant did not work" and delete it. `KEEP`
@@ -230,6 +242,67 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ## Session history (summaries — full detail in memory-keeper)
 
+- **20260904 — Token Optimizer actually installed (Claude Code + Codex); a content-DELETION bug, worse than the earlier formatting ones. KEEP.** Installed on request, via each CLI's own native plugin
+  manager (never the raw 1,639-line install.sh, read in full first). Claude Code: `claude plugin marketplace add`/`install`, scope `user`; `claude plugin details` confirmed all 10 hooks live
+  immediately. Codex: `codex plugin marketplace add`/`add`, then `codex-install --global --profile balanced` from the installed plugin's cache path, writing to `~/.codex/hooks.json`; `codex-doctor`
+  returned 14 OK / 2 WARN (benign) / 0 FAIL. Read codex_install.py (577 lines) for network/credential access first — none found. Rewriting the doc's Token Optimizer row into an install record
+  introduced a REAL bug, more serious than the two table-formatting bugs earlier today: the rebuild script's start-anchor (`startswith("| Token Optimizer")`) matched an EARLIER, different table's row
+  of the same name, and silently deleted 8 rows plus a section heading and its intro paragraph between the two matches. Every automated check passed anyway — line count grew, pipe-counts matched on
+  every surviving row, `just preflight` was clean — because none of those checks verify section presence, only row structure. Caught only because the operator read the rendered file and reported
+  missing column headers. Restored from content already read earlier in the session; verified this time by grepping for both section headings and both table headers by name. Added as a third, distinct
+  lesson to `feedback_table_authoring_reflow_script` — non-unique anchors in block-replacement scripts are the most dangerous of the three failure modes found today, since they delete rather than
+  corrupt. Separately: the operator asked whether 18 hooks Codex flagged for review were all Token Optimizer's. Traced it properly rather than guessing — cross-referenced the plugin's own bundled hook
+  manifest (15 hooks) against the 5 it wrote to the global hooks.json, against the pre-existing OPA-gate/context-limit-guard hooks (already Active, unaffected) — every per-event number reconciled
+  exactly against what Codex's UI showed. Answer: yes, effectively all 18 are the new plugin; did not approve them, since running-hook trust is the operator's call, not mine. Also fixed one governance
+  false positive along the way: a python3 command with a real skills/ subpath in prose was read by `check_library_counts()` as though it stated a numeric skills count (the checker's `without_code()` only strips fenced blocks, not inline
+  backticks, and fixing that shared helper would break the path-checker which relies on inline backticks being visible) — fixed by adding `./` to the path in prose, not by touching the checker. `just
+  preflight` clean throughout every pass (final: 51 tests, 1,100 governance checks).
+- **20260904 — token-optimization doc: feasibility column, two unrelated table bugs, one real architecture question. KEEP.** Merged a "Feasibility for Agent Stack" column into the existing
+  verification table (operator's call, correctly preferred over a redundant third table) — verdicts reasoned against Agent Stack's actual constraints, not generic quality: ADOPT (Token Optimizer),
+  PILOT (Skill Optimizer), ADAPT-the-method (Sentry Prompt Optimizer, via Agent Stack's own 60-case corpus as gate), SKIP (LLMLingua/Mem0/Letta/Zep — each conflicts with a specific constraint: no live
+  pipeline to compress, always-on memory vs. no-implicit-persistent-state, "self-improve over time" is autonomous-loop framing, Zep needs an external hosted-service commitment). Found two table bugs
+  with an identical symptom, different causes: a self-inflicted unescaped literal `|` inside a quoted GitHub description (broke one row's column count — fixed, and added as a new, distinct lesson to
+  `feedback_table_authoring_reflow_script` alongside September 3's tool bug, since the two look the same but aren't), and an under-verified license field, surfaced by the operator asking a real
+  question — how does an "external tool" actually get wired to run regardless of model. Answer, verified against the README: Token Optimizer ships as a native Claude Code AND Codex plugin using
+  harness-level hooks (`SessionStart`/`UserPromptSubmit`/`PostToolUse`/`Stop`) that fire on session events independent of the model — that architectural fact is the answer. License corrected to
+  PolyForm Noncommercial 1.0.0 (was left blank). Separately, cross-referenced the off-topic vertical-agent survey into the reliability-adaptation-proposal's Phase 2/4 after the operator asked directly
+  why it was called off-topic — answered honestly (the line was about immediate goal, not content overlap) and the operator asked to bridge them. `just preflight` clean throughout every pass (final:
+  51 tests, 1,100 governance checks).
+- **20260904 — token-optimization guide added, given frontmatter/TOC, and source-verified. KEEP.** A 906-line guide appeared in `docs/` with no frontmatter, no TOC, and one fabricated reference
+  ("BM629 token-optimization skill" — zero GitHub results, no real project behind it). Content itself was sound: a four-class information taxonomy, an 8-phase sequence putting lossy compression last,
+  real validation metrics instead of raw token-count reduction. Added frontmatter/TOC, moved to `docs/routing-evaluation/token-optimization-tools-and-strategy.md`, and source-verified all 9 cited
+  tools directly against GitHub (description, license, stars, last push) rather than trusting the brief. All 9 confirmed real. One correction: Zep's cited repo (getzep/zep) is the
+  examples/integrations repo, not the core engine — the product is now a hosted service with separate SDK repos. LightRAG (asked about separately, not in the doc's own reference list) confirmed to
+  exist (HKUDS/LightRAG) and its exclusion recorded as a scope decision, not an oversight. `just preflight` clean (51 tests, 1,097 governance checks).
+- **20260904 — `docs/` split into subfolders. KEEP.** `audits/`, `routing-evaluation/`, `reliability-adaptation/`, `off-topic/` — mirrors `.archcore/`'s own subfolder pattern once the flat list passed
+  a dozen files. `docs/README.md` rewritten with one heading/table per folder. `scripts/check_governance.py`'s catalog glob for `docs/README.md` changed `*.md` -> `**/*.md`, same reasoning already
+  documented against `.archcore/README.md`'s entry — a non-recursive glob would have reported full coverage while checking nothing inside the new subfolders. 46 cross-references updated across
+  CHANGELOG, SCRATCHPAD, ARCHITECTURE, AI_NAVIGATION, MEMORY, and six `.archcore/` files; every bumped `../` link verified against the filesystem, not assumed. One pre-existing broken link (the
+  routing-evaluation classification doc's bare `MEMORY.md` reference) fixed in passing; one other pre-existing broken link (a reference to a taxonomy file that never existed) left alone on purpose —
+  its depth math was kept consistent, not invented a target. `just preflight` clean throughout (51 tests, 1,094 governance checks).
+- **20260903 — external repository adaptation assessment. KEEP.** Reviewed the project before acting on a 25-repository survey and corrected the proposal: Agent Stack is a field-use routing library,
+  not an agent runtime. Existing evidence is six field entries / three projects, no declared gaps, and below the ten-entry proposal threshold. The proposal now lists exact upstream paths and
+  functions/classes/sections, defers every mechanism behind a named observed failure, and reuses existing JSONL/run-manifest/evaluation evidence rather than adding a second store. `just preflight`
+  passed: 52 capabilities, 51 tests, routing corpus 60/60, and 1,086 governance checks.
+
+- **20260903 — boundary enforcement is selection-time only. KEEP.** Read-only assessment, no code changed. Three layers keep personas inside their lanes when a route is BUILT: declarative `owns` per
+  persona, eight `[[precedence]]` discriminators each written from a failed eval case, and `scripts/close_route.py`'s strength invariant — a supporting capability never discharges a primary-strength
+  gate, which is the rule that keeps `analysis != independent challenge` true. Nothing enforces a boundary AFTER dispatch: `owns` appears in `scripts/*.py` only at `validate_agent_stack.py:131`, and
+  only to assert one gate owns one flag. The 15 personas' `## Boundaries` sections are prose in a subagent prompt. Whether that matters is what the field log would show, so the check is deliberately
+  not built yet.
+- **20260903 — table-reflow corrupts a plain large table, not just blockquoted ones. KEEP.** While finalizing `docs/reliability-adaptation/external-orchestrator-survey-20260903_1849.md`, the project's
+  table-reflow tool corrupted a well-formed 27-row GFM table twice — duplicating the frontmatter into every row — while reporting success both times. Not the known blockquote failure mode. Fixed by
+  rewriting clean and skipping both mdtable and rewrap.py for that table (every row already rendered under 200 chars, so no reflow was needed); verified byte-for-byte rather than trusting the tools'
+  own success messages. Personal auto-memory `feedback_table_authoring_reflow_script` updated with the new failure mode. Separately reviewed the concurrent session's
+  `docs/reliability-adaptation/agent-stack-reliability-adaptation-proposal-20260903_1943.md` in detail on request — disciplined, correctly defers every mechanism, independently re-verified and
+  correctly narrowed one of my own survey findings.
+- **20260903 — vertical-agent framework survey, off-topic but filed here at operator request. KEEP.** Separate from Agent Stack's own scope: fact-checked a pasted brief proposing a stack (PydanticAI,
+  LangGraph, CrewAI, AG2, smolagents; NetClaw, NetCopilot/ARIA, Netmiko MCP; FinRobot, TradingAgents, finance-mcp) for building NEW vertical domain-specialist agents. PydanticAI confirmed strongest
+  framework; several brief claims corrected (AG2's "v1 transition" is stale, NetCopilot/ARIA is Business Source License 1.1 not FOSS, the closest Netmiko MCP candidates have no license and allow
+  config-push not read-only). **The survey's own first pass wrongly reported two named projects as not found** — the operator supplied direct URLs (chetanreddyv/vertical_aiAgent,
+  hetu-project/openresearch-agent on GitHub), both real, verified directly via gh api. One of them confirms exactly the Together.ai dependency the first pass called unconfirmable. Corrected in place
+  in the doc and CHANGELOG rather than silently fixed. Saved as `docs/off-topic/vertical-agent-framework-survey-20260903_2126.md`, flagged in its own frontmatter as off-topic for Agent Stack. `just
+  preflight` clean throughout (51 tests, final 1,092 governance checks). No change to Agent Stack's own routing, personas, or safety model.
 - **20260903 — upstream sync retired, and the residue it left.** `just record-current` still invoked a script deleted six hours earlier: listed in `just --list`, looking live, failing only for whoever
   ran it. `check_task_recipes` verified prose-to-recipe and had no reverse direction, so a recipe pointing at a vanished script was structurally invisible. The added check fired on the defect
   immediately. The same sweep found `.archcore/guides/0001-upstream-sync.md` still `accepted` while every recipe it documents was gone, and a false claim in AGENTS.md that `just check` runs the
@@ -295,7 +368,8 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
   the headline number is largely a measurement of the specification gap.
 - Per family: business-research 6/8 (zero real errors) · direct-adversarial 3/7 · atar-import 3/8 · software-ai-engineering 3/10 · networking-infrastructure 4/15 · jdm-import 4/12.
 - Confirmed validity despite an internet outage mid-session: Hermes' fallback to local `qwen3.5:35b` never fired.
-- Wrote `docs/gate-definitions-proposal-20260901_1600.md` with triggers derived from the corpus (not invented), the two prompt fixes, and four open policy questions. Nothing applied.
+- Wrote `docs/routing-evaluation/gate-definitions-proposal-20260901_1600.md` with triggers derived from the corpus (not invented), the two prompt fixes, and four open policy questions. Nothing
+  applied.
 - Operational lesson: a foreground Bash timeout does **not** kill the process — an orphan ran 58 minutes and competed with a later run on the same family.
 
 ### 2026-09-01 — Model connectivity for behavioural eval; gate-definition gap found
@@ -332,38 +406,41 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 A clean gate is not a verified project. What this audit did **not** settle:
 
-- **89 broken path claims remain inside `skills/`**, down from 114. They are dominated by references to a repository layout Agent Stack does not have —
-  paths of the shape ../../tools/integrations/sendgrid.md and similar — inherited at import from a stack whose skills lived beside a `tools/` tree. Not introduced here.
-  `check_skill_package_references` now covers the class that matters most (a skill promising its own scripts or references), and deliberately does not police
-  references *outside* a package, where the correct target is a judgement call rather than a lookup.
-- **`skills/websh/state/*.md` is runtime cache**, not authored content; its broken claims are URL routes (`/front`, `/ask`) that a path scanner reads as paths.
-  Left alone — rewriting a cache to satisfy a scanner is the anti-pattern this skill names.
-- **147 claims need manual verification** (48 counts, 99 uniqueness). The uniqueness claims are the live risk: they were true when written and falsify silently
-  when a second instance appears, leaving nothing to grep for. Not individually re-enumerated this run.
-- **The field log and the gap log are nearly empty** — 6 entries and 0. Every mechanism this project has built for learning from real use is unexercised, so no
-  claim about the router's field behaviour rests on anything but corpus evidence.
-- **39 of 40 indexed runs stamp a corpus hash that no longer resolves.** Known, recorded, and unfixable retrospectively — those runs are not reproducible against
-  today's corpus file.
-- **`graphify-out/GRAPH_REPORT.md`** is named in AI_NAVIGATION's generated-context table and has never been generated here. Marked optional rather than removed,
-  because the tooling exists and the row is a pointer to a capability rather than a claim that a file is present.
+- **89 broken path claims remain inside `skills/`**, down from 114. They are dominated by references to a repository layout Agent Stack does not have — paths of the shape
+  ../../tools/integrations/sendgrid.md and similar — inherited at import from a stack whose skills lived beside a `tools/` tree. Not introduced here. `check_skill_package_references` now covers the
+  class that matters most (a skill promising its own scripts or references), and deliberately does not police references *outside* a package, where the correct target is a judgement call rather than a
+  lookup.
+- **`skills/websh/state/*.md` is runtime cache**, not authored content; its broken claims are URL routes (`/front`, `/ask`) that a path scanner reads as paths. Left alone — rewriting a cache to
+  satisfy a scanner is the anti-pattern this skill names.
+- **147 claims need manual verification** (48 counts, 99 uniqueness). The uniqueness claims are the live risk: they were true when written and falsify silently when a second instance appears, leaving
+  nothing to grep for. Not individually re-enumerated this run.
+- **The field log and the gap log are nearly empty** — 6 entries and 0. Every mechanism this project has built for learning from real use is unexercised, so no claim about the router's field behaviour
+  rests on anything but corpus evidence.
+- **39 of 40 indexed runs stamp a corpus hash that no longer resolves.** Known, recorded, and unfixable retrospectively — those runs are not reproducible against today's corpus file.
+- **`graphify-out/GRAPH_REPORT.md`** is named in AI_NAVIGATION's generated-context table and has never been generated here. Marked optional rather than removed, because the tooling exists and the row
+  is a pointer to a capability rather than a claim that a file is present.
 
 ### My own error in this audit
 
-I removed a real capability section from `skills/devops/SKILL.md` after reading `find ... | head` — truncated at ten lines — as proof the two scripts did not
-exist. They exist, with underscores where the SKILL.md wrote hyphens; the package has 29 files. Caught in Phase 4 when the artifact worksheet listed
-`skills/devops/scripts/cloudflare_deploy.py` by name, and restored as a two-character fix per line. **`| head` on a discovery command is not evidence of absence**, and absence was the
-whole basis of the finding. Every other package edited was re-verified against a complete listing afterwards.
+I removed a real capability section from `skills/devops/SKILL.md` after reading `find ... | head` — truncated at ten lines — as proof the two scripts did not exist. They exist, with underscores where
+the SKILL.md wrote hyphens; the package has 29 files. Caught in Phase 4 when the artifact worksheet listed `skills/devops/scripts/cloudflare_deploy.py` by name, and restored as a two-character fix per
+line. **`| head` on a discovery command is not evidence of absence**, and absence was the whole basis of the finding. Every other package edited was re-verified against a complete listing afterwards.
 
 ## Next actions
 
 **The live item is unchanged and now unblocked: use Agent Stack on real projects and read what it records.** Every mechanism is built; none has evidence. Three things are waiting on the operator
 rather than on work:
 
+- **Do not implement the external adaptation backlog pre-emptively.** Revisit only when field/replay evidence triggers a named gap; the proposal specifies candidate source boundaries and the smallest
+  existing record to extend.
+
 - **The 10 rule-0006 corpus cases** — they restate a gate's `default_personas` in `required_personas`, which the contract forbids. Relax the cases or tag them; either is defensible and it is a
   contract call, not a bug fix.
 - **`.runs` dot-prefix visibility** — persona notes land in a hidden directory inside the consuming project. Hidden keeps it out of the way; hidden also means nobody reads it.
-- **Company-repo risk** — persona notes are the operator's working analysis and must never reach an APN or Activ8me remote. The global policy already covers this shape for `.code-context-notes`;
-  Agent Stack has no equivalent guard yet, and the gap log deliberately carries only the library-facing declaration rather than the analysis.
+- **A post-dispatch boundary check is deliberately NOT built.** `scripts/persona_note.py` already persists each persona's output, so the hook exists. Building the check now would be enforcement
+  against a failure nobody has observed — the same mistake as a check that scans an empty set. Revisit only if the field log shows a persona ruling outside its `owns`.
+- **Company-repo risk** — persona notes are the operator's working analysis and must never reach an APN or Activ8me remote. The global policy already covers this shape for `.code-context-notes`; Agent
+  Stack has no equivalent guard yet, and the gap log deliberately carries only the library-facing declaration rather than the analysis.
 
 
 The measurement contract was repaired and frozen on 2026-09-02 **before** any unseen evidence is gathered, because a holdout is single-use: scoring it under a scorer that is later corrected spends the
@@ -371,12 +448,12 @@ holdout and answers nothing. Gate over-assertion now costs 5 points, coverage is
 **`just freeze-check`** — run it before the holdout and before any run compared to a recorded baseline. It is not in `preflight` by design.
 
 0. ~~**Author and spend the first unseen holdout**~~ — DONE 20260902. 24 blind cases on the Claude arm: **16/19 (84.2%), mean 71.1, 5 runner failures, 0 gate false negatives, 62 gate false
-   positives.** Evidence indexed in [evals/runs.toml](evals/runs.toml) as `status = "spent"`; classification in [docs/holdout24-analysis-20260902_1120.md](docs/holdout24-analysis-20260902_1120.md).
-   Never unseen evidence again.
+   positives.** Evidence indexed in [evals/runs.toml](evals/runs.toml) as `status = "spent"`; classification in
+   [docs/routing-evaluation/holdout24-analysis-20260902_1120.md](docs/routing-evaluation/holdout24-analysis-20260902_1120.md). Never unseen evidence again.
 1. ~~**Run runner qualification**~~ — DONE 20260902. Claude arm passed 60/60 on trivial probes and then died on real ones; **Claude Code is retired as this project's runner**. DeepSeek Flash via
    Hermes qualified **60/60 at realistic payload** (44k-char probes, median 14.6s) and is now the default arm in the justfile.
-2. ~~**Gate-only experiment A/B1/B2**~~ — DONE 20260902/03. [Full record](docs/gate-only-analysis-20260903_0030.md). Isolated gate judgement is a real classifier on two arms (PPR tracks base rate);
-   integrated it is a constant at 1.00. **Gate semantics eliminated — the defect is instruction load.**
+2. ~~**Gate-only experiment A/B1/B2**~~ — DONE 20260902/03. [Full record](docs/routing-evaluation/gate-only-analysis-20260903_0030.md). Isolated gate judgement is a real classifier on two arms (PPR
+   tracks base rate); integrated it is a constant at 1.00. **Gate semantics eliminated — the defect is instruction load.**
 3. ~~**Decide the gate architecture**~~ — DECIDED by the conditional breakdown, not the aggregate. Over-assertion costs nothing detectable (30% vs a 17% baseline, n=10); under-assertion is fatal
    (14/14). Production makes only the harmless error, so this is spec 0007's **B1 ≈ B2** row. **The collapse drops down the queue.** It costs tokens, team size and operator signal — not accuracy.
    - **DO NOT attempt the naive fix.** Trading precision for recall swaps a free error for a fatal one. Any gate-calibration work must hold recall at 1.0 and buy precision only where it costs no
@@ -404,6 +481,9 @@ Do **not** tune against the frozen 60. Add a case only to cover a new routing co
 ---
 
 ## Memory pointers (navigation only — content is above)
+
+**Added 20260903 — external reliability adaptation assessment.** memory-keeper key `agent-stack.reliability-adaptation-proposal`; project-context note on channel `agent-stack`; checkpoints:
+memory-keeper `slurp-20260903-reliability-adaptation` (18ab6888) and project-context `slurp-20260903-reliability-adaptation` (7542bfc4-b7a3-4b2-96dd-5e277e80df94). `KEEP`
 
 **Added 20260903 (rename pass)**, memory-keeper channel `agent-stack`: `agent-stack.skill-rename-and-orphan-check` — the `orchestrator` → `skill-agent-stack` rename, the three things deliberately not
 renamed and why, and the false-confidence status check it exposed. Checkpoints: memory-keeper `slurp-20260903-skill-rename` (33bf03af) · mcp-project-context `slurp-20260903-skill-rename` (999bcf1a),
