@@ -12,6 +12,7 @@ Summary: This document is inert until an operator names the evidence trigger for
 
 - [What this document is and is not](#what-this-document-is-and-is-not)
 - [Tool and feature provenance](#tool-and-feature-provenance)
+- [Provenance detail — feature, pick, effect, benefit](#provenance-detail-feature-pick-effect-benefit)
 - [Standing rule for every phase](#standing-rule-for-every-phase)
 - [Common verification commands](#common-verification-commands)
 - [Phase 1 — portability and execution receipts](#phase-1-portability-and-execution-receipts)
@@ -66,6 +67,130 @@ Full repo URLs and additional context for each row are in the proposal's [Verifi
 map](agent-stack-reliability-adaptation-proposal-20260903_1943.md#verified-upstream-adaptation-map). Repositories the survey opened and read but that contribute **no** component to this plan — Agent
 Zero, Agent Deck, BMAD Method, Claude Squad (smtg-ai), LangGraph, Ruflo/Claude Flow, evanca/skills (404, unreachable), fdarkaou/agent-skills — are not repeated here; the reasoning for each is in the
 proposal's [comparison table](agent-stack-reliability-adaptation-proposal-20260903_1943.md#comparison-of-all-repositories).
+
+## Provenance detail — feature, pick, effect, benefit
+
+The table above is deliberately terse (single-line rows, per the wrap-safety note above it). For each row it names, this section answers four questions in full: what the source repo is actually known
+for, what narrow piece of that we are taking, whether the result enhances an existing Agent Stack surface or adds a new one, and what the end benefit is. This section carries no new information beyond
+the proposal's own [Comparison of all repositories](agent-stack-reliability-adaptation-proposal-20260903_1943.md#comparison-of-all-repositories) and [Verified upstream adaptation
+map](agent-stack-reliability-adaptation-proposal-20260903_1943.md#verified-upstream-adaptation-map) — it restates their content per-repo, in one place, next to the phase it belongs to. Written as
+prose blocks rather than a wider table, because cramming four substantive answers into table cells would either be too terse to answer the question or long enough to trip the same wrap-corruption bug
+the table above is already guarding against.
+
+### Phase 1 — portability and execution receipts
+
+**wshobson/agents** (feature adapted: per-harness capability descriptor)
+- Known for: a large public library of Claude Code subagents, packaged with per-harness plugin manifests so the same agent definition works across multiple coding-agent tools.
+- Taking: the shape of its `plugin.json` `skills` descriptor — how it declares which capability is supported on which harness — never the agents or the plugin runtime itself.
+- Effect: adds a new `harness-capabilities.toml` registry, but as a manifest companion to the existing symlink installer — enhances the existing install/delivery surface, not a second installer.
+- Benefit: install-target claims ("Codex hooks work," "Claude Code caps skill bodies at 8KB") become evidenced facts instead of assumptions, catching a portability defect before it reaches a user.
+
+**backnotprop/orchestrator** (feature adapted: runtime discovery, explicit unavailable result)
+- Known for: a CLI orchestrator whose runtime-doctor checks which coding-agent executables/models are actually present before dispatching to them.
+- Taking: the `doctorRuntimeAvailability()` pattern — probe a target and return an explicit "unavailable," never a silent failure or an assumption.
+- Effect: enhances the harness validator the row above creates, adding a diagnostic mode to it — same surface, not a new one.
+- Benefit: a missing or misconfigured harness fails loudly and specifically, instead of a route silently degrading with no visible cause.
+
+**anytools-agent-skills** (feature adapted: required-vs-actual execution audit line)
+- Known for: strong execution-audit discipline — a `delegate` skill that records what a task required versus what actually ran, with a read-only audit mode.
+- Taking: the "required vs actual" comparison, reduced to a single audit line.
+- Effect: adds a new optional `receipt` object on a `field_log.py` entry — extends the existing field-log record, does not create a second log file.
+- Benefit: a normal-work execution claim ("this run used github-access") becomes checkable after the fact, closing a gap where nothing today records it.
+
+**joeblackwaslike/agent-skills** (feature adapted: imported-reference provenance stamp)
+- Known for: multi-provider skill packaging with clear source/version metadata on any content imported from elsewhere.
+- Taking: the convention of stamping an imported reference with its source URL, retrieval date, and checksum.
+- Effect: adds new metadata fields, attached only to imported references — a small addition to the existing skill-authoring convention, not a new subsystem.
+- Benefit: an imported doc or reference can be checked for staleness or drift instead of being trusted indefinitely once pulled in.
+
+### Phase 2 — legal hand-offs
+
+**MetaGPT** (feature adapted: declared legally-consumed artefact types)
+- Known for: a multi-agent software-company simulator where each role (PM, architect, engineer) has a declared contract of what it watches/consumes as well as what it produces.
+- Taking: the idea of declaring a role's *legal inputs*, not only its outputs — MetaGPT's own runtime lifecycle is explicitly not taken.
+- Effect: adds a new optional `consumes` array to the `[[personas]]` entries actually involved — extends the existing persona schema in `routing.toml`, doesn't replace it.
+- Benefit: makes it checkable whether a persona ran on inputs it was actually allowed to rely on — catches "wrong input consumed" failures that today have no contract to violate.
+
+**Agency Swarm** (feature adapted: required typed payload on a hand-off edge)
+- Known for: a framework built around typed, structured messages passed between agents rather than free-text handoffs.
+- Taking: the idea that a hand-off edge names its required payload fields.
+- Effect: adds `required_fields` to a new `[[handoffs]]` table entry — a new declarative construct, built on top of the existing persona records.
+- Benefit: a hand-off can be validated as complete or incomplete, instead of trusting on faith that the receiving persona got what it needed.
+
+**CrewAI** (feature adapted: per-task expected-output contract)
+- Known for: a crew-of-agents framework where each task declares an `expected_output` shape that gets checked against what actually came back.
+- Taking: the "declare what a persona must return" idea only — not CrewAI's automatic retry or crew runtime.
+- Effect: adds a `produces` field plus an expected-artefact shape to the same `[[handoffs]]`/persona records above — extends the new construct, doesn't add a separate one.
+- Benefit: a route's output can be compared against what was promised, surfacing a silent mismatch instead of assuming the output was right.
+
+**Microsoft AutoGen** (feature adapted: explicit hand-off target/message fields)
+- Known for: Microsoft's multi-agent conversation framework, including an explicit `Handoff` object naming a target agent, a description, and a message.
+- Taking: only the field vocabulary (target, description, message) as data — never AutoGen's callable transfer mechanism.
+- Effect: shapes the field vocabulary of the `[[handoffs]]` entries above — refines the same new construct rather than adding another one.
+- Benefit: a hand-off stays a declaration Agent Stack can validate, never a live agent-to-agent call — keeps the no-daemon safety model intact while still reusing a proven field design.
+
+**MS Agent Framework** (feature adapted: validated non-permissive directed edge)
+- Known for: Microsoft's production agent-workflow runtime, with a strict `Edge`/`EdgeGroup` model where an edge must be explicitly valid or it's rejected by default.
+- Taking: the default-deny edge-validation concept only — not its workflow executor.
+- Effect: informs the structural shape `[[handoffs]]` would need *if* it ever supports multi-hop routes — a forward-looking constraint on the same new construct, not active work today.
+- Benefit: if hand-offs ever become multi-hop, an invalid or unauthorised route fails closed by default instead of silently succeeding.
+
+**Microsoft AutoGen** (feature adapted: candidate narrowing before model selection — second mechanism from the same repo)
+- Known for: (same repo as above) also has a `candidate_func` that narrows which agents are eligible to act next, before the model picks one.
+- Taking: narrowing the legal candidate set *before* dispatch, not only repairing a bad route after the fact.
+- Effect: enhances the existing `close_route.py` — adds a pre-dispatch narrowing step to a script that today only repairs post hoc.
+- Benefit: a route that would violate the new `consumes`/`produces` facts gets ruled out before the model ever proposes it, rather than being caught and patched afterward.
+
+**SuperClaude Framework** (feature adapted: declared negative scope)
+- Known for: a broad Claude Code framework whose confidence-check skill explicitly states what it will *not* claim or attempt.
+- Taking: the "declared negative scope" idea — a persona stating what it will not do.
+- Effect: adds a new `will_not` array to the same `[[personas]]` entries — extends the existing persona schema alongside the new `consumes`/`produces` fields.
+- Benefit: a persona's boundaries become explicit and checkable, instead of living only as unenforced prose in its `SKILL.md`.
+
+### Phase 3 — post-dispatch verification
+
+**anytools-agent-skills** (feature adapted: routed-vs-honoured, four-state audit — second mechanism from the same repo)
+- Known for: (same repo as Phase 1) its delegate skill's five-stage audit distinguishing eligible/routed/honoured and related states.
+- Taking: the shape of a multi-state audit result, narrowed to Agent Stack's four states — `honoured`, `mismatch`, `incomplete`, `unverifiable`.
+- Effect: adds a new read-only script, `scripts/audit_route.py` — a new capability, but built by extending the existing `persona_note.py`/`MANIFEST.json` record, not a new log.
+- Benefit: turns "did the route actually do what it said" from an assumption into something checkable after the fact — without ever letting the audit re-route or auto-fix anything.
+
+**Squad** (feature adapted: atomic claim, time-boxed lease)
+- Known for: a coordination tool for concurrent agent work, using compare-and-swap task claims with an expiring lease.
+- Taking: the one-shot compare-and-swap claim primitive (`lease_owner`/`lease_expires_at`) only — not its SQLite coordination or task-resumption behaviour.
+- Effect: adds a new claim primitive to the run manifest — and only if a real concurrent-claim collision is ever actually observed; otherwise this is never built at all.
+- Benefit: prevents two execution contexts from silently double-claiming the same decision, without the lease itself ever starting, resuming, or retrying work.
+
+### Phase 4 — operator-controlled access and action authorization
+
+**Podiom** (feature adapted: typed capability request, operator-only decision)
+- Known for: a personal-assistant agent platform with a permission-forwarding layer that separates "agent requests X" from "human decides X."
+- Taking: the request/decision separation pattern only — not its MCP service, sessions, or goals.
+- Effect: adds a wholly new access-request schema and ledger — Agent Stack has no existing equivalent today, so this is a new capability, not an enhancement of one.
+- Benefit: an agent can flag "I need this tool/secret/permission" as a durable, reviewable record, with no code path able to self-approve it — closing the gap where a missing capability currently just
+  gets worked around silently.
+
+**gAIOS** (feature adapted: reversibility/externality classification)
+- Known for: a personal-AI-OS template whose "Recommend" step explicitly classifies an action's reversibility before proposing it.
+- Taking: the four-way reversible/external/persistent/irreversible classification only.
+- Effect: adds a new documented classification table, used as a review checklist at the point of operator review — explicitly *not* wired into `[[gates]]` or `close_route.py`, so it doesn't touch
+  existing routing.
+- Benefit: gives the operator a consistent, named framework for "does this need my explicit sign-off," instead of that judgment being made ad hoc each time.
+
+### Phase 5 — evidence-gated learning
+
+**AWS CLI Agent Orchestrator (AWS CAO)** (feature adapted: outcome-lesson-promotion ladder, reference only)
+- Known for: AWS's own CLI agent orchestrator, with a self-learning module that turns repeated outcomes into "lesson deltas" applied automatically to future runs.
+- Taking: nothing yet — this row is explicitly reference-only. Its ladder shape (outcome → lesson → promotion) is studied only if Agent Stack's own existing ladder proves insufficient.
+- Effect: no change. Agent Stack already has an equivalent, active pipeline (`field_log.py` → `capability-gaps.jsonl` → `propose_evolution.py`); this row is a documented fallback reference, and
+  explicitly rejects CAO's actual behaviour of auto-applying deltas without operator review.
+- Benefit: none yet — it's "if the current ladder ever proves insufficient, here is a studied alternative," not a planned change.
+
+**carlkibler/agent-skills** (feature adapted: privacy-minimised log forensics as proposal input)
+- Known for: a skill that mines session logs for recurring friction patterns while minimising and redacting what it exposes.
+- Taking: privacy-conscious, pattern-level (never verbatim-transcript) log analysis as one possible evidence input.
+- Effect: adds a new optional evidence input into the existing, already-active evidence-gated learning pipeline above — feeds proposals only, never edits anything itself.
+- Benefit: gives the existing proposal pipeline a richer, still privacy-safe source of "what's actually going wrong" evidence, without ever centralising raw persona notes across projects.
 
 ## Standing rule for every phase
 

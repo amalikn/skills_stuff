@@ -1,5 +1,21 @@
 # Changelog — Agent Stack
 
+## 20260904_1630 — Provenance detail section added to the phased implementation plan, at operator request
+
+### Added
+
+- docs/reliability-adaptation/phased-implementation-and-self-verification-plan-20260904_1208.md: a new "Provenance detail — feature, pick, effect, benefit" section, one prose block per repo across all
+  17 rows of the existing "Tool and feature provenance" table. Operator found the single-line table (necessarily terse, per its own 200-character wrap-safety convention) did not answer what each
+  source repo is actually known for, what narrow feature is being taken from it, whether the result enhances an existing Agent Stack surface or adds a new one, and what the end benefit is. A literal
+  four-column table extension was considered and rejected: cramming four substantive answers into table cells would either be too terse to answer the question or long enough to trip the same
+  wrap-corruption bug the existing table already guards against (see the 20260904_1208 entry below). Used prose blocks instead, organised under the same five phase headings as the rest of the
+  document. No new information beyond what the reliability adaptation proposal's own comparison table and adaptation map already state — this restates their content per-repo, next to the phase it
+  belongs to.
+- Contents block and anchor updated to match (the project's own PostToolUse hook auto-syncs Contents to real headings, confirmed by watching a manually-added Contents entry get silently stripped until
+  the matching heading existed).
+
+Verified: `just governance` (1111 checks) and `just preflight` (51 tests) both green after the addition.
+
 ## 20260904_1230 — Scoped staleness re-audit: two path defects fixed, prior 20260903_2200 register re-verified
 
 ### Fixed
@@ -1058,6 +1074,7 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260904_1630 — Provenance detail section added to the phased implementation plan, at operator request](#20260904_1630-provenance-detail-section-added-to-the-phased-implementation-plan-at-operator-request)
 - [20260904_1230 — Scoped staleness re-audit: two path defects fixed, prior 20260903_2200 register re-verified](#20260904_1230-scoped-staleness-re-audit-two-path-defects-fixed-prior-20260903_2200-register-re-verified)
 - [20260904_1208 — Phased implementation and self-verification plan added, inert pending an operator-named trigger](#20260904_1208-phased-implementation-and-self-verification-plan-added-inert-pending-an-operator-named-trigger)
 - [20260904_1155 — Sentry Skills / Prompt Optimizer row upgraded from recommendation to adopted record](#20260904_1155-sentry-skills-prompt-optimizer-row-upgraded-from-recommendation-to-adopted-record)
