@@ -1,8 +1,9 @@
 Title: Phased implementation and self-verification plan
 Category: evidence-and-proposal
 Status: proposed
-Scope: Per-phase implementation steps and the self-verification each phase requires, for the five mechanisms in the reliability adaptation proposal
-Last reviewed: 20260904_1208
+Scope: Per-phase implementation steps and self-verification for the five mechanisms in the reliability adaptation proposal, plus per-repo provenance detail, a harness-agnostic design invariant, and
+  current-state/target-state flow diagrams
+Last reviewed: 20260904_1208 (created); provenance detail, harness-agnostic design, and current/target-state diagrams added and coherence-reviewed 20260904_1641
 Summary: This document is inert until an operator names the evidence trigger for a specific phase and approves that phase individually. It does not authorise any implementation on its own. For each
   phase it fixes what gets changed, in what order, and exactly what must be run and pass afterward before the next phase — or the next file in the same phase — may start.
 
@@ -141,8 +142,10 @@ the table above is already guarding against.
 **Microsoft AutoGen** (feature adapted: candidate narrowing before model selection — second mechanism from the same repo)
 - Known for: (same repo as above) also has a `candidate_func` that narrows which agents are eligible to act next, before the model picks one.
 - Taking: narrowing the legal candidate set *before* dispatch, not only repairing a bad route after the fact.
-- Effect: enhances the existing `close_route.py` — adds a pre-dispatch narrowing step to a script that today only repairs post hoc.
-- Benefit: a route that would violate the new `consumes`/`produces` facts gets ruled out before the model ever proposes it, rather than being caught and patched afterward.
+- Effect: enhances the existing `close_route.py` `candidates()` function — adds a pre-dispatch narrowing step to a function that today already narrows and orders candidates, but only repairs post hoc.
+  Optional and separately gated: built only if a real case shows this would have caught something the rest of Phase 2 did not (see Phase 2's implementation steps).
+- Benefit: a route that would violate the new `consumes`/`produces` facts gets ruled out before the model ever proposes it, rather than being caught and patched afterward — but only once that failure
+  mode is actually observed, not pre-emptively.
 
 **SuperClaude Framework** (feature adapted: declared negative scope)
 - Known for: a broad Claude Code framework whose confidence-check skill explicitly states what it will *not* claim or attempt.
@@ -316,9 +319,12 @@ operator review → accepted, scoped instruction change with tests → back into
                                                                      only here)
 ```
 
-Two things this diagram is deliberately silent about, because the document above them already settles it: Phase 3 can never rewrite Phase 2's contract or Phase 1's registry, and nothing in Phases 1–4
-can reach Phase 5's promotion step directly — every path back into `routing.toml` goes through an operator-reviewed proposal, never an automatic edit. See [Invariants and failure
-behaviour](agent-stack-reliability-adaptation-proposal-20260903_1943.md#invariants-and-failure-behaviour) in the proposal for the full list this diagram must not violate.
+This is the fullest possible build, including the two sub-mechanisms this document gates *separately* from their parent phase — Phase 2's pre-dispatch candidate narrowing and Phase 3's atomic
+claim/lease — each built only if its own narrower trigger fires, not automatically alongside the rest of its phase; a real build may stop short of them and still be complete. Two more things this
+diagram is deliberately silent about, because the document above already settles them: Phase 3 can never rewrite Phase 2's contract or Phase 1's registry, and after each phase's own one-time,
+Standing-Rule-gated build lands, the only channel by which `routing.toml` or persona files could change again on their own initiative is Phase 5's evidence-gated loop — and even there every change is
+an operator-reviewed proposal, never an automatic edit. See [Invariants and failure behaviour](agent-stack-reliability-adaptation-proposal-20260903_1943.md#invariants-and-failure-behaviour) in the
+proposal for the full list this diagram must not violate.
 
 ## Standing rule for every phase
 
@@ -400,8 +406,13 @@ Compare hard-invariant scores only (gate misses, not soft routing-quality drift)
    vocabulary value, a duplicate value within one persona's list, and — where a `[[handoffs]]` entry exists — a consumer that has not declared the producer's artefact type among its `consumes`.
 4. Add `[[handoffs]]` entries only for the specific producer→consumer edge the triggering evidence names: `from`, `to`, `artefact`, `required_fields`, `consumed_by`. No payload field may carry raw
    credentials or an unrestricted transcript — enforce this as a validator rule, not a comment.
-5. Where AutoGen's candidate-narrowing discipline applies (see the survey's convergent finding), extend `close_route.py` to narrow the legal candidate set using the new `consumes`/`produces` facts
-   *before* the model proposes a route, mirroring the repair-time discipline it already applies after.
+5. **Optional, and gated by its own evidence — do not build this alongside steps 1–4 as a matter of course.** Steps 1–4 already make a route auditable: a `consumes`/`produces` mismatch is detectable
+   by Phase 3's audit after the fact. Only if the *same or a separately observed* real case shows a route reaching a candidate that its own declared `consumes`/`produces` facts already rule illegal —
+   i.e., a Phase 3 audit (or manual replay) actually caught what pre-dispatch narrowing would have prevented — extend `close_route.py`'s existing `candidates()` function (it already narrows and orders
+   candidates today: skills before personas, a provider with no open runtime prerequisite preferred over one that opens one) to also exclude a candidate whose declared `produces`/`consumes` cannot
+   satisfy the edge, mirroring the repair-time discipline it already applies after selection. This mirrors [AutoGen's `candidate_func` pattern](external-orchestrator-survey-20260903_1849.md), narrowed
+   to Agent Stack's single-shot closure model rather than AutoGen's live multi-turn speaker selection — the two are not the same mechanism, only the same principle (narrow before dispatch, not just
+   repair after).
 
 ### Self-verification after this phase
 
@@ -410,8 +421,8 @@ Compare hard-invariant scores only (gate misses, not soft routing-quality drift)
   fails.
 - [ ] The triggering real case, re-run through the eval harness or replayed manually, now validates correctly where it previously did not — this is the actual proof the phase closed the named gap, not
   an abstract schema test alone.
-- [ ] Frozen 60-case corpus gate: run before and after, hard-invariant scores compared. Any new miss reverts the phase. This is mandatory here because `routing.toml` and `close_route.py` are both
-  touched.
+- [ ] Frozen 60-case corpus gate: run before and after, hard-invariant scores compared. Any new miss reverts the phase. `routing.toml` is always touched, so this always applies; `close_route.py` is
+  touched only if step 5's optional narrowing was separately triggered and added — the gate applies to whichever files actually changed.
 - [ ] Existing single-persona and direct-skill routes with no hand-off declared still resolve exactly as before — spot-check at least the corpus cases that previously used the touched personas.
 - [ ] `skills/skill-agent-stack/SKILL.md`'s routing-contract description is updated to mention `consumes`/`produces`/`will_not` if the orchestrator prompt surfaces persona declarations (check
   `eval-routing-contract` block per [SCRATCHPAD](../../SCRATCHPAD.md) — production and eval prompts must not drift).
