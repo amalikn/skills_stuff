@@ -224,6 +224,18 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ## Recent decisions
 
+- **2026-09-07 — Recommended operator keep using Hermes Agent personally rather than switch to OpenFang; not an Agent Stack change.** Operator confirmed the question was prompted by OpenFang's GitHub
+  star count (18k+), not a concrete Hermes pain point. Reasoning: high switching cost (months of accumulated Hermes cron/gateway/config investment, no migration tooling from Hermes to OpenFang, only
+  OpenClaw→OpenFang exists); Hermes's self-improving skill loop has no OpenFang equivalent (Hands are static); OpenFang's Rust-vs-Python resource edge doesn't matter for personal use bound by LLM API
+  latency. Flagged star count itself as weak evidence — correlates with launch attention as much as adoption on a young (551-commit) repo, doesn't measure stability or fit to an existing setup. `KEEP`
+- **2026-09-05 — Recommended against forking OpenFang (RightNow-AI) to "tame" it into an autonomy-free Agent Stack base; not actioned.** Operator asked directly. Reasoning: (1) OpenFang's value is
+  concentrated exactly in the parts that would need stripping — kernel scheduler/RBAC/budget, autonomous "Hands" lifecycle, P2P wire protocol, credential vault, 40 channel adapters; what remains (Rust
+  runtime + 3 LLM drivers + 53 tools + MCP/A2A) is less than `routing.toml` + personas already provide, at the cost of maintaining 137K lines of foreign Rust. (2) autonomy is load-bearing through its
+  kernel/memory/channels, not a bolt-on toggle — taming it would be a permanent re-suppression tax on every upstream merge, the same class of problem this project's own safety-adaptation clause
+  already names for imported skill instructions, but at whole-codebase scale. (3) different problem shape — Agent Stack routes/judges inside human-driven coding-harness sessions; OpenFang is a
+  standalone always-on runtime built to replace the human-driven session. Alternative offered instead: study OpenFang's HAND.toml manifest schema (identity/tool-grant + typed `[[settings]]` config +
+  declared `dashboard.metrics` + embedded system prompt, one file per agent) as a design idea, not the codebase — flagged as a gap to raise next time the `routing.toml`/`SKILL.md` split comes up (see
+  Next actions and Memory pointers below). `KEEP`
 - **2026-09-04 — Don't backtick an external repo/org/file name in a governance "surface" file; backtick only the code symbol.** `scripts/check_governance.py`'s `check_referenced_paths()` scans every
   backticked token in the six SURFACES files (README.md, AGENTS.md, CLAUDE.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md) and fails if a path-like token doesn't resolve on disk — it cannot tell an
   external GitHub org/repo name (has a slash) or an external filename with a tracked suffix apart from a real local path. Hit writing a CHANGELOG.md entry for the best-of-agent-harnesses survey,
@@ -274,6 +286,22 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 
 ## Session history (summaries — full detail in memory-keeper)
 
+- **20260907 (twelfth segment) — Personal-tooling follow-up: keep Hermes over OpenFang, star-count skepticism. KEEP.** Operator asked directly whether to keep using Hermes or switch to OpenFang;
+  confirmed the trigger was OpenFang's star count, not a Hermes pain point. Recommended keeping Hermes on switching-cost, capability-gap (Hermes's self-improving skill loop has no OpenFang
+  equivalent), and irrelevant-resource-edge grounds, and separately flagged GitHub stars as weak evidence for a young, high-autonomy-surface repo. Personal decision, not an Agent Stack change — no
+  files touched.
+- **20260905 (eleventh segment) — External agent-OS landscape check (OpenFang, Hermes), agentskills.io compatibility confirmed + one real gap fixed, HAND.toml studied, no-fork decision. KEEP.**
+  Operator asked for a read on RightNow-AI/openfang, then a head-to-head against Hermes Agent (the operator's own live daily-driver at `~/.hermes`, not a survey candidate). Both are "always-on Agent
+  OS" products — scheduled/unattended agents, persistent cross-session memory, multi-channel messaging gateways — directly opposite this project's safety model (no daemons, no autonomous loops, no
+  implicit persistent state). Verdict on both: WATCH-at-most as landscape reference, nothing STEAL/ADAPT-worthy in their runtime mechanisms. Operator then asked whether Agent Stack's own `SKILL.md`
+  format is compatible with the `agentskills.io` open standard Hermes cites (originally Anthropic's, now open). Fetched the actual specification and confirmed Agent Stack is a compliant superset —
+  same six spec fields plus 13 local extension fields — with one real gap: `skills/skill-creator/scripts/quick_validate.py` never checked the spec's MUST that `name` match the parent directory. Fixed
+  it, validated against every skill directory in the repo (zero false positives) plus `just preflight` (1119 checks, 51 tests, green), and logged it in `CHANGELOG.md` — **not yet committed to git.**
+  Operator then asked whether forking OpenFang and disabling its autonomy could get Agent Stack where it's trying to go; recommended against it (see Recent decisions) and instead pulled the actual
+  HAND.toml manifest from OpenFang's `researcher` Hand to study as a design idea: one file couples tool-permission grant + typed `[[settings]]` config schema + `dashboard.metrics` declarations + the
+  full system prompt, versus Agent Stack's current split across `routing.toml` and each skill's own `SKILL.md` with no typed-settings or metrics-declaration convention. Operator explicitly asked that
+  this single-file-coupling contrast be raised in the next Agent Stack architecture discussion — logged as a high-priority task in both memory backends, not actioned this session. `just governance`
+  (1119 checks) green after the validator fix; no other files touched.
 - **20260904 (tenth segment) — Best-of-agent-harnesses survey: 160 external projects screened, 40 named and verdicted, two new multi-agent finds deep-verified on request. KEEP.** Operator pointed at
   ryanalberts/best-of-agent-harnesses and asked for the same discipline as the 2026-09-03 25-repo survey, applied to this much larger third-party list. WebFetch on the URL was blocked by this
   session's own context-mode hook (lossy HTML render); worked around it by curling the source's own structured harnesses.json and README.md directly from raw.githubusercontent.com. Screened all 12
@@ -572,6 +600,13 @@ this pass's to clear; the tsconfig JSONC residual is still open, so a full audit
 **The live item is unchanged and now unblocked: use Agent Stack on real projects and read what it records.** Every mechanism is built; none has evidence. Three things are waiting on the operator
 rather than on work:
 
+- **Raise the HAND.toml single-file-coupling contrast next time `routing.toml`/`SKILL.md`'s split comes up (operator request, 20260905).** OpenFang's Hand manifest couples tool-permission grant +
+  typed `[[settings]]` config schema + `dashboard.metrics` declarations + the full system prompt in one file; Agent Stack has no typed-settings-schema or metrics-declaration convention today. Two
+  schema-only (no-runtime) ideas already sketched: a `[[settings]]`-style typed config block a persona/skill could declare instead of freeform prose, and a `dashboard.metrics`-style declared
+  metric-name convention for routing-eval output. Not actioned — discussion input only. Detail: `agent-stack.gap-hand-toml-single-file-coupling-20260905` /
+  `agent-stack.hand-toml-manifest-structure-20260905`.
+- **Commit the `skills/skill-creator/scripts/quick_validate.py` directory-name-match fix (20260905).** Working-tree change only — closes a real agentskills.io spec-compliance gap (`name` must match
+  parent directory), validated clean against every skill in the repo plus `just preflight`. Not yet committed pending an explicit commit/push decision.
 - **Do not implement the external adaptation backlog pre-emptively.** Revisit only when field/replay evidence triggers a named gap; the proposal specifies candidate source boundaries and the smallest
   existing record to extend.
 
@@ -625,6 +660,18 @@ Do **not** tune against the frozen 60. Add a case only to cover a new routing co
 ---
 
 ## Memory pointers (navigation only — content is above)
+
+**Added 20260907 (twelfth segment) — keep-Hermes decision.** memory-keeper channel `agent-stack`: `agent-stack.decision-keep-hermes-over-openfang-20260907` (decision). Project-context: 1 note (twelfth
+segment) on channel `agent-stack` of parent `skills_stuff` (b8c5525e-3e2f-4fb5-bf87-e5751f3ad49c). Checkpoints: memory-keeper `slurp-20260907-keep-hermes-decision` (09153220) · mcp-project-context
+`slurp-20260907-keep-hermes-decision` (0988f691-29b5-464e-b006-297c17dcc4eb).
+
+**Added 20260905 (eleventh segment) — OpenFang/Hermes landscape check, agentskills.io compatibility + fix, HAND.toml study, no-fork decision.** memory-keeper channel `agent-stack`:
+`agent-stack.openfang-research-20260905` (note) · `agent-stack.openfang-vs-hermes-20260905` (note) · `agent-stack.agentskills-io-compatibility-20260905` (note) ·
+`agent-stack.quick-validate-directory-name-fix-20260905` (progress, high) · `agent-stack.hand-toml-manifest-structure-20260905` (note) · `agent-stack.gap-hand-toml-single-file-coupling-20260905`
+(task, high — the flagged next-discussion item) · `agent-stack.decision-no-openfang-fork-20260905` (decision). Project-context: 7 notes (eleventh segment) on channel `agent-stack` of parent
+`skills_stuff` (b8c5525e-3e2f-4fb5-bf87-e5751f3ad49c). Checkpoints: memory-keeper `slurp-20260905-openfang-hermes-agentskills` (ae284972) · mcp-project-context
+`slurp-20260905-openfang-hermes-agentskills` (a14feb08-8500-407c-881a-f1d1f54fa065). Not yet committed — `skills/skill-creator/scripts/quick_validate.py` + `CHANGELOG.md` changes are in the working
+tree only.
 
 **Added 20260904 (tenth segment) — best-of-agent-harnesses survey, staleness audit, coherence pass.** memory-keeper channel `agent-stack`: `agent-stack.best-of-agent-harnesses-survey-20260904`
 (progress) · `agent-stack.governance-false-positive-backticked-external-refs` (error) · `agent-stack.staleness-audit-20260904-tenth-segment` (progress) ·

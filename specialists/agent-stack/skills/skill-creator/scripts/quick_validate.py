@@ -69,6 +69,9 @@ def validate_skill(skill_path):
         # Check name length (max 64 characters per spec)
         if len(name) > 64:
             return False, f"Name is too long ({len(name)} characters). Maximum is 64 characters."
+        # Check name matches parent directory name (required per agentskills.io spec)
+        if name != skill_path.name:
+            return False, f"Name '{name}' must match the parent directory name '{skill_path.name}'"
 
     # Extract and validate description
     description = frontmatter.get('description', '')

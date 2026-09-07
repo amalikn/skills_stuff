@@ -1,5 +1,14 @@
 # Changelog — Agent Stack
 
+## 20260905_0036 — quick_validate.py enforces the agentskills.io name/directory match
+
+### Fixed
+
+- `skills/skill-creator/scripts/quick_validate.py` checked the `name` field's character set and length against the agentskills.io specification but never checked the spec's other MUST for that field:
+  the name must match the parent directory name. Found while comparing Agent Stack's skill contract against the agentskills.io open standard at operator request (following up on Hermes Agent citing it
+  as its skills format) — the rest of the frontmatter contract (six spec fields plus 13 local extension fields, length/charset constraints) already matched the spec exactly, this was the one gap.
+  Added the check; ran it against every skill directory in the repo with no false positives, then `just preflight` (1119 governance checks, 51 tests) green.
+
 ## 20260904_1710 — Scoped staleness audit on the new survey document; a stale entry found in the standing 2026-09-01 residual register
 
 ### Fixed
@@ -1119,6 +1128,7 @@ the unchanged frozen set and merged.
 
 ## Contents
 
+- [20260905_0036 — quick_validate.py enforces the agentskills.io name/directory match](#20260905_0036-quick_validatepy-enforces-the-agentskillsio-namedirectory-match)
 - [20260904_1710 — Scoped staleness audit on the new survey document; a stale entry found in the standing 2026-09-01 residual register](#20260904_1710-scoped-staleness-audit-on-the-new-survey-document-a-stale-entry-found-in-the-standing-2026-09-01-residual-register)
 - [20260904_1654 — New document: best-of-agent-harnesses survey, screening a 160-project external list for relevance](#20260904_1654-new-document-best-of-agent-harnesses-survey-screening-a-160-project-external-list-for-relevance)
 - [20260904_1630 — Provenance detail section added to the phased implementation plan, at operator request](#20260904_1630-provenance-detail-section-added-to-the-phased-implementation-plan-at-operator-request)
