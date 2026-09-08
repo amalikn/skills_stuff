@@ -1,0 +1,32 @@
+{
+  "output": {
+    "filePath": ".ai-context/governance-pack.md",
+    "style": "markdown"
+  },
+  "include": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "AI_NAVIGATION.md",
+    "README.md",
+    "ARCHITECTURE.md",
+    "SKILL.md",
+    "RUNBOOK.md",
+    "PROFILE.md",
+    "SYSTEM_PROMPT.md",
+    "manifest.json",
+    "CHANGELOG.md",
+    "context-map.yaml",
+    "SCRATCHPAD.md",
+    "exports/**/*.md",
+    "references/**/*.md",
+    "scripts/README.md",
+    ".archcore/**/*.md",
+    ".archcore/**/*.json"
+  ],
+  "ignore": [
+    ".git/**",
+    ".remember/**",
+    "graphify-out/**",
+    ".ai-context/**"
+  ]
+}

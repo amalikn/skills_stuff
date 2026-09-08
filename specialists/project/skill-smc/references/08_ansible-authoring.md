@@ -9,6 +9,9 @@
 - [`smc_network` VRF template requires netplan ≥ 0.106 — the whole fleet runs 0.104 (2026-08-25)](#smc_network-vrf-template-requires-netplan-0106-the-whole-fleet-runs-0104-2026-08-25)
 - [`smc_rsyslog`'s squid stop fails on squid's own drain window — fixed 2026-08-26](#smc_rsyslogs-squid-stop-fails-on-squids-own-drain-window-fixed-2026-08-26)
 - [Guarded pre-split syslog reclaim in `smc_rsyslog` (added 2026-08-26)](#guarded-pre-split-syslog-reclaim-in-smc_rsyslog-added-2026-08-26)
+- [Code notes: where the long explanation goes, and what it can and cannot survive (2026-08-27)](#code-notes-where-the-long-explanation-goes-and-what-it-can-and-cannot-survive-2026-08-27)
+- [`smc_squid`'s blocklist refresh: how it actually works, and the transport nobody checked (2026-09-01)](#smc_squids-blocklist-refresh-how-it-actually-works-and-the-transport-nobody-checked-2026-09-01)
+- [Two silent-failure gotchas found in `smc_system`/`smc_update_kernel` (2026-09-01/03)](#two-silent-failure-gotchas-found-in-smc_systemsmc_update_kernel-2026-09-0103)
 - Operational learning capture
 - Task key order (`when:` last, `tags:` after it) — and why ansible-lint disagrees
 - Code notes: RULE-006 split, note provenance, and what survives a branch switch
@@ -93,43 +96,47 @@ folder name:
 
 **Confirmed flavor-exclusive gates (not hardware-driven):**
 
-| Gate                                           | Condition                                                                                      | Effect                                             |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `smc_bases.yml` ClamAV + Lynis | `inventory_dir.split('/') | last == 'nbn_accelerate'` | Security hardening applied only on cw-cluster's |
-|  |  |  |   small-box flavor — no apn-cluster equivalent |
-|  |  |  |   (`rcp` does not get this). **Live-confirmed at** |
-|  |  |  |   **full fleet scale 2026-08-03** (26/26 reachable |
-|  |  |  |   `nbn_accelerate` hosts): both packages installed |
-|  |  |  |   on every host, all uniformly |
+| Gate                                                     | Condition                                                                                  | Effect                                       |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| `smc_bases.yml` ClamAV + Lynis | `inventory_dir.split('/') | last == 'nbn_accelerate'` | Security hardening applied only on |
+|  |  |  |   cw-cluster's small-box flavor — no |
+|  |  |  |   apn-cluster equivalent (`rcp` does not get |
+|  |  |  |   this). **Live-confirmed at full fleet scale** |
+|  |  |  |   **2026-08-03** (26/26 reachable |
+|  |  |  |   `nbn_accelerate` hosts): both packages |
+|  |  |  |   installed on every host, all uniformly |
 |  |  |  |   `clamav 0.103.11`/`.12`. **Root cause** |
-|  |  |  |   **confirmed 2026-08-03**: ClamAV 0.103.x reached |
-|  |  |  |   end-of-life for database updates on 2025-09-14, |
-|  |  |  |   and its CDN now hard-blocks `freshclam` from any |
-|  |  |  |   0.103.x client (HTTP 403) — every host is |
-|  |  |  |   affected, fix is a version upgrade, not a retry. |
-|  |  |  |   See `13_known-issues.md` "Known Operational Bugs |
-|  |  |  |   (NBN Accelerate cluster)" for full detail. |
+|  |  |  |   **confirmed 2026-08-03**: ClamAV 0.103.x |
+|  |  |  |   reached end-of-life for database updates |
+|  |  |  |   on 2025-09-14, and its CDN now hard-blocks |
+|  |  |  |   `freshclam` from any 0.103.x client (HTTP |
+|  |  |  |   403) — every host is affected, fix is a |
+|  |  |  |   version upgrade, not a retry. See |
+|  |  |  |   `13_known-issues.md` "Known Operational |
+|  |  |  |   Bugs (NBN Accelerate cluster)" for |
+|  |  |  |   full detail. |
 | `smc_rise_deploy.yml` RISE/overlayroot rollout | `inventory_dir.split('/') | last in ['rct', 'wh', 'nbn_wh']` | `nbn_wh` is explicitly a RISE-rollout target |
 |  |  |  |   alongside `rct`/`wh` — the mechanism that |
-|  |  |  |   (eventually) enables overlayroot on RPi-class |
-|  |  |  |   flavors. **Live-confirmed 2026-08-03**: |
-|  |  |  |   overlayroot is NOT YET active on either `nbn_wh` |
-|  |  |  |   host — operator confirmed this is a |
-|  |  |  |   planned-but-not-yet-executed rollout, not a |
-|  |  |  |   stalled deployment or code gap. |
-|  |  |  |   `nbn_accelerate`/`rcp` are never targeted (they |
-|  |  |  |   don't use overlayroot at all — bare ext4, per |
-|  |  |  |   `07_hardware-overlay.md`'s "Read-Only Migration |
-|  |  |  |   Status" table). |
+|  |  |  |   (eventually) enables overlayroot on |
+|  |  |  |   RPi-class flavors. **Live-confirmed** |
+|  |  |  |   **2026-08-03**: overlayroot is NOT YET active |
+|  |  |  |   on either `nbn_wh` host — operator |
+|  |  |  |   confirmed this is a |
+|  |  |  |   planned-but-not-yet-executed rollout, not |
+|  |  |  |   a stalled deployment or code gap. |
+|  |  |  |   `nbn_accelerate`/`rcp` are never targeted |
+|  |  |  |   (they don't use overlayroot at all — bare |
+|  |  |  |   ext4, per `07_hardware-overlay.md`'s |
+|  |  |  |   "Read-Only Migration Status" table). |
 | `smc_bases.yml` VoIP (Asterisk) | `inventory_dir.split('/') | last == 'rcp'` | Asterisk + firewall rules (SIP 5060, RTP |
-|  |  |  |   10000-20000, Cambium TFTP 69) — apn-cluster |
-|  |  |  |   exclusive, never applied on |
-|  |  |  |   `nbn_accelerate`/`nbn_wh` |
+|  |  |  |   10000-20000, Cambium TFTP 69) — |
+|  |  |  |   apn-cluster exclusive, never applied |
+|  |  |  |   on `nbn_accelerate`/`nbn_wh` |
 | `smc_qos` role | `inventory_dir.split('/') | last == 'rct'` | QoS role exists but silently no-ops on |
-|  |  |  |   `rcp`/`nbn_accelerate`/`wh` — see |
-|  |  |  |   `13_known-issues.md` |
-| `smc_ltp` sub-group (CNMaestro backhaul + DNS  | `'smc_ltp' in group_names`; group membership from `inventories/rcp/prod` (static INI), vars    | `rcp`-only (apn-cluster), no cw-cluster equivalent |
-|   switch — see below)                          |   from `inventories/rcp/group_vars/smc_ltp.yml`                                                |                                                    |
+|  |  |  |   `rcp`/`nbn_accelerate`/`wh` — |
+|  |  |  |   see `13_known-issues.md` |
+| `smc_ltp` sub-group (CNMaestro backhaul + DNS switch —   | `'smc_ltp' in group_names`; group membership from `inventories/rcp/prod` (static INI),     | `rcp`-only (apn-cluster), no                 |
+|   see below)                                             |   vars from `inventories/rcp/group_vars/smc_ltp.yml`                                       |   cw-cluster equivalent                      |
 
 **`smc_autossh` cluster/Teleport-endpoint selection.** `roles/smc_autossh/tasks/main.yml` copies pem/key files from `roles/smc_autossh/files/{{ teleport_fqdn }}/...`. `teleport_fqdn` is set in
 `smc_bases.yml` from the per-inventory group_var `smc_bases_teleport_fqdn` (`inventories/{rcp,rct,wh}/group_vars/smc_bases.yml` → `teleport.apn.au`;
@@ -1139,11 +1146,11 @@ full mechanism (baseline-ignore file format, changed-line detection, why pre-exi
 
 The hook runs four stages and they do **not** share semantics. Identifying which one is complaining is most of the debugging:
 
-| Stage                             | Baseline?                         | Scope                                                                    |
-| --------------------------------- | --------------------------------- | ------------------------------------------------------------------------ |
-| `repo_knowledge_capture`          | n/a                               | snapshot into `local-knowledge-ansible`                                  |
-| ansible-lint **delta** gate       | yes (`.git/.ansible-lint-ignore`) | changed-lines aware                                                      |
-| **yamllint**                      | **no**                            | every changed file; any *error* fails the push                           |
+| Stage                             | Baseline?                         | Scope                                                                |
+| --------------------------------- | --------------------------------- | -------------------------------------------------------------------- |
+| `repo_knowledge_capture`          | n/a                               | snapshot into `local-knowledge-ansible`                              |
+| ansible-lint **delta** gate       | yes (`.git/.ansible-lint-ignore`) | changed-lines aware                                                  |
+| **yamllint**                      | **no**                            | every changed file; any *error* fails the push                       |
 | `ansible-playbook --syntax-check` | n/a                               | **root-level playbooks only** — role task files are never syntax-checked |
 
 Properties worth knowing before you fight it:
@@ -1550,8 +1557,8 @@ Never reference a note from the code. No "see code note", no note IDs — the no
 Installed as **`amalikn.code-context-notes`**, built from `github.com/amalikn/code-context-notes` (fork of MIT `jnahian/code-context-notes`). The publisher differs deliberately: a matching
 publisher+name is the same extension ID, and VS Code would treat a higher Marketplace version as an update and silently replace the fork.
 
-Storage is `.code-context-notes/` (renamed from `.code-notes/` on 2026-08-27), a symlink into `ansible-wifi-root-governance/`. The MCP server must be passed a matching `--storage-dir` or the
-extension and the server write to different directories.
+Storage is `.code-context-notes/` (renamed from `.code-notes/` on 2026-08-27), a symlink into `ansible-wifi-root-governance/`. The MCP server must be passed a matching `--storage-dir` or the extension
+and the server write to different directories.
 
 ### What a note records, and the ranking that matters
 
@@ -1587,3 +1594,207 @@ governance versioned them was untrue — a `.gitignore` pattern written for anot
 the `.md` files are the sole source of truth.
 
 Full workflow, note types, and the three helper scripts: `skill-code-context-notes` (alias `skill-ccn`).
+
+---
+
+## `smc_squid`'s blocklist refresh: how it actually works, and the transport nobody checked (2026-09-01)
+
+The squidguard blocklist refresh is the largest single writer on the RCP fleet at **~440 MB/node/day**. Everything below was read from the role source and verified against the live upstream on
+2026-09-01, not inferred from write telemetry. Byte-level evidence: `smc-file-writing-analysis/docs/audits/write24-baseline-analysis-20260901_1400.md`.
+
+### The pipeline is two scripts and cron chains them with `&&`
+
+`roles/smc_squid/tasks/main.yml:187-190` installs a cron entry — `minute: "29"`, `hour: "3,15"`, job `/etc/squid/blocklists_download.sh && /etc/squid/blocklists_update.sh`. **No arguments**, so
+`source` defaults to `univ-tlse1` and `installflag=0`: the full download path, twice a day, every day.
+
+**Stage 1 (`blocklists_download.sh.j2`) has no conditionality of any kind:**
+
+| Step                                                                                                                    | Cost per run |
+| ----------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `curl -s -o ${tgzfile}.tmp $url` — no `-z`, no etag, no `If-Modified-Since`                                             | 24.3 MB      |
+| `cp $tgzfile ${tgzfile}.bak` — a full copy of the *previous* archive                                                    | 24.3 MB      |
+| `mv ${tgzfile}.tmp $tgzfile`                                                                                            | free         |
+| `tar xzf $tgzfile -C $srctmpdbdir` — **outside the `if ((! installflag))` block**, so it runs even on the `-i` install path | ~147 MB      |
+| `rm -rf $srcnewdbdir` + `mv ${srctmpdbdir}/${topdir} $srcnewdbdir`                                                      | free         |
+
+**Stage 2 (`blocklists_update.sh.j2`) holds the pipeline's only delta:** per list, if a `.db` exists it runs `diff -U 0 db/… newdb/…`, writes a `.diff`, and has `squidGuard -C` apply it. ~45 MB/day.
+
+### The `.diff` files are local artefacts, not an incremental download
+
+Seeing `db/univ-tlse1/malware/domains.diff` at ~0 bytes next to `domains.db` at 37.3 MB looks like evidence of delta fetching. It is not — it is `diff(1)` output against the previous full extract, and
+squidGuard rebuilds the whole Berkeley DB regardless of how small it is. **Nothing upstream of stage 2 is incremental.**
+
+### The byte arithmetic closes, and it proves both cron slots do a full refresh
+
+Upstream `blacklists.tar.gz` is 25,415,923 bytes; the uncompressed tree is 147,011,991 bytes over 304 files; `adult/domains` alone is 124,529,768 bytes. The collector observed `adult/domains` at
+**249.1 MB = 2×124.5** and the archive at **50.8 MB = 2×24.3**. Sum: (24.3 + 24.3 + 147.0) × 2 + 45 ≈ **436 MB** against 439.3 MB measured. Nothing short-circuits, because nothing in the script can.
+
+### Upstream offers rsync, and it was never considered
+
+`https://dsi.ut-capitole.fr/blacklists/index_en.php` documents three transports: HTTP, FTP, and **`rsync://ftp.ut-capitole.fr/blacklist/`**. The rsync tree is `blacklist/dest/<category>/{domains,urls,
+expressions}` — uncompressed, which is the whole reason a delta is expressible there and not in the archive. One byte changing rewrites a gzip wholesale; a 124 MB sorted text file it barely touches.
+
+Measured live 2026-09-01 against `malware/`:
+
+| Scenario                                                        | Literal data    | On the wire |
+| --------------------------------------------------------------- | --------------- | ----------- |
+| Cold first sync (5.7 MB)                                        | 5,714,697 bytes | 5.7 MB      |
+| Re-sync, nothing changed                                        | **0 bytes**     | **132 bytes** |
+| After 300 domains added (a full day's churn per the maintainer) | **685 bytes**   | 22.9 KB     |
+
+The maintainer states *"I add between 50 and 300 urls per day"* against 4.6 M adult entries — real daily churn is kilobytes.
+
+**`--inplace` is the whole point, not an optimisation.** Default rsync writes a complete temp copy of each changed file and renames it, so a 685-byte change to a 124 MB file still costs 124 MB of
+writes — bandwidth saved, disk untouched. `--inplace` writes only the changed blocks. For a write-reduction workstream, rsync *without* `--inplace` buys nothing. Reads are ~147 MB/day either way
+(checksumming the local copy), and reads do not wear SSDs.
+
+### IMPLEMENTED 2026-09-02 — rsync primary, HTTPS fallback, freshness as a health condition
+
+Uncommitted on branch `internet-label-rename`, **not yet deployed via ansible**. Four files: `roles/smc_squid/templates/blocklists_download.sh.j2` (rewritten), `roles/smc_squid/defaults/main.yml` (new
+vars), `roles/smc_squid/tasks/main.yml` (`rsync` package + `@reboot` metrics cron), `roles/prometheus_prometheus/files/rules.yml` (3 alerts).
+
+**Scope constraint from the operator, honoured:** this changes *how* the lists are fetched, not *which*. The full tree is still synced and every category `squidGuard.conf` uses is untouched. Trimming
+categories was considered and rejected on evidence anyway — `adult/` is 124.5 MB of the 147 MB tree and **is** used, via the `porn -> adult` symlink.
+
+`blocklists_update.sh` (stage 2) needed **no change at all**: rsync targets `newdb/`, which is exactly what stage 2 already reads.
+
+#### The three flags that are load-bearing, and why
+
+| Flag                              | Why it cannot be dropped                                                                                                                                         |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--inplace`                       | Without it rsync spools a complete temp copy of every changed file and renames it, so a 685-byte change to the 124 MB `adult/domains` still costs 124 MB of      |
+|                                   |   writes. Bandwidth saved, disk untouched — which is the opposite of the point                                                                                   |
+| `-l`                              | `squidGuard.conf` references `porn/`, `violence/`, `drugs/`, `proxy/`, all of which are **upstream symlinks** (`-> adult, agressif, drogue, redirector`).        |
+|                                   |   `--copy-links` would materialise `adult/domains` a second time                                                                                                 |
+| `--delete-after` (not `--delete`) | Deletion happens only once the transfer has succeeded, so an aborted run removes nothing                                                                         |
+
+#### Last-known-good is never destroyed
+
+Any acquisition failure exits non-zero, and cron's `&&` means `blocklists_update.sh` never runs — so `db/`, which is what squidGuard actually reads, is untouched and filtering continues on the
+previous data. A torn `newdb/` from an interrupted `--inplace` sync therefore cannot reach `db/`, and the next successful sync repairs it because rsync converges. The HTTPS path validates
+(`http_code`, non-empty, `gzip -t`) **before** replacing anything, extracts to `tmpdb/` first, and keeps an `.old` rollback if the swap fails.
+
+#### The 304 trap is now explicitly guarded
+
+`curl -z` with `-o` creates an **empty file** on a 304, and the original script renamed that straight over the live archive on the next line. The status is now captured with `-w '%{http_code}'` and a
+304 returns *before any move*, treated as success-unchanged with zero writes. Verified live: second fallback run logged `upstream unchanged (304)`, exit 0 in 3.0 s, `adult/domains` mtime unchanged,
+archive intact at 25,416,289 bytes.
+
+Also replaced the `cp $tgzfile ${tgzfile}.bak` with a `mv` — that `cp` was 24.3 MB of duplicated writes on every run, twice a day, with no freshness trade-off attached to removing it.
+
+#### Freshness is a health condition, not an assumption
+
+"The cron job ran" is the wrong question; "did fresh filtering data actually arrive" is the right one. Two sites were stale for four weeks without anything being operationally loud.
+
+On a **validated** success only (`adult/domains` present and ≥ `squidguard_min_domains_bytes`), the script persists an epoch to `${SQUIDGUARDDIR}/.<source>.last_success`. Metrics are written
+atomically to `squidguard_blocklist.prom` on **every** run including failures: `_last_run_success`, `_last_run_transport{transport=}`, `_last_success_timestamp_seconds`, `_domains_bytes`. Alerts:
+stale >3 d (warning), >14 d (critical), `last_run_success == 0` for 24 h (warning).
+
+The textfile collector directory is **tmpfs**, so the metric dies on every boot. A new `-m` flag republishes from the durable `.last_success` with no network or blocklist work, wired to an `@reboot`
+cron — without it a rebooted node looks like it has never succeeded until its next 03:29/15:29 slot.
+
+#### Measured on mornington-smc01, the node stale since 2026-08-05
+
+| What                                              | Result                                                                                                                                           |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Catching up **four weeks** of drift               | **Literal data 12,099,485 B**; Matched 135,409,126 B (91.7% left alone); 139 of 221 files touched; 17.8 s                                        |
+| Script run, rsync path                            | exit 0, 8.0 s, `transport=rsync`, symlinks preserved, `last_success` persisted                                                                   |
+| HTTPS fallback (forced via bogus rsync URL,       | exit 0, 14.4 s, 25,416,289 B fetched, extracted, swapped, 7 symlinks preserved                                                                   |
+|   scratch dir)                                    |                                                                                                                                                  |
+| Second fallback run (304)                         | exit 0, 3.0 s, no re-extract, archive intact                                                                                                     |
+| Lock path                                         | Proven by accident — the live 15:29 cron run held the lock, script correctly returned "Instance of script already running" with a                |
+|                                                   |   `transport=none` failure metric                                                                                                                |
+
+Pre-deployment checks: rendered the `.j2` with real defaults and asserted zero unsubstituted vars, `bash -n` clean, `shellcheck -S warning` clean apart from two **pre-existing** unused-variable
+warnings (`FILENAMES`, `SQUIDUSER`, unused in the original too), `ansible-lint roles/smc_squid` "0 failure(s), 0 warning(s), profile production passed", `rules.yml` parses.
+
+#### Still open
+
+`mornington`'s `db/` is still stale — the fresh `newdb/` needs `blocklists_update.sh` to rebuild it, which reconfigures squid on a live site and was left for operator confirmation. `bidyadanga` is
+untouched. Nothing deployed via ansible, nothing committed.
+
+**The passive-FTP egress failure is a separate network finding, deliberately not a dependency of this service.** TCP/21 works, passive data high-port fails, HTTPS/443 works, rsync/873 works. Opening a
+broad ephemeral outbound range purely to keep a legacy transport alive would increase policy surface for no benefit when two working transports exist. Raise it as evidence; do not gate squidGuard on
+it.
+
+### TESTED ON LIVE NODES 2026-09-02 — the gate is cleared and the dead nodes are root-caused
+
+**rsync works from an SMC.** `/usr/bin/rsync` 3.2.3 (protocol 31) is already installed, `ftp.ut-capitole.fr` resolves to `193.49.48.249`, TCP 873 is **open** on umoona, mornington and bidyadanga,
+`rsync rsync://ftp.ut-capitole.fr/` lists both modules, and a real pull of `dest/malware/` on mornington moved 5,721,100 bytes at ~395 KB/s. No new package, no new egress path.
+
+**The two dead nodes are an FTP passive-mode DATA-CHANNEL failure**, not reachability and not a stale URL. Running the script by hand on mornington reproduces it exactly — `Error occured while
+downloading ftp://...`, exit 1, after **2m11s**. A verbose trace shows the control connection to port 21 succeeding, `EPSV` returning a high port, and the data connection to that port hanging with
+zero bytes. Side by side:
+
+|                                            | mornington / bidyadanga   | umoona (healthy)            |
+| ------------------------------------------ | ------------------------- | --------------------------- |
+| `curl -I` on the FTP URL (no data channel) | Succeeds                  | Succeeds                    |
+| Actual FTP download (data channel)         | **Hangs, 0 bytes**        | 4 MB in 4.7 s               |
+| HTTPS download                             | **200, 5 MB in 3.8 s**    | not tested                  |
+| rsync data pull                            | **Works**                 | Works                       |
+| `nf_conntrack_ftp` loaded                  | No                        | **No** — not the differentiator |
+| `newdb/univ-tlse1` last refreshed          | Aug 5 15:30 / Aug 2 15:31 | today 03:29                 |
+
+Cron fires on both (lockfile dated today), no stuck process or lock holder, 97 GB free, permissions intact, and every artefact shares the one timestamp of the last successful run — the pipeline dies
+at the first step, every time. Site-level egress filtering of high-port outbound connections at two sites; why, is not established.
+
+**TRAP THAT COST A DAY: `curl -I` on an FTP URL never opens a data channel.** It issues `SIZE`/`MDTM` on the control connection, so it returns a clean `Content-Length` on a node that cannot download
+the file at all. That single probe retired the correct hypothesis on 2026-09-01. **A reachability probe that does not exercise the same channel as the real workload proves nothing about the workload**
+— a port-open check and a metadata request are not substitutes for transferring bytes.
+
+**Consequence for the change:** switching transport is no longer only a wear optimisation, it also **repairs two sites whose content filtering has been running on a 4-week-old blacklist**. If rsync is
+rejected for any reason, changing `UNIV_TLSE1URL` to `https://dsi.ut-capitole.fr/blacklists/download/blacklists.tar.gz` is a one-line fix for the outage on its own — HTTPS needs no second channel
+either.
+
+**Separate anomaly, not investigated:** bidyadanga's `univ-tlse1.tar.gz.bak` is 73,895,906 bytes against a 25,403,969-byte `tar.gz`. A `cp` of the archive cannot produce that; it predates this
+failure.
+
+### Before proposing this as a change, settle these
+
+1. **Outbound rsync (TCP 873) from an SMC is UNTESTED and gates everything.** These sites egress via squid and rsync is not HTTP. One command from any node settles it: `rsync
+   rsync://ftp.ut-capitole.fr/`.
+2. **Build it as rsync-preferred with a conditional-archive fallback**, never as a replacement. The fallback is worth shipping on its own because it needs no new egress path.
+3. **`--inplace` leaves a torn file if interrupted.** squidGuard reads the `.db`, not `domains`, so filtering does not break immediately — but the next stage-2 run would build a wrong `.db`. Gate the
+   rebuild on rsync's exit status; prefer syncing into `newdb/` as staging so `db/` is only touched after a clean sync.
+4. **First sync costs ~147 MB per node** (uncompressed tree vs the 24 MB archive), once.
+5. **The `topdir` rename disappears** — rsync lands categories directly, with no `blacklists/` wrapper to move.
+6. **Decide symlink handling** (`-l` vs `--copy-links`); several categories are symlinks (`porn`→`adult`, `ads`, `drugs`, `mail`, `proxy`, `violence`, `aggressive`). Preserving them is smaller and
+   closer to upstream intent.
+
+### Two upstream capabilities that make a correct fallback easy
+
+- **`MD5SUM.LST`** — 4.5 KB, 90 entries, one per category archive. Fetch it, compare, skip everything if unchanged. Far more robust than relying on `curl -z` semantics.
+- **Per-category archives** (`adult.tar.gz` 17 MB, `malware.tar.gz`, …) — the fallback need not pull all 24 MB, only the categories `squidGuard.conf` references.
+
+### Trap: `curl -z` with `-o` writes an EMPTY file on a 304
+
+The next line in this script renames that empty file over the live `blacklists.tar.gz`, silently destroying the archive the extraction depends on. Guard on exit code **and** non-empty output, or do a
+`--head` `Last-Modified`/`Content-Length` comparison before fetching at all. (`cp`→`mv` for the `.bak` is safe as written, because `${tgzfile}.tmp` becomes the new archive on the following line —
+verify that ordering survives any edit.)
+
+### Why the two dead nodes are a correctness bug, not a wear win
+
+mornington and bidyadanga write **zero** squidguard bytes while still touching `.univ-tlse1.lockfile` twice daily. Every failure path in stage 1 calls `error_message` → `exit 1`, and the `&&` then
+suppresses stage 2 entirely. The job fires and does nothing; bidyadanga's blacklist was 25 days stale.
+
+**A stale-URL hypothesis was tested and eliminated** (legacy and current hostnames are the same host, and the legacy URL still serves). **Root cause established 2026-09-02 — see the TESTED section
+above: the FTP passive-mode data channel is blocked at both sites.** RULE-008 applies — low write volume as the visible symptom of a failing chain; these nodes need writes **restored**, not
+suppressed.
+
+## Two silent-failure gotchas found in `smc_system`/`smc_update_kernel` (2026-09-01/03)
+
+### `command: lxd.lxc list ...` guard silently no-ops fleet-wide — `/snap/bin` is not on `PATH` for the `command` module
+
+A guard task meant to stop snapd removal from destroying live LXD containers ran `lxd.lxc list …` with a bare command name. The `command`/`shell` modules use the target's non-interactive `PATH`, which
+does not include `/snap/bin` — so the task always failed to find the binary and the guard never actually checked anything, on every run, fleet-wide, since it was written. Nothing surfaced this: the
+task's own `failed_when`/error handling swallowed the not-found case rather than aborting the play. **Fix: use the absolute path `/snap/bin/lxd.lxc`, not the bare `lxd.lxc` name, in any Ansible task
+that shells out to a snap-installed binary.** General lesson: a `command`/`shell` task calling a snap binary needs its `/snap/bin/<name>` path checked explicitly — do not assume the module's runtime
+PATH matches an interactive shell's.
+
+### `reboot` action plugin returns no `rc` — `failed_when: reboot_result.rc != 0` disbelieves every successful reboot
+
+`ansible.builtin.reboot` is an **action plugin**, not a command — its registered result carries no `rc` key. A task with `failed_when: reboot_result.rc != 0` therefore evaluates `reboot_result.rc` as
+undefined, which Ansible treats as truthy-failed, so the task is marked failed regardless of whether the reboot actually succeeded. Root-caused as the cause of a reboot-retry loop in
+`roles/smc_update_kernel`: fifteen consecutive successful reboots were each disbelieved and reissued. **Fix: delete the `failed_when` wrapper entirely and rely on `reboot`'s own built-in
+success/timeout detection** — match the working pattern already used by the `smc_rise_common` handler's `reboot` task (same module, same options, no `failed_when`). General lesson: never write
+`failed_when` against a field a plugin doesn't populate — check the module's actual return-value docs, not the convention used by `command`/`shell` tasks.

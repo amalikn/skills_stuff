@@ -1,0 +1,133 @@
+version: 1
+
+project:
+  name: skill-smc
+  type: specialist-pack
+  context_policy: "AI_NAVIGATION.md is the human-readable router; this file is the machine-readable routing map."
+
+bootstrap:
+  required_first_read:
+    - AGENTS.md
+    - SKILL.md
+    - RUNBOOK.md
+    - AI_NAVIGATION.md
+    - CHANGELOG.md
+
+authority_order:
+  - path: "manifest.json"
+    type: specialist_metadata
+    authority: highest
+  - path: "AGENTS.md"
+    type: agent_instructions
+    authority: high
+  - path: "CLAUDE.md"
+    type: claude_specific_instructions
+    authority: high
+  - path: "AI_NAVIGATION.md"
+    type: context_router
+    authority: high
+  - path: "SKILL.md"
+    type: agent_activation_surface
+    authority: high
+  - path: "RUNBOOK.md"
+    type: navigation_index
+    authority: high
+  - path: "references"
+    type: content_source
+    authority: high
+  - path: "PROFILE.md"
+    type: background_context
+    authority: medium
+  - path: "exports"
+    type: client_adapter
+    authority: medium
+  - path: "CHANGELOG.md"
+    type: project_history
+    authority: medium_high
+  - path: "SCRATCHPAD.md"
+    type: transient_notes
+    authority: low
+
+routing:
+  live_incident_triage:
+    description: "Box unreachable, service down, alert firing, DHCP/DNS/WiFi/VoIP/HA failure."
+    read:
+      - "SKILL.md"
+      - "references/05_troubleshooting.md"
+      - "references/06_failure-modes.md"
+
+  service_architecture:
+    description: "Service names, unit names, config paths, monitoring collectors."
+    read:
+      - "references/02_service-map.md"
+      - "references/03_communication-flows.md"
+      - "references/04_dependency-tree.md"
+
+  hardware_and_overlay:
+    description: "x86 vs Raspberry Pi differences, overlayroot, persistence risk."
+    read:
+      - "references/07_hardware-overlay.md"
+      - "references/01_overview.md"
+
+  ansible_authoring:
+    description: "Topology vars, cache coherence, cross-flavor blast radius, validation, generator drift, flavor/cluster conditional branching, smc_ltp sub-group (CNMaestro backhaul + DNS switch), 'low touch' onboarding method and site history."
+    read:
+      - "references/08_ansible-authoring.md"
+      - "SKILL.md"
+
+  url_capture_pcap:
+    description: "URL capture v2, PCAP layout, smc_get_pcapv* workflows, dns_query assumptions."
+    read:
+      - "references/09_url-capture-pcap.md"
+
+  captive_portal:
+    description: "Captive portal architecture, Eclipse config sync, PHP-FPM setup, Kohana issues."
+    read:
+      - "references/10_captive-portal.md"
+
+  vagrant_lab:
+    description: "Local family-friendly-vsmc01 Vagrant lab setup and known virtualization issues."
+    read:
+      - "references/11_vagrant-lab.md"
+
+  content_filtering:
+    description: "VLAN 501 family-friendly filtering, Eclipse PIN/MAC, MAC randomization, CAKE queuing."
+    read:
+      - "references/12_content-filtering.md"
+
+  coverage_and_gaps:
+    description: "Known coverage gaps, unvalidated assumptions, live-validation limits."
+    read:
+      - "references/13_known-issues.md"
+
+  smcbox_basics:
+    description: "SMC box definition, inventory flavors, Teleport access pattern, satellite constraints, APN vs NBN Accelerate cluster structural comparison."
+    read:
+      - "references/01_overview.md"
+      - "PROFILE.md"
+
+  pack_maintenance:
+    description: "Adding/updating references, bumping version, updating export adapters."
+    read:
+      - "AGENTS.md"
+      - "AI_NAVIGATION.md"
+      - "context-map.yaml"
+      - "CHANGELOG.md"
+      - "manifest.json"
+      - "exports/claude_code/project/skill-smc/adapter.md"
+      - "exports/claude_code/project/skill-smc/install.md"
+
+generated_context_policy:
+  regenerate_after:
+    - new_reference_file
+    - structural_change
+    - scope_boundary_change
+  commands:
+    repomix_governance: "repomix --config repomix.config.json"
+    graphify: "graphify update ."
+
+answer_contract:
+  require_source_paths: true
+  unsupported_answer: "not found in skill-smc reference material"
+  distinguish_assumptions: true
+  do_not_invent_state: true

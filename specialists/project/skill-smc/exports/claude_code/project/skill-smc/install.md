@@ -18,46 +18,73 @@ mkdir -p ~/.claude/skills/skill-smc/references
 ```bash
 cp /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/SKILL.md \
    ~/.claude/skills/skill-smc/SKILL.md
+cp /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/RUNBOOK.md \
+   ~/.claude/skills/skill-smc/RUNBOOK.md
 ```
 
-### 3. Copy RUNBOOK.md reference
+### 3. Copy references
 
 ```bash
-cp /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/RUNBOOK.md \
-   ~/.claude/skills/skill-smc/references/RUNBOOK.md
+cp /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/references/*.md \
+   ~/.claude/skills/skill-smc/references/
 ```
 
-### 4. Verify
+### 4. Copy scripts
+
+```bash
+mkdir -p ~/.claude/skills/skill-smc/scripts
+cp /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/scripts/* \
+   ~/.claude/skills/skill-smc/scripts/
+chmod +x ~/.claude/skills/skill-smc/scripts/*.sh ~/.claude/skills/skill-smc/scripts/*.py
+```
+
+### 5. Verify
 
 ```bash
 ls -la ~/.claude/skills/skill-smc/
 # Expected:
 #   SKILL.md
+#   RUNBOOK.md
 #   references/
-#     RUNBOOK.md
+#     01_overview.md
+#     ...
+#     13_known-issues.md
+#   scripts/
+#     README.md, collect-smc-evidence.sh, analyse-routing-drift.py,
+#     analyse-topology-interface-match.py, routing-diagnostics.justfile,
+#     lint-baseline-refresh.sh, ansible-lint-delta-gate.sh
 ```
 
 ## Update (re-install from canonical source)
 
-Re-run steps 2 and 3 to pick up changes from the canonical source.
+Re-run steps 2 through 4 to pick up changes from the canonical source.
 
-## MCP Configuration (Phase 2 — execution layer)
+## Execution Layer Configuration (Phase 2)
 
-After installing the skill, configure the execution layer MCPs for live troubleshooting.
+After installing the skill, configure the execution layer for live troubleshooting.
 
-### ssh-manager (live SSH)
+### Live SSH access — direct `tsh ssh`, no MCP
 
-1. Create `/Volumes/Data/_ai/_mcp/mcp-data/ssh-manager/ssh-config.toml` with SMC hosts
-2. Add `SSH_CONFIG_PATH` to the `ssh-manager` entry in `~/.claude/settings.json`:
-   ```json
-   "ssh-manager": {
-     "command": "node",
-     "args": ["<path-to-ssh-mcp-server>"],
-     "env": {
-       "SSH_CONFIG_PATH": "/Volumes/Data/_ai/_mcp/mcp-data/ssh-manager/ssh-config.toml"
-     }
-   }
+**No `ssh-manager` (or any other SSH-wrapping) MCP is used for SMC access.** Every SMC box is
+reached by running `tsh ssh root@<hostname>` directly (via the Bash/shell tool), not through an MCP
+tool call. There is no `ssh-config.toml`/`SSH_CONFIG_PATH` to configure and nothing to install here.
+
+1. The operator arranges `tsh login` manually as needed, targeting whichever Teleport cluster
+   matches the flavor/site currently being worked:
+
+   | Flavors | Teleport domain |
+   |---|---|
+   | `rcp`, `rct`, `wh`, `apn` | `teleport.apn.au` |
+   | `nbn_accelerate`, `nbn_wh`, `cw` | `teleport.communitywifi.net.au` |
+
+   Do not assume a single hardcoded domain — see `references/01_overview.md` "Remote Access".
+2. Once `tsh login` is active for the right cluster, run commands directly:
+   ```bash
+   tsh ssh root@<hostname> '<command>'
    ```
+3. No MCP configuration step is needed for this. If a future session considers adding an
+   SSH-wrapping MCP, it would need to invoke `tsh ssh` itself (a bare host/port SSH client config
+   cannot authenticate against Teleport) — but as of this pack's current state, none is in use.
 
 ### mcp-grafana (Prometheus metrics — read-only)
 
@@ -88,12 +115,11 @@ Use the flavor-specific instance, not `mcp-grafana` (central NOC, unrelated to S
 ## Verification
 
 After install and MCP configuration, restart Claude Code and confirm:
-- `ssh_list_servers` returns `malik-rct01`
-- `ssh_execute` on `malik-rct01` with `echo OK && hostname` returns `OK\nmalik-rct01`
-- `query_prometheus` with `node_memory_MemAvailable_bytes` returns current metrics
+- `tsh login` succeeds against the target cluster, then `tsh ssh root@malik-rct01 'echo OK && hostname'` returns `OK\nmalik-rct01`
+- `query_prometheus` with `node_memory_MemAvailable_bytes` returns current metrics (mcp-grafana)
 
 ## Current Install State
 
 - Installed: 2026-04-15 (Phase 1)
 - MCP wired: 2026-04-17 (Phase 2)
-- Canonical version: 0.1.0
+- Canonical version: 0.1.6

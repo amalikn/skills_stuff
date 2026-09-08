@@ -14,7 +14,7 @@ The `ansible-wifi` repo manages 7 flavors:
 | Flavor | Description |
 |---|---|
 | apn | APN network hotspots |
-| cw | Community WiFi |
+| cw | NBN Accelerate cluster — central infra hub |
 | rcp | RCP network |
 | rct | RCT (Raspberry Pi-based) |
 | wh | WH network |
