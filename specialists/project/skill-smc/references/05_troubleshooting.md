@@ -1,6 +1,8 @@
 # SMC Troubleshooting
 
 ## Contents
+
+- [5. Troubleshooting Workflows](#5-troubleshooting-workflows)
 - Tier 1: box unreachable
 - Tier 2: service down
 - Tier 3: DHCP and DNS failures
@@ -40,6 +42,12 @@
    whose primary WAN interfaces were simultaneously failing DHCP (no DHCPOFFERS at all), consistent
    with the Teleport tunnel riding the same failing uplink. That's a stronger, different signal than
    a single ssh timeout and points at the box's WAN/management path generally, not just one service.
+
+   Either way, `tsh ssh` failing does not mean the box itself is unreachable: `autossh-teleport-openssh`
+   runs a second, independent raw-OpenSSH reverse tunnel entirely outside Teleport (confirmed live
+   2026-09-08 against a site with a hung/unreachable Teleport agent). See
+   `03_communication-flows.md` §Backdoor SSH Access for the port formula and procedure — it gets you
+   a root shell to actually run steps 1-4 from inside the box instead of guessing from outside.
 
 4. Overlayroot healthy?
    mount | grep overlay
@@ -86,7 +94,10 @@
 
 ### Tier 3b: DNS Not Serving Clients (non-`smc_ltp` hosts — Unbound + Stubby)
 
-**Corrected 2026-07-03, membership count corrected twice 2026-08-03**: this is gated by `smc_ltp` inventory-group membership, not flavor — applies to every flavor's hosts except those in `smc_ltp` (a static `rcp`-only group, 7 sites — `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona`, all "low touch"-onboarded — see `08_ansible-authoring.md` "smc_ltp Sub-Group" for the full picture, including its unrelated CNMaestro backhaul-provisioning role). This tier only covers DHCP/LAN client DNS; the SMC's own DNS resolution is a separate `systemd-resolved`/glibc path — see `02_service-map.md` and `06_failure-modes.md` if the box itself (not a client) is slow to resolve names.
+**Corrected 2026-07-03, membership count corrected twice 2026-08-03**: this is gated by `smc_ltp` inventory-group membership, not flavor — applies to every flavor's hosts except those in `smc_ltp` (a
+static `rcp`-only group, 7 sites — `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona`, all "low touch"-onboarded — see `08_ansible-authoring.md` "smc_ltp
+Sub-Group" for the full picture, including its unrelated CNMaestro backhaul-provisioning role). This tier only covers DHCP/LAN client DNS; the SMC's own DNS resolution is a separate
+`systemd-resolved`/glibc path — see `02_service-map.md` and `06_failure-modes.md` if the box itself (not a client) is slow to resolve names.
 
 ```
 1. Check Unbound:
@@ -110,7 +121,10 @@
 
 ### Tier 3c: DNS Not Serving Clients (`smc_ltp` hosts only — BIND/named)
 
-Applies to the 7 static `smc_ltp` member sites only: `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona` (`rcp`-exclusive, all "low touch"-onboarded — `warburton`/`beagle-bay`/`umoona` added 2026-08-03 after the operator confirmed every low-touch site should be a member). These hosts also run CNMaestro-managed Cambium ePMP/cnPilot backhaul provisioning via a separate `smc_ltp.yml` playbook — if DNS is fine but backhaul radios aren't provisioning, check `roles/smc_cnmaestro_provisioning` and CNMaestro cloud connectivity instead, not this tier. See `08_ansible-authoring.md` "smc_ltp Sub-Group" for the full mechanism.
+Applies to the 7 static `smc_ltp` member sites only: `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona` (`rcp`-exclusive, all "low touch"-onboarded —
+`warburton`/`beagle-bay`/`umoona` added 2026-08-03 after the operator confirmed every low-touch site should be a member). These hosts also run CNMaestro-managed Cambium ePMP/cnPilot backhaul
+provisioning via a separate `smc_ltp.yml` playbook — if DNS is fine but backhaul radios aren't provisioning, check `roles/smc_cnmaestro_provisioning` and CNMaestro cloud connectivity instead, not this
+tier. See `08_ansible-authoring.md` "smc_ltp Sub-Group" for the full mechanism.
 
 ```
 1. Check named:
@@ -229,51 +243,41 @@ Manual check:
 
 ### Tier 8b: Box Reboot-Looping Every Few Minutes (overlay RAM exhaustion)
 
-A short, regular reboot cycle on a RISE host with overlayroot active is almost always the tmpfs upper
-layer filling, not a disk, kernel or hardware fault. Work it in this order.
+A short, regular reboot cycle on a RISE host with overlayroot active is almost always the tmpfs upper layer filling, not a disk, kernel or hardware fault. Work it in this order.
 
-1. **Confirm who is rebooting.** `rise_watchdog.py` reboots (`reboot_critical` when disk >=
-   `DISK_THRESH`, `reboot_after_cleanup` when cleanup frees too little). `rise_healthcheck.py`
-   **never** reboots — it only scores and applies penalties. Do not chase the healthcheck.
+1. **Confirm who is rebooting.** `rise_watchdog.py` reboots (`reboot_critical` when disk >= `DISK_THRESH`, `reboot_after_cleanup` when cleanup frees too little). `rise_healthcheck.py` **never**
+   reboots — it only scores and applies penalties. Do not chase the healthcheck.
    ```bash
    systemctl status rise-watchdog.service rise-healthcheck.service
    tail -50 /var/log/rise/watchdog.log
    ```
-2. **Do not be reassured by `df` on the real filesystem.** The exhausted resource is RAM. Compare the
-   overlay budget against what is actually resident:
+2. **Do not be reassured by `df` on the real filesystem.** The exhausted resource is RAM. Compare the overlay budget against what is actually resident:
    ```bash
    free -m                              # total RAM
    grep size_ratio inventories/<flavor>/group_vars/smc_bases.yml   # 40 on rct/wh/nbn_wh
    mount | grep 'overlayroot on / type overlay'
    df -h / /media/root-ro
    ```
-   Budget = `RAM x size_ratio / 100`. On a 7807 MiB Pi 4 at 40% that is ~3.05 GiB.
-3. **Find the oversized file, remembering copy_up charges size at first write** (see
-   `07_hardware-overlay.md` §8) — a slow-growing giant is far more dangerous than a fast-growing
-   small file:
+Budget = `RAM x size_ratio / 100`. On a 7807 MiB Pi 4 at 40% that is ~3.05 GiB.
+3. **Find the oversized file, remembering copy_up charges size at first write** (see `07_hardware-overlay.md` §8) — a slow-growing giant is far more dangerous than a fast-growing small file:
    ```bash
    find / -xdev -type f -size +20M -printf '%s\t%TY-%Tm-%Td %TH:%TM\t%p\n' 2>/dev/null | sort -rn | head -30
    ```
-   Or, on a host that already has the role deployed, the supported form — safe on live overlay hosts
-   because reading does not trigger copy_up:
+Or, on a host that already has the role deployed, the supported form — safe on live overlay hosts because reading does not trigger copy_up:
    ```bash
    /usr/local/bin/rise_logcap.py --report-only --json
    ```
-4. **Check whether anything rotates it at all.** The 2026-08-18 `delye-smc01` case was a 2.63 GiB
-   Laravel log with no stanza anywhere:
+4. **Check whether anything rotates it at all.** The 2026-08-18 `delye-smc01` case was a 2.63 GiB Laravel log with no stanza anywhere:
    ```bash
    grep -rl '<app-name>\|<log-basename>' /etc/logrotate.d/
    ```
-5. **Remedy.** Truncate (keeping a tail) rather than delete, so writers holding an fd keep working —
-   and if rsyslog owns the file, make it reopen afterwards or the truncation frees nothing:
+5. **Remedy.** Truncate (keeping a tail) rather than delete, so writers holding an fd keep working — and if rsyslog owns the file, make it reopen afterwards or the truncation frees nothing:
    ```bash
    /usr/lib/rsyslog/rsyslog-rotate     # or: systemctl kill -s HUP rsyslog.service
    ```
-   Never truncate a `.gz`. Then deploy `smc_rise_logcaps` (`--tags logcaps`) so it cannot recur.
-6. **Escape hatch if the box is unreachable between reboots**: disable overlayroot to get a stable
-   shell (`smc_rise_disable_overlay`, or `-e disable_overlay=true` on `smc_bases.yml`), fix the file,
-   then re-enable. Note the overlay-enable preflight now **fails** if any oversized file remains that
-   the cap cannot safely truncate.
+Never truncate a `.gz`. Then deploy `smc_rise_logcaps` (`--tags logcaps`) so it cannot recur.
+6. **Escape hatch if the box is unreachable between reboots**: disable overlayroot to get a stable shell (`smc_rise_disable_overlay`, or `-e disable_overlay=true` on `smc_bases.yml`), fix the file,
+   then re-enable. Note the overlay-enable preflight now **fails** if any oversized file remains that the cap cannot safely truncate.
 
 ### Tier 9: `smc_iptables` SMP apply fails with `Set restricted doesn't exist`
 
@@ -343,13 +347,10 @@ Validation:
   ansible-playbook -i inventories/rct/stage smc_bases.yml -l <host> -t smc_application --syntax-check
 ```
 
-**Superseded 2026-07-29 (old-looma/umoona topology recovery):** the `is sequence` normalization above
-was the first-attempt fix, but it hit a second incompatibility under `--check` mode (`Package
-unavailable`). The fix actually applied was a **wholesale replacement**, not an in-place patch:
-`roles/_helpers/custom_apt_install.yml` and `custom_apt_update_cache.yml` were replaced with their
-`rise-multi` branch versions — a simpler `apt-cache policy` check with no size-collection step. If
-this symptom recurs, check which version of these two helper files is deployed before re-deriving
-the `is sequence` fix from scratch.
+**Superseded 2026-07-29 (old-looma/umoona topology recovery):** the `is sequence` normalization above was the first-attempt fix, but it hit a second incompatibility under `--check` mode (`Package
+unavailable`). The fix actually applied was a **wholesale replacement**, not an in-place patch: `roles/_helpers/custom_apt_install.yml` and `custom_apt_update_cache.yml` were replaced with their
+`rise-multi` branch versions — a simpler `apt-cache policy` check with no size-collection step. If this symptom recurs, check which version of these two helper files is deployed before re-deriving the
+`is sequence` fix from scratch.
 
 ### Tier 11: `--check` does not gate `command` + `async` restart handlers
 

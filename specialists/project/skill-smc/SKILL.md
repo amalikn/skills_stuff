@@ -52,7 +52,8 @@ remind you; invoking this skill at all carries that obligation, including the fi
 ## What an SMC Box Is
 An SMC box is an **x86 PC** or **ARM64 Raspberry Pi** running **Ubuntu 20.04+ (22.04 in production)**, deployed as a managed WiFi hotspot and network gateway. All remote access routes through
 **Teleport** via a persistent `autossh` reverse SSH tunnel. SSH port on Teleport server = `50000 + site_eclipse_siteid`. Ansible connects via `ansible_host =
-{{inventory_hostname}}.teleport.<flavor>.au`.
+{{inventory_hostname}}.teleport.<project>.au` — the domain splits by **project** (APN, nbn_accelerate), not by flavor; each project has multiple flavors nested under it (see `01_overview.md` "Remote
+Access").
 
 **Critical — Overlayroot:** All SMC boxes run overlayroot. Writes go to tmpfs (`/media/root-rw/overlay`) and are **lost on reboot**. Ansible changes only persist if the lower dir (`/media/root-ro`) is
 remounted read-write first. Always check overlayroot status before assuming a change persisted.
@@ -157,7 +158,7 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
 **All inbound access** → Teleport proxy → autossh reverse tunnel → port 22 (SSH)
 
 **Outbound from SMC:**
-- `autossh` → `teleport.<flavor>.au` (persistent reverse tunnel)
+- `autossh` → `teleport.<project>.au` (persistent reverse tunnel)
 - Prometheus federation → central Prometheus (via dedicated federation tunnel)
 - `cnmaestro-provisioning` → CNMaestro WiFi Dashboard API
 - `rsyslog` → Graylog (UDP syslog)
@@ -195,4 +196,4 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
 ## Source
 - specialist_type: project
 - slug: skill-smc
-- version: 0.1.29
+- version: see `manifest.json` in the canonical source (not duplicated here — see `rule-manifest-version-discipline.md`)

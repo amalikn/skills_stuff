@@ -3,8 +3,17 @@
 ## Contents
 
 - [3. Communication Flows](#3-communication-flows)
-
----
+  * [All Inbound Access](#all-inbound-access)
+  * [Backdoor SSH Access (raw reverse tunnel, bypasses Teleport's node agent)](#backdoor-ssh-access-raw-reverse-tunnel-bypasses-teleports-node-agent)
+  * [Outbound from SMC Box](#outbound-from-smc-box)
+  * [Fluent Bit / Graylog Sidecar Config Architecture](#fluent-bit-graylog-sidecar-config-architecture)
+  * [WAN Uplink Addressing and Default-Route Programming](#wan-uplink-addressing-and-default-route-programming)
+  * [Manual TBF/`ifb` Ingress Shaping — live, fleet-wide, NOT Ansible-managed](#manual-tbfifb-ingress-shaping-live-fleet-wide-not-ansible-managed)
+  * [WAN-Path Diagnostic Techniques (from the 2026-07-30 dark-VLAN investigation)](#wan-path-diagnostic-techniques-from-the-2026-07-30-dark-vlan-investigation)
+  * [Local (LAN) Traffic](#local-lan-traffic)
+  * [Alert Flows](#alert-flows)
+  * [Grafana / Prometheus MCP Access](#grafana-prometheus-mcp-access)
+  * [Graylog REST API Access (via Teleport App, no MCP)](#graylog-rest-api-access-via-teleport-app-no-mcp)
 
 ## 3. Communication Flows
 
@@ -14,7 +23,7 @@
 External / Management
     │
     ▼
-Teleport proxy (teleport.<flavor>.au)
+Teleport proxy (teleport.<project>.au)
     │
     ▼  [via autossh reverse SSH tunnel]
 SMC box — port 22 (SSH)
@@ -24,10 +33,48 @@ SMC box — port 22 (SSH)
     └── Prometheus central (scrape via federation tunnel)
 ```
 
+### Backdoor SSH Access (raw reverse tunnel, bypasses Teleport's node agent)
+
+Use this when `tsh ssh <site>` hangs, refuses to connect, or the box is registered in Teleport (shows up in `tsh ls`) but is unresponsive over it — the Teleport agent on the SMC has stalled, but the
+box's independent OpenSSH reverse tunnel can still be up. Confirmed working live against `galiwinku-smc01` (`nbn_accelerate` project, 2026-09-08); operator-confirmed to also work across the `APN`
+project fleet (`rcp`/`wh`/`rct` flavors) — not independently re-validated against an APN-side host in that session.
+
+**Mechanism**: the `smc_autossh` role (`roles/smc_autossh/`) runs an `autossh-teleport-openssh` systemd unit on every SMC box, independent of the Teleport agent itself:
+
+```
+ExecStart=/usr/bin/autossh ... -R {{ openssh_remoteport }}:127.0.0.1:22 ssh-portfwding@{{ teleport_address }}
+```
+
+This is a persistent, always-on OpenSSH reverse tunnel (`-R`) from the box's own port 22 back to the fleet's teleport bastion host, bound to a per-site port on that bastion. The tunnel itself
+authenticates with a raw OpenSSH key (`/var/local/autossh/ssh-portfwding.id_rsa`) — Teleport is not in this path at all, which is exactly why it survives a hung Teleport node agent.
+
+**Port formula** (`smc_bases.yml:78`): `openssh_remoteport = 50000 + site_eclipse_siteid`. `site_eclipse_siteid` is a globally unique Eclipse site ID (required var, `smc_definition` role) — the
+resulting port uniquely identifies one site fleet-wide, regardless of which project/teleport cluster it belongs to.
+
+**Which bastion, per project** (`group_vars/smc_bases.yml` per inventory; each project has multiple flavors nested under it — see `01_overview.md` "Remote Access"):
+
+| Project        | Flavors (incl. central-infra)                     | `teleport_fqdn`                 | Bastion IP / alias                                              |
+| -------------- | ------------------------------------------------- | ------------------------------- | --------------------------------------------------------------- |
+| nbn_accelerate | `nbn_accelerate`, `nbn_wh` (+ `cw` central-infra) | `teleport.communitywifi.net.au` | `3.104.50.51` — reverse-DNS/`known_hosts` alias `cw-teleport01` |
+| APN            | `rcp`, `wh`, `rct` (+ `apn` central-infra)        | `teleport.apn.au`               | `13.54.242.59`                                                  |
+
+**Procedure**:
+1. Find `site_eclipse_siteid` for the target site (`host_vars`/`group_vars`) and add 50000 to get its port.
+2. `tsh ssh --proxy=<cluster-fqdn> root@<bastion>` — reach the bastion via Teleport (this hop still needs a working `tsh` session, but to the *bastion*, not the hung site).
+3. From the bastion: `ssh -p <port> root@127.0.0.1` — a second, independent SSH hop straight into the SMC box's own sshd, entirely outside Teleport.
+4. Credential: a fleet-wide shared root password, stored in the KeePassXC vault at `Network/SMC` (see `security-and-secrets-guide.md` for the `kp` retrieval workflow — `kp clip "Network/SMC"` copies
+   it to the clipboard; paste directly into the interactive prompt rather than piping the plaintext through automation/tool logs).
+
+**Caveats**:
+- No Teleport session recording on this path — it's a raw root shell with none of Teleport's audit trail. Reserve it for cases where `tsh ssh` itself is what's broken; it is not a routine substitute
+  for normal access.
+- The tunnel depends on the box's own `autossh-teleport-openssh` service still running. If the box is fully hung (see the Silent Total Hang failure mode in `06_failure-modes.md`), this path is dead
+  too — it rescues you from a *stuck Teleport agent*, not a *stuck kernel*.
+
 ### Outbound from SMC Box
 
 ```
-autossh-teleport-openssh → teleport.<flavor>.au   (persistent, always on)
+autossh-teleport-openssh → teleport.<project>.au   (persistent, always on)
 autossh-prometheus-federation → central Prometheus (metrics federation)
 prometheus (local) → remote_write endpoint
 speedtest-exporter → Ookla speed test servers      (every 1h)

@@ -1,6 +1,5 @@
 # SMC Box Operational Runbook
 
-**Version:** 0.1.28
 **Validated against:** malik-rct01 (RCT flavor, ARM64, Ubuntu 22.04, overlayroot enabled)
 **Scope:** x86 and ARM64 SMC appliances managed by `ansible-wifi`
 
@@ -24,8 +23,8 @@ practical.
 | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | Basic SMC definition, inventory flavors, remote access, satellite constraints, APN vs NBN Accelerate cluster differences                          | `references/01_overview.md`                      |
 | Service names, config paths, monitoring collectors, RCT vs x86 service map                                                                        | `references/02_service-map.md`                   |
-| External communication paths and inbound/outbound flows; **how to reach/query a backend's API or dashboard** (Grafana, Graylog, Teleport Application | `references/03_communication-flows.md`           |
-|   Access, mTLS/token auth)                                                                                                                        |                                                  |
+| External communication paths and inbound/outbound flows; **how to reach/query a backend's API or dashboard** (Grafana, Graylog, Teleport Application | `references/03_communication-flows.md` §Backdoor |
+|   Access, mTLS/token auth); **backdoor root SSH to a box when `tsh ssh` itself is hung/unreachable** (raw reverse tunnel, port = 50000 + siteid)  |   SSH Access                                     |
 | Dependency relationships between network, DNS, portal, monitoring, and access systems                                                             | `references/04_dependency-tree.md`               |
 | Live incident triage, alerts, service failures, DHCP/DNS/WiFi/VoIP/HA issues                                                                      | `references/05_troubleshooting.md`               |
 | Known failure signatures and fix patterns                                                                                                         | `references/06_failure-modes.md`                 |

@@ -32,46 +32,48 @@
 
 ## Coverage Gaps (partial knowledge)
 
-| Area                                            | Status                      | Notes                                                                                                                |
-| ----------------------------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| x86 / apn flavor live validation                | Not validated               | RUNBOOK flavor differences are from code inspection only; malik-rct01 is the only live-validated box                 |
-| cnmaestro-provisioning internals                | Partial, deployment side    | Deployment mechanism (`smc_cnmaestro_provisioning` role, `smc_ltp.yml` playbook, per-model Cambium hardware          |
-|                                                 |   now well-documented       |   profiles, IP/SSID auto-allocation) now covered in `08_ansible-authoring.md` "smc_ltp Sub-Group". Still             |
-|                                                 |   (2026-08-03)              |   undocumented: `cnmaestro-provisioning.py`'s actual runtime behavior against the CNMaestro cloud API (error         |
-|                                                 |                             |   handling, retry logic, what happens on a provisioning conflict) — not live-validated                               |
-| NBN Accelerate API behavior                     | Minimal                     | API call pattern noted; response handling and error states undocumented                                              |
-| Redis usage details                             | Minimal                     | Used by cnmaestro-provisioning; key schema undocumented                                                              |
-| Kohana / Tstik web apps                         | Minimal                     | Running on RCT; role config paths known; app internals not documented                                                |
-| RISE monitoring suite (riseclient, risengine)   | Partial                     | Unit names known; behavioral details from code inspection only                                                       |
-| Host-level (own) DNS resolution architecture,   | Newly documented            | `systemd-resolved` stub is disabled by design (`DNSStubListener=no`, unconditional) — host DNS bypasses              |
-|   as distinct from DHCP/LAN client DNS          |   2026-07-03,               |   unbound/stubby/bind entirely and goes straight to `external_dns_servers`. Confirmed via the garimba-smc01 RCA; not |
-|                                                 |   single-incident-grounded  |   independently re-validated at any other site yet. See `02_service-map.md` + `06_failure-modes.md`                  |
-| Flavor → Teleport cluster domain mapping        | Resolved 2026-07-31         | `rcp`/`rct`/`wh`/`apn` → `teleport.apn.au`; `nbn_accelerate`/`nbn_wh`/`cw` → `teleport.communitywifi.net.au`. Covers |
-|                                                 |   (operator-confirmed)      |   all 7 inventory flavors. Operators still arrange `tsh login` manually per site — this table is for orientation,    |
-|                                                 |                             |   not for hardcoding into scripts/tooling. See `01_overview.md` "Remote Access"                                      |
-| **NBN Accelerate cluster coverage gap**         | Largely closed — full fleet | `01_overview.md` "APN Cluster vs NBN Accelerate Cluster — Structural Comparison" and `08_ansible-authoring.md`       |
-|                                                 |   sweep done 2026-08-03     |   "Flavor/Cluster Conditional Branching" were structural/code-inspection only when written. **Full-fleet live**      |
-|                                                 |                             |   **validation 2026-08-03** (`tsh ssh` to all 26 reachable `nbn_accelerate` hosts + both `nbn_wh` hosts, 28 total):  |
-|                                                 |                             |   Teleport domain, HTTPS-only portal, mobile-app backend, ClamAV+Lynis presence, Asterisk absence, non-`smc_ltp` DNS |
-|                                                 |                             |   stack, and full hardware inventory all confirmed live — see "Known Operational Bugs (NBN Accelerate cluster — full |
-|                                                 |                             |   fleet sweep, 2026-08-03)" above and `07_hardware-overlay.md` "NBN Accelerate / NBN WH Hardware Inventory". **Still** |
-|                                                 |                             |   **not live-validated**: `cw` flavor itself (central-infra only, no site hosts to check), `aurukun-smc03` (unreachable |
-|                                                 |                             |   at capture time); every troubleshooting entry in `05_troubleshooting.md`/`06_failure-modes.md`/this file's         |
-|                                                 |                             |   incident rows *besides* the NBN Accelerate bugs section above is still an APN-cluster (`rcp`) site.                |
-| **"Low touch" onboarding method ↔** **`smc_ltp`** **link** | Confirmed,                  | All 7 low-touch sites (`guda-guda` pilot 2025-04-15, `umoona`, `warburton`, `beagle-bay`, `pandanus-park`,           |
-|   **— resolved 2026-08-03**                     |   operator-directed;        |   `old-looma`, `new-looma`) are now `smc_ltp` group members — operator confirmed the link is real (low-touch         |
-|                                                 |   mechanism                 |   onboarding implies `smc_ltp`) and directed adding the 3 missing sites (`umoona`/`warburton`/`beagle-bay`) to       |
-|                                                 |   confirmed manual          |   `inventories/rcp/prod`'s `smc_ltp` group, closing what had been a plain inventory gap, not a coincidental          |
-|                                                 |                             |   correlation. **Mechanism confirmed 2026-08-03: it's a manual step someone has to remember** — no low-touch onboarding |
-|                                                 |                             |   tooling automatically assigns `smc_ltp` group membership, and nothing enforces or checks that it happened. This is |
-|                                                 |                             |   the actual root cause of the 3-site gap — treat this as a standing risk for any future low-touch site, not a       |
-|                                                 |                             |   one-off fixed with this correction; verify `smc_ltp:children` membership explicitly whenever a new low-touch site  |
-|                                                 |                             |   goes live rather than assuming it's automatic. Separately, Ansible-code-wise the *string* "low touch" still means  |
-|                                                 |                             |   nothing: the one `low_touch` hit in the whole repo (`smc_bases_low_touch_provisioning: true` on `pierre-rcp01`,    |
-|                                                 |                             |   not a cohort member) is never read by any role/playbook — an orphaned var, not evidence of an implemented          |
-|                                                 |                             |   low-touch code path distinct from `smc_ltp` group membership itself. See `08_ansible-authoring.md` "'Low Touch'    |
-|                                                 |                             |   Onboarding Method and Site Deployment History".                                                                    |
-|                                                 |
+| Area                             | Status                       | Notes                                                                                                                              |
+| -------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| x86 / apn flavor live validation | Not validated                | RUNBOOK flavor differences are from code inspection only; malik-rct01 is the only live-validated box                               |
+| cnmaestro-provisioning internals | Partial, deployment side now | Deployment mechanism (`smc_cnmaestro_provisioning` role, `smc_ltp.yml` playbook, per-model Cambium hardware profiles, IP/SSID      |
+|                                  |   well-documented            |   auto-allocation) now covered in `08_ansible-authoring.md` "smc_ltp Sub-Group". Still undocumented: `cnmaestro-provisioning.py`'s |
+|                                  |   (2026-08-03)               |   actual runtime behavior against the CNMaestro cloud API (error handling, retry logic, what happens on a provisioning conflict) — |
+|                                  |                              |   not live-validated                                                                                                               |
+| NBN Accelerate API behavior      | Minimal                      | API call pattern noted; response handling and error states undocumented                                                            |
+| Redis usage details              | Minimal                      | Used by cnmaestro-provisioning; key schema undocumented                                                                            |
+| Kohana / Tstik web apps          | Minimal                      | Running on RCT; role config paths known; app internals not documented                                                              |
+| RISE monitoring suite            | Partial                      | Unit names known; behavioral details from code inspection only                                                                     |
+|   (riseclient, risengine)        |                              |                                                                                                                                    |
+| Host-level (own) DNS resolution  | Newly documented 2026-07-03, | `systemd-resolved` stub is disabled by design (`DNSStubListener=no`, unconditional) — host DNS bypasses unbound/stubby/bind        |
+|   architecture, as distinct from |   single-incident-grounded   |   entirely and goes straight to `external_dns_servers`. Confirmed via the garimba-smc01 RCA; not independently re-validated at any |
+|   DHCP/LAN client DNS            |                              |   other site yet. See `02_service-map.md` + `06_failure-modes.md`                                                                  |
+| Project → Teleport cluster       | Resolved 2026-07-31,         | APN project (`rcp`/`rct`/`wh` flavors + `apn` central-infra) → `teleport.apn.au`; nbn_accelerate project                           |
+|   domain mapping (corrected      |   terminology                |   (`nbn_accelerate`/`nbn_wh` flavors + `cw` central-infra) → `teleport.communitywifi.net.au`. Covers all 7 inventory flavors       |
+|   2026-09-08 — was mislabeled    |   fixed 2026-09-08           |   across 2 projects. Operators still arrange `tsh login` manually per site — this table is for orientation, not for hardcoding     |
+|   "Flavor → ..."; the split is   |                              |   into scripts/tooling. See `01_overview.md` "Remote Access" and `03_communication-flows.md` §Backdoor SSH Access for the          |
+|   by project, each project has   |                              |   raw-OpenSSH fallback path when `tsh ssh` itself is unreachable.                                                                  |
+|   multiple flavors)              |                              |                                                                                                                                    |
+| **NBN Accelerate cluster**       | Largely closed — full fleet  | `01_overview.md` "APN Cluster vs NBN Accelerate Cluster — Structural Comparison" and `08_ansible-authoring.md` "Flavor/Cluster     |
+|   **coverage gap**               |   sweep done 2026-08-03      |   Conditional Branching" were structural/code-inspection only when written. **Full-fleet live validation 2026-08-03** (`tsh ssh` to |
+|                                  |                              |   all 26 reachable `nbn_accelerate` hosts + both `nbn_wh` hosts, 28 total): Teleport domain, HTTPS-only portal, mobile-app         |
+|                                  |                              |   backend, ClamAV+Lynis presence, Asterisk absence, non-`smc_ltp` DNS stack, and full hardware inventory all confirmed live — see  |
+|                                  |                              |   "Known Operational Bugs (NBN Accelerate cluster — full fleet sweep, 2026-08-03)" above and `07_hardware-overlay.md` "NBN         |
+|                                  |                              |   Accelerate / NBN WH Hardware Inventory". **Still not live-validated**: `cw` flavor itself (central-infra only, no site hosts to  |
+|                                  |                              |   check), `aurukun-smc03` (unreachable at capture time); every troubleshooting entry in                                            |
+|                                  |                              |   `05_troubleshooting.md`/`06_failure-modes.md`/this file's incident rows *besides* the NBN Accelerate bugs section above is still |
+|                                  |                              |   an APN-cluster (`rcp`) site.                                                                                                     |
+| **"Low touch" onboarding method ↔** | Confirmed,                   | All 7 low-touch sites (`guda-guda` pilot 2025-04-15, `umoona`, `warburton`, `beagle-bay`, `pandanus-park`, `old-looma`,            |
+|   **`smc_ltp`** **link —**       |   operator-directed;         |   `new-looma`) are now `smc_ltp` group members — operator confirmed the link is real (low-touch onboarding implies `smc_ltp`) and  |
+|   **resolved 2026-08-03**        |   mechanism confirmed manual |   directed adding the 3 missing sites (`umoona`/`warburton`/`beagle-bay`) to `inventories/rcp/prod`'s `smc_ltp` group, closing     |
+|                                  |                              |   what had been a plain inventory gap, not a coincidental correlation. **Mechanism confirmed 2026-08-03: it's a manual step someone** |
+|                                  |                              |   **has to remember** — no low-touch onboarding tooling automatically assigns `smc_ltp` group membership, and nothing enforces or  |
+|                                  |                              |   checks that it happened. This is the actual root cause of the 3-site gap — treat this as a standing risk for any future          |
+|                                  |                              |   low-touch site, not a one-off fixed with this correction; verify `smc_ltp:children` membership explicitly whenever a new         |
+|                                  |                              |   low-touch site goes live rather than assuming it's automatic. Separately, Ansible-code-wise the *string* "low touch" still means |
+|                                  |                              |   nothing: the one `low_touch` hit in the whole repo (`smc_bases_low_touch_provisioning: true` on `pierre-rcp01`, not a cohort     |
+|                                  |                              |   member) is never read by any role/playbook — an orphaned var, not evidence of an implemented low-touch code path distinct from   |
+|                                  |                              |   `smc_ltp` group membership itself. See `08_ansible-authoring.md` "'Low Touch' Onboarding Method and Site Deployment History".    |
+|                                  |
 ## Skill Staleness Risks
 
 - Service names and config paths may drift as ansible-wifi roles are updated.

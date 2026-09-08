@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20260908_1330 — Backdoor SSH access documented: raw reverse-tunnel path around a hung Teleport node agent, confirmed live against nbn_accelerate (v0.1.30 -> v0.1.31)](#20260908_1330-backdoor-ssh-access-documented-raw-reverse-tunnel-path-around-a-hung-teleport-node-agent-confirmed-live-against-nbn_accelerate-v0130---v0131)
+- [20260908_1200 — Pack-structure self-audit: RUNBOOK version drift, install.md staleness, reference-update-discipline gap, vestigial evidence/, and archcore status promotion (v0.1.29 -> v0.1.30)](#20260908_1200-pack-structure-self-audit-runbook-version-drift-installmd-staleness-reference-update-discipline-gap-vestigial-evidence-and-archcore-status-promotion-v0129---v0130)
 - [20260907_1600 — Two Ansible silent-failure gotchas, an `rcp` systemd-mask fix, and the `auto_reboot: 0` truthy-string bug fed back from `ansible-wifi` (v0.1.28 -> v0.1.29)](#20260907_1600-two-ansible-silent-failure-gotchas-an-rcp-systemd-mask-fix-and-the-auto_reboot-0-truthy-string-bug-fed-back-from-ansible-wifi-v0128---v0129)
 - [20260907_1530 — Silent Total Hang confirmed on `rcp` (pandanus-park-smc01), first non-`wh` instance (v0.1.27 -> v0.1.28)](#20260907_1530-silent-total-hang-confirmed-on-rcp-pandanus-park-smc01-first-non-wh-instance-v0127---v0128)
 - [20260907_1200 — Standing write-back contract added to SKILL.md: the update obligation now travels with the skill, not each consuming project's governance file (v0.1.26 -> v0.1.27)](#20260907_1200-standing-write-back-contract-added-to-skillmd-the-update-obligation-now-travels-with-the-skill-not-each-consuming-projects-governance-file-v0126---v0127)
@@ -42,6 +44,74 @@
 - [0.1.0 — 2026-04-15](#010-2026-04-15)
 
 ---
+
+## 20260908_1330 — Backdoor SSH access documented: raw reverse-tunnel path around a hung Teleport node agent, confirmed live against nbn_accelerate (v0.1.30 -> v0.1.31)
+
+**Trigger:** operator used a previously-undocumented "backdoor" SSH path to reach `galiwinku-smc01` (`nbn_accelerate`) after being blocked on the normal `tsh ssh` route, and asked for the mechanism to
+be captured for future use. Operator confirmed the same path also works across the `APN` project fleet (`rcp`/`wh`/`rct` flavors), though that side was not independently re-validated live in this
+session. Operator also corrected pre-existing terminology drift: the Teleport cluster domain splits by **project** (APN, nbn_accelerate), not by flavor — flavors nest under a project, so
+`01_overview.md` and the diagrams in `03_communication-flows.md` were also fixed (`teleport.<flavor>.au` -> `teleport.<project>.au`).
+
+**Added:**
+1. `references/03_communication-flows.md` — new `### Backdoor SSH Access` subsection under `## 3. Communication Flows`, documenting the `smc_autossh` role's independent `autossh-teleport-openssh`
+   reverse tunnel: the port formula (`50000 + site_eclipse_siteid`, `smc_bases.yml:78`), the per-project bastion table (nbn_accelerate project → `teleport.communitywifi.net.au` / `cw-teleport01` /
+   `3.104.50.51`; APN project → `teleport.apn.au` / `13.54.242.59`), the two-hop procedure (`tsh ssh` to the bastion, then `ssh -p <port> root@127.0.0.1` straight into the box's own sshd), and the
+   credential source (KeePassXC `Network/SMC`, retrieved via `kp clip` per `security-and-secrets-guide.md` — never the literal value in this doc). Also notes the two caveats that matter operationally:
+   no Teleport session recording on this path, and it only rescues a *stuck Teleport agent*, not a *stuck kernel* (the tunnel service itself has to still be alive).
+2. `manifest.json` `stable_facts[1]` expanded from a one-line port-formula fact to cross-reference the new subsection and record the live-confirmation date/scope.
+3. `RUNBOOK.md` routing-table row for `references/03_communication-flows.md` extended to surface the backdoor-access use case alongside the existing Grafana/Graylog/Teleport-App entries.
+4. `references/03_communication-flows.md`'s own `## Contents` block gained indented, hyperlinked sub-entries for all 11 `###` subsections (previously only its single `##` heading was listed). Required
+   a `*`-bullet marker rather than `-` — the repo's `markdown-wrap-toc.sh` hook only manages `- [text](#anchor)` entries tied to real `##` headings and silently strips anything else added that way; a
+   `*`-bullet link renders identically in GFM but falls outside the hook's managed block.
+
+**Follow-up staleness pass (same session, same fix):** a detailed staleness audit scoped to this write-back found the `teleport.<flavor>.au` mislabel also present in `SKILL.md` (x2) and `PROFILE.md` —
+sibling surfaces that should have been caught in the original terminology fix above but were missed because the audit only checked `01_overview.md`/`03_communication-flows.md`. Fixed both, and fixed
+this pack's own `SCRATCHPAD.md` "Phase" line which still asserted `v0.1.30` as current. Regenerated `.ai-context/governance-pack.md` via `repomix` (per its own generated-file convention — never
+hand-edited) so all fixes propagate there too. Verified the `apn`/`cw` central-infra claim in the new bastion table against live inventory (`host_vars` glob for `*-smc0*.yml`: 0 matches in both `apn/`
+and `cw/`, confirming central-infra-only, no site hosts) rather than trusting the pre-existing `01_overview.md` assertion at face value.
+
+**Not independently re-tested:** the `apn`-side claim (`rcp`/`wh`/`rct`) is operator-stated, not re-validated against a live `apn` host in this session — recorded as such in the new subsection rather
+than asserted as independently confirmed.
+
+**Follow-up coherence sweep (same session, pushing the fix outward):** the staleness pass above only found direct restatements of the old wording. A coherence sweep found two places that assumed the
+old flavor-based model without containing the literal stale string: (1) `references/05_troubleshooting.md` Tier 1 ("Box Unreachable") didn't mention that a box absent from the `tsh ls` roster is still
+reachable via the backdoor tunnel — added a cross-reference so operators get a working root shell instead of being stuck external-only. (2) `references/13_known-issues.md`'s "Flavor → Teleport cluster
+domain mapping" row title and content asserted the split was by flavor — retitled to "Project → Teleport cluster domain mapping" with a corrective note, and added a pointer to the new backdoor
+section. Reviewed and left alone: `13_known-issues.md`'s brief "per flavor's Teleport cluster" parenthetical elsewhere (line ~29) — imprecise but not false, since each flavor does map to exactly one
+cluster; not worth the churn. `AI_NAVIGATION.md`/`context-map.yaml` already route generically to `03_communication-flows.md` for "external comms paths" and needed no new dedicated row. `.archcore/`
+rules and `scripts/*` were checked and don't encode this assumption (the one script referencing a Teleport domain, `fleet-health.justfile`, hardcodes the literal domain rather than assuming a
+flavor-keyed split). Regenerated `.ai-context/governance-pack.md` again after these two edits.
+
+## 20260908_1200 — Pack-structure self-audit: RUNBOOK version drift, install.md staleness, reference-update-discipline gap, vestigial evidence/, and archcore status promotion (v0.1.29 -> v0.1.30)
+
+**Trigger:** operator asked for a detailed structural review of the pack itself (not its SMC content) — is `skill-smc` organized correctly as a Claude Code skill, and does the file layout match what a
+skill should look like. Confirmed the installed surface (`SKILL.md` + `RUNBOOK.md` + `references/` + `scripts/`) is correctly lean and matches `.archcore/specs/spec-specialist-pack-file-roles.md`, but
+found five governance/hygiene defects in the surrounding pack scaffolding.
+
+**Fixed:**
+1. `RUNBOOK.md` carried its own `**Version:** 0.1.28` line, stale against `manifest.json`'s `0.1.29` — a duplicate version stamp in a file declared "navigation index only" is a guaranteed drift source
+   since no rule updates it on every bump. Removed the line entirely rather than syncing it once; `manifest.json` is already the sole version authority per `context-map.yaml`'s `authority_order`.
+2. `exports/claude_code/project/skill-smc/install.md`'s "Current Install State" section had been frozen at `Canonical version: 0.1.6` since the 2026-04-17 Phase 2 MCP-wiring entry — 20+ versions
+   stale, and misleadingly labeled "Current". Retitled to "Install History" (a point-in-time log, not a live tracker), added an explicit note to check `manifest.json` for the live version, and
+   appended a 2026-09-08 re-sync entry.
+3. `.archcore/rules/rule-reference-update-discipline.md` listed only 4 surfaces to update when adding a new reference file (`RUNBOOK.md`, `SKILL.md`, `adapter.md`, `install.md`) — it never mentioned
+   `AI_NAVIGATION.md` or `context-map.yaml`, even though both carry the same task-to-reference routing table and this pack's own `AGENTS.md` Tier 2 checklist already expected them kept current.
+   Widened the rule to 6 surfaces to match actual practice and close the gap between codified rule and enforced behavior.
+4. Removed the empty, untracked `evidence/` directory left over in canonical source — the pack's actual evidence-retention policy (documented in `scripts/README.md`) relocates captured evidence to
+   `local-knowledge-ansible/ansible-wifi/issues/...`, so a permanent local `evidence/` stub serves no purpose and could be mistaken for the real retention location.
+5. Promoted all four `.archcore/` governance docs (`adr-progressive-disclosure-structure.md`, `rule-manifest-version-discipline.md`, `rule-progressive-disclosure-loading.md`,
+   `rule-reference-update-discipline.md`, `spec-specialist-pack-file-roles.md`) from `status: proposed` to `status: accepted` — all five are actively enforced and cited elsewhere in the pack as
+   settled fact (this pack's own `AGENTS.md` treats them as working rules), so "proposed" understated their authority.
+
+**Checked, not a defect:** `.graylog-token` (a Grafana/Graylog credential sitting in the pack root) was flagged during the initial pass as an ungitignored secret risk, then verified against
+`skills_stuff/.gitignore:3` (`specialists/project/skill-smc/.graylog-token`) and confirmed already covered — `git check-ignore -v` returns a clean match. No action needed; recorded here so a future
+pass doesn't re-flag it without checking.
+
+**Not changed:** the installed skill surface itself (`SKILL.md`, `RUNBOOK.md` body content, `references/*.md`, `scripts/`) — this pass was governance/meta-hygiene only, no SMC operational content
+changed.
+
+**Evidence basis:** direct read of every top-level file, `manifest.json`, `.archcore/**`, `exports/claude_code/project/skill-smc/**`, `context-map.yaml`, `AI_NAVIGATION.md`, and `git ls-files` / `git
+check-ignore` against the actual `skills_stuff` git root (not assumed from memory-keeper history).
 
 ## 20260907_1600 — Two Ansible silent-failure gotchas, an `rcp` systemd-mask fix, and the `auto_reboot: 0` truthy-string bug fed back from `ansible-wifi` (v0.1.28 -> v0.1.29)
 

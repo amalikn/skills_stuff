@@ -28,8 +28,8 @@
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "2026-09-07T00:00:00Z",
-  "version": "0.1.29",
+  "updated_at": "2026-09-08T00:00:00Z",
+  "version": "0.1.31",
   "dependencies": [],
   "known_constraints": [
     "SMC boxes run overlayroot — changes do not persist across reboot unless lower dir is remounted rw",
@@ -45,11 +45,12 @@
       ]
     },
     {
-      "statement": "All remote access routes through Teleport reverse SSH tunnel. SSH port = 50000 + site_eclipse_siteid.",
+      "statement": "All remote access routes through Teleport reverse SSH tunnel. SSH port = 50000 + site_eclipse_siteid. This same port also backs an independent raw-OpenSSH reverse tunnel (autossh-teleport-openssh) that bypasses the Teleport node agent entirely -- the backdoor path documented in references/03_communication-flows.md, section 'Backdoor SSH Access', confirmed live 2026-09-08 against nbn_accelerate (galiwinku-smc01) and operator-confirmed for apn.",
       "confidence": 0.99,
       "tags": [
         "access",
-        "teleport"
+        "teleport",
+        "backdoor"
       ]
     },
     {
@@ -104,7 +105,7 @@
       ]
     },
     {
-      "statement": "Kohana::init() unconditionally requires APPPATH/cache AND APPPATH/logs to be writable by the web user, throwing 'Directory :dir must be writable' before routing. It prints rather than raises, so the response is HTTP 200 with a ~40-byte body and apache error.log stays empty \u2014 status-code-only health checks cannot detect a dead portal.",
+      "statement": "Kohana::init() unconditionally requires APPPATH/cache AND APPPATH/logs to be writable by the web user, throwing 'Directory :dir must be writable' before routing. It prints rather than raises, so the response is HTTP 200 with a ~40-byte body and apache error.log stays empty — status-code-only health checks cannot detect a dead portal.",
       "confidence": 0.99,
       "tags": [
         "captive-portal",
