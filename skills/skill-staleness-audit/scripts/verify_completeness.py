@@ -180,8 +180,27 @@ def check_structured(root: Path, fails: list[str], warns: list[str]) -> int:
                     # not. Reporting that as a structural defect is a false positive that survived three audits on one
                     # repo as a permanently unaccepted residual. Strip comments and trailing commas, then re-parse: a
                     # file that still fails is genuinely malformed, which is the finding worth having.
-                    stripped = re.sub(r",(\s*[}\]])", r"\1", strip_jsonc_comments(raw))
-                    json.loads(stripped)
+                    try:
+                        stripped = re.sub(r",(\s*[}\]])", r"\1", strip_jsonc_comments(raw))
+                        json.loads(stripped)
+                    except json.JSONDecodeError:
+                        # Log-preamble-before-JSON. Some capture/scraper tools write one or more log lines before
+                        # the JSON body, and those log lines themselves contain literal '[' characters (timestamps
+                        # like "[2026-09-14 12:15:36]"), so a bare `raw.find("[")` misfires on the preamble. The
+                        # body instead starts on its OWN LINE with '{' -- confirmed on a real project (2026-09-14):
+                        # reporting this as a structural defect was a false positive, and the body parses cleanly
+                        # once the preamble lines are skipped. A file with no such line (idx stays 0, meaning the
+                        # file already starts with '{' and the original error is genuine) still fails; the body
+                        # itself must still parse strictly, so real corruption inside it still fails here too.
+                        offset, idx = 0, 0
+                        for line in raw.splitlines(keepends=True):
+                            if line.lstrip().startswith("{"):
+                                idx = offset + (len(line) - len(line.lstrip()))
+                                break
+                            offset += len(line)
+                        if idx <= 0:
+                            raise
+                        json.JSONDecoder().raw_decode(raw, idx)
                 checked += 1
             elif p.suffix in {".yaml", ".yml"} and has_yaml:
                 yaml.load(p.read_text(encoding="utf-8"), Loader=NoDup)

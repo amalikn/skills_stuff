@@ -4,10 +4,11 @@
 
 ## Contents
 
-- [20260812_1400 — v1.0, initial release](#20260812_1400-v10-initial-release)
-- [2026-08-12 — the inverse sweep was prose, and a run skipped it while the gate said PASSED](#2026-08-12-the-inverse-sweep-was-prose-and-a-run-skipped-it-while-the-gate-said-passed)
-- [2026-08-12 (later) — snapshots were never cleaned up, and accumulated invisibly](#2026-08-12-later-snapshots-were-never-cleaned-up-and-accumulated-invisibly)
-- [2026-08-12 (later still) — path claims inside source docstrings were never checked](#2026-08-12-later-still-path-claims-inside-source-docstrings-were-never-checked)
+- [20260812_1400 — v1.0, initial release](#20260812_1400--v10-initial-release)
+- [2026-08-12 — the inverse sweep was prose, and a run skipped it while the gate said PASSED](#2026-08-12--the-inverse-sweep-was-prose-and-a-run-skipped-it-while-the-gate-said-passed)
+- [2026-08-12 (later) — snapshots were never cleaned up, and accumulated invisibly](#2026-08-12-later--snapshots-were-never-cleaned-up-and-accumulated-invisibly)
+- [2026-08-12 (later still) — path claims inside source docstrings were never checked](#2026-08-12-later-still--path-claims-inside-source-docstrings-were-never-checked)
+- [2026-09-14 — structured-config parsing did not know the log-preamble-before-JSON capture convention](#2026-09-14--structured-config-parsing-did-not-know-the-log-preamble-before-json-capture-convention)
 
 ---
 
@@ -35,14 +36,18 @@
 
 Everything below was a real defect **in this skill's own scripts**, found by running them outside the project they were extracted from. Each is why a rule exists.
 
-| Found | Fix |
-|---|---|
-| 19 immutable dated register captures classified as "config to parse" | Dated-stem regex — a timestamp in the **filename** is the general signal for a capture, and it survives any project's directory names |
-| **120 false `BROKEN` path claims** — bare filenames in prose (`purchase-discipline.rule.md`) resolved only root- and sibling-relative | Repo-wide bare-filename resolution, plus `docs/NN` shorthand |
-| **47 false `MISMATCH` counts** — "the three gate scripts" counted against `scripts/*.py` | Stop guessing project semantics; require `--count-map` to enable verification |
-| Placeholder patterns (`<slug>-YYYYMMDD_hhmm.md`) treated as broken paths | Placeholder regex — those are naming conventions, not references |
-| 29% of a financial repo and 19% of an Ansible repo landing in unclassified "other" | Added vendored trees, `node-compile-cache`, `.eml`/`.docx`/`.duckdb`, `.j2` templates, key material, licences, compressed bundles — **and made ≥5% unclassified exit 1**, because a rule list that silently absorbs a third of a repo is claiming coverage it does not have |
-| `--json` output corrupted by a prose block appended after the JSON | Guarded on `--json`; machine output stays machine-readable |
+| Found                                                                                             | Fix                                                                                              |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 19 immutable dated register captures classified as "config to parse"                              | Dated-stem regex — a timestamp in the **filename** is the general signal for a capture, and it   |
+|                                                                                                   |   survives any project's directory names                                                         |
+| **120 false `BROKEN` path claims** — bare filenames in prose (`purchase-discipline.rule.md`) resolved | Repo-wide bare-filename resolution, plus `docs/NN` shorthand                                     |
+|   only root- and sibling-relative                                                                 |                                                                                                  |
+| **47 false `MISMATCH` counts** — "the three gate scripts" counted against `scripts/*.py`          | Stop guessing project semantics; require `--count-map` to enable verification                    |
+| Placeholder patterns (`<slug>-YYYYMMDD_hhmm.md`) treated as broken paths                          | Placeholder regex — those are naming conventions, not references                                 |
+| 29% of a financial repo and 19% of an Ansible repo landing in unclassified "other"                | Added vendored trees, `node-compile-cache`, `.eml`/`.docx`/`.duckdb`, `.j2` templates, key       |
+|                                                                                                   |   material, licences, compressed bundles — **and made ≥5% unclassified exit 1**, because a rule list |
+|                                                                                                   |   that silently absorbs a third of a repo is claiming coverage it does not have                  |
+| `--json` output corrupted by a prose block appended after the JSON                                | Guarded on `--json`; machine output stays machine-readable                                       |
 
 Final unclassified rates: **0.0%** governance corpus · **0.0%** financial analysis (932 files) · **1.0%** Ansible/network (5,360 files) · **0.0%** Python tooling (41,025 files).
 
@@ -132,3 +137,20 @@ backticks made prose read as a live path claim.
 
 The generalisable point is not the citation. It is that the project's checker scanned `*.md` only, while its scripts carry their reasoning in docstrings that cite authorities by path with exactly the
 same failure mode. **Measure the noise cost before widening**: the sweep found precisely one pre-existing item across every script, so extending coverage was free. It would not always be.
+
+## 2026-09-14 — structured-config parsing did not know the log-preamble-before-JSON capture convention
+
+Found on a real project (`cambium-swap`): the Phase 7 gate failed `check_structured()` on 3 files that were not malformed — they were a scraper tool's documented output, a log preamble followed by a
+JSON object starting on its own line. Investigated rather than exempted: `json.JSONDecoder().raw_decode()` parses the body cleanly once the preamble is skipped, so the false positive was fixed at the
+source instead of worked around per project.
+
+### Fixed
+
+- **`check_structured()` in `verify_completeness.py`** — added a third fallback tier after strict `json.loads()` and the existing JSONC-comment tolerance: on a `JSONDecodeError`, scan lines for the
+  first one that starts with `{` and re-parse from that offset via `raw_decode()`. A file with no such line, or one that already starts with `{` (offset 0), re-raises the original error — a body that
+  is itself malformed still fails, which is the finding worth having.
+- **First attempt used `raw.find("{")` / `raw.find("[")` directly and misfired**: every preamble line in the real capture files carried a timestamp like `[2026-09-14 12:15:36]`, whose literal `[` was
+  mistaken for the start of a JSON array at offset 0, re-triggering the "no preamble" branch and reporting the original (wrong) error. Corrected to a per-line scan that only recognises `{` — the
+  convention this class of capture actually uses — never `[`.
+
+Verified on the real project: 69 structured files parsed where 66 had before, all 3 previously-failing files now included; the gate went from FAILED to PASSED with no other change.
