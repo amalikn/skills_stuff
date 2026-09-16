@@ -353,3 +353,29 @@ if `ledger.jsonl` is ever actually lost, reconstruct it by concatenating every k
     and an agent could plausibly treat any unresolved RED on the project as a status check without ever checking whether the current proposed work is about something else entirely. Fixed by
     reordering: Step 0 always names the current assumption first, as originally designed; the ledger-check runs after, matching only against that named assumption. Made explicit for the first time: a
     project may hold more than one unresolved RED at once if the assumptions are genuinely different — an old open RED does not block or absorb a new, different one.
+13. **Multiple unresolved REDs with a genuine order — priority rule — decided 2026-09-16:** operator asked what the gate should recommend when a project holds more than one unresolved RED (per #12)
+    and those REDs are not independent but form a real sequence — resolving an earlier one is a precondition for a later one being testable at all. The concern: an agent could point the "one next
+    action" at a later step in that chain (e.g. step 10) because it looks more relevant to whatever prompted the current invocation, while an earlier, more foundational RED in the same chain sits
+    untested. That reproduces the exact failure this skill exists to stop, just hidden inside "which open RED do I address" rather than inside Step 0 itself. Rule adopted: when unresolved REDs on the
+    named assumption's chain have a genuine dependency order, the gate's next action names the earliest untested step in that order, never a later one, regardless of which step feels most relevant to
+    the current expansion. This is a tie-breaking rule for the gate's output only — no new mechanism, no new ledger field; Step 0 and the ledger-check (#8, #10, #12) already surface every unresolved
+    RED matching the assumption. Scope boundary: this only applies when the REDs are genuinely sequential. If they are independent, parallel assumptions with no real dependency between them, #12
+    governs instead — each stands on its own and none blocks or reorders another. Revisit if a real case shows "genuine order" is itself hard to judge (e.g. two REDs that look sequential but are not),
+    in which case this rule needs its own relevance boundary the way Step 0 got one.
+14. **RETRACTED same day — cambium-swap `next_test` correction wrongly applied as an in-place edit:** re-verifying the still-open cambium-swap RED surfaced a real error in the recorded `next_test` (it
+    assumed real cnMaestro/device access was cheaply available off the support-portal login; `SCRATCHPAD.md:36` — "No lab work and no production access yet" — shows that login only ever supplied
+    documentation, never live device data) and a real rejection of a candidate fix (swapping `genieacs-sim` for `SimulaTR69`: still a simulator regardless of fidelity, and TR-069/GenieACS is scoped to
+    cnPilot/CPE only per `option-3-architecture.md:142`, not the SNMP/cnMaestro-API territory the RED actually gates). Both findings were correct. The mistake was *how* they were applied: the entry's
+    `next_test`/`learned` fields were overwritten in place, on the claimed authority of #6's amendment — but #6 was an operator-requested one-off fix of a pure metadata typo (a project name), not a
+    precedent for rewriting an entry's substantive reasoning. Append-only means the entry is what was written at that timestamp; a later correction is new evidence and belongs in a new entry, not a
+    rewrite of the old one — exactly the shape #9's mirror-resilience design and #10's "falls through to a fresh Step 0" language already assume. Caught when the operator pointed out the
+    contradiction: this same brief had just described editing as the rare exception, then this decision used it as if it were the norm. Also stale in its own right — see #15. Reverted: both
+    `ledger.jsonl` and the cambium-swap `.wbr-ledger.jsonl` mirror restored to their original, pre-edit text. No further action needed here — #15's proper append already carries the substance forward.
+15. **cambium-swap next_test corrected via a proper append, and the "stand-down" call itself corrected — decided 2026-09-16, by direct project-side work, not this skill's own invocation:** the
+    corrected reasoning in #14 additionally over-reached: "no production access" (`SCRATCHPAD.md:36`) was read as meeting the stand-down condition "reality contact blocked by a third party," but the
+    operator confirmed directly that a physical bench/demo Cambium unit is available — not production, not blocked. A new ledger entry (`ts` 2026-09-16T16:32:36+10:00) was appended — not an edit — to
+    both `ledger.jsonl` and the project mirror, explicitly superseding the original 14:39:57 entry and noting the stray in-place edit #14 made (by then already reverted) was itself stale the moment
+    the bench unit was confirmed. Verdict still RED; `next_test` now: (a) pull real SNMP/API responses from the bench unit for the ePMP/cnMatrix/cnWave estate, (b) only if the bench unit turns out to
+    be a cnPilot/CPE model, add GenieACS to `wc-lab`, smoke-test wiring with `genieacs-sim`, then repoint at the real unit for CWMP — preserving #14's still-valid finding that a simulator alone never
+    substitutes for that repoint. Lesson recorded in that entry's own `learned` field: absence of a specific phrase ("no production access") in project docs is not the same as absence of all real-
+    hardware access — ask the operator directly rather than inferring a stand-down from adjacent wording. Open item unchanged from #14: which device family the bench unit actually is.
