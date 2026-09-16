@@ -1,0 +1,98 @@
+version: 1
+
+project:
+  name: skill-ansible-repo-intelligence
+  aliases: [skill-ari]
+  context_policy: "AI_NAVIGATION.md is the human-readable router; this file is the machine-readable routing map."
+
+bootstrap:
+  required_first_read:
+    - SKILL.md
+    - AGENTS.md
+    - AI_NAVIGATION.md
+    - ARCHITECTURE.md
+    - context-map.yaml
+    - CHANGELOG.md
+
+authority_order:
+  - path: ".archcore/adr"
+    type: architecture_decisions
+    authority: highest
+  - path: ".archcore/rules"
+    type: durable_rules
+    authority: highest
+  - path: "AGENTS.md"
+    type: agent_instructions
+    authority: high
+  - path: "CLAUDE.md"
+    type: claude_specific_instructions
+    authority: high
+  - path: "SKILL.md"
+    type: agent_contract
+    authority: high
+  - path: "AI_NAVIGATION.md"
+    type: context_router
+    authority: high
+  - path: "ARCHITECTURE.md"
+    type: architecture_overview
+    authority: medium_high
+  - path: "ROADMAP.md"
+    type: roadmap
+    authority: medium_high
+  - path: "CHANGELOG.md"
+    type: project_history
+    authority: medium_high
+  - path: "SCRATCHPAD.md"
+    type: transient_notes
+    authority: low
+
+routing:
+  architecture:
+    description: "Module structure, data flow, boundaries, design trade-offs."
+    read: [".archcore/adr", "ARCHITECTURE.md", "src/ansible_repo_intelligence"]
+    avoid_as_authority: ["SCRATCHPAD.md"]
+  governance:
+    description: "Invariants, agent behaviour, security rules."
+    read: ["AGENTS.md", "CLAUDE.md", "SKILL.md", ".archcore/rules"]
+  planning:
+    description: "Status, phases, next steps."
+    read: ["ROADMAP.md", "SCRATCHPAD.md", "docs/reports", "CHANGELOG.md"]
+  implementation:
+    description: "Code, schemas, config rule tables, tests."
+    read: ["ARCHITECTURE.md", "src/ansible_repo_intelligence", "schemas", "config", "tests"]
+    tools:
+      preferred: [serena]
+  scripts:
+    purpose: "Runnable tasks (scan/test/query/benchmark)."
+    read_first: ["justfile", "README.md", "SKILL.md"]
+    rules:
+      - "Prefer just --list and just <task>."
+      - "Runtime venv is external: skills-working-cache/skill-ansible-repo-intelligence/venv/."
+      - "Never create a repo-local .venv."
+
+runtime:
+  python: "3.14"
+  venv: "/Volumes/Data/_ai/_skills/skills-working-cache/skill-ansible-repo-intelligence/venv"
+  mise_pinned: true
+
+update_rules:
+  durable_decision: { update: [".archcore/adr"], also_consider: ["ARCHITECTURE.md"] }
+  durable_rule: { update: [".archcore/rules"], also_consider: ["AGENTS.md"] }
+  architecture_change: { update: ["ARCHITECTURE.md"] }
+  plan_change: { update: ["ROADMAP.md", "SCRATCHPAD.md"] }
+  routing_change: { update: ["AI_NAVIGATION.md", "context-map.yaml"] }
+  governance_history: { update: ["CHANGELOG.md"] }
+
+drift_policy:
+  on_conflict:
+    action: "stop_and_report"
+    required_output: [conflicting_files, higher_authority_source, recommended_fix, assumptions]
+  scratchpad_rule:
+    authoritative: false
+    promotion_required_for_durable_truth: true
+
+answer_contract:
+  require_source_paths: true
+  unsupported_answer: "not found in project context"
+  distinguish_assumptions: true
+  do_not_invent_state: true

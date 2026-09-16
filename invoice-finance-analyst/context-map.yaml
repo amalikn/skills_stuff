@@ -1,0 +1,287 @@
+version: 1
+
+project:
+  name: invoice-finance-analyst
+  skill: internal-invoice-analysis
+  context_policy: "AI_NAVIGATION.md is the human-readable router; this file is the machine-readable routing map."
+  python_version: "3.14.4"
+  venv: "/Volumes/Data/_ai/_skills/skills-working-cache/invoice-finance-analyst/venv/"
+
+bootstrap:
+  required_first_read:
+    - AGENTS.md
+    - AI_NAVIGATION.md
+    - context-map.yaml
+    - CHANGELOG.md
+
+authority_order:
+  - path: ".archcore/adr"
+    type: architecture_decisions
+    authority: highest
+  - path: ".archcore/rules"
+    type: durable_rules
+    authority: highest
+  - path: ".archcore/specs"
+    type: design_contracts
+    authority: highest
+  - path: ".archcore/guides"
+    type: operating_guides
+    authority: high
+  - path: ".archcore/plans"
+    type: approved_plans
+    authority: high
+  - path: "AGENTS.md"
+    type: agent_instructions
+    authority: high
+  - path: "CLAUDE.md"
+    type: claude_specific_instructions
+    authority: high
+  - path: "AI_NAVIGATION.md"
+    type: context_router
+    authority: high
+  - path: "internal-invoice-analysis/SKILL.md"
+    type: skill_behavior_spec
+    authority: high
+    note: "Canonical skill behavior — source of truth for what the skill does"
+  - path: "docs/data_contract.md"
+    type: input_schema
+    authority: high
+  - path: "docs/output_schema.md"
+    type: output_schema
+    authority: high
+  - path: "ARCHITECTURE.md"
+    type: architecture_overview
+    authority: medium_high
+  - path: "ROADMAP.md"
+    type: roadmap_and_gap_decisions
+    authority: medium_high
+  - path: "SETUP.md"
+    type: setup_and_invocation
+    authority: medium_high
+  - path: "CHANGELOG.md"
+    type: project_history
+    authority: medium_high
+  - path: "scripts/README.md"
+    type: script_catalog
+    authority: medium
+  - path: "SCRATCHPAD.md"
+    type: transient_notes
+    authority: low
+    note: "KEEP-marked content is durable"
+  - path: "docs/invoice_analysis_framework.md"
+    type: planning_artifact
+    authority: very_low
+    note: "884-line design survey — planning/research only; not operational spec"
+
+hard_constraints:
+  - no_external_financial_data: true
+  - never_invent_values: true
+  - numeric_conclusions_require_pandas_source: true
+  - source_csvs_are_read_only: true
+  - real_data_gate: "Phase 4b.1 (service-map) + 4b.2 (control totals) must be complete before production data"
+
+context_sources:
+  archcore:
+    enabled: true
+    root: ".archcore"
+    read_first_for:
+      - architecture_decision
+      - governance_rule
+      - design_contract
+      - implementation_plan
+      - operating_procedure
+      - durable_project_truth
+    status: "initialized 2026-05-22; no documents yet — promote from ROADMAP/SCRATCHPAD when ready"
+
+  generated:
+    graphify:
+      enabled: true
+      root: "graphify-out"
+      preferred_files:
+        - "graphify-out/GRAPH_REPORT.md"
+        - "graphify-out/graph.json"
+      regenerate_command: "graphify update ."
+
+    repomix:
+      enabled: true
+      config: "repomix.config.json"
+      root: ".ai-context"
+      preferred_files:
+        - ".ai-context/governance-pack.md"
+      regenerate_command: "repomix --config repomix.config.json"
+
+routing:
+  architecture:
+    description: "Architecture, pipeline layers, component map, severity model, invariants."
+    read:
+      - ".archcore/adr"
+      - ".archcore/specs"
+      - "ARCHITECTURE.md"
+      - "docs/data_contract.md"
+      - "docs/output_schema.md"
+    avoid_as_authority:
+      - "SCRATCHPAD.md"
+      - "docs/invoice_analysis_framework.md"
+
+  planning:
+    description: "Roadmap, phase status, gap review decisions, next actions."
+    read:
+      - ".archcore/plans"
+      - "ROADMAP.md"
+      - "CHANGELOG.md"
+      - "SCRATCHPAD.md"
+    note: "ROADMAP.md has gap review acceptance log and phase 4a–4e breakdown"
+
+  governance:
+    description: "Agent behaviour, project rules, file update rules, workflow constraints."
+    read:
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - "AI_NAVIGATION.md"
+      - "context-map.yaml"
+      - "CHANGELOG.md"
+      - ".archcore/rules"
+
+  skill_behavior:
+    description: "What the skill does, hard rules, 15-step workflow, response format."
+    read:
+      - "internal-invoice-analysis/SKILL.md"
+      - "ARCHITECTURE.md"
+      - "docs/data_contract.md"
+    avoid_as_authority:
+      - "docs/invoice_analysis_framework.md"
+
+  implementation:
+    description: "Code, scripts, tests, configs."
+    read:
+      - "AGENTS.md"
+      - "scripts/README.md"
+      - "docs/data_contract.md"
+      - "docs/output_schema.md"
+      - ".archcore/specs"
+    script_run_order:
+      - scripts/validate_inputs.py
+      - scripts/load_inputs.py
+      - scripts/invoice_analysis_skeleton.py
+      - scripts/rate_card_analysis.py
+      - scripts/trend_analysis.py
+      - scripts/llm_analyst.py
+
+  scripts:
+    purpose: "Pipeline scripts and test runner."
+    read_first:
+      - "justfile"
+      - "scripts/README.md"
+      - "SETUP.md"
+    rules:
+      - "Prefer just <task> over raw python invocations. Use just --list to see available tasks."
+      - "Activate venv before running scripts directly."
+      - "Run scripts in pipeline order."
+      - "Treat all scripts as modifies-files safety level."
+      - "llm_analyst.py requires OPENAI_API_KEY or OPENAI_BASE_URL + OPENAI_API_KEY env vars."
+      - "Do not run on production data until Phase 4b.1 + 4b.2 complete."
+
+  documentation:
+    description: "README, docs, architecture docs, output schema."
+    read:
+      - "README.md"
+      - "CHANGELOG.md"
+      - "docs/data_contract.md"
+      - "docs/output_schema.md"
+      - "ARCHITECTURE.md"
+      - ".archcore/guides"
+      - ".archcore/specs"
+
+update_rules:
+  durable_decision:
+    update: [".archcore/adr"]
+    also_consider: ["ARCHITECTURE.md", "ROADMAP.md"]
+
+  durable_rule:
+    update: [".archcore/rules"]
+    also_consider: ["AGENTS.md", "AI_NAVIGATION.md"]
+
+  design_contract:
+    update: [".archcore/specs"]
+    also_consider: ["docs/data_contract.md", "docs/output_schema.md"]
+
+  operating_procedure:
+    update: [".archcore/guides"]
+    also_consider: ["SETUP.md", "scripts/README.md"]
+
+  new_output_table:
+    update: ["docs/output_schema.md", "ARCHITECTURE.md"]
+    also_consider: [".archcore/specs"]
+
+  script_change:
+    update: ["scripts/README.md", "ARCHITECTURE.md"]
+    also_consider: ["SETUP.md", "docs/output_schema.md"]
+
+  phase_complete:
+    update: ["ROADMAP.md", "SCRATCHPAD.md"]
+    also_consider: ["CHANGELOG.md", "README.md"]
+
+  routing_change:
+    update: ["AI_NAVIGATION.md", "context-map.yaml", "AGENTS.md"]
+
+  governance_history:
+    update: ["CHANGELOG.md"]
+
+drift_policy:
+  on_conflict:
+    action: "stop_and_report"
+    required_output:
+      - conflicting_files
+      - higher_authority_source
+      - recommended_fix
+      - assumptions
+
+  known_tensions:
+    - files: ["docs/invoice_analysis_framework.md", "ARCHITECTURE.md", "internal-invoice-analysis/SKILL.md"]
+      resolution: "ARCHITECTURE.md + SKILL.md win; framework doc is planning artifact only"
+    - files: ["SCRATCHPAD.md", "ROADMAP.md"]
+      resolution: "ROADMAP.md wins for phase status and gap decisions"
+
+generated_context_policy:
+  regenerate_after:
+    - new_script_added
+    - output_schema_changed
+    - architecture_restructure
+    - new_archcore_documents
+    - major_roadmap_update
+
+  commands:
+    graphify: "graphify update ."
+    repomix_governance: "repomix --config repomix.config.json"
+
+wiki_rag_bridge:
+  status: "PROJECT_WIKI_BRIDGE_READY"
+  policy_file: "retrieval-policy.yaml"
+  allowed_collections:
+    - "rag__wiki_vocus"
+    - "rag__wiki_nbn"
+    - "rag__project_invoice_finance_analyst"
+  wiki_domains_indexed:
+    - domain: "vocus"
+      collection: "rag__wiki_vocus"
+      status: "WIKI_DOMAIN_INDEXED"
+    - domain: "nbn"
+      collection: "rag__wiki_nbn"
+      status: "WIKI_DOMAIN_INDEXED"
+  project_collection_status: "not_needed — all project docs classified financial_rate_card with index_allowed=false; use direct file lookup"
+  document_profile: "DOCUMENT_PROFILE_COMPLETE"
+  strategy_recommended: "STRATEGY_RECOMMENDED"
+  retrieval_route_selected: "RETRIEVAL_ROUTE_SELECTED"
+  rag_tools_readiness: "RAG_TOOLS_READY"
+  rag_tools_dynamic: "RAG_TOOLS_DYNAMIC_RETRIEVAL_READY"
+  project_bridge_status: "PROJECT_WIKI_BRIDGE_READY"
+  next_step: "Bridge fully operational. Wiki queries → rag-tools vector_rag (rag__wiki_vocus / rag__wiki_nbn). Project doc queries → rag-tools lookup-table or structured-lookup on source file."
+  isolation_rule: "never query rag__project_vocus_profitability or any global collection from this project"
+
+answer_contract:
+  require_source_paths: true
+  unsupported_answer: "not found in project context"
+  distinguish_assumptions: true
+  do_not_invent_state: true
+  numeric_conclusions_require_source: true
+  retrieval_answer_requires_evidence_bundle: true

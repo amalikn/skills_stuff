@@ -1,0 +1,7 @@
+id: opportunity-assessment
+name: Opportunity Assessment
+lifecycle: VALIDATED
+inputs: [business_idea, customer_hypothesis, problem_hypothesis]
+outputs: [business_model_hypotheses, assumption_register, feasibility_questions]
+human_approval: required_before_pilot
+implementation: bftoolkit.advisor:build_assessment_plan

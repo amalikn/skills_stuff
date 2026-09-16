@@ -1,0 +1,165 @@
+# Gold-answer benchmark question set for the ansible-wifi repository.
+#
+# Each question carries:
+#   selector/term  — how the indexed workflow retrieves (query + topic paths)
+#   gold_files     — the source files a correct answer MUST be grounded in
+#   keywords       — terms a baseline (no-index) agent would grep for
+#
+# The harness measures files-opened and retrieval recall deterministically.
+# Answer correctness / unsupported claims are graded externally per RUNBOOK.md.
+version: "1.0.0"
+repo: ansible-wifi
+questions:
+  - id: q01-dns-config
+    question: How is DNS resolution configured on an SMC box?
+    selector: role
+    term: smc_dns
+    gold_files: [roles/smc_dns/tasks/main.yml, roles/smc_dns/handlers/main.yml]
+    keywords: [unbound, stubby, resolv]
+
+  - id: q02-firewall
+    question: Which role manages firewall rules and what handlers does it notify?
+    selector: role
+    term: smc_iptables
+    gold_files: [roles/smc_iptables/tasks/main.yml, roles/smc_iptables/handlers/main.yml]
+    keywords: [iptables, netfilter, firewall]
+
+  - id: q03-wifi-ap
+    question: How is the WiFi access point (hostapd) configured?
+    selector: role
+    term: smc_hostapd
+    gold_files: [roles/smc_hostapd/tasks/main.yml, roles/smc_hostapd/handlers/main.yml]
+    keywords: [hostapd, wlan, ssid]
+
+  - id: q04-dhcp
+    question: How does the SMC serve DHCP to clients?
+    selector: role
+    term: smc_dhcpd
+    gold_files: [roles/smc_dhcpd/tasks/main.yml, roles/smc_dhcpd/handlers/main.yml]
+    keywords: [dhcpd, dhcp, lease]
+
+  - id: q05-voip
+    question: How is Asterisk / VoIP configured?
+    selector: role
+    term: smc_asterisk
+    gold_files: [roles/smc_asterisk/tasks/main.yml]
+    keywords: [asterisk, extensions, dialplan]
+
+  - id: q06-ha-failover
+    question: How is HA / VIP failover implemented?
+    selector: role
+    term: smc_keepalived
+    gold_files: [roles/smc_keepalived/tasks/main.yml, roles/smc_keepalived/handlers/main.yml]
+    keywords: [keepalived, vrrp, virtual_ipaddress]
+
+  - id: q07-time-sync
+    question: How is time synchronization handled?
+    selector: role
+    term: smc_ntpd
+    gold_files: [roles/smc_ntpd/tasks/main.yml]
+    keywords: [ntp, chrony, ntpd]
+
+  - id: q08-mail
+    question: How is outbound mail (postfix) configured?
+    selector: role
+    term: smc_postfix
+    gold_files: [roles/smc_postfix/tasks/main.yml]
+    keywords: [postfix, relayhost, smtp]
+
+  - id: q09-reverse-tunnel
+    question: How does the box establish its reverse SSH tunnel?
+    selector: role
+    term: smc_autossh
+    gold_files: [roles/smc_autossh/tasks/main.yml]
+    keywords: [autossh, teleport, reverse]
+
+  - id: q10-antivirus
+    question: How is antivirus (ClamAV) set up?
+    selector: role
+    term: smc_clamav
+    gold_files: [roles/smc_clamav/tasks/main.yml]
+    keywords: [clamav, freshclam, virus]
+
+  - id: q11-restart-unbound-handler
+    question: Which handler restarts the unbound DNS service?
+    selector: handler
+    term: Restart unbound service
+    gold_files: [roles/smc_dns/handlers/main.yml]
+    keywords: [Restart unbound]
+
+  - id: q12-restart-iptables-handler
+    question: Which handler restarts iptables/netfilter?
+    selector: handler
+    term: Restart iptables service
+    gold_files: [roles/smc_iptables/handlers/main.yml]
+    keywords: [Restart iptables]
+
+  - id: q13-prometheus
+    question: How is Prometheus node monitoring configured on the box?
+    selector: role
+    term: smc_prometheus
+    gold_files: [roles/smc_prometheus/tasks/main.yml]
+    keywords: [prometheus, node_exporter, scrape]
+
+  - id: q14-node-exporter
+    question: How is the node_exporter deployed?
+    selector: role
+    term: smc_node_exporter
+    gold_files: [roles/smc_node_exporter/tasks/main.yml]
+    keywords: [node_exporter, textfile_collector]
+
+  - id: q15-qos
+    question: How is QoS / traffic shaping applied?
+    selector: role
+    term: smc_qos
+    gold_files: [roles/smc_qos/tasks/main.yml]
+    keywords: [qos, tc, htb, shaping]
+
+  - id: q16-mqtt
+    question: How is the MQTT broker configured?
+    selector: role
+    term: smc_mqtt
+    gold_files: [roles/smc_mqtt/tasks/main.yml]
+    keywords: [mqtt, mosquitto, broker]
+
+  - id: q17-security-audit
+    question: How is Lynis security auditing configured?
+    selector: role
+    term: smc_lynis
+    gold_files: [roles/smc_lynis/tasks/main.yml]
+    keywords: [lynis, audit, hardening]
+
+  - id: q18-graylog-forward
+    question: How are logs forwarded to Graylog?
+    selector: role
+    term: smc_graylog
+    gold_files: [roles/smc_graylog/tasks/main.yml]
+    keywords: [graylog, rsyslog, gelf]
+
+  - id: q19-network
+    question: How is the base network configured?
+    selector: role
+    term: smc_network
+    gold_files: [roles/smc_network/tasks/main.yml]
+    keywords: [netplan, interfaces, bridge, vrf]
+
+  - id: q20-node-exporter-textfile
+    question: Which role provides the textfile collectors used by monitoring?
+    selector: role
+    term: smc_node_exporter
+    gold_files: [roles/smc_node_exporter/tasks/main.yml]
+    keywords: [textfile_collector, prom, collector]
+
+  - id: q21-topology-vars
+    question: Where do per-host topology variables come from?
+    selector: vars_plugin
+    term: null
+    gold_files: [vars_plugins/topology_vars.py]
+    keywords: [topology_interfaces, topology_bridges, get_vars]
+
+  - id: q22-dns-template
+    question: Which template renders the unbound configuration?
+    selector: file
+    term: unbound
+    gold_files: [roles/smc_dns/templates/unbound.conf.j2]
+    keywords: [unbound.conf, server:, forward-zone]

@@ -1,0 +1,13 @@
+{
+  "id": "javascript-typescript",
+  "displayName": "JavaScript and TypeScript",
+  "description": "JavaScript and TypeScript repositories.",
+  "detect": {"anyFiles": ["package.json", "tsconfig.json", "pnpm-lock.yaml", "yarn.lock"], "anyDirectories": ["src", "app", "pages"]},
+  "include": ["package.json", "package-lock.json", "pnpm-lock.yaml", "yarn.lock", "bun.lock", "bun.lockb", "tsconfig*.json", "jsconfig*.json", "vite.config.*", "webpack.config.*", "next.config.*", "nuxt.config.*", "src/**/*.{js,jsx,ts,tsx,mjs,cjs}", "app/**/*.{js,jsx,ts,tsx}", "pages/**/*.{js,jsx,ts,tsx}", "components/**/*.{js,jsx,ts,tsx}", "server/**/*.{js,ts}", "tests/**/*.{js,jsx,ts,tsx}"],
+  "ignore": ["node_modules/**", ".next/**", ".nuxt/**", ".output/**", "dist/**", "build/**", "coverage/**", "*.tsbuildinfo"],
+  "priorityFiles": ["package.json", "tsconfig.json"],
+  "securitySensitivePatterns": ["**/.env*", "**/secrets.*", "**/credentials.*"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 120000,
+  "notes": []
+}

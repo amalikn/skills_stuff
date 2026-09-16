@@ -27,6 +27,9 @@
 | `smartmon_device_smart_healthy == 0`   | SMART failure — x86 rcp/nbn_accelerate only (Innodisk CFast or Transcend SSD; `smartctl` finds no          | Drive health critical                          |
 |                                        |   ATA-SMART device on RPi microSD, this alert never fires there)                                           |                                                |
 
+**Known coverage gap:** there is no per-device `role="internet"` equivalent of `NodeStarlinkInterfacecheckPacketLoss` — see `13_known-issues.md` "No per-device `role: internet` Prometheus alert
+exists" and the "interfacecheckv2.sh's Unconditional dhclient Restart" entry below for why this let an outage go undetected.
+
 ### Overlayroot Upper Dir Full
 
 ```
@@ -305,3 +308,103 @@ mount lands at 50% of RAM — consistent with the existing "`overlay.size_ratio`
 | `tsh` gotcha hit during triage  | `tsh ssh root@<host> -- "<cmd>"` fails with "invalid option" — the `--` separator is forwarded literally to the remote bash. Use `tsh ssh root@<host> "<cmd>"`     |
 |                                 |   (no `--`)                                                                                                                                                        |
 | Full write-up                   | `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/aurukun/enp2s0-flap.md`                                                                                |
+
+### interfacecheckv2.sh's Unconditional dhclient Restart Can Worsen a Marginal Link (No Backoff)
+
+**Do not read the aurukun entry above as "the self-heal cron is always harmless."** That incident concluded the cron was blameless because the circuit was already fully dead (zero DHCPOFFERs even
+after a clean bounce) — cycling `dhclient` on a dead circuit changes nothing. This is the opposite case: the same script's same behavior actively made a **still-recoverable, briefly-degraded** link
+worse, observed at `galiwinku-smc01` (`nbn_accelerate`), 2026-09-08.
+
+| Field           | Value                                                                                                                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mechanism       | `interfacecheckv2.sh` (`roles/smc_network/templates/interfacecheckv2.sh.j2`) runs via a 5-minute cron, `ping -I <iface> -c4 -W3 8.8.8.8` on every                                  |
+|                 |   `role: internet`/`role: starlink` interface, and on **any** failure unconditionally runs `systemctl restart dhclient@<iface>.service` — no consecutive-failure counter, no backoff, |
+|                 |   no escalation tier. One failed 4-packet ping is enough to trigger a full DHCP client restart on that interface, every 5 minutes, indefinitely                                    |
+| Observed        | `vlan523` on galiwinku went from "briefly degraded during an upstream flap" to a full DHCP lease loss (`No DHCPOFFERS received`,                                                   |
+|   failure       |   `No working leases in persistent database - sleeping`) immediately after the script's `dhclient` restart landed inside the same 5-minute window (~11:48 AEST). A link that might |
+|                 |   have recovered on its own, or recovered its existing lease via renewal, instead lost the lease entirely and had to renegotiate from scratch                                      |
+| Why it can hurt | Restarting `dhclient` on a marginal/flapping link discards the current, possibly-still-valid lease and forces a fresh `DISCOVER`/`OFFER`/`REQUEST`/`ACK` cycle. If the             |
+|                 | far end is mid-flap rather than fully dead, the restart can lose a lease that a simple renewal (`dhclient -1`/lease renewal, no restart) would have kept, or can land the          |
+|                 | new negotiation in a worse moment of the same flap                                                                                                                                 |
+| Not yet         | A consecutive-failure counter/backoff so the script stops restarting `dhclient` after 2-3 consecutive failed cycles and instead just reports via the existing                      |
+| implemented     | `my_node_interfacecheck_success` Prometheus metric — restarting a client can't fix a problem that isn't a stale-lease problem (e.g. an upstream ARP failure), and                  |
+|                 | continuing to kick a link that's mid-flap risks compounding a transient issue into a harder one                                                                                    |
+| Relationship to | The `HostInterfacecheckTextfileCollectorNotUpdated` alert (`SKILL.md` / `06_failure-modes.md` Key Prometheus Alerts) only detects the script itself going stale — it says          |
+| monitoring gap  | nothing about a single interface repeatedly failing and being repeatedly restarted while the script keeps running fine. See `13_known-issues.md` "Fleet-Wide Architecture          |
+|                 | Risks" for the related per-device `role: internet` alerting gap that let this class of failure go undetected until manual SSH diagnosis                                            |
+
+### ECMP Multipath Hashing Pins Fixed-Destination Traffic to a Single (Possibly Dead) Nexthop — the single most generalizable multi-WAN finding in this pack
+
+Confirmed at `galiwinku-smc01` (`nbn_accelerate`), 2026-09-08. **Presume fleet-wide unless proven otherwise on other hosts** — nothing in Ansible sets `net.ipv4.fib_multipath_hash_policy` anywhere in
+the repo, so every multi-WAN site inherits the kernel default. Read `03_communication-flows.md` "Nothing in ansible-wifi builds the ECMP multipath default" first — this entry is the practical
+consequence of that unmanaged, emergent ECMP group described there.
+
+| Field                                  | Value                                                                                                                                                       |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root cause                             | `net.ipv4.fib_multipath_hash_policy` defaults to `0` (L3-only: hashes source+destination IP only, ignoring port/protocol). Every flow to a **fixed**        |
+|                                        |   **destination IP** (DNS queries to `8.8.8.8`/`8.8.4.4`, or any monitoring/health-check target pinged by IP) is deterministically pinned to exactly **one** ECMP |
+|                                        |   nexthop, permanently, regardless of that nexthop's actual health — and because ECMP membership itself drifts (unmanaged, no health eviction — see         |
+|                                        |   `03_communication-flows.md`), which specific link a given destination pins to also silently drifts over time with zero visibility                         |
+| Symptom signature (memorize this)      | **Recognize this pattern at any multi-WAN SMC:** pinging an FQDN fails or times out inconsistently, seemingly regardless of which interface (`-I`) is       |
+|                                        |   specified, but pinging the same destination by raw IP works fine, and/or hardcoding the resolved IP into `/etc/hosts` "fixes" it                          |
+| Why FQDN tests mislead                 | DNS resolution does not respect `ping -I`'s device binding — glibc's resolver uses the box's normal route selection, not the bound test interface. So the   |
+|   per-iface testing                    |   DNS lookup step transits whichever single link the destination IP's L3 hash currently pins to. If that link happens to be currently broken, **every**     |
+|                                        |   FQDN-based test fails together regardless of which interface is actually under test, while direct-IP tests (no DNS step) correctly show the true          |
+|                                        |   per-interface health. This can make a single bad link look like a fleet-wide DNS outage when only one nexthop is actually down                            |
+| Fix                                    | `net.ipv4.fib_multipath_hash_policy=1` (adds source/destination port + protocol to the hash — standard "L4" multipath hashing). Lets different              |
+|                                        |   flows/retries to the same destination land on different nexthops instead of being permanently glued to one                                                |
+| Reboot required                        | **No.** `sysctl -w net.ipv4.fib_multipath_hash_policy=1` takes effect immediately. Persist via a file in `/etc/sysctl.d/`, then `sysctl --system` re-applies |
+|                                        |   cleanly, matching what happens at next boot anyway                                                                                                        |
+| Live-test procedure (~30s, zero risk)  | Run `ip route get <known-fixed-destination-ip> sport <N1> dport <P> ipproto <proto>` for several arbitrary source port numbers `N`. Under `policy=0` all    |
+|                                        |   return the identical nexthop; after switching to `policy=1`, the same commands should return varying nexthops. Provable on any live box in under a minute |
+|                                        |   with no traffic impact                                                                                                                                    |
+| Applied at galiwinku                   | Live + persisted on 2026-09-08 via a new file `/etc/sysctl.d/60-smc-multiwan-fib-hash.conf` — **on-box only, NOT committed to the ansible-wifi git repo, NOT** |
+|                                        |   **rolled into** **`roles/smc_network`** **via Ansible**. A fleet-wide rollout via a `sysctl` module task (`sysctl_set: yes`, `reload: yes`) was proposed but |
+|                                        |   **deliberately deferred** pending an observation period on galiwinku alone. **Do not assume this fix is live fleet-wide from this entry alone — check the** |
+|                                        |   **actual role/live hosts before relying on it anywhere else.**                                                                                            |
+
+**Important caveat — the fix does NOT give seamless mid-connection failover.** Switching to L4 hashing does not monitor or reroute an already-established flow just because the hash policy changed or
+the path went bad — an open TCP connection keeps using its originally-hashed nexthop for its entire lifetime. Only **new** connection attempts (including reconnects of a dropped connection) benefit,
+since each gets a fresh ephemeral source port and therefore an independent hash roll. Practical implication: if the link carrying an active session goes bad, that session must first be detected as
+dead by whatever keepalive the specific service uses before a reconnect is even attempted — the fix only improves the odds that *that* reconnect attempt succeeds quickly, rather than repeatedly
+hashing onto the same dead nexthop forever (the old L3-only failure mode).
+
+**Real production evidence this already hit live infrastructure** — the `autossh-teleport-openssh` systemd service's own log, galiwinku, 2026-09-08 incident window:
+
+```
+Sep 08 11:25:32 galiwinku-smc01 autossh[1980298]: ssh: connect to host 3.104.50.51 port 22: No route to host
+ssh exited with error status 255; restarting ssh
+```
+
+A genuine reconnect attempt failed outright because, under the pre-fix L3-only policy, it hashed onto a nexthop that was ARP-dead at that moment (the service self-recovered on a later retry, now
+established via `eno1`). This is concrete proof the pinning issue doesn't just affect DNS lookups — it affects **any** fixed-destination-IP traffic, including the Teleport reverse tunnel itself, since
+Teleport's own bastion IP (`3.104.50.51`) is just as subject to the same per-destination hash pinning as `8.8.8.8` is. See `05_troubleshooting.md` Tier 1 for the autossh tunnel check this relates to,
+and `03_communication-flows.md` §Backdoor SSH Access for the fallback path when this tunnel itself is the thing affected.
+
+### Port-80 Source-IP Allowlist on the APN VIP (`202.171.100.138` / `wifi-02.activ8me.net.au`) — a site's public IP drifting out of the NAT pool breaks it silently
+
+Confirmed 2026-09-08. **This is an APN-internal policy failure, not a vendor problem** — read `03_communication-flows.md` "`wifi-02.activ8me.net.au` / `202.171.100.138` is APN's OWN keepalived/LVS
+VIP" first for the ownership correction that makes this an internal escalation.
+
+| Field                                    | Value                                                                                                                                                     |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mechanism                                | The **port-80** virtual service on `202.171.100.138` enforces a source-IP ACL. Sources inside `119.12.209.0/24` (the fleet's normal NAT pool) are permitted; |
+|                                          |   sources outside it are **rejected at the director** with ICMP type 3 code 13 (admin prohibited). **Port 443 carries no such restriction** — HTTP 200 from every |
+|                                          |   source tested                                                                                                                                           |
+| Symptom signature (memorize this)        | `curl`/`telnet` to **port 80** fails with **"No route to host" in ~1 RTT**, while **ping to the same host succeeds** and **port 443 works**. That combination is an |
+|                                          |   ICMP admin-prohibited *reject*, not a routing failure — a genuine routing failure would not let ping through, and a drop/blackhole would time out over  |
+|                                          |   seconds rather than answering immediately                                                                                                               |
+| Do not confuse with the expected         | `curl` **exit 56** / "Connection reset by peer" means the TCP connection reached **ESTABLISHED** and the application then reset it — this is the **normal** behaviour |
+|   behaviour other sites see              |   of this endpoint and is what a healthy in-pool site looks like. `curl` **exit 7** / "No route to host" means the connection **never established at all** — that |
+|                                          |   is the allowlist reject. Always capture `rc=$?` separately; the two are trivially distinguishable by exit code and completely different diagnoses       |
+| Confirmed out-of-range sources           | `galiwinku-smc01` public IP `119.12.211.80`, and `cw-teleport01` `3.104.50.51` — two independent sources, both rejected on port 80, both fine on 443      |
+| Root cause (galiwinku case)              | The site's **carrier NAT placed it in `119.12.211.0/24` instead of the fleet's `119.12.209.0/24`**, silently putting it outside the allowlist. **No config** |
+|                                          |   **change was made on either side and nothing alerted.** Any site whose public IP drifts out of the pool breaks identically and just as silently         |
+| Fix path                                 | Either add the range to the director's allowlist, or — **preferred** — restore the site to the fleet's NAT pool so the allowlist stays a tight,           |
+|                                          |   meaningful control                                                                                                                                      |
+| Investigation limit hit                  | **SSH to the director (`202.171.100.132:22`) is FILTERED from `cw-teleport01`**, so the allowlist rule itself could not be read in-session. The behaviour |
+|                                          |   above is inferred from the ICMP responses, not from the rule text                                                                                       |
+
+**Prevention**: nothing today audits site public egress IPs against the expected pool. See `03_communication-flows.md` "Per-Site Public Egress IP" for the `curl -sS https://api.ipify.org` check, the
+known per-site values, and the recommended fleet-wide audit. For the method used to prove the rejection was generated at the far end rather than by a nearby middlebox, see `05_troubleshooting.md`
+"Cross-Tier: Reject vs Drop, Where a Rejection Was Generated, and On-Box Tooling Gotchas".

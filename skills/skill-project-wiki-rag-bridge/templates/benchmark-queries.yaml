@@ -1,0 +1,89 @@
+# benchmark-queries.yaml — benchmark query set for rag-tools benchmark-file
+# Template: copy to <project-root>/rag/benchmarks/queries/<document_id>-queries.yaml
+# Usage: rag-tools benchmark-file <path> --queries <this-file>
+# Schema: skill-project-wiki-rag-bridge/schemas/benchmark-queries (inline below)
+
+version: 1
+
+document_id: "<document-id>"           # must match retrieval-strategy.yaml document_id
+document_class: "<class>"              # structured_markdown_reference | financial_rate_card | etc.
+
+# Minimum 5 queries. Weight toward the primary retrieval mode:
+# - structured_markdown_reference → section/heading queries
+# - financial_rate_card / invoice_or_billing_report → table queries
+# - knowledge_article → semantic/cross-section queries
+
+queries:
+  - id: "Q1"
+    query: "<question that tests exact section or fact extraction>"
+    expected_source:
+      section_id: "<section-ID or null>"           # e.g. "C2.11" or null
+      heading_contains: "<heading text or null>"   # e.g. "Rebate Calculation" or null
+      table_contains: "<table header or value or null>"
+    expected_terms:
+      - "<term-that-must-appear-in-excerpt>"
+    expected_answer_contains:
+      - "<value or phrase — for human review>"
+    retrieval_modes:
+      - structured          # test structured heading/section lookup
+      - table               # test table-aware lookup
+      # - vector_rag        # uncomment only if Qdrant collection exists
+    notes: "<why this query matters — e.g. tests rebate period 3 amount>"
+
+  - id: "Q2"
+    query: "<question that tests table retrieval>"
+    expected_source:
+      section_id: null
+      heading_contains: null
+      table_contains: "<header cell text>"
+    expected_terms:
+      - "<column header>"
+      - "<expected cell value>"
+    expected_answer_contains:
+      - "<expected amount or rate>"
+    retrieval_modes:
+      - table
+      - structured
+    notes: "<e.g. tests rate card lookup for service X in period Y>"
+
+  - id: "Q3"
+    query: "<question that tests heading navigation>"
+    expected_source:
+      section_id: null
+      heading_contains: "<heading text>"
+      table_contains: null
+    expected_terms:
+      - "<term expected in that section>"
+    expected_answer_contains:
+      - "<phrase or value>"
+    retrieval_modes:
+      - structured
+    notes: "<e.g. tests heading-level navigation for clause lookup>"
+
+  - id: "Q4"
+    query: "<cross-section or semantic question>"
+    expected_source:
+      section_id: null
+      heading_contains: null
+      table_contains: null
+    expected_terms:
+      - "<key term>"
+    expected_answer_contains:
+      - "<expected concept>"
+    retrieval_modes:
+      - structured
+      # - vector_rag
+    notes: "<e.g. tests whether structured lookup handles cross-section intent>"
+
+  - id: "Q5"
+    query: "<negative or edge-case query — tests fallback behavior>"
+    expected_source:
+      section_id: null
+      heading_contains: null
+      table_contains: null
+    expected_terms: []
+    expected_answer_contains: []
+    retrieval_modes:
+      - structured
+      - table
+    notes: "Expect fallback_needed: true — confirms benchmark detects retrieval gaps"

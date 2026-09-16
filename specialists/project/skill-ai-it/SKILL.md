@@ -1,18 +1,6 @@
 ---
 name: skill-ai-it
-description: >
-  Analyzes a folder's existing content and bootstraps or refreshes AI
-  governance, navigation, and context-routing files tailored to what it finds.
-  Creates README.md, AGENTS.md, CLAUDE.md, SCRATCHPAD.md, and CHANGELOG.md
-  always during bootstrap; creates ARCHITECTURE.md, CONVENTIONS.md, ROADMAP.md,
-  AI_NAVIGATION.md, context-map.yaml, repomix.config.json, optional script/task
-  inventory files, and local preflight scripts only when explicitly requested. Supports safe
-  repeat runs that audit, append, refresh, or propose changes without
-  overwriting existing governance content. Updates parent folder index and
-  routing rules. Invoke when setting up a new project folder, onboarding an
-  existing folder into the AI governance stack, adding AI navigation support,
-  refreshing context routing, or bootstrapping child projects under apn/ or
-  project_stuff/.
+description: "Bootstraps/refreshes a folder's AI governance docs when onboarding a project."
 metadata:
   short-description: Bootstrap and maintain AI governance/navigation files from folder content analysis
 ---
@@ -26,11 +14,11 @@ metadata:
 - [Operating Modes](#operating-modes)
 - [Repeat-Safety Contract](#repeat-safety-contract)
 - [Skill Package Layout](#skill-package-layout)
-- [Phase 1 — Inventory](#phase-1-inventory)
-- [Phase 2 — Understand](#phase-2-understand)
-- [Phase 3 — Infer](#phase-3-infer)
-- [Phase 4 — Generate Files](#phase-4-generate-files)
-- [Phase 5 — Update Parent](#phase-5-update-parent)
+- [Phase 1 — Inventory](#phase-1--inventory)
+- [Phase 2 — Understand](#phase-2--understand)
+- [Phase 3 — Infer](#phase-3--infer)
+- [Phase 4 — Generate Files](#phase-4--generate-files)
+- [Phase 5 — Update Parent](#phase-5--update-parent)
 - [Conventions Baked In](#conventions-baked-in)
 - [Quality Check Before Completing](#quality-check-before-completing)
 - [Context Compaction Recovery](#context-compaction-recovery)
@@ -39,6 +27,7 @@ metadata:
 - [Audit Output Format](#audit-output-format)
 - [Public Pattern Inspiration](#public-pattern-inspiration)
 - [Required Follow-Up Packaging Task](#required-follow-up-packaging-task)
+- [Pitfalls observed in practice](#pitfalls-observed-in-practice)
 
 ---
 
@@ -71,20 +60,18 @@ regeneration.
 
 Determine the mode before editing. If the user does not specify a mode, infer it from existing files and requested action.
 
-| Mode             | Trigger                                      | Behaviour                                                                                                                          |
-| ---------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `bootstrap`      | New or lightly populated folder              | Create the base governance scaffold and conditional project files.                                                                 |
-| `navigation-add` | Existing project lacks `AI_NAVIGATION.md` or | Add the AI navigation starter module and wire it into AGENTS/CLAUDE/README. Where managed blocks already exist, run the            |
-|                  |   `context-map.yaml`                         |   deterministic upgrade sequence rather than hand-editing them.                                                                    |
-| `refresh`        | Existing governance files are present        | **Run the deterministic upgrade sequence FIRST** (see                                                                              |
-|                  |                                              |   [Deterministic Navigation-Control Automation](#deterministic-navigation-control-automation)) — it rewrites managed blocks,       |
-|                  |                                              |   restamps the version, and adds missing `context-map.yaml` keys mechanically. Only then re-scan content, update routing/index     |
-|                  |                                              |   sections, append missing blocks, and preserve custom content by hand.                                                            |
-| `audit`          | User asks whether context is                 | Report missing files, stale sections, routing gaps, drift, and proposed fixes. Do not edit unless requested.                       |
-|                  |   complete/stale/conflicting                 |                                                                                                                                    |
-| `promote`        | User authorizes promotion from               | Write or propose `.archcore/` content files (adr, rules, specs, guides, plans). Only mode that creates `.archcore/` content. Do    |
-|                  |   `ARCHCORE_PROMOTION_CANDIDATES.md` or      |   not silently promote.                                                                                                            |
-|                  |   explicitly requests durable promotion      |                                                                                                                                    |
+| Mode             | Trigger                                                 | Behaviour                                                                                                               |
+| ---------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `bootstrap`      | New or lightly populated folder                         | Create the base governance scaffold and conditional project files.                                                      |
+| `navigation-add` | Existing project lacks `AI_NAVIGATION.md`               | Add the AI navigation starter module and wire it into AGENTS/CLAUDE/README. Where managed blocks already exist, run the |
+|                  |   or `context-map.yaml`                                 |   deterministic upgrade sequence rather than hand-editing them.                                                         |
+| `refresh`        | Existing governance files are present                   | **Run the deterministic upgrade sequence FIRST** (see [Deterministic Navigation-Control Automation](#deterministic-navigation-control-automation)) — it rewrites managed |
+|                  |                                                         |   blocks, restamps the version, and adds missing `context-map.yaml` keys mechanically. Only then re-scan content,       |
+|                  |                                                         |   update routing/index sections, append missing blocks, and preserve custom content by hand.                            |
+| `audit`          | User asks whether context is complete/stale/conflicting | Report missing files, stale sections, routing gaps, drift, and proposed fixes. Do not edit unless requested.            |
+| `promote`        | User authorizes promotion from                          | Write or propose `.archcore/` content files (adr, rules, specs, guides, plans). Only mode that creates `.archcore/`     |
+|                  |   `ARCHCORE_PROMOTION_CANDIDATES.md` or explicitly      |   content. Do not silently promote.                                                                                     |
+|                  |   requests durable promotion                            |                                                                                                                         |
 
 ### Mode selection rules
 
@@ -275,26 +262,28 @@ Read parent `CHANGELOG.md` if present to extract:
 
 From inventory + content reads, determine:
 
-| Field                    | How to infer                                                                                                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Project name             | Folder name, formatted (e.g. `aurukun-fni` → "Aurukun FNI")                                                                                                               |
-| Purpose                  | From README, code comments, config descriptions, or folder name semantics                                                                                                 |
-| Technology stack         | From file extensions, package manifests, imports                                                                                                                          |
+| Field                 | How to infer                                                                                                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Project name          | Folder name, formatted (e.g. `aurukun-fni` → "Aurukun FNI")                                                                                                                  |
+| Purpose               | From README, code comments, config descriptions, or folder name semantics                                                                                                    |
+| Technology stack      | From file extensions, package manifests, imports                                                                                                                             |
 | Participants | From git log (`git log --format="%an" | sort -u`), email headers in EML files, or existing docs |
-| Internal domain          | From parent AGENTS.md; default `apn.net.au` for APN projects                                                                                                              |
-| Subfolder roles          | From subfolder names and their contents                                                                                                                                   |
-| Project type             | Code / docs / ops / comms / mixed (drives conditional file creation)                                                                                                      |
-| Governance completeness  | Presence/quality of README, AGENTS, CLAUDE, SCRATCHPAD, CHANGELOG, AI_NAVIGATION, context-map, roadmap, architecture docs                                                 |
-| Navigation maturity      | Whether task-to-file routing, source priority, drift policy, and generated-context rules exist                                                                            |
-| Structured truth backend | Presence of `.archcore/`, ADRs, rules, specs, guides, plans, memory-bank, Graphify, Repomix                                                                               |
-| Script/task inventory    | Presence of `justfile`, `scripts/README.md`, other task runners (Taskfile.yml, Makefile, package.json), raw scripts, safety labels, inputs/outputs, and stale/missing     |
-|                          |   catalog entries                                                                                                                                                         |
-| Coherence invariants     | Claims the governance surfaces make that the filesystem can contradict: counts, index links, path references, catalogs, generated artifacts and their sources, and any    |
-|                          |   threshold or canonical value restated in more than one file. Each becomes a check — see `patterns/governance-checks.md` for the artifact-to-check inference table       |
-| Repeat-run risk          | Existing custom sections, `KEEP` blocks, managed blocks, user-authored YAML/JSON, and generated artifacts                                                                 |
-| Runtime requirements     | Interpreters the scripts/recipes actually invoke (`python3`, `node`, `npx`), and whether each is pinned in `.mise.toml`. Derive the working-cache peer path from the      |
-|                          |   source root — see *Runtime isolation*                                                                                                                                   |
-| Active development?      | Presence of TODOs, WIP markers, incomplete docs, recent git commits                                                                                                       |
+| Internal domain       | From parent AGENTS.md; default `apn.net.au` for APN projects                                                                                                                 |
+| Subfolder roles       | From subfolder names and their contents                                                                                                                                      |
+| Project type          | Code / docs / ops / comms / mixed (drives conditional file creation)                                                                                                         |
+| Governance            | Presence/quality of README, AGENTS, CLAUDE, SCRATCHPAD, CHANGELOG, AI_NAVIGATION, context-map, roadmap, architecture docs                                                    |
+|   completeness        |                                                                                                                                                                              |
+| Navigation maturity   | Whether task-to-file routing, source priority, drift policy, and generated-context rules exist                                                                               |
+| Structured            | Presence of `.archcore/`, ADRs, rules, specs, guides, plans, memory-bank, Graphify, Repomix                                                                                  |
+|   truth backend       |                                                                                                                                                                              |
+| Script/task inventory | Presence of `justfile`, `scripts/README.md`, other task runners (Taskfile.yml, Makefile, package.json), raw scripts, safety labels, inputs/outputs, and stale/missing        |
+|                       |   catalog entries                                                                                                                                                            |
+| Coherence invariants  | Claims the governance surfaces make that the filesystem can contradict: counts, index links, path references, catalogs, generated artifacts and their sources, and any       |
+|                       |   threshold or canonical value restated in more than one file. Each becomes a check — see `patterns/governance-checks.md` for the artifact-to-check inference table          |
+| Repeat-run risk       | Existing custom sections, `KEEP` blocks, managed blocks, user-authored YAML/JSON, and generated artifacts                                                                    |
+| Runtime requirements  | Interpreters the scripts/recipes actually invoke (`python3`, `node`, `npx`), and whether each is pinned in `.mise.toml`. Derive the working-cache peer path from the source  |
+|                       |   root — see *Runtime isolation*                                                                                                                                             |
+| Active development?   | Presence of TODOs, WIP markers, incomplete docs, recent git commits                                                                                                          |
 
 ---
 
@@ -302,33 +291,29 @@ From inventory + content reads, determine:
 
 ### File creation/update policy
 
-| File                           | Bootstrap                      | Navigation-add               | Refresh                                                                                | Audit      |
-| ------------------------------ | -----------------------------: | ---------------------------: | -------------------------------------------------------------------------------------: | ---------: |
-| `README.md`                    | create/update                  | update pointers              | update index/pointers only                                                             | check      |
-| `AGENTS.md`                    | create/update                  | add navigation block         | refresh managed block only                                                             | check      |
-| `CLAUDE.md`                    | create/update                  | ensure wrapper               | ensure wrapper                                                                         | check      |
-| `SCRATCHPAD.md`                | create/update                  | update memory pointers       | append/protect KEEP                                                                    | check      |
-| `CHANGELOG.md`                 | create/update                  | append navigation addition   | append refresh summary                                                                 | check      |
-| `.archcore/`                   | initialize if CLI available    | initialize if CLI available  | initialize if CLI available                                                            | check      |
-| Graphify / `graphify-out/`     | run if CLI available           | run if CLI available         | run if CLI available                                                                   | check      |
-| `repomix.config.json`          | initialize if CLI available    | initialize if CLI available  | run to refresh context pack                                                            | check      |
-| `AI_NAVIGATION.md`             | create if useful               | create                       | update managed sections only                                                           | check      |
-| `context-map.yaml`             | create if useful               | create                       | write `.proposed` if risky                                                             | check      |
-| `scripts/README.md`            | create if scripts/tasks exist  | add pointer if scripts/tasks | create from template if scripts/tasks exist and file missing; update managed blocks if | check      |
-|                                |                                |   exist                      |   exists                                                                               |            |
-| `justfile`                     | create from template if no     | no unless needed             | propose only if drift/conflict                                                         | check      |
-|                                |   canonical runner exists and  |                              |                                                                                        |            |
-|                                |   scripts/automation present   |                              |                                                                                        |            |
-| `scripts/check_governance.py`  | create from template, tuned to | add if governance surfaces   | **create from template if missing**; if present, extend registries for new artifacts — | run it,    |
-|                                |   inferred invariants          |   exist                      |   never narrow an existing check                                                       |   report   |
-|                                |                                |                              |                                                                                        |   failures |
-|                                |                                |                              |                                                                                        |   and      |
-|                                |                                |                              |                                                                                        |   coverage |
-|                                |                                |                              |                                                                                        |   gaps     |
-| `scripts/context-preflight.sh` | explicit request only          | explicit request only        | audit/propose only                                                                     | check      |
-| `ARCHITECTURE.md`              | conditional                    | no unless needed             | update pointers only                                                                   | check      |
-| `CONVENTIONS.md`               | conditional                    | no unless needed             | update pointers only                                                                   | check      |
-| `ROADMAP.md`                   | conditional                    | no unless needed             | update progress only                                                                   | check      |
+| File                           | Bootstrap                                      | Navigation-add                  | Refresh                                                   | Audit                |
+| ------------------------------ | ---------------------------------------------: | ------------------------------: | --------------------------------------------------------: | -------------------: |
+| `README.md`                    | create/update                                  | update pointers                 | update index/pointers only                                | check                |
+| `AGENTS.md`                    | create/update                                  | add navigation block            | refresh managed block only                                | check                |
+| `CLAUDE.md`                    | create/update                                  | ensure wrapper                  | ensure wrapper                                            | check                |
+| `SCRATCHPAD.md`                | create/update                                  | update memory pointers          | append/protect KEEP                                       | check                |
+| `CHANGELOG.md`                 | create/update                                  | append navigation addition      | append refresh summary                                    | check                |
+| `.archcore/`                   | initialize if CLI available                    | initialize if CLI available     | initialize if CLI available                               | check                |
+| Graphify / `graphify-out/`     | run if CLI available                           | run if CLI available            | run if CLI available                                      | check                |
+| `repomix.config.json`          | initialize if CLI available                    | initialize if CLI available     | run to refresh context pack                               | check                |
+| `AI_NAVIGATION.md`             | create if useful                               | create                          | update managed sections only                              | check                |
+| `context-map.yaml`             | create if useful                               | create                          | write `.proposed` if risky                                | check                |
+| `scripts/README.md`            | create if scripts/tasks exist                  | add pointer if                  | create from template if scripts/tasks exist and file      | check                |
+|                                |                                                |   scripts/tasks exist           |   missing; update managed blocks if exists                |                      |
+| `justfile`                     | create from template if no canonical runner    | no unless needed                | propose only if drift/conflict                            | check                |
+|                                |   exists and scripts/automation present        |                                 |                                                           |                      |
+| `scripts/check_governance.py`  | create from template, tuned to                 | add if governance               | **create from template if missing**; if present, extend   | run it, report       |
+|                                |   inferred invariants                          |   surfaces exist                |   registries for new artifacts — never narrow an          |   failures and       |
+|                                |                                                |                                 |   existing check                                          |   coverage gaps      |
+| `scripts/context-preflight.sh` | explicit request only                          | explicit request only           | audit/propose only                                        | check                |
+| `ARCHITECTURE.md`              | conditional                                    | no unless needed                | update pointers only                                      | check                |
+| `CONVENTIONS.md`               | conditional                                    | no unless needed                | update pointers only                                      | check                |
+| `ROADMAP.md`                   | conditional                                    | no unless needed                | update progress only                                      | check                |
 
 ---
 
@@ -491,6 +476,17 @@ Agents must prefer cataloged tasks over raw script execution. Prefer `just <task
 This is the failure mode that makes it worth a rule rather than a preference: **it works.** A recipe calling bare `python3` runs correctly on the machine it was written on, passes every check, and
 keeps working until the host's Homebrew updates or the operator switches machines — at which point it fails somewhere inside a script, reading like a code bug rather than an environment one. Observed
 2026-08-25: a freshly bootstrapped project pinned Python 3.14 and Node 26 in `.mise.toml` while every recipe silently used Homebrew's 3.14.7 and Node 26.7.0. Nothing in the project could detect it.
+
+**`mise exec -- python` is not the fix either.** This is the half-measure that looks correct and is the more common failure in practice, because it *works*. Where `.mise.toml` sets `_.python.venv`,
+`mise exec -- python` does resolve to the venv — so it tests clean and reads as pinned. But the dependency is **implicit**: nothing at the call site names the interpreter, and if the activation stops
+applying — the `[env]` block is edited, the venv is absent, the recipe is copied into a project without that config — it degrades **silently to the host interpreter** rather than failing. Address the
+interpreter by **path** through `{{py}}` and depend on `_require-venv`, so the failure mode is a loud error with a fix attached instead of a wrong-interpreter run that looks fine. Observed 2026-09-01:
+an Agent Stack justfile used `mise exec -- python` throughout and resolved correctly, while its `.mise.toml` simultaneously pointed the venv *inside the repo* — the implicit form made both the pinning
+and the violation invisible at every call site.
+
+Apply the same reasoning to `mise run` tasks in `.mise.toml`: give them the absolute venv path too, or they become a second, divergent resolution path beside the justfile.
+
+Node has no venv layer, so `mise exec -- node` **is** the explicit form for it. The distinction applies wherever a venv sits between mise and the interpreter — in practice, Python.
 
 **Generate these three things together, or none of them works:**
 
@@ -1507,18 +1503,20 @@ Preferred source template: `templates/repomix.config.json`.
     ".archcore/**/*.md",
     "docs/**/*.md"
   ],
-  "ignore": [
-    "node_modules/**",
-    ".git/**",
-    "dist/**",
-    "build/**",
-    "cache/**",
-    "runtime/**",
-    "__pycache__/**",
-    ".venv/**",
-    "graphify-out/**",
-    ".ai-context/**"
-  ]
+  "ignore": {
+    "customPatterns": [
+      "node_modules/**",
+      ".git/**",
+      "dist/**",
+      "build/**",
+      "cache/**",
+      "runtime/**",
+      "__pycache__/**",
+      ".venv/**",
+      "graphify-out/**",
+      ".ai-context/**"
+    ]
+  }
 }
 ```
 
@@ -1669,6 +1667,8 @@ After creating/updating files in the target folder:
 - `graphify-out/` and `.ai-context/` are generated support artifacts, not canonical truth
 - Repeat runs must update managed blocks only and preserve custom content
 - Task recipes never call a bare `python3` / `node` — pin runtimes in `.mise.toml`, route recipes through `{{py}}` / `{{nd}}`, and keep the venv in the working-cache peer, never in the repo
+- Nor an *implicit* `mise exec -- python`: address the venv interpreter by path via `{{py}}` and guard it with `_require-venv`, so a missing venv fails loudly instead of degrading to the host
+  interpreter. Give `.mise.toml` tasks the absolute venv path for the same reason
 - Generate `just bootstrap` and `just runtimes` alongside any pinned-runtime justfile; without `runtimes` the pinning cannot be verified quickly
 - For risky changes to existing YAML/JSON, write `.proposed` files rather than overwriting
 
@@ -1696,6 +1696,8 @@ After creating/updating files in the target folder:
 - [ ] Script/task safety labels are present for cataloged entries; uncataloged scripts are treated as `unknown`
 - [ ] **No generated recipe calls a bare `python3`, `node`, `npx`, or `ruby`** — grep the justfile to confirm. Every runtime the recipes use is pinned in `.mise.toml` (Node as well as Python where a
   recipe shells out to a JS tool), the venv is in the working-cache peer rather than the repo, `_require-venv` guards the Python recipes, and `just runtimes` was **executed** and its output reported
+- [ ] **No recipe reaches Python through an implicit `mise exec -- python`** — grep for it. Every Python recipe addresses `{{py}}` by path, and `mise run` tasks in `.mise.toml` carry the absolute venv
+  path too, so the justfile and the mise tasks cannot resolve differently. Verify by confirming `just runtimes` reports the working-cache venv, not a host or mise-shim path
 - [ ] No `.python-version` was created alongside `.mise.toml` — one file owns the pin
 - [ ] Third-party imports the tooling needs are declared in `requirements.txt` and installed by `bootstrap`; the project's own governance checker remains stdlib-only. Prove it by running the checker
   and the navigation validator **from the pinned venv**, not from the host interpreter
@@ -1872,3 +1874,27 @@ If this skill is being maintained as a reusable package, extract the embedded fa
 - `CHANGELOG.md` as the skill-package governance history ledger
 
 After extraction, keep `SKILL.md` focused on orchestration logic and keep detailed reusable content in the template/pattern files.
+
+## Pitfalls observed in practice
+
+**Path references in prose are tried against the stating file's folder first, then the project root.** The governance checker extracts backticked spans and markdown link targets and reports a
+reference as broken only when it resolves by neither route. So a cross-project reference like `../../health/` in a project that is a direct child of the target's parent fails both ways, where
+`../health/` succeeds — and a root-level file differs from one inside a subfolder, because `../.archcore/...` resolves from `decisions/` but not from the project root. Write each reference so it
+resolves by one of the two routes, and confirm with the checker rather than by eye.
+
+**A document describing a broken reference is itself a broken reference.** The checker reads the whole surface, including open-items, changelog prose and roadmap tables. Quoting a bad path in order to
+explain it re-introduces the failure, and this bites twice in a row if the first fix is written in prose rather than as the corrected path. Describe the defect in words; quote only paths that resolve.
+
+**Never hand-edit a managed block to make a check pass.** The managed navigation block is canonical and is replaced wholesale on the next upgrade, so any local edit is lost. When it names a file the
+project legitimately does not have (`ARCHITECTURE.md`, `roadmap.md`, `memory-bank/*`, `Taskfile.yml`), register the path in `CONDITIONAL_PATHS` with a per-entry reason — that is the sanctioned escape
+hatch, and it keeps the exemption reviewable instead of silently ignored.
+
+**Recipe interpreters must come from a task-runner variable, never typed inline.** A literal `uv run --with pyyaml python3 ...` in a recipe trips the interpreter-pinning check even though it is
+already uv-routed. Bind it to a variable and interpolate, and keep one variable per dependency set so stdlib-only recipes do not resolve a dependency they do not use.
+
+**Leave a registry empty rather than filling it with plausible entries.** Each `COUNT_CLAIMS` / `CONSTANT_SURFACES` entry asserts a real comparison, so a wrong entry claims coverage the project does
+not have. An empty registry contributes zero assertions and reads honestly as "not covered yet". When a fact is already enforced executably by a test, say that in the comment instead of duplicating
+the assertion in prose.
+
+**Agents may be unable to write `AGENTS.md`.** Some host agents treat agent-instruction files as protected and require explicit user approval. If a write is refused, do not route around it through a
+shell, a script or a direct file edit — leave the edit pending, report it, and let the checker keep failing on it. A green check bought by an unapproved edit is worse than a red one.

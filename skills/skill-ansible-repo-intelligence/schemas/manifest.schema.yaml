@@ -1,0 +1,27 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "ari:manifest.schema"
+title: Ansible Repo Intelligence — manifest
+type: object
+required:
+  - schema_version
+  - tool_version
+  - parser_version
+  - understanding_boundary
+  - source_fingerprint
+  - configuration_fingerprint
+  - output_files
+additionalProperties: true
+properties:
+  schema_version: { type: string }
+  tool_version: { type: string }
+  parser_version: { type: string }
+  understanding_boundary: { type: string }
+  source_fingerprint: { type: string, pattern: "^sha256:[0-9a-f]{64}$" }
+  configuration_fingerprint: { type: string, pattern: "^sha256:[0-9a-f]{64}$" }
+  parser_capabilities: { type: object }
+  counts: { type: object }
+  output_files:
+    type: object
+    additionalProperties: { type: string, pattern: "^sha256:[0-9a-f]{64}$" }
+  context_integration: { type: object }
+  external_tools: { type: object }

@@ -1,0 +1,113 @@
+# project-context.yaml — Generic project template with comments
+# Copy to: <project>/rag/project-context.yaml
+# Replace all values in angle brackets. Remove these comments before use.
+
+version: 1
+schema: "wiki-project-dependency-model"
+global_search_allowed: false  # NEVER change to true
+
+project:
+  # id: stable identifier, usually <group>-<project-name>
+  id: "<group>-<project-name>"
+  # slug: used as Qdrant filter value and collection suffix. Lowercase, underscores only.
+  slug: "<project_name_slug>"
+  name: "<Human Readable Project Name>"
+  root: "/Volumes/Data/_ai/_project/project_stuff/<group>/<project-folder>"
+  # collection: always rag__project_<slug>
+  collection: "rag__project_<project_name_slug>"
+
+wiki:
+  root: "/Volumes/Data/_ai/_wiki"
+  content_root: "/Volumes/Data/_ai/_wiki/wiki_stuff"
+  data_root: "/Volumes/Data/_ai/_wiki/wiki-data"
+  pattern: "karpathy-llm-wiki"
+  canonical_shared_knowledge: true
+
+tools:
+  rag_tools_root: "/Volumes/Data/_ai/_tool/tools_stuff/rag-tools"
+  rag_tools_venv: "/Volumes/Data/_ai/_tool/tools-working-cache/rag-tools/.venv"
+
+# Declare ONLY domains this project actually needs. Remove unused entries.
+wiki_dependencies:
+  - domain: "<domain1>"
+    slug: "<domain1>"
+    collection: "rag__wiki_<domain1>"
+    source_paths:
+      - "domains/<domain1>"
+    # reason: explain why this project needs this domain
+    reason: "<Why this project may query this domain>"
+    source_authority: "shared_reference_authoritative_markdown"
+    allowed_topics:
+      - "<topic-a>"
+      - "<topic-b>"
+  # Uncomment and fill in for additional domains:
+  # - domain: "<domain2>"
+  #   slug: "<domain2>"
+  #   collection: "rag__wiki_<domain2>"
+  #   source_paths:
+  #     - "domains/<domain2>"
+  #   reason: "<Why>"
+  #   source_authority: "shared_reference_authoritative_markdown"
+  #   allowed_topics: []
+
+retrieval_policy:
+  retrieval_order:
+    - step: 1
+      source: "project_local_files"
+      description: "Project source files, reports, manifests, and analysis."
+    - step: 2
+      source: "project_collection"
+      collection: "rag__project_<project_name_slug>"
+      required_filters:
+        project_slug: "<project_name_slug>"
+    - step: 3
+      source: "declared_wiki_domains"
+      collections:
+        - "rag__wiki_<domain1>"
+      required_filters:
+        wiki_domain:
+          allowed:
+            - "<domain1>"
+    - step: 4
+      source: "ask_user"
+      condition: "No sufficient evidence found in steps 1–3."
+
+rules:
+  require_project_filter: true
+  require_wiki_domain_filter: true
+  disallow_global_wiki_search: true
+  disallow_undeclared_wiki_domains: true
+  disallow_cross_project_fallback: true
+  disallow_project_data_in_wiki_collection: true
+  disallow_wiki_data_in_project_collection_unless_copied_with_source: true
+  cite_sources: true
+  cite_collection_name: true
+  cite_source_file: true
+  cite_section_path: true
+  cite_heading: true
+  prefer_project_local_for_project_specific_facts: true
+  prefer_wiki_authoritative_markdown_for_shared_reference_facts: true
+  nav_yaml_is_routing_metadata_only: true
+  no_unsupported_conclusions: true
+
+forbidden_collections:
+  - "rag__global_all_docs"
+  - "rag__wiki_all"
+  - "rag__all"
+  - "default"
+  - "documents"
+  - "knowledge"
+  - "main"
+
+conflict_resolution:
+  project_specific_fact:
+    prefer: "project_local"
+  shared_reference_fact:
+    prefer: "wiki_authoritative_markdown"
+  unresolved_conflict:
+    action: "report_conflict_and_ask_user"
+
+status:
+  lifecycle: "draft"
+  owner: "project"
+  reviewed: false

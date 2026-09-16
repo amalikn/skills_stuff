@@ -1,0 +1,7 @@
+id: business-pulse
+name: Business Pulse
+lifecycle: PROTOTYPE
+inputs: [cash, sales, pipeline, inventory, operations, risks]
+outputs: [management_snapshot, exceptions, priorities, decisions_needed]
+human_approval: required_for_actions
+implementation: none

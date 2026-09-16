@@ -21,6 +21,7 @@ Checks:
   3. Count claims in prose match reality (historical facts exempt).
   4. Cataloged items exist and existing items are cataloged.
   5. Task-runner recipes named in prose exist in the runner.
+  5b. No recipe reaches an interpreter implicitly — neither a bare `python3`/`node` nor `mise exec -- python`.
   6. Derived artifacts are not older than their inputs.
   7. Every surface restating a registered constant states it identically, and nothing unregistered restates it.
   8. Every row of an append-only table stamps its pass, and no pass records the same entity twice.
@@ -307,6 +308,51 @@ def check_task_recipes() -> None:
                 fail("runner", f"{surface} names recipe `{named}` which {TASK_RUNNER} does not define")
 
 
+def check_interpreter_pinning() -> None:
+    """No task recipe reaches an interpreter implicitly.
+
+    Two defects, one root cause — the recipe does not say which interpreter it means:
+
+    1. A BARE `python3`/`node`/`npx`/`ruby` resolves to whatever is on PATH, not to what .mise.toml pins.
+    2. `mise exec -- python` resolves to the venv only while `_.python.venv` activation applies. It tests clean, reads
+       as pinned, and degrades SILENTLY to the host interpreter when that activation stops holding.
+
+    Both are the "it works on the machine it was written on" class. Recipes must address {{py}} by path and depend on
+    _require-venv. Node has no venv layer, so `mise exec -- node` is the legitimate explicit form for it and is allowed.
+
+    Rule: the runtime-isolation section of skill-ai-it's SKILL.md, and the RUNTIME PINNING header of templates/justfile.
+    """
+    if TASK_RUNNER is None:
+        return
+    runner = read(TASK_RUNNER)
+    if runner is None:
+        return
+    for lineno, line in enumerate(runner.splitlines(), 1):
+        if not line.startswith((" ", "\t")):
+            continue  # only recipe bodies are commands; headers and variable assignments are not
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            continue
+        # Blank out quoted literals, keeping offsets intact: an interpreter NAME inside a string is a label being
+        # printed (`printf 'python  '`), not a command being run.
+        scan = re.sub(r"'[^']*'|\"[^\"]*\"", lambda m: " " * len(m.group(0)), stripped)
+        counted()
+        if re.search(r"mise\s+exec\b[^|;]*--\s+python", scan):
+            fail(
+                "runtime",
+                f"{TASK_RUNNER}:{lineno} reaches Python through an implicit `mise exec -- python` — address the venv "
+                f"interpreter by path via {{{{py}}}} and guard it with _require-venv",
+            )
+        for match in re.finditer(r"(?<![-\w/])(python3?|npx|ruby)\b", scan):
+            # `mise exec -- <interp>` is handled above for python; for the rest it is the sanctioned explicit form.
+            if re.search(r"mise\s+(exec\b[^|;]*--|run)\s*$", scan[: match.start()]):
+                continue
+            fail(
+                "runtime",
+                f"{TASK_RUNNER}:{lineno} calls bare `{match.group(1)}` — route it through the pinned interpreter",
+            )
+
+
 # --------------------------------------------------------------------------------------------------------------- TIER 3
 # Project-specific invariants. Each check states, in its docstring, the project rule it enforces and where that rule
 # lives. A check whose justification cannot be found is a check the next agent deletes.
@@ -437,6 +483,7 @@ CHECKS = (
     check_count_claims,
     check_catalog_coverage,
     check_task_recipes,
+    check_interpreter_pinning,
     check_derived_freshness,
     check_constant_sync,
     check_append_only_grain,

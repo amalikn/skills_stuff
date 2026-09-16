@@ -5,9 +5,10 @@
 - [7. Hardware Differences: x86 vs Raspberry Pi](#7-hardware-differences-x86-vs-raspberry-pi)
 - [8. Overlay Filesystem (Critical Concept)](#8-overlay-filesystem-critical-concept)
 - [Orphaned persistent journal after the volatile conversion (~44 GB fleet-wide, reclaimed 2026-07-28)](#orphaned-persistent-journal-after-the-volatile-conversion-44-gb-fleet-wide-reclaimed-2026-07-28)
-- [Fleet status-probe gotchas — three checks that read as fleet-wide failures but are wrong paths (verified 2026-08-25)](#fleet-status-probe-gotchas-three-checks-that-read-as-fleet-wide-failures-but-are-wrong-paths-verified-2026-08-25)
+- [Fleet status-probe gotchas — three checks that read as fleet-wide failures but are wrong paths (verified 2026-08-25)](#fleet-status-probe-gotchas--three-checks-that-read-as-fleet-wide-failures-but-are-wrong-paths-verified-2026-08-25)
 - [Write-rate sweeps are blind to burst writers (2026-08-26)](#write-rate-sweeps-are-blind-to-burst-writers-2026-08-26)
 - [The 24 h write baseline, and what two attribution passes buy you (2026-08-27/28 capture)](#the-24-h-write-baseline-and-what-two-attribution-passes-buy-you-2026-08-2728-capture)
+- [Cambium radio and AP estate by flavour (operator-stated 2026-09-14)](#cambium-radio-and-ap-estate-by-flavour-operator-stated-2026-09-14)
 - Hardware differences: x86 vs Raspberry Pi
 - NBN Accelerate / NBN WH hardware inventory (first live fleet sweep)
 - Overlay filesystem structure and runtime behavior
@@ -29,27 +30,27 @@ because no coherence sweep had re-checked this specific file against those corre
 | ------------------ | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | CPU arch           | x86_64                                    | ARM64 (aarch64)                                                                                                                     |
 | RAM                | 4–16 GB typical                           | 8 GB (Model 4B; measured 7807 MB — corrected 2026-09-03, was 1.9 GB)                                                                |
-| Storage            | SSD or CFast (Innodisk CFast 3ME3 /       | **Always SD card** (Swissbit industrial microSD, monitored via `sbdm.py`/`sbdm-cli`) — USB storage may be physically present but is     |
+| Storage            | SSD or CFast (Innodisk CFast 3ME3 /       | **Always SD card** (Swissbit industrial microSD, monitored via `sbdm.py`/`sbdm-cli`) — USB storage may be physically present but is |
 |                    |   Transcend TS128GSSD420K confirmed       |   reserved for future use, not the root/primary storage device                                                                      |
-|                    |   brands, monitored via                   |                                                                                                                                     |
-|                    |   `smartmon.py`/`smartctl`)               |                                                                                                                                     |
+|                    |   brands, monitored                       |                                                                                                                                     |
+|                    |   via `smartmon.py`/`smartctl`)           |                                                                                                                                     |
 | Swap               | Traditional swap partition                | zram (`/dev/zram0`, ~1.2 GB, compressed)                                                                                            |
-| DNS                | **Not platform-determined — corrected**       | Same — Unbound + Stubby, unless `smc_ltp` (never applies to RPi flavors; `smc_ltp` is `rcp`-only)                                   |
-|                    |   **2026-08-03.** Every flavor (both x86 and  |                                                                                                                                     |
+| DNS                | **Not platform-determined — corrected**   | Same — Unbound + Stubby, unless `smc_ltp` (never applies to RPi flavors; `smc_ltp` is `rcp`-only)                                   |
+|                    |   **2026-08-03.** Every flavor (both x86 and |                                                                                                                                     |
 |                    |   RPi) runs Unbound + Stubby              |                                                                                                                                     |
-|                    |   (DNS-over-TLS) by default; the *only*     |                                                                                                                                     |
+|                    |   (DNS-over-TLS) by default; the *only*   |                                                                                                                                     |
 |                    |   hosts that get BIND/named instead are   |                                                                                                                                     |
 |                    |   members of the `smc_ltp` inventory      |                                                                                                                                     |
 |                    |   group — a static, `rcp`-only, 7-site    |                                                                                                                                     |
 |                    |   allowlist, unrelated to CPU             |                                                                                                                                     |
 |                    |   architecture. See `02_service-map.md`   |                                                                                                                                     |
-|                    |   and `08_ansible-authoring.md` "smc_ltp  |                                                                                                                                     |
-|                    |   Sub-Group".                             |                                                                                                                                     |
+|                    |   and `08_ansible-authoring.md`           |                                                                                                                                     |
+|                    |   "smc_ltp Sub-Group".                    |                                                                                                                                     |
 | VoIP | **Not platform-determined either —** | last == | Not deployed |
 |  |   **corrected 2026-08-03.** Asterisk is gated |   'rcp'`), not "x86" generally — confirmed live 2026-08-03 that `nbn_accelerate` (also x86) does **not** have Asterisk (`systemctl |  |
-|  |   to `rcp` specifically |   is-active asterisk` → inactive/not found on `warakurna-smc01`/`indulkana-smc01`). See `08_ansible-authoring.md` "Flavor/Cluster |  |
-|  |   (`inventory_dir.split('/') |   Conditional Branching". |  |
-| Antivirus/security | **`nbn_accelerate`** **only** (ClamAV + Lynis) —  | Not deployed on any RPi flavor                                                                                                      |
+|  |   to `rcp` |   is-active asterisk` → inactive/not found on `warakurna-smc01`/`indulkana-smc01`). See `08_ansible-authoring.md` "Flavor/Cluster |  |
+|  |   specifically (`inventory_dir.split('/') |   Conditional Branching". |  |
+| Antivirus/security | **`nbn_accelerate`** **only** (ClamAV + Lynis) — | Not deployed on any RPi flavor                                                                                                      |
 |                    |   confirmed live 2026-08-03 on            |                                                                                                                                     |
 |                    |   `warakurna-smc01`/`indulkana-smc01`,    |                                                                                                                                     |
 |                    |   both installed. `rcp` does not get this |                                                                                                                                     |
@@ -74,15 +75,16 @@ Conditional Branching" for the full selector-mechanism reference.
 
 The table above says x86 storage is "monitored by SBDM/SMART" — this undersells how split the two mechanisms actually are. Confirmed live 2026-07-13:
 
-| Tool                 | Binary                        | Works on                               | Fails on                                                                                             |
-| -------------------- | ----------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `smartmon.py` (wraps | n/a (uses system `smartctl`)  | x86 rcp: Innodisk CFast, Transcend SSD | RPi/mmcblk SD cards — `smartctl --scan-open` finds zero devices; SD/eMMC doesn't expose classic ATA  |
-|   `smartctl`)        |                               |   (both report via ATA SMART)          |   SMART attributes the way SATA/USB-SAT drives do                                                    |
-| `sbdm.py` (wraps     | `roles/smc_node_exporter/\`   | RPi/rct/wh: genuine Swissbit-branded   | x86 rcp: Innodisk/Transcend hardware isn't Swissbit-branded — `sbdm-cli` returns "No supported disks |
-|   `sbdm-cli`,        |   `files/{x86-64,aarch64}/\`  |   industrial microSD cards (model "SD  |   found" (exit 3), and `sbdm.py` currently exits 0 with **zero stdout output**, producing a 0-byte       |
-|   "Swissbit Device   |   `sbdm-cli` — deployed to    |   card SB AFNI0", series S-58)         |   `sbdm.prom`. This is the root cause of the standing "sbdm.prom = 0 bytes" bug tracked as a known   |
-|   Manager")          |   **both** architectures          |                                        |   issue on tjuntjuntjara/burringurrah/warburton — expected behavior for non-Swissbit hardware, not a |
-|                      |                               |                                        |   bug in those specific nodes.                                                                       |
+| Tool                   | Binary                         | Works on                         | Fails on                                                                                                |
+| ---------------------- | ------------------------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `smartmon.py`          | n/a (uses system `smartctl`)   | x86 rcp: Innodisk CFast,         | RPi/mmcblk SD cards — `smartctl --scan-open` finds zero devices; SD/eMMC doesn't expose classic ATA     |
+|   (wraps `smartctl`)   |                                |   Transcend SSD (both report via |   SMART attributes the way SATA/USB-SAT drives do                                                       |
+|                        |                                |   ATA SMART)                     |                                                                                                         |
+| `sbdm.py` (wraps       | `roles/smc_node_exporter/\`    | RPi/rct/wh: genuine              | x86 rcp: Innodisk/Transcend hardware isn't Swissbit-branded — `sbdm-cli` returns "No supported disks    |
+|   `sbdm-cli`,          |   `files/{x86-64,aarch64}/\`   |   Swissbit-branded industrial    |   found" (exit 3), and `sbdm.py` currently exits 0 with **zero stdout output**, producing a 0-byte      |
+|   "Swissbit            |   `sbdm-cli` — deployed to     |   microSD cards (model "SD card  |   `sbdm.prom`. This is the root cause of the standing "sbdm.prom = 0 bytes" bug tracked as a known      |
+|   Device Manager")     |   **both** architectures       |   SB AFNI0", series S-58)        |   issue on tjuntjuntjara/burringurrah/warburton — expected behavior for non-Swissbit hardware, not a    |
+|                        |                                |                                  |   bug in those specific nodes.                                                                          |
 
 So: x86 rcp nodes are monitored by `smartmon.py`/`smartctl` only (SBDM silently no-ops there). RPi rct/wh nodes are monitored by `sbdm.py`/`sbdm-cli` only (SMART silently no-ops there, confirmed
 `smartmon.prom` has metric headers but zero data lines on every RPi node checked). Never assume both tools produce meaningful data on both platforms.
@@ -195,14 +197,14 @@ No live hardware inventory existed for this cluster before this sweep — everyt
 total, `aurukun-smc03` unreachable at capture time), via `scripts/collect-fleet-health.sh`. **`nbn_wh` is the operator-confirmed `wh`-flavor equivalent on this cluster** — compare it against the
 `rct`/`wh` row in the platform table above, not against `nbn_accelerate`'s x86 baseline.
 
-| Chassis                            | Count | CPU                       | RAM   | Storage                                                   | Flavor           | Kernel                               |
-| ---------------------------------- | ----- | ------------------------- | ----- | --------------------------------------------------------- | ---------------- | ------------------------------------ |
-| AAEON BOXER-6641                   | 11    | Intel Core i5-8500T @     | 15Gi  | Transcend TS128GSSD420K SSD                               | `nbn_accelerate` | `5.15.0-119-generic` (fleet-uniform) |
-|                                    |       |   2.10GHz                 |       |                                                           |                  |                                      |
-| AAEON BOXER-6404                   | 15    | Intel Celeron J1900 @     | 7.7Gi | Innodisk CFast 3ME3                                       | `nbn_accelerate` | `5.15.0-117-generic` (2 outliers —   |
-|                                    |       |   1.99GHz                 |       |                                                           |                  |   see below)                         |
-| Raspberry Pi, Cortex-A72 (`-raspi` | 2     | ARM64, 4-core Cortex-A72  | 7.6Gi | Swissbit SB AFNI0 microSD (`sbdm.prom` populated,         | `nbn_wh`         | `5.15.0-1064-raspi` /                |
-|   kernel, no dmidecode)            |       |                           |       |   `smartmon.prom` header-only — same split as `rct`/`wh`) |                  |   `5.15.0-1078-raspi`                |
+| Chassis                             | Count | CPU                   | RAM   | Storage                                                        | Flavor           | Kernel                             |
+| ----------------------------------- | ----- | --------------------- | ----- | -------------------------------------------------------------- | ---------------- | ---------------------------------- |
+| AAEON BOXER-6641                    | 11    | Intel Core i5-8500T   | 15Gi  | Transcend TS128GSSD420K SSD                                    | `nbn_accelerate` | `5.15.0-119-generic`               |
+|                                     |       |   @ 2.10GHz           |       |                                                                |                  |   (fleet-uniform)                  |
+| AAEON BOXER-6404                    | 15    | Intel Celeron J1900   | 7.7Gi | Innodisk CFast 3ME3                                            | `nbn_accelerate` | `5.15.0-117-generic` (2 outliers — |
+|                                     |       |   @ 1.99GHz           |       |                                                                |                  |   see below)                       |
+| Raspberry Pi, Cortex-A72 (`-raspi`  | 2     | ARM64,                | 7.6Gi | Swissbit SB AFNI0 microSD (`sbdm.prom` populated,              | `nbn_wh`         | `5.15.0-1064-raspi`                |
+|   kernel, no dmidecode)             |       |   4-core Cortex-A72   |       |   `smartmon.prom` header-only — same split as `rct`/`wh`)      |                  |   / `5.15.0-1078-raspi`            |
 
 Same BOXER-6641/BOXER-6404 chassis family already documented for the `rcp` fleet (`amata-smc01` was independently confirmed BOXER-6641 during the earlier disk-fault incident) — this is not new
 hardware, just the first time it's been inventoried for this specific cluster.
@@ -339,19 +341,19 @@ actually matters:
 | ---------------------------------------- | ---------------------------------------------------------------------------------- | ----------------------- |
 | Overlay prep (`smc_rise_enable_overlay`) | journal to 100M, `*.gz` >7d, `auth.log` to 200 lines, apt cache, teleport logs >7d | active application logs |
 | Watchdog `cleanup_always()`              | `/opt/rise/cache`, `/tmp`, `/var/tmp`, apt, journal                                | active application logs |
-| Watchdog `cleanup_logs_gated()`          | **rotated** siblings, and only once Graylog confirms ingestion                         | anything un-rotated     |
+| Watchdog `cleanup_logs_gated()`          | **rotated** siblings, and only once Graylog confirms ingestion                     | anything un-rotated     |
 
 None of them can shrink an un-rotated **active** log — which is precisely the file that fills the overlay. `smc_rise_logcaps` closes that gap by **discovery rather than enumeration**: `rise_logcap.py`
 walks `/var /opt /srv /home` (`-xdev`, ~1.3 s on a Pi 4) and buckets everything over `watch_mb`:
 
 | Bucket     | Gets a logrotate stanza? | Hard-capped? | Rationale                                                                                                                                     |
 | ---------- | ------------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **managed**    | yes                      | yes          | live, log-shaped, unclaimed by any other config                                                                                               |
-| **foreign**    | **no**                       | yes          | another `/etc/logrotate.d` config owns it; a duplicate entry aborts the entire daily logrotate run. Ownership is no guarantee of a *sane*       |
+| **managed** | yes                      | yes          | live, log-shaped, unclaimed by any other config                                                                                               |
+| **foreign** | **no**                   | yes          | another `/etc/logrotate.d` config owns it; a duplicate entry aborts the entire daily logrotate run. Ownership is no guarantee of a *sane*     |
 |            |                          |              |   policy — see the rsyslog note below                                                                                                         |
-| **rotated**    | **no**                       | yes          | `.1`/`.2.gz`/`.old`/`.bak` — rotating a rotation is meaningless, but it costs the overlay the same                                            |
-| **stale**      | no                       | no           | unwritten for `stale_days`; reported only, `prune_stale` defaults false because retention is an operator decision                             |
-| **ineligible** | no                       | **never**        | oversized but not log-shaped, or binary (NUL byte in first 4 KB). Always reported; blocks the overlay-enable preflight                        |
+| **rotated** | **no**                   | yes          | `.1`/`.2.gz`/`.old`/`.bak` — rotating a rotation is meaningless, but it costs the overlay the same                                            |
+| **stale**  | no                       | no           | unwritten for `stale_days`; reported only, `prune_stale` defaults false because retention is an operator decision                             |
+| **ineligible** | no                       | **never**    | oversized but not log-shaped, or binary (NUL byte in first 4 KB). Always reported; blocks the overlay-enable preflight                        |
 
 The **ineligible** bucket is the design's whole point: an unknown oversized file becomes a Prometheus metric and a blocked preflight rather than a silent reboot loop. That is what makes this scale
 without anyone maintaining a list of paths.
@@ -413,7 +415,7 @@ mount | grep overlay   # should return nothing
 
 | Flavor               | Platform  | Root partition                       | Firmware/boot                | Track   | Status                      |
 | -------------------- | --------- | ------------------------------------ | ---------------------------- | ------- | --------------------------- |
-| rct / wh             | RPi ARM64 | **READ-ONLY** (overlayroot active)       | WRITABLE (/boot vfat)        | Track B | Root done; firmware pending |
+| rct / wh             | RPi ARM64 | **READ-ONLY** (overlayroot active)   | WRITABLE (/boot vfat)        | Track B | Root done; firmware pending |
 | rcp / nbn_accelerate | x86       | **WRITABLE** (bare ext4, no overlayroot) | WRITABLE (/boot + /boot/efi) | Track A | Primary migration target    |
 
 ### `smc_disk_failover` role — EFI BootNext mechanism, not a guaranteed live-corruption failover
@@ -542,17 +544,17 @@ Canary result (kalumburu, 4.1 GB): 37 G → 41 G free, 32% → 24% used, all che
 A uniform status probe pushed over `tsh ssh` to every rcp node returned negative on three keys for **all 17 nodes**, including 15 verified working four weeks earlier. Unanimous failure across
 known-good nodes is a probe bug, not a fleet event. All three were wrong-path assumptions:
 
-| Wrong check                                | Correct check                         | Why                                                                                                             |
-| ------------------------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `test -L /var/log/interfacecheck`          | `test -L /var/log/interfacecheck.log` | `smc_rsyslog` symlinks the **log file**, not a directory:                                                           |
-|                                            |                                       |   `/var/log/interfacecheck.log -> /var/log/smc-groups/interfacecheck.log`. squid and mosquitto *are* directory    |
-|                                            |                                       |   symlinks, so the three are not symmetrical.                                                                   |
-| `test -L /opt/apn-mqtt-client/status.json` | `find / -maxdepth 5 -name status.\`   | The app lives at `/run/apn-mqtt-client/` (a real file, already on tmpfs since `/run` is tmpfs) on most nodes,   |
-|                                            |   `json -path '*mqtt*'`               |   or `/var/www/apn-mqtt-client/` (a symlink into `/run`) on others. Never `/opt/`. Both forms are the *fixed*     |
-|                                            |                                       |   state — a real file under `/run` is not a gap.                                                                |
-| `systemctl is-active fluent-bit`           | `pgrep -c fluent-bit`                 | fluent-bit has **no systemd unit**. `graylog-sidecar` spawns it directly as a child:                                |
-|                                            |                                       |   `/opt/fluent-bit/bin/fluent-bit -c /var/lib/graylog-sidecar/generated/<id>/apn-gelf-http.conf`. `is-active`   |
-|                                            |                                       |   returns `inactive` on a perfectly healthy node.                                                               |
+| Wrong check                                | Correct check                          | Why                                                                                                            |
+| ------------------------------------------ | -------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `test -L /var/log/interfacecheck`          | `test -L /var/log/interfacecheck.log`  | `smc_rsyslog` symlinks the **log file**, not a directory:                                                      |
+|                                            |                                        |   `/var/log/interfacecheck.log -> /var/log/smc-groups/interfacecheck.log`. squid and mosquitto *are* directory |
+|                                            |                                        |   symlinks, so the three are not symmetrical.                                                                  |
+| `test -L /opt/apn-mqtt-client/status.json` | `find / -maxdepth 5 -name status.\`    | The app lives at `/run/apn-mqtt-client/` (a real file, already on tmpfs since `/run` is tmpfs) on most nodes,  |
+|                                            |   `json -path '*mqtt*'`                |   or `/var/www/apn-mqtt-client/` (a symlink into `/run`) on others. Never `/opt/`. Both forms are the *fixed*  |
+|                                            |                                        |   state — a real file under `/run` is not a gap.                                                               |
+| `systemctl is-active fluent-bit`           | `pgrep -c fluent-bit`                  | fluent-bit has **no systemd unit**. `graylog-sidecar` spawns it directly as a child:                           |
+|                                            |                                        |   `/opt/fluent-bit/bin/fluent-bit -c /var/lib/graylog-sidecar/generated/<id>/apn-gelf-http.conf`. `is-active`  |
+|                                            |                                        |   returns `inactive` on a perfectly healthy node.                                                              |
 
 **Rule:** before recording a negative status finding, check whether the *known-good* nodes also fail it. If they do, fix the probe, not the fleet. Recording these three unverified would have produced
 three false fleet-wide regressions in the canonical tracker.
@@ -595,16 +597,16 @@ for `fatrace`.
 Some of the largest writers on an SMC fire **once or twice a day for a few seconds** and move hundreds of MB. No sampling window of practical length catches them. Two independent windows (300 s and
 600 s) run on 2026-08-26 agreed closely on continuous writers and **missed every one of the following**:
 
-| Writer                         | Volume per event                                                        | Notes                                                                                     |
-| ------------------------------ | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `snapd` snap refresh           | **image written twice** — `/var/lib/snapd/cache/` then                      | Refresh times scatter across the clock (observed 02:25/10:00/14:23/17:20/19:55) — snapd's |
-|                                |   `/var/lib/snapd/snaps/`. `lxd_40575.snap` = 115.3 MB × 2 = **230.6 MB**   |   own randomised timer. Same node looks clean one day, heavy the next.                    |
-| `squidguard` blacklist refresh | 24.3 MB `.tar.gz` + 24.3 MB `.bak`, then extraction into a 624–657 MB   | Observed at **15:29 on 7 of 9 nodes simultaneously** — one fleet-wide cron                    |
-|                                |   tree                                                                  |                                                                                           |
-| `apt` metadata churn           | `pkgcache.bin` ~67 MB + `srcpkgcache.bin` ~67 MB + ~117 MB lists ≈ 250  | Only on nodes where apt timers are unmasked                                               |
-|                                |   MB/day                                                                |                                                                                           |
-| `dhcpd` lease-DB rewrite       | full-file rewrite, up to 294 MB                                         | Episodic. `dhcpd` measured 1.30 MB in one 5-min window and 0.02 MB in the next 10-min     |
-|                                |                                                                         |   window on the same node.                                                                |
+| Writer                         | Volume per event                                                      | Notes                                                                                       |
+| ------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `snapd` snap refresh           | **image written twice** — `/var/lib/snapd/cache/` then                | Refresh times scatter across the clock (observed 02:25/10:00/14:23/17:20/19:55) — snapd's   |
+|                                |   `/var/lib/snapd/snaps/`. `lxd_40575.snap` = 115.3 MB × 2 = **230.6 MB** |   own randomised timer. Same node looks clean one day, heavy the next.                      |
+| `squidguard` blacklist refresh | 24.3 MB `.tar.gz` + 24.3 MB `.bak`, then extraction into a 624–657    | Observed at **15:29 on 7 of 9 nodes simultaneously** — one fleet-wide cron                  |
+|                                |   MB tree                                                             |                                                                                             |
+| `apt` metadata churn           | `pkgcache.bin` ~67 MB + `srcpkgcache.bin` ~67 MB + ~117 MB lists ≈    | Only on nodes where apt timers are unmasked                                                 |
+|                                |   250 MB/day                                                          |                                                                                             |
+| `dhcpd` lease-DB rewrite       | full-file rewrite, up to 294 MB                                       | Episodic. `dhcpd` measured 1.30 MB in one 5-min window and 0.02 MB in the next 10-min       |
+|                                |                                                                       |   window on the same node.                                                                  |
 
 **Method rule going forward: pair every sampling window with a 24 h large-file scan.** Neither alone is sufficient.
 
@@ -707,3 +709,32 @@ restored, not suppressed. Textbook RULE-008 — low write volume as the visible 
 
 mornington 672.8 MB/day against umoona's 100.9 — the largest single line item in the dataset, 2.1× the fleet median, not explained by site size. mornington also carries the known 64 MB `auth.log` and
 the unremediated auth-filter.
+
+## Cambium radio and AP estate by flavour (operator-stated 2026-09-14)
+
+Recorded while bootstrapping the Cambium/cnMaestro continuity project (`/Volumes/Data/_ai/_project/project_stuff/apn/cambium-swap/`), after Cambium Networks, Ltd was reported to have filed a Notice of
+Intention to appoint an administrator (10 Sep 2026). The Cambium devices sit behind the SMC but are managed through cnMaestro, not ansible-wifi. Treat the SMC's DHCP and DNS as the discovery path
+those devices depend on.
+
+| Flavour                         | Cambium devices (source)                                                                                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `rct`                           | ePMP 1000 2.4 GHz Connectorized and ePMP 1000 5 GHz Connectorized APs (operator-stated); being migrated to MikroTik "metal" APs and XV2-2T0                        |
+| `wh`                            | ePMP 1000 APs (operator-stated; exact variant not yet identified); being migrated to MikroTik "metal" APs and XV2-2T0                                              |
+| `rcp` / `smc_ltp`               | Hardware profiles in `inventories/rcp/group_vars/smc_ltp.yml`: cnPilot r195P, XV2-2T0, XV2-22H, ePMP Force 300-16, Force 300-25 (SMs), ePMP 3000L (AP)             |
+| Fleet-wide (flavour not mapped) | Enterprise Wi-Fi XV2-2T0, XV2-22H, E500, E430; cnPilot R195P; ePMP APs 3000, 3000L, 1000; ePMP SMs Force 300-16, Force 300-25, Force 180; cnWave 60 GHz V5000,     |
+|                                 |   V3000, V2000, V1000                                                                                                                                              |
+
+Terminology (operator correction, 2026-09-14): ePMP 3000/3000L/1000 are **APs** (point-to-multipoint access points), and the Force units are **SMs**. "DN" is not the right term for ePMP here; it is
+cnWave vocabulary.
+
+SMC facts that matter to cnMaestro continuity:
+
+- `smc_dhcpd` hands Cambium vendor-class clients DHCP option 43 = `https://<cnmaestro_address>`. That is the address, not the FQDN, so a cnMaestro recovery that changes the public IP needs an SMC-wide
+  DHCP change unless the Elastic IP is kept.
+- The `smc_ltp` flavour points at the On-Premises instance `lt-cnmaestro.apn.au` and runs `smc_cnmaestro_provisioning` against its local REST API.
+- The r195P router template hard-codes `cns_static_url=https://cloud.cambiumnetworks.com`, so those routers are managed by the Cambium-hosted cnMaestro Cloud, not by APN's On-Prem instances.
+- `smc_dns_mgmt` deploys an empty `cambium-rpz` response-policy zone (`force: no`); its live contents are node-managed and unrecorded.
+- The cnMaestro On-Premises 6.0.0 User Guide documents a 90-day grace period after the instance loses subscription sync with the Cambium Cloud Anchor. At expiry "all the devices will be moved to the
+  onboarding queue", so new low-touch onboarding and device approval stop once the Anchor is gone.
+
+Full analysis, evidence and tests live in the cambium-swap project; do not duplicate them here.

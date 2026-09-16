@@ -1,0 +1,13 @@
+{
+  "id": "python",
+  "displayName": "Python",
+  "description": "Python repositories.",
+  "detect": {"anyFiles": ["pyproject.toml", "requirements.txt", "setup.py", "setup.cfg", "uv.lock"], "anyDirectories": ["src", "tests"]},
+  "include": ["pyproject.toml", "uv.lock", "poetry.lock", "Pipfile", "Pipfile.lock", "requirements*.txt", "setup.py", "setup.cfg", "tox.ini", "pytest.ini", "mypy.ini", "ruff.toml", "src/**/*.py", "app/**/*.py", "tests/**/*.py", "scripts/**/*.py", "migrations/**/*.py"],
+  "ignore": [".venv/**", "venv/**", "__pycache__/**", ".pytest_cache/**", ".mypy_cache/**", ".ruff_cache/**", "*.pyc", "*.pyo", "dist/**", "build/**", "*.egg-info/**", ".coverage", "htmlcov/**"],
+  "priorityFiles": ["pyproject.toml", "uv.lock", "requirements*.txt"],
+  "securitySensitivePatterns": ["**/.env*", "**/settings.local.py", "**/secrets.py"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 120000,
+  "notes": []
+}

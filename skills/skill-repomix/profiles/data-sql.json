@@ -1,0 +1,13 @@
+{
+  "id": "data-sql",
+  "displayName": "Data and SQL",
+  "description": "SQL, dbt, and data-engineering repositories.",
+  "detect": {"anyFiles": ["dbt_project.yml", "packages.yml"], "anyDirectories": ["sql", "queries", "models", "migrations"]},
+  "include": ["sql/**/*.sql", "queries/**/*.sql", "models/**/*.sql", "migrations/**/*.sql", "dbt_project.yml", "packages.yml", "profiles.example.yml", "schema.yml", "models/**/*.yml", "models/**/*.yaml", "scripts/**/*.py"],
+  "ignore": ["*.db", "*.sqlite", "*.sqlite3", "*.duckdb", "target/**", "dbt_packages/**", "logs/**", "profiles.yml", "*.csv", "*.parquet", "*.xlsx"],
+  "priorityFiles": ["dbt_project.yml", "models/**/*.sql", "schema.yml"],
+  "securitySensitivePatterns": ["profiles.yml", "*.csv", "*.parquet", "*.xlsx"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 100000,
+  "notes": ["Data files are excluded unless a bounded sample is explicitly requested."]
+}

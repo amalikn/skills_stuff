@@ -631,6 +631,23 @@ Operational implications:
 - Prometheus remote_write and federation scrapes must tolerate high latency
 - Any continuous disk writer (pcap, journal, large logs) has compounding impact since data cannot be quickly offloaded over the link
 
+### WAN Uplink Topology Pattern — Direct-to-NTD and Switch-Trunked Access-VLANs Can Coexist on One Box
+
+Confirmed at `galiwinku-smc01` (`nbn_accelerate`, multi-WAN NBN business site), 2026-09-08. Do not assume every `role: internet`/`role: starlink` interface on a multi-WAN site shares the same
+deployment characteristics — two structurally different patterns can and do coexist on the same box:
+
+- **Direct-to-NTD physical ports** — a NIC wired straight to its own NBN NTD, no switch in between (`eno1`, `enp3s0` on galiwinku).
+- **Switch-trunked access-VLAN ports** — a single NIC (`enp1s0`/`enp2s0` on galiwinku) is an 802.1Q trunk into a dedicated on-site switch, and that one switch carries **multiple** separate NBN
+  circuits as access-VLANs, one NTD per access port. Galiwinku's `enp2s0` ("switch01") trunks VLANs 521/523/525/527; `enp1s0` ("switch02") trunks VLANs 532/534/536/538. Starlink (`vlan621`/`vlan631`,
+  `role: starlink`) rides the same two trunks but is a logically separate role from the `role: internet` VLANs sharing the switch.
+
+**Why this matters for triage:** a shared-switch VLAN failure and an independent direct-NTD failure require different troubleshooting paths. On a switch-trunked circuit, the switch itself, its uplink
+port, and the trunk NIC are all shared fate across every VLAN on that switch — a switch-level problem can look like several unrelated circuits failing together. A direct-to-NTD port has no such shared
+blast radius; its failure is isolated to that one circuit. Before chasing a "why did N circuits fail at once" question, check whether those circuits share a switch trunk (`enp1s0`/`enp2s0`-style) or
+are independent direct-to-NTD ports — the answer changes where to look first. This is a distinct pattern from the switch01/switch02 **active-standby failover for one circuit** design discussed in
+`08_ansible-authoring.md` "Design Recommendation: Bond Doubled RCP/NBN-Accelerate Internet Circuits" — that one is two switches carrying the *same* circuit; this one is one switch carrying *several
+different* circuits as access-VLANs.
+
 ### Inventory Flavors
 
 | Flavor         | Platform    | Description                                |
@@ -922,6 +939,8 @@ pending vs. offline is distinguished by whether the watchdog series has ever exi
   * [All Inbound Access](#all-inbound-access)
   * [Backdoor SSH Access (raw reverse tunnel, bypasses Teleport's node agent)](#backdoor-ssh-access-raw-reverse-tunnel-bypasses-teleports-node-agent)
   * [Outbound from SMC Box](#outbound-from-smc-box)
+  * [`wifi-02.activ8me.net.au` / `202.171.100.138` is APN's OWN keepalived/LVS VIP — not a third-party service](#wifi-02activ8menetau-202171100138-is-apns-own-keepalivedlvs-vip-not-a-third-party-service)
+  * [Per-Site Public Egress IP — a first-class diagnostic, and one address for the whole box](#per-site-public-egress-ip-a-first-class-diagnostic-and-one-address-for-the-whole-box)
   * [Fluent Bit / Graylog Sidecar Config Architecture](#fluent-bit-graylog-sidecar-config-architecture)
   * [WAN Uplink Addressing and Default-Route Programming](#wan-uplink-addressing-and-default-route-programming)
   * [Manual TBF/`ifb` Ingress Shaping — live, fleet-wide, NOT Ansible-managed](#manual-tbfifb-ingress-shaping-live-fleet-wide-not-ansible-managed)
@@ -981,11 +1000,22 @@ resulting port uniquely identifies one site fleet-wide, regardless of which proj
 4. Credential: a fleet-wide shared root password, stored in the KeePassXC vault at `Network/SMC` (see `security-and-secrets-guide.md` for the `kp` retrieval workflow — `kp clip "Network/SMC"` copies
    it to the clipboard; paste directly into the interactive prompt rather than piping the plaintext through automation/tool logs).
 
+**Delivering the credential from an agentic/automated session without exposing it in tool output** (used successfully 2026-09-08 against galiwinku-smc01's root shell via this backdoor path): run `kp
+clip -a Password "<vault-entry-name>"` — this copies to the macOS clipboard silently and produces no stdout, so the plaintext never appears in any tool-call argument or output. Then deliver the
+clipboard content into the target terminal session with a short AppleScript that does `write text (the clipboard)` addressed to that specific iTerm session's unique GUID (obtained from iTerm's session
+list), which pastes the real secret directly into the SSH password prompt. The orchestrating agent's own tool-call arguments and outputs never contain the plaintext value at any point in this flow.
+
 **Caveats**:
 - No Teleport session recording on this path — it's a raw root shell with none of Teleport's audit trail. Reserve it for cases where `tsh ssh` itself is what's broken; it is not a routine substitute
   for normal access.
 - The tunnel depends on the box's own `autossh-teleport-openssh` service still running. If the box is fully hung (see the Silent Total Hang failure mode in `06_failure-modes.md`), this path is dead
   too — it rescues you from a *stuck Teleport agent*, not a *stuck kernel*.
+
+**Additional capability — `cw-teleport01` is also an APN-side diagnostic vantage point, not only an SSH stepping stone (2026-09-08).** From a root shell on the bastion you have internal APN
+reachability from inside the `nbn_accelerate`/`cw` environment, which lets you test APN infrastructure (LVS real servers, VIPs) *directly*, independent of any site's own WAN path — invaluable for
+deciding whether a site-side symptom is the site or the backend. Measured latencies: `172.16.254.73`/`172.16.254.74` (lweb03/lweb04) at ~10.5–10.8 ms, `202.171.100.132` (LVS director) at ~11.8 ms. Its
+own public source IP is `3.104.50.51`. **Caveat: SSH port 22 to the LVS director (`202.171.100.132:22`) is FILTERED from this host**, so you can reach the director's service ports but cannot log into
+it to read a rule set — a live 2026-09-08 investigation was blocked on exactly this.
 
 ### Outbound from SMC Box
 
@@ -1000,6 +1030,48 @@ graylog-sidecar + fluent-bit → gl.aws.apn.au:443   (structured HTTPS GELF; X-G
 postfix → mail relay
 NBN Accelerate API                                  (broadband management, nbn_accelerate flavor)
 ```
+
+### `wifi-02.activ8me.net.au` / `202.171.100.138` is APN's OWN keepalived/LVS VIP — not a third-party service
+
+**Confirmed 2026-09-08. The `activ8me.net.au` domain name is misleading: this endpoint is APN-operated load-balanced infrastructure, so any failure involving it is an APN-internal escalation, not a
+vendor ticket.** Do not conflate it with `wifi.activ8me.net.au:443`, the remote Eclipse portal-config server documented in `10_captive-portal.md` — different host, different owner-facing role.
+
+| Layer              | Detail                                                                                                                                         |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| VIP                | `202.171.100.138` — keepalived `vrrp_instance VI_138`                                                                                          |
+| Director pair      | `202.171.100.132` / `202.171.100.133`, VRRP on `bond1.1005`                                                                                    |
+| Real servers (LVS) | `lweb03.apn.net.au` (`172.16.254.73`), `lweb04.apn.net.au` (`172.16.254.74`)                                                                   |
+| Name resolution    | **Static `/etc/hosts` entry on every `nbn_accelerate` SMC** (`202.171.100.138 wifi-02.activ8me.net.au`) — DNS is never a variable in failures here |
+| Port 443           | Open from every source tested (HTTP 200)                                                                                                       |
+| Port 80            | **Source-IP allowlist enforced at the director** — see `06_failure-modes.md` "Port-80 Source-IP Allowlist on the APN VIP"                      |
+| Persistence        | `persistence_timeout 86400` — each client source IP is pinned to one real server for 24 hours                                                  |
+| Known upstream bug | `lb_algo rr` ignores `real_server` weights, so the `weight 65535` drain intent on lweb04 does nothing — see `13_known-issues.md`               |
+
+Because name resolution is a static hosts entry, "it must be DNS" is a dead end for this endpoint on `nbn_accelerate` boxes: the address is fixed on disk and the only variables are routing, the box's
+public egress IP, and the director's own policy.
+
+### Per-Site Public Egress IP — a first-class diagnostic, and one address for the whole box
+
+**All of a multi-WAN SMC's circuits can share ONE public IP.** Confirmed at galiwinku-smc01 2026-09-08: all seven circuits egress as `119.12.211.80`, converging at carrier hop `10.191.0.13` which NATs
+them. **This invalidates most per-circuit theories about remote-end behaviour** — the remote server sees a single address no matter which uplink a flow took, so "circuit A is blocked but circuit B is
+not" cannot be true for any source-IP-based policy at the far end.
+
+Check it with HTTPS, never HTTP — port 80 may itself be the thing under investigation:
+
+```bash
+curl -sS https://api.ipify.org
+```
+
+Known values as of 2026-09-08:
+
+| Site      | Public egress IP | In the fleet's expected pool (`119.12.209.0/24`)? |
+| --------- | ---------------- | ------------------------------------------------- |
+| galiwinku | `119.12.211.80`  | **No** — carrier NAT placed it in `119.12.211.0/24` |
+| amata     | `119.12.209.20`  | Yes                                               |
+| kowanyama | `119.12.209.111` | Yes                                               |
+
+**Recommended, not yet done: a fleet-wide audit of every site's public egress IP against the expected pool.** A site whose carrier NAT drifts out of `119.12.209.0/24` silently loses access to any
+APN-side service that allowlists that range, with no config change on either side and no alerting — see the port-80 allowlist failure mode in `06_failure-modes.md`.
 
 ### Fluent Bit / Graylog Sidecar Config Architecture
 
@@ -1198,11 +1270,26 @@ Consequences worth knowing before diagnosing any WAN routing question:
 - **A topology file can shrink.** One site's `internetNN` definitions went from 16 to 6 on a branch, and the shrunken render reached `smc_application` while netplan still held all 16. The failure
   looks identical to a site outgrowing its topology file; only the direction differs. **Stale `ip rule` entries are the forensic marker** — a rule with no matching hook entry is residue from an
   earlier render, since rules persist until deleted or reboot. An interface holding *both* a stale rule and a `metric 100` default is two renders coexisting, not a contradiction.
+- **A stale `ip rule` does not always mean a stale render — a dropped DHCP lease leaves one too (galiwinku-smc01, 2026-09-08).** Each WAN source address gets its own rule pointing at a dedicated table
+  (`from 10.181.104.90 lookup vlan534`, etc.). Nothing removes that rule when the lease expires, so rules were observed still present for `vlan525` and `vlan523` after **both** interfaces had lost
+  their addresses entirely. Before concluding "old render", check whether the rule's source IP is still assigned (`ip -4 addr show <iface>`): a rule whose source address no longer exists on the box is
+  lease residue, whereas a rule with no matching arm in `/etc/dhcp/dhclient-enter-hooks` is render residue. The two look identical in `ip rule show`.
+- **Squid's transparent redirect is scoped to LAN clients only, and is a common false lead when diagnosing port-80 problems from a root shell.** The rule is `-A PREROUTING -i bridge_501 -p tcp --dport
+  80 -j SQUID_REDIRECT` — it matches only traffic *arriving on* `bridge_501`, so traffic the SMC **originates itself** (any `curl`/`telnet` from the box's own shell) never enters `PREROUTING` and is
+  never redirected to Squid. If a locally-run port-80 test fails, Squid is not in that path; look at routing, the box's public egress IP, and far-end policy instead.
 - **The `100` is accidental.** `metric` is empty at that point, so the code runs `expr + 100`; GNU `expr` treats a leading `+` as a quoting operator, yielding `100`. If DHCP ever returns more than one
   router, `metric` is already the string `metric 1`, `expr metric 1 + 100` errors, and the route is added with **no metric at all** — colliding with the ECMP entry instead of losing to it.
-- **Nothing in ansible-wifi builds the ECMP multipath default.** `grep -rn nexthop roles/` returns zero hits. The matched branch calls `kohana status:gateway` on every lease, so the multipath route is
-  built by the Kohana wifi app — *inferred, not verified* (that repo is not checked out locally). Practical effect: ECMP membership reflects the portal app's view of link health, which is why an
-  unhealthy link quietly leaves the pool.
+- **Nothing in ansible-wifi builds the ECMP multipath default — CONFIRMED 2026-09-08 (galiwinku-smc01, live), correcting the prior "inferred" Kohana theory below.** `grep -rn nexthop roles/` returns
+  zero hits, and the previous hypothesis that the Kohana wifi app builds the multipath route via `kohana status:gateway` is now understood to be an interpretive leap, not the actual mechanism: that
+  call registers the lease with the portal app, it does not construct or manage any route. **The real mechanism is emergent, unmanaged kernel behavior**: every `role: internet`/`role: starlink`
+  interface runs its own independent `dhclient@<iface>.service`, each independently installing its own default route via its DHCP-supplied gateway at the same route metric (via the
+  `dhclient-enter-hooks` per-interface-table path above, or the shared `metric 100` fallback). The kernel automatically merges multiple same-destination/same-metric routes from different devices into
+  one ECMP multipath group — this is standard Linux multipath routing, not a designed multi-WAN policy engine and not something any ansible-wifi role or the portal app manages. **Critically, there is
+  no health-based nexthop eviction of any kind**: a nexthop whose gateway has gone ARP-FAILED stays in the ECMP group and keeps receiving a share of routed traffic until its DHCP lease itself is lost
+  (which can take hours — DHCP lease loss and ARP/gateway health are unrelated events). ECMP group membership was observed shifting unpredictably at galiwinku as leases came and went during the same
+  session — a VLAN could appear or vanish from `ip route show`'s nexthop list independent of its actual link health. This generalizes fleet-wide to every multi-WAN site: nothing evicts an unhealthy
+  member early, and which links currently share the ECMP pool is a lease-timing accident, not a health signal. See `06_failure-modes.md` "ECMP Multipath Hashing Pins Fixed-Destination Traffic to a
+  Single (Possibly Dead) Nexthop" for the practical consequence (L3-only hash pinning) and its fix.
 - **`interfacecheckv2.sh` does not delete routes.** It pings `8.8.8.8` (`-c 4 -W 3`) per interface and on failure runs `systemctl restart dhclient@<iface>.service`, writing
   `my_node_interfacecheck_success{device="…"} 0`. Route disappearance is second-order. That series is a usable per-interface failure-onset history without box access (`mcp-grafana-apn` for
   rcp/rct/wh).
@@ -1256,10 +1343,14 @@ ref of the repository — see `local-knowledge-ansible/ansible-wifi/issues/apn/r
   confirmed on the branch now shared by `rise-multi`/`internet-label-rename` after a same-day reset):** the *deploying* Ansible task block for `multiwan-setup.sh.j2`/`.service.j2`
   (`roles/smc_network/tasks/ubuntu.yml`, ~lines 377-405) is fully commented out — added by commit `5eb127bf` (2025-10-16, the per-WAN-VRF fix for same-subnet/same-MAC Starlink CPE ARP flapping), then
   disabled as **apparent incidental collateral** of an unrelated commit, `c19a61fa` (2026-06-09, a URL-capture-v2 refactor) — no deliberate rationale recorded. This reads as accidentally orphaned
-  complexity, not a considered decision to abandon the mechanism. **Important nuance not previously captured here:** the fwmark script being dead does not mean VRF is fully "not in play" —
-  `roles/smc_network/templates/netplan.yml.j2`'s per-WAN VRF *allocation* (the `{% if interface.role in ['internet','starlink'] %}` VRF-membership block, ~lines 46/127) is **still live and rendered
-  into every deploy today**. Only the fwmark `ip rule`s that would route traffic into those VRF tables are missing. A box could plausibly carry allocated-but-unused `vrf-<tableid>` devices as a result
-  — **not yet checked on any live SMC**, flagged as an open item, not confirmed either way.
+  complexity, not a considered decision to abandon the mechanism. **Superseded 2026-09-08:** the per-WAN VRF *allocation* in `netplan.yml.j2` referenced below is no longer "still live and rendered
+  into every deploy today" on every branch — it was commented out at source on 2026-08-25 (interim) and landed as commit `f2fb439f` (2026-08-27), present on `internet-label-rename`/`squid-redesign`
+  but **not on `master`** as of 2026-09-08. See `08_ansible-authoring.md` "VRF commented out at source" for the full mechanism and branch scope; the computation
+  (`vrf_candidates`/`vrf_membership`/`vrfs`) is left intact and unused, so the allocation could still be reinstated by deleting two comment wrappers — check the actual branch a site deploys from
+  before assuming either state. **Original (2026-07-31) finding, now branch-scoped rather than universal:** the fwmark script being dead does not mean VRF is fully "not in play" —
+  `roles/smc_network/templates/netplan.yml.j2`'s per-WAN VRF *allocation* (the `{% if interface.role in ['internet','starlink'] %}` VRF-membership block, ~lines 46/127) was **still live and rendered
+  into every deploy** on branches predating the 2026-08-25 disable. Only the fwmark `ip rule`s that would route traffic into those VRF tables were ever missing. A box could plausibly carry
+  allocated-but-unused `vrf-<tableid>` devices as a result from a deploy predating the disable — **not yet checked on any live SMC**, flagged as an open item, not confirmed either way.
 - **`smc_application`'s dhclient-restart handler had no connectivity safety net — `smc_network`'s does. Fixed 2026-07-29, not yet live-tested under a real failure.** Both roles can trigger `systemctl
   restart dhclient@*.service` (every WAN interface, all at once). `smc_network` (`roles/smc_network/handlers/main.yml`, listen `Protected dhclient services restart`) schedules an independent `at
   systemctl restart teleport` job 2 minutes out *before* the restart, runs the restart `async`/`poll: 0`, then `wait_for_connection` (up to 1h) and cancels the `at` job only if the connection comes
@@ -1508,6 +1599,7 @@ same thing as `smc_ltp`'s CNMaestro provisioning. See `08_ansible-authoring.md` 
 - Tier 9: SMP iptables ipset failure
 - Tier 10: smc_application loop input failure
 - Tier 11: --check does not gate command+async restart handlers
+- Cross-Tier: reject vs drop, ICMP-TTL origin location, on-box tooling gotchas
 
 ## 5. Troubleshooting Workflows
 
@@ -1542,6 +1634,13 @@ same thing as `smc_ltp`'s CNMaestro provisioning. See `08_ansible-authoring.md` 
    2026-09-08 against a site with a hung/unreachable Teleport agent). See
    `03_communication-flows.md` §Backdoor SSH Access for the port formula and procedure — it gets you
    a root shell to actually run steps 1-4 from inside the box instead of guessing from outside.
+
+   On a multi-WAN site, a reconnect failure here (e.g. `ssh: connect to host ... No route to host`,
+   `ssh exited with error status 255; restarting ssh` in the `autossh-teleport-openssh` unit's own log)
+   can be caused by ECMP hash pinning routing the reconnect onto a currently-dead nexthop rather than
+   the tunnel itself being broken — see `06_failure-modes.md` "ECMP Multipath Hashing Pins
+   Fixed-Destination Traffic to a Single (Possibly Dead) Nexthop". The fix there improves the odds a
+   *subsequent* reconnect attempt succeeds; it does not make an already-hung attempt recover on its own.
 
 4. Overlayroot healthy?
    mount | grep overlay
@@ -1899,6 +1998,35 @@ Validation:
 Full incident writeup: local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/docs/pandanus-park-checkmode-async-restart-incident-20260730_1140.md
 ```
 
+### Cross-Tier: Reject vs Drop, Where a Rejection Was Generated, and On-Box Tooling Gotchas
+
+Established during the 2026-09-08 galiwinku port-80 investigation (see `06_failure-modes.md` "Port-80 Source-IP Allowlist on the APN VIP"). These techniques are not specific to that incident — they
+answer the general "is it them or us?" question on any SMC.
+
+**Locate where a rejection is generated, using the ICMP error's TTL.** Compare the TTL of the returned ICMP error against the TTL of known-good replies from the same host:
+
+- **TTLs match** → the rejection genuinely originates at the far end.
+- **The error's TTL is much higher** → a nearby middlebox forged it, and the far end never saw the packet.
+
+Worked example: the ICMP admin-prohibited arrived at `ttl 49`, identical to genuine ping replies from the same host (`ttl 49`), proving a far-end origin ~13–14 hops away. The SYN quoted inside the
+ICMP error's payload showed `ttl 51` (sent at 64), corroborating the hop count independently.
+
+**Measure the failure latency to separate a reject from a drop.** An active reject returns in **~1 RTT**; a drop/blackhole shows as a **multi-second timeout**. A "connection failed" that comes back
+instantly is almost always something answering, not something missing.
+
+**On-box tooling gotchas (SMC appliances):**
+
+- **`traceroute` is NOT installed.** Available instead: `mtr`, `nping`, `nmap`, `tracepath`, `busybox`.
+- **`mtr --interface <if>` binds correctly in TCP mode (`-T`) but NOT in ICMP mode.** An ICMP trace requested on `vlan534` silently egressed via `eno1`. **Always verify hop 1 matches the intended
+  gateway before trusting any interface-bound trace** — the wrong-interface result looks completely plausible.
+- **`mtr` showing "0.0% loss" at the final hop does NOT mean the service is reachable.** It counts *any* response for that TTL as success, including an ICMP rejection. A clean-looking mtr is fully
+  compatible with a hard-rejected service.
+- **`tcpdump` buffers its output** — reading the capture file while it is still running shows nothing. Wait for it to exit, use `-U`, or (preferred) `-w file.pcap` and decode separately.
+- **A `host <ip>` tcpdump filter will NOT match returning ICMP errors.** Their outer header is gateway→us, not peer→us. Use `'host <ip> or icmp'`, and decode with `-vv` to see the embedded quoted
+  packet and its TTL (which is what the TTL technique above depends on).
+- **`curl -w ... 2>&1 | tail -1` masks the real error.** Capture `rc=$?` separately — exit **7** ("No route to host", never established) and exit **56** ("Connection reset by peer", established then
+  reset) are completely different diagnoses and the piped one-liner hides which one you got.
+
 ---
 ````
 
@@ -1932,6 +2060,9 @@ Full incident writeup: local-knowledge-ansible/ansible-wifi/issues/apn/routing-i
 |                                        |   SSD"; `sbdm-cli` only detects genuine Swissbit hardware, never fires on x86 SSD/CFast)                   |                                                |
 | `smartmon_device_smart_healthy == 0`   | SMART failure — x86 rcp/nbn_accelerate only (Innodisk CFast or Transcend SSD; `smartctl` finds no          | Drive health critical                          |
 |                                        |   ATA-SMART device on RPi microSD, this alert never fires there)                                           |                                                |
+
+**Known coverage gap:** there is no per-device `role="internet"` equivalent of `NodeStarlinkInterfacecheckPacketLoss` — see `13_known-issues.md` "No per-device `role: internet` Prometheus alert
+exists" and the "interfacecheckv2.sh's Unconditional dhclient Restart" entry below for why this let an outage go undetected.
 
 ### Overlayroot Upper Dir Full
 
@@ -2211,6 +2342,106 @@ mount lands at 50% of RAM — consistent with the existing "`overlay.size_ratio`
 | `tsh` gotcha hit during triage  | `tsh ssh root@<host> -- "<cmd>"` fails with "invalid option" — the `--` separator is forwarded literally to the remote bash. Use `tsh ssh root@<host> "<cmd>"`     |
 |                                 |   (no `--`)                                                                                                                                                        |
 | Full write-up                   | `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/aurukun/enp2s0-flap.md`                                                                                |
+
+### interfacecheckv2.sh's Unconditional dhclient Restart Can Worsen a Marginal Link (No Backoff)
+
+**Do not read the aurukun entry above as "the self-heal cron is always harmless."** That incident concluded the cron was blameless because the circuit was already fully dead (zero DHCPOFFERs even
+after a clean bounce) — cycling `dhclient` on a dead circuit changes nothing. This is the opposite case: the same script's same behavior actively made a **still-recoverable, briefly-degraded** link
+worse, observed at `galiwinku-smc01` (`nbn_accelerate`), 2026-09-08.
+
+| Field           | Value                                                                                                                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mechanism       | `interfacecheckv2.sh` (`roles/smc_network/templates/interfacecheckv2.sh.j2`) runs via a 5-minute cron, `ping -I <iface> -c4 -W3 8.8.8.8` on every                                  |
+|                 |   `role: internet`/`role: starlink` interface, and on **any** failure unconditionally runs `systemctl restart dhclient@<iface>.service` — no consecutive-failure counter, no backoff, |
+|                 |   no escalation tier. One failed 4-packet ping is enough to trigger a full DHCP client restart on that interface, every 5 minutes, indefinitely                                    |
+| Observed        | `vlan523` on galiwinku went from "briefly degraded during an upstream flap" to a full DHCP lease loss (`No DHCPOFFERS received`,                                                   |
+|   failure       |   `No working leases in persistent database - sleeping`) immediately after the script's `dhclient` restart landed inside the same 5-minute window (~11:48 AEST). A link that might |
+|                 |   have recovered on its own, or recovered its existing lease via renewal, instead lost the lease entirely and had to renegotiate from scratch                                      |
+| Why it can hurt | Restarting `dhclient` on a marginal/flapping link discards the current, possibly-still-valid lease and forces a fresh `DISCOVER`/`OFFER`/`REQUEST`/`ACK` cycle. If the             |
+|                 | far end is mid-flap rather than fully dead, the restart can lose a lease that a simple renewal (`dhclient -1`/lease renewal, no restart) would have kept, or can land the          |
+|                 | new negotiation in a worse moment of the same flap                                                                                                                                 |
+| Not yet         | A consecutive-failure counter/backoff so the script stops restarting `dhclient` after 2-3 consecutive failed cycles and instead just reports via the existing                      |
+| implemented     | `my_node_interfacecheck_success` Prometheus metric — restarting a client can't fix a problem that isn't a stale-lease problem (e.g. an upstream ARP failure), and                  |
+|                 | continuing to kick a link that's mid-flap risks compounding a transient issue into a harder one                                                                                    |
+| Relationship to | The `HostInterfacecheckTextfileCollectorNotUpdated` alert (`SKILL.md` / `06_failure-modes.md` Key Prometheus Alerts) only detects the script itself going stale — it says          |
+| monitoring gap  | nothing about a single interface repeatedly failing and being repeatedly restarted while the script keeps running fine. See `13_known-issues.md` "Fleet-Wide Architecture          |
+|                 | Risks" for the related per-device `role: internet` alerting gap that let this class of failure go undetected until manual SSH diagnosis                                            |
+
+### ECMP Multipath Hashing Pins Fixed-Destination Traffic to a Single (Possibly Dead) Nexthop — the single most generalizable multi-WAN finding in this pack
+
+Confirmed at `galiwinku-smc01` (`nbn_accelerate`), 2026-09-08. **Presume fleet-wide unless proven otherwise on other hosts** — nothing in Ansible sets `net.ipv4.fib_multipath_hash_policy` anywhere in
+the repo, so every multi-WAN site inherits the kernel default. Read `03_communication-flows.md` "Nothing in ansible-wifi builds the ECMP multipath default" first — this entry is the practical
+consequence of that unmanaged, emergent ECMP group described there.
+
+| Field                                  | Value                                                                                                                                                       |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root cause                             | `net.ipv4.fib_multipath_hash_policy` defaults to `0` (L3-only: hashes source+destination IP only, ignoring port/protocol). Every flow to a **fixed**        |
+|                                        |   **destination IP** (DNS queries to `8.8.8.8`/`8.8.4.4`, or any monitoring/health-check target pinged by IP) is deterministically pinned to exactly **one** ECMP |
+|                                        |   nexthop, permanently, regardless of that nexthop's actual health — and because ECMP membership itself drifts (unmanaged, no health eviction — see         |
+|                                        |   `03_communication-flows.md`), which specific link a given destination pins to also silently drifts over time with zero visibility                         |
+| Symptom signature (memorize this)      | **Recognize this pattern at any multi-WAN SMC:** pinging an FQDN fails or times out inconsistently, seemingly regardless of which interface (`-I`) is       |
+|                                        |   specified, but pinging the same destination by raw IP works fine, and/or hardcoding the resolved IP into `/etc/hosts` "fixes" it                          |
+| Why FQDN tests mislead                 | DNS resolution does not respect `ping -I`'s device binding — glibc's resolver uses the box's normal route selection, not the bound test interface. So the   |
+|   per-iface testing                    |   DNS lookup step transits whichever single link the destination IP's L3 hash currently pins to. If that link happens to be currently broken, **every**     |
+|                                        |   FQDN-based test fails together regardless of which interface is actually under test, while direct-IP tests (no DNS step) correctly show the true          |
+|                                        |   per-interface health. This can make a single bad link look like a fleet-wide DNS outage when only one nexthop is actually down                            |
+| Fix                                    | `net.ipv4.fib_multipath_hash_policy=1` (adds source/destination port + protocol to the hash — standard "L4" multipath hashing). Lets different              |
+|                                        |   flows/retries to the same destination land on different nexthops instead of being permanently glued to one                                                |
+| Reboot required                        | **No.** `sysctl -w net.ipv4.fib_multipath_hash_policy=1` takes effect immediately. Persist via a file in `/etc/sysctl.d/`, then `sysctl --system` re-applies |
+|                                        |   cleanly, matching what happens at next boot anyway                                                                                                        |
+| Live-test procedure (~30s, zero risk)  | Run `ip route get <known-fixed-destination-ip> sport <N1> dport <P> ipproto <proto>` for several arbitrary source port numbers `N`. Under `policy=0` all    |
+|                                        |   return the identical nexthop; after switching to `policy=1`, the same commands should return varying nexthops. Provable on any live box in under a minute |
+|                                        |   with no traffic impact                                                                                                                                    |
+| Applied at galiwinku                   | Live + persisted on 2026-09-08 via a new file `/etc/sysctl.d/60-smc-multiwan-fib-hash.conf` — **on-box only, NOT committed to the ansible-wifi git repo, NOT** |
+|                                        |   **rolled into** **`roles/smc_network`** **via Ansible**. A fleet-wide rollout via a `sysctl` module task (`sysctl_set: yes`, `reload: yes`) was proposed but |
+|                                        |   **deliberately deferred** pending an observation period on galiwinku alone. **Do not assume this fix is live fleet-wide from this entry alone — check the** |
+|                                        |   **actual role/live hosts before relying on it anywhere else.**                                                                                            |
+
+**Important caveat — the fix does NOT give seamless mid-connection failover.** Switching to L4 hashing does not monitor or reroute an already-established flow just because the hash policy changed or
+the path went bad — an open TCP connection keeps using its originally-hashed nexthop for its entire lifetime. Only **new** connection attempts (including reconnects of a dropped connection) benefit,
+since each gets a fresh ephemeral source port and therefore an independent hash roll. Practical implication: if the link carrying an active session goes bad, that session must first be detected as
+dead by whatever keepalive the specific service uses before a reconnect is even attempted — the fix only improves the odds that *that* reconnect attempt succeeds quickly, rather than repeatedly
+hashing onto the same dead nexthop forever (the old L3-only failure mode).
+
+**Real production evidence this already hit live infrastructure** — the `autossh-teleport-openssh` systemd service's own log, galiwinku, 2026-09-08 incident window:
+
+```
+Sep 08 11:25:32 galiwinku-smc01 autossh[1980298]: ssh: connect to host 3.104.50.51 port 22: No route to host
+ssh exited with error status 255; restarting ssh
+```
+
+A genuine reconnect attempt failed outright because, under the pre-fix L3-only policy, it hashed onto a nexthop that was ARP-dead at that moment (the service self-recovered on a later retry, now
+established via `eno1`). This is concrete proof the pinning issue doesn't just affect DNS lookups — it affects **any** fixed-destination-IP traffic, including the Teleport reverse tunnel itself, since
+Teleport's own bastion IP (`3.104.50.51`) is just as subject to the same per-destination hash pinning as `8.8.8.8` is. See `05_troubleshooting.md` Tier 1 for the autossh tunnel check this relates to,
+and `03_communication-flows.md` §Backdoor SSH Access for the fallback path when this tunnel itself is the thing affected.
+
+### Port-80 Source-IP Allowlist on the APN VIP (`202.171.100.138` / `wifi-02.activ8me.net.au`) — a site's public IP drifting out of the NAT pool breaks it silently
+
+Confirmed 2026-09-08. **This is an APN-internal policy failure, not a vendor problem** — read `03_communication-flows.md` "`wifi-02.activ8me.net.au` / `202.171.100.138` is APN's OWN keepalived/LVS
+VIP" first for the ownership correction that makes this an internal escalation.
+
+| Field                                    | Value                                                                                                                                                     |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mechanism                                | The **port-80** virtual service on `202.171.100.138` enforces a source-IP ACL. Sources inside `119.12.209.0/24` (the fleet's normal NAT pool) are permitted; |
+|                                          |   sources outside it are **rejected at the director** with ICMP type 3 code 13 (admin prohibited). **Port 443 carries no such restriction** — HTTP 200 from every |
+|                                          |   source tested                                                                                                                                           |
+| Symptom signature (memorize this)        | `curl`/`telnet` to **port 80** fails with **"No route to host" in ~1 RTT**, while **ping to the same host succeeds** and **port 443 works**. That combination is an |
+|                                          |   ICMP admin-prohibited *reject*, not a routing failure — a genuine routing failure would not let ping through, and a drop/blackhole would time out over  |
+|                                          |   seconds rather than answering immediately                                                                                                               |
+| Do not confuse with the expected         | `curl` **exit 56** / "Connection reset by peer" means the TCP connection reached **ESTABLISHED** and the application then reset it — this is the **normal** behaviour |
+|   behaviour other sites see              |   of this endpoint and is what a healthy in-pool site looks like. `curl` **exit 7** / "No route to host" means the connection **never established at all** — that |
+|                                          |   is the allowlist reject. Always capture `rc=$?` separately; the two are trivially distinguishable by exit code and completely different diagnoses       |
+| Confirmed out-of-range sources           | `galiwinku-smc01` public IP `119.12.211.80`, and `cw-teleport01` `3.104.50.51` — two independent sources, both rejected on port 80, both fine on 443      |
+| Root cause (galiwinku case)              | The site's **carrier NAT placed it in `119.12.211.0/24` instead of the fleet's `119.12.209.0/24`**, silently putting it outside the allowlist. **No config** |
+|                                          |   **change was made on either side and nothing alerted.** Any site whose public IP drifts out of the pool breaks identically and just as silently         |
+| Fix path                                 | Either add the range to the director's allowlist, or — **preferred** — restore the site to the fleet's NAT pool so the allowlist stays a tight,           |
+|                                          |   meaningful control                                                                                                                                      |
+| Investigation limit hit                  | **SSH to the director (`202.171.100.132:22`) is FILTERED from `cw-teleport01`**, so the allowlist rule itself could not be read in-session. The behaviour |
+|                                          |   above is inferred from the ICMP responses, not from the rule text                                                                                       |
+
+**Prevention**: nothing today audits site public egress IPs against the expected pool. See `03_communication-flows.md` "Per-Site Public Egress IP" for the `curl -sS https://api.ipify.org` check, the
+known per-site values, and the recommended fleet-wide audit. For the method used to prove the rejection was generated at the far end rather than by a nearby middlebox, see `05_troubleshooting.md`
+"Cross-Tier: Reject vs Drop, Where a Rejection Was Generated, and On-Box Tooling Gotchas".
 ````
 
 ## File: references/07_hardware-overlay.md
@@ -4350,9 +4581,16 @@ Stripping the 10 `vrf:` lines and the trailing `vrfs:` block reproduces the pre-
 stays. The `diff` is the real gate: identical output proves the repair changed no intended network state and nothing new applies at reboot. **Never `netplan apply` on a remote SMC to fix this** —
 `generate` is sufficient to clear the boot hazard, and `apply` risks the uplink carrying your own session.
 
-### VRF commented out at source 2026-08-25 (interim, on `internet-label-rename`)
+### VRF commented out at source 2026-08-25 (interim, on `internet-label-rename`) — now committed as `f2fb439f` (2026-08-27)
 
-Rather than gate the feature properly, the operator asked for VRF to be **commented out and revisited later**. Two files changed, **uncommitted**:
+**Update 2026-09-08:** the interim, uncommitted disable described below landed as commit `f2fb439f` ("Onboard yakanarra, disable VRF emission, and add gated write-reduction blocks", 2026-08-27),
+present on `internet-label-rename` and `squid-redesign` — **confirmed NOT on `master`** as of 2026-09-08 (`git merge-base --is-ancestor f2fb439f master` fails). The commit message states the same
+rationale captured live below independently: "VRF IS A FLEET-WIDE LANDMINE... emitting `vrf:` breaks `netplan generate` on every `rcp` SMC... Disabled at source rather than removed, so the re-enable
+gate stays visible: fleet netplan 0.106 or later AND the exact schema verified against it." Treat "uncommitted" in the rest of this section as historical — the change itself is unchanged, only its
+commit status differs. `multiwan-setup.sh.j2`'s deploying task block and the VRF modprobe task remain commented out in `roles/smc_network/tasks/ubuntu.yml` on the same commit; neither mechanism is
+live anywhere in the fleet as of this update. **Do not assume this has reached `master`/the fleet's default deploy branch without checking the actual branch a given site runs from.**
+
+Rather than gate the feature properly, the operator asked for VRF to be **commented out and revisited later**. Two files changed, **uncommitted at the time**:
 
 - `roles/smc_network/templates/netplan.yml.j2` — the per-interface `vrf:` key and the top-level `vrfs:` block are each wrapped in a Jinja `{# … #}` comment carrying a banner that states the netplan
   0.104 incompatibility, the over-broad selector, and the two conditions required before re-enabling. **The computation is deliberately left intact** (`vrf_candidates`, `tablenames`, `tableids`,
@@ -5633,6 +5871,7 @@ curl -sv http://1.1.1.1/ 2>&1 | grep -E "Location|302|wifi"
 - [2026-08-18 — Ubuntu's stock rsyslog logrotate has no size limit (fleet-wide)](#2026-08-18-ubuntus-stock-rsyslog-logrotate-has-no-size-limit-fleet-wide)
 - [2026-08-18 — legacy `ozai` logger still writing post-RISE; graylog-sidecar logs accumulate forever](#2026-08-18-legacy-ozai-logger-still-writing-post-rise-graylog-sidecar-logs-accumulate-forever)
 - [2026-08-18 — plaintext secrets in `group_vars`, and a copied Graylog config that shared them](#2026-08-18-plaintext-secrets-in-group_vars-and-a-copied-graylog-config-that-shared-them)
+- [2026-09-08 — upstream keepalived VIP config bug: `lb_algo rr` silently ignores the lweb03 drain intent (`202.171.100.138`)](#2026-09-08-upstream-keepalived-vip-config-bug-lb_algo-rr-silently-ignores-the-lweb03-drain-intent-202171100138)
 
 ---
 
@@ -5737,43 +5976,64 @@ assuming `cw`/`apn`/`rct`/`wh` are ungated by design.
 
 ## Fleet-Wide Architecture Risks (identified, not yet remediated)
 
-| Risk                                | Detail                                                                                              | Evidence basis                                           |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| Stubby DoT upstream has no failover | Exactly one `upstream_recursive_servers` entry (`127.0.0.1@60853`, reached via an autossh local     | garimba-smc01 DNS RCA,                                   |
-|                                     |   port forward to Teleport) is configured fleet-wide, identically, for every non-`smc_ltp` site —   |   2026-07-03, `roles/smc_dns/files/stubby.yml`           |
-|                                     |   `round_robin_upstreams: 1` is set but meaningless with a single upstream                          |                                                          |
-| No monitoring for the autossh local | Repo-wide search found no Prometheus alert rule specific to `autossh-teleport.service` state or     | garimba-smc01 DNS RCA, 2026-07-03                        |
-|   forward or Stubby                 |   DNS-upstream health; if the Teleport connection drops, DHCP/LAN client DNS on that SMC has no     |                                                          |
-|   upstream reachability             |   fallback once Unbound's cache expires (positive TTL up to 24h, negative TTL up to 5min) — failure |                                                          |
-|                                     |   would be silent until users notice                                                                |                                                          |
-| **No HTTP-level captive-portal**    | Nothing probes whether the portal actually serves. The only portal-adjacent signals are the Kohana  | rcp portal outage RCA, 2026-07-28,                       |
-|   **monitoring anywhere in the fleet** |   `status:update:usage` / `status:update:status` crons, which run as **root** and therefore keep    |   `issues/rcp-fleet/rcp-captive-portal-cache-perms-\`    |
-|                                     |   succeeding even when the portal is dead for `www-data` — Eclipse keeps receiving data throughout  |   `outage-20260728_1240.md`                              |
-|                                     |   an outage. This let 10 of 16 `rcp` sites sit fully down for 7 days undetected. A naive probe      |                                                          |
-|                                     |   would not help either: the failure returns **HTTP 200** with a 40-byte error body, so any check must |                                                          |
-|                                     |   assert on response body content or size, not status code                                          |                                                          |
-| Host-level DNS resolution bypasses  | `DNSStubListener=no` + `Cache=no` unconditional on all non-`smc_ltp` hosts — host glibc is directly | See `06_failure-modes.md` — mitigation candidate exists  |
-|   any stub/cache                    |   exposed to any WAN-path DNS anomaly with no resolver-level mitigation in place today              |   but is not yet fleet-validated                         |
-| `smc_qos` role exists but is gated | last == 'rct'` — silently no-ops on every `rcp`/`nbn_accelerate` site | `03_communication-flows.md` previously stated | routing-issue investigation, |
-|   `when: inventory_dir.split('/') |  |   Ansible-managed QoS was "planned, not started" — |   `ingress-shaping-not-managed-or-extended-20260730_\` |
-|  |  |   that's stale. The role exists and `--tags qos` runs |   `1245.md` |
-|  |  |   during rcp deploys, it just never fires due to the |  |
-|  |  |   gate. Manual TBF/ifb shaping remains the only active |  |
-|  |  |   mechanism on rcp, and it has NOT been extended to |  |
-|  |  |   newly-fixed VLANs at every site (2 missing at Pandanus |  |
-|  |  |   Park, 10 at Umoona, 8 at Old Looma as of 2026-07-30) |  |
-| Fixed-topology                      | Confirmed at Horn Island: the boilerplate two-interface starlink block is applied regardless of     | routing-issue investigation,                             |
-|   `starlink01`/`starlink02`         |   whether a backup circuit actually exists, inflating `interfacecheckv2.sh`'s per-cycle ping count  |   `starlink-backup-no-lease-l2-investigation-20260730_\` |
-|   interfaces defined even at sites  |   for no operational benefit. Topology generation should condition this block on actual             |   `1400.md`                                              |
-|   with no Starlink circuit ordered  |   provisioning, not apply it unconditionally per flavor                                             |                                                          |
-| `watchdog.auto_reboot: 0` does not  | (1) Line 16 templates `WATCHDOG_AUTO_REBOOT = "{{ watchdog.auto_reboot \| int }}"` without wrapping | ansible-wifi session, 2026-09-03, open item —            |
-|   actually disable automatic        |   in `int()` like every other templated scalar in the file, so it renders the **string** `"0"` — truthy |   SCRATCHPAD.md `ansible-wifi`                           |
-|   reboots — two independent defects |   in Python — meaning the guard at line 641 is always true. (2) Separately, the second reboot path  |                                                          |
-|   in `roles/smc_rise_watchdog/\`    |   at line 653 (`if not args.dry_run: reboot()`) never consults the flag at any value. Confirmed     |                                                          |
-|   `templates/rise_watchdog.py.j2`   |   live, not from the template alone: `/opt/rise/status/watchdog.json` on a `flavor` set to          |                                                          |
-|                                     |   `auto_reboot: 0` emits `"auto_reboot":"0"` (quoted). **Not yet fixed — do not apply blind.**      |                                                          |
-|                                     |   `fb7ff6fa`-style precedent exists of a guard being deliberate and masking a spurious-reboot case  |                                                          |
-|                                     |   the diff doesn't show; check `rct` and `nbn_wh` values before changing anything                   |                                                          |
+| Risk                             | Detail                                                                                                         | Evidence basis                                   |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Stubby DoT upstream has          | Exactly one `upstream_recursive_servers` entry (`127.0.0.1@60853`, reached via an autossh local port forward   | garimba-smc01 DNS RCA,                           |
+|   no failover                    |   to Teleport) is configured fleet-wide, identically, for every non-`smc_ltp` site —                           |   2026-07-03, `roles/smc_dns/files/stubby.yml`   |
+|                                  |   `round_robin_upstreams: 1` is set but meaningless with a single upstream                                     |                                                  |
+| No monitoring for the autossh    | Repo-wide search found no Prometheus alert rule specific to `autossh-teleport.service` state or DNS-upstream   | garimba-smc01 DNS RCA, 2026-07-03                |
+|   local forward or Stubby        |   health; if the Teleport connection drops, DHCP/LAN client DNS on that SMC has no fallback once Unbound's     |                                                  |
+|   upstream reachability          |   cache expires (positive TTL up to 24h, negative TTL up to 5min) — failure would be silent until users notice |                                                  |
+| **No HTTP-level captive-portal** | Nothing probes whether the portal actually serves. The only portal-adjacent signals are the Kohana             | rcp portal outage RCA, 2026-07-28,               |
+|   **monitoring anywhere in**     |   `status:update:usage` / `status:update:status` crons, which run as **root** and therefore keep succeeding even |   `issues/rcp-fleet/rcp-captive-portal-cache-\`  |
+|   **the fleet**                  |   when the portal is dead for `www-data` — Eclipse keeps receiving data throughout an outage. This let 10 of   |   `perms-outage-20260728_1240.md`                |
+|                                  |   16 `rcp` sites sit fully down for 7 days undetected. A naive probe would not help either: the failure        |                                                  |
+|                                  |   returns **HTTP 200** with a 40-byte error body, so any check must assert on response body content or size, not |                                                  |
+|                                  |   status code                                                                                                  |                                                  |
+| Host-level DNS resolution        | `DNSStubListener=no` + `Cache=no` unconditional on all non-`smc_ltp` hosts — host glibc is directly exposed to | See `06_failure-modes.md` — mitigation candidate |
+|   bypasses any stub/cache        |   any WAN-path DNS anomaly with no resolver-level mitigation in place today                                    |   exists but is not yet fleet-validated          |
+| `smc_qos` role exists but is | last == 'rct'` — silently no-ops on every `rcp`/`nbn_accelerate` site | `03_communication-flows.md` previously stated | routing-issue investigation, |
+|   gated `when: |  |   Ansible-managed QoS was "planned, not started" |   `ingress-shaping-not-managed-or-extended-\` |
+|   inventory_dir.split('/') |  |   — that's stale. The role exists and |   `20260730_1245.md` |
+|  |  |   `--tags qos` runs during rcp deploys, it just |  |
+|  |  |   never fires due to the gate. Manual TBF/ifb |  |
+|  |  |   shaping remains the only active mechanism on |  |
+|  |  |   rcp, and it has NOT been extended to |  |
+|  |  |   newly-fixed VLANs at every site (2 missing at |  |
+|  |  |   Pandanus Park, 10 at Umoona, 8 at Old Looma as |  |
+|  |  |   of 2026-07-30) |  |
+| Fixed-topology                   | Confirmed at Horn Island: the boilerplate two-interface starlink block is applied regardless of whether a      | routing-issue investigation,                     |
+|   `starlink01`/`starlink02`      |   backup circuit actually exists, inflating `interfacecheckv2.sh`'s per-cycle ping count for no operational    |   `starlink-backup-no-lease-l2-investigation-\`  |
+|   interfaces defined even at     |   benefit. Topology generation should condition this block on actual provisioning, not apply it                |   `20260730_1400.md`                             |
+|   sites with no Starlink         |   unconditionally per flavor                                                                                   |                                                  |
+|   circuit ordered                |                                                                                                                |                                                  |
+| `watchdog.auto_reboot: 0` does   | (1) Line 16 templates `WATCHDOG_AUTO_REBOOT = "{{ watchdog.auto_reboot \| int }}"` without wrapping in `int()` | ansible-wifi session, 2026-09-03, open item —    |
+|   not actually disable automatic |   like every other templated scalar in the file, so it renders the **string** `"0"` — truthy in Python — meaning |   SCRATCHPAD.md `ansible-wifi`                   |
+|   reboots — two independent      |   the guard at line 641 is always true. (2) Separately, the second reboot path at line 653                     |                                                  |
+|   defects in                     |   (`if not args.dry_run: reboot()`) never consults the flag at any value. Confirmed live, not from the         |                                                  |
+|   `roles/smc_rise_watchdog/\`    |   template alone: `/opt/rise/status/watchdog.json` on a `flavor` set to `auto_reboot: 0` emits                 |                                                  |
+|   `templates/rise_watchdog.py.j2` |   `"auto_reboot":"0"` (quoted). **Not yet fixed — do not apply blind.** `fb7ff6fa`-style precedent exists of a |                                                  |
+|                                  |   guard being deliberate and masking a spurious-reboot case the diff doesn't show; check `rct` and `nbn_wh`    |                                                  |
+|                                  |   values before changing anything                                                                              |                                                  |
+| **No per-device `role: internet` | `roles/prometheus_prometheus/files/rules.yml` has `NodeStarlinkInterfacecheckPacketLoss` (~line 173),          | ansible-wifi session,                            |
+|                                  |   aggregated across ALL `role="starlink"` devices, firing only at                                              |                                                  |
+| Prometheus alert exists —**      | 100% combined loss sustained `for: 60m` — appropriate for a small backup-link category where losing all of     | 2026-09-08, galiwinku-smc01                      |
+|                                  |   them at once is the only thing worth paging on. There is                                                     |                                                  |
+| **only an aggregated Starlink rule** | **no equivalent alert for `role="internet"` interfaces at all.** The only other related rule,                  | vlan523/vlan525 outage                           |
+|   **and a stale-collector rule,** |   `HostInterfacecheckTextfileCollectorNotUpdated` (~line 383), checks whether `interfacecheckv2.sh`'s own      |                                                  |
+|   **neither of which pages on a** |   textfile output has gone stale (file-mtime > 450s) — it says nothing about whether an individual             |                                                  |
+|   **single dead internet link**  |   `role: internet` device is failing while the script continues running fine and faithfully reporting that     |                                                  |
+|                                  |   failure into an unwatched metric (`my_node_interfacecheck_loss_ratio`). This is fleet-wide, not              |                                                  |
+|                                  |   galiwinku-specific — every multi-WAN SMC site has the same blind spot, and it is precisely why the           |                                                  |
+|                                  |   vlan523/vlan525 outage at galiwinku (see `06_failure-modes.md` "interfacecheckv2.sh's Unconditional dhclient |                                                  |
+|                                  |   Restart") went undetected for hours, requiring manual SSH diagnosis. **Recommended fix (not yet implemented** |                                                  |
+|                                  |   **anywhere):** a PER-DEVICE alert on `my_node_interfacecheck_loss_ratio` scoped to `role="internet"`, NOT    |                                                  |
+|                                  |   aggregated like the Starlink rule (one-of-many internet links being down is expected/tolerable and shouldn't |                                                  |
+|                                  |   page immediately, but a sustained single-device failure — 30-60+ minutes — should), modeled closely on the   |                                                  |
+|                                  |   Starlink rule's structure but per-device instead of aggregated, with a threshold realistic for this fleet's  |                                                  |
+|                                  |   known link flakiness. See `SKILL.md` "Key Prometheus Alerts Reference" — that table lists                    |                                                  |
+|                                  |   `NodeStarlinkInterfacecheckPacketLoss` but has no `role="internet"` row; do not read its absence there as    |                                                  |
+|                                  |   evidence the coverage exists elsewhere.                                                                      |                                                  |
 
 ## Known Operational Bugs (rcp fleet — confirmed 2026-06-30)
 
@@ -6396,6 +6656,24 @@ inert today: `cw-graylog01` is not provisioned and `inventories/cw/prod` has no 
 carry only the client-side `smc_bases_graylog` block.
 
 Rotating the already-exposed material would mean every committed copy plus git history, and is tracked as its own roadmap item rather than something to fold into unrelated work.
+
+## 2026-09-08 — upstream keepalived VIP config bug: `lb_algo rr` silently ignores the lweb03 drain intent (`202.171.100.138`)
+
+**Not owned by `ansible-wifi`** — this is the APN keepalived/LVS director config behind `wifi-02.activ8me.net.au`, recorded here because it affects an endpoint every `nbn_accelerate` SMC talks to. See
+`03_communication-flows.md` for the endpoint's architecture (it is APN's own VIP, not a third party).
+
+| Item               | Finding                                                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The bug            | The `virtual_server` uses `lb_algo rr`. **Plain `rr` does not honour `real_server` weights — only `wrr` does.**                                                                 |
+| The ignored intent | The config sets `weight 65535` on `lweb04` with `lweb03` left at the default `1`, which reads as an intent to **drain `lweb03`**. Under `rr` that intent is silently discarded and |
+|                    |   `lweb03` still takes roughly **50% of new connections**.                                                                                                                      |
+| Was this           | **No.** Both backends were verified healthy on 2026-09-08 (HTTP 200 plain, and HTTP 200 with `Host: corellia`), so the mis-set algorithm was **not** the cause of that day's incident — |
+|   the cause?       |   but the drain is genuinely not working and will not work whenever it is next relied upon.                                                                                     |
+| Related setting    | `persistence_timeout 86400` pins each client source IP to one real server for 24 hours, so even a corrected `wrr` would take up to a day to fully drain existing                |
+|                    |   client affinities.                                                                                                                                                            |
+| Fix                | Change `lb_algo rr` to `lb_algo wrr` on the director pair (`202.171.100.132`/`.133`). Outside this repo — raise with whoever owns the keepalived config.                        |
+
+**Investigation limit:** SSH to `202.171.100.132:22` is filtered from `cw-teleport01`, so the running config could not be re-read live from an SMC-side vantage point during the session.
 ````
 
 ## File: scripts/README.md
@@ -6404,67 +6682,85 @@ Title: skill-smc — Reusable Diagnostic and Validation Scripts
 Category: script-inventory
 Status: current
 Authority: local-supplement
-Scope: Reusable read-only diagnostic tooling for SMC WAN-routing/topology-drift investigations and fleet-wide hardware/service-health audits, plus generic ansible-lint pre-push/CI gate scripts for the ansible-wifi repo
-Summary: Three categories — (1) WAN-routing diagnostics (evidence capture + drift analysis + topology/hardware cross-check + task-runner template), promoted from the 2026-07-29/30 APN routing-issue
-  investigation; (2) ansible-lint baseline/delta-gate scripts, promoted 2026-07-31 from `local-knowledge-ansible/ansible-wifi/scripts/`, for a pre-push hook that blocks only NEW lint violations;
-  (3) fleet hardware/security/service-health audit (evidence capture + task-runner), written 2026-08-03 for the first full NBN Accelerate cluster sweep.
-  Read before running the WAN-routing tools: the "hook covers netplan" discriminator they automate, and why it works, is documented in `../references/03_communication-flows.md`.
+Scope: Reusable read-only diagnostic tooling for SMC WAN-routing/topology-drift investigations and fleet-wide hardware/service-health audits, plus generic ansible-lint pre-push/CI gate scripts for the
+  ansible-wifi repo
+Summary: Four categories — (1) WAN-routing diagnostics (evidence capture + drift analysis + topology/hardware cross-check + task-runner template), promoted from the 2026-07-29/30 APN routing-issue
+  investigation; (2) ansible-lint baseline/delta-gate scripts, promoted 2026-07-31 from `local-knowledge-ansible/ansible-wifi/scripts/`, for a pre-push hook that blocks only NEW lint violations; (3)
+  fleet hardware/security/service-health audit (evidence capture + task-runner), written 2026-08-03 for the first full NBN Accelerate cluster sweep; (4) pack governance validation
+  (check_governance.py), added 2026-09-08 to turn this pack's own routing/version-discipline rules into assertions.
+Read before running the WAN-routing tools: the "hook covers netplan" discriminator they automate, and why it works, is documented in `../references/03_communication-flows.md`.
 
 # scripts/
 
-Promoted **2026-07-29** (evidence capture + drift analysis) and **2026-07-30** (topology/hardware cross-check) from `local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/scripts/`, where
-they were built and live-validated across all seven `rcp` sites during that investigation. Kept here so a future WAN-routing investigation — any site, any flavor — doesn't have to re-derive the
+Promoted **2026-07-29** (evidence capture + drift analysis) and **2026-07-30** (topology/hardware cross-check) from `local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/scripts/`, where they
+were built and live-validated across all seven `rcp` sites during that investigation. Kept here so a future WAN-routing investigation — any site, any flavor — doesn't have to re-derive the
 discriminator or re-write the capture set from scratch.
 
-**These are deliberately separate copies from the investigation folder's originals, not symlinks.** Promotion is a review checkpoint, not a relocation — the copies here are genericized (no
-hardcoded site lists, `OUTDIR_ROOT` override, etc.) and are meant to diverge from whatever an investigation folder's working copy does next. When an investigation script changes in a way worth
-having everywhere, diff it against the promoted copy and re-apply deliberately (see e.g. the `dmidecode-model` capture below) rather than assuming the two stay in sync automatically.
+**These are deliberately separate copies from the investigation folder's originals, not symlinks.** Promotion is a review checkpoint, not a relocation — the copies here are genericized (no hardcoded
+site lists, `OUTDIR_ROOT` override, etc.) and are meant to diverge from whatever an investigation folder's working copy does next. When an investigation script changes in a way worth having
+everywhere, diff it against the promoted copy and re-apply deliberately (see e.g. the `dmidecode-model` capture below) rather than assuming the two stay in sync automatically.
 
 **Promotion checklist — every time a script is promoted or an existing promoted script is updated:**
 1. Copy/update the script itself here, genericized (no investigation-specific hardcoding).
 2. Add or update its row in the safety-classification table and its own `###` section below.
-3. **Update `routing-diagnostics.justfile`** with any new recipe the script needs — a script with
-   no justfile recipe is easy to forget exists. Confirmed missed once (2026-07-30) before being
-   caught and fixed in the same pass; treat this as a mandatory step, not an afterthought.
-4. Cross-reference the relevant `../references/*.md` file if the script encodes a lesson worth
-   capturing there too (it usually does).
+3. **Update `routing-diagnostics.justfile`** with any new recipe the script needs — a script with no justfile recipe is easy to forget exists. Confirmed missed once (2026-07-30) before being caught
+   and fixed in the same pass; treat this as a mandatory step, not an afterthought.
+4. Cross-reference the relevant `../references/*.md` file if the script encodes a lesson worth capturing there too (it usually does).
 
 **Safety classification, per the parent policy — every script here is catalogued. An uncatalogued script must be treated as `unknown` safety until inspected.**
 
-| Script | Touches | Safety | Notes |
-|---|---|---|---|
-| [collect-smc-evidence.sh](collect-smc-evidence.sh) | Live SMC appliances over Teleport | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as arguments — no default site list** (genericized from the original, which defaulted to one investigation's specific sites) |
-| [collect-smc-evidence-full.sh](collect-smc-evidence-full.sh) | Live SMC appliances over Teleport | **read-only** | The wide companion to `collect-smc-evidence.sh`: 144 captures across 17 subsystem groups, for triage and pre/post-deploy baselines rather than the routing question. Same hardcoded-command, host-names-only contract. **One SSH session per host** (delimited stream split locally) instead of one per capture — 144 captures in ~25s. `--only`/`--skip` select groups; **redacts credentials by default**, `--no-redact` to disable. x86 capture set; detects Raspberry Pi and says so rather than running x86-only probes against it |
-| [analyse-routing-drift.py](analyse-routing-drift.py) | Local `evidence/` tree, local `ansible-wifi` git objects | **read-only** | `git show` only; never checks out, never writes to the ansible repo. `--flavor` selects `inventories/<flavor>/topology_vars`; `--commit` selects the comparison ref — both default to the original investigation's `rcp`/`fb419e6c` and should be overridden per new investigation |
-| [analyse-topology-interface-match.py](analyse-topology-interface-match.py) | Local `evidence/` tree, local `ansible-wifi` working tree | **read-only** | Reads `topology_vars/<site>.yml` from the working tree (not a specific commit — pre-deploy sanity check, not historical drift analysis); `--flavor` overridable |
-| [routing-diagnostics.justfile](routing-diagnostics.justfile) | Wraps the three scripts above | **read-only** | A **template**, not a ready-to-run file — copy it into a new investigation folder and edit the `sites`/`deployed`/`flavor` variables at the top before use |
+| Script                              | Touches                 | Safety    | Notes                                                                                                                    |
+| ----------------------------------- | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
+| [collect-smc-evidence.sh](collect-smc-evidence.sh) | Live SMC appliances     | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as** |
+|                                     |   over Teleport         |           |   **arguments — no default site list** (genericized from the original, which defaulted to one investigation's            |
+|                                     |                         |           |   specific sites)                                                                                                        |
+| [collect-smc-evidence-full.sh](collect-smc-evidence-full.sh) | Live SMC appliances     | **read-only** | The wide companion to `collect-smc-evidence.sh`: 144 captures across 17 subsystem groups, for triage and pre/post-deploy |
+|                                     |   over Teleport         |           |   baselines rather than the routing question. Same hardcoded-command, host-names-only contract. **One SSH session per host** |
+|                                     |                         |           |   (delimited stream split locally) instead of one per capture — 144 captures in ~25s. `--only`/`--skip` select groups;   |
+|                                     |                         |           |   **redacts credentials by default**, `--no-redact` to disable. x86 capture set; detects Raspberry Pi and says so rather |
+|                                     |                         |           |   than running x86-only probes against it                                                                                |
+| [analyse-routing-drift.py](analyse-routing-drift.py) | Local `evidence/` tree, | **read-only** | `git show` only; never checks out, never writes to the ansible repo. `--flavor` selects                                  |
+|                                     |   local `ansible-wifi`  |           |   `inventories/<flavor>/topology_vars`; `--commit` selects the comparison ref — both default to the original             |
+|                                     |   git objects           |           |   investigation's `rcp`/`fb419e6c` and should be overridden per new investigation                                        |
+| [analyse-topology-interface-match.py](analyse-topology-interface-match.py) | Local `evidence/` tree, | **read-only** | Reads `topology_vars/<site>.yml` from the working tree (not a specific commit — pre-deploy sanity check, not historical  |
+|                                     |   local `ansible-wifi`  |           |   drift analysis); `--flavor` overridable                                                                                |
+|                                     |   working tree          |           |                                                                                                                          |
+| [routing-diagnostics.justfile](routing-diagnostics.justfile) | Wraps the three         | **read-only** | A **template**, not a ready-to-run file — copy it into a new investigation folder and edit the `sites`/`deployed`/`flavor` |
+|                                     |   scripts above         |           |   variables at the top before use                                                                                        |
 
 **Nothing here may write to an SMC.** If a future task needs a mutating command, run it by hand under change control and record it in the investigation's own analysis — do not add it to
 `collect-smc-evidence.sh`. The read-only contract is what makes it safe to run these against production sites without a change window.
 
 **Fleet hardware/security/service-health audit (promoted 2026-08-03, different category — full-fleet hardware/software inventory, not WAN-routing-specific):**
 
-| Script | Touches | Safety | Notes |
-|---|---|---|---|
-| [collect-fleet-health.sh](collect-fleet-health.sh) | Live SMC appliances over Teleport | **read-only** | Same hardcoded-command, host-names-only contract as `collect-smc-evidence.sh`. Bundles ~20 read-only commands into 4 grouped captures (not one-command-per-round-trip) to stay tractable at fleet scale over satellite links — see the script's own header note |
-| [fleet-health.justfile](fleet-health.justfile) | Wraps `collect-fleet-health.sh` | **read-only** | Unlike `routing-diagnostics.justfile`, ships with a real current site list (the NBN Accelerate cluster, confirmed live via `tsh ls` 2026-08-03) rather than a placeholder — edit `sites` or override on the command line for a different fleet |
+| Script                  | Touches                        | Safety    | Notes                                                                                                                         |
+| ----------------------- | ------------------------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [collect-fleet-health.sh](collect-fleet-health.sh) | Live SMC appliances            | **read-only** | Same hardcoded-command, host-names-only contract as `collect-smc-evidence.sh`. Bundles ~20 read-only commands into 4 grouped  |
+|                         |   over Teleport                |           |   captures (not one-command-per-round-trip) to stay tractable at fleet scale over satellite links — see the script's own      |
+|                         |                                |           |   header note                                                                                                                 |
+| [fleet-health.justfile](fleet-health.justfile) | Wraps                          | **read-only** | Unlike `routing-diagnostics.justfile`, ships with a real current site list (the NBN Accelerate cluster, confirmed live via    |
+|                         |   `collect-fleet-health.sh`    |           |   `tsh ls` 2026-08-03) rather than a placeholder — edit `sites` or override on the command line for a different fleet         |
 
-**Requires explicit hosts as arguments — no default site list in the script itself** (the justfile's `sites` variable supplies the default site list for `just collect`, the script always requires args).
+**Requires explicit hosts as arguments — no default site list in the script itself** (the justfile's `sites` variable supplies the default site list for `just collect`, the script always requires
+args).
 
 **Ansible-lint pre-push/CI gate (promoted 2026-07-31, different category — no SMC/host access at all):**
 
-| Script | Touches | Safety | Notes |
-|---|---|---|---|
-| [lint-baseline-refresh.sh](lint-baseline-refresh.sh) | Local git repo only (`ansible-lint --generate-ignore`) | **read-only w.r.t. the repo's tracked content** | Writes only to `.git/.ansible-lint-ignore` (an untracked git-internal file, not repo content). Genericized: config path defaults to `<repo_root>/.ansible-lint`, override with `ANSIBLE_LINT_CONFIG=<path>` — the two scripts this was promoted from disagreed on a hardcoded path (`local-knowledge/` vs `local-knowledge-ansible/`); this removes that class of drift |
-| [ansible-lint-delta-gate.sh](ansible-lint-delta-gate.sh) | Local git repo only (`git diff`/`git cat-file`, `ansible-lint`) | **read-only** | Never writes anything; exits non-zero only to block a push/commit. Same `ANSIBLE_LINT_CONFIG` override as above. Falls back through `@{upstream}` → `origin/master` → `origin/main` → empty-tree for the comparison base, so it works on a fresh clone with no upstream configured |
+| Script                     | Touches                                    | Safety             | Notes                                                                                                 |
+| -------------------------- | ------------------------------------------ | ------------------ | ----------------------------------------------------------------------------------------------------- |
+| [lint-baseline-refresh.sh](lint-baseline-refresh.sh) | Local git repo                             | **read-only w.r.t.** | Writes only to `.git/.ansible-lint-ignore` (an untracked git-internal file, not repo content).        |
+|                            |   only (`ansible-lint --generate-ignore`)  |   **the repo's**   |   Genericized: config path defaults to `<repo_root>/.ansible-lint`, override with                     |
+|                            |                                            |   **tracked content** |   `ANSIBLE_LINT_CONFIG=<path>` — the two scripts this was promoted from disagreed on a hardcoded path |
+|                            |                                            |                    |   (`local-knowledge/` vs `local-knowledge-ansible/`); this removes that class of drift                |
+| [ansible-lint-delta-gate.sh](ansible-lint-delta-gate.sh) | Local git repo only                        | **read-only**      | Never writes anything; exits non-zero only to block a push/commit. Same `ANSIBLE_LINT_CONFIG`         |
+|                            |   (`git diff`/`git cat-file`,              |                    |   override as above. Falls back through `@{upstream}` → `origin/master` → `origin/main` → empty-tree  |
+|                            |   `ansible-lint`)                          |                    |   for the comparison base, so it works on a fresh clone with no upstream configured                   |
 
 ### `lint-baseline-refresh.sh`
 
-Regenerates `.git/.ansible-lint-ignore` from every currently-lintable file (`*.yml`, `*.yaml`,
-`*.j2` tracked by git), sorted and deduplicated. Run this deliberately when you want to accept the
-current violation set as the new baseline (e.g. after a bulk cleanup, or when first adopting the
-delta-gate on a repo with existing debt) — **not** as part of every normal lint run, since that
-would silently re-baseline away violations introduced since the last refresh.
+Regenerates `.git/.ansible-lint-ignore` from every currently-lintable file (`*.yml`, `*.yaml`, `*.j2` tracked by git), sorted and deduplicated. Run this deliberately when you want to accept the
+current violation set as the new baseline (e.g. after a bulk cleanup, or when first adopting the delta-gate on a repo with existing debt) — **not** as part of every normal lint run, since that would
+silently re-baseline away violations introduced since the last refresh.
 
 ```bash
 scripts/lint-baseline-refresh.sh
@@ -6474,8 +6770,7 @@ ANSIBLE_LINT_CONFIG=/path/to/.ansible-lint scripts/lint-baseline-refresh.sh
 
 ### `ansible-lint-delta-gate.sh`
 
-Meant to run from a pre-push hook (or CI) with the set of changed ansible files as arguments. Runs
-`ansible-lint` against exactly those files, then classifies every violation:
+Meant to run from a pre-push hook (or CI) with the set of changed ansible files as arguments. Runs `ansible-lint` against exactly those files, then classifies every violation:
 
 - **New file** (didn't exist at the merge-base with upstream) → always blocking.
 - **Existing file, violation on a line the diff actually touched** → blocking.
@@ -6487,16 +6782,52 @@ Meant to run from a pre-push hook (or CI) with the set of changed ansible files 
 scripts/ansible-lint-delta-gate.sh roles/smc_network/tasks/ubuntu.yml roles/smc_dns/templates/unbound.conf.j2
 ```
 
-Exits 0 (with `clean` or `no new violations`) when safe to proceed, non-zero with the blocking
-violation list on stderr otherwise. Requires `ansible-lint` on `PATH` (or set
-`ANSIBLE_LINT_VENV_BIN` to a venv's `bin/` directory, same convention both scripts share).
+Exits 0 (with `clean` or `no new violations`) when safe to proceed, non-zero with the blocking violation list on stderr otherwise. Requires `ansible-lint` on `PATH` (or set `ANSIBLE_LINT_VENV_BIN` to
+a venv's `bin/` directory, same convention both scripts share).
+
+**Pack governance validation (added 2026-09-08, different category — no SMC/host access, checks this pack's own file structure):**
+
+| Script              | Touches                | Safety    | Notes                                                                                                                                     |
+| ------------------- | ---------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [check_governance.py](check_governance.py) | This pack's own files  | **read-only** | Stdlib-only; turns this pack's governance claims (RUNBOOK.md/SKILL.md/AI_NAVIGATION.md/context-map.yaml reference routing, manifest.json  |
+|                     |   only (read-only)     |           |   single-source version discipline) into assertions that fail. Exit 0 = pass. Run before claiming any durable governance change           |
+|                     |                        |           |   is complete                                                                                                                             |
+
+### `check_governance.py`
+
+```bash
+python3 scripts/check_governance.py
+```
+
+Two check families, tuned to this pack's stated rules (see the file's own CONFIG section for the exact registries and per-entry exemption reasons):
+
+- **Catalog coverage** — every `references/*.md` file is named in `RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, and `context-map.yaml` (the four surfaces
+  `.archcore/rules/rule-reference-update-discipline.md` requires a per-file row in), and every script in `scripts/` is named in this file. Fails in both directions — a stale catalog entry, or an
+  uncataloged new file.
+- **Version single-source** — no governance surface hardcodes a duplicate of this pack's own version number (`.archcore/rules/rule-manifest-version-discipline.md`); `manifest.json` is the sole
+  version-of-record. The check derives the current major.minor line from `manifest.json` at run time rather than matching any semver-shaped number, so it does not collide with unrelated software
+  versions mentioned in the references (ClamAV, ansible-lint, etc.).
+
+When it fails, fix the pack, not the check. Adding a new governance surface or a new duplicated-fact convention requires extending the checker's CONFIG registries in the same pass — see the file's own
+module docstring.
+
+## Contents
+
+- [What each script is for](#what-each-script-is-for)
+- [Usage](#usage)
+- [Requirements](#requirements)
+- [Evidence retention](#evidence-retention)
+- [Execution Policy](#execution-policy)
+- [Preferred Execution Order](#preferred-execution-order)
+- [Maintenance Rules](#maintenance-rules)
+
+---
 
 ## What each script is for
 
 ### `collect-smc-evidence-full.sh`
 
-The broad one. Use it when the question is "what is going on with this box" rather than a specific routing fault, and when you want a **baseline before
-a deploy and a matching capture after it**.
+The broad one. Use it when the question is "what is going on with this box" rather than a specific routing fault, and when you want a **baseline before a deploy and a matching capture after it**.
 
 ```bash
 ./collect-smc-evidence-full.sh yakanarra                    # everything, redacted
@@ -6509,112 +6840,117 @@ Output is `evidence-full/<stamp>/<host>/<group>/<capture>.txt`, plus a per-host 
 
 **Groups:** `identity os overlay storage services network dhcp dns firewall qos wifi voip portal monitoring rise access rpi logs`.
 
-**Why one SSH session.** The narrow collector opens one Teleport session per capture. At 144 captures that would be 144 sequential sessions — slow over
-a satellite link and noisy in the audit log. This script builds a single remote bash script with `===SMC-CAPTURE===` delimiters and splits the stream
-locally. Measured: 144 captures in ~25s per host.
+**Why one SSH session.** The narrow collector opens one Teleport session per capture. At 144 captures that would be 144 sequential sessions — slow over a satellite link and noisy in the audit log.
+This script builds a single remote bash script with `===SMC-CAPTURE===` delimiters and splits the stream locally. Measured: 144 captures in ~25s per host.
 
-**Read the SUMMARY first.** Absences are classified rather than lumped together as failures, because on a healthy box most non-zero exit codes mean a
-subsystem is simply not deployed on that flavour — which is itself the finding:
+**Read the SUMMARY first.** Absences are classified rather than lumped together as failures, because on a healthy box most non-zero exit codes mean a subsystem is simply not deployed on that flavour —
+which is itself the finding:
 
-| Status | Means |
-|---|---|
-| `ok (N lines)` | captured |
-| `empty` | ran fine, no output (e.g. no apt holds) — usually a real answer |
-| `absent (no such systemd unit)` | rc=4, the service is not installed here |
-| `absent (command not installed)` | rc=127 |
-| `absent (no such file or directory)` | rc=1/2 |
-| `FAILED (rc=N)` | anything else — the only status that means something actually went wrong |
+| Status                               | Means                                                                    |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| `ok (N lines)`                       | captured                                                                 |
+| `empty`                              | ran fine, no output (e.g. no apt holds) — usually a real answer          |
+| `absent (no such systemd unit)`      | rc=4, the service is not installed here                                  |
+| `absent (command not installed)`     | rc=127                                                                   |
+| `absent (no such file or directory)` | rc=1/2                                                                   |
+| `FAILED (rc=N)`                      | anything else — the only status that means something actually went wrong |
 
-**Credentials.** This fleet stores secrets in plaintext (no ansible-vault anywhere — see `../references/13_known-issues.md`), and a broad capture reads
-service configs, so Teleport join tokens, Asterisk SIP secrets and Graylog tokens land in the output. Captures are therefore **redacted by default**:
-the key is preserved and the value replaced with `<REDACTED>`, so "a secret is configured here" stays visible while the secret does not. Redaction is
-pattern-based — a sensible default, not a guarantee. Read a capture directory before attaching it to anything.
+**Credentials.** This fleet stores secrets in plaintext (no ansible-vault anywhere — see `../references/13_known-issues.md`), and a broad capture reads service configs, so Teleport join tokens,
+Asterisk SIP secrets and Graylog tokens land in the output. Captures are therefore **redacted by default**: the key is preserved and the value replaced with `<REDACTED>`, so "a secret is configured
+here" stays visible while the secret does not. Redaction is pattern-based — a sensible default, not a guarantee. Read a capture directory before attaching it to anything.
 
 **Two traps this script exists to make visible**, both confirmed live on 2026-08-25:
 
-- **`systemctl status asterisk` reporting `active (exited)` is not proof Asterisk is running.** The unit is an LSB init wrapper, so systemd reports
-  success once the script returns 0 whether or not a daemon survives. On umoona-smc01 the unit was `active (exited)` with **zero** asterisk processes,
-  no control socket, and every `asterisk -rx` query failing. The `voip|asterisk-procs` and `voip|asterisk-ctl-socket` captures exist so this reads as a
-  diagnosis instead of five confusing failures.
-- **A textfile collector that stopped writing does not alert as broken** — it alerts as no-data, or not at all. `monitoring|textfile-mtimes` is
-  therefore captured alongside the contents; the staleness windows are in `../references/02_service-map.md`.
+- **`systemctl status asterisk` reporting `active (exited)` is not proof Asterisk is running.** The unit is an LSB init wrapper, so systemd reports success once the script returns 0 whether or not a
+  daemon survives. On umoona-smc01 the unit was `active (exited)` with **zero** asterisk processes, no control socket, and every `asterisk -rx` query failing. The `voip|asterisk-procs` and
+  `voip|asterisk-ctl-socket` captures exist so this reads as a diagnosis instead of five confusing failures.
+- **A textfile collector that stopped writing does not alert as broken** — it alerts as no-data, or not at all. `monitoring|textfile-mtimes` is therefore captured alongside the contents; the staleness
+  windows are in `../references/02_service-map.md`.
 
-**Platform.** Both capture sets are implemented — x86 (BOXER-6404/6641) and ARM64 Raspberry Pi 4B — and the list is filtered per host from detected
-platform. The `rpi` group runs only on a Pi; the x86-only probes (`dmidecode` ×3, `smartctl`) are dropped there rather than filling the summary with
-absences that read like findings. A host whose platform cannot be identified gets the platform-neutral set. Asking for `--only rpi` against an x86 host
-skips it cleanly with a message rather than erroring.
+**Platform.** Both capture sets are implemented — x86 (BOXER-6404/6641) and ARM64 Raspberry Pi 4B — and the list is filtered per host from detected platform. The `rpi` group runs only on a Pi; the
+x86-only probes (`dmidecode` ×3, `smartctl`) are dropped there rather than filling the summary with absences that read like findings. A host whose platform cannot be identified gets the
+platform-neutral set. Asking for `--only rpi` against an x86 host skips it cleanly with a message rather than erroring.
 
-The **`rpi` group (20 captures)** is built around the questions the Ubuntu 26.04 migration actually has to answer, so a fleet sweep with `--only rpi`
-doubles as the phase-0 audit:
+The **`rpi` group (20 captures)** is built around the questions the Ubuntu 26.04 migration actually has to answer, so a fleet sweep with `--only rpi` doubles as the phase-0 audit:
 
-| Capture | Why |
-|---|---|
-| `revision` | The revision code decides tryboot eligibility and RAM. An 8 GB 4B is only ever `d03114`/`d03115` (rev 1.4/1.5), and the tryboot EEPROM write-protect caveat applies solely to rev 1.0/1.1 — so this settles whether A/B boot is available on the box |
-| `eeprom-version` | **26.04 will not boot** on a Pi 4/400/CM4 with EEPROM older than 2022-11-25 (Pi 5/500/CM5: 2025-02-11) |
-| `boot-partition` | 26.04 keeps up to three boot asset sets; older images allocated only 256 MB and upgraded systems keep it |
-| `piboot-layout` / `autoboot-txt` / `piboot-units` | Canonical ships piboot A/B from 25.10. Absent on 22.04 — capturing the absence is the before-picture, not a fault |
-| `copymods` | Its meaning **inverts** across the migration: a fault condition on 22.04 that `smc_update_kernel` tears down, and the platform default under dracut on 26.04 |
-| `throttled` | `get_throttled` bitmask plus temp/volts — undervoltage is a real field failure here. Bits 0/2 are live; bits 16/18 are since-boot history |
-| `sd-card` / `mmc-errors` | SD identity and wear-relevant fields, plus MMC I/O errors from dmesg |
-| `zram` / `zram-units` | `rct`/`wh` only; the legacy ozai-zram vs rise-zram mismatch has bitten this fleet before |
+| Capture                      | Why                                                                                                                                                                   |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `revision`                   | The revision code decides tryboot eligibility and RAM. An 8 GB 4B is only ever `d03114`/`d03115` (rev 1.4/1.5), and the tryboot EEPROM write-protect caveat applies   |
+|                              |   solely to rev 1.0/1.1 — so this settles whether A/B boot is available on the box                                                                                    |
+| `eeprom-version`             | **26.04 will not boot** on a Pi 4/400/CM4 with EEPROM older than 2022-11-25 (Pi 5/500/CM5: 2025-02-11)                                                                |
+| `boot-partition`             | 26.04 keeps up to three boot asset sets; older images allocated only 256 MB and upgraded systems keep it                                                              |
+| `piboot-layout` /            | Canonical ships piboot A/B from 25.10. Absent on 22.04 — capturing the absence is the before-picture, not a fault                                                     |
+|   `autoboot-txt`             |                                                                                                                                                                       |
+|   / `piboot-units`           |                                                                                                                                                                       |
+| `copymods`                   | Its meaning **inverts** across the migration: a fault condition on 22.04 that `smc_update_kernel` tears down, and the platform default under dracut on 26.04          |
+| `throttled`                  | `get_throttled` bitmask plus temp/volts — undervoltage is a real field failure here. Bits 0/2 are live; bits 16/18 are since-boot history                             |
+| `sd-card` / `mmc-errors`     | SD identity and wear-relevant fields, plus MMC I/O errors from dmesg                                                                                                  |
+| `zram` / `zram-units`        | `rct`/`wh` only; the legacy ozai-zram vs rise-zram mismatch has bitten this fleet before                                                                              |
 
 Two deliberate exclusions, both learned from the hardware rather than assumed:
 
-- **`life_time` / `pre_eol_info` are not captured.** They are eMMC attributes and an SD-booted Pi 4 does not expose them — verified on
-  marta-marta-smc01, where `/sys/block/mmcblk0/device/` holds `cid`, `csd`, `ssr`, `fwrev`, `manfid`, `oemid`, `serial`, `date` and no wear-level pair.
-  Anything claiming to read SD wear-levelling from those two files on this hardware is wrong. `cid`/`csd`/`ssr` are captured instead.
-- **`flash-kernel` is never invoked**, only its config read — it writes to the boot partition. The same reasoning excludes `rpi-eeprom-update -a`; the
-  bare command used here only reports.
+- **`life_time` / `pre_eol_info` are not captured.** They are eMMC attributes and an SD-booted Pi 4 does not expose them — verified on marta-marta-smc01, where `/sys/block/mmcblk0/device/` holds
+  `cid`, `csd`, `ssr`, `fwrev`, `manfid`, `oemid`, `serial`, `date` and no wear-level pair. Anything claiming to read SD wear-levelling from those two files on this hardware is wrong.
+  `cid`/`csd`/`ssr` are captured instead.
+- **`flash-kernel` is never invoked**, only its config read — it writes to the boot partition. The same reasoning excludes `rpi-eeprom-update -a`; the bare command used here only reports.
 
 ### `collect-smc-evidence.sh`
 
 Captures the following read-only views from each appliance into `<output-root>/evidence/<YYYYMMDD_hhmm>/<host>/`:
 
-| Capture | Command | Why it matters |
-|---|---|---|
-| `ip-route` | `ip route show` | The ECMP pool and any stray `metric 100` default — the primary evidence for a Problem-1-class fault |
-| `ip-route-table-all` | `ip route show table all` | The per-interface tables the dhclient hook builds for `role: internet` interfaces |
-| `ip-rule` | `ip rule show` | A source rule per interface proves the hook recognised that interface |
-| `ip-addr` / `ip-link` | `ip -br addr` / `ip -br link` | Which interfaces hold a CGNAT lease; the deterministic `72:77:77:*` generated MACs |
-| `dmidecode-model` | `dmidecode -s system-product-name` | Which SMC chassis this is — different models use different physical NIC naming schemes (`enp1s0`-`enp4s0` vs `eno1`/`enp3s0`/...), and `topology_vars` can silently assume the wrong one. Feeds `analyse-topology-interface-match.py`'s cross-model naming hint |
-| `netplan` | `cat /etc/netplan/*.yaml` | What `smc_network` actually rendered — compare against the deployed topology |
-| `dhclient-enter-hooks` | `cat /etc/dhcp/dhclient-enter-hooks` | What `smc_application` rendered — **the interface list that decides ECMP membership** |
-| `dhclient-enter-hooks-d` | `cat /etc/dhcp/dhclient-enter-hooks.d/*` | Stock Debian fragments only; kept to prove the override is not here (see capture trap below) |
-| `dhclient-script` | `cat /etc/dhcp/dhclient-script` | Base `add_default_gateway()` and `is_router_reachable()` |
-| `dhclient-units` | `systemctl list-units 'dhclient@*'` | Which interfaces are actually being leased |
-| `iptables-save` | `iptables-save` | All tables in one dump — the authoritative ruleset snapshot |
-| `iptables-filter` / `-nat` / `-mangle` / `-raw` | `iptables [-t <table>] -S` | Per-table views — `filter`-only misses NAT/mangle entirely (see capture trap below) |
-| `interfacecheck` | `cat /usr/local/bin/interfacecheckv2.sh` | The ping check and its `dhclient@` restart behaviour |
-| `internet-ingress-shaping-script` / `internet-shaping-service` / `internet-shaping-unit-status` | script/unit/status | The manual TBF/`ifb` ingress-shaping mechanism — see `../references/03_communication-flows.md`, "Manual TBF/`ifb` Ingress Shaping" |
-| `tc-qdisc` / `ip-link-ifb` | `tc -s qdisc show` / `ip -br link show type ifb` | Actual configured shaping rate/burst/latency and traffic counters, and which `ifb*` redirects exist |
-| `netplan-mtime` / `hook-mtime` | `stat --format='%Y %y %n' ...` | Last-modified time of netplan vs the dhclient hook — directly shows how far apart `smc_network` and `smc_application` were last actually run |
+| Capture                                             | Command                                 | Why it matters                                                                                       |
+| --------------------------------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `ip-route`                                          | `ip route show`                         | The ECMP pool and any stray `metric 100` default — the primary evidence for a Problem-1-class fault  |
+| `ip-route-table-all`                                | `ip route show table all`               | The per-interface tables the dhclient hook builds for `role: internet` interfaces                    |
+| `ip-rule`                                           | `ip rule show`                          | A source rule per interface proves the hook recognised that interface                                |
+| `ip-addr` / `ip-link`                               | `ip -br addr` / `ip -br link`           | Which interfaces hold a CGNAT lease; the deterministic `72:77:77:*` generated MACs                   |
+| `dmidecode-model`                                   | `dmidecode -s system-product-name`      | Which SMC chassis this is — different models use different physical NIC naming schemes               |
+|                                                     |                                         |   (`enp1s0`-`enp4s0` vs `eno1`/`enp3s0`/...), and `topology_vars` can silently assume the wrong one. |
+|                                                     |                                         |   Feeds `analyse-topology-interface-match.py`'s cross-model naming hint                              |
+| `netplan`                                           | `cat /etc/netplan/*.yaml`               | What `smc_network` actually rendered — compare against the deployed topology                         |
+| `dhclient-enter-hooks`                              | `cat /etc/dhcp/dhclient-enter-hooks`    | What `smc_application` rendered — **the interface list that decides ECMP membership**                |
+| `dhclient-enter-hooks-d`                            | `cat /etc/dhcp/dhclient-enter-hooks.\`  | Stock Debian fragments only; kept to prove the override is not here (see capture trap below)         |
+|                                                     |   `d/*`                                 |                                                                                                      |
+| `dhclient-script`                                   | `cat /etc/dhcp/dhclient-script`         | Base `add_default_gateway()` and `is_router_reachable()`                                             |
+| `dhclient-units`                                    | `systemctl list-units 'dhclient@*'`     | Which interfaces are actually being leased                                                           |
+| `iptables-save`                                     | `iptables-save`                         | All tables in one dump — the authoritative ruleset snapshot                                          |
+| `iptables-filter` / `-nat` / `-mangle` / `-raw`     | `iptables [-t <table>] -S`              | Per-table views — `filter`-only misses NAT/mangle entirely (see capture trap below)                  |
+| `interfacecheck`                                    | `cat /usr/local/bin/interfacecheckv2.\` | The ping check and its `dhclient@` restart behaviour                                                 |
+|                                                     |   `sh`                                  |                                                                                                      |
+| `internet-ingress-shaping-script` /                 | script/unit/status                      | The manual TBF/`ifb` ingress-shaping mechanism — see `../references/03_communication-flows.md`,      |
+|   `internet-shaping-service`                        |                                         |   "Manual TBF/`ifb` Ingress Shaping"                                                                 |
+|   / `internet-shaping-unit-status`                  |                                         |                                                                                                      |
+| `tc-qdisc` / `ip-link-ifb`                          | `tc -s qdisc show`                      | Actual configured shaping rate/burst/latency and traffic counters, and which `ifb*` redirects exist  |
+|                                                     |   / `ip -br link show type ifb`         |                                                                                                      |
+| `netplan-mtime` / `hook-mtime`                      | `stat --format='%Y %y %n' ...`          | Last-modified time of netplan vs the dhclient hook — directly shows how far apart `smc_network` and  |
+|                                                     |                                         |   `smc_application` were last actually run                                                           |
 
 **Two capture-path traps, both hit and corrected on 2026-07-29** — see `../references/03_communication-flows.md` for the full write-up:
 
 - **The dhclient override is `/etc/dhcp/dhclient-enter-hooks`, without an extension.** `/etc/dhcp/dhclient-enter-hooks.d/` contains only stock Debian fragments and does **not** contain
   `add_default_gateway()`. Capturing only the `.d/` directory silently yields the wrong file with no error.
-- **`iptables -S` shows only the `filter` table.** `smc_iptables` templates declare `*filter`, `*mangle` and `*nat`, and the role also references `-t raw`. A filter-only capture misses NAT and
-  mangle entirely.
+- **`iptables -S` shows only the `filter` table.** `smc_iptables` templates declare `*filter`, `*mangle` and `*nat`, and the role also references `-t raw`. A filter-only capture misses NAT and mangle
+  entirely.
 
 ### `analyse-routing-drift.py`
 
 Reads a capture directory and correlates it against the topology committed at a given commit (`--commit`, `--flavor`). For each site it reports the switch01 primary count in git, the live ECMP
-members, the stray `metric 100` interface, and any interface holding a lease with no matching `ip rule` (leased but unrecognised by the hook). This automates **the discriminator**: a site is
-healthy exactly when the dhclient hook's `case` arm covers every uplink VLAN netplan defines (excluding the SMP-backup VLANs, which are meant to be absent). Full mechanism write-up in
+members, the stray `metric 100` interface, and any interface holding a lease with no matching `ip rule` (leased but unrecognised by the hook). This automates **the discriminator**: a site is healthy
+exactly when the dhclient hook's `case` arm covers every uplink VLAN netplan defines (excluding the SMP-backup VLANs, which are meant to be absent). Full mechanism write-up in
 `../references/03_communication-flows.md`.
 
 `--markdown` emits a table ready to paste into an analysis document.
 
 ### `analyse-topology-interface-match.py`
 
-Cross-checks a site's committed `topology_vars/<site>.yml` against what the box's live `netplan` actually has, in both directions: every physical interface name and VLAN-parent pairing
-topology_vars declares is checked against netplan, and every real (`macaddress:`-bearing) VLAN on the box is checked for a matching topology_vars entry. Also flags a physical interface name
-that isn't typical for the box's `dmidecode`-reported model, when the model is in the script's `KNOWN_MODELS` table.
+Cross-checks a site's committed `topology_vars/<site>.yml` against what the box's live `netplan` actually has, in both directions: every physical interface name and VLAN-parent pairing topology_vars
+declares is checked against netplan, and every real (`macaddress:`-bearing) VLAN on the box is checked for a matching topology_vars entry. Also flags a physical interface name that isn't typical for
+the box's `dmidecode`-reported model, when the model is in the script's `KNOWN_MODELS` table.
 
 **Run this before editing any site's `topology_vars`, or before deploying to a site you haven't touched recently** — none of `yamllint`/`ansible-lint`/`--syntax-check` catch a topology file that
-parses fine but names the wrong physical NIC or points a VLAN at the wrong parent. Confirmed live at New Looma (2026-07-30): `topology_vars` named a WAN interface `eno1` — a NIC name that exists
-on a *different* SMC chassis model, not the BOXER-6404 actually deployed there — and had the WAN/LAN-trunk physical roles completely cross-wired. `yamllint`/`ansible-lint`/`--syntax-check` all
-passed anyway. See the "Mandatory pre-check" note in `../references/08_ansible-authoring.md` for the full incident.
+parses fine but names the wrong physical NIC or points a VLAN at the wrong parent. Confirmed live at New Looma (2026-07-30): `topology_vars` named a WAN interface `eno1` — a NIC name that exists on a
+*different* SMC chassis model, not the BOXER-6404 actually deployed there — and had the WAN/LAN-trunk physical roles completely cross-wired. `yamllint`/`ansible-lint`/`--syntax-check` all passed
+anyway. See the "Mandatory pre-check" note in `../references/08_ansible-authoring.md` for the full incident.
 
 ```bash
 ./analyse-topology-interface-match.py <site>                    # newest capture
@@ -6624,16 +6960,29 @@ passed anyway. See the "Mandatory pre-check" note in `../references/08_ansible-a
 
 ### `collect-fleet-health.sh`
 
-Captures a broad hardware + software-inventory snapshot from each appliance into
-`<output-root>/evidence/<YYYYMMDD_hhmm>/<host>/`, grouped into 4 files instead of one-per-command
-(see the script header for why):
+Captures a broad hardware + software-inventory snapshot from each appliance into `<output-root>/evidence/<YYYYMMDD_hhmm>/<host>/`, grouped into 4 files instead of one-per-command (see the script
+header for why):
 
 | Capture file | Covers | Why it matters |
 |---|---|---|
-| `01-identity-hardware.txt` | hostname/uptime/kernel/OS, `dmidecode` manufacturer/product/serial, CPU (`lscpu`), RAM (`free -h`), disks (`lsblk`, `df -h`), `smartmon.prom`/`sbdm.prom` textfile-collector SSD health, overlayroot mount state | The chassis-model + resource baseline this pack never had for `nbn_accelerate`/`nbn_wh` before 2026-08-03 |
-| `02-services-security.txt` | `systemctl --failed`, Teleport/autossh state, DNS-stack (`unbound`/`stubby`/`named`), ClamAV daemon + `freshclam` detailed status, Lynis presence, full list of running services | ClamAV/Lynis is an `nbn_accelerate`-only hardening gate (`08_ansible-authoring.md`) — the `freshclam` status specifically checks for the CDN-block finding first seen 2026-08-03 on `warakurna`/`indulkana` |
-| `03-apps-scripts-cron.txt` | `apn-mqtt-client`/`cnmaestro-provisioning`/`url_capture` presence, Kohana portal git reflog, `graylog-sidecar`/`node_exporter`/`prometheus`/`fluent-bit`/`cnmaestro-provisioning` service state, `/usr/local/{bin,sbin,lib}` listing, `crontab -l`, `/etc/cron.d/`, `systemctl list-timers` | Surfaces undocumented custom scripts the way the rcp-fleet audits in `smc-file-writing-analysis` found several — don't assume the documented app list is exhaustive |
-| `04-portal-packages.txt` | Apache vhost config, mobile-app-backend + Kohana portal dir presence, installed versions of `bind9`/`unbound`/`stubby`/`apache2`/`php*`/`clamav`/`lynis`/`prometheus`/`node-exporter`/`fluent-bit`/`teleport`/`isc-dhcp-server` | Confirms/refutes the code-inspection-only portal-protocol and package claims in `01_overview.md`/`10_captive-portal.md` |
+| `01-identity-hardware.txt` | hostname/uptime/kernel/OS, `dmidecode` manufacturer/product/serial, CPU (`lscpu`), RAM (`free -h`), disks (`lsblk`, `df -h`), | The chassis-model + resource baseline |
+|  |   `smartmon.prom`/`sbdm.prom` textfile-collector SSD health, overlayroot mount state |   this pack never had for |
+|  |  |   `nbn_accelerate`/`nbn_wh` |
+|  |  |   before 2026-08-03 |
+| `02-services-security.txt` | `systemctl --failed`, Teleport/autossh state, DNS-stack (`unbound`/`stubby`/`named`), ClamAV daemon + `freshclam` detailed status, | ClamAV/Lynis is an `nbn_accelerate`-only |
+|  |   Lynis presence, full list of running services |   hardening gate |
+|  |  |   (`08_ansible-authoring.md`) — the |
+|  |  |   `freshclam` status specifically checks |
+|  |  |   for the CDN-block finding first seen |
+|  |  |   2026-08-03 on `warakurna`/`indulkana` |
+| `03-apps-scripts-cron.txt` | `apn-mqtt-client`/`cnmaestro-provisioning`/`url_capture` presence, Kohana portal git reflog, | Surfaces undocumented custom scripts the |
+|  |   `graylog-sidecar`/`node_exporter`/`prometheus`/`fluent-bit`/`cnmaestro-provisioning` service state, `/usr/local/{bin,sbin,lib}` |   way the rcp-fleet audits in |
+|  |   listing, `crontab -l`, `/etc/cron.d/`, `systemctl list-timers` |   `smc-file-writing-analysis` found |
+|  |  |   several — don't assume the documented |
+|  |  |   app list is exhaustive |
+| `04-portal-packages.txt` | Apache vhost config, mobile-app-backend + Kohana portal dir presence, installed versions of | Confirms/refutes the code-inspection-only |
+|  |   `bind9`/`unbound`/`stubby`/`apache2`/`php*`/`clamav`/`lynis`/`prometheus`/`node-exporter`/`fluent-bit`/`teleport`/`isc-dhcp-server` |   portal-protocol and package claims in |
+|  |  |   `01_overview.md`/`10_captive-portal.md` |
 
 ```bash
 ./collect-fleet-health.sh warakurna indulkana bungardi        # named sites
@@ -6643,21 +6992,14 @@ just -f fleet-health.justfile freshclam-check                 # quick cross-host
 just -f fleet-health.justfile chassis-models
 ```
 
-**Sites with more than one numbered host (e.g. `aurukun-smc01`/`aurukun-smc02`) must be passed
-with their full `-smcNN` suffix** — a bare `aurukun` always resolves to `aurukun-smc01`.
+**Sites with more than one numbered host (e.g. `aurukun-smc01`/`aurukun-smc02`) must be passed with their full `-smcNN` suffix** — a bare `aurukun` always resolves to `aurukun-smc01`.
 
-**`just -f <path>` runs recipes with cwd = the justfile's own directory, not the invoker's cwd —
-confirmed the hard way on the first real fleet run.** `fleet-health.justfile` lives in `scripts/`,
-but `collect-fleet-health.sh` writes `evidence/` into its *parent* directory (skill-smc root) by
-default. A recipe written as `./scripts/collect-fleet-health.sh` or a bare `evidence` path looks
-correct when read, but silently resolves to a nonexistent `scripts/scripts/...` or `scripts/
-evidence/` and fails (or worse, reports a misleading "no captures yet" instead of an error).
-`fleet-health.justfile`'s recipes use `./collect-fleet-health.sh` (sibling file) and `../evidence`
-(one level up) for this reason — if you add a recipe to a justfile that lives in `scripts/`,
-match that convention, and **run every new recipe for real before trusting it**, the way this one
-was dogfooded: three of its four quick-check recipes had real bugs (wrong paths, and the same
-exit-code-of-last-command quirk documented in `collect-fleet-health.sh`'s header) that a syntax
-check alone would never have caught.
+**`just -f <path>` runs recipes with cwd = the justfile's own directory, not the invoker's cwd — confirmed the hard way on the first real fleet run.** `fleet-health.justfile` lives in `scripts/`, but
+`collect-fleet-health.sh` writes `evidence/` into its *parent* directory (skill-smc root) by default. A recipe written as `./scripts/collect-fleet-health.sh` or a bare `evidence` path looks correct
+when read, but silently resolves to a nonexistent `scripts/scripts/...` or `scripts/ evidence/` and fails (or worse, reports a misleading "no captures yet" instead of an error).
+`fleet-health.justfile`'s recipes use `./collect-fleet-health.sh` (sibling file) and `../evidence` (one level up) for this reason — if you add a recipe to a justfile that lives in `scripts/`, match
+that convention, and **run every new recipe for real before trusting it**, the way this one was dogfooded: three of its four quick-check recipes had real bugs (wrong paths, and the same
+exit-code-of-last-command quirk documented in `collect-fleet-health.sh`'s header) that a syntax check alone would never have caught.
 
 ## Usage
 
@@ -6690,6 +7032,35 @@ reusable knowledge and tooling, not case-specific evidence. See the parent repo'
 **The 2026-08-03 NBN Accelerate fleet sweep was captured without `OUTDIR_ROOT` set** (script default, under `skill-smc/evidence/`) — relocate that capture to a case-specific
 `local-knowledge-ansible/ansible-wifi/issues/` folder per this policy once collection finishes, rather than leaving raw per-host evidence inside the skill-smc pack long-term. The *analysis*
 (conclusions, confirmed/refuted claims, new findings) belongs in `references/*.md`; the raw capture files do not.
+
+<!-- BEGIN MANAGED: skill-ai-it:scripts --> <!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->
+
+## Execution Policy
+
+- Prefer the existing canonical task runner for this project.
+- Prefer `just <task>` when a `justfile` is present.
+- Do not run scripts marked `destructive`, `review-required`, or `unknown` without review.
+- Do not assume arbitrary files under `scripts/` are safe.
+- If a script is missing from this inventory, inspect it before use and update or propose an inventory entry.
+- Secrets must not be documented here as values. Document only secret names and where they are expected to come from.
+
+## Preferred Execution Order
+
+1. Existing canonical task runner (whichever is established for this project)
+2. `just --list` / `just <task>`
+3. `scripts/README.md`
+4. Other task runners: `Taskfile.yml`, `Makefile`, `package.json`
+5. Raw scripts under `scripts/` after inspection
+
+## Maintenance Rules
+
+- Keep this file aligned with: `justfile`, `Taskfile.yml`, `Makefile`, `package.json`, actual files under `scripts/`
+- Prefer managed block updates for generated sections.
+- Preserve manually written notes unless explicitly replacing them.
+- When removing a script, remove or mark its inventory entry stale.
+- When adding a script, document purpose, inputs, outputs, safety, idempotency, and when to use it.
+
+<!-- END MANAGED: skill-ai-it:scripts -->
 ````
 
 ## File: AGENTS.md
@@ -6702,9 +7073,20 @@ Status: current
 Authority: local-supplement
 Scope: skill-smc specialist pack — canonical source for SMC box operational knowledge and ansible-wifi authoring
 Last reviewed: 20260731_1300
-Summary: Agent guidance for maintaining and using the skill-smc specialist pack. Covers specialist structure, reference routing, and update discipline. Cross-repo trigger rule broadened 2026-07-31 to cover the whole local-knowledge-ansible/ansible-wifi tree (current and future subfolders) and both skill-slurp-chat and project-coherence as mandatory feed-back trigger points.
+Summary: Agent guidance for maintaining and using the skill-smc specialist pack. Covers specialist structure, reference routing, and update discipline. Cross-repo trigger rule broadened 2026-07-31 to
+  cover the whole local-knowledge-ansible/ansible-wifi tree (current and future subfolders) and both skill-slurp-chat and project-coherence as mandatory feed-back trigger points.
 
 # AGENTS.md
+
+## Contents
+
+- [Working rules](#working-rules)
+- [Project-coherence checklist](#project-coherence-checklist)
+- [AI navigation and context preflight](#ai-navigation-and-context-preflight)
+- [Governance coherence checks](#governance-coherence-checks)
+- [Canonical governance linkage](#canonical-governance-linkage)
+
+---
 
 ## Working rules
 
@@ -6726,15 +7108,15 @@ When running `project-coherence` on the `skill-smc` specialist pack — whether 
 
 ### Tier 1 — Reference files (content source — update first)
 
-| New knowledge type | Target file |
-|---|---|
-| Captive portal, Kohana, Eclipse config, portal PHP (mod_php, not PHP-FPM) | `references/10_captive-portal.md` |
-| Vagrant lab bring-up, VirtualBox, vsmc nuances | `references/11_vagrant-lab.md` |
-| VLAN 501, content filtering, MAC randomization, CAKE | `references/12_content-filtering.md` |
-| New coverage gaps, staleness risk, unvalidated assumptions | `references/13_known-issues.md` |
-| URL capture, PCAP, dns_query | `references/09_url-capture-pcap.md` |
-| Ansible authoring, topology, cache, blast radius | `references/08_ansible-authoring.md` |
-| All other domains → per routing table in `RUNBOOK.md` | matching `references/0N_*.md` |
+| New knowledge type                                                        | Target file                          |
+| ------------------------------------------------------------------------- | ------------------------------------ |
+| Captive portal, Kohana, Eclipse config, portal PHP (mod_php, not PHP-FPM) | `references/10_captive-portal.md`    |
+| Vagrant lab bring-up, VirtualBox, vsmc nuances                            | `references/11_vagrant-lab.md`       |
+| VLAN 501, content filtering, MAC randomization, CAKE                      | `references/12_content-filtering.md` |
+| New coverage gaps, staleness risk, unvalidated assumptions                | `references/13_known-issues.md`      |
+| URL capture, PCAP, dns_query                                              | `references/09_url-capture-pcap.md`  |
+| Ansible authoring, topology, cache, blast radius                          | `references/08_ansible-authoring.md` |
+| All other domains → per routing table in `RUNBOOK.md`                     | matching `references/0N_*.md`        |
 
 **Do not write new operational content to `RUNBOOK.md`** — it is a navigation index only. Write content to the matching reference file.
 
@@ -6760,66 +7142,100 @@ repomix --config /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skil
 
 ### Cross-repo trigger rule (when triggered from ansible-wifi or local-knowledge-ansible/ansible-wifi)
 
-**Scope: the whole tree, not just top-level sessions.** This rule fires for work done in
-`/Volumes/Data/_ansible/ansible-wifi` itself, in `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi`,
-and in **any current or future subfolder of either** — `issues/**`, `ai-tooling/`, `opa/`, `plans/`,
-`scripts/`, `history/`, and any new investigation/design workspace bootstrapped later. Every such
-subfolder is expected to `@`-import `ansible-wifi-root-governance/AGENTS.md` (the established
-convention — see e.g. `issues/apn/routing-issue/AGENTS.md`), which is what makes this rule reach
-new folders automatically without a separate wiring step per folder.
+**Scope: the whole tree, not just top-level sessions.** This rule fires for work done in `/Volumes/Data/_ansible/ansible-wifi` itself, in `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi`,
+and in **any current or future subfolder of either** — `issues/**`, `ai-tooling/`, `opa/`, `plans/`, `scripts/`, `history/`, and any new investigation/design workspace bootstrapped later. Every such
+subfolder is expected to `@`-import `ansible-wifi-root-governance/AGENTS.md` (the established convention — see e.g. `issues/apn/routing-issue/AGENTS.md`), which is what makes this rule reach new
+folders automatically without a separate wiring step per folder.
 
-**Trigger conditions — broader than "bug fixes".** Any of the following, from any session anywhere
-in that tree, counts as producing knowledge this pack must capture:
+**Trigger conditions — broader than "bug fixes".** Any of the following, from any session anywhere in that tree, counts as producing knowledge this pack must capture:
 - An incident, debug fix, or change in assumptions (the original narrow case).
-- A design analysis or recommendation — **even if not yet implemented or canary-tested.** Do not
-  wait for something to ship before capturing it; mark it clearly as a design recommendation with
-  its implementation status, so a future session doesn't have to rediscover it from a dated
-  investigation-folder doc.
+- A design analysis or recommendation — **even if not yet implemented or canary-tested.** Do not wait for something to ship before capturing it; mark it clearly as a design recommendation with its
+  implementation status, so a future session doesn't have to rediscover it from a dated investigation-folder doc.
 - A new or updated ADR, rule, guide, or spec under `.archcore/`.
 - A change to the OPA policy layer (`opa/policies/`, `opa/data/`) or its precedence/gating logic.
-- A reusable script worth generalizing for future investigations (promote to `skill-smc/scripts/`
-  per its own promotion checklist in `scripts/README.md`).
-- A ROADMAP-tracked architectural decision or backlog item that changes what this pack currently
-  documents as true.
+- A reusable script worth generalizing for future investigations (promote to `skill-smc/scripts/` per its own promotion checklist in `scripts/README.md`).
+- A ROADMAP-tracked architectural decision or backlog item that changes what this pack currently documents as true.
 
-**Trigger points — both are mandatory, not just one.** Both `skill-slurp-chat` and
-`project-coherence`, run anywhere in the tree above, must check for unpromoted knowledge before
-closing out — not only project-coherence. If either closes a session without this check, treat the
-closeout as incomplete.
+**Trigger points — both are mandatory, not just one.** Both `skill-slurp-chat` and `project-coherence`, run anywhere in the tree above, must check for unpromoted knowledge before closing out — not
+only project-coherence. If either closes a session without this check, treat the closeout as incomplete.
 
 **Steps once new knowledge is identified:**
-1. Write content to the matching `references/*.md` in this pack (use `RUNBOOK.md`'s routing table
-   to find the file — never write content to `RUNBOOK.md` itself).
+1. Write content to the matching `references/*.md` in this pack (use `RUNBOOK.md`'s routing table to find the file — never write content to `RUNBOOK.md` itself).
 2. Verify the RUNBOOK.md routing table has a row pointing to that reference.
 3. Bump `manifest.json` version + `updated_at`.
 4. Append CHANGELOG.md entry.
 5. Update SCRATCHPAD.md current state.
 6. Regenerate `.ai-context/governance-pack.md` (Tier 4, above).
 
-**Closeout self-check (this is what prevents needing another full directory sweep):** before
-ending any `skill-slurp-chat` or `project-coherence` pass that touched this tree, explicitly ask —
-did this session create or change anything under `local-knowledge-ansible/ansible-wifi/**` (a new
-issue report, design doc, ADR, script, ROADMAP edit, `.remember` entry) that isn't yet reflected
-here? If yes, promote it in the same pass per the steps above rather than deferring it.
+**Closeout self-check (this is what prevents needing another full directory sweep):** before ending any `skill-slurp-chat` or `project-coherence` pass that touched this tree, explicitly ask — did this
+session create or change anything under `local-knowledge-ansible/ansible-wifi/**` (a new issue report, design doc, ADR, script, ROADMAP edit, `.remember` entry) that isn't yet reflected here? If yes,
+promote it in the same pass per the steps above rather than deferring it.
 
-<!-- BEGIN skill-ai-it:navigation -->
+<!-- BEGIN MANAGED: skill-ai-it:navigation --> <!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->
 
 ## AI navigation and context preflight
 
 Before answering, planning, editing, or creating files in this project:
 
-1. **Check `.ai-context/governance-pack.md`** — if it exists and is current (< 7 days), read it as the primary context load. If stale or missing, regenerate: `repomix --config repomix.config.json`.
-2. If pack unavailable, read individually:
-   - [AI_NAVIGATION.md](AI_NAVIGATION.md) — context router
-   - [context-map.yaml](context-map.yaml) — machine-readable routing map
-   - [SKILL.md](SKILL.md) — agent-facing skill definition
-   - [RUNBOOK.md](RUNBOOK.md) — reference routing index
-   - Recent entries in [CHANGELOG.md](CHANGELOG.md)
-3. Then load the specific `references/*.md` file relevant to the task.
-4. If sources conflict, stop and report the conflict instead of guessing.
-5. Do not treat `SCRATCHPAD.md` as durable truth unless content is marked `KEEP`.
+1. Read [AI_NAVIGATION.md](AI_NAVIGATION.md).
+2. Read [context-map.yaml](context-map.yaml).
+3. Read recent entries in [CHANGELOG.md](CHANGELOG.md).
+4. Load relevant `.archcore/` context if present.
+5. Load relevant `memory-bank/` files if present.
+6. Consult generated context when available:
+   - `graphify-out/GRAPH_REPORT.md`
+   - `.ai-context/governance-pack.md`
+7. Before making durable changes, inspect companion-file rules in `context-map.yaml update_rules`. Update all companion files when changing source files.
+8. If sources conflict, stop and report the conflict instead of guessing.
+9. Do not treat `SCRATCHPAD.md` as durable truth unless content is marked `KEEP` or promoted into `.archcore/`, ROADMAP, or memory-bank.
+10. Do not treat Graphify (`graphify-out/`) or Repomix (`.ai-context/`) output as canonical truth. These are generated support artifacts only, always rebuildable.
+11. Before running scripts or automation, inspect `justfile`, `scripts/README.md`, `Taskfile.yml`, `Makefile`, and `package.json` when present. Prefer `just --list` and `just <task>` when a `justfile`
+    exists.
+12. Treat uncataloged scripts as `unknown` safety until inspected.
+13. When adding, modifying, or removing scripts or tasks, update `scripts/README.md` to reflect the change — purpose, inputs, outputs, safety label, and idempotency.
+14. If `scripts/check_governance.py` exists, run it before claiming any durable change is complete. When it fails, fix the project, not the check. Adding a new artifact class, generated output, or a
+    constant restated across files requires extending its registries in the same pass.
+15. After making changes, update `CHANGELOG.md` for all durable governance/navigation changes.
+16. Preserve user-authored content outside managed sections. Do not rewrite custom project notes.
 
-<!-- END skill-ai-it:navigation -->
+<!-- END MANAGED: skill-ai-it:navigation -->
+
+<!-- managed:skill-ai-it:governance-checks — regenerated by skill-ai-it. Edit the surrounding file freely; edits inside this block may be replaced. -->
+
+## Governance coherence checks
+
+This pack's governance claims are executable. [`scripts/check_governance.py`](scripts/check_governance.py) turns them into assertions; run `python3 scripts/check_governance.py` to gate on them. It is
+stdlib-only and exits non-zero on any failure.
+
+**Run it before claiming any durable change is complete**, and after any change that adds, moves, renames, or retires a file. It is cheap and it is the only thing standing between this pack's
+documents and silent decay.
+
+### The checker grows with the pack
+
+The check count is a coverage signal, not a score. It is expected to rise as the pack acquires structure. Extend it on these triggers:
+
+| Change made                                           | Required checker update                                                                                                                      |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Add a new `references/*.md` file                      | None — the coverage check fails until `RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, and `context-map.yaml` all name it. That is the intended |
+|                                                       |   workflow, not an error to route around                                                                                                     |
+| Add a script to `scripts/`                            | Catalog it in `scripts/README.md`; coverage fails until then                                                                                 |
+| Add a new governance surface that could restate this  | Add it to `VERSION_STAMP_SURFACES` in `scripts/check_governance.py`                                                                          |
+|   pack's version number                               |                                                                                                                                              |
+| Rename or move a file                                 | Nothing — path resolution catches every stale reference automatically                                                                        |
+| Retire a check                                        | Record why in `CHANGELOG.md`. A silently deleted check is indistinguishable from one that never existed                                      |
+
+### Rules that are not negotiable
+
+- **When a check fails, fix the pack, not the check.** Broadening an ignore-list to silence a true positive, or exempting the file that failed, converts a real finding into a permanent blind spot that
+  the next agent has no way to discover.
+- **A new check must be able to fail.** Prove it by breaking the pack deliberately and watching it go red.
+- **Text matching does not verify behavior.** Where a check must verify behavior, execute the behavior and assert on the result, not grep for a keyword.
+- **Do not enforce history.** `CHANGELOG.md` and `install.md` are append-only history logs; a past fact recorded there is evidence, not a live claim, and is exempt from the checks above by design.
+
+Doctrine, the seven check families, and the artifact-to-check inference table: [the governance-checks
+pattern](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/governance-checks.md).
+
+<!-- /managed:skill-ai-it:governance-checks -->
 
 ## Canonical governance linkage
 
@@ -6835,7 +7251,22 @@ Purpose: context entrypoint for AI agents working on the skill-smc specialist pa
 
 This file is a router, not the knowledge store.
 
-<!-- BEGIN skill-ai-it:navigation -->
+<!-- BEGIN skill-ai-it:navigation --> <!-- skill-ai-it:manual reason="task->reference routing table (13 files) and specialist-pack file-role priority order are project-specific; the generic template
+has no equivalent and would delete them" -->
+
+## Contents
+
+- [Mandatory read order](#mandatory-read-order)
+- [Source priority](#source-priority)
+- [Reference routing (task → file)](#reference-routing-task-file)
+- [Project context files](#project-context-files)
+- [Update rules](#update-rules)
+- [Drift handling](#drift-handling)
+- [Generated context](#generated-context)
+- [Companion consistency](#companion-consistency)
+- [Context compaction recovery](#context-compaction-recovery)
+
+---
 
 ## Mandatory read order
 
@@ -6863,65 +7294,65 @@ When sources conflict:
 
 ## Reference routing (task → file)
 
-| Task | Read |
-|---|---|
-| Live incident: box unreachable, service down, alert firing | `references/05_troubleshooting.md` |
-| Identify which services are present / service names / config paths | `references/02_service-map.md` |
-| Understand external comms paths (Teleport, Prometheus, Graylog) | `references/03_communication-flows.md` |
-| Understand dependencies between services | `references/04_dependency-tree.md` |
-| Identify known failure signatures and fix patterns | `references/06_failure-modes.md` |
-| Hardware differences, overlayroot, persistence risk | `references/07_hardware-overlay.md` |
-| Ansible authoring: topology vars, cache, validation, blast radius, smc_ltp sub-group, "low touch" onboarding history | `references/08_ansible-authoring.md` |
-| URL capture v2, PCAP layout, fetch/process, dns_query assumptions | `references/09_url-capture-pcap.md` |
-| Captive portal, Kohana, Eclipse config sync, portal PHP (mod_php, not PHP-FPM) | `references/10_captive-portal.md` |
-| Vagrant lab bring-up and virtualization issues | `references/11_vagrant-lab.md` |
-| VLAN 501, content filtering, MAC randomization, CAKE | `references/12_content-filtering.md` |
-| Coverage gaps, staleness risk, unvalidated assumptions | `references/13_known-issues.md` |
-| SMC box definition, inventory flavors, Teleport access pattern, APN vs NBN Accelerate cluster differences | `references/01_overview.md` |
+| Task                                                                                                                 | Read                                   |
+| -------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Live incident: box unreachable, service down, alert firing                                                           | `references/05_troubleshooting.md`     |
+| Identify which services are present / service names / config paths                                                   | `references/02_service-map.md`         |
+| Understand external comms paths (Teleport, Prometheus, Graylog)                                                      | `references/03_communication-flows.md` |
+| Understand dependencies between services                                                                             | `references/04_dependency-tree.md`     |
+| Identify known failure signatures and fix patterns                                                                   | `references/06_failure-modes.md`       |
+| Hardware differences, overlayroot, persistence risk                                                                  | `references/07_hardware-overlay.md`    |
+| Ansible authoring: topology vars, cache, validation, blast radius, smc_ltp sub-group, "low touch" onboarding history | `references/08_ansible-authoring.md`   |
+| URL capture v2, PCAP layout, fetch/process, dns_query assumptions                                                    | `references/09_url-capture-pcap.md`    |
+| Captive portal, Kohana, Eclipse config sync, portal PHP (mod_php, not PHP-FPM)                                       | `references/10_captive-portal.md`      |
+| Vagrant lab bring-up and virtualization issues                                                                       | `references/11_vagrant-lab.md`         |
+| VLAN 501, content filtering, MAC randomization, CAKE                                                                 | `references/12_content-filtering.md`   |
+| Coverage gaps, staleness risk, unvalidated assumptions                                                               | `references/13_known-issues.md`        |
+| SMC box definition, inventory flavors, Teleport access pattern, APN vs NBN Accelerate cluster differences            | `references/01_overview.md`            |
 
 ## Project context files
 
-| File | Role | Authority |
-|---|---|---|
-| `AGENTS.md` | Agent instructions for maintaining this pack | High |
-| `CLAUDE.md` | Claude Code bootstrap (thin wrapper) | High |
-| `AI_NAVIGATION.md` | Human-readable context router (this file) | High |
-| `context-map.yaml` | Machine-readable routing map | High |
-| `SKILL.md` | Agent-facing activation surface | High |
-| `RUNBOOK.md` | Navigation index — task-to-reference routing | High |
-| `manifest.json` | Specialist metadata, scope, stable facts | High |
-| `PROFILE.md` | Background context; not installed to clients | Medium |
-| `SYSTEM_PROMPT.md` | Dedicated agent mode prompt; not loaded in normal invocations | Medium |
-| `references/01_overview.md` | SMC box definition, flavors, access, APN vs NBN Accelerate differences | Content |
-| `references/02_service-map.md` | 50+ services, units, config paths | Content |
-| `references/03_communication-flows.md` | Inbound/outbound paths | Content |
-| `references/04_dependency-tree.md` | Service dependency relationships | Content |
-| `references/05_troubleshooting.md` | Live incident triage (Tiers 1–7) | Content |
-| `references/06_failure-modes.md` | Failure signatures and fix patterns | Content |
-| `references/07_hardware-overlay.md` | Hardware diff, overlayroot, persistence | Content |
-| `references/08_ansible-authoring.md` | Ansible rules, validation, generator drift, smc_ltp, onboarding history | Content |
-| `references/09_url-capture-pcap.md` | URL capture v2, PCAP, dns_query | Content |
-| `references/10_captive-portal.md` | Captive portal, Kohana, portal PHP (mod_php) | Content |
-| `references/11_vagrant-lab.md` | Vagrant lab setup | Content |
-| `references/12_content-filtering.md` | VLAN 501 filtering stack | Content |
-| `references/13_known-issues.md` | Known gaps and staleness | Content |
-| `exports/claude_code/project/skill-smc/adapter.md` | Claude Code source→install mapping | Adapter |
-| `exports/claude_code/project/skill-smc/install.md` | Claude Code installation steps | Adapter |
-| `CHANGELOG.md` | Pack version history and governance changes | Medium-high |
-| `SCRATCHPAD.md` | Temporary working notes | Low |
-| `.ai-context/governance-pack.md` | Generated context bundle | Generated |
+| File                                               | Role                                                                    | Authority   |
+| -------------------------------------------------- | ----------------------------------------------------------------------- | ----------- |
+| `AGENTS.md`                                        | Agent instructions for maintaining this pack                            | High        |
+| `CLAUDE.md`                                        | Claude Code bootstrap (thin wrapper)                                    | High        |
+| `AI_NAVIGATION.md`                                 | Human-readable context router (this file)                               | High        |
+| `context-map.yaml`                                 | Machine-readable routing map                                            | High        |
+| `SKILL.md`                                         | Agent-facing activation surface                                         | High        |
+| `RUNBOOK.md`                                       | Navigation index — task-to-reference routing                            | High        |
+| `manifest.json`                                    | Specialist metadata, scope, stable facts                                | High        |
+| `PROFILE.md`                                       | Background context; not installed to clients                            | Medium      |
+| `SYSTEM_PROMPT.md`                                 | Dedicated agent mode prompt; not loaded in normal invocations           | Medium      |
+| `references/01_overview.md`                        | SMC box definition, flavors, access, APN vs NBN Accelerate differences  | Content     |
+| `references/02_service-map.md`                     | 50+ services, units, config paths                                       | Content     |
+| `references/03_communication-flows.md`             | Inbound/outbound paths                                                  | Content     |
+| `references/04_dependency-tree.md`                 | Service dependency relationships                                        | Content     |
+| `references/05_troubleshooting.md`                 | Live incident triage (Tiers 1–7)                                        | Content     |
+| `references/06_failure-modes.md`                   | Failure signatures and fix patterns                                     | Content     |
+| `references/07_hardware-overlay.md`                | Hardware diff, overlayroot, persistence                                 | Content     |
+| `references/08_ansible-authoring.md`               | Ansible rules, validation, generator drift, smc_ltp, onboarding history | Content     |
+| `references/09_url-capture-pcap.md`                | URL capture v2, PCAP, dns_query                                         | Content     |
+| `references/10_captive-portal.md`                  | Captive portal, Kohana, portal PHP (mod_php)                            | Content     |
+| `references/11_vagrant-lab.md`                     | Vagrant lab setup                                                       | Content     |
+| `references/12_content-filtering.md`               | VLAN 501 filtering stack                                                | Content     |
+| `references/13_known-issues.md`                    | Known gaps and staleness                                                | Content     |
+| `exports/claude_code/project/skill-smc/adapter.md` | Claude Code source→install mapping                                      | Adapter     |
+| `exports/claude_code/project/skill-smc/install.md` | Claude Code installation steps                                          | Adapter     |
+| `CHANGELOG.md`                                     | Pack version history and governance changes                             | Medium-high |
+| `SCRATCHPAD.md`                                    | Temporary working notes                                                 | Low         |
+| `.ai-context/governance-pack.md`                   | Generated context bundle                                                | Generated   |
 
 ## Update rules
 
-| Change type | Update |
-|---|---|
-| New operational knowledge | Add/update `references/<nn>_*.md`; update `RUNBOOK.md` routing; check `SKILL.md` |
-| New reference file | Update `RUNBOOK.md` routing table + `SKILL.md` References + `adapter.md` + `install.md` |
-| Structural change | Bump `manifest.json` version + `updated_at`; append `CHANGELOG.md` |
-| Scope boundary change | Update `manifest.json` `scope_boundary`; review `SKILL.md` Use When |
-| Stable fact confirmed/changed | Update `manifest.json` `stable_facts`; update relevant reference |
-| Context routing changed | Update `AI_NAVIGATION.md` and `context-map.yaml` |
-| Governance change | Append `CHANGELOG.md` |
+| Change type                   | Update                                                                                  |
+| ----------------------------- | --------------------------------------------------------------------------------------- |
+| New operational knowledge     | Add/update `references/<nn>_*.md`; update `RUNBOOK.md` routing; check `SKILL.md`        |
+| New reference file            | Update `RUNBOOK.md` routing table + `SKILL.md` References + `adapter.md` + `install.md` |
+| Structural change             | Bump `manifest.json` version + `updated_at`; append `CHANGELOG.md`                      |
+| Scope boundary change         | Update `manifest.json` `scope_boundary`; review `SKILL.md` Use When                     |
+| Stable fact confirmed/changed | Update `manifest.json` `stable_facts`; update relevant reference                        |
+| Context routing changed       | Update `AI_NAVIGATION.md` and `context-map.yaml`                                        |
+| Governance change             | Append `CHANGELOG.md`                                                                   |
 
 ## Drift handling
 
@@ -6932,6 +7363,34 @@ If files disagree:
 3. State which has higher authority per source priority above.
 4. Propose the smallest correction.
 5. Do not silently merge.
+
+## Generated context
+
+`.ai-context/governance-pack.md` (built via `repomix --config repomix.config.json`) is generated support only — always rebuildable, never canonical truth. Do not cite it as a source of a fact; cite
+the underlying `references/*.md`, `manifest.json`, or `.archcore/` document it was built from. This pack has no `graphify-out/`; skip that step if it stays absent.
+
+## Companion consistency
+
+When changing a source file, update its companions in the same pass:
+
+| File changed                                 | Companions to update                                                                                                                                  |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `references/<nn>_*.md` (new or restructured) | `RUNBOOK.md` routing table, `SKILL.md` References section,                                                                                            |
+|                                              |   `exports/claude_code/project/skill-smc/adapter.md`, `exports/claude_code/project/skill-smc/install.md`                                              |
+| Any `references/*.md` content change         | `manifest.json` `version` + `updated_at`; `CHANGELOG.md` entry                                                                                        |
+| `AI_NAVIGATION.md` or `context-map.yaml`     | keep the other in sync — same routing, same file roles                                                                                                |
+| New script added                             | `scripts/README.md`, `AGENTS.md` if it changes a working rule                                                                                         |
+
+## Context compaction recovery
+
+After context compaction, rebuild agent context in this order:
+
+1. Read `AI_NAVIGATION.md` (this file) first — it is the router.
+2. Read `context-map.yaml` for the machine-readable routing map.
+3. Check `.ai-context/governance-pack.md` — if current (< 7 days), read as primary context load; otherwise regenerate: `repomix --config repomix.config.json`.
+4. Load `AGENTS.md`, `SKILL.md`, `RUNBOOK.md`, recent `CHANGELOG.md` entries.
+5. Load the specific `references/*.md` file relevant to the task.
+6. Verify `SCRATCHPAD.md` current-state section is not stale before trusting it.
 
 <!-- END skill-ai-it:navigation -->
 ````
@@ -7008,6 +7467,9 @@ Everything else (PROFILE.md, SYSTEM_PROMPT.md, manifest.json, exports/, .archcor
 
 ## Contents
 
+- [20260908_1955 — skill-ai-it refresh: navigation-control upgrade, `check_governance.py` adopted, `AI_NAVIGATION.md` declared project-managed (v0.1.33 -> v0.1.34)](#20260908_1955-skill-ai-it-refresh-navigation-control-upgrade-check_governancepy-adopted-ai_navigationmd-declared-project-managed-v0133---v0134)
+- [20260908_1515 — `wifi-02.activ8me.net.au` is APN's own LVS VIP, not a third party; port-80 source-IP allowlist failure mode; reject-vs-drop diagnostics (v0.1.32 -> v0.1.33)](#20260908_1515-wifi-02activ8menetau-is-apns-own-lvs-vip-not-a-third-party-port-80-source-ip-allowlist-failure-mode-reject-vs-drop-diagnostics-v0132---v0133)
+- [20260908_1430 — galiwinku-smc01 multi-WAN session write-back: ECMP hash-pinning root cause, VRF-disable landed, topology/monitoring gaps (v0.1.31 -> v0.1.32)](#20260908_1430-galiwinku-smc01-multi-wan-session-write-back-ecmp-hash-pinning-root-cause-vrf-disable-landed-topologymonitoring-gaps-v0131---v0132)
 - [20260908_1330 — Backdoor SSH access documented: raw reverse-tunnel path around a hung Teleport node agent, confirmed live against nbn_accelerate (v0.1.30 -> v0.1.31)](#20260908_1330-backdoor-ssh-access-documented-raw-reverse-tunnel-path-around-a-hung-teleport-node-agent-confirmed-live-against-nbn_accelerate-v0130---v0131)
 - [20260908_1200 — Pack-structure self-audit: RUNBOOK version drift, install.md staleness, reference-update-discipline gap, vestigial evidence/, and archcore status promotion (v0.1.29 -> v0.1.30)](#20260908_1200-pack-structure-self-audit-runbook-version-drift-installmd-staleness-reference-update-discipline-gap-vestigial-evidence-and-archcore-status-promotion-v0129---v0130)
 - [20260907_1600 — Two Ansible silent-failure gotchas, an `rcp` systemd-mask fix, and the `auto_reboot: 0` truthy-string bug fed back from `ansible-wifi` (v0.1.28 -> v0.1.29)](#20260907_1600-two-ansible-silent-failure-gotchas-an-rcp-systemd-mask-fix-and-the-auto_reboot-0-truthy-string-bug-fed-back-from-ansible-wifi-v0128---v0129)
@@ -7051,6 +7513,131 @@ Everything else (PROFILE.md, SYSTEM_PROMPT.md, manifest.json, exports/, .archcor
 
 ---
 
+## 20260908_1955 — skill-ai-it refresh: navigation-control upgrade, `check_governance.py` adopted, `AI_NAVIGATION.md` declared project-managed (v0.1.33 -> v0.1.34)
+
+**Trigger:** `/skill-ai-it bootstrap` invoked against this pack. All base governance (`README.md`, `AGENTS.md`, `CLAUDE.md`) and navigation (`AI_NAVIGATION.md`, `context-map.yaml`) files already
+existed, so per skill-ai-it's own mode-selection rules the correct action was `refresh`, not a fresh bootstrap.
+
+- Ran the deterministic navigation-control upgrade (`upgrade_navigation_control_layer.py`): refreshed `context-map.yaml` (added `audit_checks`, `promotion_rules`, `context_recovery`, `update_rules`,
+  `skill_ai_it_version`) and inserted a managed inventory block into `scripts/README.md`.
+- `AGENTS.md`'s `skill-ai-it:navigation` block predated the version-marker convention and carried only generic, non-project-specific content; upgraded it in place to the current template
+  (`2026-08-11-governance-checks-layer-v1`).
+- `AI_NAVIGATION.md`'s `skill-ai-it:navigation` block is genuinely project-specific — a 13-file task-to-reference routing table and specialist-pack file-role priorities the generic template has no
+  equivalent for. Overwriting it would have destroyed real content, so it was declared project-managed (`<!-- skill-ai-it:manual reason="..." -->`) instead; the two sections the validator still
+  expected (generated-context support-only policy, context compaction recovery, companion consistency) were hand-added, tailored to this pack's actual files rather than copied verbatim from the
+  generic template.
+- Adopted `scripts/check_governance.py` (this pack had none): turns `.archcore/rules/rule-reference-update-discipline.md` (references named in `RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`,
+  `context-map.yaml`) and `.archcore/rules/rule-manifest-version-discipline.md` (`manifest.json` as sole version-of-record) into executable assertions. First run surfaced 35 false positives from a
+  generic first pass — remote-appliance script paths (`sbdm.py`, `smartmon.py`, etc.), sibling-repo (`ansible-wifi`) file mentions, and a version regex that collided with unrelated software versions
+  (ClamAV `0.103.11`, ansible-lint `0.0.53`) — each was traced to its actual source and either registered in `CONDITIONAL_PATHS` with a reason or fixed at the regex level (the version check now
+  derives its match pattern from `manifest.json`'s own major.minor at run time instead of matching any semver-shaped number). One genuine finding survived: the checker itself was not yet cataloged in
+  `scripts/README.md`; fixed by adding a fourth script category there.
+- Wired the checker into `AGENTS.md` via the `skill-ai-it:governance-checks` managed block.
+- `validate_navigation_control_layer.py` now reports a clean PASS (26/26) with 0 warnings, 0 failures.
+- The mechanical upgrade step's own `CHANGELOG.md` entry had been appended at the end of the file (chronological), breaking this pack's newest-first convention with no `Contents` row; folded into this
+  entry instead, at the top, in the pack's own order.
+
+Applied to: `AGENTS.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `scripts/README.md`, `scripts/check_governance.py` (new), `manifest.json`, `CHANGELOG.md`.
+
+---
+
+## 20260908_1515 — `wifi-02.activ8me.net.au` is APN's own LVS VIP, not a third party; port-80 source-IP allowlist failure mode; reject-vs-drop diagnostics (v0.1.32 -> v0.1.33)
+
+**Trigger:** a live diagnostic session investigating why `galiwinku-smc01` (`nbn_accelerate`) could not reach `wifi-02.activ8me.net.au` on port 80 produced eight findings — one of them an architecture
+correction that changes escalation routing. Applying the skill's standing write-back contract (`SKILL.md`), extending the references that already cover this territory rather than duplicating them.
+
+**Corrected (the important one):**
+1. `references/03_communication-flows.md` — new `### wifi-02.activ8me.net.au / 202.171.100.138 is APN's OWN keepalived/LVS VIP` subsection. **Despite the `activ8me` domain, this endpoint is APN
+   infrastructure, not an external vendor service** — keepalived `vrrp_instance VI_138`, director pair `202.171.100.132`/`.133` on `bond1.1005`, load-balancing to real servers `lweb03.apn.net.au`
+   (`172.16.254.73`) and `lweb04.apn.net.au` (`172.16.254.74`). The pack previously did not document this host **at all**; the only nearby entry was `wifi.activ8me.net.au:443` (the remote Eclipse
+   portal-config server in `10_captive-portal.md`), which the new section explicitly distinguishes so the two are not conflated. Also records that the name is a **static `/etc/hosts` entry** on every
+   `nbn_accelerate` SMC, so DNS is never a variable in failures involving it. **This changes escalation routing: failures here are APN-internal, not a vendor ticket.**
+
+**Added:**
+1. `references/06_failure-modes.md` — new "Port-80 Source-IP Allowlist on the APN VIP" entry. The port-80 virtual service enforces a source-IP ACL: `119.12.209.0/24` (the fleet's NAT pool) permitted,
+   everything else rejected at the director with ICMP type 3 code 13 (admin prohibited); port 443 is unrestricted. Documents the memorable symptom signature (**port 80 fails "No route to host" in ~1
+   RTT while ping succeeds and 443 works** = an ICMP admin-prohibited reject, not a routing failure) and the distinction that matters most in practice: `curl` **exit 56** / "Connection reset by peer"
+   means TCP fully ESTABLISHED then app-reset — the *normal* behaviour of this endpoint — whereas `curl` **exit 7** / "No route to host" means it never established. Root cause at galiwinku: carrier
+   NAT placed the site in `119.12.211.0/24` instead of the pool, with **no config change on either side and no alerting**. Confirmed with two independent out-of-range sources (`119.12.211.80`,
+   `3.104.50.51`). Fix path: add the range to the allowlist, or preferably restore the site to the pool. Investigation limit recorded: `202.171.100.132:22` is filtered from `cw-teleport01`, so the
+   rule text itself could not be read in-session.
+2. `references/03_communication-flows.md` — new `### Per-Site Public Egress IP` subsection. All of a multi-WAN SMC's circuits can share **one** public IP (galiwinku: all 7 circuits → `119.12.211.80`,
+   converging at carrier hop `10.191.0.13`), which invalidates most per-circuit theories about remote-end behaviour. Records the check (`curl -sS https://api.ipify.org` — HTTPS deliberately, since
+   port 80 may be the thing under investigation), the known 2026-09-08 values (galiwinku `119.12.211.80` out-of-pool, amata `119.12.209.20`, kowanyama `119.12.209.111`), and a recommendation for a
+   fleet-wide audit that would catch this class of silent breakage.
+3. `references/03_communication-flows.md` §Backdoor SSH Access — `cw-teleport01` documented as an **APN-side diagnostic vantage point**, not only an SSH stepping stone: internal APN reachability to
+   `172.16.254.73`/`.74` at ~10.5–10.8 ms and `202.171.100.132` at ~11.8 ms, useful for testing LVS backends and VIPs directly. Added as a capability note on the existing subsection rather than a new
+   one, since the backdoor-SSH mechanics were already covered by the v0.1.31 write-back. Includes the SSH-filtered caveat.
+4. `references/05_troubleshooting.md` — new `### Cross-Tier: Reject vs Drop, Where a Rejection Was Generated, and On-Box Tooling Gotchas` section. The generalizable method: **compare the returned ICMP
+   error's TTL against known-good replies from the same host** — matching TTLs prove a far-end origin, a much higher TTL means a nearby middlebox forged it (worked example: admin-prohibited at `ttl
+   49` identical to genuine ping replies, ~13–14 hops away; the quoted SYN at `ttl 51`, sent at 64). Plus reject-vs-drop by latency (~1 RTT vs multi-second timeout), and six on-box tooling gotchas: no
+   `traceroute` (use `mtr`/`nping`/`nmap`/`tracepath`/`busybox`); `mtr --interface` binds in `-T` but **not** in ICMP mode (silently egressed via `eno1` when `vlan534` was requested — always check hop
+   1); `mtr` "0.0% loss" counts an ICMP *rejection* as a response; `tcpdump` buffers so mid-run reads show nothing; a `host <ip>` filter misses returning ICMP errors (use `'host <ip> or icmp'` with
+   `-vv`); and `curl ... 2>&1 | tail -1` masks the exit code that distinguishes 7 from 56.
+5. `references/13_known-issues.md` — new dated section recording an **upstream keepalived config bug not owned by `ansible-wifi`**: the virtual_server uses `lb_algo rr`, which does not honour
+   `real_server` weights (only `wrr` does), so the `weight 65535` on lweb04 against lweb03's default `1` reads as a drain intent that is silently ignored — lweb03 still takes ~50% of new connections.
+   Explicitly recorded as **not** the cause of the 2026-09-08 incident (both backends verified healthy, HTTP 200 plain and with `Host: corellia`), so the entry is not misread as a resolved root cause.
+   Also notes `persistence_timeout 86400` pins each client source IP to one real server for 24 hours.
+6. `references/03_communication-flows.md` §WAN Uplink Addressing — two bullets extending the existing source-policy-routing coverage rather than duplicating it. (a) **A stale `ip rule` does not always
+   mean a stale render**: rules persist when a DHCP lease drops too (observed at galiwinku for `vlan525`/`vlan523` after both lost their addresses), so check whether the rule's source IP is still
+   assigned to distinguish lease residue from render residue — the pre-existing "topology file can shrink" bullet only covered the render case. (b) **Squid's transparent redirect is scoped to LAN
+   clients**: `-A PREROUTING -i bridge_501 -p tcp --dport 80 -j SQUID_REDIRECT` never sees traffic the SMC originates itself, a common false lead when diagnosing port-80 failures from a root shell.
+7. `RUNBOOK.md` — three new routing rows: the APN VIP / public-egress-IP entry, the port-80 allowlist symptom, and the "is it them or us?" diagnostic section.
+
+**Already covered, extended rather than duplicated:** per-WAN-source `ip rule` → dedicated routing table was already documented in `03_communication-flows.md` (the `dhclient-enter-hooks` branch table)
+and `02_service-map.md`; only the lease-residue nuance and the Squid scoping were new. `cw-teleport01` already had a backdoor-SSH section from the v0.1.31 write-back; only its diagnostic-vantage
+capability was added.
+
+**Manifest/version:** `manifest.json` version bumped `0.1.32` -> `0.1.33`, `updated_at` set to `2026-09-08T15:15:00Z`, and a new `stable_facts` entry added recording the VIP ownership correction, the
+static `/etc/hosts` resolution, and the port-80 allowlist as durable architectural facts.
+
+## 20260908_1430 — galiwinku-smc01 multi-WAN session write-back: ECMP hash-pinning root cause, VRF-disable landed, topology/monitoring gaps (v0.1.31 -> v0.1.32)
+
+**Trigger:** a live diagnostic session against `galiwinku-smc01` (`nbn_accelerate`) investigating a WAN circuit outage surfaced eight findings spanning topology, a self-heal script hazard, two
+already-tracked-but-now-superseded VRF/multi-WAN facts, a fleet-wide ECMP routing root cause, a monitoring blind spot, and an access-automation pattern. Applying the skill's standing write-back
+contract (`SKILL.md`) across the reference set that already covers this territory, correcting rather than duplicating where content already existed.
+
+**Added:**
+1. `references/01_overview.md` — new "WAN Uplink Topology Pattern" subsection: direct-to-NTD physical ports and switch-trunked multi-circuit access-VLAN ports can coexist on one multi-WAN box
+   (confirmed at galiwinku: `eno1`/`enp3s0` direct-to-NTD, `enp2s0`/`enp1s0` trunking 4 access-VLANs each to two separate switches), and why that split matters for triage. Cross-referenced against the
+   pre-existing switch01/switch02 active-standby bonding design in `08_ansible-authoring.md` to distinguish the two patterns explicitly.
+2. `references/06_failure-modes.md` — new "interfacecheckv2.sh's Unconditional dhclient Restart Can Worsen a Marginal Link" entry, directly following the pre-existing aurukun-smc03 self-heal-cron
+   entry it qualifies: that entry concluded the cron was blameless against an already-dead circuit; this one documents the opposite case (galiwinku `vlan523`, 2026-09-08) where the same restart-with-
+   no-backoff behavior turned a recoverable, briefly-degraded link into a full DHCP lease loss.
+3. `references/06_failure-modes.md` — new "ECMP Multipath Hashing Pins Fixed-Destination Traffic to a Single (Possibly Dead) Nexthop" entry — the most generalizable finding of the session.
+   `net.ipv4.fib_multipath_hash_policy` defaults to `0` (L3-only) fleet-wide (nothing in Ansible sets it), so any fixed-destination flow (DNS to `8.8.8.8`, a monitoring target, the Teleport bastion IP
+   itself) is permanently pinned to one ECMP nexthop regardless of its health. Documents the recognizable symptom signature ("FQDN ping fails inconsistently, IP ping doesn't, `/etc/hosts` 'fixes'
+   it"), the live-testable no-reboot fix (`fib_multipath_hash_policy=1`, verified via `ip route get ... sport <N>`), and the important caveat that the fix does not give seamless mid-connection
+   failover — backed by real `autossh-teleport-openssh` log evidence of a failed reconnect attempt hashing onto a dead nexthop. Applied on galiwinku only
+   (`/etc/sysctl.d/60-smc-multiwan-fib-hash.conf`, on-box, uncommitted to ansible-wifi); fleet-wide rollout proposed but deliberately deferred pending observation.
+4. `references/05_troubleshooting.md` Tier 1 — cross-reference from the autossh tunnel check to the new ECMP hash-pinning entry, since a reconnect failure there can look like a broken tunnel when it's
+   actually a hash-pinned dead nexthop.
+5. `references/13_known-issues.md` "Fleet-Wide Architecture Risks" — new row documenting the missing per-device `role="internet"` Prometheus alert: `NodeStarlinkInterfacecheckPacketLoss` only covers
+   aggregated `role="starlink"`, and `HostInterfacecheckTextfileCollectorNotUpdated` only detects the collector script itself going stale, not an individual internet-role device failing while the
+   script keeps running. This is why the galiwinku outage needed manual SSH diagnosis. Cross-referenced from `SKILL.md`'s and `06_failure-modes.md`'s own "Key Prometheus Alerts" tables so neither
+   reads as complete coverage on its own.
+6. `references/03_communication-flows.md` §Backdoor SSH Access — added the specific credential-delivery mechanism for agentic/automated sessions: `kp clip -a Password "<entry>"` (silent, no stdout)
+   plus an AppleScript `write text (the clipboard)` targeted at a specific iTerm session GUID, so the plaintext never appears in any tool-call argument or output. The `kp clip`-to-vault workflow
+   itself was already documented; only this specific automation-safe delivery detail was missing.
+
+**Corrected:**
+1. `references/03_communication-flows.md` — the "Nothing in ansible-wifi builds the ECMP multipath default" bullet previously theorized (explicitly flagged "inferred, not verified") that the Kohana
+   wifi app builds the multipath route via `kohana status:gateway`. Corrected: that call only registers a lease with the portal app: it does not construct or manage any route. The real mechanism,
+   confirmed live at galiwinku 2026-09-08, is emergent kernel behavior — independent per-interface `dhclient` instances each install a same-metric default route, and the kernel merges same-
+   destination/same-metric routes from different devices into one ECMP group with **no health-based nexthop eviction of any kind**. This is the mechanism the new ECMP hash-pinning failure-mode entry
+   (above) depends on, and now correctly attributes it.
+2. `references/03_communication-flows.md` and `references/08_ansible-authoring.md` — the VRF-allocation-in-`netplan.yml.j2` "still live and rendered into every deploy today" claim (2026-07-31) and the
+   "commented out at source... uncommitted" note (2026-08-25) are both now stale in the same way: the interim disable landed as commit `f2fb439f` ("Onboard yakanarra, disable VRF emission...",
+   2026-08-27), confirmed present on `internet-label-rename`/`squid-redesign` and confirmed **absent from `master`** as of 2026-09-08 (`git merge-base --is-ancestor` check). Both files updated to
+   state the branch-scoped, commit-pinned current reality rather than a since-superseded snapshot. `multiwan-setup.sh.j2`'s deploying task block remains commented out on the same commit — neither
+   mechanism is live anywhere in the fleet; this reconfirms, rather than changes, the pack's prior "not deployed" conclusion for both.
+
+**Not applicable, no action taken:** the session also confirmed `multiwan-setup.sh` itself (the fwmark/nft/tc-shaping allocator) remains fully undeployed with no doc drift to correct beyond the VRF
+branch/commit update above — the pack already documented it correctly as dead code.
+
+**Manifest/version:** `manifest.json` version bumped `0.1.31` -> `0.1.32`, `updated_at` set to `2026-09-08T14:30:00Z`, and a new `stable_facts` entry added summarizing the
+ECMP/`fib_multipath_hash_policy` finding as a fleet-wide architectural fact (see the file for full text).
+
 ## 20260908_1330 — Backdoor SSH access documented: raw reverse-tunnel path around a hung Teleport node agent, confirmed live against nbn_accelerate (v0.1.30 -> v0.1.31)
 
 **Trigger:** operator used a previously-undocumented "backdoor" SSH path to reach `galiwinku-smc01` (`nbn_accelerate`) after being blocked on the normal `tsh ssh` route, and asked for the mechanism to
@@ -7078,6 +7665,15 @@ and `cw/`, confirming central-infra-only, no site hosts) rather than trusting th
 
 **Not independently re-tested:** the `apn`-side claim (`rcp`/`wh`/`rct`) is operator-stated, not re-validated against a live `apn` host in this session — recorded as such in the new subsection rather
 than asserted as independently confirmed.
+
+**Follow-up coherence sweep (same session, pushing the fix outward):** the staleness pass above only found direct restatements of the old wording. A coherence sweep found two places that assumed the
+old flavor-based model without containing the literal stale string: (1) `references/05_troubleshooting.md` Tier 1 ("Box Unreachable") didn't mention that a box absent from the `tsh ls` roster is still
+reachable via the backdoor tunnel — added a cross-reference so operators get a working root shell instead of being stuck external-only. (2) `references/13_known-issues.md`'s "Flavor → Teleport cluster
+domain mapping" row title and content asserted the split was by flavor — retitled to "Project → Teleport cluster domain mapping" with a corrective note, and added a pointer to the new backdoor
+section. Reviewed and left alone: `13_known-issues.md`'s brief "per flavor's Teleport cluster" parenthetical elsewhere (line ~29) — imprecise but not false, since each flavor does map to exactly one
+cluster; not worth the churn. `AI_NAVIGATION.md`/`context-map.yaml` already route generically to `03_communication-flows.md` for "external comms paths" and needed no new dedicated row. `.archcore/`
+rules and `scripts/*` were checked and don't encode this assumption (the one script referencing a Teleport domain, `fleet-health.justfile`, hardcodes the literal domain rather than assuming a
+flavor-keyed split). Regenerated `.ai-context/governance-pack.md` again after these two edits.
 
 ## 20260908_1200 — Pack-structure self-audit: RUNBOOK version drift, install.md staleness, reference-update-discipline gap, vestigial evidence/, and archcore status promotion (v0.1.29 -> v0.1.30)
 
@@ -8001,138 +8597,205 @@ Initial creation.
 ## File: context-map.yaml
 ````yaml
 version: 1
-
 project:
   name: skill-smc
   type: specialist-pack
-  context_policy: "AI_NAVIGATION.md is the human-readable router; this file is the machine-readable routing map."
-
+  context_policy: AI_NAVIGATION.md is the human-readable router; this file is the
+    machine-readable routing map.
 bootstrap:
   required_first_read:
-    - AGENTS.md
-    - SKILL.md
-    - RUNBOOK.md
-    - AI_NAVIGATION.md
-    - CHANGELOG.md
-
+  - AGENTS.md
+  - SKILL.md
+  - RUNBOOK.md
+  - AI_NAVIGATION.md
+  - CHANGELOG.md
 authority_order:
-  - path: "manifest.json"
-    type: specialist_metadata
-    authority: highest
-  - path: "AGENTS.md"
-    type: agent_instructions
-    authority: high
-  - path: "CLAUDE.md"
-    type: claude_specific_instructions
-    authority: high
-  - path: "AI_NAVIGATION.md"
-    type: context_router
-    authority: high
-  - path: "SKILL.md"
-    type: agent_activation_surface
-    authority: high
-  - path: "RUNBOOK.md"
-    type: navigation_index
-    authority: high
-  - path: "references"
-    type: content_source
-    authority: high
-  - path: "PROFILE.md"
-    type: background_context
-    authority: medium
-  - path: "exports"
-    type: client_adapter
-    authority: medium
-  - path: "CHANGELOG.md"
-    type: project_history
-    authority: medium_high
-  - path: "SCRATCHPAD.md"
-    type: transient_notes
-    authority: low
-
+- path: manifest.json
+  type: specialist_metadata
+  authority: highest
+- path: AGENTS.md
+  type: agent_instructions
+  authority: high
+- path: CLAUDE.md
+  type: claude_specific_instructions
+  authority: high
+- path: AI_NAVIGATION.md
+  type: context_router
+  authority: high
+- path: SKILL.md
+  type: agent_activation_surface
+  authority: high
+- path: RUNBOOK.md
+  type: navigation_index
+  authority: high
+- path: references
+  type: content_source
+  authority: high
+- path: PROFILE.md
+  type: background_context
+  authority: medium
+- path: exports
+  type: client_adapter
+  authority: medium
+- path: CHANGELOG.md
+  type: project_history
+  authority: medium_high
+- path: SCRATCHPAD.md
+  type: transient_notes
+  authority: low
 routing:
   live_incident_triage:
-    description: "Box unreachable, service down, alert firing, DHCP/DNS/WiFi/VoIP/HA failure."
+    description: Box unreachable, service down, alert firing, DHCP/DNS/WiFi/VoIP/HA
+      failure.
     read:
-      - "SKILL.md"
-      - "references/05_troubleshooting.md"
-      - "references/06_failure-modes.md"
-
+    - SKILL.md
+    - references/05_troubleshooting.md
+    - references/06_failure-modes.md
   service_architecture:
-    description: "Service names, unit names, config paths, monitoring collectors."
+    description: Service names, unit names, config paths, monitoring collectors.
     read:
-      - "references/02_service-map.md"
-      - "references/03_communication-flows.md"
-      - "references/04_dependency-tree.md"
-
+    - references/02_service-map.md
+    - references/03_communication-flows.md
+    - references/04_dependency-tree.md
   hardware_and_overlay:
-    description: "x86 vs Raspberry Pi differences, overlayroot, persistence risk."
+    description: x86 vs Raspberry Pi differences, overlayroot, persistence risk.
     read:
-      - "references/07_hardware-overlay.md"
-      - "references/01_overview.md"
-
+    - references/07_hardware-overlay.md
+    - references/01_overview.md
   ansible_authoring:
-    description: "Topology vars, cache coherence, cross-flavor blast radius, validation, generator drift, flavor/cluster conditional branching, smc_ltp sub-group (CNMaestro backhaul + DNS switch), 'low touch' onboarding method and site history."
+    description: Topology vars, cache coherence, cross-flavor blast radius, validation,
+      generator drift, flavor/cluster conditional branching, smc_ltp sub-group (CNMaestro
+      backhaul + DNS switch), 'low touch' onboarding method and site history.
     read:
-      - "references/08_ansible-authoring.md"
-      - "SKILL.md"
-
+    - references/08_ansible-authoring.md
+    - SKILL.md
   url_capture_pcap:
-    description: "URL capture v2, PCAP layout, smc_get_pcapv* workflows, dns_query assumptions."
+    description: URL capture v2, PCAP layout, smc_get_pcapv* workflows, dns_query
+      assumptions.
     read:
-      - "references/09_url-capture-pcap.md"
-
+    - references/09_url-capture-pcap.md
   captive_portal:
-    description: "Captive portal architecture, Eclipse config sync, PHP-FPM setup, Kohana issues."
+    description: Captive portal architecture, Eclipse config sync, PHP-FPM setup,
+      Kohana issues.
     read:
-      - "references/10_captive-portal.md"
-
+    - references/10_captive-portal.md
   vagrant_lab:
-    description: "Local family-friendly-vsmc01 Vagrant lab setup and known virtualization issues."
+    description: Local family-friendly-vsmc01 Vagrant lab setup and known virtualization
+      issues.
     read:
-      - "references/11_vagrant-lab.md"
-
+    - references/11_vagrant-lab.md
   content_filtering:
-    description: "VLAN 501 family-friendly filtering, Eclipse PIN/MAC, MAC randomization, CAKE queuing."
+    description: VLAN 501 family-friendly filtering, Eclipse PIN/MAC, MAC randomization,
+      CAKE queuing.
     read:
-      - "references/12_content-filtering.md"
-
+    - references/12_content-filtering.md
   coverage_and_gaps:
-    description: "Known coverage gaps, unvalidated assumptions, live-validation limits."
+    description: Known coverage gaps, unvalidated assumptions, live-validation limits.
     read:
-      - "references/13_known-issues.md"
-
+    - references/13_known-issues.md
   smcbox_basics:
-    description: "SMC box definition, inventory flavors, Teleport access pattern, satellite constraints, APN vs NBN Accelerate cluster structural comparison."
+    description: SMC box definition, inventory flavors, Teleport access pattern, satellite
+      constraints, APN vs NBN Accelerate cluster structural comparison.
     read:
-      - "references/01_overview.md"
-      - "PROFILE.md"
-
+    - references/01_overview.md
+    - PROFILE.md
   pack_maintenance:
-    description: "Adding/updating references, bumping version, updating export adapters."
+    description: Adding/updating references, bumping version, updating export adapters.
     read:
-      - "AGENTS.md"
-      - "AI_NAVIGATION.md"
-      - "context-map.yaml"
-      - "CHANGELOG.md"
-      - "manifest.json"
-      - "exports/claude_code/project/skill-smc/adapter.md"
-      - "exports/claude_code/project/skill-smc/install.md"
-
+    - AGENTS.md
+    - AI_NAVIGATION.md
+    - context-map.yaml
+    - CHANGELOG.md
+    - manifest.json
+    - exports/claude_code/project/skill-smc/adapter.md
+    - exports/claude_code/project/skill-smc/install.md
 generated_context_policy:
   regenerate_after:
-    - new_reference_file
-    - structural_change
-    - scope_boundary_change
+  - new_reference_file
+  - structural_change
+  - scope_boundary_change
   commands:
-    repomix_governance: "repomix --config repomix.config.json"
-    graphify: "graphify update ."
-
+    repomix_governance: repomix --config repomix.config.json
+    graphify: graphify update .
 answer_contract:
   require_source_paths: true
-  unsupported_answer: "not found in skill-smc reference material"
+  unsupported_answer: not found in skill-smc reference material
   distinguish_assumptions: true
   do_not_invent_state: true
+skill_ai_it_version: 2026-08-11-governance-checks-layer-v1
+audit_checks:
+  governance_file_presence:
+  - README.md
+  - AGENTS.md
+  - CLAUDE.md
+  - AI_NAVIGATION.md
+  - context-map.yaml
+  - CHANGELOG.md
+  version_consistency:
+    description: Verify managed block version strings match current skill version.
+    action: report_mismatch
+  companion_update_completeness:
+    description: Verify companion files in update_rules were updated together.
+    action: report_missing
+  generated_output_policy:
+    description: Verify Graphify and Repomix outputs are classified as generated support.
+    action: report_violation
+  task_runner_consistency:
+    description: Verify cataloged tasks match actual script files.
+    action: report_drift
+  no_stale_references:
+    description: Detect references to removed tools or superseded governance assumptions.
+    action: report_stale
+promotion_rules:
+  archcore:
+    allowed_init_modes:
+    - bootstrap
+    - navigation-add
+    - refresh
+    content_write_modes:
+    - promote
+    required_authorization: true
+    candidates_report: ARCHCORE_PROMOTION_CANDIDATES.md
+    extract_heuristics_source: patterns/archcore-routing.md
+    exclusion:
+    - CHANGELOG.md (history only)
+    - generated files (.ai-context/, graphify-out/)
+    - unmarked SCRATCHPAD sections
+    - draft/obsolete roadmap items
+context_recovery:
+  procedure:
+  - Read AI_NAVIGATION.md first for navigation map.
+  - Load .archcore/ context if present (durable truth).
+  - 'Regenerate graphify-out/ with: graphify update .'
+  - 'Regenerate .ai-context/ with: repomix --config repomix.config.json'
+  - Verify SCRATCHPAD.md has current state. If empty, populate from memory-keeper
+    / mcp-project-context.
+  - Verify CHANGELOG.md is current.
+  - Verify AI_NAVIGATION.md and context-map.yaml companion consistency.
+  evidence_label: Context recovered at <timestamp> via skill-ai-it context-recovery
+    procedure.
+update_rules:
+  governance_navigation:
+    AGENTS.md:
+      companions:
+      - AI_NAVIGATION.md
+      - context-map.yaml
+      - scripts/README.md
+    AI_NAVIGATION.md:
+      companions:
+      - context-map.yaml
+    context-map.yaml:
+      companions:
+      - AI_NAVIGATION.md
+    scripts/README.md:
+      companions:
+      - AGENTS.md
+      - context-map.yaml
+    new_script_added:
+      companions:
+      - scripts/README.md
+      - AGENTS.md
+      - justfile
 ````
 
 ## File: manifest.json
@@ -8167,8 +8830,8 @@ answer_contract:
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "2026-09-08T00:00:00Z",
-  "version": "0.1.31",
+  "updated_at": "2026-09-08T19:55:00Z",
+  "version": "0.1.34",
   "dependencies": [],
   "known_constraints": [
     "SMC boxes run overlayroot — changes do not persist across reboot unless lower dir is remounted rw",
@@ -8258,6 +8921,29 @@ answer_contract:
       "tags": [
         "ansible",
         "authoring"
+      ]
+    },
+    {
+      "statement": "The fleet's multi-WAN default route is not an actively managed policy engine anywhere in ansible-wifi -- it is emergent kernel ECMP behavior. Every role:internet/role:starlink interface runs its own independent dhclient@<iface>.service, each installing its own same-metric default route; the kernel merges same-destination/same-metric routes from different devices into one multipath group with NO health-based nexthop eviction -- a nexthop whose gateway has gone ARP-FAILED stays in the group until its DHCP lease itself is lost, which can take hours. Because net.ipv4.fib_multipath_hash_policy defaults to 0 (L3-only, source+dest IP only) fleet-wide and nothing in Ansible sets it otherwise, every flow to a fixed destination IP (DNS to 8.8.8.8, a monitoring target, the Teleport bastion IP itself) is permanently pinned to exactly one nexthop regardless of health. Recognizable symptom: an FQDN ping fails inconsistently while the same target's raw IP succeeds, and/or hardcoding it into /etc/hosts 'fixes' it -- because DNS resolution does not respect ping -I's device binding and transits whichever link the destination currently hashes to. Fix is net.ipv4.fib_multipath_hash_policy=1 (L4 hashing), live-testable with no reboot via `ip route get <ip> sport <N> ...`, but it does NOT give seamless mid-connection failover -- only new connection attempts get a fresh hash roll. Confirmed live at galiwinku-smc01 (nbn_accelerate) 2026-09-08, including real autossh-teleport-openssh log evidence of a reconnect attempt failing onto a dead nexthop under the pre-fix policy. Applied on galiwinku only (on-box sysctl, not committed to ansible-wifi); fleet-wide rollout proposed but deliberately deferred. Corrects a prior 'inferred, not verified' theory in 03_communication-flows.md that the Kohana wifi app built the multipath route -- it does not; the mechanism is purely kernel-level and unrelated to the portal app. See references/06_failure-modes.md and references/03_communication-flows.md.",
+      "confidence": 0.95,
+      "tags": [
+        "ecmp",
+        "multi-wan",
+        "networking",
+        "root-cause",
+        "nbn-accelerate"
+      ]
+    },
+    {
+      "statement": "wifi-02.activ8me.net.au / 202.171.100.138 is APN's OWN keepalived/LVS VIP (vrrp_instance VI_138, directors 202.171.100.132/.133 on bond1.1005, real servers lweb03 172.16.254.73 and lweb04 172.16.254.74), NOT a third-party activ8me service -- failures involving it are an APN-internal escalation, not a vendor ticket. It is resolved by a static /etc/hosts entry on every nbn_accelerate SMC, so DNS is never a variable. Its port-80 virtual service enforces a source-IP allowlist (119.12.209.0/24 permitted; anything outside rejected at the director with ICMP type 3 code 13), while port 443 is unrestricted -- so a site whose carrier NAT drifts out of the pool loses port 80 silently, with no config change and no alerting. See references/03_communication-flows.md and references/06_failure-modes.md.",
+      "confidence": 0.95,
+      "tags": [
+        "apn-infrastructure",
+        "keepalived",
+        "lvs",
+        "nbn_accelerate",
+        "allowlist",
+        "escalation-routing"
       ]
     }
   ],
@@ -8432,33 +9118,40 @@ practical.
 
 ## Reference Routing
 
-| Task                                                                                                                                              | Read                                             |
-| ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| Basic SMC definition, inventory flavors, remote access, satellite constraints, APN vs NBN Accelerate cluster differences                          | `references/01_overview.md`                      |
-| Service names, config paths, monitoring collectors, RCT vs x86 service map                                                                        | `references/02_service-map.md`                   |
-| External communication paths and inbound/outbound flows; **how to reach/query a backend's API or dashboard** (Grafana, Graylog, Teleport Application | `references/03_communication-flows.md` §Backdoor |
-|   Access, mTLS/token auth); **backdoor root SSH to a box when `tsh ssh` itself is hung/unreachable** (raw reverse tunnel, port = 50000 + siteid)  |   SSH Access                                     |
-| Dependency relationships between network, DNS, portal, monitoring, and access systems                                                             | `references/04_dependency-tree.md`               |
-| Live incident triage, alerts, service failures, DHCP/DNS/WiFi/VoIP/HA issues                                                                      | `references/05_troubleshooting.md`               |
-| Known failure signatures and fix patterns                                                                                                         | `references/06_failure-modes.md`                 |
-| Box unreachable by both `tsh` and reverse tunnel, fixed by power cycle — read before blaming the SD card/disk. Cross-flavor: `wh`                 | `references/06_failure-modes.md` §Silent         |
-|   (windjana-gorge, kupungarri) and `rcp` (pandanus-park)                                                                                          |   Total Hang                                     |
-| When did this site actually die? 3-year Prometheus retention; why Graylog silence is not proof a box was down; how to actually query Graylog for  | `references/06_failure-modes.md` §Silent         |
-|   it (Teleport App Access, not a bare `curl`) is in `references/03_communication-flows.md`                                                        |   Total Hang                                     |
-| Why `rct` self-recovers and `wh`/`rcp` do not — tstik vs `watchdog.auto_reboot: 0` vs no RISE at all, no hardware watchdog anywhere in repo       | `references/06_failure-modes.md` §Silent         |
-|                                                                                                                                                   |   Total Hang                                     |
-| Hardware differences, overlayroot, disk write behavior, persistence risk                                                                          | `references/07_hardware-overlay.md`              |
-| Overlayroot copy_up cost model, `recurse=0` escape hatch, log capping (`smc_rise_logcaps`)                                                        | `references/07_hardware-overlay.md` §8           |
-| Box reboot-looping every few minutes (overlay RAM exhaustion)                                                                                     | `references/05_troubleshooting.md` Tier 8b       |
-| Ansible topology vars, cache coherence, validation commands, generator drift, smc_ltp sub-group, "low touch" onboarding history                   | `references/08_ansible-authoring.md`             |
-| Code notes: RULE-006 comment/note split, note provenance (context, branch, commit), what survives a branch switch, `check_note_anchors.py`        | `references/08_ansible-authoring.md` §Code notes |
-| URL capture v2, PCAP layout, fetch/process workflows, dns_query assumptions                                                                       | `references/09_url-capture-pcap.md`              |
-| Captive portal, Eclipse config sync, Kohana issues, portal PHP (mod_php, not PHP-FPM)                                                             | `references/10_captive-portal.md`                |
-| Local Vagrant lab bring-up and known virtualization issues                                                                                        | `references/11_vagrant-lab.md`                   |
-| Family-friendly VLAN 501 access, filtering stack, MAC randomization, CAKE                                                                         | `references/12_content-filtering.md`             |
-| Coverage gaps, live-validation limits, stale assumptions                                                                                          | `references/13_known-issues.md`                  |
-| Reusable read-only scripts: WAN-routing/topology-drift investigation tooling (evidence capture, drift analyser, topology/hardware cross-check),   | `scripts/README.md`                              |
-|   plus ansible-lint pre-push/CI gate scripts                                                                                                      |                                                  |
+| Task                                                                                                                                                | Read                                           |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Basic SMC definition, inventory flavors, remote access, satellite constraints, APN vs NBN Accelerate cluster differences                            | `references/01_overview.md`                    |
+| Service names, config paths, monitoring collectors, RCT vs x86 service map                                                                          | `references/02_service-map.md`                 |
+| External communication paths and inbound/outbound flows; **how to reach/query a backend's API or dashboard** (Grafana, Graylog, Teleport Application | `references/03_communication-flows.md`         |
+|   Access, mTLS/token auth); **backdoor root SSH to a box when `tsh ssh` itself is hung/unreachable** (raw reverse tunnel, port = 50000 + siteid)    |   §Backdoor SSH Access                         |
+| `wifi-02.activ8me.net.au` / `202.171.100.138` — APN's OWN keepalived/LVS VIP, not a third party; static `/etc/hosts` entry; per-site public egress  | `references/03_communication-flows.md`         |
+|   IP check (`curl -sS https://api.ipify.org`) and known values; `cw-teleport01` as an APN-side diagnostic vantage point                             |                                                |
+| Port 80 to `202.171.100.138` fails ("No route to host", ~1 RTT) while ping and port 443 work — source-IP allowlist reject, not a routing failure    | `references/06_failure-modes.md` §Port-80      |
+|                                                                                                                                                     |   Source-IP Allowlist                          |
+| "Is it them or us?" — locating where an ICMP rejection was generated via TTL comparison, reject-vs-drop latency, and on-box tooling gotchas (no     | `references/05_troubleshooting.md` §Cross-Tier |
+|   `traceroute`; `mtr -I` ignores `--interface`; tcpdump buffering and ICMP filters; curl exit 7 vs 56)                                              |                                                |
+| Dependency relationships between network, DNS, portal, monitoring, and access systems                                                               | `references/04_dependency-tree.md`             |
+| Live incident triage, alerts, service failures, DHCP/DNS/WiFi/VoIP/HA issues                                                                        | `references/05_troubleshooting.md`             |
+| Known failure signatures and fix patterns                                                                                                           | `references/06_failure-modes.md`               |
+| Box unreachable by both `tsh` and reverse tunnel, fixed by power cycle — read before blaming the SD card/disk. Cross-flavor: `wh` (windjana-gorge,  | `references/06_failure-modes.md` §Silent       |
+|   kupungarri) and `rcp` (pandanus-park)                                                                                                             |   Total Hang                                   |
+| When did this site actually die? 3-year Prometheus retention; why Graylog silence is not proof a box was down; how to actually query Graylog for it | `references/06_failure-modes.md` §Silent       |
+|   (Teleport App Access, not a bare `curl`) is in `references/03_communication-flows.md`                                                             |   Total Hang                                   |
+| Why `rct` self-recovers and `wh`/`rcp` do not — tstik vs `watchdog.auto_reboot: 0` vs no RISE at all, no hardware watchdog anywhere in repo         | `references/06_failure-modes.md` §Silent       |
+|                                                                                                                                                     |   Total Hang                                   |
+| Hardware differences, overlayroot, disk write behavior, persistence risk                                                                            | `references/07_hardware-overlay.md`            |
+| Overlayroot copy_up cost model, `recurse=0` escape hatch, log capping (`smc_rise_logcaps`)                                                          | `references/07_hardware-overlay.md` §8         |
+| Box reboot-looping every few minutes (overlay RAM exhaustion)                                                                                       | `references/05_troubleshooting.md` Tier 8b     |
+| Ansible topology vars, cache coherence, validation commands, generator drift, smc_ltp sub-group, "low touch" onboarding history                     | `references/08_ansible-authoring.md`           |
+| Code notes: RULE-006 comment/note split, note provenance (context, branch, commit), what survives a branch switch, `check_note_anchors.py`          | `references/08_ansible-authoring.md`           |
+|                                                                                                                                                     |   §Code notes                                  |
+| URL capture v2, PCAP layout, fetch/process workflows, dns_query assumptions                                                                         | `references/09_url-capture-pcap.md`            |
+| Captive portal, Eclipse config sync, Kohana issues, portal PHP (mod_php, not PHP-FPM)                                                               | `references/10_captive-portal.md`              |
+| Local Vagrant lab bring-up and known virtualization issues                                                                                          | `references/11_vagrant-lab.md`                 |
+| Family-friendly VLAN 501 access, filtering stack, MAC randomization, CAKE                                                                           | `references/12_content-filtering.md`           |
+| Coverage gaps, live-validation limits, stale assumptions                                                                                            | `references/13_known-issues.md`                |
+| Reusable read-only scripts: WAN-routing/topology-drift investigation tooling (evidence capture, drift analyser, topology/hardware cross-check),     | `scripts/README.md`                            |
+|   plus ansible-lint pre-push/CI gate scripts                                                                                                        |                                                |
 
 ## Runtime Paths
 
@@ -8495,7 +9188,11 @@ Cambium backhaul provisioning + a DNS-resolver-stack switch to bind9/RPZ, two un
 <!-- KEEP: updated 2026-08-03 — "low touch" onboarding method + site deployment history added (v0.1.10): guda-guda pilot 2025-04-15, then umoona/warburton/beagle-bay/pandanus-park/old-looma/new-looma
 in 2026; all 4 smc_ltp sites are also low-touch sites — flagged as an unresolved correlation, not concluded. "low_touch" has no live Ansible code path (one orphaned host_var, never read) --> <!--
 KEEP: updated 2026-08-03 — smc_ltp/low-touch correlation RESOLVED (v0.1.11): operator confirmed the link is real (every low-touch site should be an smc_ltp member) and directed + verified adding the 3
-missing sites (warburton/beagle-bay/umoona) to inventories/rcp/prod. smc_ltp is now 7 members, not 4. Uncommitted production Ansible inventory change — not yet run against any live SMC -->
+missing sites (warburton/beagle-bay/umoona) to inventories/rcp/prod. smc_ltp is now 7 members, not 4. Uncommitted production Ansible inventory change — not yet run against any live SMC --> <!-- KEEP:
+updated 2026-09-08 — skill-ai-it refresh (v0.1.34, CHANGELOG 20260908_1955): navigation-control upgrade applied; AGENTS.md's generic navigation block upgraded to current template; AI_NAVIGATION.md's
+project-specific routing table declared project-managed (`skill-ai-it:manual`) rather than overwritten, with its two missing sections (generated-context policy, compaction recovery) hand-added;
+`scripts/check_governance.py` adopted for the first time, tuned to rule-reference-update-discipline.md and rule-manifest-version-discipline.md after 35 initial false positives (remote-appliance
+scripts, sibling-repo paths, unrelated-software version numbers) were traced and resolved; validator now a clean PASS (26/26, 0 warnings) -->
 
 ## Contents
 
@@ -8511,11 +9208,13 @@ missing sites (warburton/beagle-bay/umoona) to inventories/rcp/prod. smc_ltp is 
 
 ## Current state
 
-**Phase:** Stable — v0.1.31. Backdoor SSH Access documented 2026-09-08 (CHANGELOG 20260908_1330): new section in `03_communication-flows.md`, plus a terminology fix (Teleport-cluster split is by
-project, not flavor) propagated to `01_overview.md`, `SKILL.md`, and `PROFILE.md`. Prior: pack-structure self-audit completed 2026-09-08 (CHANGELOG 20260908_1200): removed RUNBOOK.md's duplicate/stale
-version stamp, fixed install.md's frozen "Canonical version: 0.1.6" note, widened `rule-reference-update-discipline.md` from 4 to 6 required surfaces (added AI_NAVIGATION.md + context-map.yaml),
-removed the vestigial empty `evidence/` dir, and promoted all `.archcore/` docs from `proposed` to `accepted`. `.graylog-token` was checked and is already correctly gitignored — not a defect. Prior
-operational-content phase summary (ClamAV EOL root cause, Grafana CW/NBN exploration, new-looma-smc01 outage) unchanged, see CHANGELOG for full history.
+**Phase:** Stable — v0.1.34. skill-ai-it refresh completed 2026-09-08 (CHANGELOG 20260908_1955): `scripts/check_governance.py` adopted for the first time and now gates on this pack's own stated
+reference-routing and version-discipline rules; `AI_NAVIGATION.md` declared project-managed to protect its 13-file routing table from generic overwrite; `AGENTS.md` navigation block upgraded.
+`validate_navigation_control_layer.py` reports a clean PASS. Prior: Backdoor SSH Access documented 2026-09-08 (CHANGELOG 20260908_1330): new section in `03_communication-flows.md`, plus a terminology
+fix (Teleport-cluster split is by project, not flavor) propagated to `01_overview.md`, `SKILL.md`, and `PROFILE.md`. Prior: pack-structure self-audit completed 2026-09-08 (CHANGELOG 20260908_1200):
+removed RUNBOOK.md's duplicate/stale version stamp, fixed install.md's frozen "Canonical version: 0.1.6" note, widened `rule-reference-update-discipline.md` from 4 to 6 required surfaces (added
+AI_NAVIGATION.md + context-map.yaml), removed the vestigial empty `evidence/` dir, and promoted all `.archcore/` docs from `proposed` to `accepted`. `.graylog-token` was checked and is already
+correctly gitignored — not a defect. Prior operational-content phase summary (ClamAV EOL root cause, Grafana CW/NBN exploration, new-looma-smc01 outage) unchanged, see CHANGELOG for full history.
 
 skill-smc is the canonical specialist pack for SMC (Site Management Controller) box operations and ansible-wifi authoring. As of v0.1.3 the pack has 13 numbered focused reference files under
 `references/`. RUNBOOK.md is a navigation index only — all operational content lives in `references/0N_*.md`. Content for `references/10_captive-portal.md`, `references/11_vagrant-lab.md`,
@@ -9106,6 +9805,9 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
 | `NodeStarlinkInterfacecheckPacketLoss` | 100% loss 60min        | starlink interface down                 |
 | `sbdm_device_health_status == 0`       | Samsung SSD degraded   | SSD replacement needed                  |
 | `smartmon_device_smart_healthy == 0`   | SMART failure          | drive health critical                   |
+
+**This table is not complete coverage — known gap:** there is no per-device `role="internet"` equivalent of `NodeStarlinkInterfacecheckPacketLoss`. A single dead internet-role link can run undetected
+indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `references/13_known-issues.md` "No per-device `role: internet` Prometheus alert exists".
 
 ---
 

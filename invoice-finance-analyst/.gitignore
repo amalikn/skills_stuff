@@ -1,0 +1,7 @@
+db/
+output/
+.pytest_cache/
+pytest-of-*/
+__pycache__/
+*.pyc
+.remember/

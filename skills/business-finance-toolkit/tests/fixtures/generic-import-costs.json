@@ -1,0 +1,14 @@
+{
+  "components": {
+    "purchase": "10000.00",
+    "supplier_fee": "350.00",
+    "origin_transport": "420.00",
+    "freight": "1500.00",
+    "insurance": "125.00",
+    "brokerage": "220.00",
+    "domestic_transport": "480.00",
+    "preparation_reserve": "900.00",
+    "contingency": "600.00"
+  },
+  "note": "Fixture only. It is not a quote, a customs calculation, or evidence that any category applies."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "justfile",
+  "displayName": "Justfile",
+  "description": "Projects using just as a task runner (justfile or Justfile).",
+  "detect": {"anyFiles": ["justfile", "Justfile", ".justfile"], "anyDirectories": []},
+  "include": ["justfile", "Justfile", ".justfile", "README.md", "AGENTS.md", "ARCHITECTURE.md", "AI_NAVIGATION.md", "context-map.yaml", "CHANGELOG.md"],
+  "ignore": [".ai-context/**", "**/.env", "**/.env.*", "**/*.pem", "**/*.key", "**/*.db", "**/*.sqlite", "**/node_modules/**", "**/.venv/**", "**/dist/**", "**/build/**", "**/logs/**", "**/runtime/**", "**/cache/**"],
+  "priorityFiles": ["justfile", "Justfile", ".justfile"],
+  "securitySensitivePatterns": ["**/.env*", "**/*.pem", "**/*.key"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 60000,
+  "notes": ["Combine with a language-specific profile when the project also has source code."]
+}

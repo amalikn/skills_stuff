@@ -1,0 +1,11 @@
+toolkit:
+  calculator_version: "0.1.0"
+  currency: AUD
+  data_classification_default: confidential
+  external_llm_default: deny
+decision_gates:
+  require_human_approval: true
+  block_on_missing_critical_claim: true
+evidence:
+  require_retrieval_date: true
+  regulated_fact_requires_primary_source: true

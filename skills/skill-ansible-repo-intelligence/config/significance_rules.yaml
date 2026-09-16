@@ -1,0 +1,163 @@
+# Significance classification rules for Ansible task/resource nodes.
+#
+# Rules are evaluated in ascending `priority` order is IGNORED; instead the
+# HIGHEST-priority matching rule wins (ties broken by rule order, then id).
+# Each rule matches on module name (exact or FQCN-suffix) and/or free-text
+# regex patterns applied to the task's module args / command string.
+#
+# This file is schema-validated against schemas/significance_rules.schema.yaml
+# before any scan proceeds. Repositories may override it via --config.
+#
+# significance levels: critical | high | normal | low
+version: "1.0.0"
+default_significance: normal
+
+rules:
+  # --- critical: destructive / security / kernel / credential -----------------
+  - id: destructive-shell-command
+    priority: 100
+    significance: critical
+    reason: Destructive command pattern (rm -rf / mkfs / dd / fdisk)
+    match:
+      modules: [command, shell, ansible.builtin.command, ansible.builtin.shell, raw]
+      patterns:
+        - '\brm\s+-rf\b'
+        - '\bmkfs\b'
+        - '\bdd\s+if='
+        - '\bfdisk\b'
+        - '\bwipefs\b'
+        - '\bshred\b'
+
+  - id: filesystem-format-partition
+    priority: 98
+    significance: critical
+    reason: Partitioning or filesystem creation
+    match:
+      modules: [community.general.parted, community.general.filesystem, parted, filesystem]
+
+  - id: authorization-and-users
+    priority: 95
+    significance: critical
+    reason: User / group / privilege / sudo management
+    match:
+      modules: [user, group, ansible.builtin.user, ansible.builtin.group]
+      patterns: ['\bsudoers\b', '\bvisudo\b']
+
+  - id: credential-handling
+    priority: 95
+    significance: critical
+    reason: Key / certificate / credential handling
+    match:
+      modules:
+        - ansible.builtin.copy
+        - ansible.builtin.template
+      patterns:
+        - 'authorized_keys'
+        - 'id_rsa'
+        - 'private_key'
+        - '\.pem\b'
+        - '/etc/ssl/'
+        - '/etc/pki/'
+
+  - id: firewall-and-routing
+    priority: 90
+    significance: critical
+    reason: Firewall / routing / kernel network changes
+    match:
+      modules:
+        - ansible.posix.firewalld
+        - community.general.ufw
+        - ansible.builtin.iptables
+        - iptables
+        - firewalld
+        - ufw
+      patterns: ['\bip\s+route\b', '\bsysctl\b.*net\.', '\bnftables\b']
+
+  - id: kernel-and-boot
+    priority: 88
+    significance: critical
+    reason: Kernel, bootloader, or reboot operation
+    match:
+      modules: [ansible.builtin.reboot, reboot]
+      patterns: ['\bgrub\b', '/boot/', '\bmodprobe\b', '\bupdate-initramfs\b', '\bkernel\b']
+
+  # --- high: services / repos / systemd / network / storage / db --------------
+  - id: template-managed-config
+    priority: 70
+    significance: high
+    reason: Templated configuration file
+    match:
+      modules: [template, ansible.builtin.template]
+
+  - id: service-state
+    priority: 68
+    significance: high
+    reason: Service / systemd unit management
+    match:
+      modules:
+        - service
+        - ansible.builtin.service
+        - ansible.builtin.systemd
+        - ansible.builtin.systemd_service
+        - systemd
+        - sysvinit
+
+  - id: package-repository
+    priority: 66
+    significance: high
+    reason: Package repository configuration
+    match:
+      modules:
+        - ansible.builtin.apt_repository
+        - ansible.builtin.apt_key
+        - ansible.builtin.yum_repository
+        - apt_repository
+        - apt_key
+        - yum_repository
+
+  - id: network-config
+    priority: 64
+    significance: high
+    reason: Network interface / config management
+    match:
+      modules:
+        - ansible.netcommon.*
+        - community.general.nmcli
+        - nmcli
+      patterns: ['/etc/netplan/', '/etc/network/', 'interfaces']
+
+  - id: storage-and-mounts
+    priority: 62
+    significance: high
+    reason: Mount / storage configuration
+    match:
+      modules: [ansible.posix.mount, mount, community.general.lvg, community.general.lvol]
+
+  - id: database-changes
+    priority: 60
+    significance: high
+    reason: Database schema / data operation
+    match:
+      modules:
+        - community.mysql.*
+        - community.postgresql.*
+        - mysql_db
+        - postgresql_db
+        - mysql_user
+        - postgresql_user
+
+  # --- low: non-operational bookkeeping --------------------------------------
+  - id: debug-and-assert
+    priority: 20
+    significance: low
+    reason: Debug / assert / non-operational task
+    match:
+      modules:
+        - ansible.builtin.debug
+        - ansible.builtin.assert
+        - ansible.builtin.meta
+        - debug
+        - assert
+        - meta
+        - ansible.builtin.set_fact
+        - set_fact

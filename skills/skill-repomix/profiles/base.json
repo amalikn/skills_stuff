@@ -1,0 +1,13 @@
+{
+  "id": "base",
+  "displayName": "Base",
+  "description": "Cross-language governance and build metadata.",
+  "detect": {"anyFiles": ["README.md", "AGENTS.md"], "anyDirectories": []},
+  "include": ["README.md", "AGENTS.md", "ARCHITECTURE.md", "AI_NAVIGATION.md", "context-map.yaml", "CHANGELOG.md", "LICENSE*", "Dockerfile*", "compose*.yaml", "compose*.yml", "Makefile", "Taskfile*", "justfile"],
+  "ignore": [".ai-context/**", "**/.env", "**/.env.*", "**/*.pem", "**/*.key", "**/*.db", "**/*.sqlite", "**/*.sqlite3", "**/node_modules/**", "**/.venv/**", "**/dist/**", "**/build/**", "**/coverage/**", "**/logs/**", "**/runtime/**", "**/cache/**", "**/backup/**", "**/backups/**", "**/rollback/**", "**/archive/**"],
+  "priorityFiles": ["AGENTS.md", "ARCHITECTURE.md", "AI_NAVIGATION.md", "context-map.yaml"],
+  "securitySensitivePatterns": ["**/.env*", "**/*.pem", "**/*.key", "**/credentials/**", "**/secrets/**"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 120000,
+  "notes": ["Always combine with a language-specific profile."]
+}

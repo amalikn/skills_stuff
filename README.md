@@ -8,27 +8,19 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 - `governance/`: repo-local pointer docs linking this repo to the shared governance stack.
 
 ## Folder index
-- [graphify/](graphify/)
-  Local Graphify workspace with upstream clone, governance files, and operator install notes.
-  Project entry: [graphify/README.md](graphify/README.md)
-- [invoice-finance-analyst/](invoice-finance-analyst/)
-  Authoring surface for the internal-invoice-analysis skill — multi-layer CSV invoice reconciliation, rate-card validation, and margin analysis.
-  Project entry: [invoice-finance-analyst/README.md](invoice-finance-analyst/README.md)
-- [personal/](personal/)
-  Personal-use skill packs — career tracking, therapy/counselling support, and other personal productivity tools.
-  Index: [personal/README.md](personal/README.md)
-- [skills/skill-project-wiki-rag-bridge/](skills/skill-project-wiki-rag-bridge/)
-  Reusable skill — controlled bridge from project repos to shared wiki and Qdrant RAG tooling, with strict multi-project collection isolation.
-  Project entry: [skills/skill-project-wiki-rag-bridge/README.md](skills/skill-project-wiki-rag-bridge/README.md)
-  AI navigation: [skills/skill-project-wiki-rag-bridge/AI_NAVIGATION.md](skills/skill-project-wiki-rag-bridge/AI_NAVIGATION.md)
+- [specialists/agent-stack/](specialists/agent-stack/) Canonical English-only library of Auto Company-derived personas and skills, delivered as a manifest-driven symlink install. Excludes the upstream autonomous loop, consensus mechanism, and daemon. Project entry: [specialists/agent-stack/README.md](specialists/agent-stack/README.md) AI navigation: [specialists/agent-stack/AI_NAVIGATION.md](specialists/agent-stack/AI_NAVIGATION.md)
+- [graphify/](graphify/) Local Graphify workspace with upstream clone, governance files, and operator install notes. Project entry: [graphify/README.md](graphify/README.md)
+- [invoice-finance-analyst/](invoice-finance-analyst/) Authoring surface for the internal-invoice-analysis skill — multi-layer CSV invoice reconciliation, rate-card validation, and margin analysis. Project entry: [invoice-finance-analyst/README.md](invoice-finance-analyst/README.md)
+- [personal/](personal/) Personal-use skill packs — career tracking, therapy/counselling support, and other personal productivity tools. Index: [personal/README.md](personal/README.md)
+- [skills/skill-project-wiki-rag-bridge/](skills/skill-project-wiki-rag-bridge/) Reusable skill — controlled bridge from project repos to shared wiki and Qdrant RAG tooling, with strict multi-project collection isolation. Project entry: [skills/skill-project-wiki-rag-bridge/README.md](skills/skill-project-wiki-rag-bridge/README.md) AI navigation: [skills/skill-project-wiki-rag-bridge/AI_NAVIGATION.md](skills/skill-project-wiki-rag-bridge/AI_NAVIGATION.md)
 
 ## Specialist Packs — Project
 
-| Pack | Path | Status |
-|---|---|---|
-| `skill-ai-it` | `specialists/project/skill-ai-it/` | Stable — just-only task runner; mise fully removed |
-| `skill-smc` | `specialists/project/skill-smc/` | Active |
-| `skill-mx02-migration` | `specialists/project/skill-mx02-migration/` | Active |
+| Pack                   | Path                                        | Status                                             |
+| ---------------------- | ------------------------------------------- | -------------------------------------------------- |
+| `skill-ai-it`          | `specialists/project/skill-ai-it/`          | Stable — just-only task runner; mise fully removed |
+| `skill-smc`            | `specialists/project/skill-smc/`            | Active                                             |
+| `skill-mx02-migration` | `specialists/project/skill-mx02-migration/` | Active                                             |
 
 ## Current Focus
 - Project specialist coverage now includes:
@@ -47,12 +39,12 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 
 ## Reusable Skills — skills/
 
-| Skill | Path | Purpose |
-|---|---|---|
+| Skill                           | Path                                    | Purpose                                                               |
+| ------------------------------- | --------------------------------------- | --------------------------------------------------------------------- |
 | `skill-project-wiki-rag-bridge` | `skills/skill-project-wiki-rag-bridge/` | Controlled project/wiki/rag-tools bridge with multi-project isolation |
 
-`skill-project-wiki-rag-bridge` governs how project repos connect to the shared wiki and rag-tools.
-It does not own wiki content, project content, Qdrant data, or embeddings. Depends on external `rag-tools`.
+`skill-project-wiki-rag-bridge` governs how project repos connect to the shared wiki and rag-tools. It does not own wiki content, project content, Qdrant data, or embeddings. Depends on external
+`rag-tools`.
 
 ## Governance
 - Repo-local guidance: [AGENTS.md](/Volumes/Data/_ai/_skills/skills_stuff/AGENTS.md)

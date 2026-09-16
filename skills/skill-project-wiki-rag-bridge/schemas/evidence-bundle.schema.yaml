@@ -1,0 +1,149 @@
+# Schema: evidence-bundle.schema.yaml
+# Purpose: Defines the EvidenceBundle contract for retrieval results.
+# Authority: skill-project-wiki-rag-bridge / archcore specs layer
+# Source: mirrors rag_tools.evidence.EvidenceBundle (Pydantic model)
+
+schema_name: evidence-bundle
+version: 1
+applies_to: "any rag-tools retrieval command output"
+
+purpose: >
+  EvidenceBundle is the required output of every rag-tools retrieval operation. The LLM must
+  answer only from evidence bundle content — never from training knowledge. Exact amounts, dates,
+  clause references, and IDs must not be inferred; they must come from the excerpt field. If no
+  valid EvidenceBundle is returned, the agent must report RETRIEVAL_NOT_READY and stop.
+
+required_fields:
+  query:
+    type: string
+    description: The exact original query or lookup term submitted to the retrieval function.
+
+  retrieval_mode:
+    type: string
+    allowed_values:
+      - direct_structured_lookup
+      - section_clause_lookup
+      - heading_aware_lookup
+      - table_aware_lookup
+      - tabular_analytics
+      - keyword_lookup
+      - vector_rag
+      - hybrid_direct_first
+      - hybrid_rag_first
+    description: >
+      The retrieval mode that produced this bundle. Must reflect the actual mode used, not the
+      intended mode. Used for citation and routing audit.
+
+  excerpt:
+    type: string
+    description: >
+      Verbatim text extracted from the source file. This is the ONLY field the LLM may use to
+      construct an answer. Rules:
+        - Must be source-grounded; no generated conclusions.
+        - Must not contain invented amounts, dates, rates, identifiers, or clause text.
+        - If blank or missing, the bundle is invalid — do not answer from it.
+        - Do not paraphrase the excerpt in the answer; cite it directly.
+
+  source_file:
+    type: string
+    description: >
+      Absolute path to the canonical source file. Required. Never a Qdrant collection name.
+      Qdrant results are retrieval artifacts, not authoritative records. The source_file
+      is the authoritative reference for citation.
+
+optional_fields:
+  document_id:
+    type: string
+    description: File stem without extension. Strongly recommended for citation traceability.
+
+  source_type:
+    type: string
+    description: File extension without dot (e.g. "md", "csv").
+
+  authority:
+    type: string
+    allowed_values: [source, wiki_article, external_reference, derived]
+    description: Authority level of the source. Default is "source" for project files.
+
+  section_id:
+    type: string
+    description: >
+      Structured section ID from the source (e.g. "C2.11", "1.2.3"). When present, enables
+      exact clause-level citations. Should be populated for section_clause_lookup results.
+
+  section_path:
+    type: list[string]
+    description: >
+      Heading chain from document root to the matched section (e.g. ["Agreement", "Rates",
+      "Period 3"]). Should be present for structured and section lookup results.
+
+  heading:
+    type: string
+    description: The single nearest heading above the matched text. For display in citations.
+
+  table_id:
+    type: string
+    description: Table identifier within the source. Present for table_aware_lookup results.
+
+  row_keys:
+    type: list[string]
+    description: Short row-key preview for matched table rows. For citation and debugging.
+
+  matched_terms:
+    type: list[string]
+    description: Query terms that matched in the source. Supports citation transparency.
+
+  score_or_confidence:
+    type: float
+    description: >
+      Relevance score from the retrieval function. For deterministic lookup may be 1.0 (exact
+      match) or term-overlap score. For vector RAG this is the cosine similarity. Low values
+      (< 0.5 for RAG) should trigger a retrieval_warning.
+
+  context_chars:
+    type: integer
+    description: Auto-calculated as len(excerpt). Zero if excerpt is empty.
+
+  retrieval_warnings:
+    type: list[string]
+    description: >
+      Must be populated when any of the following apply:
+        - source file was missing ("source file missing")
+        - retrieval fell back from primary to secondary mode
+        - evidence is low-confidence or partial
+        - vector RAG score < 0.5
+        - structured lookup found no exact section ID match
+        - table match is partial (header only, no row match)
+        - fallback was needed and used
+      An empty list is valid when retrieval succeeded cleanly.
+
+answer_rules:
+  - The LLM must answer only from excerpt content.
+  - Do not infer amounts, dates, identifiers, or clause text not present in the excerpt.
+  - If evidence is missing for a fact, state "not found in retrieved evidence" — do not guess.
+  - Qdrant payloads are retrieval artifacts. They cite the source_file; they are not the authority.
+  - When multiple bundles are returned, cite each separately by source_file + section_id/heading.
+  - Do not merge conflicting excerpts into a single answer — report the conflict.
+  - retrieval_warnings must be surfaced in the answer when present; low-confidence evidence must
+    be flagged, not silently used.
+
+citation_requirements:
+  - Minimum citation: source_file (required).
+  - Preferred citation: source_file + (section_id OR heading OR table_id).
+  - Full citation: source_file + section_path + section_id + excerpt snippet.
+  - For table results: include table_id and relevant row_keys in citation.
+
+validation_notes:
+  - excerpt must be source-grounded — no generated conclusions, no invented values
+  - source_file is required; a bundle without it is invalid
+  - heading or section_path should be present where possible for structured lookup results
+  - retrieval_warnings must be populated for low-confidence or fallback cases
+  - a bundle with an empty excerpt must include a retrieval_warning explaining why
+
+common_failure_cases:
+  - "excerpt is empty with no retrieval_warning — invalid bundle; do not answer from it"
+  - "source_file is a Qdrant collection name, not a file path — invalid citation"
+  - "LLM synthesizes an amount not present in excerpt — forbidden"
+  - "section_id or heading absent for section_clause_lookup result — citation incomplete"
+  - "retrieval_warnings missing despite fallback_needed: true in benchmark — silent failure"
+  - "vector RAG score 0.3 with no warning — low-confidence result should be flagged"

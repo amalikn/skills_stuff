@@ -1,0 +1,85 @@
+version: 1
+skill_ai_it_version: 2026-08-11-governance-checks-layer-v1
+project:
+  name: business-finance-toolkit
+  context_policy: AI_NAVIGATION.md is the human-readable router; this file is the
+    machine-readable routing map.
+bootstrap:
+  required_first_read:
+  - AGENTS.md
+  - AI_NAVIGATION.md
+  - context-map.yaml
+  - CHANGELOG.md
+audit_checks:
+  governance_file_presence:
+  - README.md
+  - AGENTS.md
+  - CLAUDE.md
+  - AI_NAVIGATION.md
+  - context-map.yaml
+  - CHANGELOG.md
+  version_consistency:
+    description: Verify managed block version strings match current skill version.
+    action: report_mismatch
+  companion_update_completeness:
+    description: Verify companion files in update_rules were updated together.
+    action: report_missing
+  generated_output_policy:
+    description: Verify Graphify and Repomix outputs are classified as generated support.
+    action: report_violation
+  task_runner_consistency:
+    description: Verify cataloged tasks match actual script files.
+    action: report_drift
+  no_stale_references:
+    description: Detect references to removed tools or superseded governance assumptions.
+    action: report_stale
+promotion_rules:
+  archcore:
+    allowed_init_modes:
+    - bootstrap
+    - navigation-add
+    - refresh
+    content_write_modes:
+    - promote
+    required_authorization: true
+    candidates_report: ARCHCORE_PROMOTION_CANDIDATES.md
+    extract_heuristics_source: patterns/archcore-routing.md
+    exclusion:
+    - CHANGELOG.md (history only)
+    - generated files (.ai-context/, graphify-out/)
+    - unmarked SCRATCHPAD sections
+    - draft/obsolete roadmap items
+context_recovery:
+  procedure:
+  - Read AI_NAVIGATION.md first for navigation map.
+  - Load .archcore/ context if present (durable truth).
+  - 'Regenerate graphify-out/ with: graphify update .'
+  - 'Regenerate .ai-context/ with: repomix --config repomix.config.json'
+  - Verify SCRATCHPAD.md has current state. If empty, populate from memory-keeper
+    / mcp-project-context.
+  - Verify CHANGELOG.md is current.
+  - Verify AI_NAVIGATION.md and context-map.yaml companion consistency.
+  evidence_label: Context recovered at <timestamp> via skill-ai-it context-recovery
+    procedure.
+update_rules:
+  governance_navigation:
+    AGENTS.md:
+      companions:
+      - AI_NAVIGATION.md
+      - context-map.yaml
+      - scripts/README.md
+    AI_NAVIGATION.md:
+      companions:
+      - context-map.yaml
+    context-map.yaml:
+      companions:
+      - AI_NAVIGATION.md
+    scripts/README.md:
+      companions:
+      - AGENTS.md
+      - context-map.yaml
+    new_script_added:
+      companions:
+      - scripts/README.md
+      - AGENTS.md
+      - justfile

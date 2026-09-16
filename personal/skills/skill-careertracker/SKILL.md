@@ -1,6 +1,6 @@
 ---
 name: skill-careertracker
-description: Use when given a job ad URL and asked to assess a role, create a job tracking entry, or evaluate career fit. Also triggers for job-market sourcing requests like "search Melbourne jobs", "find roles matching my profile", or "run jobspy". Triggers on job posting URLs, "track this job", "assess this role", or when a recruiter message accompanies a job link.
+description: "Assess a job ad URL, track career fit, or source Melbourne job listings."
 ---
 
 # skill-careertracker

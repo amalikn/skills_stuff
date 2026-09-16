@@ -1420,9 +1420,16 @@ Stripping the 10 `vrf:` lines and the trailing `vrfs:` block reproduces the pre-
 stays. The `diff` is the real gate: identical output proves the repair changed no intended network state and nothing new applies at reboot. **Never `netplan apply` on a remote SMC to fix this** —
 `generate` is sufficient to clear the boot hazard, and `apply` risks the uplink carrying your own session.
 
-### VRF commented out at source 2026-08-25 (interim, on `internet-label-rename`)
+### VRF commented out at source 2026-08-25 (interim, on `internet-label-rename`) — now committed as `f2fb439f` (2026-08-27)
 
-Rather than gate the feature properly, the operator asked for VRF to be **commented out and revisited later**. Two files changed, **uncommitted**:
+**Update 2026-09-08:** the interim, uncommitted disable described below landed as commit `f2fb439f` ("Onboard yakanarra, disable VRF emission, and add gated write-reduction blocks", 2026-08-27),
+present on `internet-label-rename` and `squid-redesign` — **confirmed NOT on `master`** as of 2026-09-08 (`git merge-base --is-ancestor f2fb439f master` fails). The commit message states the same
+rationale captured live below independently: "VRF IS A FLEET-WIDE LANDMINE... emitting `vrf:` breaks `netplan generate` on every `rcp` SMC... Disabled at source rather than removed, so the re-enable
+gate stays visible: fleet netplan 0.106 or later AND the exact schema verified against it." Treat "uncommitted" in the rest of this section as historical — the change itself is unchanged, only its
+commit status differs. `multiwan-setup.sh.j2`'s deploying task block and the VRF modprobe task remain commented out in `roles/smc_network/tasks/ubuntu.yml` on the same commit; neither mechanism is
+live anywhere in the fleet as of this update. **Do not assume this has reached `master`/the fleet's default deploy branch without checking the actual branch a given site runs from.**
+
+Rather than gate the feature properly, the operator asked for VRF to be **commented out and revisited later**. Two files changed, **uncommitted at the time**:
 
 - `roles/smc_network/templates/netplan.yml.j2` — the per-interface `vrf:` key and the top-level `vrfs:` block are each wrapped in a Jinja `{# … #}` comment carrying a banner that states the netplan
   0.104 incompatibility, the over-broad selector, and the two conditions required before re-enabling. **The computation is deliberately left intact** (`vrf_candidates`, `tablenames`, `tableids`,

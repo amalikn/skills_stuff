@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: ansible-repo-intelligence
+Version: 0.1.0
+Summary: Deterministic static intelligence for Ansible repositories: bounded, source-traceable, offline.
+Author: Malik Ahmad
+License: MIT
+Requires-Python: >=3.14
+Description-Content-Type: text/markdown
+Requires-Dist: ruamel.yaml>=0.18
+Requires-Dist: jsonschema>=4.21
+Requires-Dist: jinja2>=3.1
+Requires-Dist: networkx>=3.2
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: pytest-cov>=5.0; extra == "dev"

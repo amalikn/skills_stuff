@@ -1,0 +1,13 @@
+{
+  "id": "ruby",
+  "displayName": "Ruby",
+  "description": "Ruby repositories.",
+  "detect": {"anyFiles": ["Gemfile", "Gemfile.lock", "Rakefile"], "anyDirectories": ["app", "lib", "spec"]},
+  "include": ["Gemfile", "Gemfile.lock", "*.gemspec", "Rakefile", "config.ru", "app/**/*.rb", "lib/**/*.rb", "config/**/*.rb", "spec/**/*.rb", "test/**/*.rb", "db/migrate/**/*.rb"],
+  "ignore": [".bundle/**", "vendor/bundle/**", "tmp/**", "log/**", "coverage/**"],
+  "priorityFiles": ["Gemfile", "Gemfile.lock"],
+  "securitySensitivePatterns": ["config/master.key", "config/credentials*.yml.enc", "**/.env*"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 110000,
+  "notes": []
+}

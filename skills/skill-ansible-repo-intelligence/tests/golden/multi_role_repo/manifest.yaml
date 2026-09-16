@@ -1,0 +1,67 @@
+schema_version: 1.0.0
+tool_version: 0.1.0
+parser_version: '1'
+understanding_boundary: High-coverage static understanding of repository structure and statically resolvable relationships, with explicit identification of dynamic and unresolved behaviour. Not complete runtime understanding.
+source_fingerprint: sha256:41f216178b55456421e5f1b81dd7897ebf410aac4bb706ffd67f3e552701f997
+configuration_fingerprint: sha256:4a56896b84051b41d34bb330c4586c1db6da04159b1937d18217623b290cee05
+parser_capabilities:
+  jinja_parse_only: true
+  inventory_executed: false
+  vendored_deep_indexed: false
+counts:
+  node_count: 27
+  edge_count: 12
+  nodes_by_kind:
+    collection: 1
+    handler: 1
+    inventory_flavor: 1
+    inventory_group: 2
+    inventory_host: 3
+    play: 1
+    playbook: 1
+    role: 2
+    task: 6
+    task_file: 2
+    template: 1
+    variable: 5
+    vars_plugin: 1
+  edges_by_type:
+    depends_on: 1
+    import_role: 1
+    include_tasks: 1
+    member_of: 3
+    notifies: 2
+    supplies: 2
+    uses_role: 2
+  nodes_by_significance:
+    critical: 3
+    high: 4
+    low: 6
+    normal: 14
+  retrieval_topic_count: 2
+  vendored_yaml_excluded: 1
+  diagnostics:
+    info: 3
+    warning: 1
+    error: 0
+    fatal: 0
+output_files:
+  graph.yaml: sha256:0c6b957287bae0d34b339d69a8b99d5b10243109af2d21b42baa49fde5481799
+  diagnostics.yaml: sha256:64668a4220b1f3f8922edfea3f8f9d4f09a0c293d3f8a91d69a56874eb37e68f
+  ANSIBLE_REPO_MAP.md: sha256:fbc05955ff7e50972ac71ff8d01b66241f0f81db6245c9aedce389dff882cc02
+context_integration:
+  existing_context_map:
+  authority_order_present: false
+  required_first_read: []
+  preferred_first_read: []
+  higher_authority_paths: []
+  registered_derived_artifacts:
+  - ANSIBLE_REPO_MAP.md
+  - manifest.yaml
+  - graph.yaml
+  - diagnostics.yaml
+  output_inside_existing_context: false
+  authority_conflict: false
+  authority_conflict_reason:
+  policy: generated artifacts are derived and non-authoritative; existing .archcore and context-map authority outrank them
+external_tools: {}

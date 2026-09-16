@@ -1,0 +1,17 @@
+all:
+  children:
+    webservers:
+      hosts:
+        web1.example.test:
+        web2.example.test:
+      vars:
+        http_port: 8080
+    dbservers:
+      hosts:
+        db1.example.test:
+      vars:
+        db_port: 5432
+    edge:
+      children:
+        webservers:
+        dbservers:

@@ -1,0 +1,1529 @@
+#!/usr/bin/env python3
+"""Unified wrapper for ansible-inventory-grapher and ansible-playbook-grapher.
+
+Visualization and documentation only. Never executes playbooks against managed
+hosts. See SKILL.md for the full behavioral contract.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+from typing import Any
+
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    print("ERROR: PyYAML is required (python3 -c 'import yaml' failed).", file=sys.stderr)
+    sys.exit(3)
+
+SKILL_ROOT = Path(__file__).resolve().parent.parent
+SKILL_VERSION = "0.2.0"
+MANIFEST_SCHEMA_VERSION = 2
+
+# The managed working-cache venv is the default interpreter (see justfile/scripts/*
+# shims); this is documented, not hardcoded as the *only* interpreter this code can run
+# under. Any Python in this range works; 3.14 is simply this stack's pinned default.
+MANAGED_PYTHON_VENV = "/Volumes/Data/_ai/_skills/skills-working-cache/skill-ansible-grapher/.venv"
+SUPPORTED_PYTHON_MIN = (3, 10)
+SUPPORTED_PYTHON_MAX = (3, 14)
+
+REDACTED = "***REDACTED***"
+
+EXIT_OK = 0
+EXIT_ARG_ERROR = 2
+EXIT_VALIDATION_FAILED = 4
+EXIT_MISSING_DEPENDENCY = 5
+EXIT_OUTPUT_UNSAFE = 6
+EXIT_PARTIAL_FAILURE = 7
+
+
+class GrapherError(RuntimeError):
+    def __init__(self, message: str, exit_code: int = 1):
+        super().__init__(message)
+        self.exit_code = exit_code
+
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+
+def load_config() -> dict[str, Any]:
+    default_path = SKILL_ROOT / "config" / "default.yaml"
+    profiles_path = SKILL_ROOT / "config" / "profiles.yaml"
+    cfg = yaml.safe_load(default_path.read_text()) or {}
+    cfg["_profiles"] = yaml.safe_load(profiles_path.read_text()) or {}
+    return cfg
+
+
+def env_bool(name: str, default: bool) -> bool:
+    val = os.environ.get(name)
+    if val is None:
+        return default
+    return val.strip().lower() in ("1", "true", "yes", "on")
+
+
+def env_str(name: str, default: str | None) -> str | None:
+    return os.environ.get(name, default)
+
+
+# ---------------------------------------------------------------------------
+# Executable resolution — never hardcode machine-specific absolute paths.
+# Resolution order: CLI flag > env var > PATH lookup.
+# ---------------------------------------------------------------------------
+
+def resolve_executable(name: str, cli_value: str | None, env_var: str) -> str | None:
+    if cli_value:
+        return cli_value
+    from_env = os.environ.get(env_var)
+    if from_env:
+        return from_env
+    return shutil.which(name)
+
+
+def require_executable(name: str, cli_value: str | None, env_var: str) -> str:
+    path = resolve_executable(name, cli_value, env_var)
+    if not path or not Path(path).exists():
+        raise GrapherError(
+            f"Missing dependency: '{name}' not found on PATH, via ${env_var}, or via "
+            f"the corresponding CLI flag. This skill does not install or modify tools "
+            f"automatically — install/locate '{name}' and re-run, or set ${env_var} to "
+            f"its executable path.",
+            EXIT_MISSING_DEPENDENCY,
+        )
+    return path
+
+
+# ---------------------------------------------------------------------------
+# Safety: path containment, redaction, subprocess execution
+# ---------------------------------------------------------------------------
+
+def resolve_output_dir(raw: str) -> Path:
+    p = Path(raw).expanduser().resolve()
+    forbidden = {Path("/"), Path.home().resolve()}
+    if p in forbidden:
+        raise GrapherError(f"Refusing to use output directory '{p}' (too broad).", EXIT_OUTPUT_UNSAFE)
+    if str(p) == str(Path.home().resolve()):
+        raise GrapherError("Refusing to use $HOME as the output directory.", EXIT_OUTPUT_UNSAFE)
+    return p
+
+
+def redact_args(args: list[str], redact_flags: list[str]) -> list[str]:
+    out: list[str] = []
+    skip_next = False
+    for a in args:
+        if skip_next:
+            out.append(REDACTED)
+            skip_next = False
+            continue
+        matched = False
+        for flag in redact_flags:
+            if a == flag:
+                out.append(a)
+                skip_next = True
+                matched = True
+                break
+            if a.startswith(flag + "="):
+                out.append(f"{flag}={REDACTED}")
+                matched = True
+                break
+        if not matched:
+            out.append(a)
+    return out
+
+
+def run_command(
+    argv: list[str],
+    *,
+    timeout: int,
+    cwd: Path | None = None,
+    env: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess:
+    try:
+        return subprocess.run(
+            argv,
+            shell=False,
+            cwd=str(cwd) if cwd else None,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except FileNotFoundError as exc:
+        raise GrapherError(f"Executable not found: {argv[0]} ({exc})", EXIT_MISSING_DEPENDENCY)
+    except subprocess.TimeoutExpired as exc:
+        raise GrapherError(f"Command timed out after {timeout}s: {' '.join(argv)}", EXIT_VALIDATION_FAILED)
+
+
+def deterministic_env() -> dict[str, str]:
+    """Env for grapher subprocesses. Both graphers iterate Python sets/dicts of group
+    names when building the graph; without a fixed hash seed, node/edge ordering (and
+    therefore the generated DOT/SVG bytes) varies between process invocations even for
+    identical input. Pinning PYTHONHASHSEED makes output byte-for-byte reproducible."""
+    env = dict(os.environ)
+    env["PYTHONHASHSEED"] = "0"
+    return env
+
+
+def detect_runtime_info() -> dict[str, Any]:
+    """Provenance of the Python interpreter *this process* is running under. The shim
+    scripts (scripts/graph-*, justfile) decide which interpreter to launch before Python
+    ever starts; when they fall back to system Python they set
+    ANSIBLE_GRAPHER_PYTHON_FALLBACK_USED=1 so this process can report it honestly rather
+    than silently presenting itself as the managed runtime."""
+    fallback_used = env_bool("ANSIBLE_GRAPHER_PYTHON_FALLBACK_USED", False)
+    version_tuple = sys.version_info[:2]
+    in_supported_range = SUPPORTED_PYTHON_MIN <= version_tuple <= SUPPORTED_PYTHON_MAX
+    return {
+        "python_executable": sys.executable,
+        "python_version": ".".join(str(part) for part in sys.version_info[:3]),
+        "python_in_supported_range": in_supported_range,
+        "managed_venv_expected": MANAGED_PYTHON_VENV,
+        "python_fallback_used": fallback_used,
+        "runtime_isolation": "degraded" if fallback_used else "managed",
+    }
+
+
+def sha256_of(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+# ---------------------------------------------------------------------------
+# Runtime provenance, version classification, toolchain compatibility
+#
+# Neither grapher runs in the same Python/ansible-core environment as this skill or as
+# each other (see docs/tool-capabilities.md) — each launcher points at its own isolated
+# venv. This section discovers what is actually running, rather than assuming names
+# match environments, and reports a PASS/WARN/FAIL/UNKNOWN compatibility verdict instead
+# of silently ignoring the mismatch.
+# ---------------------------------------------------------------------------
+
+CORE_VERSION_RE = re.compile(r"\[core ([0-9]+(?:\.[0-9]+){1,3})\]")
+WITH_ANSIBLE_RE = re.compile(r"\(with ansible ([0-9]+(?:\.[0-9]+){1,3})\)")
+VENV_LAUNCHER_RE = re.compile(r'VENV=(["\']?)(\S+?)\1\s*$', re.MULTILINE)
+BARE_VERSION_RE = re.compile(r"([0-9]+(?:\.[0-9]+){1,3})")
+
+
+def resolve_tri_state(
+    cli_true: bool, cli_false: bool, env_var: str, profile_value: bool | None, default_value: bool
+) -> bool:
+    """Precedence: CLI > environment > profile > default."""
+    if cli_true:
+        return True
+    if cli_false:
+        return False
+    env_raw = os.environ.get(env_var)
+    if env_raw is not None:
+        return env_raw.strip().lower() in ("1", "true", "yes", "on")
+    if profile_value is not None:
+        return profile_value
+    return default_value
+
+
+def classify_release_status(version_str: str | None) -> str:
+    if not version_str:
+        return "unknown"
+    v = version_str.lower()
+    if "dev" in v:
+        return "development"
+    if any(tag in v for tag in ("rc", "alpha", "beta", "-pre", "a1", "b1")):
+        return "prerelease"
+    if BARE_VERSION_RE.search(v):
+        return "stable"
+    return "unknown"
+
+
+def get_ansible_core_version_via_cli(bin_path: str, timeout: int) -> str | None:
+    try:
+        result = run_command([bin_path, "--version"], timeout=timeout)
+    except GrapherError:
+        return None
+    m = CORE_VERSION_RE.search(result.stdout) or CORE_VERSION_RE.search(result.stderr)
+    return m.group(1) if m else None
+
+
+def get_ansible_core_version_via_python(python_bin: str, timeout: int) -> str | None:
+    if not python_bin or not Path(python_bin).exists():
+        return None
+    try:
+        result = run_command(
+            [python_bin, "-c", "import ansible; print(ansible.__version__)"], timeout=timeout
+        )
+    except GrapherError:
+        return None
+    if result.returncode != 0:
+        return None
+    m = BARE_VERSION_RE.search(result.stdout.strip())
+    return m.group(1) if m else None
+
+
+def find_venv_python_for_launcher(bin_path: str) -> str | None:
+    """If bin_path is one of this stack's `exec "$VENV/bin/tool" "$@"` launcher shims,
+    extract the venv path and return its python interpreter, so the tool's *actual*
+    ansible-core version can be inspected directly instead of guessed from --version
+    text (ansible-inventory-grapher's --version does not print an embedded ansible
+    version at all)."""
+    try:
+        p = Path(bin_path)
+        if not p.is_file():
+            return None
+        text = p.read_text(errors="ignore")
+    except OSError:
+        return None
+    m = VENV_LAUNCHER_RE.search(text)
+    if not m:
+        return None
+    venv_python = Path(m.group(2)) / "bin" / "python"
+    return str(venv_python) if venv_python.exists() else None
+
+
+def find_git_checkout_provenance(bin_path: str, timeout: int) -> dict[str, Any] | None:
+    """Look for a sibling `*-github` checkout next to this launcher's project directory
+    (this stack's convention for keeping an editable upstream clone alongside a venv —
+    see AGENTS.md). Reports only commit SHA and dirty/clean state, nothing else."""
+    try:
+        project_dir = Path(bin_path).resolve().parent.parent  # scripts/ -> project root
+    except OSError:
+        return None
+    candidates = sorted(project_dir.glob("*-github")) if project_dir.is_dir() else []
+    for repo_dir in candidates:
+        if not (repo_dir / ".git").exists():
+            continue
+        try:
+            rev = run_command(["git", "-C", str(repo_dir), "rev-parse", "--short", "HEAD"], timeout=timeout)
+            status = run_command(["git", "-C", str(repo_dir), "status", "--porcelain"], timeout=timeout)
+        except GrapherError:
+            return {"repo_path": str(repo_dir), "commit": None, "dirty": None}
+        if rev.returncode != 0:
+            return {"repo_path": str(repo_dir), "commit": None, "dirty": None}
+        return {
+            "repo_path": str(repo_dir),
+            "commit": rev.stdout.strip(),
+            "dirty": bool(status.stdout.strip()) if status.returncode == 0 else None,
+        }
+    return None
+
+
+def discover_tool_provenance(label: str, bin_path: str, timeout: int) -> dict[str, Any]:
+    """Full provenance record for one executable: resolved path, raw version, release
+    status, whether it's a venv-wrapper launcher, the venv's actual ansible-core version
+    (when discoverable), and upstream git checkout info (when discoverable)."""
+    try:
+        version_result = run_command([bin_path, "--version"], timeout=timeout)
+        raw_version_text = (version_result.stdout + version_result.stderr).strip()
+    except GrapherError:
+        raw_version_text = ""
+
+    # Prefer an embedded "(with ansible X.Y.Z)" string (ansible-playbook-grapher); fall
+    # back to a bare leading version token (e.g. "ansible-inventory-grapher 2.6.0").
+    embedded_ansible = WITH_ANSIBLE_RE.search(raw_version_text)
+    tool_version_match = BARE_VERSION_RE.search(raw_version_text)
+    tool_version = tool_version_match.group(1) if tool_version_match else None
+
+    venv_python = find_venv_python_for_launcher(bin_path)
+    ansible_core_version = (
+        embedded_ansible.group(1) if embedded_ansible
+        else get_ansible_core_version_via_python(venv_python, timeout) if venv_python
+        else None
+    )
+
+    return {
+        "label": label,
+        "resolved_path": bin_path,
+        "tool_version_raw": raw_version_text or None,
+        "tool_version": tool_version,
+        "release_status": classify_release_status(raw_version_text or tool_version),
+        "is_wrapper_script": venv_python is not None,
+        "venv_python": venv_python,
+        "ansible_core_version": ansible_core_version,
+        "git": find_git_checkout_provenance(bin_path, timeout),
+    }
+
+
+def assess_version_alignment(validation_version: str | None, grapher_version: str | None) -> dict[str, Any]:
+    if validation_version is None or grapher_version is None:
+        return {
+            "status": "UNKNOWN",
+            "match": None,
+            "reasons": ["Could not positively identify one or both Ansible core versions."],
+        }
+    match = validation_version == grapher_version
+    return {
+        "status": "PASS" if match else "WARN",
+        "match": match,
+        "reasons": [] if match else [
+            f"Validation Ansible core ({validation_version}) differs from the grapher's "
+            f"Ansible core ({grapher_version})."
+        ],
+    }
+
+
+def compute_toolchain_compatibility(
+    validation_ansible_version: str | None,
+    grapher_provenance: dict[str, Any],
+    strict_version_match: bool,
+    allow_development: bool,
+) -> dict[str, Any]:
+    alignment = assess_version_alignment(validation_ansible_version, grapher_provenance["ansible_core_version"])
+    reasons = list(alignment["reasons"])
+    status = alignment["status"]
+
+    if grapher_provenance["release_status"] in ("development", "prerelease") and not allow_development:
+        reasons.append(
+            f"{grapher_provenance['label']} reports a {grapher_provenance['release_status']} version "
+            f"({grapher_provenance['tool_version_raw']}) and allow_development_tool_versions is disabled."
+        )
+        status = "FAIL"
+    elif grapher_provenance["release_status"] in ("development", "prerelease"):
+        reasons.append(
+            f"{grapher_provenance['label']} reports a {grapher_provenance['release_status']} version "
+            f"({grapher_provenance['tool_version_raw']}) — allowed by explicit policy."
+        )
+        if status == "PASS":
+            status = "WARN"
+
+    if strict_version_match and alignment["match"] is False:
+        status = "FAIL"
+    elif strict_version_match and alignment["match"] is None:
+        status = "FAIL"
+        reasons.append("Strict mode requires a positively-identified version match; one or both versions are unknown.")
+
+    return {
+        "status": status,
+        "validation_ansible_version": validation_ansible_version,
+        "grapher_label": grapher_provenance["label"],
+        "grapher_ansible_version": grapher_provenance["ansible_core_version"],
+        "grapher_tool_version": grapher_provenance["tool_version_raw"],
+        "grapher_release_status": grapher_provenance["release_status"],
+        "version_match": alignment["match"],
+        "strict_mode": strict_version_match,
+        "allow_development_tool_versions": allow_development,
+        "reasons": reasons,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Command log (redacted, append-only)
+# ---------------------------------------------------------------------------
+
+class RunContext:
+    def __init__(self, output_dir: Path, cfg: dict[str, Any], force: bool):
+        self.output_dir = output_dir
+        self.cfg = cfg
+        self.force = force
+        self.warnings: list[str] = []
+        self.generated_files: list[Path] = []
+        self.commands: list[dict[str, Any]] = []
+        self.redact_flags = cfg.get("redaction", {}).get("redact_flags", [])
+        self.toolchain_compatibility: dict[str, Any] | None = None
+        self.runtime_info: dict[str, Any] = detect_runtime_info()
+
+    def warn(self, msg: str) -> None:
+        self.warnings.append(msg)
+        print(f"WARNING: {msg}", file=sys.stderr)
+
+    def log_command(self, label: str, argv: list[str], result: subprocess.CompletedProcess) -> None:
+        self.commands.append(
+            {
+                "label": label,
+                "command": redact_args(argv, self.redact_flags),
+                "returncode": result.returncode,
+            }
+        )
+
+    def write_command_log(self) -> None:
+        log_dir = self.output_dir / "logs"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_path = log_dir / "commands.log"
+        with log_path.open("a") as f:
+            for entry in self.commands:
+                f.write(json.dumps(entry) + "\n")
+
+    def ensure_output_dir(self) -> None:
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        marker = self.output_dir / self.cfg["output"]["ownership_marker"]
+        if not marker.exists():
+            marker.write_text(
+                json.dumps({"schema": "ansible-grapher-owned", "skill_version": SKILL_VERSION}, indent=2)
+            )
+
+    def target_path(self, relative: str) -> Path:
+        """Refuse to overwrite an existing artifact unless --force was given."""
+        target = self.output_dir / relative
+        if target.exists() and not self.force:
+            raise GrapherError(
+                f"Refusing to overwrite existing artifact '{target}' without --force.",
+                EXIT_OUTPUT_UNSAFE,
+            )
+        target.parent.mkdir(parents=True, exist_ok=True)
+        return target
+
+    def atomic_write(self, target: Path, data: bytes) -> None:
+        tmp = target.with_suffix(target.suffix + f".tmp.{os.getpid()}")
+        tmp.write_bytes(data)
+        tmp.replace(target)
+        self.generated_files.append(target)
+
+
+DOT_STRUCTURE_RE = re.compile(r"^\s*(strict\s+)?(di)?graph\b", re.IGNORECASE)
+
+
+def validate_artifact_content(path: Path, kind: str) -> None:
+    """Structural sanity check for a just-generated artifact. Raises GrapherError
+    (EXIT_PARTIAL_FAILURE) rather than silently promoting an empty/garbage file as a
+    successful result — an upstream tool exiting 0 is not proof it did its job."""
+    if not path.exists() or path.stat().st_size == 0:
+        raise GrapherError(f"Generated artifact '{path}' is missing or empty.", EXIT_PARTIAL_FAILURE)
+
+    if kind == "svg":
+        text = path.read_text(errors="ignore")
+        if "<svg" not in text:
+            raise GrapherError(f"Generated artifact '{path}' does not contain valid SVG markup.", EXIT_PARTIAL_FAILURE)
+    elif kind == "json":
+        try:
+            parsed = json.loads(path.read_text())
+        except json.JSONDecodeError as exc:
+            raise GrapherError(f"Generated artifact '{path}' is not valid JSON: {exc}", EXIT_PARTIAL_FAILURE)
+        if not parsed:
+            raise GrapherError(f"Generated artifact '{path}' is empty JSON ({{}}/[]) where graph output was expected.", EXIT_PARTIAL_FAILURE)
+    elif kind == "mmd":
+        text = path.read_text(errors="ignore")
+        if "flowchart" not in text.lower() and "graph" not in text.lower():
+            raise GrapherError(f"Generated artifact '{path}' does not contain a supported Mermaid graph declaration.", EXIT_PARTIAL_FAILURE)
+    elif kind == "dot":
+        text = path.read_text(errors="ignore")
+        if not DOT_STRUCTURE_RE.match(text):
+            raise GrapherError(f"Generated artifact '{path}' does not look like valid DOT (expected 'graph'/'digraph').", EXIT_PARTIAL_FAILURE)
+    elif kind == "binary":
+        # png/pdf: existence + non-zero size already checked above; Graphviz's own
+        # non-zero exit code is the primary signal for these formats.
+        pass
+
+
+# ---------------------------------------------------------------------------
+# Validation
+# ---------------------------------------------------------------------------
+
+def validate_inventory(ctx: RunContext, inventory: str, ansible_inventory_bin: str) -> dict[str, Any]:
+    argv = [ansible_inventory_bin, "-i", inventory, "--list"]
+    result = run_command(argv, timeout=ctx.cfg["timeouts"]["default_command_timeout_seconds"])
+    ctx.log_command("ansible-inventory --list", argv, result)
+    if result.returncode != 0:
+        raise GrapherError(
+            f"Inventory validation failed for '{inventory}':\n{result.stderr.strip()}",
+            EXIT_VALIDATION_FAILED,
+        )
+    # ansible-inventory exits 0 and silently falls back to "implicit localhost only" when
+    # every inventory plugin fails to parse the source — treat that as a validation failure
+    # rather than a valid-but-empty inventory.
+    if "Unable to parse" in result.stderr or "No inventory was parsed" in result.stderr:
+        raise GrapherError(
+            f"Inventory '{inventory}' could not be parsed by any inventory plugin "
+            f"(ansible-inventory fell back to implicit localhost):\n{result.stderr.strip()}",
+            EXIT_VALIDATION_FAILED,
+        )
+    try:
+        parsed = json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise GrapherError(f"Inventory '{inventory}' produced non-JSON output: {exc}", EXIT_VALIDATION_FAILED)
+    host_count = len({h for group in parsed.values() if isinstance(group, dict) for h in group.get("hosts", [])})
+    max_hosts = ctx.cfg["thresholds"]["max_inventory_hosts_before_warning"]
+    if host_count > max_hosts:
+        ctx.warn(
+            f"Inventory has {host_count} hosts (> {max_hosts}). Consider a narrower "
+            f"--pattern or the inventory-summary profile to avoid an unreadable graph."
+        )
+    return {"host_count": host_count, "returncode": result.returncode}
+
+
+def validate_playbook(ctx: RunContext, playbook: str, ansible_playbook_bin: str, inventory: str | None) -> dict[str, Any]:
+    argv = [ansible_playbook_bin, "--syntax-check", playbook]
+    if inventory:
+        argv += ["-i", inventory]
+    result = run_command(argv, timeout=ctx.cfg["timeouts"]["default_command_timeout_seconds"])
+    ctx.log_command("ansible-playbook --syntax-check", argv, result)
+    if result.returncode != 0:
+        raise GrapherError(
+            f"Playbook syntax check failed for '{playbook}':\n{result.stderr.strip()}",
+            EXIT_VALIDATION_FAILED,
+        )
+    return {"returncode": result.returncode}
+
+
+def check_dynamic_inventory(ctx: RunContext, inventory: str, allow_dynamic: bool) -> None:
+    p = Path(inventory)
+    is_executable_script = p.is_file() and os.access(p, os.X_OK) and not inventory.endswith((".yml", ".yaml", ".ini"))
+    if is_executable_script and not allow_dynamic:
+        raise GrapherError(
+            f"Inventory '{inventory}' looks like an executable/dynamic inventory source. "
+            f"This skill denies dynamic inventory execution by default because it may run "
+            f"local plugin code or contact external systems (AWS/Azure/GCP/VMware/NetBox/etc). "
+            f"Re-run with --allow-dynamic-inventory (or ANSIBLE_GRAPHER_ALLOW_DYNAMIC_INVENTORY=1) "
+            f"only after explicit user approval.",
+            EXIT_OUTPUT_UNSAFE,
+        )
+    if is_executable_script and allow_dynamic:
+        ctx.warn(f"Dynamic inventory '{inventory}' invoked with explicit approval (--allow-dynamic-inventory).")
+
+
+# ---------------------------------------------------------------------------
+# Inventory graphing
+# ---------------------------------------------------------------------------
+
+def cmd_inventory(args: argparse.Namespace, cfg: dict[str, Any], compat_sink: list | None = None) -> int:
+    output_dir = resolve_output_dir(args.output_dir or cfg["output"]["default_output_dir"])
+    ctx = RunContext(output_dir, cfg, args.force)
+    ctx.ensure_output_dir()
+
+    ansible_inventory_bin = require_executable("ansible-inventory", args.ansible_inventory_bin, "ANSIBLE_GRAPHER_ANSIBLE_INVENTORY_BIN")
+    grapher_bin = require_executable("ansible-inventory-grapher", args.grapher_bin, "ANSIBLE_GRAPHER_INVENTORY_GRAPHER_BIN")
+    dot_bin = require_executable("dot", args.dot_bin, "ANSIBLE_GRAPHER_DOT_BIN")
+
+    inventory_abs = str(Path(args.inventory).expanduser().resolve())
+
+    allow_dynamic = args.allow_dynamic_inventory or env_bool("ANSIBLE_GRAPHER_ALLOW_DYNAMIC_INVENTORY", cfg["dynamic_inventory"]["allow_by_default"])
+    check_dynamic_inventory(ctx, inventory_abs, allow_dynamic)
+
+    validate_inventory(ctx, inventory_abs, ansible_inventory_bin)
+
+    profile_name = args.profile or cfg["profiles"]["default_inventory_profile"]
+    profile = cfg["_profiles"]["inventory_profiles"].get(profile_name)
+    if not profile:
+        raise GrapherError(f"Unknown inventory profile '{profile_name}'.", EXIT_ARG_ERROR)
+
+    timeout = cfg["timeouts"]["default_command_timeout_seconds"]
+    strict_version_match = resolve_tri_state(
+        args.strict_ansible_version_match, args.allow_ansible_version_mismatch,
+        "ANSIBLE_GRAPHER_STRICT_ANSIBLE_VERSION_MATCH", profile.get("strict_ansible_version_match"),
+        cfg.get("compatibility", {}).get("strict_ansible_version_match_default", False),
+    )
+    allow_development = resolve_tri_state(
+        args.allow_development_tool_versions, args.reject_development_tool_versions,
+        "ANSIBLE_GRAPHER_ALLOW_DEVELOPMENT_TOOL_VERSIONS", profile.get("allow_development_tool_versions"),
+        cfg.get("compatibility", {}).get("allow_development_tool_versions_default", True),
+    )
+    grapher_provenance = discover_tool_provenance("ansible-inventory-grapher", grapher_bin, timeout)
+    validation_ansible_version = get_ansible_core_version_via_cli(ansible_inventory_bin, timeout)
+    ctx.toolchain_compatibility = compute_toolchain_compatibility(
+        validation_ansible_version, grapher_provenance, strict_version_match, allow_development
+    )
+    if ctx.runtime_info["python_fallback_used"]:
+        ctx.warn(
+            f"Running under a system Python fallback ({ctx.runtime_info['python_executable']}), "
+            f"not the managed venv ({MANAGED_PYTHON_VENV}). Runtime isolation is degraded."
+        )
+        if ctx.toolchain_compatibility["status"] == "PASS":
+            ctx.toolchain_compatibility["status"] = "WARN"
+    for reason in ctx.toolchain_compatibility["reasons"]:
+        ctx.warn(f"[toolchain] {reason}")
+    if ctx.toolchain_compatibility["status"] == "FAIL":
+        raise GrapherError(
+            f"Toolchain compatibility check failed: {'; '.join(ctx.toolchain_compatibility['reasons'])}",
+            EXIT_VALIDATION_FAILED,
+        )
+
+    show_vars = args.show_variables or env_bool("ANSIBLE_GRAPHER_SHOW_VARIABLES", cfg["variables"]["show_variables_by_default"]) or profile.get("show_variables", False)
+    if show_vars:
+        ctx.warn(
+            "Variable display is ENABLED for this inventory graph. Diagrams may now contain "
+            "IP addresses, hostnames, usernames, connection parameters, tokens, or other "
+            "sensitive operational data. Treat the generated files as sensitive."
+        )
+
+    inv_dir = output_dir / "inventory"
+    inv_dir.mkdir(parents=True, exist_ok=True)
+    dot_target = ctx.target_path("inventory/inventory.dot") if not args.dot_only_stdout else inv_dir / "inventory.dot"
+
+    argv = [grapher_bin, "-i", inventory_abs]
+    if not show_vars:
+        argv.append("-q")
+    attrs = args.graph_attributes or profile.get("graph_attributes")
+    if attrs:
+        argv += ["-a", attrs]
+    if args.pattern:
+        argv.append(args.pattern)
+    else:
+        argv.append("all")
+
+    result = run_command(argv, timeout=cfg["timeouts"]["default_command_timeout_seconds"], env=deterministic_env())
+    ctx.log_command("ansible-inventory-grapher", argv, result)
+    if result.returncode != 0:
+        raise GrapherError(f"ansible-inventory-grapher failed:\n{result.stderr.strip()}", EXIT_VALIDATION_FAILED)
+    if not result.stdout.strip():
+        raise GrapherError("ansible-inventory-grapher produced no DOT output (exit 0 but no content — treated as failure, not success).", EXIT_PARTIAL_FAILURE)
+
+    ctx.atomic_write(dot_target, result.stdout.encode())
+    try:
+        validate_artifact_content(dot_target, "dot")
+    except GrapherError:
+        dot_target.unlink(missing_ok=True)
+        raise
+
+    requested_formats = args.formats or profile.get("formats", ["dot", "svg"])
+    for fmt in requested_formats:
+        if fmt == "dot":
+            continue
+        rendered = ctx.target_path(f"inventory/inventory.{fmt}")
+        render_result = run_command(
+            [dot_bin, f"-T{fmt}", str(dot_target), "-o", str(rendered)],
+            timeout=cfg["timeouts"]["default_command_timeout_seconds"],
+        )
+        ctx.log_command(f"dot -T{fmt}", [dot_bin, f"-T{fmt}"], render_result)
+        if render_result.returncode != 0:
+            ctx.warn(f"Graphviz failed to render '{fmt}': {render_result.stderr.strip()}")
+            rendered.unlink(missing_ok=True)
+            continue
+        try:
+            validate_artifact_content(rendered, fmt if fmt in ("svg", "json", "dot") else "binary")
+        except GrapherError as exc:
+            ctx.warn(f"Rejected invalid '{fmt}' artifact: {exc}")
+            rendered.unlink(missing_ok=True)
+            continue
+        ctx.generated_files.append(rendered)
+        size_mb = rendered.stat().st_size / (1024 * 1024)
+        if size_mb > cfg["thresholds"]["max_output_file_size_mb_before_warning"]:
+            ctx.warn(f"Generated file '{rendered}' is {size_mb:.1f}MB — consider a narrower pattern.")
+
+    if not cfg["output"]["keep_dot_files"] and "dot" not in requested_formats:
+        dot_target.unlink(missing_ok=True)
+        ctx.generated_files = [f for f in ctx.generated_files if f != dot_target]
+    else:
+        ctx.generated_files.append(dot_target) if dot_target not in ctx.generated_files else None
+
+    ctx.write_command_log()
+    print_final_report("inventory", profile_name, ctx)
+    if compat_sink is not None:
+        compat_sink.append(ctx.toolchain_compatibility)
+    return EXIT_OK
+
+
+# ---------------------------------------------------------------------------
+# Playbook graphing
+# ---------------------------------------------------------------------------
+
+PLAYBOOK_FLAG_MAP = {
+    "include_role_tasks": "--include-role-tasks",
+    "only_roles": "--only-roles",
+    "group_roles_by_name": "--group-roles-by-name",
+    "hide_plays_without_roles": "--hide-plays-without-roles",
+    "hide_empty_plays": "--hide-empty-plays",
+    "show_handlers": "--show-handlers",
+    "collapsible_nodes": "--collapsible-nodes",
+    "save_dot_file": "--save-dot-file",
+}
+
+RENDERER_EXTENSION = {"graphviz": "svg", "mermaid-flowchart": "mmd", "json": "json"}
+
+
+def build_playbook_argv(
+    grapher_bin: str,
+    playbooks: list[str],
+    inventory: str | None,
+    profile: dict[str, Any],
+    renderer: str,
+    output_file_base: Path,
+    tags: list[str],
+    skip_tags: list[str],
+    extra_vars: list[str],
+) -> list[str]:
+    argv = [grapher_bin]
+    for flag_key, flag in PLAYBOOK_FLAG_MAP.items():
+        if profile.get(flag_key):
+            argv.append(flag)
+    argv += ["--renderer", renderer]
+    if renderer == "mermaid-flowchart" and profile.get("renderer_mermaid_orientation"):
+        argv += ["--renderer-mermaid-orientation", profile["renderer_mermaid_orientation"]]
+    if inventory:
+        argv += ["-i", inventory]
+    for t in tags:
+        argv += ["-t", t]
+    for st in skip_tags:
+        argv += ["--skip-tags", st]
+    for ev in extra_vars:
+        argv += ["-e", ev]
+    argv += ["-o", str(output_file_base)]
+    argv += playbooks
+    return argv
+
+
+def cmd_playbook(args: argparse.Namespace, cfg: dict[str, Any], compat_sink: list | None = None) -> int:
+    output_dir = resolve_output_dir(args.output_dir or cfg["output"]["default_output_dir"])
+    ctx = RunContext(output_dir, cfg, args.force)
+    ctx.ensure_output_dir()
+
+    ansible_playbook_bin = require_executable("ansible-playbook", args.ansible_playbook_bin, "ANSIBLE_GRAPHER_ANSIBLE_PLAYBOOK_BIN")
+    grapher_bin = require_executable("ansible-playbook-grapher", args.grapher_bin, "ANSIBLE_GRAPHER_PLAYBOOK_GRAPHER_BIN")
+
+    if args.inventory:
+        allow_dynamic = args.allow_dynamic_inventory or env_bool("ANSIBLE_GRAPHER_ALLOW_DYNAMIC_INVENTORY", cfg["dynamic_inventory"]["allow_by_default"])
+        check_dynamic_inventory(ctx, args.inventory, allow_dynamic)
+
+    # Resolve to absolute paths before any cwd assumptions elsewhere in the pipeline —
+    # the caller may pass paths relative to their own project root, not this skill's
+    # output directory.
+    playbooks_abs = [str(Path(pb).expanduser().resolve()) for pb in args.playbook]
+    inventory_abs = str(Path(args.inventory).expanduser().resolve()) if args.inventory else None
+
+    for pb in playbooks_abs:
+        validate_playbook(ctx, pb, ansible_playbook_bin, inventory_abs)
+
+    profile_name = args.profile or cfg["profiles"]["default_playbook_profile"]
+    profile = cfg["_profiles"]["playbook_profiles"].get(profile_name)
+    if not profile:
+        raise GrapherError(f"Unknown playbook profile '{profile_name}'.", EXIT_ARG_ERROR)
+
+    timeout = cfg["timeouts"]["default_command_timeout_seconds"]
+    strict_version_match = resolve_tri_state(
+        args.strict_ansible_version_match, args.allow_ansible_version_mismatch,
+        "ANSIBLE_GRAPHER_STRICT_ANSIBLE_VERSION_MATCH", profile.get("strict_ansible_version_match"),
+        cfg.get("compatibility", {}).get("strict_ansible_version_match_default", False),
+    )
+    allow_development = resolve_tri_state(
+        args.allow_development_tool_versions, args.reject_development_tool_versions,
+        "ANSIBLE_GRAPHER_ALLOW_DEVELOPMENT_TOOL_VERSIONS", profile.get("allow_development_tool_versions"),
+        cfg.get("compatibility", {}).get("allow_development_tool_versions_default", True),
+    )
+    grapher_provenance = discover_tool_provenance("ansible-playbook-grapher", grapher_bin, timeout)
+    validation_ansible_version = get_ansible_core_version_via_cli(ansible_playbook_bin, timeout)
+    ctx.toolchain_compatibility = compute_toolchain_compatibility(
+        validation_ansible_version, grapher_provenance, strict_version_match, allow_development
+    )
+    if ctx.runtime_info["python_fallback_used"]:
+        ctx.warn(
+            f"Running under a system Python fallback ({ctx.runtime_info['python_executable']}), "
+            f"not the managed venv ({MANAGED_PYTHON_VENV}). Runtime isolation is degraded."
+        )
+        if ctx.toolchain_compatibility["status"] == "PASS":
+            ctx.toolchain_compatibility["status"] = "WARN"
+    for reason in ctx.toolchain_compatibility["reasons"]:
+        ctx.warn(f"[toolchain] {reason}")
+    if ctx.toolchain_compatibility["status"] == "FAIL":
+        raise GrapherError(
+            f"Toolchain compatibility check failed: {'; '.join(ctx.toolchain_compatibility['reasons'])}",
+            EXIT_VALIDATION_FAILED,
+        )
+
+    renderer = args.renderer or profile.get("renderer", "graphviz")
+    base_name = Path(args.playbook[0]).stem if len(args.playbook) == 1 else "combined"
+    ext = RENDERER_EXTENSION[renderer]
+    target = ctx.target_path(f"playbooks/{base_name}.{ext}")
+    output_file_base = target.with_suffix("")
+
+    if args.extra_vars:
+        ctx.warn("Extra-vars supplied. Values likely to contain secrets are redacted in logs/manifests, never echoed to chat output.")
+
+    argv = build_playbook_argv(
+        grapher_bin,
+        playbooks_abs,
+        inventory_abs,
+        profile,
+        renderer,
+        output_file_base,
+        args.tags or [],
+        args.skip_tags or [],
+        args.extra_vars or [],
+    )
+    result = run_command(argv, timeout=cfg["timeouts"]["default_command_timeout_seconds"], env=deterministic_env())
+    ctx.log_command("ansible-playbook-grapher", argv, result)
+    if result.returncode != 0:
+        raise GrapherError(f"ansible-playbook-grapher failed:\n{result.stderr.strip()}", EXIT_VALIDATION_FAILED)
+
+    if not target.exists():
+        raise GrapherError(
+            f"ansible-playbook-grapher exited 0 but the expected primary artifact "
+            f"'{target}' was not generated. Treated as a failure, not a success.",
+            EXIT_PARTIAL_FAILURE,
+        )
+    try:
+        validate_artifact_content(target, ext if ext in ("svg", "json") else "mmd")
+    except GrapherError:
+        target.unlink(missing_ok=True)
+        raise
+    ctx.generated_files.append(target)
+
+    dot_sibling = output_file_base.with_suffix(".dot")
+    if dot_sibling.exists():
+        ctx.generated_files.append(dot_sibling)
+
+    ctx.write_command_log()
+    print_final_report("playbook", profile_name, ctx)
+    if compat_sink is not None:
+        compat_sink.append(ctx.toolchain_compatibility)
+    return EXIT_OK
+
+
+# ---------------------------------------------------------------------------
+# Combined project graphing
+# ---------------------------------------------------------------------------
+
+def cmd_project(args: argparse.Namespace, cfg: dict[str, Any]) -> int:
+    output_dir = resolve_output_dir(args.output_dir or cfg["output"]["default_output_dir"])
+    combined_profile_name = args.profile or "documentation-pack"
+    combined = cfg["_profiles"]["combined_profiles"].get(combined_profile_name)
+    if not combined:
+        raise GrapherError(f"Unknown combined profile '{combined_profile_name}'.", EXIT_ARG_ERROR)
+
+    generated: list[Path] = []
+    warnings: list[str] = []
+    compat_results: list[dict[str, Any]] = []
+
+    # Precedence for the sub-invocations below: explicit `project`-level CLI flags win;
+    # otherwise the *combined* profile's own compatibility policy (e.g. ci-light forcing
+    # strict matching / rejecting dev tool versions) is applied as if it were a CLI flag
+    # — it must outrank the target inventory/playbook sub-profile's own (looser) setting.
+    compat_kwargs = dict(
+        strict_ansible_version_match=(
+            args.strict_ansible_version_match
+            or (combined.get("strict_ansible_version_match") is True and not args.allow_ansible_version_mismatch)
+        ),
+        allow_ansible_version_mismatch=args.allow_ansible_version_mismatch,
+        allow_development_tool_versions=args.allow_development_tool_versions,
+        reject_development_tool_versions=(
+            args.reject_development_tool_versions
+            or (combined.get("allow_development_tool_versions") is False and not args.allow_development_tool_versions)
+        ),
+    )
+
+    if args.inventory:
+        inv_args = argparse.Namespace(
+            inventory=args.inventory, pattern=None, profile=combined["inventory_profile"],
+            output_dir=str(output_dir), formats=None, show_variables=args.show_variables,
+            graph_attributes=None, force=args.force, dot_only_stdout=False,
+            ansible_inventory_bin=args.ansible_inventory_bin, grapher_bin=args.inventory_grapher_bin,
+            dot_bin=args.dot_bin, allow_dynamic_inventory=args.allow_dynamic_inventory,
+            **compat_kwargs,
+        )
+        cmd_inventory(inv_args, cfg, compat_sink=compat_results)
+    else:
+        warnings.append("No --inventory supplied; skipping inventory graph.")
+
+    for pb in args.playbook or []:
+        pb_args = argparse.Namespace(
+            playbook=[pb], inventory=args.inventory, profile=combined["playbook_profile"],
+            renderer=None, output_dir=str(output_dir), tags=None, skip_tags=None,
+            extra_vars=None, force=args.force,
+            ansible_playbook_bin=args.ansible_playbook_bin, grapher_bin=args.playbook_grapher_bin,
+            allow_dynamic_inventory=args.allow_dynamic_inventory,
+            **compat_kwargs,
+        )
+        cmd_playbook(pb_args, cfg, compat_sink=compat_results)
+        for extra_renderer in combined.get("extra_playbook_renderers", []):
+            pb_args2 = argparse.Namespace(**{**vars(pb_args), "renderer": extra_renderer, "force": True})
+            cmd_playbook(pb_args2, cfg)
+
+    severity = {"FAIL": 3, "WARN": 2, "UNKNOWN": 1, "PASS": 0}
+    overall_compat = max(compat_results, key=lambda c: severity.get(c["status"], 0)) if compat_results else None
+    if overall_compat:
+        warnings.extend(f"[toolchain:{overall_compat['grapher_label']}] {r}" for r in overall_compat["reasons"])
+
+    manifest = build_manifest(output_dir, cfg, "project", combined_profile_name, args, warnings)
+    manifest["toolchain_compatibility"] = compat_results
+    manifest["runtime"] = detect_runtime_info()
+    write_manifest(output_dir, manifest)
+    write_index(output_dir, manifest)
+
+    print(f"\nProject documentation pack written to: {output_dir}")
+    print(f"Next: open {output_dir / 'index.md'}")
+    return EXIT_OK
+
+
+# ---------------------------------------------------------------------------
+# Discovery
+# ---------------------------------------------------------------------------
+
+PLAYBOOK_TOP_KEYS = {"hosts", "roles", "tasks", "pre_tasks", "post_tasks", "handlers", "import_playbook"}
+
+
+def looks_like_playbook(path: Path) -> bool:
+    try:
+        data = yaml.safe_load(path.read_text())
+    except Exception:
+        return False
+    if not isinstance(data, list):
+        return False
+    for item in data:
+        if isinstance(item, dict) and PLAYBOOK_TOP_KEYS & item.keys():
+            return True
+    return False
+
+
+def cmd_discover(args: argparse.Namespace, cfg: dict[str, Any]) -> int:
+    project_root = Path(args.project_root).expanduser().resolve()
+    if not project_root.is_dir():
+        raise GrapherError(f"Project root '{project_root}' is not a directory.", EXIT_ARG_ERROR)
+
+    exclude_dirs = set(cfg["discovery"]["exclude_dirs"])
+    max_files = cfg["discovery"]["max_files_scanned"]
+    max_depth = cfg["discovery"]["max_recursion_depth"]
+
+    findings: dict[str, Any] = {
+        "project_root": str(project_root),
+        "ansible_cfg": None,
+        "inventories": [],
+        "playbook_candidates": [],
+        "roles_dirs": [],
+        "collections_dirs": [],
+        "requirements_files": [],
+        "group_vars_dirs": [],
+        "host_vars_dirs": [],
+        "warnings": [],
+        "limit_reached": False,
+    }
+
+    scanned = 0
+    for root, dirs, files in os.walk(project_root):
+        rel_depth = len(Path(root).relative_to(project_root).parts)
+        if rel_depth >= max_depth:
+            dirs[:] = []
+            continue
+        dirs[:] = [d for d in dirs if d not in exclude_dirs]
+        rootp = Path(root)
+
+        if rootp.name == "group_vars":
+            findings["group_vars_dirs"].append(str(rootp))
+        if rootp.name == "host_vars":
+            findings["host_vars_dirs"].append(str(rootp))
+        if rootp.name == "roles" and any((rootp / d / "tasks").is_dir() for d in os.listdir(rootp) if (rootp / d).is_dir()):
+            findings["roles_dirs"].append(str(rootp))
+        if rootp.name == "ansible_collections":
+            findings["collections_dirs"].append(str(rootp))
+
+        for fname in files:
+            scanned += 1
+            if scanned > max_files:
+                findings["limit_reached"] = True
+                findings["warnings"].append(f"Discovery stopped after scanning {max_files} files (limit reached).")
+                break
+            fpath = rootp / fname
+            if fname == "ansible.cfg" and findings["ansible_cfg"] is None:
+                findings["ansible_cfg"] = str(fpath)
+            elif fname in ("requirements.yml", "requirements.yaml"):
+                findings["requirements_files"].append(str(fpath))
+            elif fname.endswith((".yml", ".yaml")):
+                if looks_like_playbook(fpath):
+                    findings["playbook_candidates"].append(str(fpath))
+        if scanned > max_files:
+            break
+
+    # Inventory discovery: known filenames/dirs, validated with ansible-inventory, not
+    # selected purely because the filename contains "hosts".
+    ansible_inventory_bin = shutil.which("ansible-inventory")
+    inv_candidates: list[str] = []
+    for name in ("inventory", "inventories", "hosts", "hosts.yml", "hosts.yaml", "hosts.ini"):
+        candidate = project_root / name
+        if candidate.exists():
+            inv_candidates.append(str(candidate))
+    for candidate in inv_candidates:
+        entry = {"path": candidate, "valid": None}
+        if ansible_inventory_bin:
+            result = run_command(
+                [ansible_inventory_bin, "-i", candidate, "--list"],
+                timeout=cfg["timeouts"]["default_command_timeout_seconds"],
+            )
+            entry["valid"] = result.returncode == 0
+        findings["inventories"].append(entry)
+
+    findings["playbook_candidates"].sort()
+    recommended_playbooks = findings["playbook_candidates"][: cfg["thresholds"]["max_auto_selected_playbooks"]]
+    if len(findings["playbook_candidates"]) > len(recommended_playbooks):
+        findings["warnings"].append(
+            f"{len(findings['playbook_candidates'])} playbook candidates found; recommending only "
+            f"the first {len(recommended_playbooks)} (max_auto_selected_playbooks). Use "
+            f"'ansible-grapher playbook' explicitly for the rest."
+        )
+
+    valid_inventories = [i["path"] for i in findings["inventories"] if i["valid"]]
+    recommendation = {
+        "primary_inventory": valid_inventories[0] if valid_inventories else None,
+        "primary_playbooks": recommended_playbooks,
+        "suggested_profiles": {
+            "inventory": "inventory-summary",
+            "playbook": "playbook-roles" if len(recommended_playbooks) > 2 else "playbook-summary",
+        },
+        "risks": [],
+    }
+    if any(not i["valid"] for i in findings["inventories"]):
+        recommendation["risks"].append("One or more inventory candidates failed ansible-inventory validation.")
+    if findings["requirements_files"]:
+        recommendation["risks"].append("requirements.yml present — required collections/roles may not be installed.")
+    findings["recommendation"] = recommendation
+
+    output_dir = Path(args.output_dir).expanduser().resolve() if args.output_dir else None
+    md_lines = [
+        f"# Ansible project discovery: {project_root}",
+        "",
+        f"- ansible.cfg: `{findings['ansible_cfg'] or 'not found'}`",
+        f"- Inventory candidates: {len(findings['inventories'])} (valid: {len(valid_inventories)})",
+        f"- Playbook candidates: {len(findings['playbook_candidates'])} (recommended: {len(recommended_playbooks)})",
+        f"- Roles dirs: {len(findings['roles_dirs'])}",
+        f"- Collections dirs: {len(findings['collections_dirs'])}",
+        "",
+        "## Recommended graphing plan",
+        f"- Primary inventory: `{recommendation['primary_inventory'] or 'none identified'}`",
+        f"- Primary playbooks: {recommendation['primary_playbooks'] or 'none identified'}",
+        f"- Suggested profiles: {recommendation['suggested_profiles']}",
+        "",
+        "## Risks",
+    ] + [f"- {r}" for r in recommendation["risks"]] + [""] + (
+        ["## Warnings"] + [f"- {w}" for w in findings["warnings"]] if findings["warnings"] else []
+    )
+    md = "\n".join(md_lines) + "\n"
+
+    print(json.dumps(findings, indent=2))
+    print("\n" + md, file=sys.stderr)
+
+    if output_dir:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        (output_dir / "discovery.json").write_text(json.dumps(findings, indent=2))
+        (output_dir / "discovery.md").write_text(md)
+        print(f"\nWritten: {output_dir / 'discovery.json'}, {output_dir / 'discovery.md'}", file=sys.stderr)
+
+    return EXIT_OK
+
+
+# ---------------------------------------------------------------------------
+# Validate-only
+# ---------------------------------------------------------------------------
+
+SEVERITY_RANK = {"FAIL": 3, "WARN": 2, "UNKNOWN": 1, "PASS": 0}
+
+
+def _add_check(checks: list[dict[str, Any]], name: str, status: str, details: dict[str, Any] | None = None, remediation: str = "") -> None:
+    checks.append({"name": name, "status": status, "details": details or {}, "remediation": remediation})
+
+
+def cmd_validate(args: argparse.Namespace, cfg: dict[str, Any]) -> int:
+    checks: list[dict[str, Any]] = []
+    timeout = cfg["timeouts"]["default_command_timeout_seconds"]
+    as_json = getattr(args, "format", None) == "json"
+
+    strict_version_match = resolve_tri_state(
+        args.strict_ansible_version_match, args.allow_ansible_version_mismatch,
+        "ANSIBLE_GRAPHER_STRICT_ANSIBLE_VERSION_MATCH", None,
+        cfg.get("compatibility", {}).get("strict_ansible_version_match_default", False),
+    )
+    allow_development = resolve_tri_state(
+        args.allow_development_tool_versions, args.reject_development_tool_versions,
+        "ANSIBLE_GRAPHER_ALLOW_DEVELOPMENT_TOOL_VERSIONS", None,
+        cfg.get("compatibility", {}).get("allow_development_tool_versions_default", True),
+    )
+
+    # 1. Managed Python environment
+    runtime = detect_runtime_info()
+    venv_python = f"{MANAGED_PYTHON_VENV}/bin/python"
+    venv_ok = Path(venv_python).exists()
+    if venv_ok:
+        try:
+            probe = run_command([venv_python, "-c", "import yaml, sys; print(sys.version)"], timeout=timeout)
+            module_import_ok = probe.returncode == 0
+        except GrapherError:
+            module_import_ok = False
+        _add_check(
+            checks, "managed_python_env",
+            "PASS" if module_import_ok else "FAIL",
+            {"venv_python": venv_python, "module_import_ok": module_import_ok, "current_process": runtime},
+            "" if module_import_ok else f"Rebuild venv: mise exec -- python -m venv .venv && .venv/bin/python -m pip install PyYAML (in {os.path.dirname(MANAGED_PYTHON_VENV)})",
+        )
+    else:
+        _add_check(
+            checks, "managed_python_env", "WARN",
+            {"venv_python": venv_python, "exists": False, "current_process": runtime},
+            f"Managed venv missing. Rebuild: cd {os.path.dirname(MANAGED_PYTHON_VENV)} && mise install && "
+            f"mise exec -- python -m venv .venv && .venv/bin/python -m pip install PyYAML. "
+            f"Falling back to system Python requires explicit opt-in (ANSIBLE_GRAPHER_ALLOW_SYSTEM_PYTHON_FALLBACK=1 "
+            f"or --allow-system-python-fallback) — it is never silent.",
+        )
+    _add_check(
+        checks, "python_version_supported",
+        "PASS" if runtime["python_in_supported_range"] else "WARN",
+        {"version": runtime["python_version"], "supported_range": f"{'.'.join(map(str, SUPPORTED_PYTHON_MIN))}-{'.'.join(map(str, SUPPORTED_PYTHON_MAX))}"},
+    )
+    if runtime["python_fallback_used"]:
+        _add_check(checks, "python_runtime_isolation", "WARN", {"executable": runtime["python_executable"]}, "Managed venv fallback was used explicitly for this run.")
+    else:
+        _add_check(checks, "python_runtime_isolation", "PASS", {"executable": runtime["python_executable"]})
+
+    # 2. Executable resolution + tool versions + release status
+    exe_specs = (
+        ("ansible-inventory-grapher", "ANSIBLE_GRAPHER_INVENTORY_GRAPHER_BIN"),
+        ("ansible-playbook-grapher", "ANSIBLE_GRAPHER_PLAYBOOK_GRAPHER_BIN"),
+        ("ansible-inventory", "ANSIBLE_GRAPHER_ANSIBLE_INVENTORY_BIN"),
+        ("ansible-playbook", "ANSIBLE_GRAPHER_ANSIBLE_PLAYBOOK_BIN"),
+        ("dot", "ANSIBLE_GRAPHER_DOT_BIN"),
+    )
+    resolved: dict[str, str | None] = {}
+    for name, envvar in exe_specs:
+        path = resolve_executable(name, None, envvar)
+        resolved[name] = path
+        _add_check(
+            checks, f"executable:{name}", "PASS" if path else "FAIL",
+            {"resolved_path": path},
+            "" if path else f"Set ${envvar} to the tool's executable path, or add it to PATH. This skill does not install it automatically.",
+        )
+        if not as_json:
+            print(f"[{'OK' if path else 'MISSING'}] {name}: {path or 'not found'}")
+
+    inventory_grapher_provenance = playbook_grapher_provenance = None
+    if resolved["ansible-inventory-grapher"]:
+        inventory_grapher_provenance = discover_tool_provenance("ansible-inventory-grapher", resolved["ansible-inventory-grapher"], timeout)
+        dev_status = inventory_grapher_provenance["release_status"]
+        _add_check(
+            checks, "inventory_grapher_release_status",
+            "PASS" if dev_status == "stable" else ("WARN" if allow_development else "FAIL"),
+            {"version": inventory_grapher_provenance["tool_version_raw"], "release_status": dev_status, "git": inventory_grapher_provenance["git"]},
+            "" if dev_status == "stable" else "Set allow_development_tool_versions / --reject-development-tool-versions per policy.",
+        )
+    if resolved["ansible-playbook-grapher"]:
+        playbook_grapher_provenance = discover_tool_provenance("ansible-playbook-grapher", resolved["ansible-playbook-grapher"], timeout)
+        dev_status = playbook_grapher_provenance["release_status"]
+        _add_check(
+            checks, "playbook_grapher_release_status",
+            "PASS" if dev_status == "stable" else ("WARN" if allow_development else "FAIL"),
+            {"version": playbook_grapher_provenance["tool_version_raw"], "release_status": dev_status, "git": playbook_grapher_provenance["git"]},
+            "" if dev_status == "stable" else "Set allow_development_tool_versions / --reject-development-tool-versions per policy.",
+        )
+
+    # 3. Ansible version alignment (both domains)
+    if resolved["ansible-inventory"] and inventory_grapher_provenance:
+        validation_v = get_ansible_core_version_via_cli(resolved["ansible-inventory"], timeout)
+        alignment = compute_toolchain_compatibility(validation_v, inventory_grapher_provenance, strict_version_match, allow_development)
+        _add_check(
+            checks, "inventory_ansible_version_match", alignment["status"],
+            {k: v for k, v in alignment.items() if k != "status"},
+        )
+    if resolved["ansible-playbook"] and playbook_grapher_provenance:
+        validation_v = get_ansible_core_version_via_cli(resolved["ansible-playbook"], timeout)
+        alignment = compute_toolchain_compatibility(validation_v, playbook_grapher_provenance, strict_version_match, allow_development)
+        _add_check(
+            checks, "playbook_ansible_version_match", alignment["status"],
+            {k: v for k, v in alignment.items() if k != "status"},
+            "" if alignment["status"] == "PASS" else "Version mismatch is expected on this stack (each grapher runs its own isolated ansible-core); see docs/troubleshooting.md. Use --strict-ansible-version-match to enforce an exact match.",
+        )
+
+    # 4. Renderer support (documented capability — see docs/tool-capabilities.md)
+    _add_check(checks, "renderer_support", "PASS", {"renderers": list(RENDERER_EXTENSION.keys())})
+
+    # 5. Profile validity
+    profiles = cfg.get("_profiles", {})
+    missing_profiles = []
+    for group, key in (("inventory_profiles", "default_inventory_profile"), ("playbook_profiles", "default_playbook_profile")):
+        default_name = cfg["profiles"][key]
+        if default_name not in profiles.get(group, {}):
+            missing_profiles.append(f"{group}:{default_name}")
+    _add_check(checks, "profile_validity", "PASS" if not missing_profiles else "FAIL", {"missing": missing_profiles})
+
+    # 6. Output directory safety
+    if args.output_dir:
+        try:
+            resolve_output_dir(args.output_dir)
+            _add_check(checks, "output_path_safety", "PASS", {"path": args.output_dir})
+        except GrapherError as exc:
+            _add_check(checks, "output_path_safety", "FAIL", {"path": args.output_dir, "error": str(exc)})
+
+    # 7. Inventory parser result
+    if args.inventory and resolved["ansible-inventory"]:
+        dummy_ctx = RunContext(Path("."), cfg, False)
+        try:
+            validate_inventory(dummy_ctx, args.inventory, resolved["ansible-inventory"])
+            _add_check(checks, "inventory_parse", "PASS", {"target": args.inventory})
+        except GrapherError as exc:
+            _add_check(checks, "inventory_parse", "FAIL", {"target": args.inventory, "error": str(exc)})
+
+    # 8. Playbook syntax
+    for pb in args.playbook or []:
+        if not resolved["ansible-playbook"]:
+            continue
+        argv = [resolved["ansible-playbook"], "--syntax-check", pb]
+        if args.inventory:
+            argv += ["-i", args.inventory]
+        result = run_command(argv, timeout=timeout)
+        _add_check(
+            checks, "playbook_syntax", "PASS" if result.returncode == 0 else "FAIL",
+            {"target": pb, "stderr": result.stderr.strip() if result.returncode != 0 else None},
+        )
+
+    # 9. Policy summary checks (always informational, never fail on their own)
+    _add_check(checks, "dynamic_inventory_policy", "PASS", {"allow_by_default": cfg["dynamic_inventory"]["allow_by_default"]})
+    _add_check(checks, "development_version_policy", "PASS", {"allow_development_tool_versions": allow_development})
+    _add_check(checks, "strict_compatibility_policy", "PASS", {"strict_ansible_version_match": strict_version_match})
+
+    # Aggregate + strict promotion
+    overall_status = "PASS"
+    for c in checks:
+        if SEVERITY_RANK[c["status"]] > SEVERITY_RANK[overall_status]:
+            overall_status = c["status"]
+    if strict_version_match and overall_status == "WARN":
+        overall_status = "FAIL"
+        for c in checks:
+            if c["status"] == "WARN":
+                c["status"] = "FAIL"
+
+    report = {"status": overall_status, "checks": checks}
+
+    if as_json:
+        print(json.dumps(report, indent=2))
+    else:
+        for c in checks:
+            marker = {"PASS": "OK", "WARN": "WARN", "FAIL": "FAILED", "UNKNOWN": "UNKNOWN"}[c["status"]]
+            print(f"[{marker}] {c['name']}")
+            if c["status"] in ("WARN", "FAIL") and c.get("remediation"):
+                print(f"    remediation: {c['remediation']}")
+        print(f"\nOverall: {overall_status}")
+
+    return EXIT_OK if overall_status in ("PASS", "WARN") else EXIT_VALIDATION_FAILED
+
+
+# ---------------------------------------------------------------------------
+# Clean
+# ---------------------------------------------------------------------------
+
+def cmd_clean(args: argparse.Namespace, cfg: dict[str, Any]) -> int:
+    # Check symlink-ness on the raw path BEFORE resolving — resolve_output_dir() follows
+    # symlinks to their real target, so checking after resolution would never detect one.
+    raw_path = Path(args.output_dir).expanduser()
+    if raw_path.is_symlink():
+        raise GrapherError(f"Refusing to clean symlinked path '{raw_path}'.", EXIT_OUTPUT_UNSAFE)
+
+    output_dir = resolve_output_dir(args.output_dir)
+    marker = output_dir / cfg["output"]["ownership_marker"]
+
+    if not output_dir.exists():
+        print(f"Nothing to clean: '{output_dir}' does not exist.")
+        return EXIT_OK
+
+    if not marker.exists():
+        raise GrapherError(
+            f"Refusing to clean '{output_dir}': ownership marker "
+            f"'{cfg['output']['ownership_marker']}' not found. This directory was not "
+            f"(fully) generated by skill-ansible-grapher.",
+            EXIT_OUTPUT_UNSAFE,
+        )
+    try:
+        marker_data = json.loads(marker.read_text())
+        if marker_data.get("schema") != "ansible-grapher-owned":
+            raise ValueError("unexpected schema")
+    except Exception as exc:
+        raise GrapherError(f"Ownership marker in '{output_dir}' is invalid: {exc}", EXIT_OUTPUT_UNSAFE)
+
+    if not args.force:
+        print(f"Would remove: {output_dir} (re-run with --force to actually delete)")
+        return EXIT_OK
+
+    removed = 0
+    for root, dirs, files in os.walk(output_dir, topdown=False, followlinks=False):
+        rootp = Path(root)
+        for fname in files:
+            fp = rootp / fname
+            if fp.is_symlink():
+                continue
+            fp.unlink()
+            removed += 1
+        for dname in dirs:
+            dp = rootp / dname
+            if dp.is_symlink():
+                continue
+            try:
+                dp.rmdir()
+            except OSError:
+                pass
+    try:
+        output_dir.rmdir()
+    except OSError:
+        pass
+    print(f"Removed {removed} files under '{output_dir}'.")
+    return EXIT_OK
+
+
+# ---------------------------------------------------------------------------
+# Profiles listing
+# ---------------------------------------------------------------------------
+
+def cmd_profiles(args: argparse.Namespace, cfg: dict[str, Any]) -> int:
+    profiles = cfg["_profiles"]
+    for group in ("inventory_profiles", "playbook_profiles", "combined_profiles"):
+        print(f"\n[{group}]")
+        for name, spec in profiles.get(group, {}).items():
+            print(f"  {name}: {spec.get('description', '')}")
+    return EXIT_OK
+
+
+# ---------------------------------------------------------------------------
+# Manifest / index / report
+# ---------------------------------------------------------------------------
+
+def build_manifest(output_dir: Path, cfg: dict[str, Any], mode: str, profile: str, args: argparse.Namespace, warnings: list[str]) -> dict[str, Any]:
+    files = []
+    for p in sorted(output_dir.rglob("*")):
+        if p.is_file() and p.name != cfg["output"]["ownership_marker"] and p.name != "manifest.json":
+            files.append({"path": str(p.relative_to(output_dir)), "sha256": sha256_of(p), "size_bytes": p.stat().st_size})
+    return {
+        "schema_version": MANIFEST_SCHEMA_VERSION,
+        "skill_version": SKILL_VERSION,
+        "mode": mode,
+        "profile": profile,
+        "output_root": str(output_dir),
+        "generated_files": files,
+        "warnings": warnings,
+    }
+
+
+def write_manifest(output_dir: Path, manifest: dict[str, Any]) -> Path:
+    path = output_dir / "manifest.json"
+    path.write_text(json.dumps(manifest, indent=2))
+    return path
+
+
+def write_index(output_dir: Path, manifest: dict[str, Any]) -> Path:
+    lines = [
+        "# Ansible Grapher — Documentation Index",
+        "",
+        f"Mode: {manifest['mode']} | Profile: {manifest['profile']}",
+        "",
+        "## Generated artifacts",
+    ]
+    for f in manifest["generated_files"]:
+        lines.append(f"- [{f['path']}]({f['path']}) ({f['size_bytes']} bytes)")
+    if manifest["warnings"]:
+        lines.append("\n## Warnings")
+        for w in manifest["warnings"]:
+            lines.append(f"- {w}")
+    path = output_dir / "index.md"
+    path.write_text("\n".join(lines) + "\n")
+    return path
+
+
+def print_final_report(mode: str, profile: str, ctx: RunContext) -> None:
+    print(f"\n=== ansible-grapher: {mode} ({profile}) ===")
+    print(f"Output directory: {ctx.output_dir}")
+    print("Generated artifacts:")
+    for f in ctx.generated_files:
+        print(f"  - {f}")
+    if ctx.toolchain_compatibility:
+        tc = ctx.toolchain_compatibility
+        print(
+            f"Toolchain compatibility: {tc['status']} "
+            f"(validation ansible={tc['validation_ansible_version'] or 'unknown'}, "
+            f"{tc['grapher_label']} ansible={tc['grapher_ansible_version'] or 'unknown'}, "
+            f"strict_mode={tc['strict_mode']})"
+        )
+    if ctx.runtime_info.get("python_fallback_used"):
+        print(f"Runtime isolation: degraded (system Python fallback: {ctx.runtime_info.get('python_executable')})")
+    if ctx.warnings:
+        print("Warnings:")
+        for w in ctx.warnings:
+            print(f"  - {w}")
+    print(f"Next: ls -la {ctx.output_dir}")
+
+
+# ---------------------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------------------
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="ansible-grapher", description=__doc__)
+    sub = p.add_subparsers(dest="command", required=True)
+
+    common_bins = argparse.ArgumentParser(add_help=False)
+    common_bins.add_argument("--force", action="store_true", help="Overwrite existing artifacts.")
+
+    compat_flags = argparse.ArgumentParser(add_help=False)
+    compat_flags.add_argument("--strict-ansible-version-match", action="store_true")
+    compat_flags.add_argument("--allow-ansible-version-mismatch", action="store_true")
+    compat_flags.add_argument("--allow-development-tool-versions", action="store_true")
+    compat_flags.add_argument("--reject-development-tool-versions", action="store_true")
+
+    discover_p = sub.add_parser("discover", parents=[common_bins])
+    discover_p.add_argument("--project-root", required=True)
+    discover_p.add_argument("--output-dir")
+    discover_p.set_defaults(func=cmd_discover)
+
+    inv_p = sub.add_parser("inventory", parents=[common_bins, compat_flags])
+    inv_p.add_argument("--inventory", required=True)
+    inv_p.add_argument("--pattern")
+    inv_p.add_argument("--profile")
+    inv_p.add_argument("--output-dir")
+    inv_p.add_argument("--format", dest="formats", action="append", choices=["dot", "svg", "png", "pdf"])
+    inv_p.add_argument("--show-variables", action="store_true")
+    inv_p.add_argument("--graph-attributes")
+    inv_p.add_argument("--allow-dynamic-inventory", action="store_true")
+    inv_p.add_argument("--ansible-inventory-bin")
+    inv_p.add_argument("--grapher-bin")
+    inv_p.add_argument("--dot-bin")
+    inv_p.add_argument("--dot-only-stdout", action="store_true", help=argparse.SUPPRESS)
+    inv_p.set_defaults(func=cmd_inventory)
+
+    pb_p = sub.add_parser("playbook", parents=[common_bins, compat_flags])
+    pb_p.add_argument("--playbook", action="append", required=True, dest="playbook")
+    pb_p.add_argument("--inventory")
+    pb_p.add_argument("--profile")
+    pb_p.add_argument("--renderer", choices=["graphviz", "mermaid-flowchart", "json"])
+    pb_p.add_argument("--tags", action="append")
+    pb_p.add_argument("--skip-tags", action="append")
+    pb_p.add_argument("--extra-vars", action="append")
+    pb_p.add_argument("--output-dir")
+    pb_p.add_argument("--allow-dynamic-inventory", action="store_true")
+    pb_p.add_argument("--ansible-playbook-bin")
+    pb_p.add_argument("--grapher-bin")
+    pb_p.set_defaults(func=cmd_playbook)
+
+    proj_p = sub.add_parser("project", parents=[common_bins, compat_flags])
+    proj_p.add_argument("--project-root", required=True)
+    proj_p.add_argument("--inventory")
+    proj_p.add_argument("--playbook", action="append")
+    proj_p.add_argument("--profile")
+    proj_p.add_argument("--output-dir")
+    proj_p.add_argument("--show-variables", action="store_true")
+    proj_p.add_argument("--allow-dynamic-inventory", action="store_true")
+    proj_p.add_argument("--ansible-inventory-bin")
+    proj_p.add_argument("--ansible-playbook-bin")
+    proj_p.add_argument("--inventory-grapher-bin")
+    proj_p.add_argument("--playbook-grapher-bin")
+    proj_p.add_argument("--dot-bin")
+    proj_p.set_defaults(func=cmd_project)
+
+    val_p = sub.add_parser("validate", parents=[compat_flags])
+    val_p.add_argument("--project-root")
+    val_p.add_argument("--inventory")
+    val_p.add_argument("--playbook", action="append")
+    val_p.add_argument("--output-dir")
+    val_p.add_argument("--format", choices=["text", "json"], default="text")
+    val_p.set_defaults(func=cmd_validate)
+
+    clean_p = sub.add_parser("clean")
+    clean_p.add_argument("--output-dir", required=True)
+    clean_p.add_argument("--force", action="store_true")
+    clean_p.set_defaults(func=cmd_clean)
+
+    prof_p = sub.add_parser("profiles")
+    prof_p.set_defaults(func=cmd_profiles)
+
+    help_p = sub.add_parser("help")
+    help_p.set_defaults(func=lambda a, c: (p.print_help(), EXIT_OK)[1])
+
+    return p
+
+
+def main(argv: list[str]) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    cfg = load_config()
+    try:
+        return args.func(args, cfg)
+    except GrapherError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return exc.exit_code
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

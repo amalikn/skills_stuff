@@ -1,0 +1,7 @@
+id: pilot-planning
+name: Pilot Planning
+lifecycle: PROTOTYPE
+inputs: [assessment_plan, economics, risks, capacity]
+outputs: [pilot_scope, success_criteria, stop_loss_criteria, review_schedule]
+human_approval: required_to_start
+implementation: bftoolkit.gates:evaluate_pilot_gate

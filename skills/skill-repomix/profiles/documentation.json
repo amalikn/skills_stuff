@@ -1,0 +1,13 @@
+{
+  "id": "documentation",
+  "displayName": "Documentation",
+  "description": "Documentation-focused repositories.",
+  "detect": {"anyFiles": ["mkdocs.yml", "docusaurus.config.js"], "anyDirectories": ["docs"]},
+  "include": ["README.md", "AGENTS.md", "ARCHITECTURE.md", "AI_NAVIGATION.md", "CHANGELOG.md", "docs/**/*.md", "docs/**/*.mdx", "**/*.rst", "mkdocs.yml", "docusaurus.config.*", "sidebars.*"],
+  "ignore": ["site/**", "docs/.vitepress/dist/**", "docs/reports/archive/**"],
+  "priorityFiles": ["README.md", "ARCHITECTURE.md", "AI_NAVIGATION.md"],
+  "securitySensitivePatterns": [],
+  "defaultCompression": false,
+  "defaultTokenBudget": 80000,
+  "notes": []
+}

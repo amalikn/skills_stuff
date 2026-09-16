@@ -1,0 +1,161 @@
+version: 1
+created: "2026-05-26"
+status: "active — wiki access configured; project docs use direct structured lookup (no Qdrant collection needed)"
+
+project:
+  id: "invoice-finance-analyst"
+  slug: "invoice_finance_analyst"
+  description: "Invoice reconciliation and finance analysis skill — APN internal use"
+  root: "/Volumes/Data/_ai/_skills/skills_stuff/invoice-finance-analyst"
+
+# Allowed Qdrant collections — only these may be queried for this project
+allowed_collections:
+  - name: "rag__wiki_vocus"
+    type: "wiki"
+    domain: "vocus"
+    authority: "shared_reference_authoritative_markdown"
+    reason: "Vocus billing mechanics, invoice record types, CVC/AVC billing — directly relevant"
+  - name: "rag__wiki_nbn"
+    type: "wiki"
+    domain: "nbn"
+    authority: "shared_reference_authoritative_markdown"
+    reason: "NBN/WBA/DCR reference knowledge — secondary; relevant for NBN billing interpretation"
+  - name: "rag__project_invoice_finance_analyst"
+    type: "project"
+    status: "not_needed"
+    reason: "profile-file classified all project docs as financial_rate_card with index_allowed=false — direct structured/table lookup outperforms vector RAG for these docs"
+
+# Forbidden collections — must never be queried
+forbidden_collections:
+  - "rag__global_all_docs"
+  - "rag__wiki_all"
+  - "rag__all"
+  - "default"
+  - "documents"
+  - "knowledge"
+  - "rag__project_vocus_profitability"  # different project; isolation enforced
+
+# Authority order for retrieval answers
+authority_order:
+  - source: "project_local_parquet"
+    note: "All numeric conclusions — pandas/parquet is always authoritative over wiki"
+  - source: "rag__wiki_vocus"
+    note: "Vocus billing interpretation and rate-card context"
+  - source: "rag__wiki_nbn"
+    note: "NBN terminology and DCR/WBA reference"
+  - source: "rag__project_invoice_finance_analyst"
+    note: "Project governance docs — data contract, output schema, skill behavior"
+
+# Project document manifest — documents eligible for indexing
+# All documents must have index: true AND sensitive: false before indexing
+documents:
+  - path: "docs/data_contract.md"
+    document_id: "invoice-fa/data-contract"
+    title: "Data Contract — Internal Invoice Analysis"
+    source_type: "project_doc"
+    sensitive: false
+    index: false  # index_allowed=false — profiler result 2026-05-26
+    profiled: true
+    document_class: "financial_rate_card"
+    heading_count: 20
+    table_count: 9
+    estimated_tokens: 2928
+    recommended_retrieval:
+      - "table_aware_lookup"      # primary — 9 tables
+      - "direct_structured_lookup"  # secondary — 20 headings
+      - "vector_rag"               # fallback only
+    retrieval_route_selected: "lookup-table"
+    notes: "Canonical input schema for 4 source types. Use rag-tools lookup-table or structured-lookup directly."
+
+  - path: "docs/output_schema.md"
+    document_id: "invoice-fa/output-schema"
+    title: "Output Schema — Internal Invoice Analysis"
+    source_type: "project_doc"
+    sensitive: false
+    index: false  # index_allowed=false — profiler result 2026-05-26
+    profiled: true
+    document_class: "financial_rate_card"
+    heading_count: 32
+    table_count: 18
+    estimated_tokens: 3968
+    recommended_retrieval:
+      - "table_aware_lookup"        # primary — 18 tables
+      - "direct_structured_lookup"  # secondary — 32 headings
+      - "vector_rag"                # fallback only
+    retrieval_route_selected: "lookup-table"
+    notes: "22 parquet table definitions. Use rag-tools lookup-table for schema queries."
+
+  - path: "internal-invoice-analysis/SKILL.md"
+    document_id: "invoice-fa/skill"
+    title: "Internal Invoice Analysis"
+    source_type: "project_doc"
+    sensitive: false
+    index: false  # index_allowed=false — profiler result 2026-05-26
+    profiled: true
+    document_class: "financial_rate_card"
+    heading_count: 68
+    table_count: 8
+    section_ids: ["0.4.0"]
+    estimated_tokens: 5377
+    recommended_retrieval:
+      - "table_aware_lookup"        # primary — 8 tables + 68 headings
+      - "direct_structured_lookup"  # secondary
+      - "vector_rag"                # fallback only
+    retrieval_route_selected: "structured-lookup"
+    notes: "15-step workflow spec. Use rag-tools structured-lookup or lookup-table for behavior queries."
+
+  - path: "docs/invoice_analysis_framework.md"
+    document_id: "invoice-fa/framework"
+    title: "Invoice Analysis Framework (planning artifact)"
+    source_type: "project_doc"
+    sensitive: false
+    index: false
+    notes: "884-line planning/research doc — LOW authority; do not index until reviewed"
+
+  - path: "examples/"
+    document_id: null
+    title: "Fixture CSVs and mapping YAMLs"
+    source_type: "fixture_data"
+    sensitive: false
+    index: false
+    notes: "Synthetic fixtures only; not production data; no indexing needed"
+
+  - path: "db/"
+    document_id: null
+    title: "Runtime parquet outputs"
+    source_type: "runtime_artifact"
+    sensitive: true
+    index: false
+    notes: "Runtime outputs — never index; may contain real data post-4b gate"
+
+# Retrieval rules
+retrieval_rules:
+  require_evidence_bundle: true
+  fallback_on_empty: "RETRIEVAL_NOT_READY"
+  allow_training_knowledge_fallback: false
+  numeric_answer_requires_parquet_source: true
+  wiki_answers_require_collection_citation: true
+
+# Profiling — COMPLETE 2026-05-26
+profiling_complete:
+  - doc: "data_contract"
+    result: "financial_rate_card / index_allowed=false / route=lookup-table"
+  - doc: "output_schema"
+    result: "financial_rate_card / index_allowed=false / route=lookup-table"
+  - doc: "skill"
+    result: "financial_rate_card / index_allowed=false / route=structured-lookup"
+
+# Readiness state
+readiness:
+  wiki_operational: "WIKI_OPERATIONAL_READY"
+  rag_tools: "RAG_TOOLS_READY"
+  rag_tools_dynamic: "RAG_TOOLS_DYNAMIC_RETRIEVAL_READY"
+  wiki_vocus_indexed: "WIKI_DOMAIN_INDEXED"
+  wiki_nbn_indexed: "WIKI_DOMAIN_INDEXED"
+  document_profile: "DOCUMENT_PROFILE_COMPLETE"
+  strategy_recommended: "STRATEGY_RECOMMENDED"
+  retrieval_route_selected: "RETRIEVAL_ROUTE_SELECTED"
+  project_bridge: "PROJECT_WIKI_BRIDGE_READY"
+  project_rag_policy: "PROJECT_RAG_POLICY_VALIDATED"
+  project_collection: "not_needed — all project docs use direct file lookup, not Qdrant"
+  next_step: "Bridge is fully operational. For wiki queries: use rag-tools vector_rag against rag__wiki_vocus or rag__wiki_nbn. For project doc queries: use rag-tools lookup-table or structured-lookup directly on the source file."

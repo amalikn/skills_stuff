@@ -1,0 +1,7 @@
+---
+- name: Broken play
+  hosts: all
+  tasks:
+    - name: Missing module name (syntax error)
+      this_is_not_a_real_module_key: {}
+      also_not_valid: [

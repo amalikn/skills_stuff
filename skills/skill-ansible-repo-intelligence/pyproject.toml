@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ansible-repo-intelligence"
+version = "0.1.0"
+description = "Deterministic static intelligence for Ansible repositories: bounded, source-traceable, offline."
+readme = "README.md"
+requires-python = ">=3.14"
+license = { text = "MIT" }
+authors = [{ name = "Malik Ahmad" }]
+
+# FOSS, offline-capable dependencies only. No paid API, cloud, embeddings,
+# vector DB, or LLM is used during index generation.
+dependencies = [
+    "ruamel.yaml>=0.18",   # line-aware, safe YAML loading
+    "jsonschema>=4.21",    # JSON Schema Draft 2020-12 validation
+    "jinja2>=3.1",         # PARSE-ONLY AST inspection of Jinja expressions; never render()
+    "networkx>=3.2",       # graph algorithms for bounded traversal / reachability
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+]
+
+[project.scripts]
+ansible-repo-intelligence = "ansible_repo_intelligence.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ansible_repo_intelligence = ["../../schemas/*.yaml", "../../config/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

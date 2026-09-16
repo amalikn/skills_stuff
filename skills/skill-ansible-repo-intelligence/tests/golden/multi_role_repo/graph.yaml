@@ -1,0 +1,734 @@
+schema_version: 1.0.0
+statistics:
+  node_count: 27
+  edge_count: 12
+  nodes_by_kind:
+    collection: 1
+    handler: 1
+    inventory_flavor: 1
+    inventory_group: 2
+    inventory_host: 3
+    play: 1
+    playbook: 1
+    role: 2
+    task: 6
+    task_file: 2
+    template: 1
+    variable: 5
+    vars_plugin: 1
+  edges_by_type:
+    depends_on: 1
+    import_role: 1
+    include_tasks: 1
+    member_of: 3
+    notifies: 2
+    supplies: 2
+    uses_role: 2
+  nodes_by_significance:
+    critical: 3
+    high: 4
+    low: 6
+    normal: 14
+  retrieval_topic_count: 2
+retrieval_topics:
+  dns:
+    summary: Role 'dns' tasks, handlers and templates
+    primary_nodes:
+    - role:dns
+    - template:roles/dns/templates/resolved.conf.j2
+    source_paths:
+    - roles/dns/handlers/main.yml
+    - roles/dns/tasks/main.yml
+    - roles/dns/templates/resolved.conf.j2
+  web:
+    summary: Role 'web' tasks, handlers and templates
+    primary_nodes:
+    - role:web
+    source_paths:
+    - roles/web/tasks/main.yml
+nodes:
+- id: collection:community.general
+  kind: collection
+  name: community.general
+  significance: normal
+  source:
+    path: collections/ansible_collections/community/general
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    origin: vendored_third_party
+    version: 1.0.0
+- id: handler:roles/dns/handlers/main.yml:0:0
+  kind: handler
+  name: restart resolved
+  significance: high
+  source:
+    path: roles/dns/handlers/main.yml
+    document: 0
+    line_start: 2
+    line_end: 2
+    content_hash: sha256:2234b9e31eeb0e85ffe3e091306e15553646e8bb9237dbad07be496c51c47152
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    listen: []
+    module: ansible.builtin.service
+    role: dns
+- id: inventory-flavor:prod_env
+  kind: inventory_flavor
+  name: prod_env
+  significance: normal
+  source:
+    path: inventories/prod_env
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    environments:
+    - prod
+    var_dirs:
+    - group_vars
+- id: inventory-group:prod_env:prod:dns
+  kind: inventory_group
+  name: dns
+  significance: normal
+  source:
+    path: inventories/prod_env/prod
+    document:
+    line_start:
+    line_end:
+    content_hash: sha256:aa6268318b398d0a5ff6f46a35f0244375e421cd49183c6048180e2b46428c45
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    children: []
+    environment: prod
+    flavor: prod_env
+    host_count: 1
+- id: inventory-group:prod_env:prod:web
+  kind: inventory_group
+  name: web
+  significance: normal
+  source:
+    path: inventories/prod_env/prod
+    document:
+    line_start:
+    line_end:
+    content_hash: sha256:aa6268318b398d0a5ff6f46a35f0244375e421cd49183c6048180e2b46428c45
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    children: []
+    environment: prod
+    flavor: prod_env
+    host_count: 2
+- id: inventory-host:prod_env:prod:dns1
+  kind: inventory_host
+  name: dns1
+  significance: low
+  source:
+    path: inventories/prod_env/prod
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    environment: prod
+    flavor: prod_env
+- id: inventory-host:prod_env:prod:web1
+  kind: inventory_host
+  name: web1
+  significance: low
+  source:
+    path: inventories/prod_env/prod
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    environment: prod
+    flavor: prod_env
+- id: inventory-host:prod_env:prod:web2
+  kind: inventory_host
+  name: web2
+  significance: low
+  source:
+    path: inventories/prod_env/prod
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    environment: prod
+    flavor: prod_env
+- id: play:site.yml:0:0
+  kind: play
+  name: Configure DNS and web
+  significance: normal
+  source:
+    path: site.yml
+    document: 0
+    line_start: 2
+    line_end: 2
+    content_hash: sha256:32bf1e2e6c55b5c9b2551fb35c9b5ca95761b6e91cbe8c72fe73156dcaed490c
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    hosts: all
+- id: playbook:site.yml
+  kind: playbook
+  name: site.yml
+  significance: high
+  source:
+    path: site.yml
+    document: 0
+    line_start:
+    line_end:
+    content_hash: sha256:a06976c062920e5411db92d018db0eb583b390893d9b5882d35762a2875346a2
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes: {}
+- id: role:dns
+  kind: role
+  name: dns
+  significance: normal
+  source:
+    path: roles/dns
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes: {}
+- id: role:web
+  kind: role
+  name: web
+  significance: normal
+  source:
+    path: roles/web
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes: {}
+- id: task:roles/dns/tasks/main.yml:0:0
+  kind: task
+  name: Deploy resolved config
+  significance: critical
+  significance_rule_id: credential-handling
+  source:
+    path: roles/dns/tasks/main.yml
+    document: 0
+    line_start: 2
+    line_end: 2
+    content_hash: sha256:b01092f5b10f986815e3f9903b62b7b825837d82de93db1e22cd8f7b0cd6dcaa
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    module: ansible.builtin.template
+    notify:
+    - restart resolved
+    operation: render_template
+    resource:
+      src: resolved.conf.j2
+      dest: /etc/systemd/resolved.conf
+    role: dns
+    verification:
+      recommended: true
+      reason: Critical operation; verify against source
+- id: task:roles/dns/tasks/main.yml:0:1
+  kind: task
+  name: Dynamic include
+  significance: normal
+  significance_rule_id: default
+  source:
+    path: roles/dns/tasks/main.yml
+    document: 0
+    line_start: 7
+    line_end: 7
+    content_hash: sha256:64ed028fe1e7e668e191af5bb46745867e0f6dca9129dc90fe06ff2b15eb2d0c
+  resolution:
+    status: dynamic
+    confidence: high
+    reason: Include/role target is templated or variable-derived
+  attributes:
+    module: include_tasks
+    role: dns
+- id: task:roles/dns/tasks/main.yml:0:2
+  kind: task
+  name: Destroy old data
+  significance: critical
+  significance_rule_id: destructive-shell-command
+  source:
+    path: roles/dns/tasks/main.yml
+    document: 0
+    line_start: 9
+    line_end: 9
+    content_hash: sha256:506eb35ca38c38d78f0d7086bb8eb3bfddcbeb7368b0b99c13411ef90656b0d2
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    module: ansible.builtin.shell
+    operation: execute_command
+    resource:
+      command: rm -rf /var/cache/old
+    role: dns
+    verification:
+      recommended: true
+      reason: Free-form command; verify exact behaviour against source; Critical operation; verify against source
+- id: task:roles/web/tasks/main.yml:0:0
+  kind: task
+  name: Install nginx
+  significance: normal
+  significance_rule_id: default
+  source:
+    path: roles/web/tasks/main.yml
+    document: 0
+    line_start: 2
+    line_end: 2
+    content_hash: sha256:a0f786ad139be86cbe6187c86b82aaf818036788811fa6ed1e5ac8c9e572fa62
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    module: ansible.builtin.package
+    operation: install_package
+    resource:
+      packages: nginx
+    role: web
+- id: task:roles/web/tasks/main.yml:0:1
+  kind: task
+  name: Import role static
+  significance: normal
+  significance_rule_id: default
+  source:
+    path: roles/web/tasks/main.yml
+    document: 0
+    line_start: 5
+    line_end: 5
+    content_hash: sha256:692b1027ff89a404bf3b077fe3e2f1bd0b307dc7b0019c9312985fa1ba7ac320
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static import_role target
+  attributes:
+    module: import_role
+    role: web
+- id: task:site.yml:0:0
+  kind: task
+  name: Notify restart
+  significance: critical
+  significance_rule_id: destructive-shell-command
+  source:
+    path: site.yml
+    document: 0
+    line_start: 8
+    line_end: 8
+    content_hash: sha256:92abdc116ef8a4123077842b4be285f9772b3fef9d43228097db3cc557cc5ec0
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    module: ansible.builtin.command
+    notify:
+    - restart resolved
+    operation: execute_command
+    resource:
+      command: /bin/true
+    verification:
+      recommended: true
+      reason: Free-form command; verify exact behaviour against source; Critical operation; verify against source
+- id: taskfile:roles/dns/tasks/main.yml
+  kind: task_file
+  name: roles/dns/tasks/main.yml
+  significance: normal
+  source:
+    path: roles/dns/tasks/main.yml
+    document:
+    line_start:
+    line_end:
+    content_hash: sha256:3841c8e2e6a14190ffa7e722aaf9430c79b792337a010817179a7e42b1d1310d
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    role: dns
+- id: taskfile:roles/web/tasks/main.yml
+  kind: task_file
+  name: roles/web/tasks/main.yml
+  significance: normal
+  source:
+    path: roles/web/tasks/main.yml
+    document:
+    line_start:
+    line_end:
+    content_hash: sha256:47c552822a98f3d376ae106285bdf863065ffcd340c5c18f72f3f7c6b331aaa4
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    role: web
+- id: template:roles/dns/templates/resolved.conf.j2
+  kind: template
+  name: resolved.conf.j2
+  significance: high
+  source:
+    path: roles/dns/templates/resolved.conf.j2
+    document:
+    line_start:
+    line_end:
+    content_hash: sha256:7aaff3611ab1ca984b942ccde5f9194b7246fab2f7f07f952a773535f864055a
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    role: dns
+    variables:
+    - dns_servers
+    - search_domains
+- id: variable:api_token:roles/dns/defaults/main.yml:role_default
+  kind: variable
+  name: api_token
+  significance: low
+  source:
+    path: roles/dns/defaults/main.yml
+    document: 0
+    line_start:
+    line_end:
+    content_hash: sha256:b76ea7fe2b794d4dcbec36d27cfdfbc050a22fef67db692a0d9663e4e61323e1
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    precedence_class: role_default
+    scope: role:dns
+    sensitive_name: true
+- id: variable:custom_injected:vars_plugins/custom_vars.py:vars_plugin
+  kind: variable
+  name: custom_injected
+  significance: normal
+  source:
+    path: vars_plugins/custom_vars.py
+    document:
+    line_start:
+    line_end:
+    content_hash: sha256:7917ba94e221eb8ad9ed4f4c9f3410d20726dea512b1ce209efdeeb63c132810
+  resolution:
+    status: dynamic
+    confidence: high
+    reason: Custom vars plugin executes during inventory loading and is not statically resolvable
+  attributes:
+    plugin: vars_plugins/custom_vars.py
+    precedence_class: unknown_runtime
+    source_kind: vars_plugin
+- id: variable:custom_topology:vars_plugins/custom_vars.py:vars_plugin
+  kind: variable
+  name: custom_topology
+  significance: normal
+  source:
+    path: vars_plugins/custom_vars.py
+    document:
+    line_start:
+    line_end:
+    content_hash: sha256:7917ba94e221eb8ad9ed4f4c9f3410d20726dea512b1ce209efdeeb63c132810
+  resolution:
+    status: dynamic
+    confidence: high
+    reason: Custom vars plugin executes during inventory loading and is not statically resolvable
+  attributes:
+    plugin: vars_plugins/custom_vars.py
+    precedence_class: unknown_runtime
+    source_kind: vars_plugin
+- id: variable:dns_servers:inventories/prod_env/group_vars/web.yml:inventory_group
+  kind: variable
+  name: dns_servers
+  significance: low
+  source:
+    path: inventories/prod_env/group_vars/web.yml
+    document: 0
+    line_start:
+    line_end:
+    content_hash: sha256:3eba1e098c8d1b7814ed1fc6f1a299a74f062286b6dcd6467f04e7347c46dd7e
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    precedence_class: inventory_group
+    scope: flavor:prod_env
+    sensitive_name: false
+- id: variable:dns_servers:roles/dns/defaults/main.yml:role_default
+  kind: variable
+  name: dns_servers
+  significance: low
+  source:
+    path: roles/dns/defaults/main.yml
+    document: 0
+    line_start:
+    line_end:
+    content_hash: sha256:b76ea7fe2b794d4dcbec36d27cfdfbc050a22fef67db692a0d9663e4e61323e1
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes:
+    precedence_class: role_default
+    scope: role:dns
+    sensitive_name: false
+- id: vars_plugin:vars_plugins/custom_vars.py
+  kind: vars_plugin
+  name: custom_vars
+  significance: high
+  source:
+    path: vars_plugins/custom_vars.py
+    document:
+    line_start:
+    line_end:
+    content_hash: sha256:7917ba94e221eb8ad9ed4f4c9f3410d20726dea512b1ce209efdeeb63c132810
+  resolution:
+    status: dynamic
+    confidence: high
+    reason: Custom vars plugin executes during inventory loading and is not statically resolvable
+  attributes:
+    classes:
+    - VarsModule
+    consumed_dirs: []
+    variable_prefixes: []
+edges:
+- id: edge:depends_on:0bb416cd70c00c44
+  type: depends_on
+  from: role:web
+  to: role:dns
+  source:
+    path: roles/web/meta/main.yml
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Exact static match
+  attributes:
+    dependency: dns
+- id: edge:import_role:20395522b83801fe
+  type: import_role
+  from: task:roles/web/tasks/main.yml:0:1
+  to: role:dns
+  source:
+    path: roles/web/tasks/main.yml
+    document: 0
+    line_start: 5
+    line_end: 5
+    content_hash: sha256:692b1027ff89a404bf3b077fe3e2f1bd0b307dc7b0019c9312985fa1ba7ac320
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Exact static match
+  attributes:
+    role: dns
+- id: edge:include_tasks:d9fb1aefbd885251
+  type: include_tasks
+  from: task:roles/dns/tasks/main.yml:0:1
+  to: unresolved:include_tasks
+  source:
+    path: roles/dns/tasks/main.yml
+    document: 0
+    line_start: 7
+    line_end: 7
+    content_hash: sha256:64ed028fe1e7e668e191af5bb46745867e0f6dca9129dc90fe06ff2b15eb2d0c
+  resolution:
+    status: dynamic
+    confidence: high
+    reason: Target is templated / runtime-derived
+  attributes:
+    target_expression: '{{ os_family }}.yml'
+- id: edge:member_of:12d6893266cc5c95
+  type: member_of
+  from: inventory-host:prod_env:prod:web1
+  to: inventory-group:prod_env:prod:web
+  source:
+    path: inventories/prod_env/prod
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes: {}
+- id: edge:member_of:96b8d723ab3a5e14
+  type: member_of
+  from: inventory-host:prod_env:prod:dns1
+  to: inventory-group:prod_env:prod:dns
+  source:
+    path: inventories/prod_env/prod
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes: {}
+- id: edge:member_of:d5ec1a0bb3c2dc1e
+  type: member_of
+  from: inventory-host:prod_env:prod:web2
+  to: inventory-group:prod_env:prod:web
+  source:
+    path: inventories/prod_env/prod
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Static declaration
+  attributes: {}
+- id: edge:notifies:78c6602d08137bd1
+  type: notifies
+  from: task:site.yml:0:0
+  to: handler:roles/dns/handlers/main.yml:0:0
+  source:
+    path: site.yml
+    document: 0
+    line_start: 8
+    line_end: 8
+    content_hash: sha256:92abdc116ef8a4123077842b4be285f9772b3fef9d43228097db3cc557cc5ec0
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Exact static match
+  attributes:
+    notification: restart resolved
+- id: edge:notifies:b0b43fbae615f35b
+  type: notifies
+  from: task:roles/dns/tasks/main.yml:0:0
+  to: handler:roles/dns/handlers/main.yml:0:0
+  source:
+    path: roles/dns/tasks/main.yml
+    document: 0
+    line_start: 2
+    line_end: 2
+    content_hash: sha256:b01092f5b10f986815e3f9903b62b7b825837d82de93db1e22cd8f7b0cd6dcaa
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Exact static match
+  attributes:
+    notification: restart resolved
+- id: edge:supplies:aa58bccfb790b54b
+  type: supplies
+  from: vars_plugin:vars_plugins/custom_vars.py
+  to: variable:custom_topology:vars_plugins/custom_vars.py:vars_plugin
+  source:
+    path: vars_plugins/custom_vars.py
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: dynamic
+    confidence: high
+    reason: Custom vars plugin executes during inventory loading and is not statically resolvable
+  attributes: {}
+- id: edge:supplies:cd53d8c4b92308c3
+  type: supplies
+  from: vars_plugin:vars_plugins/custom_vars.py
+  to: variable:custom_injected:vars_plugins/custom_vars.py:vars_plugin
+  source:
+    path: vars_plugins/custom_vars.py
+    document:
+    line_start:
+    line_end:
+    content_hash:
+  resolution:
+    status: dynamic
+    confidence: high
+    reason: Custom vars plugin executes during inventory loading and is not statically resolvable
+  attributes: {}
+- id: edge:uses_role:43452406c0b67945
+  type: uses_role
+  from: play:site.yml:0:0
+  to: role:dns
+  source:
+    path: site.yml
+    document: 0
+    line_start: 2
+    line_end: 2
+    content_hash: sha256:32bf1e2e6c55b5c9b2551fb35c9b5ca95761b6e91cbe8c72fe73156dcaed490c
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Exact static match
+  attributes:
+    role: dns
+- id: edge:uses_role:4b18968f49dcbe0a
+  type: uses_role
+  from: play:site.yml:0:0
+  to: role:web
+  source:
+    path: site.yml
+    document: 0
+    line_start: 2
+    line_end: 2
+    content_hash: sha256:32bf1e2e6c55b5c9b2551fb35c9b5ca95761b6e91cbe8c72fe73156dcaed490c
+  resolution:
+    status: resolved
+    confidence: high
+    reason: Exact static match
+  attributes:
+    role: web

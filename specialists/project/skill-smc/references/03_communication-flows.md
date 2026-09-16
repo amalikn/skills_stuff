@@ -6,6 +6,8 @@
   * [All Inbound Access](#all-inbound-access)
   * [Backdoor SSH Access (raw reverse tunnel, bypasses Teleport's node agent)](#backdoor-ssh-access-raw-reverse-tunnel-bypasses-teleports-node-agent)
   * [Outbound from SMC Box](#outbound-from-smc-box)
+  * [`wifi-02.activ8me.net.au` / `202.171.100.138` is APN's OWN keepalived/LVS VIP — not a third-party service](#wifi-02activ8menetau-202171100138-is-apns-own-keepalivedlvs-vip-not-a-third-party-service)
+  * [Per-Site Public Egress IP — a first-class diagnostic, and one address for the whole box](#per-site-public-egress-ip-a-first-class-diagnostic-and-one-address-for-the-whole-box)
   * [Fluent Bit / Graylog Sidecar Config Architecture](#fluent-bit-graylog-sidecar-config-architecture)
   * [WAN Uplink Addressing and Default-Route Programming](#wan-uplink-addressing-and-default-route-programming)
   * [Manual TBF/`ifb` Ingress Shaping — live, fleet-wide, NOT Ansible-managed](#manual-tbfifb-ingress-shaping-live-fleet-wide-not-ansible-managed)
@@ -65,11 +67,22 @@ resulting port uniquely identifies one site fleet-wide, regardless of which proj
 4. Credential: a fleet-wide shared root password, stored in the KeePassXC vault at `Network/SMC` (see `security-and-secrets-guide.md` for the `kp` retrieval workflow — `kp clip "Network/SMC"` copies
    it to the clipboard; paste directly into the interactive prompt rather than piping the plaintext through automation/tool logs).
 
+**Delivering the credential from an agentic/automated session without exposing it in tool output** (used successfully 2026-09-08 against galiwinku-smc01's root shell via this backdoor path): run `kp
+clip -a Password "<vault-entry-name>"` — this copies to the macOS clipboard silently and produces no stdout, so the plaintext never appears in any tool-call argument or output. Then deliver the
+clipboard content into the target terminal session with a short AppleScript that does `write text (the clipboard)` addressed to that specific iTerm session's unique GUID (obtained from iTerm's session
+list), which pastes the real secret directly into the SSH password prompt. The orchestrating agent's own tool-call arguments and outputs never contain the plaintext value at any point in this flow.
+
 **Caveats**:
 - No Teleport session recording on this path — it's a raw root shell with none of Teleport's audit trail. Reserve it for cases where `tsh ssh` itself is what's broken; it is not a routine substitute
   for normal access.
 - The tunnel depends on the box's own `autossh-teleport-openssh` service still running. If the box is fully hung (see the Silent Total Hang failure mode in `06_failure-modes.md`), this path is dead
   too — it rescues you from a *stuck Teleport agent*, not a *stuck kernel*.
+
+**Additional capability — `cw-teleport01` is also an APN-side diagnostic vantage point, not only an SSH stepping stone (2026-09-08).** From a root shell on the bastion you have internal APN
+reachability from inside the `nbn_accelerate`/`cw` environment, which lets you test APN infrastructure (LVS real servers, VIPs) *directly*, independent of any site's own WAN path — invaluable for
+deciding whether a site-side symptom is the site or the backend. Measured latencies: `172.16.254.73`/`172.16.254.74` (lweb03/lweb04) at ~10.5–10.8 ms, `202.171.100.132` (LVS director) at ~11.8 ms. Its
+own public source IP is `3.104.50.51`. **Caveat: SSH port 22 to the LVS director (`202.171.100.132:22`) is FILTERED from this host**, so you can reach the director's service ports but cannot log into
+it to read a rule set — a live 2026-09-08 investigation was blocked on exactly this.
 
 ### Outbound from SMC Box
 
@@ -84,6 +97,48 @@ graylog-sidecar + fluent-bit → gl.aws.apn.au:443   (structured HTTPS GELF; X-G
 postfix → mail relay
 NBN Accelerate API                                  (broadband management, nbn_accelerate flavor)
 ```
+
+### `wifi-02.activ8me.net.au` / `202.171.100.138` is APN's OWN keepalived/LVS VIP — not a third-party service
+
+**Confirmed 2026-09-08. The `activ8me.net.au` domain name is misleading: this endpoint is APN-operated load-balanced infrastructure, so any failure involving it is an APN-internal escalation, not a
+vendor ticket.** Do not conflate it with `wifi.activ8me.net.au:443`, the remote Eclipse portal-config server documented in `10_captive-portal.md` — different host, different owner-facing role.
+
+| Layer              | Detail                                                                                                                                         |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| VIP                | `202.171.100.138` — keepalived `vrrp_instance VI_138`                                                                                          |
+| Director pair      | `202.171.100.132` / `202.171.100.133`, VRRP on `bond1.1005`                                                                                    |
+| Real servers (LVS) | `lweb03.apn.net.au` (`172.16.254.73`), `lweb04.apn.net.au` (`172.16.254.74`)                                                                   |
+| Name resolution    | **Static `/etc/hosts` entry on every `nbn_accelerate` SMC** (`202.171.100.138 wifi-02.activ8me.net.au`) — DNS is never a variable in failures here |
+| Port 443           | Open from every source tested (HTTP 200)                                                                                                       |
+| Port 80            | **Source-IP allowlist enforced at the director** — see `06_failure-modes.md` "Port-80 Source-IP Allowlist on the APN VIP"                      |
+| Persistence        | `persistence_timeout 86400` — each client source IP is pinned to one real server for 24 hours                                                  |
+| Known upstream bug | `lb_algo rr` ignores `real_server` weights, so the `weight 65535` drain intent on lweb04 does nothing — see `13_known-issues.md`               |
+
+Because name resolution is a static hosts entry, "it must be DNS" is a dead end for this endpoint on `nbn_accelerate` boxes: the address is fixed on disk and the only variables are routing, the box's
+public egress IP, and the director's own policy.
+
+### Per-Site Public Egress IP — a first-class diagnostic, and one address for the whole box
+
+**All of a multi-WAN SMC's circuits can share ONE public IP.** Confirmed at galiwinku-smc01 2026-09-08: all seven circuits egress as `119.12.211.80`, converging at carrier hop `10.191.0.13` which NATs
+them. **This invalidates most per-circuit theories about remote-end behaviour** — the remote server sees a single address no matter which uplink a flow took, so "circuit A is blocked but circuit B is
+not" cannot be true for any source-IP-based policy at the far end.
+
+Check it with HTTPS, never HTTP — port 80 may itself be the thing under investigation:
+
+```bash
+curl -sS https://api.ipify.org
+```
+
+Known values as of 2026-09-08:
+
+| Site      | Public egress IP | In the fleet's expected pool (`119.12.209.0/24`)? |
+| --------- | ---------------- | ------------------------------------------------- |
+| galiwinku | `119.12.211.80`  | **No** — carrier NAT placed it in `119.12.211.0/24` |
+| amata     | `119.12.209.20`  | Yes                                               |
+| kowanyama | `119.12.209.111` | Yes                                               |
+
+**Recommended, not yet done: a fleet-wide audit of every site's public egress IP against the expected pool.** A site whose carrier NAT drifts out of `119.12.209.0/24` silently loses access to any
+APN-side service that allowlists that range, with no config change on either side and no alerting — see the port-80 allowlist failure mode in `06_failure-modes.md`.
 
 ### Fluent Bit / Graylog Sidecar Config Architecture
 
@@ -282,11 +337,26 @@ Consequences worth knowing before diagnosing any WAN routing question:
 - **A topology file can shrink.** One site's `internetNN` definitions went from 16 to 6 on a branch, and the shrunken render reached `smc_application` while netplan still held all 16. The failure
   looks identical to a site outgrowing its topology file; only the direction differs. **Stale `ip rule` entries are the forensic marker** — a rule with no matching hook entry is residue from an
   earlier render, since rules persist until deleted or reboot. An interface holding *both* a stale rule and a `metric 100` default is two renders coexisting, not a contradiction.
+- **A stale `ip rule` does not always mean a stale render — a dropped DHCP lease leaves one too (galiwinku-smc01, 2026-09-08).** Each WAN source address gets its own rule pointing at a dedicated table
+  (`from 10.181.104.90 lookup vlan534`, etc.). Nothing removes that rule when the lease expires, so rules were observed still present for `vlan525` and `vlan523` after **both** interfaces had lost
+  their addresses entirely. Before concluding "old render", check whether the rule's source IP is still assigned (`ip -4 addr show <iface>`): a rule whose source address no longer exists on the box is
+  lease residue, whereas a rule with no matching arm in `/etc/dhcp/dhclient-enter-hooks` is render residue. The two look identical in `ip rule show`.
+- **Squid's transparent redirect is scoped to LAN clients only, and is a common false lead when diagnosing port-80 problems from a root shell.** The rule is `-A PREROUTING -i bridge_501 -p tcp --dport
+  80 -j SQUID_REDIRECT` — it matches only traffic *arriving on* `bridge_501`, so traffic the SMC **originates itself** (any `curl`/`telnet` from the box's own shell) never enters `PREROUTING` and is
+  never redirected to Squid. If a locally-run port-80 test fails, Squid is not in that path; look at routing, the box's public egress IP, and far-end policy instead.
 - **The `100` is accidental.** `metric` is empty at that point, so the code runs `expr + 100`; GNU `expr` treats a leading `+` as a quoting operator, yielding `100`. If DHCP ever returns more than one
   router, `metric` is already the string `metric 1`, `expr metric 1 + 100` errors, and the route is added with **no metric at all** — colliding with the ECMP entry instead of losing to it.
-- **Nothing in ansible-wifi builds the ECMP multipath default.** `grep -rn nexthop roles/` returns zero hits. The matched branch calls `kohana status:gateway` on every lease, so the multipath route is
-  built by the Kohana wifi app — *inferred, not verified* (that repo is not checked out locally). Practical effect: ECMP membership reflects the portal app's view of link health, which is why an
-  unhealthy link quietly leaves the pool.
+- **Nothing in ansible-wifi builds the ECMP multipath default — CONFIRMED 2026-09-08 (galiwinku-smc01, live), correcting the prior "inferred" Kohana theory below.** `grep -rn nexthop roles/` returns
+  zero hits, and the previous hypothesis that the Kohana wifi app builds the multipath route via `kohana status:gateway` is now understood to be an interpretive leap, not the actual mechanism: that
+  call registers the lease with the portal app, it does not construct or manage any route. **The real mechanism is emergent, unmanaged kernel behavior**: every `role: internet`/`role: starlink`
+  interface runs its own independent `dhclient@<iface>.service`, each independently installing its own default route via its DHCP-supplied gateway at the same route metric (via the
+  `dhclient-enter-hooks` per-interface-table path above, or the shared `metric 100` fallback). The kernel automatically merges multiple same-destination/same-metric routes from different devices into
+  one ECMP multipath group — this is standard Linux multipath routing, not a designed multi-WAN policy engine and not something any ansible-wifi role or the portal app manages. **Critically, there is
+  no health-based nexthop eviction of any kind**: a nexthop whose gateway has gone ARP-FAILED stays in the ECMP group and keeps receiving a share of routed traffic until its DHCP lease itself is lost
+  (which can take hours — DHCP lease loss and ARP/gateway health are unrelated events). ECMP group membership was observed shifting unpredictably at galiwinku as leases came and went during the same
+  session — a VLAN could appear or vanish from `ip route show`'s nexthop list independent of its actual link health. This generalizes fleet-wide to every multi-WAN site: nothing evicts an unhealthy
+  member early, and which links currently share the ECMP pool is a lease-timing accident, not a health signal. See `06_failure-modes.md` "ECMP Multipath Hashing Pins Fixed-Destination Traffic to a
+  Single (Possibly Dead) Nexthop" for the practical consequence (L3-only hash pinning) and its fix.
 - **`interfacecheckv2.sh` does not delete routes.** It pings `8.8.8.8` (`-c 4 -W 3`) per interface and on failure runs `systemctl restart dhclient@<iface>.service`, writing
   `my_node_interfacecheck_success{device="…"} 0`. Route disappearance is second-order. That series is a usable per-interface failure-onset history without box access (`mcp-grafana-apn` for
   rcp/rct/wh).
@@ -340,10 +410,14 @@ ref of the repository — see `local-knowledge-ansible/ansible-wifi/issues/apn/r
   confirmed on the branch now shared by `rise-multi`/`internet-label-rename` after a same-day reset):** the *deploying* Ansible task block for `multiwan-setup.sh.j2`/`.service.j2`
   (`roles/smc_network/tasks/ubuntu.yml`, ~lines 377-405) is fully commented out — added by commit `5eb127bf` (2025-10-16, the per-WAN-VRF fix for same-subnet/same-MAC Starlink CPE ARP flapping), then
   disabled as **apparent incidental collateral** of an unrelated commit, `c19a61fa` (2026-06-09, a URL-capture-v2 refactor) — no deliberate rationale recorded. This reads as accidentally orphaned
-  complexity, not a considered decision to abandon the mechanism. **Important nuance not previously captured here:** the fwmark script being dead does not mean VRF is fully "not in play" —
-  `roles/smc_network/templates/netplan.yml.j2`'s per-WAN VRF *allocation* (the `{% if interface.role in ['internet','starlink'] %}` VRF-membership block, ~lines 46/127) is **still live and rendered
-  into every deploy today**. Only the fwmark `ip rule`s that would route traffic into those VRF tables are missing. A box could plausibly carry allocated-but-unused `vrf-<tableid>` devices as a result
-  — **not yet checked on any live SMC**, flagged as an open item, not confirmed either way.
+  complexity, not a considered decision to abandon the mechanism. **Superseded 2026-09-08:** the per-WAN VRF *allocation* in `netplan.yml.j2` referenced below is no longer "still live and rendered
+  into every deploy today" on every branch — it was commented out at source on 2026-08-25 (interim) and landed as commit `f2fb439f` (2026-08-27), present on `internet-label-rename`/`squid-redesign`
+  but **not on `master`** as of 2026-09-08. See `08_ansible-authoring.md` "VRF commented out at source" for the full mechanism and branch scope; the computation
+  (`vrf_candidates`/`vrf_membership`/`vrfs`) is left intact and unused, so the allocation could still be reinstated by deleting two comment wrappers — check the actual branch a site deploys from
+  before assuming either state. **Original (2026-07-31) finding, now branch-scoped rather than universal:** the fwmark script being dead does not mean VRF is fully "not in play" —
+  `roles/smc_network/templates/netplan.yml.j2`'s per-WAN VRF *allocation* (the `{% if interface.role in ['internet','starlink'] %}` VRF-membership block, ~lines 46/127) was **still live and rendered
+  into every deploy** on branches predating the 2026-08-25 disable. Only the fwmark `ip rule`s that would route traffic into those VRF tables were ever missing. A box could plausibly carry
+  allocated-but-unused `vrf-<tableid>` devices as a result from a deploy predating the disable — **not yet checked on any live SMC**, flagged as an open item, not confirmed either way.
 - **`smc_application`'s dhclient-restart handler had no connectivity safety net — `smc_network`'s does. Fixed 2026-07-29, not yet live-tested under a real failure.** Both roles can trigger `systemctl
   restart dhclient@*.service` (every WAN interface, all at once). `smc_network` (`roles/smc_network/handlers/main.yml`, listen `Protected dhclient services restart`) schedules an independent `at
   systemctl restart teleport` job 2 minutes out *before* the restart, runs the restart `async`/`poll: 0`, then `wait_for_connection` (up to 1h) and cancels the `at` job only if the connection comes

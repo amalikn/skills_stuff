@@ -1,0 +1,120 @@
+# project-context.yaml — RAG bridge configuration for a project
+# Copy to: <project>/rag/project-context.yaml
+# This file is ROUTING METADATA ONLY — not an authoritative source of facts.
+# Replace all <placeholder> values before use.
+
+version: 1
+schema: "wiki-project-dependency-model"
+global_search_allowed: false
+
+project:
+  id: "<project-id>"                            # e.g. "apn-vocus-profitability"
+  slug: "<project_slug>"                        # e.g. "vocus_profitability" (underscores, no spaces)
+  name: "<Project Name>"                        # e.g. "Vocus Profitability"
+  root: "<absolute-project-root>"              # e.g. "/Volumes/Data/_ai/_project/project_stuff/apn/vocus-profitability"
+  collection: "rag__project_<project_slug>"    # e.g. "rag__project_vocus_profitability"
+
+wiki:
+  root: "/Volumes/Data/_ai/_wiki"
+  content_root: "/Volumes/Data/_ai/_wiki/wiki_stuff"
+  data_root: "/Volumes/Data/_ai/_wiki/wiki-data"
+  pattern: "karpathy-llm-wiki"
+  canonical_shared_knowledge: true
+
+tools:
+  rag_tools_root: "/Volumes/Data/_ai/_tool/tools_stuff/rag-tools"
+  rag_tools_venv: "/Volumes/Data/_ai/_tool/tools-working-cache/rag-tools/.venv"
+
+# Declare ONLY the wiki domains this project is allowed to query.
+# Do not list domains you do not need — undeclared domains are forbidden.
+wiki_dependencies:
+  - domain: "<domain>"                          # e.g. "nbn"
+    slug: "<domain>"
+    collection: "rag__wiki_<domain>"           # e.g. "rag__wiki_nbn"
+    source_paths:
+      - "domains/<domain>"                     # relative to wiki_stuff
+    reason: "<why this project may use this domain>"
+    source_authority: "shared_reference_authoritative_markdown"
+    allowed_topics:
+      - "<topic-1>"
+      - "<topic-2>"
+  # Add more domains below. Keep the list minimal.
+  # - domain: "<domain2>"
+  #   slug: "<domain2>"
+  #   collection: "rag__wiki_<domain2>"
+  #   source_paths:
+  #     - "domains/<domain2>"
+  #   reason: "<why>"
+  #   source_authority: "shared_reference_authoritative_markdown"
+  #   allowed_topics: []
+
+retrieval_policy:
+  retrieval_order:
+    - step: 1
+      source: "project_local_files"
+      description: "Use project-local source files, reports, manifests, and analysis first."
+    - step: 2
+      source: "project_collection"
+      collection: "rag__project_<project_slug>"
+      required_filters:
+        project_slug: "<project_slug>"
+    - step: 3
+      source: "declared_wiki_domains"
+      collections:
+        - "rag__wiki_<domain>"
+      required_filters:
+        wiki_domain:
+          allowed:
+            - "<domain>"
+    - step: 4
+      source: "ask_user"
+      condition: "No sufficient evidence found in project-local or declared wiki sources."
+
+rules:
+  require_project_filter: true
+  require_wiki_domain_filter: true
+  disallow_global_wiki_search: true
+  disallow_undeclared_wiki_domains: true
+  disallow_cross_project_fallback: true
+  disallow_project_data_in_wiki_collection: true
+  disallow_wiki_data_in_project_collection_unless_copied_with_source: true
+  cite_sources: true
+  cite_collection_name: true
+  cite_source_file: true
+  cite_section_path: true
+  cite_heading: true
+  prefer_project_local_for_project_specific_facts: true
+  prefer_wiki_authoritative_markdown_for_shared_reference_facts: true
+  nav_yaml_is_routing_metadata_only: true
+  no_unsupported_conclusions: true
+
+forbidden_collections:
+  - "rag__global_all_docs"
+  - "rag__wiki_all"
+  - "rag__all"
+  - "default"
+  - "documents"
+  - "knowledge"
+  - "main"
+
+conflict_resolution:
+  project_specific_fact:
+    prefer: "project_local"
+    examples:
+      - invoices
+      - internal_reports
+      - customer_mappings
+      - calculated_output
+  shared_reference_fact:
+    prefer: "wiki_authoritative_markdown"
+    examples:
+      - standards
+      - rate_card_interpretations
+      - policy_definitions
+  unresolved_conflict:
+    action: "report_conflict_and_ask_user"
+
+status:
+  lifecycle: "draft"            # draft | active | deprecated
+  owner: "project"
+  reviewed: false

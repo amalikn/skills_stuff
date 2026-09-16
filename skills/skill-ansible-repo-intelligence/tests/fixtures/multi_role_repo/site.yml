@@ -1,0 +1,10 @@
+---
+- name: Configure DNS and web
+  hosts: all
+  roles:
+    - dns
+    - web
+  tasks:
+    - name: Notify restart
+      ansible.builtin.command: /bin/true
+      notify: restart resolved

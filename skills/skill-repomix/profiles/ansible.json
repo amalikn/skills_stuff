@@ -1,0 +1,13 @@
+{
+  "id": "ansible",
+  "displayName": "Ansible",
+  "description": "Ansible projects.",
+  "detect": {"anyFiles": ["ansible.cfg", "requirements.yml", "requirements.yaml"], "anyDirectories": ["roles", "playbooks", "group_vars", "host_vars"]},
+  "include": ["ansible.cfg", "requirements.yml", "requirements.yaml", "inventories/**/*.yml", "inventories/**/*.yaml", "group_vars/**/*.yml", "group_vars/**/*.yaml", "host_vars/**/*.yml", "host_vars/**/*.yaml", "roles/**/*.yml", "roles/**/*.yaml", "playbooks/**/*.yml", "playbooks/**/*.yaml", "collections/requirements.yml"],
+  "ignore": ["**/vault*.yml", "**/vault*.yaml", "**/*secrets*.yml", "**/*secrets*.yaml", "**/.vault-password*"],
+  "priorityFiles": ["ansible.cfg", "requirements.yml", "playbooks/**/*.yml"],
+  "securitySensitivePatterns": ["**/vault*.yml", "**/vault*.yaml", "**/*secrets*.yml", "**/*secrets*.yaml"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 90000,
+  "notes": ["Vault and secret-variable files are excluded by default."]
+}

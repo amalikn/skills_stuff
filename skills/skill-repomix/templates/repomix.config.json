@@ -1,0 +1,77 @@
+{
+  "$schema": "https://repomix.com/schemas/latest/schema.json",
+  "input": {
+    "maxFileSize": 2000000
+  },
+  "output": {
+    "filePath": ".ai-context/current-state.xml",
+    "style": "xml",
+    "compress": false,
+    "instructionFilePath": "repomix-instruction.md",
+    "fileSummary": true,
+    "directoryStructure": true,
+    "files": true,
+    "removeComments": false,
+    "removeEmptyLines": false,
+    "showLineNumbers": true,
+    "truncateBase64": true,
+    "copyToClipboard": false,
+    "topFilesLength": 20,
+    "tokenBudget": 120000,
+    "includeEmptyDirectories": false,
+    "git": {
+      "sortByChanges": true,
+      "sortByChangesMaxCommits": 100,
+      "includeDiffs": false,
+      "includeLogs": false,
+      "includeLogsCount": 20
+    }
+  },
+  "include": [
+    "README.md",
+    "AGENTS.md",
+    "ARCHITECTURE.md",
+    "AI_NAVIGATION.md",
+    "context-map.yaml",
+    "CHANGELOG.md"
+  ],
+  "ignore": {
+    "useGitignore": true,
+    "useDotIgnore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      ".ai-context/**",
+      "**/.env",
+      "**/.env.*",
+      "**/*.pem",
+      "**/*.key",
+      "**/*.p12",
+      "**/*.pfx",
+      "**/credentials/**",
+      "**/secrets/**",
+      "**/node_modules/**",
+      "**/.venv/**",
+      "**/venv/**",
+      "**/__pycache__/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/coverage/**",
+      "**/runtime/**",
+      "**/logs/**",
+      "**/*.log",
+      "**/*.db",
+      "**/*.sqlite",
+      "**/*.sqlite3",
+      "**/backup/**",
+      "**/backups/**",
+      "**/rollback/**",
+      "**/archive/**"
+    ]
+  },
+  "security": {
+    "enableSecurityCheck": true
+  },
+  "tokenCount": {
+    "encoding": "o200k_base"
+  }
+}

@@ -1,0 +1,84 @@
+# evidence-bundle.yaml — EvidenceBundle output contract reference
+# Template: reference or copy to show expected output structure.
+# Schema: skill-project-wiki-rag-bridge/schemas/evidence-bundle.schema.yaml
+#
+# EvidenceBundle is the required output of every rag-tools retrieval command.
+# LLM answers must be grounded in evidence from these fields — no training knowledge.
+
+query: "<the original user query or lookup term>"
+# Required. The exact query submitted to the retrieval function.
+
+retrieval_mode: "<mode>"
+# Required. One of:
+#   direct_structured_lookup | section_clause_lookup | heading_aware_lookup |
+#   table_aware_lookup | tabular_analytics | keyword_lookup | vector_rag | hybrid
+
+document_id: "<document stem>"
+# Optional but strongly recommended.
+# The stem of the source file (without extension).
+
+source_file: "<absolute path to source file>"
+# Required. The canonical authoritative source.
+# Never a Qdrant collection name — always the actual file.
+
+source_type: "<file extension without dot>"
+# Optional. e.g. "md", "csv", "yaml".
+
+authority: "source"
+# Optional. Indicates the authority level of this evidence.
+# Values: source | wiki_article | external_reference | derived
+
+section_id: "<section ID or null>"
+# Optional. Structured section ID detected in the source (e.g. "C2.11", "1.2.3").
+# Presence enables direct citation by clause ID.
+
+section_path:
+  - "<H1 heading>"
+  - "<H2 heading>"
+  - "<H3 heading>"
+# Optional list. Heading chain from document root to the matched section.
+# Should be present for structured/section lookup results.
+
+heading: "<nearest heading above the matched text>"
+# Optional. The single nearest heading label for display in citations.
+
+table_id: "<table ID or null>"
+# Optional. Present for table_aware_lookup results.
+# Identifies which table in the document was matched.
+
+row_keys:
+  - "<first few cells of matched rows for identification>"
+# Optional list. Short row-key preview for table match identification.
+
+excerpt: "<verbatim extracted text from source — no paraphrase>"
+# Required. The LLM must answer ONLY from this field.
+# Rules:
+#   - Must be verbatim from the source file
+#   - Must not contain generated conclusions or LLM-synthesized text
+#   - Must not contain invented amounts, dates, or identifiers
+#   - If blank, the bundle is invalid — do not answer from it
+
+matched_terms:
+  - "<terms from the query that matched in the source>"
+# Optional list. Supports citation transparency and debugging.
+
+score_or_confidence: 0.0
+# Optional float. Relevance score or confidence from the retrieval function.
+# For deterministic lookup, may be 1.0 (exact match) or based on term overlap.
+
+context_chars: 0
+# Auto-calculated as len(excerpt). Used to estimate retrieval coverage.
+
+retrieval_warnings:
+  - "<warning string or empty list>"
+# Optional list. Must be populated when:
+#   - source file was missing at retrieval time
+#   - retrieval mode fell back from primary to secondary
+#   - evidence is low-confidence or partial
+#   - vector RAG result had low score and fallback was used
+#   - structured lookup found no exact section match
+# Examples:
+#   "source file missing"
+#   "no exact section ID match; nearest heading used"
+#   "vector RAG score < 0.5; fallback to structured lookup"
+#   "table match is partial; only header row matched"

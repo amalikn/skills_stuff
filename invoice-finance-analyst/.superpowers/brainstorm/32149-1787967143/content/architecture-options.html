@@ -1,0 +1,53 @@
+<h2>Business Intelligence Stack v2: architecture direction</h2>
+<p class="subtitle">Choose the path that should govern the revised implementation document. The existing finance pipeline remains the factual starting point in every option.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">A. Finance controls first</div>
+        <div class="mockup-body">
+          <div style="text-align:center;line-height:2.1"><strong>Invoice analyst</strong><br>↓<br>Correctness and controls<br>↓<br>Evidence and lineage<br>↓<br>LLM governance<br>↓<br>Extract only after a second proven use case</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Stage-gated foundation</h3>
+      <p>Retains v2’s core direction. Builds A1 only now, defines explicit exit criteria, and postpones shared BI infrastructure.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">B. Parallel platform build</div>
+        <div class="mockup-body">
+          <div style="text-align:center;line-height:2.1"><strong>Shared BI layer</strong><br>↙&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↘<br>Invoice controls &nbsp; New skills<br>↘&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↙<br>Common primitives evolve together</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Early shared platform</h3>
+      <p>Creates common evidence, controls, and reporting modules while remediation proceeds. Faster breadth, higher risk of freezing the wrong abstractions.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">C. Documentation-only roadmap</div>
+        <div class="mockup-body">
+          <div style="text-align:center;line-height:2.1"><strong>Roadmap and principles</strong><br>↓<br>Separate implementation tickets<br>↓<br>Teams choose local architecture<br>↓<br>Periodic alignment review</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Loose portfolio guidance</h3>
+      <p>Offers broad direction without hard delivery gates. Easy to adopt, but weaker protection against finance-control drift.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <p><strong>Recommendation:</strong> A. It matches the audited gaps and prevents unproven finance logic from becoming a platform dependency.</p>
+</div>

@@ -1,0 +1,113 @@
+# skill-ansible-grapher — convenience recipes
+# Requires: just (https://github.com/casey/just), the managed Python venv (or explicit
+# opt-in fallback — see scripts/_resolve_python.sh), Graphviz `dot`.
+# These recipes wrap scripts/ansible-grapher; see SKILL.md for the behavioral contract.
+#
+# Python selection: managed working-cache venv by default; FAILS clearly (not silently)
+# if missing. Opt into system python3 fallback via ANSIBLE_GRAPHER_ALLOW_SYSTEM_PYTHON_FALLBACK=1
+# (just recipes cannot easily forward a --allow-system-python-fallback CLI flag through
+# named parameters — use the env var here, or call scripts/* directly for the CLI flag).
+
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+script_dir := justfile_directory() / "scripts"
+grapher := script_dir / "ansible-grapher"
+
+# List available recipes
+default:
+    @just --list
+
+# Show ansible-grapher's own help
+help:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{script_dir}}/_resolve_python.sh"
+    "$RESOLVED_PYTHON" "{{grapher}}" help
+
+# List all inventory/playbook/combined profiles
+profiles:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{script_dir}}/_resolve_python.sh"
+    "$RESOLVED_PYTHON" "{{grapher}}" profiles
+
+# Validate installed executables (and optionally a given inventory/playbook)
+validate inventory="" playbook="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{script_dir}}/_resolve_python.sh"
+    args=()
+    [ -n "{{inventory}}" ] && args+=(--inventory "{{inventory}}")
+    [ -n "{{playbook}}" ] && args+=(--playbook "{{playbook}}")
+    "$RESOLVED_PYTHON" "{{grapher}}" validate "${args[@]}"
+
+# Discover an Ansible project and recommend a bounded graphing plan
+discover project_root output_dir="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{script_dir}}/_resolve_python.sh"
+    args=(--project-root "{{project_root}}")
+    [ -n "{{output_dir}}" ] && args+=(--output-dir "{{output_dir}}")
+    "$RESOLVED_PYTHON" "{{grapher}}" discover "${args[@]}"
+
+# Graph an inventory (profile default: inventory-summary)
+inventory inventory profile="inventory-summary" output_dir="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{script_dir}}/_resolve_python.sh"
+    args=(--inventory "{{inventory}}" --profile "{{profile}}")
+    [ -n "{{output_dir}}" ] && args+=(--output-dir "{{output_dir}}")
+    "$RESOLVED_PYTHON" "{{grapher}}" inventory "${args[@]}"
+
+# Graph a playbook (profile default: playbook-summary)
+playbook playbook profile="playbook-summary" inventory="" output_dir="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{script_dir}}/_resolve_python.sh"
+    args=(--playbook "{{playbook}}" --profile "{{profile}}")
+    [ -n "{{inventory}}" ] && args+=(--inventory "{{inventory}}")
+    [ -n "{{output_dir}}" ] && args+=(--output-dir "{{output_dir}}")
+    "$RESOLVED_PYTHON" "{{grapher}}" playbook "${args[@]}"
+
+# Generate a combined documentation pack for a project
+project project_root inventory="" playbook="" profile="documentation-pack" output_dir="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{script_dir}}/_resolve_python.sh"
+    args=(--project-root "{{project_root}}" --profile "{{profile}}")
+    [ -n "{{inventory}}" ] && args+=(--inventory "{{inventory}}")
+    [ -n "{{playbook}}" ] && args+=(--playbook "{{playbook}}")
+    [ -n "{{output_dir}}" ] && args+=(--output-dir "{{output_dir}}")
+    "$RESOLVED_PYTHON" "{{grapher}}" project "${args[@]}"
+
+# Remove a previously generated output directory (requires ownership marker)
+clean output_dir force="false":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{script_dir}}/_resolve_python.sh"
+    args=(--output-dir "{{output_dir}}")
+    [ "{{force}}" = "true" ] && args+=(--force)
+    "$RESOLVED_PYTHON" "{{grapher}}" clean "${args[@]}"
+
+# Run the example inventory + playbook graph against the bundled fixtures
+example output_dir=".ai-artifacts/ansible-grapher-example":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{script_dir}}/_resolve_python.sh"
+    "$RESOLVED_PYTHON" "{{grapher}}" inventory --inventory examples/inventory/hosts.yml --output-dir {{output_dir}} --force
+    "$RESOLVED_PYTHON" "{{grapher}}" playbook --playbook examples/playbooks/site.yml --output-dir {{output_dir}} --force
+
+# Run ci-light validation + a bounded local-CI-equivalent generation pass (see .github/workflows)
+ci-check output_dir=".ai-artifacts/ansible-grapher-ci":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{script_dir}}/_resolve_python.sh"
+    "$RESOLVED_PYTHON" "{{grapher}}" validate --inventory examples/inventory/hosts.yml --playbook examples/playbooks/site.yml --format json
+    "$RESOLVED_PYTHON" "{{grapher}}" project --project-root examples --inventory examples/inventory/hosts.yml --playbook examples/playbooks/site.yml --profile ci-light --output-dir {{output_dir}} --force
+
+# Run the full test suite
+test:
+    bash tests/test-skill-ansible-grapher.sh
+    bash tests/test-output-safety.sh
+    bash tests/test-toolchain-compatibility.sh
+    bash tests/test-partial-generation-failure.sh

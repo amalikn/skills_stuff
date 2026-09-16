@@ -1,0 +1,100 @@
+# project-documents.schema.yaml
+# Schema for <project>/rag/manifests/project-documents.yaml
+
+schema_name: project-documents
+version: 1
+applies_to: "<project>/rag/manifests/project-documents.yaml"
+
+top_level_keys:
+  version:
+    type: integer
+    required: true
+    value: 1
+
+  project_slug:
+    type: string
+    required: true
+    pattern: "^[a-z0-9_]+$"
+    notes: "Must match project_slug in retrieval-policy.yaml."
+
+  rules:
+    type: object
+    required: true
+    required_keys:
+      default_index:
+        type: boolean
+        required: true
+        value: false
+        notes: "MUST be false. No document is indexed unless explicitly opted in."
+      require_explicit_index_true:
+        type: boolean
+        required: true
+        value: true
+      raw_data_requires_explicit_approval:
+        type: boolean
+        required: true
+        value: true
+      communications_requires_review_before_indexing:
+        type: boolean
+        required: true
+        value: true
+
+  documents:
+    type: list of objects
+    required: true
+    notes: "May be empty. Each entry represents one document."
+    item_required_keys:
+      id:
+        type: string
+        notes: "Stable unique ID for this document. Used as document_id in Qdrant."
+      title:
+        type: string
+        notes: "Human-readable title."
+      path:
+        type: string
+        notes: "Relative path from project root."
+      type:
+        type: string
+        allowed_values:
+          - report
+          - manifest
+          - reference
+          - analysis
+          - communication
+          - raw
+        notes: "Determines default caution level."
+      index:
+        type: boolean
+        required: true
+        notes: "Must be explicitly set. Defaults to false by rule."
+      sensitive:
+        type: boolean
+        required: true
+        notes: "If true, never index regardless of index flag."
+      notes:
+        type: string
+        notes: "Required for any document with index: true or sensitive: true."
+
+document_type_caution_levels:
+  report: "Low — curated output, usually safe to index"
+  manifest: "Low — structured metadata, usually safe"
+  reference: "Low — reference material, usually safe"
+  analysis: "Medium — may contain derived sensitive data, review before indexing"
+  communication: "High — requires explicit review; never index by default"
+  raw: "High — raw data; never index without explicit approval and notes"
+
+common_failures:
+  - "default_index: true  # must be false"
+  - "document entry missing 'index' key (defaults are not safe — must be explicit)"
+  - "sensitive: true but index: true — indexing blocked but both flags present"
+  - "communication or raw type with index: true and no notes explaining approval"
+  - "path doesn't exist relative to project root"
+
+example_document:
+  id: "report-margin-analysis-2026-q1"
+  title: "Q1 2026 Margin Analysis Report"
+  path: "reports/margin-analysis-2026-q1.md"
+  type: "report"
+  index: true
+  sensitive: false
+  notes: "Curated analysis report. Reviewed and approved for indexing 2026-05-24."

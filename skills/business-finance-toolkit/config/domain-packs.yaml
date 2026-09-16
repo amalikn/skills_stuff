@@ -1,0 +1,8 @@
+packs:
+  generic-import:
+    code_module: bftoolkit.domain_packs.packs.GENERIC_IMPORT
+    lifecycle: VALIDATED
+  australia-jdm:
+    code_module: bftoolkit.domain_packs.packs.AUSTRALIA_JDM
+    lifecycle: PROTOTYPE
+    disclaimer: "Question set only; confirm every jurisdictional conclusion from an in-force primary authority."

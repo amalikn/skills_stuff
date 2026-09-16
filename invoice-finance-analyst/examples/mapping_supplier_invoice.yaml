@@ -1,0 +1,18 @@
+# mapping_supplier_invoice.yaml
+# Column mapping for supplier_invoice_sample.csv → canonical field names.
+# Generated format: used by validate_inputs.py to translate source columns.
+
+version: "1"
+created: "2026-05-21"
+source_type: supplier_invoice
+
+field_mappings:
+  invoice_number:         "Invoice #"
+  invoice_date:           "Inv Date"
+  billing_period_start:   "Period From"
+  billing_period_end:     "Period To"
+  supplier_service_id:    "AVC ID"
+  service_type:           "Product"
+  description:            "Line Description"
+  amount_ex_tax:          "Net Charge"
+  tax_amount:             "GST"

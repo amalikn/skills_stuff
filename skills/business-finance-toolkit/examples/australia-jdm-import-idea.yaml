@@ -1,0 +1,17 @@
+idea: "Pilot import of used Japanese equipment for sale in Australia"
+domain_pack: australia-jdm
+assumptions:
+  pilot_units: 1
+  purchase_price_aud: "10000.00"
+  indicative_freight_aud: "1500.00"
+  indicative_selling_price_aud: "15000.00"
+claims:
+  - id: import-eligibility
+    state: MISSING
+    evidence_quality: UNVERIFIED
+    critical: true
+  - id: market-demand
+    state: PROPOSED
+    evidence_quality: UNVERIFIED
+    critical: true
+note: "Illustrative planning input only. It contains no regulatory conclusion."

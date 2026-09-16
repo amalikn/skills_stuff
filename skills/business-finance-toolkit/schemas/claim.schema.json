@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Claim",
+  "type": "object",
+  "required": ["id", "statement", "state", "evidence_quality"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "statement": {"type": "string", "minLength": 1},
+    "critical": {"type": "boolean", "default": true},
+    "regulated": {"type": "boolean", "default": false},
+    "state": {"enum": ["MISSING", "PROPOSED", "VERIFIED", "SUPERSEDED"]},
+    "evidence_quality": {"enum": ["USER_STATED", "UNVERIFIED", "VERIFIED_PRIMARY", "VERIFIED_SECONDARY"]},
+    "sources": {"type": "array", "items": {"$ref": "#/$defs/source"}}
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": ["title", "url", "retrieved_on"],
+      "properties": {
+        "title": {"type": "string"},
+        "url": {"type": "string", "format": "uri"},
+        "retrieved_on": {"type": "string", "format": "date"},
+        "primary": {"type": "boolean", "default": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+# wiki-domain-registry-entry.yaml — single domain entry for domain-registry.yaml
+# Append this block under the `domains:` list in:
+#   /Volumes/Data/_ai/_wiki/wiki-data/domain-registry.yaml
+# Replace all <placeholder> values before use.
+
+# --- Paste this block into domain-registry.yaml under domains: ---
+#
+#   - domain: "<domain>"
+#     slug: "<domain_slug>"
+#     description: "<What knowledge this domain contains and its purpose>"
+#     source_paths:
+#       - "domains/<domain_slug>"              # relative to wiki_stuff content_root
+#     qdrant_collection: "rag__wiki_<domain_slug>"
+#     status: "active"                        # active | draft | deprecated
+
+# --- Example (NBN domain, already exists) ---
+#
+#   - domain: "nbn"
+#     slug: "nbn"
+#     description: "NBN/WBA/DCR rebate, credit, discount, campaign, and eligibility reference."
+#     source_paths:
+#       - "domains/nbn"
+#     qdrant_collection: "rag__wiki_nbn"
+#     status: "active"
+
+# --- Template entry ---
+
+  - domain: "<domain>"
+    slug: "<domain_slug>"
+    description: "<Concise description of what knowledge this domain contains>"
+    source_paths:
+      - "domains/<domain_slug>"
+    qdrant_collection: "rag__wiki_<domain_slug>"
+    status: "active"

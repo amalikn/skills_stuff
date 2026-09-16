@@ -1,0 +1,10 @@
+---
+- name: Deploy resolved config
+  ansible.builtin.template:
+    src: resolved.conf.j2
+    dest: /etc/systemd/resolved.conf
+  notify: restart resolved
+- name: Dynamic include
+  ansible.builtin.include_tasks: "{{ os_family }}.yml"
+- name: Destroy old data
+  ansible.builtin.shell: rm -rf /var/cache/old

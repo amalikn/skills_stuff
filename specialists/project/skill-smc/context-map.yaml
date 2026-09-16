@@ -1,133 +1,207 @@
 version: 1
-
 project:
   name: skill-smc
   type: specialist-pack
-  context_policy: "AI_NAVIGATION.md is the human-readable router; this file is the machine-readable routing map."
-
+  context_policy: AI_NAVIGATION.md is the human-readable router; this file is the
+    machine-readable routing map.
 bootstrap:
   required_first_read:
-    - AGENTS.md
-    - SKILL.md
-    - RUNBOOK.md
-    - AI_NAVIGATION.md
-    - CHANGELOG.md
-
+  - AGENTS.md
+  - SKILL.md
+  - RUNBOOK.md
+  - AI_NAVIGATION.md
+  - CHANGELOG.md
 authority_order:
-  - path: "manifest.json"
-    type: specialist_metadata
-    authority: highest
-  - path: "AGENTS.md"
-    type: agent_instructions
-    authority: high
-  - path: "CLAUDE.md"
-    type: claude_specific_instructions
-    authority: high
-  - path: "AI_NAVIGATION.md"
-    type: context_router
-    authority: high
-  - path: "SKILL.md"
-    type: agent_activation_surface
-    authority: high
-  - path: "RUNBOOK.md"
-    type: navigation_index
-    authority: high
-  - path: "references"
-    type: content_source
-    authority: high
-  - path: "PROFILE.md"
-    type: background_context
-    authority: medium
-  - path: "exports"
-    type: client_adapter
-    authority: medium
-  - path: "CHANGELOG.md"
-    type: project_history
-    authority: medium_high
-  - path: "SCRATCHPAD.md"
-    type: transient_notes
-    authority: low
-
+- path: manifest.json
+  type: specialist_metadata
+  authority: highest
+- path: AGENTS.md
+  type: agent_instructions
+  authority: high
+- path: CLAUDE.md
+  type: claude_specific_instructions
+  authority: high
+- path: AI_NAVIGATION.md
+  type: context_router
+  authority: high
+- path: SKILL.md
+  type: agent_activation_surface
+  authority: high
+- path: RUNBOOK.md
+  type: navigation_index
+  authority: high
+- path: references
+  type: content_source
+  authority: high
+- path: PROFILE.md
+  type: background_context
+  authority: medium
+- path: exports
+  type: client_adapter
+  authority: medium
+- path: CHANGELOG.md
+  type: project_history
+  authority: medium_high
+- path: SCRATCHPAD.md
+  type: transient_notes
+  authority: low
 routing:
   live_incident_triage:
-    description: "Box unreachable, service down, alert firing, DHCP/DNS/WiFi/VoIP/HA failure."
+    description: Box unreachable, service down, alert firing, DHCP/DNS/WiFi/VoIP/HA
+      failure.
     read:
-      - "SKILL.md"
-      - "references/05_troubleshooting.md"
-      - "references/06_failure-modes.md"
-
+    - SKILL.md
+    - references/05_troubleshooting.md
+    - references/06_failure-modes.md
   service_architecture:
-    description: "Service names, unit names, config paths, monitoring collectors."
+    description: Service names, unit names, config paths, monitoring collectors.
     read:
-      - "references/02_service-map.md"
-      - "references/03_communication-flows.md"
-      - "references/04_dependency-tree.md"
-
+    - references/02_service-map.md
+    - references/03_communication-flows.md
+    - references/04_dependency-tree.md
   hardware_and_overlay:
-    description: "x86 vs Raspberry Pi differences, overlayroot, persistence risk."
+    description: x86 vs Raspberry Pi differences, overlayroot, persistence risk.
     read:
-      - "references/07_hardware-overlay.md"
-      - "references/01_overview.md"
-
+    - references/07_hardware-overlay.md
+    - references/01_overview.md
   ansible_authoring:
-    description: "Topology vars, cache coherence, cross-flavor blast radius, validation, generator drift, flavor/cluster conditional branching, smc_ltp sub-group (CNMaestro backhaul + DNS switch), 'low touch' onboarding method and site history."
+    description: Topology vars, cache coherence, cross-flavor blast radius, validation,
+      generator drift, flavor/cluster conditional branching, smc_ltp sub-group (CNMaestro
+      backhaul + DNS switch), 'low touch' onboarding method and site history.
     read:
-      - "references/08_ansible-authoring.md"
-      - "SKILL.md"
-
+    - references/08_ansible-authoring.md
+    - SKILL.md
   url_capture_pcap:
-    description: "URL capture v2, PCAP layout, smc_get_pcapv* workflows, dns_query assumptions."
+    description: URL capture v2, PCAP layout, smc_get_pcapv* workflows, dns_query
+      assumptions.
     read:
-      - "references/09_url-capture-pcap.md"
-
+    - references/09_url-capture-pcap.md
   captive_portal:
-    description: "Captive portal architecture, Eclipse config sync, PHP-FPM setup, Kohana issues."
+    description: Captive portal architecture, Eclipse config sync, PHP-FPM setup,
+      Kohana issues.
     read:
-      - "references/10_captive-portal.md"
-
+    - references/10_captive-portal.md
   vagrant_lab:
-    description: "Local family-friendly-vsmc01 Vagrant lab setup and known virtualization issues."
+    description: Local family-friendly-vsmc01 Vagrant lab setup and known virtualization
+      issues.
     read:
-      - "references/11_vagrant-lab.md"
-
+    - references/11_vagrant-lab.md
   content_filtering:
-    description: "VLAN 501 family-friendly filtering, Eclipse PIN/MAC, MAC randomization, CAKE queuing."
+    description: VLAN 501 family-friendly filtering, Eclipse PIN/MAC, MAC randomization,
+      CAKE queuing.
     read:
-      - "references/12_content-filtering.md"
-
+    - references/12_content-filtering.md
   coverage_and_gaps:
-    description: "Known coverage gaps, unvalidated assumptions, live-validation limits."
+    description: Known coverage gaps, unvalidated assumptions, live-validation limits.
     read:
-      - "references/13_known-issues.md"
-
+    - references/13_known-issues.md
+  pin_activation_diagnosis:
+    description: Two independent mechanisms for captive-portal pin diagnosis -- iptables
+      mangle ECLIPSE_MARK (pin validity now) vs Apache wifi/access log (pin issuance
+      over time). Marks-are-not-activations pitfalls, MAC/IP correlation via dhcpd.leases,
+      and the 2026-09-11 nbn_accelerate/nbn_wh fleet case study.
+    read:
+    - references/14_pin-activation-diagnosis.md
   smcbox_basics:
-    description: "SMC box definition, inventory flavors, Teleport access pattern, satellite constraints, APN vs NBN Accelerate cluster structural comparison."
+    description: SMC box definition, inventory flavors, Teleport access pattern, satellite
+      constraints, APN vs NBN Accelerate cluster structural comparison.
     read:
-      - "references/01_overview.md"
-      - "PROFILE.md"
-
+    - references/01_overview.md
+    - PROFILE.md
   pack_maintenance:
-    description: "Adding/updating references, bumping version, updating export adapters."
+    description: Adding/updating references, bumping version, updating export adapters.
     read:
-      - "AGENTS.md"
-      - "AI_NAVIGATION.md"
-      - "context-map.yaml"
-      - "CHANGELOG.md"
-      - "manifest.json"
-      - "exports/claude_code/project/skill-smc/adapter.md"
-      - "exports/claude_code/project/skill-smc/install.md"
-
+    - AGENTS.md
+    - AI_NAVIGATION.md
+    - context-map.yaml
+    - CHANGELOG.md
+    - manifest.json
+    - exports/claude_code/project/skill-smc/adapter.md
+    - exports/claude_code/project/skill-smc/install.md
 generated_context_policy:
   regenerate_after:
-    - new_reference_file
-    - structural_change
-    - scope_boundary_change
+  - new_reference_file
+  - structural_change
+  - scope_boundary_change
   commands:
-    repomix_governance: "repomix --config repomix.config.json"
-    graphify: "graphify update ."
-
+    repomix_governance: repomix --config repomix.config.json
+    graphify: graphify update .
 answer_contract:
   require_source_paths: true
-  unsupported_answer: "not found in skill-smc reference material"
+  unsupported_answer: not found in skill-smc reference material
   distinguish_assumptions: true
   do_not_invent_state: true
+skill_ai_it_version: 2026-08-11-governance-checks-layer-v1
+audit_checks:
+  governance_file_presence:
+  - README.md
+  - AGENTS.md
+  - CLAUDE.md
+  - AI_NAVIGATION.md
+  - context-map.yaml
+  - CHANGELOG.md
+  version_consistency:
+    description: Verify managed block version strings match current skill version.
+    action: report_mismatch
+  companion_update_completeness:
+    description: Verify companion files in update_rules were updated together.
+    action: report_missing
+  generated_output_policy:
+    description: Verify Graphify and Repomix outputs are classified as generated support.
+    action: report_violation
+  task_runner_consistency:
+    description: Verify cataloged tasks match actual script files.
+    action: report_drift
+  no_stale_references:
+    description: Detect references to removed tools or superseded governance assumptions.
+    action: report_stale
+promotion_rules:
+  archcore:
+    allowed_init_modes:
+    - bootstrap
+    - navigation-add
+    - refresh
+    content_write_modes:
+    - promote
+    required_authorization: true
+    candidates_report: ARCHCORE_PROMOTION_CANDIDATES.md
+    extract_heuristics_source: patterns/archcore-routing.md
+    exclusion:
+    - CHANGELOG.md (history only)
+    - generated files (.ai-context/, graphify-out/)
+    - unmarked SCRATCHPAD sections
+    - draft/obsolete roadmap items
+context_recovery:
+  procedure:
+  - Read AI_NAVIGATION.md first for navigation map.
+  - Load .archcore/ context if present (durable truth).
+  - 'Regenerate graphify-out/ with: graphify update .'
+  - 'Regenerate .ai-context/ with: repomix --config repomix.config.json'
+  - Verify SCRATCHPAD.md has current state. If empty, populate from memory-keeper
+    / mcp-project-context.
+  - Verify CHANGELOG.md is current.
+  - Verify AI_NAVIGATION.md and context-map.yaml companion consistency.
+  evidence_label: Context recovered at <timestamp> via skill-ai-it context-recovery
+    procedure.
+update_rules:
+  governance_navigation:
+    AGENTS.md:
+      companions:
+      - AI_NAVIGATION.md
+      - context-map.yaml
+      - scripts/README.md
+    AI_NAVIGATION.md:
+      companions:
+      - context-map.yaml
+    context-map.yaml:
+      companions:
+      - AI_NAVIGATION.md
+    scripts/README.md:
+      companions:
+      - AGENTS.md
+      - context-map.yaml
+    new_script_added:
+      companions:
+      - scripts/README.md
+      - AGENTS.md
+      - justfile

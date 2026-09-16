@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=_repomix-common.sh
+source "$SCRIPT_DIR/_repomix-common.sh"
+
+REPO="$PWD"
+PROFILE="auto"
+OUTPUT=".ai-context/change-review.xml"
+INCLUDE=""
+IGNORE=""
+TOKEN_BUDGET=""
+COMPRESS=0
+WITH_LOGS=0
+LOG_COUNT=10
+REMOTE=""
+REVISION=""
+ALLOW_DEFAULT=0
+FORCE=0
+STYLE="xml"
+
+usage() {
+  cat <<'USAGE'
+Usage: repomix-review [options]
+  --repo PATH
+  --profile PROFILE
+  --include PATTERNS
+  --ignore PATTERNS
+  --output PATH
+  --token-budget NUMBER
+  --compress
+  --no-compress
+  --with-logs
+  --log-count NUMBER
+  --revision VALUE
+  --allow-default-branch
+  --style xml|markdown|json|plain
+  --force
+USAGE
+}
+
+# shellcheck disable=SC2050,SC2194
+if [[ "review" == "reference" ]]; then
+  [[ $# -gt 0 ]] || { usage; exit 2; }
+  REMOTE="$1"
+  shift
+fi
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --repo) REPO="$2"; shift 2 ;;
+    --profile) PROFILE="$2"; shift 2 ;;
+    --include) INCLUDE="$2"; shift 2 ;;
+    --ignore) IGNORE="$2"; shift 2 ;;
+    --output) OUTPUT="$2"; shift 2 ;;
+    --token-budget) TOKEN_BUDGET="$2"; shift 2 ;;
+    --compress) COMPRESS=1; shift ;;
+    --no-compress) COMPRESS=0; shift ;;
+    --with-logs) WITH_LOGS=1; shift ;;
+    --log-count) LOG_COUNT="$2"; shift 2 ;;
+    --revision) REVISION="$2"; shift 2 ;;
+    --allow-default-branch) ALLOW_DEFAULT=1; shift ;;
+    --style) STYLE="$2"; shift 2 ;;
+    --force) FORCE=1; shift ;;
+    --no-security-check) die "--no-security-check is prohibited" ;;
+    -h|--help) usage; exit 0 ;;
+    *) die "Unknown option: $1" ;;
+  esac
+done
+
+REPO="$(find_repo_root "$REPO")"
+assert_safe_repo "$REPO"
+
+if [[ "$PROFILE" == "auto" ]]; then
+  PROFILE="$("$SCRIPT_DIR/detect-language-profile" --repo "$REPO" --primary-only)"
+fi
+
+# shellcheck disable=SC2050,SC2194
+if [[ "review" == "reference" ]]; then
+  if [[ -z "$REVISION" && "$ALLOW_DEFAULT" -ne 1 ]]; then
+    die "A pinned --revision is required"
+  fi
+  safe_remote="$(printf '%s' "$REMOTE" | sed 's#https\?://##; s#[^A-Za-z0-9._-]#-#g')"
+  safe_revision="$(printf '%s' "${REVISION:-default}" | sed 's#[^A-Za-z0-9._-]#-#g')"
+  if [[ "$OUTPUT" == ".ai-context/change-review.xml" ]]; then
+    OUTPUT=".ai-context/references/${safe_remote}-${safe_revision}.xml"
+  fi
+fi
+
+if [[ "$OUTPUT" != /* ]]; then
+  OUTPUT="$REPO/$OUTPUT"
+fi
+assert_safe_output "$REPO" "$OUTPUT"
+mkdir -p "$(dirname "$OUTPUT")"
+[[ ! -e "$OUTPUT" || "$FORCE" -eq 1 ]] || die "Output exists; use --force: $OUTPUT"
+
+read -r -a RBASE <<<"$(repomix_cmd)"
+cmd=("${RBASE[@]}" --style "$STYLE" --output "$OUTPUT")
+
+[[ -n "$INCLUDE" ]] && cmd+=(--include "$INCLUDE")
+[[ -n "$IGNORE" ]] && cmd+=(--ignore "$IGNORE")
+[[ -n "$TOKEN_BUDGET" ]] && cmd+=(--token-budget "$TOKEN_BUDGET")
+[[ "$COMPRESS" -eq 1 ]] && cmd+=(--compress)
+
+# shellcheck disable=SC2050,SC2194
+case "review" in
+  review)
+    cmd+=(--include-diffs)
+    if [[ "$WITH_LOGS" -eq 1 ]]; then
+      cmd+=(--include-logs --include-logs-count "$LOG_COUNT")
+    fi
+    ;;
+  reference)
+    cmd+=(--remote "$REMOTE")
+    [[ -n "$REVISION" ]] && cmd+=(--remote-branch "$REVISION")
+    ;;
+esac
+
+printf 'Profile: %s\n' "$PROFILE"
+printf 'Output: %s\n' "$OUTPUT"
+printf 'Command:'
+printf ' %q' "${cmd[@]}"
+printf '\n'
+(cd "$REPO" && "${cmd[@]}")

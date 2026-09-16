@@ -149,8 +149,16 @@ def check_structured(root: Path, fails: list[str], warns: list[str]) -> int:
             pass
 
         def mapping(loader, node, deep=False):
+            # Merge keys ("<<: *anchor") resolve to tag:yaml.org,2002:merge, not a plain string --
+            # constructing them directly here (rather than leaving them to SafeConstructor's own
+            # flatten_mapping, called below) raises "could not determine a constructor for the tag
+            # 'tag:yaml.org,2002:merge'" on any file using this common, spec-valid YAML feature.
+            # They are not a duplicate-key candidate in the sense this loop checks for, so skip them;
+            # the standard construct_mapping call below still validates and flattens them correctly.
             seen = set()
             for k, _ in node.value:
+                if getattr(k, "tag", None) == "tag:yaml.org,2002:merge":
+                    continue
                 key = loader.construct_object(k, deep=deep)
                 if key in seen:
                     raise ValueError(f"duplicate key {key!r}")

@@ -1,0 +1,40 @@
+version: 1
+authority:
+  agent_behavior: SKILL.md
+  human_operations: README.md
+  maintenance: AGENTS.md
+  token_policy: patterns/token-budgeting.md
+  architecture: ARCHITECTURE.md
+  routing_policy: templates/repomix-mcp-routing-policy.md
+  profile_schema: docs/profile-schema.md
+relationships:
+  - source: SKILL.md
+    governs:
+      - run-reporting
+      - token-budget-thresholds
+      - retry-strategy
+      - ambiguous-routing
+  - source: scripts/detect-language-profile
+    depends_on:
+      - profiles/
+      - docs/profile-schema.md
+  - source: scripts/repomix-current
+    depends_on:
+      - profiles/base.json
+      - templates/repomix.config.json
+  - source: scripts/install-skill-into-project
+    depends_on:
+      - templates/
+      - scripts/repomix-current
+      - scripts/repomix-review
+      - scripts/repomix-security
+      - scripts/repomix-reference
+  - source: tests/test-skill-repomix.sh
+    validates:
+      - scripts/
+      - profiles/
+      - templates/
+      - SKILL.md
+      - patterns/
+  - source: README.md
+    note: human-operations guidance only; does not override SKILL.md agent behaviour

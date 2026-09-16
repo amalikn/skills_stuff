@@ -1,7 +1,7 @@
 ---
 title: Progressive Disclosure Loading
 type: rule
-status: proposed
+status: accepted
 provenance: promoted from AGENTS.md + AI_NAVIGATION.md on 20260626
 ---
 

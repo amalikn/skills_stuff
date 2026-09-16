@@ -1,0 +1,72 @@
+# retrieval-policy.yaml — Generic project template with comments
+# Copy to: <project>/rag/retrieval-policy.yaml
+# Replace all values in angle brackets.
+
+version: 1
+
+# Flat validator contract keys — validated by: rag-tools validate-policy rag/retrieval-policy.yaml
+project_slug: "<project_name_slug>"
+project_collection: "rag__project_<project_name_slug>"
+
+# List domain slugs exactly as they appear in domain-registry.yaml
+allowed_wiki_domains:
+  - "<domain1>"
+  # - "<domain2>"
+
+# Must match allowed_wiki_domains 1:1
+allowed_wiki_collections:
+  - "rag__wiki_<domain1>"
+  # - "rag__wiki_<domain2>"
+
+# Do not remove any of these — add project-specific forbidden names if needed
+forbidden_collections:
+  - "rag__global_all_docs"
+  - "rag__wiki_all"
+  - "rag__all"
+  - "default"
+  - "documents"
+  - "knowledge"
+  - "main"
+
+required_filters:
+  - "project_slug"
+  - "wiki_domain"
+
+citation_rules:
+  cite_sources: true
+  cite_collection_name: true
+  cite_source_file: true
+  cite_section_path: true
+  cite_heading: true
+
+# Rich human/agent guidance below (not currently parsed by validator)
+project:
+  id: "<group>-<project-name>"
+  name: "<Human Readable Project Name>"
+
+retrieval_order:
+  - step: 1
+    source: "project_local_files"
+    description: "Project-local files first."
+  - step: 2
+    source: "project_collection"
+    collection: "rag__project_<project_name_slug>"
+    filter_required: "project_slug = <project_name_slug>"
+  - step: 3
+    source: "declared_wiki_domains"
+    collections:
+      - "rag__wiki_<domain1>"
+    filter_required: "wiki_domain in [<domain1>]"
+  - step: 4
+    source: "ask_user"
+    condition: "No sufficient evidence found in steps 1–3."
+
+hard_rules:
+  - "Never query undeclared wiki domains."
+  - "Never query global or mixed collections."
+  - "Every result must cite source_file, section_path, heading, and collection."
+  - "If insufficient evidence, say so — do not speculate."
+
+status:
+  lifecycle: "draft"
+  reviewed: false

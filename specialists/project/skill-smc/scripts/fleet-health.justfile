@@ -46,6 +46,19 @@ collect: check-login
 collect-sites sites: check-login
     ./collect-fleet-health.sh {{sites}}
 
+# Pin validity (mangle) + activation-log audit (added 2026-09-11, see ../references/14_pin-activation-diagnosis.md) across the full fleet
+pin-audit: check-login
+    ./audit-pin-activation.sh {{sites}}
+
+# Pin audit against named sites only, e.g. just -f fleet-health.justfile pin-audit-sites "hope-vale kowanyama"
+pin-audit-sites sites: check-login
+    ./audit-pin-activation.sh {{sites}}
+
+# Per-pin activation timeline (IP + MAC + lease window + live status) for one site, e.g.
+# just -f fleet-health.justfile pin-correlate "bungardi"
+pin-correlate sites: check-login
+    ./correlate-pin-activation.sh {{sites}}
+
 # List captures held locally
 list-captures:
     @test -d ../evidence && find ../evidence -maxdepth 1 -mindepth 1 -type d | sort || echo "no captures yet"
@@ -101,3 +114,22 @@ chassis-models:
       fi
       printf '%-24s %s\n' "$host" "$model"
     done
+
+# Which hosts in the latest capture still have the portal-FQDN regression live (deny_info pointing at the Teleport hostname instead of the real portal domain) — added 2026-09-11, see ../references/13_known-issues.md and ../references/14_pin-activation-diagnosis.md
+portal-fqdn-check:
+    #!/usr/bin/env bash
+    latest=$(find ../evidence -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
+    [ -z "$latest" ] && { echo "no captures yet — run 'just -f fleet-health.justfile collect' first"; exit 1; }
+    echo "checking: $latest"
+    for f in "$latest"/*/05-portal-fqdn-status.txt; do
+      host=$(basename "$(dirname "$f")")
+      deny=$(awk '/--deny-info--/{getline; print; exit}' "$f" 2>/dev/null)
+      if echo "$deny" | grep -q 'teleport\.'; then
+        printf '%-24s BROKEN — %s\n' "$host" "$deny"
+      elif [ -z "$deny" ]; then
+        printf '%-24s no capture / unreachable\n' "$host"
+      else
+        printf '%-24s ok\n' "$host"
+      fi
+    done
+    true

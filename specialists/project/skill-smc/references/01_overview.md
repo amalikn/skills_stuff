@@ -147,6 +147,23 @@ Operational implications:
 - Prometheus remote_write and federation scrapes must tolerate high latency
 - Any continuous disk writer (pcap, journal, large logs) has compounding impact since data cannot be quickly offloaded over the link
 
+### WAN Uplink Topology Pattern — Direct-to-NTD and Switch-Trunked Access-VLANs Can Coexist on One Box
+
+Confirmed at `galiwinku-smc01` (`nbn_accelerate`, multi-WAN NBN business site), 2026-09-08. Do not assume every `role: internet`/`role: starlink` interface on a multi-WAN site shares the same
+deployment characteristics — two structurally different patterns can and do coexist on the same box:
+
+- **Direct-to-NTD physical ports** — a NIC wired straight to its own NBN NTD, no switch in between (`eno1`, `enp3s0` on galiwinku).
+- **Switch-trunked access-VLAN ports** — a single NIC (`enp1s0`/`enp2s0` on galiwinku) is an 802.1Q trunk into a dedicated on-site switch, and that one switch carries **multiple** separate NBN
+  circuits as access-VLANs, one NTD per access port. Galiwinku's `enp2s0` ("switch01") trunks VLANs 521/523/525/527; `enp1s0` ("switch02") trunks VLANs 532/534/536/538. Starlink (`vlan621`/`vlan631`,
+  `role: starlink`) rides the same two trunks but is a logically separate role from the `role: internet` VLANs sharing the switch.
+
+**Why this matters for triage:** a shared-switch VLAN failure and an independent direct-NTD failure require different troubleshooting paths. On a switch-trunked circuit, the switch itself, its uplink
+port, and the trunk NIC are all shared fate across every VLAN on that switch — a switch-level problem can look like several unrelated circuits failing together. A direct-to-NTD port has no such shared
+blast radius; its failure is isolated to that one circuit. Before chasing a "why did N circuits fail at once" question, check whether those circuits share a switch trunk (`enp1s0`/`enp2s0`-style) or
+are independent direct-to-NTD ports — the answer changes where to look first. This is a distinct pattern from the switch01/switch02 **active-standby failover for one circuit** design discussed in
+`08_ansible-authoring.md` "Design Recommendation: Bond Doubled RCP/NBN-Accelerate Internet Circuits" — that one is two switches carrying the *same* circuit; this one is one switch carrying *several
+different* circuits as access-VLANs.
+
 ### Inventory Flavors
 
 | Flavor         | Platform    | Description                                |

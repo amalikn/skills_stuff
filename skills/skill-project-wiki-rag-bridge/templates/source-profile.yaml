@@ -1,0 +1,53 @@
+# source-profile.yaml — document profile output from rag-tools profile-file
+# Template: copy to <project-root>/rag/source-profiles/<document_id>.yaml
+# Populate from: rag-tools profile-file <path> output (JSON → YAML)
+# Schema: skill-project-wiki-rag-bridge/schemas/document-profile.schema.yaml
+
+document_id: "<stem-of-file>"          # path.stem — no extension
+title: "<document title>"              # first heading or file stem if no heading
+path: "<absolute-path-to-file>"        # full path as returned by profile-file
+
+# File structure
+file_type: "<extension>"               # .md | .txt | .csv | .tsv | .json | .yaml | .pdf | .xlsx
+size_bytes: 0
+line_count: 0
+estimated_tokens: 0
+
+# Classification (set by rag-tools document_profiler._document_class)
+document_class: "unknown"              # structured_markdown_reference | legal_contract_or_terms |
+                                       # financial_rate_card | invoice_or_billing_report |
+                                       # operational_runbook | policy_document | meeting_notes |
+                                       # knowledge_article | source_code_docs | unstructured_pdf |
+                                       # scanned_pdf | tabular_dataset | mixed_content | unknown
+
+# Structural features (all booleans from profile-file output)
+has_headings: false
+heading_count: 0
+heading_levels: []                     # e.g. [1, 2, 3]
+has_tables: false
+table_count: 0
+has_section_ids: false                 # e.g. "C2.11", "1.2.3" style IDs
+section_ids: []                        # list of detected section ID strings
+has_toc: false
+has_frontmatter: false
+has_repeated_entities: false           # recurring named entities (suggests reference doc)
+
+# Content signals
+has_dates: false
+has_amounts: false                     # currency, percentages, numeric amounts
+has_definitions: false
+has_cross_references: false            # links or section-ID references to other parts
+
+# Safety flag
+contains_sensitive_data: false         # api_key, password, secret, token patterns detected
+
+# Authority and retrieval
+authoritative: true                    # true = source of truth; false = derived/secondary
+recommended_retrieval_modes:           # ordered list from profile-file / recommend-strategy
+  - "<mode>"
+
+# Index gate (set by strategy, not by profiler directly)
+index_allowed: false                   # always false at profile stage; update after strategy + benchmark
+
+# Notes (populated by profile-file or manually)
+notes: []

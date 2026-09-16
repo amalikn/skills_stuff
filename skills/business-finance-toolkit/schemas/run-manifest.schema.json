@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RunManifest",
+  "type": "object",
+  "required": ["run_id", "created_at", "calculator_version", "input_sha256"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "calculator_version": {"type": "string"},
+    "input_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "claim_ids": {"type": "array", "items": {"type": "string"}},
+    "artifacts": {"type": "array", "items": {"type": "string"}}
+  }
+}

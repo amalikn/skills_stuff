@@ -143,6 +143,10 @@ RULES = [
     ((), (".yaml", ".yml", ".json", ".toml", ".ini"),
      "structured-config", "examined-special", "parse with a strict loader; do not read as text"),
     ((), (".md", ".rst", ".txt"), "prose", "examined", ""),
+    ((), (".trace", ".log"),
+     "evidence-log", "examined-special", "append-only fetch/run record; check it states status and time, and that its subject still exists"),
+    ((), (".otf", ".ttf", ".woff", ".woff2"),
+     "font-binary", "examined-special", "check licence, family name as read from the name table, and provenance — never inferred from the filename"),
     ((), (".png", ".jpg", ".jpeg", ".svg", ".pdf", ".gif"),
      "media", "examined-special", "open and look — an undated diagram is a finding"),
 ]
@@ -211,10 +215,13 @@ def list_files(root: Path, scope: str | None) -> list[str]:
         # returns EMPTY here, silently falls through to the rglob branch below, and that branch
         # has no gitignore awareness -- so the audit's own scratch gets classified as project
         # files. Found 2026-08-26 on smc-file-writing-analysis (0 tracked files, 486 untracked).
-        out = subprocess.run(["git", "ls-files", "-c", "-o", "--exclude-standard"],
+        # -z: NUL-separated and UNQUOTED. Without it git C-quotes any path with non-ASCII or
+        # spaces ("sources/.../search-\330\243....md"), the trailing quote defeats the extension
+        # match, and real prose files land in "unclassified" — a blind spot that reads as a rule gap.
+        out = subprocess.run(["git", "ls-files", "-z", "-c", "-o", "--exclude-standard"],
                              cwd=root, capture_output=True, text=True, timeout=60)
         if out.returncode == 0 and out.stdout.strip():
-            files = [l.strip() for l in out.stdout.splitlines() if l.strip()]
+            files = [l for l in out.stdout.split("\0") if l.strip()]
         else:
             raise RuntimeError
     except (OSError, subprocess.SubprocessError, RuntimeError):

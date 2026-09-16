@@ -1,0 +1,15 @@
+schema_version: 1.0.0
+parser_version: '1'
+configuration_fingerprint: sha256:4a56896b84051b41d34bb330c4586c1db6da04159b1937d18217623b290cee05
+files:
+  ansible.cfg: sha256:e5b847d77df9c1f224142b633f640b0340cf213ca5b575c09d0f1e7a0261b2d9
+  inventories/prod_env/group_vars/web.yml: sha256:3eba1e098c8d1b7814ed1fc6f1a299a74f062286b6dcd6467f04e7347c46dd7e
+  inventories/prod_env/prod: sha256:aa6268318b398d0a5ff6f46a35f0244375e421cd49183c6048180e2b46428c45
+  roles/dns/defaults/main.yml: sha256:b76ea7fe2b794d4dcbec36d27cfdfbc050a22fef67db692a0d9663e4e61323e1
+  roles/dns/handlers/main.yml: sha256:d82c4b7fdd77f573a6d829c84286e5563c23995e26aeef73784ed8cffb661516
+  roles/dns/tasks/main.yml: sha256:3841c8e2e6a14190ffa7e722aaf9430c79b792337a010817179a7e42b1d1310d
+  roles/dns/templates/resolved.conf.j2: sha256:7aaff3611ab1ca984b942ccde5f9194b7246fab2f7f07f952a773535f864055a
+  roles/web/meta/main.yml: sha256:a326ac65801d8fc510009d8ff92461ab4d80f3a7c3cf9f14f1e7140d2b73abbd
+  roles/web/tasks/main.yml: sha256:47c552822a98f3d376ae106285bdf863065ffcd340c5c18f72f3f7c6b331aaa4
+  site.yml: sha256:a06976c062920e5411db92d018db0eb583b390893d9b5882d35762a2875346a2
+  vars_plugins/custom_vars.py: sha256:7917ba94e221eb8ad9ed4f4c9f3410d20726dea512b1ce209efdeeb63c132810

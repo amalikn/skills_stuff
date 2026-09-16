@@ -1,7 +1,7 @@
 ---
 title: Progressive Disclosure Reference Structure
 type: adr
-status: proposed
+status: accepted
 date: 20260626
 provenance: promoted from CHANGELOG.md v0.1.2 on 20260626
 ---
@@ -10,13 +10,15 @@ provenance: promoted from CHANGELOG.md v0.1.2 on 20260626
 
 ## Status
 
-Proposed (implemented as of v0.1.2)
+Accepted (implemented as of v0.1.2)
 
 ## Context
 
-The original skill-smc pack had a monolithic `RUNBOOK.md` containing 1724 lines across 13 major sections: overview, service map, communication flows, dependency tree, troubleshooting, failure modes, hardware/overlayroot, Ansible authoring, URL capture, captive portal, Vagrant lab, content filtering, and known issues.
+The original skill-smc pack had a monolithic `RUNBOOK.md` containing 1724 lines across 13 major sections: overview, service map, communication flows, dependency tree, troubleshooting, failure modes,
+hardware/overlayroot, Ansible authoring, URL capture, captive portal, Vagrant lab, content filtering, and known issues.
 
-Loading this file in full consumed significant context before any task-specific work could begin. A focused troubleshooting question required reading the entire service architecture section to get to the troubleshooting section.
+Loading this file in full consumed significant context before any task-specific work could begin. A focused troubleshooting question required reading the entire service architecture section to get to
+the troubleshooting section.
 
 ## Decision
 

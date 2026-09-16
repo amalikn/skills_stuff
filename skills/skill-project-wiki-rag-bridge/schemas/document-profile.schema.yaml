@@ -1,0 +1,147 @@
+# Schema: document-profile.schema.yaml
+# Purpose: Defines the structure of profile-file output saved to source-profiles/.
+# Authority: skill-project-wiki-rag-bridge / archcore specs layer
+# Source: mirrors rag_tools.document_profiler.profile_file() return shape
+
+schema_name: document-profile
+version: 1
+applies_to: "<project-root>/rag/source-profiles/<document_id>.yaml"
+
+purpose: >
+  Source document profile produced by `rag-tools profile-file`. Records structural features
+  used by strategy_selector to recommend retrieval modes. Stored in project-local rag/
+  directory for audit and strategy derivation.
+
+required_fields:
+  document_id:
+    type: string
+    description: File stem (no extension). Must match the filename used in retrieval-strategy.yaml.
+
+  title:
+    type: string
+    description: First heading text, or file stem if no headings. Used for display and citation.
+
+  path:
+    type: string
+    description: Absolute path to the source file. Never a Qdrant collection path.
+
+  file_type:
+    type: string
+    allowed_values: [".md", ".txt", ".csv", ".tsv", ".json", ".yaml", ".yml", ".pdf", ".xlsx"]
+    description: File extension including the dot.
+
+  size_bytes:
+    type: integer
+    description: File size in bytes. Zero if file is missing.
+
+  line_count:
+    type: integer
+    description: Number of lines in the file.
+
+  estimated_tokens:
+    type: integer
+    description: Rough token count estimate. Used for chunking decisions.
+
+  document_class:
+    type: string
+    allowed_values:
+      - structured_markdown_reference
+      - legal_contract_or_terms
+      - financial_rate_card
+      - invoice_or_billing_report
+      - operational_runbook
+      - policy_document
+      - meeting_notes
+      - knowledge_article
+      - source_code_docs
+      - unstructured_pdf
+      - scanned_pdf
+      - tabular_dataset
+      - mixed_content
+      - unknown
+    description: >
+      Document classification from document_profiler._document_class(). Drives strategy
+      selection. "unknown" is a valid output but requires manual classification before indexing.
+
+  has_headings:
+    type: boolean
+
+  heading_count:
+    type: integer
+
+  heading_levels:
+    type: list[integer]
+    description: Sorted list of heading depths found (e.g. [1, 2, 3]).
+
+  has_tables:
+    type: boolean
+
+  table_count:
+    type: integer
+
+  has_section_ids:
+    type: boolean
+    description: True if structured IDs like "C2.11" or "1.2.3" were detected.
+
+  section_ids:
+    type: list[string]
+    description: Sorted list of detected section ID strings.
+
+  authoritative:
+    type: boolean
+    description: Always true from profile-file output. Reflects that source files are authoritative.
+
+  recommended_retrieval_modes:
+    type: list[string]
+    description: Ordered list of preferred retrieval modes from _recommended_modes().
+
+  index_allowed:
+    type: boolean
+    description: Always false from profile-file. Only updated after strategy + benchmark decisions.
+
+  notes:
+    type: list[string]
+    description: Optional profiler notes or manual annotations.
+
+optional_fields:
+  has_toc:
+    type: boolean
+
+  has_frontmatter:
+    type: boolean
+
+  has_repeated_entities:
+    type: boolean
+
+  has_dates:
+    type: boolean
+
+  has_amounts:
+    type: boolean
+
+  has_definitions:
+    type: boolean
+
+  has_cross_references:
+    type: boolean
+
+  contains_sensitive_data:
+    type: boolean
+    description: >
+      If true, index_allowed must remain false. Profiler detects api_key, password, secret,
+      token patterns. Manual review required before considering any indexing.
+
+validation_notes:
+  - document_id must match the file stem exactly
+  - path must be an absolute path to the actual source file
+  - index_allowed from profile-file is always false; do not override at profile stage
+  - contains_sensitive_data: true always blocks indexing
+  - recommended_retrieval_modes must be a non-empty list for any supported file type
+  - document_class unknown requires manual classification before strategy can proceed
+
+common_failure_cases:
+  - "document_id does not match file stem — misalignment breaks retrieval-strategy.yaml lookups"
+  - "contains_sensitive_data: true with index_allowed: true — forbidden"
+  - "document_class: unknown — re-run profile-file or classify manually before writing strategy"
+  - "recommended_retrieval_modes is empty — profiler found an unsupported file type"
+  - "path is relative, not absolute — must be full path for reliable source citation"

@@ -1,0 +1,11 @@
+version: "1"
+created: "2026-05-21"
+source_type: service_map
+
+# Maps service_map_sample.csv columns → canonical service_map field names.
+field_mappings:
+  supplier_service_id:  "Supplier Service ID"
+  our_service_id:       "Internal Service ID"
+  customer_id:          "Customer ID"
+  service_type:         "Service Type"
+  active:               "Active"

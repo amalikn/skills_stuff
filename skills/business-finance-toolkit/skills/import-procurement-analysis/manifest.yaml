@@ -1,0 +1,7 @@
+id: import-procurement-analysis
+name: Import and Procurement Analysis
+lifecycle: PROTOTYPE
+inputs: [supplier_terms, product_details, origin, destination]
+outputs: [procurement_checklist, eligibility_claims, cost_categories, risk_register]
+human_approval: required_before_commitment
+implementation: bftoolkit.domain_packs:get_domain_pack

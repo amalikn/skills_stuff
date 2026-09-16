@@ -1,0 +1,402 @@
+version = 1
+purpose = "Canonical Agent Stack routing catalogue. Personas own judgement; skills provide repeatable procedures or tools."
+
+[routing]
+default_entry = "orchestrator"
+normal_persona_min = 1
+normal_persona_max = 4
+critic_on_material_decisions = true
+prefer_narrow_skill_for_narrow_task = true
+require_runtime_match_for_tool_skills = true
+
+# Persona records intentionally describe decision ownership, not biography/style.
+[[personas]]
+id = "ceo-bezos"
+domains = ["strategy", "business", "leadership"]
+intents = ["strategy", "prioritisation", "resource-allocation", "operating-model", "executive-decision"]
+owns = ["enterprise-direction", "strategic-priority", "resource-allocation"]
+
+[[personas]]
+id = "cfo-campbell"
+domains = ["finance", "business", "import-economics"]
+intents = ["pricing", "unit-economics", "financial-model", "capital-allocation", "cash-risk", "monetisation", "landed-cost", "import-economics", "margin", "inventory-risk", "warranty-reserve", "freight-economics", "supplier-cost-comparison", "go-no-go-economics"]
+owns = ["economic-viability", "financial-guardrail", "pricing-economics"]
+
+[[personas]]
+id = "critic-munger"
+domains = ["decision-quality", "risk"]
+intents = ["critique", "premortem", "red-team", "assumption-review", "inversion"]
+owns = ["independent-challenge"]
+
+[[personas]]
+id = "cto-vogels"
+domains = ["technology", "architecture", "engineering", "networking", "systems"]
+intents = ["architecture", "technical-strategy", "scalability", "reliability", "integration", "migration", "network-design", "routing", "switching", "bgp", "ospf", "pppoe", "radius", "dns", "network-troubleshooting", "capacity-planning", "network-migration", "vendor-platform", "nas", "storage-architecture", "virtualisation"]
+owns = ["technical-architecture", "technology-strategy"]
+
+[[personas]]
+id = "devops-hightower"
+domains = ["delivery", "infrastructure", "operations", "systems"]
+intents = ["deployment", "cicd", "infrastructure", "observability", "sre", "rollback", "cloud", "containers", "linux-operations", "monitoring", "logging", "backup", "restore", "infrastructure-automation", "ansible", "service-operations", "incident-response"]
+owns = ["delivery-mechanism", "operational-readiness"]
+
+[[personas]]
+id = "fullstack-dhh"
+domains = ["engineering", "implementation"]
+intents = ["implement", "refactor", "application-design", "api", "frontend", "backend", "code-change"]
+owns = ["application-implementation"]
+
+[[personas]]
+id = "interaction-cooper"
+domains = ["ux", "interaction"]
+intents = ["user-flow", "workflow", "interaction-model", "navigation", "form-design", "state-design"]
+owns = ["interaction-behaviour"]
+
+[[personas]]
+id = "marketing-godin"
+domains = ["marketing", "growth"]
+intents = ["positioning", "content", "seo", "launch", "audience", "campaign", "community-growth"]
+owns = ["market-message", "marketing-channel"]
+
+[[personas]]
+id = "operations-pg"
+domains = ["operations", "startup", "execution", "imports", "supply-chain"]
+intents = ["pilot", "validation", "process", "customer-learning", "pmf", "operating-workflow", "import-workflow", "supplier-selection", "sourcing", "inspection", "freight", "customs-process", "inventory-process", "fulfilment", "supply-chain", "auction-sourcing"]
+owns = ["operating-process", "pilot-design"]
+
+[[personas]]
+id = "product-norman"
+domains = ["product", "ux"]
+intents = ["product-strategy", "requirements", "prioritisation", "roadmap", "feature-definition", "product-discovery"]
+owns = ["product-outcome", "product-scope"]
+
+[[personas]]
+id = "qa-bach"
+domains = ["quality", "testing"]
+intents = ["qa", "test-strategy", "release-readiness", "defect", "coverage", "exploratory-testing"]
+owns = ["quality-risk", "release-confidence"]
+
+[[personas]]
+id = "research-thompson"
+domains = ["research", "evidence", "regulatory-research", "market-intelligence"]
+intents = ["research", "fact-finding", "market-research", "competitive-research", "source-validation", "evidence", "current-facts", "regulatory-research", "import-regulation", "customs-research", "tariff-research", "eligibility-research", "supplier-research", "auction-data", "market-pricing", "demand-research", "vendor-documentation"]
+owns = ["evidence-synthesis"]
+
+[[personas]]
+id = "sales-ross"
+domains = ["sales", "commercial"]
+intents = ["sales", "pipeline", "qualification", "outbound", "objection", "conversion"]
+owns = ["sales-process", "qualification"]
+
+[[personas]]
+id = "ui-duarte"
+domains = ["ui", "design"]
+intents = ["visual-design", "design-system", "interface-hierarchy", "dashboard-design", "responsive-ui"]
+owns = ["visual-interface"]
+
+# Skills: intents drive selection; personas are likely judgement owners/consumers.
+# execution = "analysis" means no special local runtime is inherently required.
+# execution = "tool" means runtime/tool availability must be checked before selection.
+
+[[skills]]
+id = "agent-browser"
+intents = ["browser-automation", "website-interaction", "form-automation", "capture-web-workflow"]
+personas = ["research-thompson", "qa-bach"]
+execution = "tool"
+requires_any = ["agent-browser-cli"]
+
+[[skills]]
+id = "code-review-security"
+intents = ["secure-code-review", "code-vulnerability-review", "security-code-scan"]
+personas = ["cto-vogels", "fullstack-dhh", "qa-bach"]
+execution = "analysis"
+
+[[skills]]
+id = "cold-email-sequence-generator"
+intents = ["cold-email", "outbound-sequence", "prospecting-email"]
+personas = ["sales-ross", "marketing-godin"]
+execution = "analysis"
+
+[[skills]]
+id = "community-led-growth"
+intents = ["community-growth", "community-strategy", "community-acquisition", "retention-community"]
+personas = ["marketing-godin", "operations-pg"]
+execution = "analysis"
+
+[[skills]]
+id = "competitive-intelligence-analyst"
+intents = ["competitor-analysis", "competitive-intelligence", "feature-benchmark", "pricing-benchmark", "market-gap"]
+personas = ["research-thompson", "marketing-godin", "ceo-bezos"]
+execution = "analysis"
+
+[[skills]]
+id = "content-strategy"
+intents = ["content-strategy", "editorial-plan", "content-topics", "content-funnel"]
+personas = ["marketing-godin"]
+execution = "analysis"
+
+[[skills]]
+id = "deep-analysis"
+intents = ["deep-analysis", "structured-analysis", "complex-review", "multi-angle-analysis"]
+personas = ["critic-munger", "cto-vogels", "research-thompson"]
+execution = "analysis"
+
+[[skills]]
+id = "deep-reading-analyst"
+intents = ["deep-reading", "document-analysis", "paper-analysis", "longform-analysis"]
+personas = ["research-thompson", "critic-munger"]
+execution = "analysis"
+
+[[skills]]
+id = "deep-research"
+intents = ["deep-research", "multi-source-research", "citation-research", "comprehensive-research", "regulatory-research", "supplier-research", "auction-research", "vendor-documentation-research"]
+personas = ["research-thompson"]
+execution = "tool"
+requires_any = ["python>=3.10"]
+safety_notes = ["No continuation agents, viewer launch, or implicit persistent output unless operator/project explicitly authorises it."]
+
+[[skills]]
+id = "devops"
+intents = ["cloud-deploy", "docker", "kubernetes", "cicd", "infrastructure", "operational-readiness"]
+personas = ["devops-hightower", "cto-vogels"]
+execution = "tool"
+requires_any = ["relevant-provider-cli"]
+
+[[skills]]
+id = "email-sequence"
+intents = ["email-sequence", "drip-campaign", "lifecycle-email", "automated-email-flow"]
+personas = ["marketing-godin", "sales-ross"]
+execution = "analysis"
+
+[[skills]]
+id = "financial-unit-economics"
+intents = ["unit-economics", "cac-ltv", "contribution-margin", "payback", "transaction-economics", "landed-cost", "import-margin", "inventory-economics", "warranty-reserve", "downside-scenario"]
+personas = ["cfo-campbell"]
+execution = "analysis"
+
+[[skills]]
+id = "find-skills"
+intents = ["find-skill", "discover-skill", "extend-agent-capability"]
+personas = ["orchestrator-follett"]
+execution = "tool"
+safety_notes = ["Discovery is allowed; installation requires explicit operator authority."]
+
+[[skills]]
+id = "frontend-design"
+intents = ["frontend-design", "ui-implementation-design", "interface-composition"]
+personas = ["ui-duarte", "fullstack-dhh"]
+execution = "analysis"
+
+[[skills]]
+id = "github-explorer"
+intents = ["github-repository-research", "repository-exploration", "github-code-discovery"]
+personas = ["research-thompson", "cto-vogels", "fullstack-dhh"]
+execution = "tool"
+requires_any = ["github-access"]
+
+[[skills]]
+id = "market-sizing-analysis"
+intents = ["market-sizing", "tam", "sam", "som", "market-opportunity", "import-market-demand", "addressable-demand"]
+personas = ["research-thompson", "cfo-campbell", "ceo-bezos"]
+execution = "analysis"
+
+[[skills]]
+id = "micro-saas-launcher"
+intents = ["micro-saas", "small-saas-launch", "indie-launch", "rapid-saas-validation"]
+personas = ["operations-pg", "product-norman", "marketing-godin"]
+execution = "analysis"
+
+[[skills]]
+id = "orchestrator"
+intents = ["multi-domain", "orchestration", "complex-decision", "integrated-review"]
+personas = ["orchestrator-follett"]
+execution = "analysis"
+
+[[skills]]
+id = "ph-community-outreach"
+intents = ["product-hunt-outreach", "launch-community-outreach"]
+personas = ["marketing-godin"]
+execution = "analysis"
+
+[[skills]]
+id = "premortem"
+intents = ["premortem", "failure-analysis", "launch-risk", "decision-risk"]
+personas = ["critic-munger"]
+execution = "analysis"
+
+[[skills]]
+id = "pricing-strategy"
+intents = ["pricing", "packaging", "monetisation", "pricing-tier", "value-metric"]
+personas = ["cfo-campbell", "marketing-godin"]
+execution = "analysis"
+
+[[skills]]
+id = "product-strategist"
+intents = ["product-strategy", "gtm-product", "product-positioning", "roadmap-strategy"]
+personas = ["product-norman", "ceo-bezos"]
+execution = "analysis"
+
+[[skills]]
+id = "scientific-critical-thinking"
+intents = ["research-rigor", "scientific-evidence", "methodology-review", "statistical-validity", "bias-review"]
+personas = ["research-thompson", "critic-munger"]
+execution = "analysis"
+
+[[skills]]
+id = "security-audit"
+intents = ["security-audit", "owasp", "dependency-security", "auth-security", "api-security", "secret-security"]
+personas = ["cto-vogels", "qa-bach"]
+execution = "analysis"
+
+[[skills]]
+id = "senior-qa"
+intents = ["test-strategy", "test-automation", "qa", "coverage-analysis", "e2e-testing"]
+personas = ["qa-bach"]
+execution = "tool"
+requires_any = ["python>=3.10"]
+
+[[skills]]
+id = "seo-audit"
+intents = ["seo-audit", "technical-seo", "search-performance-diagnosis"]
+personas = ["marketing-godin"]
+execution = "analysis"
+
+[[skills]]
+id = "seo-content-strategist"
+intents = ["seo-content", "keyword-strategy", "content-cluster", "pillar-page"]
+personas = ["marketing-godin"]
+execution = "analysis"
+
+[[skills]]
+id = "skill-creator"
+intents = ["create-skill", "update-skill", "validate-skill", "skill-design"]
+personas = ["orchestrator-follett"]
+execution = "tool"
+requires_any = ["python>=3.10", "pyyaml"]
+
+[[skills]]
+id = "startup-business-models"
+intents = ["business-model", "revenue-model", "startup-economics", "packaging-model"]
+personas = ["ceo-bezos", "cfo-campbell", "operations-pg"]
+execution = "analysis"
+
+[[skills]]
+id = "startup-financial-modeling"
+intents = ["financial-projection", "startup-forecast", "budget-model", "runway", "scenario-model"]
+personas = ["cfo-campbell"]
+execution = "analysis"
+
+[[skills]]
+id = "tailwind-v4-shadcn"
+intents = ["tailwind-v4", "shadcn", "frontend-component", "design-system-implementation"]
+personas = ["ui-duarte", "fullstack-dhh"]
+execution = "tool"
+requires_any = ["node", "tailwind-v4", "shadcn"]
+
+[[skills]]
+id = "team"
+intents = ["persona-selection", "team-formation", "role-routing"]
+personas = ["orchestrator-follett"]
+execution = "analysis"
+
+[[skills]]
+id = "user-persona-creation"
+intents = ["user-persona", "customer-persona", "research-persona"]
+personas = ["product-norman", "interaction-cooper", "marketing-godin", "sales-ross"]
+execution = "analysis"
+
+[[skills]]
+id = "user-research-synthesis"
+intents = ["user-research", "interview-synthesis", "research-insights", "opportunity-synthesis"]
+personas = ["research-thompson", "product-norman", "interaction-cooper"]
+execution = "analysis"
+
+[[skills]]
+id = "ux-audit-rethink"
+intents = ["ux-audit", "usability-review", "experience-redesign", "interaction-audit"]
+personas = ["product-norman", "interaction-cooper", "ui-duarte"]
+execution = "analysis"
+
+[[skills]]
+id = "web-scraping"
+intents = ["web-scraping", "content-extraction", "site-data-extraction", "undocumented-api"]
+personas = ["research-thompson"]
+execution = "tool"
+requires_any = ["web-access"]
+
+[[skills]]
+id = "websh"
+intents = ["websh", "web-crawl", "web-cache", "web-shell"]
+personas = ["research-thompson"]
+execution = "tool"
+requires_any = ["websh-runtime"]
+safety_notes = ["No background agents, eager crawl, or implicit persistent .websh state without explicit operator/project authorisation."]
+
+[[routing_rules]]
+id = "research-first"
+when_any = ["research", "market-research", "competitive-research", "source-validation", "evidence"]
+prefer_personas = ["research-thompson"]
+
+[[routing_rules]]
+id = "economics-gate"
+when_any = ["pricing", "profitability", "unit-economics", "financial-model", "capital-allocation", "business-viability"]
+require_personas = ["cfo-campbell"]
+
+[[routing_rules]]
+id = "architecture-owner"
+when_any = ["architecture", "technical-strategy", "migration", "scalability", "reliability"]
+require_personas = ["cto-vogels"]
+
+[[routing_rules]]
+id = "implementation-owner"
+when_any = ["implement", "code-change", "refactor", "application-design"]
+prefer_personas = ["fullstack-dhh"]
+
+[[routing_rules]]
+id = "release-quality"
+when_any = ["release", "test-strategy", "qa", "regression", "coverage"]
+prefer_personas = ["qa-bach"]
+
+[[routing_rules]]
+id = "material-independent-challenge"
+when_any = ["irreversible", "high-cost", "high-risk", "security-sensitive", "weak-evidence", "go-no-go"]
+require_personas = ["critic-munger"]
+
+[[routing_rules]]
+id = "product-experience-chain"
+when_any = ["product-change", "feature-definition", "user-flow", "ux", "ui"]
+prefer_personas = ["product-norman"]
+notes = "Add interaction-cooper for behavioural flow, ui-duarte for visual treatment, and fullstack-dhh only when implementation is in scope."
+
+[[routing_rules]]
+id = "network-technical-owner"
+when_any = ["network-design", "routing", "switching", "bgp", "ospf", "pppoe", "radius", "dns", "network-troubleshooting", "capacity-planning", "network-migration", "vendor-platform"]
+require_personas = ["cto-vogels"]
+notes = "Add DevOps only for operational delivery/automation/observability; add QA only for validation/release confidence."
+
+[[routing_rules]]
+id = "import-evidence-first"
+when_any = ["import-business", "supplier-selection", "auction-sourcing", "customs", "tariff", "import-regulation", "vehicle-eligibility", "market-pricing", "demand-research"]
+require_personas = ["research-thompson"]
+notes = "Regulatory/legal-adjacent questions remain evidence/research tasks; do not imply legal advice persona capability."
+
+[[routing_rules]]
+id = "import-economics-gate"
+when_any = ["landed-cost", "import-economics", "margin", "inventory-risk", "warranty-reserve", "freight-economics", "go-no-go-economics"]
+require_personas = ["cfo-campbell"]
+
+[[routing_rules]]
+id = "import-operations-owner"
+when_any = ["import-workflow", "sourcing", "inspection", "freight", "customs-process", "inventory-process", "fulfilment", "auction-sourcing", "pilot"]
+prefer_personas = ["operations-pg"]
+
+[[routing_rules]]
+id = "current-facts-research"
+when_any = ["current-facts", "current-price", "current-regulation", "current-availability", "vendor-documentation"]
+require_personas = ["research-thompson"]
+
+[[personas]]
+id = "orchestrator-follett"
+domains = ["coordination", "routing"]
+intents = ["orchestration", "multi-domain", "team-selection", "skill-selection", "synthesis"]
+owns = ["routing", "coordination", "synthesis"]

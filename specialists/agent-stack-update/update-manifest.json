@@ -1,0 +1,288 @@
+{
+  "format": 1,
+  "base": "agent-stack.zip",
+  "update": "agent-stack-routing-evals-20260901.zip",
+  "files": [
+    {
+      "path": ".gitignore",
+      "status": "added",
+      "new_sha256": "900404593fe30fa1866f1eb8430077d003b9dcd6cb1967ebe1c1a3afee4b1edd"
+    },
+    {
+      "path": "REVISION_NOTES.md",
+      "status": "added",
+      "new_sha256": "5c0ec5de608634078eca9fca0836d9141609942a8c22c3ec5fd021b86dd60e37"
+    },
+    {
+      "path": "ROUTING_EVALS.md",
+      "status": "added",
+      "new_sha256": "15d7dc723c6ab2a6a66dcd9ba1b693bc5ef10d177c2ab18037652c1bac029cd1"
+    },
+    {
+      "path": "RUNTIME.md",
+      "status": "added",
+      "new_sha256": "04aeec4c375ac29e522664bb3b0ff8ad8999b4b407f48fb7b0d4876310c3136d"
+    },
+    {
+      "path": "SKILL_STANDARD.md",
+      "status": "added",
+      "new_sha256": "82c4f59fe808409a6645ac479daeb0d1d7da0c0e9f0df209c639442bde99d55f"
+    },
+    {
+      "path": "evals/routing-cases.toml",
+      "status": "added",
+      "new_sha256": "dbfa1ff18fa60d60bbbf25b85a814a1424fe03ca7d9cda061159ae83db8829fb"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "status": "added",
+      "new_sha256": "d04744249a56c70874f09107a45c32c3d2a1290f3bd59fc24448990d4855f2c1"
+    },
+    {
+      "path": "routing.toml",
+      "status": "added",
+      "new_sha256": "579e72e6400f74b36deddee0eef84f9c227d409f46aee15a5c96919db09c5015"
+    },
+    {
+      "path": "scripts/evaluate_routing.py",
+      "status": "added",
+      "new_sha256": "7aa8539a582298c8398714c4d23cf83b4d669cb015e877c6f8d629fbaad00af7"
+    },
+    {
+      "path": "scripts/validate_agent_stack.py",
+      "status": "added",
+      "new_sha256": "80f1b4d15155d9f5cd5fa19a19d0baeb144ca2c766c72817719770db5f437a78"
+    },
+    {
+      "path": "skills/startup-business-models/assets/business-model-canvas.md",
+      "status": "added",
+      "new_sha256": "3f6f28fa3aecd3d28a77759813476a1b97a1c7183d6e4a71c073361b618e988f"
+    },
+    {
+      "path": "skills/startup-business-models/assets/pricing-tier-design.md",
+      "status": "added",
+      "new_sha256": "f0f5835b6e7aa5ddd77712384724e6f2c7f06fa0b3980c9b9242f1a9c549e281"
+    },
+    {
+      "path": "skills/startup-business-models/assets/unit-economics-worksheet.md",
+      "status": "added",
+      "new_sha256": "5199d0b28221d4a68df58bcadcd7b742c6565498686eb427d2b0641a58773716"
+    },
+    {
+      "path": "skills/startup-business-models/data/sources.json",
+      "status": "added",
+      "new_sha256": "3fa2d777f9c5138c36ca357f6f10d2a35e734741143ee2fb05675e8fe3e3b7eb"
+    },
+    {
+      "path": "skills/startup-business-models/references/pricing-research-guide.md",
+      "status": "added",
+      "new_sha256": "e28a9af479857f7f2f41904e635df033e3fadc1c93e0705c1ec49d3ef183d7fc"
+    },
+    {
+      "path": "skills/startup-business-models/references/saas-metrics-playbook.md",
+      "status": "added",
+      "new_sha256": "eece3eb5978bfada49742d5994a9e6bd6b457be011a36048bb8db863a4e1c2af"
+    },
+    {
+      "path": "skills/startup-business-models/references/unit-economics-calculator.md",
+      "status": "added",
+      "new_sha256": "c3d6c0ad75e828c19da049c24a1d72614e6141a56a4c8f32f06f2730f959b68f"
+    },
+    {
+      "path": "tests/test_routing_behavior.py",
+      "status": "added",
+      "new_sha256": "4bb1c50e083fb24a0609afcdd17d305ad93d99293222c14abad1ceaf1db8b418"
+    },
+    {
+      "path": "tests/test_routing_contract.py",
+      "status": "added",
+      "new_sha256": "26417a527b29b6f8360342392ba482629a4caac5e8b04bedec37652147cd979d"
+    },
+    {
+      "path": "tests/test_skill_contract.py",
+      "status": "added",
+      "new_sha256": "ee2d2fa8bc0645417795e6f08579d906c3ed75a759d551b0ab11c7159a856a53"
+    },
+    {
+      "path": ".mise.toml",
+      "status": "modified",
+      "new_sha256": "e0645d41b402c3d0e009490c3c065e652338de52f393d82bf15829a48ad77a1e",
+      "old_sha256": "b66accab34c9e607dd15df5953ce2be8c559a65f8e9b2535a2422375f7cd8694"
+    },
+    {
+      "path": "README.md",
+      "status": "modified",
+      "new_sha256": "31e76539ca70ce372ace808ac03131868785a9d259b277055dfb278fd6641fc2",
+      "old_sha256": "dff8562973085d3d17d33d0afbc0ba9d217d10cec620475c857370bac1bf0d2f"
+    },
+    {
+      "path": "justfile",
+      "status": "modified",
+      "new_sha256": "81f98612fb3f3528fb2c6142517be83d19792d011d05ca2f46583127a438f6cc",
+      "old_sha256": "f061c58c891007e616db407b5ec6087ac8629694db001a65d125cd0fdb567048"
+    },
+    {
+      "path": "manifest.yaml",
+      "status": "modified",
+      "new_sha256": "b0c138b8e807bfabc86840e264b8b18dcdfcdcc7b2d976249b081d28e55c2ebe",
+      "old_sha256": "e282a4d101d9dfea7c5e765a363563b941d2a91c6cedce8cd93c602ad9c9e064"
+    },
+    {
+      "path": "personas/ceo-bezos.md",
+      "status": "modified",
+      "new_sha256": "ae3c49a2bb4c937a4e474e955966e04f233f30c38e107d8e454a2e4100b35ee2",
+      "old_sha256": "aa44a5ee8c1464713a3f92cc1780fa7a2f25f1873eb610b46e170f0ede5055bb"
+    },
+    {
+      "path": "personas/cfo-campbell.md",
+      "status": "modified",
+      "new_sha256": "851335a552333f9736ec747142bc0f4f47453989741fffae22f92ba4691b73bb",
+      "old_sha256": "7bf4d09e3e92217d16191100eedabf286a8b5c5f59f9f1e88c4718bed25f78b1"
+    },
+    {
+      "path": "personas/critic-munger.md",
+      "status": "modified",
+      "new_sha256": "92d2025c826ad7d9dfe80ed4a92dc6b591450cba373ac7afd47c5446ac0d169d",
+      "old_sha256": "6d0b606eed00fbedd4eebd37c49f48a5545f4cee7ffbcce2e0d54e510ec2812f"
+    },
+    {
+      "path": "personas/cto-vogels.md",
+      "status": "modified",
+      "new_sha256": "30054253cd213b33aa8c633f48fb1242b382633957cecf0338126021cbfcd2c0",
+      "old_sha256": "b0249c3fabf156fff36e1ede4d327404bed3105e7622985683439aa3d250614c"
+    },
+    {
+      "path": "personas/devops-hightower.md",
+      "status": "modified",
+      "new_sha256": "5e58539ddecb3d2ecd4c585914eb525b9f1202fe2af67b496239534dff2d35ed",
+      "old_sha256": "960a55e2a4c9501140cf766d376618cb50b4ce6ba490128f3f7f63b004e6c9a7"
+    },
+    {
+      "path": "personas/fullstack-dhh.md",
+      "status": "modified",
+      "new_sha256": "17c4e29b3e1cc276e8c7e9b727eb4a78242c3f04e3985873f5f8a48a733ab544",
+      "old_sha256": "c171cafcd5a71ee193b29bef806f050f53fe6a0bee4fad6add7150843bc8e292"
+    },
+    {
+      "path": "personas/interaction-cooper.md",
+      "status": "modified",
+      "new_sha256": "da6b6c09a68a6ae10c9ffb9c710e857e3b9fc8f40ec9acc1587dbf23e18f246d",
+      "old_sha256": "15ad29f23c31131394f574430c9a03ad4fe09564db2c71d5166776e43ea39ef4"
+    },
+    {
+      "path": "personas/marketing-godin.md",
+      "status": "modified",
+      "new_sha256": "5278773a47e21f9a76185606ef714868a7bd1d6c25c1ae902791fa2b085b4ce8",
+      "old_sha256": "a54bfc82faaec1523dc70326535db3dff2f89dc65f6020b791234000036a8c00"
+    },
+    {
+      "path": "personas/operations-pg.md",
+      "status": "modified",
+      "new_sha256": "74b3c1914ca7bf04eeba853ed54bbbf3a26b09290c82e04c644bca6145cf7c0a",
+      "old_sha256": "cda497040134778d8d25e8a7777c5bec6130d2aa30a54f034322971fa709e05a"
+    },
+    {
+      "path": "personas/orchestrator-follett.md",
+      "status": "modified",
+      "new_sha256": "f7e5d00e3d136805286f51129c6951cb6f3c332a35294df0d28b24a24ae441d3",
+      "old_sha256": "0502610e171c54bcc60d10066def87f716314e215a391eed3b4af74f4ef88f79"
+    },
+    {
+      "path": "personas/product-norman.md",
+      "status": "modified",
+      "new_sha256": "2cc8cfb62b8b64da80d6afc279266f562bdd69e64865f362a7a52c4fe849de98",
+      "old_sha256": "a157871983ff83151931fe8fbf6f602802074687ca0439f3082aefa8b98108ae"
+    },
+    {
+      "path": "personas/qa-bach.md",
+      "status": "modified",
+      "new_sha256": "bd912f0d992fb369e4ca6745bd81a0eb576604b5e20dc5c76b5e3b0db9a0eec9",
+      "old_sha256": "47b9cee58494085b4e22955bdab74a5d1ff4be3294f3e19dc615f69a89007882"
+    },
+    {
+      "path": "personas/research-thompson.md",
+      "status": "modified",
+      "new_sha256": "d9df2ef3c76c6d9b6fa47cb2188bd72478aac0ff859bbf382a6cda97f5049764",
+      "old_sha256": "99a3fa4fe0f9f7e2ea66130315ab1f66dd9563f8d1694fb3fa7fdd8259e9533e"
+    },
+    {
+      "path": "personas/sales-ross.md",
+      "status": "modified",
+      "new_sha256": "44b13430b446c97d87b8265cfb56078432a7afaf430224a418fb283ac04c0e2f",
+      "old_sha256": "e164262ca865fab8782700c8706bf193cdd4cb3c39aa59cb24a0b62beb2a5fd2"
+    },
+    {
+      "path": "personas/ui-duarte.md",
+      "status": "modified",
+      "new_sha256": "938f27158514d5913b381905686d8726ba8fd4bed5dfea23b571bc08a9781ac7",
+      "old_sha256": "1e6a2efccf2c3f682ec0d1d6f4c34a7b433ede46eeb3a08c0a0704b8f6561d61"
+    },
+    {
+      "path": "scripts/install_global.py",
+      "status": "modified",
+      "new_sha256": "87bc8fb0af8449ac3f23617de292f84ee27993412c5dc13e66d6a1687fbec90a",
+      "old_sha256": "e051c99f708b2b67a608a543f182f6af7fff104a8c99fd2289d1987d97870957"
+    },
+    {
+      "path": "skills/code-review-security/SKILL.md",
+      "status": "modified",
+      "new_sha256": "00d24f9878999ac2bf18c09790bf268274e18d2f655400ae59667d4e5a950c8e",
+      "old_sha256": "6a7d57ae5b2f014c8b43b95500f391084f079d24c0157200cfc119caf79cd7b9"
+    },
+    {
+      "path": "skills/deep-research/SKILL.md",
+      "status": "modified",
+      "new_sha256": "ce84bb0764ce95ce77e8bd20cc6e2649aeb5620b58bc5f62730387a04908d587",
+      "old_sha256": "af533b36012ace7444991b07210e883c9ba38109c400b7585d3866555fa5f6b9"
+    },
+    {
+      "path": "skills/devops/SKILL.md",
+      "status": "modified",
+      "new_sha256": "77255e695db5df29c535110f32b4ca1ab671043d34abf918d8ec8cc3ddfe264e",
+      "old_sha256": "2456b40d4a02aedd8845bef4228792d62bde8193439228b491b4be1fab247058"
+    },
+    {
+      "path": "skills/orchestrator/SKILL.md",
+      "status": "modified",
+      "new_sha256": "a17f9ea4fb273855043dd080130efb5ee2efc7f74447eeca88d09d83cb7b79f2",
+      "old_sha256": "64ca63c8804e399075ef46fa9000499d221c2da538627690131e89dd5528e0bc"
+    },
+    {
+      "path": "skills/senior-qa/SKILL.md",
+      "status": "modified",
+      "new_sha256": "85228df45f3564ecfc4121267b0d6a8ff6add7db21902115d7afadcc8674d6aa",
+      "old_sha256": "4453b4aa9bf923a911ee0c44249e74a95b91b5da7daee16c61652a8a7c8595ae"
+    },
+    {
+      "path": "skills/skill-creator/SKILL.md",
+      "status": "modified",
+      "new_sha256": "c147c4e9f953473d17486b1a28fc96e58ae7cca4542d133b86de7ea728412032",
+      "old_sha256": "d57b6e3a44535b9c0ef454dad5c86f5df78185fc80a65c7092885b4b5e10f81b"
+    },
+    {
+      "path": "skills/skill-creator/scripts/quick_validate.py",
+      "status": "modified",
+      "new_sha256": "da37f7b0570cdf5393d048554b0e15a999ab63334fc15e7816b901a826e427cd",
+      "old_sha256": "67cf5703402013936c8fb75ad6a1afecd8841d45cc5e606b634eb05825fde365"
+    },
+    {
+      "path": "skills/startup-business-models/SKILL.md",
+      "status": "modified",
+      "new_sha256": "d94cf4e5cc558e6799d62a9c5e674ea7252f26b7443315ab2424fedb0fc20685",
+      "old_sha256": "5457890151ef84d7f182c250d29d5083548bab40d3df1cc53e4ebf85f24a3ed0"
+    },
+    {
+      "path": "skills/team/SKILL.md",
+      "status": "modified",
+      "new_sha256": "7871a1bedfd0f2ba10d4a23e64b8b6721b689ff1a9009c838b35eebea1861fd7",
+      "old_sha256": "64dd2622d550a179ddf2b8402eb48302f91b495bf2b1df58edb012dadb05c22b"
+    },
+    {
+      "path": "skills/websh/SKILL.md",
+      "status": "modified",
+      "new_sha256": "73e1f2154109c036cbfe569a95a5b2e288c918d164bf96a13cc0497045dedd0d",
+      "old_sha256": "a097b68b2d4224f859a9b10af9c0f2c2233d74e5ebea2a8695dff90d5ff8c1d6"
+    }
+  ],
+  "removed": []
+}

@@ -1,0 +1,7 @@
+id: sales-listing-marketing
+name: Sales, Listing, and Marketing Analysis
+lifecycle: PROTOTYPE
+inputs: [product_facts, customer_segment, channels, evidence]
+outputs: [channel_plan, listing_brief, pricing_hypotheses, measurement_plan]
+human_approval: required_to_publish
+implementation: none

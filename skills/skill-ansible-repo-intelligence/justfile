@@ -1,0 +1,63 @@
+# just task catalog for skill-ansible-repo-intelligence (skill-ari).
+# Usage: just --list | just <task>
+#
+# Runtime venv is OUTSIDE this tree (skills_stuff storage policy):
+venv := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-ansible-repo-intelligence/venv"
+py := venv + "/bin/python"
+cli := venv + "/bin/ansible-repo-intelligence"
+
+set dotenv-load := false
+
+# List available tasks
+default:
+    @just --list
+
+# Run the full test suite (safe)
+test:
+    {{py}} -m pytest tests -q
+
+# Run only unit tests (safe)
+test-unit:
+    {{py}} -m pytest tests/unit -q
+
+# Regenerate the golden output set from the fixture (modifies-files: tests/golden)
+golden:
+    {{py}} tests/_gen_fixture.py
+    {{cli}} scan --repo tests/fixtures/multi_role_repo --output tests/golden/multi_role_repo --offline --strict
+
+# Regenerate the test fixture (safe, modifies tests/fixtures)
+fixture:
+    {{py}} tests/_gen_fixture.py
+
+# Scan a repo (offline, safe). Usage: just scan /path/to/repo /path/to/out
+scan repo out:
+    {{cli}} scan --repo {{repo}} --output {{out}} --offline
+
+# Validate a generated context dir (safe). Usage: just validate /path/to/out
+validate ctx:
+    {{cli}} validate --context {{ctx}}
+
+# Bounded query (safe). Usage: just query role smc_dns /path/to/out
+query selector term ctx:
+    {{cli}} query {{selector}} {{term}} --context {{ctx}}
+
+# Static impact (safe). Usage: just impact roles/smc_dns /path/to/out
+impact path ctx:
+    {{cli}} impact --path {{path}} --context {{ctx}}
+
+# Advisory question router (safe, never executes). Usage: just route "Where does X come from?"
+route question:
+    {{cli}} route "{{question}}"
+
+# Deterministic benchmark half (safe). Usage: just benchmark <repo> <ctx> <questions.yaml>
+benchmark repo ctx questions:
+    {{cli}} benchmark --repo {{repo}} --context {{ctx}} --questions {{questions}}
+
+# Reinstall the package editable into the venv (modifies-files)
+install:
+    {{py}} -m pip install -e .
+
+# Audit script/task inventory for drift (safe)
+audit-scripts:
+    @echo "== just recipes =="; just --list || true
+    @echo; echo "== src modules =="; find src -name '*.py' | sort

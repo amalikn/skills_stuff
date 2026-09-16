@@ -85,6 +85,17 @@ CAPTURES=(
   "03-apps-scripts-cron:echo '--apn-mqtt-client--'; test -d /var/www/apn-mqtt-client && echo present || echo absent; echo '--cnmaestro-provisioning-files--'; ls /usr/local/lib/cnmaestro-provisioning/ 2>/dev/null; echo '--url-capture-dir--'; (test -d /url_capture && echo 'present (v1 path)') || (test -d /var/lib/url_capture && echo 'present (v2 path)') || echo absent; echo '--kohana-portal-reflog--'; git -C /var/www/html/wifi reflog --date=iso -n3 2>/dev/null; echo '--graylog-sidecar--'; systemctl is-active graylog-sidecar 2>&1; echo '--node-exporter-prometheus--'; systemctl is-active node_exporter prometheus 2>&1; echo '--fluent-bit--'; systemctl is-active fluent-bit 2>&1; echo '--cnmaestro-provisioning-service--'; systemctl is-active cnmaestro-provisioning 2>&1; echo '--usr-local-bin--'; ls -la /usr/local/bin/ 2>/dev/null; echo '--usr-local-sbin--'; ls -la /usr/local/sbin/ 2>/dev/null; echo '--usr-local-lib--'; ls /usr/local/lib/ 2>/dev/null; echo '--root-crontab--'; crontab -l 2>&1; echo '--cron.d--'; ls /etc/cron.d/ 2>/dev/null; echo '--systemd-timers--'; systemctl list-timers --all --no-pager --no-legend 2>/dev/null; true"
 
   "04-portal-packages:echo '--vhost-config--'; cat /etc/apache2/sites-enabled/*.conf 2>/dev/null; echo '--mobile-app-backend--'; test -d /var/www/html/wifi-community-app-backend && echo present || echo absent; echo '--kohana-portal-dir--'; test -d /var/www/html/wifi && echo present || echo absent; echo '--key-packages--'; dpkg -l 2>/dev/null | grep -E '^ii' | grep -iE 'bind9|unbound|stubby|apache2 |php[0-9]|clamav|lynis|prometheus|node-exporter|fluent-bit|teleport|isc-dhcp-server'; true"
+
+  # Added 2026-09-11 during the nbn_accelerate/nbn_wh portal-FQDN regression investigation (see
+  # ../references/13_known-issues.md and ../references/14_pin-activation-diagnosis.md). Both
+  # inventories independently had periods where smc_bases_portal_fqdn pointed at the Teleport
+  # proxy hostname instead of the real portal domain; git being fixed does NOT mean a box is
+  # fixed — squid.conf/Apache vhosts/cron only regenerate when the relevant role actually re-runs
+  # on that box, so a box can carry the broken config for over a year after the git revert. This
+  # bundle is the config-side half of that diagnosis; ../references/14_pin-activation-diagnosis.md
+  # + audit-pin-activation.sh is the live-impact half — run both when investigating a suspected
+  # portal-issuance problem.
+  "05-portal-fqdn-status:echo '--deny-info--'; grep -m1 -i 'deny_info.*captive_portal' /etc/squid/squid.conf 2>/dev/null; echo '--squid-conf-mtime--'; stat -c '%y' /etc/squid/squid.conf 2>/dev/null; echo '--apache-sites-enabled--'; ls /etc/apache2/sites-enabled/ 2>/dev/null; echo '--sslcertcopy-cron--'; grep -h sslcertcopy /var/spool/cron/crontabs/root 2>/dev/null; true"
 )
 
 die() { echo "ERROR: $*" >&2; exit 1; }

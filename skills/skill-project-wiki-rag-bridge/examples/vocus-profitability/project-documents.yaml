@@ -1,0 +1,62 @@
+# project-documents.yaml — Vocus Profitability
+# Location: /Volumes/Data/_ai/_project/project_stuff/apn/vocus-profitability/rag/manifests/project-documents.yaml
+
+version: 1
+
+project_slug: "vocus_profitability"
+
+rules:
+  default_index: false
+  require_explicit_index_true: true
+  raw_data_requires_explicit_approval: true
+  communications_requires_review_before_indexing: true
+
+documents:
+  # CSV raw data — never index
+  - id: "raw-invoice-csv-jan25"
+    title: "Vocus Invoice Jan 2025"
+    path: "docs/csv/vocus-invoices/WS207_mntlyinvrecon_20250107_170408_W01.csv"
+    type: "raw"
+    index: false
+    sensitive: true
+    notes: "Raw billing CSV. Contains financial data. Do not index."
+
+  - id: "raw-rate-card-avc"
+    title: "Rate Card AVC CSV"
+    path: "docs/csv/rate_card_avc.csv"
+    type: "raw"
+    index: false
+    sensitive: false
+    notes: "Raw rate card extract. Index only after cleaning and creating a curated report."
+
+  - id: "raw-ovc-details"
+    title: "OVC Details CSV"
+    path: "docs/csv/ovc_details.csv"
+    type: "raw"
+    index: false
+    sensitive: false
+    notes: "Raw OVC data. Not yet reviewed for indexing."
+
+  # Governance docs — not useful for RAG
+  - id: "docs-csv-ignore-readme"
+    title: "CSV Ignore README"
+    path: "docs/csv/ignore/README.md"
+    type: "reference"
+    index: false
+    sensitive: false
+    notes: "Internal file management note. Not useful for retrieval."
+
+  # Communications — never index without explicit review
+  # (placeholder — add actual comms files here as they are created)
+  # - id: "comms-xxx"
+  #   title: "Email thread re: ..."
+  #   path: "communications/..."
+  #   type: "communication"
+  #   index: false
+  #   sensitive: true
+  #   notes: "Contains external communications. Requires legal review before indexing."
+
+status:
+  lifecycle: "active"
+  reviewed: false
+  last_reviewed: null

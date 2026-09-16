@@ -1,0 +1,56 @@
+# project-documents.yaml — manifest declaring which project documents may be indexed
+# Copy to: <project>/rag/manifests/project-documents.yaml
+#
+# IMPORTANT: default_index is false. Every document must have index: true explicitly set
+# before it will be indexed. Raw, sensitive, and communications data requires
+# extra approval before setting index: true.
+
+version: 1
+
+project_slug: "<project_slug>"
+
+rules:
+  default_index: false                              # NO document is indexed unless index: true
+  require_explicit_index_true: true                 # Explicit opt-in required for every document
+  raw_data_requires_explicit_approval: true         # Raw/sensitive data needs approval note
+  communications_requires_review_before_indexing: true  # Comms must be reviewed first
+
+documents:
+  - id: "<doc-id-1>"
+    title: "<Document Title>"
+    path: "<relative-path-from-project-root>"      # e.g. "docs/reports/analysis-2026.md"
+    type: "report"                                 # report | manifest | reference | analysis | communication | raw
+    index: false                                   # Set to true ONLY after review
+    sensitive: false                               # true = never index regardless of index flag
+    notes: "<reason for current index setting>"
+
+  - id: "<doc-id-2>"
+    title: "<Another Document>"
+    path: "<relative-path>"
+    type: "analysis"
+    index: false
+    sensitive: false
+    notes: "Pending review before indexing."
+
+  # Communications — require explicit review note
+  # - id: "comms-email-001"
+  #   title: "Email thread re: billing dispute"
+  #   path: "communications/email-thread-001.md"
+  #   type: "communication"
+  #   index: false
+  #   sensitive: true
+  #   notes: "Contains customer PII. Do not index without legal review."
+
+  # Raw data — require explicit approval
+  # - id: "raw-invoice-data"
+  #   title: "Invoice CSV export"
+  #   path: "docs/csv/invoices.csv"
+  #   type: "raw"
+  #   index: false
+  #   sensitive: true
+  #   notes: "Raw financial data. Do not index."
+
+status:
+  lifecycle: "draft"
+  reviewed: false
+  last_reviewed: null

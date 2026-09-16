@@ -1,0 +1,7 @@
+---
+- name: Install nginx
+  ansible.builtin.package:
+    name: nginx
+- name: Import role static
+  ansible.builtin.import_role:
+    name: dns

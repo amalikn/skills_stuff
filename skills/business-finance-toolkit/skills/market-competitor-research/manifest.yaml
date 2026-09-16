@@ -1,0 +1,7 @@
+id: market-competitor-research
+name: Market and Competitor Research
+lifecycle: PROTOTYPE
+inputs: [customer_segment, geography, product_category]
+outputs: [market_claims, competitor_observations, pricing_evidence, research_gaps]
+human_approval: required_for_material_claims
+implementation: none

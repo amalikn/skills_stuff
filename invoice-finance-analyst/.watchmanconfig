@@ -1,0 +1,8 @@
+{
+  "settle": 100,
+  "ignore_dirs": [
+    ".pytest_cache",
+    ".serena",
+    ".vscode"
+  ]
+}

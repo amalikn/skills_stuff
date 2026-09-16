@@ -140,6 +140,9 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
 | `sbdm_device_health_status == 0`       | Samsung SSD degraded   | SSD replacement needed                  |
 | `smartmon_device_smart_healthy == 0`   | SMART failure          | drive health critical                   |
 
+**This table is not complete coverage — known gap:** there is no per-device `role="internet"` equivalent of `NodeStarlinkInterfacecheckPacketLoss`. A single dead internet-role link can run undetected
+indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `references/13_known-issues.md` "No per-device `role: internet` Prometheus alert exists".
+
 ---
 
 ## Ansible Authoring: Key Rules
@@ -190,8 +193,11 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
 - `references/11_vagrant-lab.md` — local Vagrant lab bring-up and virtualization issues.
 - `references/12_content-filtering.md` — family-friendly VLAN 501 filtering, MAC randomization, CAKE.
 - `references/13_known-issues.md` — coverage gaps, live-validation limits, and staleness risks.
+- `references/14_pin-activation-diagnosis.md` — pin validity (mangle) vs pin issuance (Apache access log): two independent mechanisms, marks-≠-activations pitfalls, and the 2026-09-11 fleet case
+  study.
 - `scripts/` — reusable read-only diagnostic tooling for WAN-routing/topology-drift investigations (evidence capture, the "hook covers netplan" drift analyser, and a topology_vars-vs-live-hardware
-  cross-check), plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate); see `scripts/README.md`.
+  cross-check), fleet hardware/service-health + portal-FQDN-status audit, captive-portal pin-activation diagnosis, plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate);
+  see `scripts/README.md`.
 
 ## Source
 - specialist_type: project

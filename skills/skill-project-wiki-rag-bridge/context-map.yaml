@@ -1,0 +1,277 @@
+version: 1
+
+project:
+  name: skill-project-wiki-rag-bridge
+  context_policy: "AI_NAVIGATION.md is the human-readable router; this file is the machine-readable routing map."
+
+bootstrap:
+  required_first_read:
+    - AGENTS.md
+    - AI_NAVIGATION.md
+    - context-map.yaml
+    - CHANGELOG.md
+    - SKILL.md
+    - docs/authority-model.md
+
+authority_order:
+  - path: ".archcore/adr"
+    type: architecture_decisions
+    authority: highest
+  - path: ".archcore/rules"
+    type: durable_rules
+    authority: highest
+  - path: ".archcore/specs"
+    type: design_contracts
+    authority: highest
+  - path: ".archcore/guides"
+    type: operating_guides
+    authority: high
+    includes:
+      - "new-project-onboarding.md"
+      - "failure-mode-reference.md"
+      - "wiki-domain-creation.md"
+      - "post-index-retrieval-validation.md"
+      - "dynamic-retrieval-routing.md"
+      - "evidence-first-answering.md"
+  - path: "AGENTS.md"
+    type: agent_instructions
+    authority: high
+  - path: "CLAUDE.md"
+    type: claude_specific_instructions
+    authority: high
+  - path: "AI_NAVIGATION.md"
+    type: context_router
+    authority: high
+  - path: "SKILL.md"
+    type: skill_instructions
+    authority: high
+  - path: "docs/authority-model.md"
+    type: isolation_policy
+    authority: high
+  - path: "docs/collection-naming-policy.md"
+    type: naming_rules
+    authority: high
+  - path: "docs/architecture.md"
+    type: architecture_overview
+    authority: medium_high
+  - path: "docs/operating-runbook.md"
+    type: operational_guide
+    authority: high
+  - path: "docs/failure-modes.md"
+    type: troubleshooting_reference
+    authority: medium
+  - path: "schemas"
+    type: yaml_field_definitions
+    authority: high
+  - path: "checklists"
+    type: blocking_gate_checklists
+    authority: high
+  - path: "CHANGELOG.md"
+    type: project_history
+    authority: medium_high
+  - path: "SCRATCHPAD.md"
+    type: transient_notes
+    authority: low
+
+context_sources:
+  archcore:
+    enabled: true
+    root: ".archcore"
+    read_first_for:
+      - architecture_decision
+      - isolation_policy
+      - governance_rule
+      - design_contract
+      - operating_procedure
+      - durable_project_truth
+
+  generated:
+    graphify:
+      enabled: false
+      root: "graphify-out"
+      note: "skipped — pure-markdown skill, no code files; re-run graphify if code added"
+      preferred_files:
+        - "graphify-out/GRAPH_REPORT.md"
+        - "graphify-out/graph.json"
+
+    repomix:
+      enabled: true
+      root: ".ai-context"
+      preferred_files:
+        - ".ai-context/governance-pack.md"
+
+routing:
+  architecture:
+    description: "Qdrant collection isolation, wiki/project separation, authority boundaries."
+    read:
+      - "ARCHITECTURE.md"
+      - ".archcore/adr"
+      - ".archcore/specs"
+      - "docs/authority-model.md"
+      - "docs/collection-naming-policy.md"
+      - "docs/architecture.md"
+      - "docs/multi-project-model.md"
+    avoid_as_authority:
+      - "SCRATCHPAD.md"
+
+  workflow:
+    description: "How to execute the bridge setup workflow end-to-end."
+    read:
+      - "SKILL.md"
+      - "prompts"
+      - "checklists"
+      - "docs/operating-runbook.md"
+    sequence:
+      - "prompts/00-verify-wiki-operational-state.md"
+      - "prompts/01-create-wiki-domain.md"
+      - "prompts/02-verify-rag-tools.md"
+      - "prompts/03-create-project-bridge.md"
+      - "prompts/04-validate-project-policy.md"
+      - "prompts/02b-profile-and-recommend-strategy.md"   # Phase 2 — profile docs; choose retrieval route
+      - "prompts/02c-benchmark-retrieval-routes.md"       # Phase 2 — benchmark structured/table/RAG
+      - "prompts/05-index-wiki-domain.md"
+      - "prompts/06-post-index-retrieval-validation.md"
+      - "prompts/07-add-wiki-reference-article.md"
+      - "prompts/08-index-project-documents.md"
+      - "prompts/09-troubleshoot-rag-bridge.md"
+
+  dynamic_retrieval:
+    description: "Document profiling, retrieval strategy selection, EvidenceBundle grounding."
+    read:
+      - "SKILL.md"                                        # section: Dynamic retrieval strategy
+      - "prompts/02b-profile-and-recommend-strategy.md"
+      - "prompts/02c-benchmark-retrieval-routes.md"
+      - "checklists/indexing-readiness.md"                # profile gate section
+      - "checklists/dynamic-retrieval-readiness.md"
+      - "checklists/evidence-bundle-validation.md"
+      - "docs/dynamic-retrieval-strategy.md"
+      - "docs/evidence-contract.md"
+      - "docs/retrieval-mode-decision-tree.md"
+      - "schemas/document-profile.schema.yaml"
+      - "schemas/retrieval-strategy.schema.yaml"
+      - "schemas/evidence-bundle.schema.yaml"
+      - "templates/retrieval-strategy.yaml"
+      - "templates/source-profile.yaml"
+      - "templates/benchmark-queries.yaml"
+      - "templates/evidence-bundle.yaml"
+
+  validation:
+    description: "Retrieval policy, collection naming, schema validation, multi-project isolation."
+    read:
+      - ".archcore/rules"
+      - "docs/authority-model.md"
+      - "schemas/retrieval-policy.schema.yaml"
+      - "schemas/project-context.schema.yaml"
+      - "checklists/project-bridge-readiness.md"
+      - "checklists/multi-project-isolation.md"
+
+  troubleshooting:
+    description: "RAG pipeline issues, Qdrant errors, retrieval failures."
+    read:
+      - "docs/failure-modes.md"
+      - "docs/operating-runbook.md"
+      - "prompts/09-troubleshoot-rag-bridge.md"
+      - "checklists/rag-tools-readiness.md"
+      - "checklists/retrieval-validation.md"
+
+  templates:
+    description: "Bridge file templates, YAML starting points, registry entries."
+    read:
+      - "templates"
+      - "examples/vocus-profitability"
+      - "examples/generic-project"
+      - "schemas"
+
+  governance:
+    description: "Agent behaviour, project rules, file update rules."
+    read:
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - "AI_NAVIGATION.md"
+      - "context-map.yaml"
+      - "CHANGELOG.md"
+      - ".archcore/rules"
+
+update_rules:
+  isolation_decision:
+    update:
+      - ".archcore/adr"
+    also_consider:
+      - "docs/authority-model.md"
+      - "docs/collection-naming-policy.md"
+
+  durable_rule:
+    update:
+      - ".archcore/rules"
+    also_consider:
+      - "AGENTS.md"
+      - "AI_NAVIGATION.md"
+
+  retrieval_contract:
+    update:
+      - ".archcore/specs"
+    also_consider:
+      - "schemas/retrieval-policy.schema.yaml"
+      - "docs/authority-model.md"
+
+  operating_procedure:
+    update:
+      - ".archcore/guides"
+    also_consider:
+      - "docs/operating-runbook.md"
+      - "prompts"
+
+  schema_change:
+    update:
+      - "schemas"
+    also_consider:
+      - ".archcore/specs"
+      - "templates"
+
+  routing_change:
+    update:
+      - "AI_NAVIGATION.md"
+      - "context-map.yaml"
+      - "AGENTS.md"
+
+  governance_history:
+    update:
+      - "CHANGELOG.md"
+
+  temporary_note:
+    update:
+      - "SCRATCHPAD.md"
+
+drift_policy:
+  on_conflict:
+    action: "stop_and_report"
+    required_output:
+      - conflicting_files
+      - higher_authority_source
+      - recommended_fix
+      - assumptions
+
+  scratchpad_rule:
+    authoritative: false
+    promotion_required_for_durable_truth: true
+
+  isolation_rule:
+    never_bypass: true
+    on_violation: "refuse and explain"
+
+generated_context_policy:
+  regenerate_after:
+    - schema_change
+    - new_archcore_documents
+    - major_doc_change
+    - workflow_restructure
+  commands:
+    graphify: "graphify update ."
+    repomix_governance: "repomix --config repomix.config.json"
+
+answer_contract:
+  require_source_paths: true
+  unsupported_answer: "not found in project context"
+  distinguish_assumptions: true
+  do_not_invent_state: true
+  never_bypass_isolation: true

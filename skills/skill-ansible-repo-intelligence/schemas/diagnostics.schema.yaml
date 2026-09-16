@@ -1,0 +1,22 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "ari:diagnostics.schema"
+title: Ansible Repo Intelligence — diagnostics
+type: object
+required: [schema_version, counts, diagnostics]
+additionalProperties: false
+properties:
+  schema_version: { type: string }
+  counts: { type: object }
+  diagnostics:
+    type: array
+    items:
+      type: object
+      required: [code, severity, message]
+      additionalProperties: false
+      properties:
+        code: { type: string, pattern: "^ARI[0-9]{3}_[A-Z0-9_]+$" }
+        severity: { enum: [info, warning, error, fatal] }
+        message: { type: string }
+        path: { type: [string, "null"] }
+        node_id: { type: [string, "null"] }
+        details: { type: object }

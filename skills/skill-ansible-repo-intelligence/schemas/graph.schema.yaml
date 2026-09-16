@@ -1,0 +1,64 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "ari:graph.schema"
+title: Ansible Repo Intelligence — canonical graph
+type: object
+required: [schema_version, nodes, edges, statistics]
+additionalProperties: false
+properties:
+  schema_version: { type: string }
+  statistics: { type: object }
+  retrieval_topics: { type: object }
+  nodes:
+    type: array
+    items:
+      type: object
+      required: [id, kind, name, significance, source, resolution, attributes]
+      additionalProperties: false
+      properties:
+        id: { type: string, minLength: 1 }
+        kind: { type: string, minLength: 1 }
+        name: { type: string }
+        significance: { enum: [critical, high, normal, low] }
+        significance_rule_id: { type: string }
+        source:
+          oneOf:
+            - type: "null"
+            - $ref: "#/$defs/source"
+        resolution: { $ref: "#/$defs/resolution" }
+        attributes: { type: object }
+  edges:
+    type: array
+    items:
+      type: object
+      required: [id, type, from, to, resolution, attributes]
+      additionalProperties: false
+      properties:
+        id: { type: string, minLength: 1 }
+        type: { type: string, minLength: 1 }
+        from: { type: string, minLength: 1 }
+        to: { type: string, minLength: 1 }
+        source:
+          oneOf:
+            - type: "null"
+            - $ref: "#/$defs/source"
+        resolution: { $ref: "#/$defs/resolution" }
+        attributes: { type: object }
+$defs:
+  source:
+    type: object
+    required: [path]
+    additionalProperties: false
+    properties:
+      path: { type: string, minLength: 1 }
+      document: { type: [integer, "null"] }
+      line_start: { type: [integer, "null"] }
+      line_end: { type: [integer, "null"] }
+      content_hash: { type: [string, "null"], pattern: "^sha256:[0-9a-f]{64}$" }
+  resolution:
+    type: object
+    required: [status, confidence, reason]
+    additionalProperties: false
+    properties:
+      status: { enum: [resolved, partially_resolved, unresolved, dynamic] }
+      confidence: { enum: [high, medium, low] }
+      reason: { type: string }

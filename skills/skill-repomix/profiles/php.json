@@ -1,0 +1,13 @@
+{
+  "id": "php",
+  "displayName": "PHP",
+  "description": "PHP repositories.",
+  "detect": {"anyFiles": ["composer.json", "composer.lock"], "anyDirectories": ["src", "app", "routes"]},
+  "include": ["composer.json", "composer.lock", "phpunit.xml*", "phpstan.neon*", "psalm.xml", "src/**/*.php", "app/**/*.php", "config/**/*.php", "routes/**/*.php", "tests/**/*.php", "database/migrations/**/*.php"],
+  "ignore": ["vendor/**", "storage/logs/**", "bootstrap/cache/**", ".phpunit.cache/**"],
+  "priorityFiles": ["composer.json", "composer.lock"],
+  "securitySensitivePatterns": ["**/.env*", "config/*.local.php"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 110000,
+  "notes": []
+}

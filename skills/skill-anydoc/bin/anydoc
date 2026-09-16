@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# anydoc launcher — converts documents to GitHub-Flavored Markdown.
+#
+# Primary path: the @firecrawl/anydoc npm package installed in the skills
+# working cache (rebuildable, no global npm link, no network at call time).
+# Fallback: npx, which downloads the prebuilt binary on first run.
+#
+# Rebuild the working cache with:
+#   cd /Volumes/Data/_ai/_skills/skills-working-cache/anydoc && npm install @firecrawl/anydoc
+
+set -euo pipefail
+
+CLI="/Volumes/Data/_ai/_skills/skills-working-cache/anydoc/node_modules/@firecrawl/anydoc/cli.js"
+
+if [ -f "$CLI" ]; then
+  exec node "$CLI" "$@"
+fi
+
+echo "anydoc: working cache missing at $CLI, falling back to npx" >&2
+exec npx -y @firecrawl/anydoc "$@"

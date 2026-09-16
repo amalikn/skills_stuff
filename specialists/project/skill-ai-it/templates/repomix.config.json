@@ -28,16 +28,18 @@
     ".archcore/**/*.md",
     "docs/**/*.md"
   ],
-  "ignore": [
-    "node_modules/**",
-    ".git/**",
-    "dist/**",
-    "build/**",
-    "cache/**",
-    "runtime/**",
-    "__pycache__/**",
-    ".venv/**",
-    "graphify-out/**",
-    ".ai-context/**"
-  ]
+  "ignore": {
+    "customPatterns": [
+      "node_modules/**",
+      ".git/**",
+      "dist/**",
+      "build/**",
+      "cache/**",
+      "runtime/**",
+      "__pycache__/**",
+      ".venv/**",
+      "graphify-out/**",
+      ".ai-context/**"
+    ]
+  }
 }

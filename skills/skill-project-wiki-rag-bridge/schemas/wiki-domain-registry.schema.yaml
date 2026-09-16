@@ -1,0 +1,96 @@
+# wiki-domain-registry.schema.yaml
+# Schema for /Volumes/Data/_ai/_wiki/wiki-data/domain-registry.yaml
+
+schema_name: wiki-domain-registry
+version: 1
+applies_to: "/Volumes/Data/_ai/_wiki/wiki-data/domain-registry.yaml"
+
+top_level_keys:
+  version:
+    type: integer
+    required: true
+    value: 1
+
+  wiki_root:
+    type: string
+    required: true
+    value: "/Volumes/Data/_ai/_wiki"
+
+  content_root:
+    type: string
+    required: true
+    value: "/Volumes/Data/_ai/_wiki/wiki_stuff"
+
+  domains:
+    type: list of objects
+    required: true
+    notes: "Each entry declares one wiki domain."
+    item_required_keys:
+      domain:
+        type: string
+        required: true
+        notes: "Domain name, lowercase. e.g. 'nbn'"
+      slug:
+        type: string
+        required: true
+        pattern: "^[a-z0-9_]+$"
+        notes: "Used in collection names and filter values. Usually matches domain."
+      description:
+        type: string
+        required: true
+        notes: "What knowledge this domain contains."
+      source_paths:
+        type: list of string
+        required: true
+        notes: "Paths relative to content_root. e.g. ['domains/nbn']"
+      qdrant_collection:
+        type: string
+        required: true
+        pattern: "^rag__wiki_[a-z0-9_]+$"
+        notes: "Must be rag__wiki_<slug>."
+      status:
+        type: string
+        required: true
+        allowed_values:
+          - active
+          - draft
+          - deprecated
+        notes: "Only 'active' domains are eligible for indexing."
+
+  rules:
+    type: object
+    required: true
+    required_keys:
+      disallow_global_collection:
+        type: boolean
+        value: true
+      require_declared_domain:
+        type: boolean
+        value: true
+      require_source_path:
+        type: boolean
+        value: true
+      require_collection_per_domain:
+        type: boolean
+        value: true
+
+validation_notes:
+  - "Each domain must have its own Qdrant collection — no sharing."
+  - "qdrant_collection must always be rag__wiki_<slug>, never rag__wiki_all or similar."
+  - "source_paths must exist as directories under wiki_stuff/."
+  - "deprecated domains must not be queried by projects unless explicitly grandfathered."
+
+common_failures:
+  - "slug and qdrant_collection suffix mismatch (e.g. slug='nbn' but collection='rag__wiki_nbn_v2')"
+  - "status: active but source_paths directory doesn't exist"
+  - "qdrant_collection: rag__wiki_all  # forbidden global name"
+  - "domain entry with no description — fails human review"
+
+example_entry:
+  - domain: "nbn"
+    slug: "nbn"
+    description: "NBN/WBA/DCR rebate, credit, discount, campaign, and eligibility reference."
+    source_paths:
+      - "domains/nbn"
+    qdrant_collection: "rag__wiki_nbn"
+    status: "active"

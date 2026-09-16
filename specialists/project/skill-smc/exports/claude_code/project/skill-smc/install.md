@@ -1,5 +1,16 @@
 # skill-smc: Claude Code Installation Instructions
 
+## Contents
+
+- [Prerequisites](#prerequisites)
+- [Install Steps](#install-steps)
+- [Update (re-install from canonical source)](#update-re-install-from-canonical-source)
+- [Execution Layer Configuration (Phase 2)](#execution-layer-configuration-phase-2)
+- [Verification](#verification)
+- [Install History](#install-history)
+
+---
+
 ## Prerequisites
 
 - Claude Code CLI installed and configured
@@ -65,31 +76,27 @@ After installing the skill, configure the execution layer for live troubleshooti
 
 ### Live SSH access — direct `tsh ssh`, no MCP
 
-**No `ssh-manager` (or any other SSH-wrapping) MCP is used for SMC access.** Every SMC box is
-reached by running `tsh ssh root@<hostname>` directly (via the Bash/shell tool), not through an MCP
-tool call. There is no `ssh-config.toml`/`SSH_CONFIG_PATH` to configure and nothing to install here.
+**No `ssh-manager` (or any other SSH-wrapping) MCP is used for SMC access.** Every SMC box is reached by running `tsh ssh root@<hostname>` directly (via the Bash/shell tool), not through an MCP tool
+call. There is no `ssh-config.toml`/`SSH_CONFIG_PATH` to configure and nothing to install here.
 
-1. The operator arranges `tsh login` manually as needed, targeting whichever Teleport cluster
-   matches the flavor/site currently being worked:
+1. The operator arranges `tsh login` manually as needed, targeting whichever Teleport cluster matches the flavor/site currently being worked:
 
-   | Flavors | Teleport domain |
-   |---|---|
-   | `rcp`, `rct`, `wh`, `apn` | `teleport.apn.au` |
+   | Flavors                          | Teleport domain                 |
+   | -------------------------------- | ------------------------------- |
+   | `rcp`, `rct`, `wh`, `apn`        | `teleport.apn.au`               |
    | `nbn_accelerate`, `nbn_wh`, `cw` | `teleport.communitywifi.net.au` |
 
-   Do not assume a single hardcoded domain — see `references/01_overview.md` "Remote Access".
+Do not assume a single hardcoded domain — see `references/01_overview.md` "Remote Access".
 2. Once `tsh login` is active for the right cluster, run commands directly:
    ```bash
    tsh ssh root@<hostname> '<command>'
    ```
-3. No MCP configuration step is needed for this. If a future session considers adding an
-   SSH-wrapping MCP, it would need to invoke `tsh ssh` itself (a bare host/port SSH client config
-   cannot authenticate against Teleport) — but as of this pack's current state, none is in use.
+3. No MCP configuration step is needed for this. If a future session considers adding an SSH-wrapping MCP, it would need to invoke `tsh ssh` itself (a bare host/port SSH client config cannot
+   authenticate against Teleport) — but as of this pack's current state, none is in use.
 
 ### mcp-grafana (Prometheus metrics — read-only)
 
-**Read-only:** Never write, modify, or create anything in Grafana via MCP.
-Use the flavor-specific instance, not `mcp-grafana` (central NOC, unrelated to SMC boxes).
+**Read-only:** Never write, modify, or create anything in Grafana via MCP. Use the flavor-specific instance, not `mcp-grafana` (central NOC, unrelated to SMC boxes).
 
 1. Build binary: `cd /Volumes/Data/_ai/_mcp/mcp_stuff/mcp-grafana && go build -o dist/mcp-grafana ./cmd/mcp-grafana`
 2. Copy to: `/Volumes/Data/_ai/_mcp/mcp-working-cache/mcp-grafana/mcp-grafana`
@@ -110,7 +117,7 @@ Use the flavor-specific instance, not `mcp-grafana` (central NOC, unrelated to S
      }
    }
    ```
-   Requires active Teleport SSH tunnel port-forwarding 63000 (nbn) or 53000 (apn) before use.
+Requires active Teleport SSH tunnel port-forwarding 63000 (nbn) or 53000 (apn) before use.
 
 ## Verification
 
@@ -118,8 +125,10 @@ After install and MCP configuration, restart Claude Code and confirm:
 - `tsh login` succeeds against the target cluster, then `tsh ssh root@malik-rct01 'echo OK && hostname'` returns `OK\nmalik-rct01`
 - `query_prometheus` with `node_memory_MemAvailable_bytes` returns current metrics (mcp-grafana)
 
-## Current Install State
+## Install History
+
+Point-in-time log of installation milestones — not a live version tracker. For the pack's current version, read `manifest.json` `version` in the canonical source.
 
 - Installed: 2026-04-15 (Phase 1)
-- MCP wired: 2026-04-17 (Phase 2)
-- Canonical version: 0.1.6
+- MCP wired: 2026-04-17 (Phase 2), canonical version 0.1.6 at that time
+- Re-synced: 2026-09-08, canonical version 0.1.30 at that time

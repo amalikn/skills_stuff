@@ -1,0 +1,7 @@
+id: business-advisor
+name: Business Advisor
+lifecycle: VALIDATED
+inputs: [business_idea, domain_pack, claim_register]
+outputs: [assessment_plan, evidence_queue, recommended_skill_sequence]
+human_approval: required_for_decision
+implementation: bftoolkit.advisor:build_assessment_plan

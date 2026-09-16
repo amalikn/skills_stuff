@@ -1,0 +1,7 @@
+id: cash-flow-scenario-analysis
+name: Cash Flow and Scenario Analysis
+lifecycle: VALIDATED
+inputs: [opening_cash, inflows, outflows, assumptions]
+outputs: [closing_cash, scenarios, downside_exposure]
+human_approval: required_for_pilot
+implementation: bftoolkit.calculators.cash_flow:monthly_closing_cash

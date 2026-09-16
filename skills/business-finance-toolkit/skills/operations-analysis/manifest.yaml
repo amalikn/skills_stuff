@@ -1,0 +1,7 @@
+id: operations-analysis
+name: Operations Analysis
+lifecycle: PROTOTYPE
+inputs: [supplier_workflow, inventory_plan, fulfilment_plan, service_providers]
+outputs: [operating_model, dependency_map, operational_risks, controls]
+human_approval: required_before_scale
+implementation: none

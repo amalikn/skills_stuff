@@ -1,0 +1,13 @@
+{
+  "id": "terraform",
+  "displayName": "Terraform",
+  "description": "Terraform repositories.",
+  "detect": {"anyFiles": ["terraform.lock.hcl"], "anyDirectories": ["modules", "environments"]},
+  "include": ["**/*.tf", "**/*.tf.json", "**/*.tftpl", "terraform.lock.hcl", "modules/**", "environments/**"],
+  "ignore": [".terraform/**", "*.tfstate", "*.tfstate.*", "crash.log", "crash.*.log", "*.tfvars", "*.auto.tfvars", "override.tf", "override.tf.json", "*_override.tf", "*_override.tf.json"],
+  "priorityFiles": ["terraform.lock.hcl", "**/main.tf", "**/variables.tf", "**/outputs.tf"],
+  "securitySensitivePatterns": ["*.tfvars", "*.auto.tfvars", "*.tfstate*"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 90000,
+  "notes": ["Variable files and state are sensitive by default."]
+}

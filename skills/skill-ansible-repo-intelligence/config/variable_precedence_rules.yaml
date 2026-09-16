@@ -1,0 +1,52 @@
+# Variable precedence classes and conflict-detection policy.
+#
+# Schema-validated against schemas/variable_precedence_rules.schema.yaml before
+# analysis begins. Classes are ordered low -> high precedence, mirroring
+# Ansible's documented precedence (simplified for static analysis). The
+# `rank` is used only to describe which definition would win *if* all inputs
+# were statically known; the analyzer never claims a winner unless every
+# higher-rank input is statically resolved.
+version: "1.0.0"
+
+classes:
+  - name: role_default          # roles/<r>/defaults/main.yml
+    rank: 10
+  - name: inventory_group        # group_vars (all, then groups)
+    rank: 20
+  - name: inventory_host         # host_vars
+    rank: 30
+  - name: play_var               # play-level vars:
+    rank: 40
+  - name: vars_file              # vars_files:
+    rank: 50
+  - name: role_var               # roles/<r>/vars/main.yml
+    rank: 60
+  - name: block_var              # block-level vars:
+    rank: 70
+  - name: task_var               # task-level vars:
+    rank: 80
+  - name: include_var            # include_vars / set by include
+    rank: 85
+  - name: set_fact               # set_fact
+    rank: 90
+  - name: registered             # register:
+    rank: 92
+  - name: environment_lookup     # lookup('env', ...) / environment:
+    rank: 95
+  - name: extra_var_unknown      # -e / survey (runtime, unknown statically)
+    rank: 100
+  - name: unknown_runtime        # any source we cannot statically place
+    rank: 110
+
+# Conflict policy: emit ARI006 when the same variable name is defined in two or
+# more DISTINCT precedence classes that can apply to the same reachable
+# execution path, OR multiple times within the same class for overlapping
+# inventory/execution scope. Definitions proven isolated to disjoint roles,
+# plays, inventory flavors, groups or conditions are NOT flagged.
+conflict_policy:
+  flag_cross_class: true
+  flag_same_class_overlap: true
+  ignore_disjoint_scopes: true
+  # Classes considered "runtime / unknowable"; a conflict involving only these
+  # is reported at lower confidence.
+  runtime_classes: [extra_var_unknown, unknown_runtime, environment_lookup, registered]

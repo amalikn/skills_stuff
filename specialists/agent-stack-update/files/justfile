@@ -1,0 +1,61 @@
+set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
+
+# Show the current configured upstream state without mirror or network access.
+upstream-status:
+    mise exec -- python scripts/sync_auto_company.py --status
+
+# Compare the existing local mirror without fetching it.
+upstream-dry-run:
+    mise exec -- python scripts/sync_auto_company.py --dry-run
+
+# Fetch the official upstream into the disposable working cache and report proposed changes.
+upstream-fetch-dry-run:
+    mise exec -- python scripts/sync_auto_company.py --fetch --dry-run
+
+# Apply only safe additions and unchanged canonical replacements after explicit confirmation.
+upstream-apply confirm="":
+    test "{{confirm}}" = "apply"
+    mise exec -- python scripts/sync_auto_company.py --fetch --apply
+
+# Record a reviewed local Auto Company source checkout as the current import baseline.
+record-current source:
+    mise exec -- python scripts/sync_auto_company.py --record-current --source "{{source}}"
+
+
+# Create/refresh the isolated Agent Stack maintenance environment.
+bootstrap:
+    mise run bootstrap
+
+# Validate persona, skill, routing, and repository contracts.
+check:
+    mise run check
+
+# Run the standard-library sync tests.
+test:
+    mise exec -- python -m unittest discover -s tests -v
+
+# Report the symlink-only global installation state; skill-creator stays excluded by default.
+global-status:
+    mise exec -- python scripts/install_global.py --status
+
+# Preview the global installation without changing Claude, Codex, or compatible .agents directories.
+global-dry-run:
+    mise exec -- python scripts/install_global.py --dry-run
+
+# Install every non-conflicting Agent Stack entry globally through verified symlinks only.
+global-install confirm="":
+    test "{{confirm}}" = "install"
+    mise exec -- python scripts/install_global.py --install
+
+# Remove only global links that still point exactly to Agent Stack sources.
+global-uninstall confirm="":
+    test "{{confirm}}" = "uninstall"
+    mise exec -- python scripts/install_global.py --uninstall
+
+# Validate routing eval definitions without invoking any model.
+routing-eval-check:
+    mise run routing-eval-check
+
+# Run behavioral routing against a local CLI command supplied by the operator.
+routing-eval command:
+    mise exec -- python scripts/evaluate_routing.py --command "{{command}}"

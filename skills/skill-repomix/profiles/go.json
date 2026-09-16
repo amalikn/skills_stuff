@@ -1,0 +1,13 @@
+{
+  "id": "go",
+  "displayName": "Go",
+  "description": "Go repositories.",
+  "detect": {"anyFiles": ["go.mod", "go.work"], "anyDirectories": ["cmd", "internal", "pkg"]},
+  "include": ["go.mod", "go.sum", "go.work", "go.work.sum", "cmd/**/*.go", "internal/**/*.go", "pkg/**/*.go", "api/**/*.go", "tests/**/*.go", "**/*_test.go"],
+  "ignore": ["vendor/**", "bin/**", "coverage.out", "*.test"],
+  "priorityFiles": ["go.mod", "go.work"],
+  "securitySensitivePatterns": ["**/.env*", "**/secrets.go"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 120000,
+  "notes": []
+}

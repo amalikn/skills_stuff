@@ -1,0 +1,38 @@
+# Ansible Grapher — Combined Documentation Report
+
+Project root: {{project_root}}
+Output root: {{output_root}}
+Generated: {{generated_at}}
+Skill version: {{skill_version}}
+
+## Validation
+
+| Check | Target | Result |
+|---|---|---|
+{{#each validation_results}}
+| {{check}} | {{target}} | {{result}} |
+{{/each}}
+
+## Inventory graph
+
+- Profile: {{inventory_profile}}
+- Variables displayed: {{show_variables}}
+- Artifacts: {{inventory_artifacts}}
+
+## Playbook graph(s)
+
+- Profile: {{playbook_profile}}
+- Renderers used: {{renderers}}
+- Artifacts: {{playbook_artifacts}}
+
+## Warnings
+
+{{#each warnings}}
+- {{this}}
+{{/each}}
+
+## Known limitations
+
+This report is evidence of parsed structure, not proof of runtime correctness. Static
+analysis cannot fully resolve runtime facts, dynamic variables, loops, conditionals, or
+variable-dependent includes. See docs/security-and-safety.md.

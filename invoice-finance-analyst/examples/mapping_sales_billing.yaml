@@ -1,0 +1,17 @@
+# mapping_sales_billing.yaml
+# Column mapping for sales_billing_sample.csv → canonical field names.
+# Generated format: used by validate_inputs.py to translate source columns.
+
+version: "1"
+created: "2026-05-21"
+source_type: sales_billing
+
+field_mappings:
+  customer_id:            "Account No"
+  customer_name:          "Customer"
+  our_service_id:         "Service Ref"
+  billing_period_start:   "Billing Start"
+  billing_period_end:     "Billing End"
+  revenue_ex_tax:         "Revenue ExGST"
+  cost_ex_tax:            "Cost ExGST"
+  service_type:           "Service Type"

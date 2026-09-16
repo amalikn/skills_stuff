@@ -1,0 +1,4 @@
+---
+- name: Example role task (no-op)
+  ansible.builtin.debug:
+    msg: "example role task"

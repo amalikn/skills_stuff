@@ -1,0 +1,38 @@
+schema_version: 1.0.0
+counts:
+  info: 3
+  warning: 1
+  error: 0
+  fatal: 0
+diagnostics:
+- code: ARI006_POSSIBLE_VARIABLE_PRECEDENCE_CONFLICT
+  severity: warning
+  message: "variable 'dns_servers': Defined in 2 precedence classes on potentially reachable paths (confidence medium)"
+  path:
+  node_id:
+  details:
+    classes:
+    - inventory_group
+    - role_default
+    scopes:
+    - flavor:prod_env
+    - role:dns
+    variable: dns_servers
+- code: ARI002_DYNAMIC_INCLUDE
+  severity: info
+  message: 'dynamic include/notify target: {{ os_family }}.yml'
+  path: roles/dns/tasks/main.yml
+  node_id: task:roles/dns/tasks/main.yml:0:1
+  details: {}
+- code: ARI015_VENDORED_COLLECTION_EXCLUDED
+  severity: info
+  message: Excluded 1 vendored collection YAML file(s) from first-class indexing; FQCN usage still tracked
+  path:
+  node_id:
+  details: {}
+- code: ARI017_CUSTOM_VARS_PLUGIN_DYNAMIC
+  severity: info
+  message: custom vars plugin 'vars_plugins/custom_vars.py' supplies variables dynamically
+  path: vars_plugins/custom_vars.py
+  node_id: vars_plugin:vars_plugins/custom_vars.py
+  details: {}

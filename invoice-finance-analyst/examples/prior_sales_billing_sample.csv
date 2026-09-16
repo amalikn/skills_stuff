@@ -1,0 +1,4 @@
+Account No,Customer,Service Ref,Billing Start,Billing End,Revenue ExGST,Cost ExGST,Service Type
+CUST-003,Gamma Inc,LOC000003,2026-02-01,2026-02-28,60.00,25.00,NBN Wireless
+CUST-004,Delta Ltd,LOC000004,2026-02-01,2026-02-28,60.00,50.00,NBN Fibre
+CUST-005,Epsilon Co,LOC000006,2026-02-01,2026-02-28,54.00,38.00,NBN Copper

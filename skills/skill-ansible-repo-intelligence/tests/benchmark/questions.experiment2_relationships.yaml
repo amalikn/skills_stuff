@@ -1,0 +1,235 @@
+# Experiment 2 gold-answer question set — relationship-heavy workload.
+# Per docs/prompts/close-experiment1-and-run-expermient2.md Part 3.
+#
+# All facts below were verified directly against /Volumes/Data/_ansible/ansible-wifi
+# source (grep + file reads), not assumed from memory or prior documentation —
+# one candidate question ("topology_dns_servers") was DROPPED because that
+# variable does not actually exist in this repo; the real vars-plugin-supplied
+# names (topology_interfaces, dhcp_scopes, virtual_gateways, etc.) were used
+# instead.
+#
+# gold_files = files an answer MUST be grounded in.
+# required_relationships = specific edges/chains the answer must get right.
+# disallowed_claims = specific fabrications/overclaims that would be wrong.
+# runtime_uncertainties = things that cannot be resolved by static analysis.
+version: "1.0.0"
+repo: ansible-wifi
+questions:
+
+  # --- handler_chain (6) -----------------------------------------------------
+  - id: e2-h01-unbound-restart
+    category: handler_chain
+    question: >-
+      Which handler does rendering /etc/unbound/unbound.conf in the smc_dns
+      role notify?
+    gold_files: [roles/smc_dns/tasks/main.yml, roles/smc_dns/handlers/main.yml]
+    required_relationships:
+      - "task 'Generate and copy /etc/unbound/unbound.conf' (main.yml:28) notifies 'Restart unbound service' (handlers/main.yml:8)"
+    disallowed_claims:
+      - "must not confuse with teleport_unbound role's separate 'Enable and start Unbound service' handler"
+
+  - id: e2-h02-systemd-resolved-listen-chain
+    category: handler_chain
+    question: >-
+      In the smc_network role, which handlers respond to a systemd-resolved
+      restart notification, and which task triggers it?
+    gold_files: [roles/smc_network/handlers/main.yml, roles/smc_network/tasks/ubuntu.yml]
+    required_relationships:
+      - "task at roles/smc_network/tasks/ubuntu.yml:201 notifies 'Protected systemd-resolved restart'"
+      - "4 handlers in handlers/main.yml use listen: 'Protected systemd-resolved restart' — Schedule a Teleport service restart in 2 minutes, Restart systemd-resolved service, Ensure we have an operational ssh connection, Delete Teleport service restart job"
+    acceptable_phrasings: ["fan-out via listen", "handler group"]
+    disallowed_claims: ["must not report only 1 handler when 4 respond via listen"]
+
+  - id: e2-h03-orphaned-notify
+    category: handler_chain
+    question: >-
+      Does the "Restart interfaces" notification in
+      roles/smc_network/tasks/centos.yml resolve to a defined handler?
+    gold_files: [roles/smc_network/tasks/centos.yml, roles/smc_network/handlers/main.yml]
+    required_facts:
+      - "roles/smc_network/tasks/centos.yml:148 notifies 'Restart interfaces'"
+      - "no handler named 'Restart interfaces' (by name or listen) exists in roles/smc_network/handlers/main.yml — this is an unresolved/orphaned notification, a real repo inconsistency"
+    disallowed_claims:
+      - "must NOT fabricate or guess a matching handler; must not silently substitute a similarly-named handler"
+
+  - id: e2-h04-two-unbound-roles
+    category: handler_chain
+    question: >-
+      Two roles in this repo manage something called "unbound". Which handler
+      does each define, and are they the same service instance?
+    gold_files: [roles/smc_dns/handlers/main.yml, roles/teleport_unbound/handlers/main.yml]
+    required_facts:
+      - "smc_dns defines 'Restart unbound service' (production DNS resolver)"
+      - "teleport_unbound defines 'Enable and start Unbound service' + 'Reload systemd daemon' (a separate, teleport-scoped unbound instance)"
+    disallowed_claims: ["must not merge the two roles' handlers as one service"]
+
+  - id: e2-h05-hostapd
+    category: handler_chain
+    question: Which handler restarts the WiFi access point service, and which task notifies it?
+    gold_files: [roles/smc_hostapd/tasks/main.yml, roles/smc_hostapd/handlers/main.yml]
+    required_relationships:
+      - "task 'Generate and copy /etc/hostapd/hostapd.conf' (main.yml:16) notifies 'Restart hostapd service' (handlers/main.yml:3)"
+
+  - id: e2-h06-qos-listen-group
+    category: handler_chain
+    question: What handlers does the smc_qos role define, and what do they all respond to?
+    gold_files: [roles/smc_qos/handlers/main.yml]
+    required_facts:
+      - "4 handlers, all using listen: 'Protected ethernet interfaces cycle' — schedule Teleport restart, cycle ethernet interfaces (shell, async), wait_for_connection, delete Teleport restart job"
+    disallowed_claims: ["must not claim these are triggered by name-based notify — they are listen-group handlers"]
+
+  # --- impact / reachability (5) ----------------------------------------------
+  - id: e2-i01-dns-role-impact
+    category: impact
+    question: What is the static impact of changing roles/smc_dns/tasks/main.yml?
+    gold_files: [roles/smc_dns/tasks/main.yml]
+    required_facts:
+      - "reaches: install bind-utils/dnsutils, install unbound, render+deploy unbound.conf, enable/start unbound, install getdns-stubby/stubby, copy stubby.yml, enable/start stubby"
+      - "notifies: 'Restart stubby service', 'Restart unbound service'"
+    runtime_uncertainties: ["static reachability only — dynamic includes/vars-plugin output not resolved"]
+
+  - id: e2-i02-dns-handlers-notified
+    category: impact
+    question: Which handlers are notified if roles/smc_dns/tasks/main.yml changes?
+    gold_files: [roles/smc_dns/tasks/main.yml, roles/smc_dns/handlers/main.yml]
+    required_facts: ["Restart stubby service", "Restart unbound service"]
+
+  - id: e2-i03-dns-role-playbook-reachability
+    category: reachability
+    question: Which top-level playbook(s) in this repo include the smc_dns role?
+    gold_files: [smc_bases.yml]
+    required_facts: ["smc_bases.yml references smc_dns"]
+    disallowed_claims: ["must not claim a playbooks/ subdirectory exists — playbooks live at repo root"]
+
+  - id: e2-i04-template-impact-blindspot
+    category: impact
+    question: >-
+      Which task renders roles/smc_dns/templates/unbound.conf.j2, and what
+      does static impact analysis on the template file itself show?
+    gold_files: [roles/smc_dns/templates/unbound.conf.j2, roles/smc_dns/tasks/main.yml]
+    required_facts:
+      - "the rendering task is 'Generate and copy /etc/unbound/unbound.conf' at roles/smc_dns/tasks/main.yml:28"
+      - "running `impact --path roles/smc_dns/templates/unbound.conf.j2` returns ZERO affected/reachable nodes — a known tool blind spot (templates are not reverse-linked to the tasks that render them)"
+    disallowed_claims:
+      - "must not report 'no impact' / 'nothing affected' as the final answer without cross-checking the role's tasks — that would be a false negative, not a true finding"
+
+  - id: e2-i05-network-handler-chain-impact
+    category: impact
+    question: What would be affected by changes to roles/smc_network/handlers/main.yml?
+    gold_files: [roles/smc_network/handlers/main.yml, roles/smc_network/tasks/ubuntu.yml]
+    required_facts:
+      - "4-handler 'Protected systemd-resolved restart' listen-chain; upstream trigger is roles/smc_network/tasks/ubuntu.yml:201"
+
+  # --- variable_origin / precedence (5) ---------------------------------------
+  - id: e2-v01-topology-interfaces-origin
+    category: variable_origin
+    question: Where do per-host values like topology_interfaces originate?
+    gold_files: [vars_plugins/topology_vars.py]
+    required_facts: ["sourced from the custom vars plugin vars_plugins/topology_vars.py; resolution: dynamic"]
+    disallowed_claims: ["must not claim it comes from group_vars/host_vars — no such static definition exists"]
+
+  - id: e2-v02-dhcp-scopes-consumers
+    category: variable_origin
+    question: Which role(s) consume dhcp_scopes, and in which files?
+    gold_files:
+      - roles/smc_dhcpd/templates/dhcpd.conf.j2
+      - roles/smc_dhcpd/templates/ifup-local.j2
+      - roles/smc_dhcpd/templates/isc-dhcp-server.j2
+    required_facts: ["smc_dhcpd consumes dhcp_scopes in 3 templates: dhcpd.conf.j2, ifup-local.j2, isc-dhcp-server.j2"]
+
+  - id: e2-v03-virtual-gateways-cross-role
+    category: precedence
+    question: >-
+      virtual_gateways is used by templates in more than one role. Which
+      roles use it, and where does the variable's VALUE actually originate?
+    gold_files:
+      - roles/smc_iptables/templates/iptables.j2
+      - roles/smc_iptables/templates/iptables.smp.j2
+      - roles/smc_keepalived/templates/keepalived.conf.j2
+      - vars_plugins/topology_vars.py
+    required_facts:
+      - "consumed by smc_iptables (iptables.j2, iptables.smp.j2) and smc_keepalived (keepalived.conf.j2)"
+      - "value originates solely from vars_plugins/topology_vars.py — neither role DEFINES it"
+    disallowed_claims: ["must not claim smc_iptables or smc_keepalived defines/owns this variable"]
+
+  - id: e2-v04-no-static-override
+    category: precedence
+    question: >-
+      Does any inventory group_vars or host_vars file statically override
+      topology_interfaces or dhcp_scopes?
+    gold_files: [vars_plugins/topology_vars.py]
+    required_facts: ["no static group_vars/host_vars override was found for either variable; sole origin is the vars plugin"]
+    disallowed_claims:
+      - "must not invent a precedence conflict where none exists — a wrong 'yes, group_vars overrides it' answer is a fabrication"
+
+  - id: e2-v05-runtime-winner-case-switches
+    category: precedence
+    question: Can the runtime winner for case_switches be determined through static analysis alone?
+    gold_files: [vars_plugins/topology_vars.py]
+    required_facts: ["no — case_switches is computed at runtime inside the custom vars plugin from host facts; static analysis can name the SOURCE (the plugin) but not the resolved value"]
+    runtime_uncertainties: ["vars-plugin output is fundamentally runtime-computed"]
+
+  # --- inventory_scope (3) ----------------------------------------------------
+  - id: e2-c01-smc-bases-namespacing
+    category: inventory_scope
+    question: >-
+      Is "smc_bases" a single flat inventory group shared across the repo, or
+      is it namespaced per site/flavor?
+    gold_files: []
+    required_facts:
+      - "namespaced per-site, e.g. amata_smc_bases, ampilatwatja_smc_bases, arawerr_smc_bases (hundreds of per-site groups across flavors like nbn_accelerate, rct, wh, rcp) — never one flat 'smc_bases' group"
+    disallowed_claims: ["must not claim a single shared 'smc_bases' group spanning all flavors"]
+
+  - id: e2-c02-flavor-scoped-group-vars
+    category: inventory_scope
+    question: Do the rct and wh inventory flavors share the same group_vars content, or is each flavor scoped independently?
+    gold_files: [inventories/rct/group_vars, inventories/wh/group_vars]
+    required_facts: ["each flavor has its own independent group_vars/ directory; content is never merged across flavors"]
+
+  - id: e2-c03-smc-ltp-flavor-specific
+    category: inventory_scope
+    question: Which inventory flavor(s) run the smc_ltp.yml playbook — is it universal or flavor-specific?
+    gold_files: [smc_ltp.yml]
+    required_facts: ["flavor-specific — only rcp references smc_ltp.yml (alongside smc_bases.yml); it is not present under rct, wh, cw, apn, nbn_wh, or nbn_accelerate"]
+
+  # --- dynamic_reference (3) ---------------------------------------------------
+  - id: e2-d01-conditional-overlay-include
+    category: dynamic_reference
+    question: >-
+      Is the smc_rise_disable_overlay role included unconditionally by
+      smc_rise_deploy_stage0.yml, or under a condition that can't be resolved
+      statically?
+    gold_files: [smc_rise_deploy_stage0.yml]
+    required_facts:
+      - "included via include_role with when: allow_disable_overlay | default(false) | bool — a runtime-extra-var-dependent condition, not statically resolvable to a fixed true/false"
+    disallowed_claims: ["must not claim it always runs, or never runs"]
+
+  - id: e2-d02-callback-plugin
+    category: dynamic_reference
+    question: Which callback plugin is enabled in this repo's ansible.cfg, and where is its source?
+    gold_files: [ansible.cfg, callback_plugins]
+    required_facts: ["callback_whitelist = role_version_logger, source under callback_plugins/, modelled as a first-class dynamic node (runtime behaviour, not statically executed)"]
+
+  - id: e2-d03-role-path-include
+    category: dynamic_reference
+    question: >-
+      roles/teleport_roles/tasks/main.yml includes a task file via
+      "{{ role_path }}/tasks/create_tctl_roles_users.yml". Is this a
+      genuinely unresolvable dynamic target, or does it resolve deterministically?
+    gold_files: [roles/teleport_roles/tasks/main.yml]
+    required_facts:
+      - "role_path is the including role's own path (teleport_roles) — this resolves deterministically to roles/teleport_roles/tasks/create_tctl_roles_users.yml, even though it's a Jinja expression"
+    disallowed_claims: ["must not claim the target is unknowable/fully dynamic — a static tool MAY still label it dynamic due to the Jinja syntax, but a correct ANSWER should note it resolves in practice"]
+
+  # --- direct_control (2) -------------------------------------------------------
+  - id: e2-x01-qos-packages
+    category: direct_control
+    question: Which packages does the smc_qos role install?
+    gold_files: [roles/smc_qos/tasks/main.yml]
+    required_facts: ["linux-modules-extra-raspi (roles/smc_qos/tasks/main.yml:3-5), required for ifb interfaces"]
+
+  - id: e2-x02-hostapd-template
+    category: direct_control
+    question: Which template renders the WiFi access point configuration, and what does it notify?
+    gold_files: [roles/smc_hostapd/tasks/main.yml]
+    required_facts: ["hostapd.conf.j2 -> /etc/hostapd/hostapd.conf (main.yml:16), notifies 'Restart hostapd service'"]

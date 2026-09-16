@@ -1,0 +1,32 @@
+{
+  "output": {
+    "filePath": ".ai-context/governance-pack.md",
+    "style": "markdown"
+  },
+  "include": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "AI_NAVIGATION.md",
+    "README.md",
+    "SKILL.md",
+    "CHANGELOG.md",
+    "context-map.yaml",
+    "SCRATCHPAD.md",
+    "docs/**/*.md",
+    "schemas/**/*.yaml",
+    "checklists/**/*.md",
+    "templates/**/*.md",
+    "templates/**/*.yaml",
+    ".archcore/**/*.md",
+    ".archcore/**/*.yaml"
+  ],
+  "ignore": [
+    ".git/**",
+    ".DS_Store",
+    ".remember/**",
+    "graphify-out/**",
+    ".ai-context/**",
+    "examples/**",
+    "prompts/**"
+  ]
+}

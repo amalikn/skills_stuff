@@ -28,8 +28,8 @@
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "2026-09-08T00:00:00Z",
-  "version": "0.1.31",
+  "updated_at": "2026-09-14T00:00:00Z",
+  "version": "0.1.40",
   "dependencies": [],
   "known_constraints": [
     "SMC boxes run overlayroot — changes do not persist across reboot unless lower dir is remounted rw",
@@ -119,6 +119,29 @@
       "tags": [
         "ansible",
         "authoring"
+      ]
+    },
+    {
+      "statement": "The fleet's multi-WAN default route is not an actively managed policy engine anywhere in ansible-wifi -- it is emergent kernel ECMP behavior. Every role:internet/role:starlink interface runs its own independent dhclient@<iface>.service, each installing its own same-metric default route; the kernel merges same-destination/same-metric routes from different devices into one multipath group with NO health-based nexthop eviction -- a nexthop whose gateway has gone ARP-FAILED stays in the group until its DHCP lease itself is lost, which can take hours. Because net.ipv4.fib_multipath_hash_policy defaults to 0 (L3-only, source+dest IP only) fleet-wide and nothing in Ansible sets it otherwise, every flow to a fixed destination IP (DNS to 8.8.8.8, a monitoring target, the Teleport bastion IP itself) is permanently pinned to exactly one nexthop regardless of health. Recognizable symptom: an FQDN ping fails inconsistently while the same target's raw IP succeeds, and/or hardcoding it into /etc/hosts 'fixes' it -- because DNS resolution does not respect ping -I's device binding and transits whichever link the destination currently hashes to. Fix is net.ipv4.fib_multipath_hash_policy=1 (L4 hashing), live-testable with no reboot via `ip route get <ip> sport <N> ...`, but it does NOT give seamless mid-connection failover -- only new connection attempts get a fresh hash roll. Confirmed live at galiwinku-smc01 (nbn_accelerate) 2026-09-08, including real autossh-teleport-openssh log evidence of a reconnect attempt failing onto a dead nexthop under the pre-fix policy. Applied on galiwinku only (on-box sysctl, not committed to ansible-wifi); fleet-wide rollout proposed but deliberately deferred. Corrects a prior 'inferred, not verified' theory in 03_communication-flows.md that the Kohana wifi app built the multipath route -- it does not; the mechanism is purely kernel-level and unrelated to the portal app. See references/06_failure-modes.md and references/03_communication-flows.md.",
+      "confidence": 0.95,
+      "tags": [
+        "ecmp",
+        "multi-wan",
+        "networking",
+        "root-cause",
+        "nbn-accelerate"
+      ]
+    },
+    {
+      "statement": "wifi-02.activ8me.net.au / 202.171.100.138 is APN's OWN keepalived/LVS VIP (vrrp_instance VI_138, directors 202.171.100.132/.133 on bond1.1005, real servers lweb03 172.16.254.73 and lweb04 172.16.254.74), NOT a third-party activ8me service -- failures involving it are an APN-internal escalation, not a vendor ticket. It is resolved by a static /etc/hosts entry on every nbn_accelerate SMC, so DNS is never a variable. Its port-80 virtual service enforces a source-IP allowlist (119.12.209.0/24 permitted; anything outside rejected at the director with ICMP type 3 code 13), while port 443 is unrestricted -- so a site whose carrier NAT drifts out of the pool loses port 80 silently, with no config change and no alerting. See references/03_communication-flows.md and references/06_failure-modes.md.",
+      "confidence": 0.95,
+      "tags": [
+        "apn-infrastructure",
+        "keepalived",
+        "lvs",
+        "nbn_accelerate",
+        "allowlist",
+        "escalation-routing"
       ]
     }
   ],

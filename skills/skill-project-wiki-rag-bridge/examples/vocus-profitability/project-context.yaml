@@ -1,0 +1,141 @@
+# project-context.yaml — Vocus Profitability project RAG bridge
+# Location: /Volumes/Data/_ai/_project/project_stuff/apn/vocus-profitability/rag/project-context.yaml
+
+version: 1
+schema: "wiki-project-dependency-model"
+global_search_allowed: false
+
+project:
+  id: "apn-vocus-profitability"
+  slug: "vocus_profitability"
+  name: "Vocus Profitability"
+  root: "/Volumes/Data/_ai/_project/project_stuff/apn/vocus-profitability"
+  collection: "rag__project_vocus_profitability"
+
+wiki:
+  root: "/Volumes/Data/_ai/_wiki"
+  content_root: "/Volumes/Data/_ai/_wiki/wiki_stuff"
+  data_root: "/Volumes/Data/_ai/_wiki/wiki-data"
+  pattern: "karpathy-llm-wiki"
+  canonical_shared_knowledge: true
+
+tools:
+  rag_tools_root: "/Volumes/Data/_ai/_tool/tools_stuff/rag-tools"
+  rag_tools_venv: "/Volumes/Data/_ai/_tool/tools-working-cache/rag-tools/.venv"
+
+wiki_dependencies:
+  - domain: "nbn"
+    slug: "nbn"
+    collection: "rag__wiki_nbn"
+    source_paths:
+      - "domains/nbn"
+    reason: "NBN WBA/DCR rebate, credit, discount, campaign, and eligibility reference."
+    source_authority: "shared_reference_authoritative_markdown"
+    allowed_topics:
+      - avc
+      - wba
+      - dcr
+      - discounts
+      - credits
+      - rebates
+      - campaign_terms
+      - fixed_wireless
+      - connect_now
+      - connect_the_unconnected
+      - network_asset_recovery
+      - performance_targets
+      - mdf
+      - clawback
+      - eligible_premises
+      - interaction_rules
+
+  - domain: "vocus"
+    slug: "vocus"
+    collection: "rag__wiki_vocus"
+    source_paths:
+      - "domains/vocus"
+    reason: "Shared Vocus invoice, rate-card, billing, and profitability interpretation notes."
+    source_authority: "shared_reference_authoritative_markdown"
+    allowed_topics:
+      - invoice_mapping
+      - rate_card_logic
+      - rebate_passthrough
+      - service_profitability
+      - billing_interpretation
+      - product_mapping
+      - wholesale_contracts
+
+retrieval_policy:
+  retrieval_order:
+    - step: 1
+      source: "project_local_files"
+      description: "Use project-local source files, reports, manifests, and analysis first."
+    - step: 2
+      source: "project_collection"
+      collection: "rag__project_vocus_profitability"
+      required_filters:
+        project_slug: "vocus_profitability"
+    - step: 3
+      source: "declared_wiki_domains"
+      collections:
+        - "rag__wiki_nbn"
+        - "rag__wiki_vocus"
+      required_filters:
+        wiki_domain:
+          allowed:
+            - "nbn"
+            - "vocus"
+    - step: 4
+      source: "ask_user"
+      condition: "No sufficient evidence found in project-local or declared wiki sources."
+
+rules:
+  require_project_filter: true
+  require_wiki_domain_filter: true
+  disallow_global_wiki_search: true
+  disallow_undeclared_wiki_domains: true
+  disallow_cross_project_fallback: true
+  disallow_project_data_in_wiki_collection: true
+  disallow_wiki_data_in_project_collection_unless_copied_with_source: true
+  cite_sources: true
+  cite_collection_name: true
+  cite_source_file: true
+  cite_section_path: true
+  cite_heading: true
+  prefer_project_local_for_project_specific_facts: true
+  prefer_wiki_authoritative_markdown_for_shared_reference_facts: true
+  nav_yaml_is_routing_metadata_only: true
+  no_unsupported_conclusions: true
+
+forbidden_collections:
+  - "rag__global_all_docs"
+  - "rag__wiki_all"
+  - "rag__all"
+  - "default"
+  - "documents"
+  - "knowledge"
+  - "main"
+
+conflict_resolution:
+  project_specific_fact:
+    prefer: "project_local"
+    examples:
+      - invoices
+      - internal_reports
+      - customer_service_mappings
+      - calculated_profitability
+      - evidence_request_drafts
+  shared_reference_fact:
+    prefer: "wiki_authoritative_markdown"
+    examples:
+      - NBN DCR terms
+      - WBA reference summaries
+      - Vocus rate-card interpretation
+      - reusable rebate logic
+  unresolved_conflict:
+    action: "report_conflict_and_ask_user"
+
+status:
+  lifecycle: "active"
+  owner: "project"
+  reviewed: false

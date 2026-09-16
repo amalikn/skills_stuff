@@ -20,6 +20,16 @@
 # host changes underneath it and then fails in a way that reads like a code bug. Recipes go through the variables below
 # so no recipe depends on the ambient interpreter, and `just runtimes` makes the resolved versions visible.
 #
+# `mise exec -- python` IS NOT THE FIX, and this is the part that gets missed. Where .mise.toml sets `_.python.venv`,
+# `mise exec -- python` does land on the venv — so it tests clean and reads as pinned. But the dependency is IMPLICIT:
+# nothing at the call site says which interpreter is meant, and if the activation ever stops applying (the env block is
+# edited, the venv is missing, the recipe is copied into a project without that config) it degrades SILENTLY to the host
+# interpreter instead of failing. Address the interpreter by PATH via {{py}}, and depend on _require-venv, so a missing
+# venv is a loud error with a fix attached rather than a wrong-interpreter run that looks fine.
+#
+# Node has no venv layer, so `mise exec -- node` is genuinely the explicit form for it — the distinction above applies
+# wherever a venv sits between mise and the interpreter, which in practice means Python.
+#
 # The venv lives in the WORKING-CACHE PEER, never in this repo — a repo carries source, not rebuildable runtime.
 # Path mapping (see the global runtime-isolation policy):
 #   project_stuff/<group>/<project>  ->  project-working-cache/<group>/<project>

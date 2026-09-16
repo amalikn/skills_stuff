@@ -1,0 +1,46 @@
+# project-documents.yaml — Generic project template with comments
+# Copy to: <project>/rag/manifests/project-documents.yaml
+
+version: 1
+project_slug: "<project_name_slug>"
+
+rules:
+  default_index: false                              # NEVER change to true
+  require_explicit_index_true: true                 # Every doc must opt in explicitly
+  raw_data_requires_explicit_approval: true         # Raw data needs a notes: explanation
+  communications_requires_review_before_indexing: true  # Comms always reviewed first
+
+documents:
+  # Template entries — fill in or remove as needed
+
+  # A curated analysis report (eligible for indexing after review)
+  - id: "<project_name_slug>-report-001"
+    title: "<Report Title>"
+    path: "reports/<report-slug>.md"
+    type: "report"
+    index: false          # Set to true after review confirms no sensitive content
+    sensitive: false
+    notes: "Pending review before indexing."
+
+  # A raw data file — never index
+  - id: "<project_name_slug>-raw-001"
+    title: "<Raw Data File>"
+    path: "data/<filename>.csv"
+    type: "raw"
+    index: false
+    sensitive: true
+    notes: "Raw data. Do not index."
+
+  # A communications file — never index without legal/management review
+  # - id: "<project_name_slug>-comms-001"
+  #   title: "<Communication Subject>"
+  #   path: "communications/<filename>.md"
+  #   type: "communication"
+  #   index: false
+  #   sensitive: true
+  #   notes: "External communications. Requires review before indexing."
+
+status:
+  lifecycle: "draft"
+  reviewed: false
+  last_reviewed: null

@@ -22,7 +22,11 @@ Cambium backhaul provisioning + a DNS-resolver-stack switch to bind9/RPZ, two un
 <!-- KEEP: updated 2026-08-03 — "low touch" onboarding method + site deployment history added (v0.1.10): guda-guda pilot 2025-04-15, then umoona/warburton/beagle-bay/pandanus-park/old-looma/new-looma
 in 2026; all 4 smc_ltp sites are also low-touch sites — flagged as an unresolved correlation, not concluded. "low_touch" has no live Ansible code path (one orphaned host_var, never read) --> <!--
 KEEP: updated 2026-08-03 — smc_ltp/low-touch correlation RESOLVED (v0.1.11): operator confirmed the link is real (every low-touch site should be an smc_ltp member) and directed + verified adding the 3
-missing sites (warburton/beagle-bay/umoona) to inventories/rcp/prod. smc_ltp is now 7 members, not 4. Uncommitted production Ansible inventory change — not yet run against any live SMC -->
+missing sites (warburton/beagle-bay/umoona) to inventories/rcp/prod. smc_ltp is now 7 members, not 4. Uncommitted production Ansible inventory change — not yet run against any live SMC --> <!-- KEEP:
+updated 2026-09-08 — skill-ai-it refresh (v0.1.34, CHANGELOG 20260908_1955): navigation-control upgrade applied; AGENTS.md's generic navigation block upgraded to current template; AI_NAVIGATION.md's
+project-specific routing table declared project-managed (`skill-ai-it:manual`) rather than overwritten, with its two missing sections (generated-context policy, compaction recovery) hand-added;
+`scripts/check_governance.py` adopted for the first time, tuned to rule-reference-update-discipline.md and rule-manifest-version-discipline.md after 35 initial false positives (remote-appliance
+scripts, sibling-repo paths, unrelated-software version numbers) were traced and resolved; validator now a clean PASS (26/26, 0 warnings) -->
 
 ## Contents
 
@@ -38,11 +42,13 @@ missing sites (warburton/beagle-bay/umoona) to inventories/rcp/prod. smc_ltp is 
 
 ## Current state
 
-**Phase:** Stable — v0.1.31. Backdoor SSH Access documented 2026-09-08 (CHANGELOG 20260908_1330): new section in `03_communication-flows.md`, plus a terminology fix (Teleport-cluster split is by
-project, not flavor) propagated to `01_overview.md`, `SKILL.md`, and `PROFILE.md`. Prior: pack-structure self-audit completed 2026-09-08 (CHANGELOG 20260908_1200): removed RUNBOOK.md's duplicate/stale
-version stamp, fixed install.md's frozen "Canonical version: 0.1.6" note, widened `rule-reference-update-discipline.md` from 4 to 6 required surfaces (added AI_NAVIGATION.md + context-map.yaml),
-removed the vestigial empty `evidence/` dir, and promoted all `.archcore/` docs from `proposed` to `accepted`. `.graylog-token` was checked and is already correctly gitignored — not a defect. Prior
-operational-content phase summary (ClamAV EOL root cause, Grafana CW/NBN exploration, new-looma-smc01 outage) unchanged, see CHANGELOG for full history.
+**Phase:** Stable — v0.1.34. skill-ai-it refresh completed 2026-09-08 (CHANGELOG 20260908_1955): `scripts/check_governance.py` adopted for the first time and now gates on this pack's own stated
+reference-routing and version-discipline rules; `AI_NAVIGATION.md` declared project-managed to protect its 13-file routing table from generic overwrite; `AGENTS.md` navigation block upgraded.
+`validate_navigation_control_layer.py` reports a clean PASS. Prior: Backdoor SSH Access documented 2026-09-08 (CHANGELOG 20260908_1330): new section in `03_communication-flows.md`, plus a terminology
+fix (Teleport-cluster split is by project, not flavor) propagated to `01_overview.md`, `SKILL.md`, and `PROFILE.md`. Prior: pack-structure self-audit completed 2026-09-08 (CHANGELOG 20260908_1200):
+removed RUNBOOK.md's duplicate/stale version stamp, fixed install.md's frozen "Canonical version: 0.1.6" note, widened `rule-reference-update-discipline.md` from 4 to 6 required surfaces (added
+AI_NAVIGATION.md + context-map.yaml), removed the vestigial empty `evidence/` dir, and promoted all `.archcore/` docs from `proposed` to `accepted`. `.graylog-token` was checked and is already
+correctly gitignored — not a defect. Prior operational-content phase summary (ClamAV EOL root cause, Grafana CW/NBN exploration, new-looma-smc01 outage) unchanged, see CHANGELOG for full history.
 
 skill-smc is the canonical specialist pack for SMC (Site Management Controller) box operations and ansible-wifi authoring. As of v0.1.3 the pack has 13 numbered focused reference files under
 `references/`. RUNBOOK.md is a navigation index only — all operational content lives in `references/0N_*.md`. Content for `references/10_captive-portal.md`, `references/11_vagrant-lab.md`,
@@ -460,6 +466,11 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Memory pointers (navigation only)
 
+- memory-keeper channel: `skill-smc` / keys added 2026-09-08 (skill-ai-it refresh slurp): `skill-smc.decision.skill-ai-it-refresh-mode-correction-20260908`,
+  `skill-smc.decision.ai-navigation-declared-manual-20260908`, `skill-smc.note.check-governance-adopted-and-tuning-20260908`, `skill-smc.progress.v0134-refresh-20260908`,
+  `skill-smc.note.mk-pc-backend-divergence-20260908`. Checkpoint: `slurp-20260908-skill-ai-it-refresh` (both backends).
+- project-context project ID `0bf38158-d30f-4b0f-8653-f6f93d22a068`: notes added 2026-09-08 mirroring the same session; **note this backend was ~5 weeks stale (last prior entry 2026-08-03) before this
+  update** — see `skill-smc.note.mk-pc-backend-divergence-20260908` for the memory-keeper-only entries from 2026-09-07 that were never mirrored here.
 - memory-keeper channel: `skill-smc` / keys added 2026-08-03 (this pass): `skill-smc.discovery.new-looma-outage-confirmed-20260803`
 - memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.discovery.grafana-dashboard-inventory-rise-metrics-20260803`
 - memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.task.grafana-cw-exploration-blocked-20260803`

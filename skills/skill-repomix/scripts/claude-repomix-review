@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# Change-review pack optimised for Claude Code: Markdown output with diffs included.
+set -Eeuo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=_repomix-common.sh
+source "$SCRIPT_DIR/_repomix-common.sh"
+
+REPO="$PWD"
+PROFILE="auto"
+OUTPUT=".ai-context/claude-review.md"
+INCLUDE=""
+IGNORE=""
+TOKEN_BUDGET=""
+COMPRESS=0
+WITH_LOGS=0
+LOG_COUNT=10
+STYLE="markdown"
+FORCE=0
+
+usage() {
+  cat <<'USAGE'
+Usage: claude-repomix-review [options]
+  --repo PATH
+  --profile PROFILE
+  --include PATTERNS
+  --ignore PATTERNS
+  --output PATH
+  --token-budget NUMBER
+  --compress
+  --no-compress
+  --with-logs
+  --log-count NUMBER
+  --style markdown|xml|json|plain
+  --force
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --repo)          REPO="$2";          shift 2 ;;
+    --profile)       PROFILE="$2";       shift 2 ;;
+    --include)       INCLUDE="$2";       shift 2 ;;
+    --ignore)        IGNORE="$2";        shift 2 ;;
+    --output)        OUTPUT="$2";        shift 2 ;;
+    --token-budget)  TOKEN_BUDGET="$2";  shift 2 ;;
+    --compress)      COMPRESS=1;         shift ;;
+    --no-compress)   COMPRESS=0;         shift ;;
+    --with-logs)     WITH_LOGS=1;        shift ;;
+    --log-count)     LOG_COUNT="$2";     shift 2 ;;
+    --style)         STYLE="$2";         shift 2 ;;
+    --force)         FORCE=1;            shift ;;
+    --no-security-check) die "--no-security-check is prohibited" ;;
+    -h|--help)       usage; exit 0 ;;
+    *) die "Unknown option: $1" ;;
+  esac
+done
+
+REPO="$(find_repo_root "$REPO")"
+assert_safe_repo "$REPO"
+
+if [[ "$PROFILE" == "auto" ]]; then
+  PROFILE="$("$SCRIPT_DIR/detect-language-profile" --repo "$REPO" --primary-only)"
+fi
+
+if [[ "$OUTPUT" != /* ]]; then
+  OUTPUT="$REPO/$OUTPUT"
+fi
+assert_safe_output "$REPO" "$OUTPUT"
+mkdir -p "$(dirname "$OUTPUT")"
+[[ ! -e "$OUTPUT" || "$FORCE" -eq 1 ]] || die "Output exists; use --force: $OUTPUT"
+
+read -r -a RBASE <<<"$(repomix_cmd)"
+cmd=("${RBASE[@]}" --style "$STYLE" --output "$OUTPUT" --include-diffs)
+
+[[ -n "$INCLUDE" ]]       && cmd+=(--include "$INCLUDE")
+[[ -n "$IGNORE" ]]        && cmd+=(--ignore "$IGNORE")
+[[ -n "$TOKEN_BUDGET" ]]  && cmd+=(--token-budget "$TOKEN_BUDGET")
+[[ "$COMPRESS" -eq 1 ]]   && cmd+=(--compress)
+[[ "$WITH_LOGS" -eq 1 ]]  && cmd+=(--include-logs --include-logs-count "$LOG_COUNT")
+
+printf 'Profile: %s\n' "$PROFILE"
+printf 'Style:   %s\n' "$STYLE"
+printf 'Output:  %s\n' "$OUTPUT"
+printf 'Command:'
+printf ' %q' "${cmd[@]}"
+printf '\n'
+(cd "$REPO" && "${cmd[@]}")

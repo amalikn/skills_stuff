@@ -1,6 +1,6 @@
 ---
 name: skill-slurp-chat
-description: Persist conversation content to memory-keeper and mcp-project-context to prevent loss from auto-compaction. /slurp-chat reads existing state from both backends, finds the last save point in each, scans the unsaved portion thoroughly and the already-covered portion lightly for missed detail, then saves only gaps. /slurp-chat close adds a full save-and-exit closeout. mcp-project-context has no delete — reading before writing is mandatory.
+description: Persist unsaved conversation context to memory-keeper and project-context before compaction or closeout.
 ---
 
 # skill-slurp-chat

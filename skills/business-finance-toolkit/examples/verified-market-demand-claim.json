@@ -1,0 +1,16 @@
+[
+  {
+    "id": "market-demand",
+    "statement": "Illustrative verified claim for demonstrating the gate command.",
+    "state": "VERIFIED",
+    "evidence_quality": "VERIFIED_PRIMARY",
+    "sources": [
+      {
+        "title": "Replace with an authoritative source before a real decision",
+        "url": "https://example.test",
+        "retrieved_on": "2026-08-29",
+        "primary": true
+      }
+    ]
+  }
+]

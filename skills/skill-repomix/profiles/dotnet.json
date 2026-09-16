@@ -1,0 +1,13 @@
+{
+  "id": "dotnet",
+  "displayName": ".NET",
+  "description": ".NET repositories.",
+  "detect": {"anyFiles": ["*.sln", "*.csproj", "*.fsproj", "global.json"], "anyDirectories": ["src", "tests"]},
+  "include": ["*.sln", "*.slnx", "*.csproj", "*.fsproj", "*.vbproj", "Directory.Build.props", "Directory.Build.targets", "Directory.Packages.props", "global.json", "NuGet.config", "src/**/*.cs", "src/**/*.fs", "tests/**/*.cs", "tests/**/*.fs"],
+  "ignore": ["bin/**", "obj/**", "TestResults/**", "*.user", "*.suo"],
+  "priorityFiles": ["*.sln", "Directory.Build.props", "Directory.Packages.props"],
+  "securitySensitivePatterns": ["**/appsettings.*.json", "**/.env*"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 130000,
+  "notes": []
+}

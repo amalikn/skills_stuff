@@ -1,0 +1,7 @@
+id: hidden-cost-discovery
+name: Hidden-Cost Discovery
+lifecycle: VALIDATED
+inputs: [domain_pack, transaction_description, draft_cost_model]
+outputs: [cost_gap_register, applicable_cost_categories, assumptions]
+human_approval: required_for_budget
+implementation: bftoolkit.domain_packs:get_domain_pack

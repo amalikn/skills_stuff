@@ -1,0 +1,7 @@
+id: decision-memo
+name: Decision Memo
+lifecycle: VALIDATED
+inputs: [claim_register, calculations, scenarios, gate_result]
+outputs: [decision_memo, recommendation, open_risks, approval_request]
+human_approval: required_for_approval
+implementation: bftoolkit.gates:evaluate_pilot_gate

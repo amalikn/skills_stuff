@@ -1,0 +1,121 @@
+# project-context.schema.yaml
+# Schema for <project>/rag/project-context.yaml
+
+schema_name: project-context
+version: 1
+applies_to: "<project>/rag/project-context.yaml"
+
+top_level_keys:
+  version:
+    type: integer
+    required: true
+    value: 1
+
+  schema:
+    type: string
+    required: true
+    value: "wiki-project-dependency-model"
+
+  global_search_allowed:
+    type: boolean
+    required: true
+    value: false
+    notes: "Must always be false. Global wiki search is forbidden."
+
+  project:
+    type: object
+    required: true
+    required_keys:
+      id:
+        type: string
+        notes: "Stable project identifier. e.g. 'apn-vocus-profitability'"
+      slug:
+        type: string
+        pattern: "^[a-z0-9_]+$"
+        notes: "Used as Qdrant filter value. Underscores only."
+      name:
+        type: string
+        notes: "Human-readable project name."
+      root:
+        type: string
+        notes: "Absolute path to project root on this machine."
+      collection:
+        type: string
+        pattern: "^rag__project_[a-z0-9_]+$"
+        notes: "Must be rag__project_<slug>."
+
+  wiki:
+    type: object
+    required: true
+    required_keys:
+      root:
+        value: "/Volumes/Data/_ai/_wiki"
+      content_root:
+        value: "/Volumes/Data/_ai/_wiki/wiki_stuff"
+      data_root:
+        value: "/Volumes/Data/_ai/_wiki/wiki-data"
+      pattern:
+        value: "karpathy-llm-wiki"
+      canonical_shared_knowledge:
+        type: boolean
+        value: true
+
+  tools:
+    type: object
+    required: true
+    required_keys:
+      rag_tools_root:
+        value: "/Volumes/Data/_ai/_tool/tools_stuff/rag-tools"
+      rag_tools_venv:
+        value: "/Volumes/Data/_ai/_tool/tools-working-cache/rag-tools/.venv"
+
+  wiki_dependencies:
+    type: list of objects
+    required: true
+    notes: "One entry per declared wiki domain. Empty list means no wiki access."
+    item_required_keys:
+      - domain
+      - slug
+      - collection
+      - source_paths
+      - reason
+      - source_authority
+
+  retrieval_policy:
+    type: object
+    required: true
+    required_keys:
+      - retrieval_order
+
+  rules:
+    type: object
+    required: true
+    notes: "All isolation rules should be true. Deviations require justification."
+
+  forbidden_collections:
+    type: list of string
+    required: true
+    notes: "Must include the globally forbidden set."
+
+  status:
+    type: object
+    required: true
+    required_keys:
+      - lifecycle
+      - owner
+      - reviewed
+
+common_failures:
+  - "global_search_allowed: true  # must always be false"
+  - "wiki.root path doesn't exist on this machine"
+  - "wiki_dependencies entry missing 'reason' field"
+  - "collection slug in wiki_dependencies doesn't match rag__wiki_<domain>"
+  - "retrieval_order missing 'ask_user' step as final fallback"
+
+example:
+  project:
+    id: "apn-vocus-profitability"
+    slug: "vocus_profitability"
+    name: "Vocus Profitability"
+    root: "/Volumes/Data/_ai/_project/project_stuff/apn/vocus-profitability"
+    collection: "rag__project_vocus_profitability"

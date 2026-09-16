@@ -1,0 +1,11 @@
+version: "1"
+created: "2026-05-21"
+source_type: rate_card
+
+# Maps rate_card_sample.csv columns → canonical rate_card field names.
+field_mappings:
+  service_type:           "Service Type"
+  expected_cost_ex_tax:   "Expected Cost ExGST"
+  effective_date:         "Effective Date"
+  expiry_date:            "Expiry Date"
+  notes:                  "Notes"

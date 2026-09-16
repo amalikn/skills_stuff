@@ -2,20 +2,22 @@
 
 ## Contents
 
-- [Knowledge Gaps (by design — require execution layer)](#knowledge-gaps-by-design-require-execution-layer)
+- [Knowledge Gaps (by design — require execution layer)](#knowledge-gaps-by-design--require-execution-layer)
 - [Coverage Gaps (partial knowledge)](#coverage-gaps-partial-knowledge)
 - [Skill Staleness Risks](#skill-staleness-risks)
 - [Fleet-Wide Architecture Risks (identified, not yet remediated)](#fleet-wide-architecture-risks-identified-not-yet-remediated)
-- [Known Operational Bugs (rcp fleet — confirmed 2026-06-30)](#known-operational-bugs-rcp-fleet-confirmed-2026-06-30)
-- [Known Operational Bugs (NBN Accelerate cluster — full fleet sweep, 2026-08-03)](#known-operational-bugs-nbn-accelerate-cluster-full-fleet-sweep-2026-08-03)
+- [Known Operational Bugs (rcp fleet — confirmed 2026-06-30)](#known-operational-bugs-rcp-fleet--confirmed-2026-06-30)
+- [Known Operational Bugs (NBN Accelerate cluster — full fleet sweep, 2026-08-03)](#known-operational-bugs-nbn-accelerate-cluster--full-fleet-sweep-2026-08-03)
 - [Known Site Issues (as of 2026-06-30)](#known-site-issues-as-of-2026-06-30)
 - [Out of Scope (permanent)](#out-of-scope-permanent)
-- [2026-07-28 — fleet fatrace sweep findings (all 16 rcp incl. new-looma)](#2026-07-28-fleet-fatrace-sweep-findings-all-16-rcp-incl-new-looma)
-- [2026-08-18 — `delye-smc01` 5-minute reboot loop: a 2.6 GiB Laravel log vs a 3.81 GiB overlay (RESOLVED)](#2026-08-18-delye-smc01-5-minute-reboot-loop-a-26-gib-laravel-log-vs-a-381-gib-overlay-resolved)
-- [2026-08-18 — `rise-watchdog.service` dead with `status=226/NAMESPACE` whenever overlay is off](#2026-08-18-rise-watchdogservice-dead-with-status226namespace-whenever-overlay-is-off)
-- [2026-08-18 — Ubuntu's stock rsyslog logrotate has no size limit (fleet-wide)](#2026-08-18-ubuntus-stock-rsyslog-logrotate-has-no-size-limit-fleet-wide)
-- [2026-08-18 — legacy `ozai` logger still writing post-RISE; graylog-sidecar logs accumulate forever](#2026-08-18-legacy-ozai-logger-still-writing-post-rise-graylog-sidecar-logs-accumulate-forever)
-- [2026-08-18 — plaintext secrets in `group_vars`, and a copied Graylog config that shared them](#2026-08-18-plaintext-secrets-in-group_vars-and-a-copied-graylog-config-that-shared-them)
+- [2026-07-28 — fleet fatrace sweep findings (all 16 rcp incl. new-looma)](#2026-07-28--fleet-fatrace-sweep-findings-all-16-rcp-incl-new-looma)
+- [2026-08-18 — `delye-smc01` 5-minute reboot loop: a 2.6 GiB Laravel log vs a 3.81 GiB overlay (RESOLVED)](#2026-08-18--delye-smc01-5-minute-reboot-loop-a-26-gib-laravel-log-vs-a-381-gib-overlay-resolved)
+- [2026-08-18 — `rise-watchdog.service` dead with `status=226/NAMESPACE` whenever overlay is off](#2026-08-18--rise-watchdogservice-dead-with-status226namespace-whenever-overlay-is-off)
+- [2026-08-18 — Ubuntu's stock rsyslog logrotate has no size limit (fleet-wide)](#2026-08-18--ubuntus-stock-rsyslog-logrotate-has-no-size-limit-fleet-wide)
+- [2026-08-18 — legacy `ozai` logger still writing post-RISE; graylog-sidecar logs accumulate forever](#2026-08-18--legacy-ozai-logger-still-writing-post-rise-graylog-sidecar-logs-accumulate-forever)
+- [2026-08-18 — plaintext secrets in `group_vars`, and a copied Graylog config that shared them](#2026-08-18--plaintext-secrets-in-group_vars-and-a-copied-graylog-config-that-shared-them)
+- [2026-09-08 — upstream keepalived VIP config bug: `lb_algo rr` silently ignores the lweb03 drain intent (`202.171.100.138`)](#2026-09-08--upstream-keepalived-vip-config-bug-lb_algo-rr-silently-ignores-the-lweb03-drain-intent-202171100138)
+- [2026-09-11 — portal-FQDN regression: two separate incidents, one still live on 2 sites](#2026-09-11--portal-fqdn-regression-two-separate-incidents-one-still-live-on-2-sites)
 
 ---
 
@@ -120,43 +122,64 @@ assuming `cw`/`apn`/`rct`/`wh` are ungated by design.
 
 ## Fleet-Wide Architecture Risks (identified, not yet remediated)
 
-| Risk                                | Detail                                                                                              | Evidence basis                                           |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| Stubby DoT upstream has no failover | Exactly one `upstream_recursive_servers` entry (`127.0.0.1@60853`, reached via an autossh local     | garimba-smc01 DNS RCA,                                   |
-|                                     |   port forward to Teleport) is configured fleet-wide, identically, for every non-`smc_ltp` site —   |   2026-07-03, `roles/smc_dns/files/stubby.yml`           |
-|                                     |   `round_robin_upstreams: 1` is set but meaningless with a single upstream                          |                                                          |
-| No monitoring for the autossh local | Repo-wide search found no Prometheus alert rule specific to `autossh-teleport.service` state or     | garimba-smc01 DNS RCA, 2026-07-03                        |
-|   forward or Stubby                 |   DNS-upstream health; if the Teleport connection drops, DHCP/LAN client DNS on that SMC has no     |                                                          |
-|   upstream reachability             |   fallback once Unbound's cache expires (positive TTL up to 24h, negative TTL up to 5min) — failure |                                                          |
-|                                     |   would be silent until users notice                                                                |                                                          |
-| **No HTTP-level captive-portal**    | Nothing probes whether the portal actually serves. The only portal-adjacent signals are the Kohana  | rcp portal outage RCA, 2026-07-28,                       |
-|   **monitoring anywhere in the fleet** |   `status:update:usage` / `status:update:status` crons, which run as **root** and therefore keep    |   `issues/rcp-fleet/rcp-captive-portal-cache-perms-\`    |
-|                                     |   succeeding even when the portal is dead for `www-data` — Eclipse keeps receiving data throughout  |   `outage-20260728_1240.md`                              |
-|                                     |   an outage. This let 10 of 16 `rcp` sites sit fully down for 7 days undetected. A naive probe      |                                                          |
-|                                     |   would not help either: the failure returns **HTTP 200** with a 40-byte error body, so any check must |                                                          |
-|                                     |   assert on response body content or size, not status code                                          |                                                          |
-| Host-level DNS resolution bypasses  | `DNSStubListener=no` + `Cache=no` unconditional on all non-`smc_ltp` hosts — host glibc is directly | See `06_failure-modes.md` — mitigation candidate exists  |
-|   any stub/cache                    |   exposed to any WAN-path DNS anomaly with no resolver-level mitigation in place today              |   but is not yet fleet-validated                         |
-| `smc_qos` role exists but is gated | last == 'rct'` — silently no-ops on every `rcp`/`nbn_accelerate` site | `03_communication-flows.md` previously stated | routing-issue investigation, |
-|   `when: inventory_dir.split('/') |  |   Ansible-managed QoS was "planned, not started" — |   `ingress-shaping-not-managed-or-extended-20260730_\` |
-|  |  |   that's stale. The role exists and `--tags qos` runs |   `1245.md` |
-|  |  |   during rcp deploys, it just never fires due to the |  |
-|  |  |   gate. Manual TBF/ifb shaping remains the only active |  |
-|  |  |   mechanism on rcp, and it has NOT been extended to |  |
-|  |  |   newly-fixed VLANs at every site (2 missing at Pandanus |  |
-|  |  |   Park, 10 at Umoona, 8 at Old Looma as of 2026-07-30) |  |
-| Fixed-topology                      | Confirmed at Horn Island: the boilerplate two-interface starlink block is applied regardless of     | routing-issue investigation,                             |
-|   `starlink01`/`starlink02`         |   whether a backup circuit actually exists, inflating `interfacecheckv2.sh`'s per-cycle ping count  |   `starlink-backup-no-lease-l2-investigation-20260730_\` |
-|   interfaces defined even at sites  |   for no operational benefit. Topology generation should condition this block on actual             |   `1400.md`                                              |
-|   with no Starlink circuit ordered  |   provisioning, not apply it unconditionally per flavor                                             |                                                          |
-| `watchdog.auto_reboot: 0` does not  | (1) Line 16 templates `WATCHDOG_AUTO_REBOOT = "{{ watchdog.auto_reboot \| int }}"` without wrapping | ansible-wifi session, 2026-09-03, open item —            |
-|   actually disable automatic        |   in `int()` like every other templated scalar in the file, so it renders the **string** `"0"` — truthy |   SCRATCHPAD.md `ansible-wifi`                           |
-|   reboots — two independent defects |   in Python — meaning the guard at line 641 is always true. (2) Separately, the second reboot path  |                                                          |
-|   in `roles/smc_rise_watchdog/\`    |   at line 653 (`if not args.dry_run: reboot()`) never consults the flag at any value. Confirmed     |                                                          |
-|   `templates/rise_watchdog.py.j2`   |   live, not from the template alone: `/opt/rise/status/watchdog.json` on a `flavor` set to          |                                                          |
-|                                     |   `auto_reboot: 0` emits `"auto_reboot":"0"` (quoted). **Not yet fixed — do not apply blind.**      |                                                          |
-|                                     |   `fb7ff6fa`-style precedent exists of a guard being deliberate and masking a spurious-reboot case  |                                                          |
-|                                     |   the diff doesn't show; check `rct` and `nbn_wh` values before changing anything                   |                                                          |
+| Risk                             | Detail                                                                                                         | Evidence basis                                   |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Stubby DoT upstream has          | Exactly one `upstream_recursive_servers` entry (`127.0.0.1@60853`, reached via an autossh local port forward   | garimba-smc01 DNS RCA,                           |
+|   no failover                    |   to Teleport) is configured fleet-wide, identically, for every non-`smc_ltp` site —                           |   2026-07-03, `roles/smc_dns/files/stubby.yml`   |
+|                                  |   `round_robin_upstreams: 1` is set but meaningless with a single upstream                                     |                                                  |
+| No monitoring for the autossh    | Repo-wide search found no Prometheus alert rule specific to `autossh-teleport.service` state or DNS-upstream   | garimba-smc01 DNS RCA, 2026-07-03                |
+|   local forward or Stubby        |   health; if the Teleport connection drops, DHCP/LAN client DNS on that SMC has no fallback once Unbound's     |                                                  |
+|   upstream reachability          |   cache expires (positive TTL up to 24h, negative TTL up to 5min) — failure would be silent until users notice |                                                  |
+| **No HTTP-level captive-portal** | Nothing probes whether the portal actually serves. The only portal-adjacent signals are the Kohana             | rcp portal outage RCA, 2026-07-28,               |
+|   **monitoring anywhere in**     |   `status:update:usage` / `status:update:status` crons, which run as **root** and therefore keep succeeding even |   `issues/rcp-fleet/rcp-captive-portal-cache-\`  |
+|   **the fleet**                  |   when the portal is dead for `www-data` — Eclipse keeps receiving data throughout an outage. This let 10 of   |   `perms-outage-20260728_1240.md`                |
+|                                  |   16 `rcp` sites sit fully down for 7 days undetected. A naive probe would not help either: the failure        |                                                  |
+|                                  |   returns **HTTP 200** with a 40-byte error body, so any check must assert on response body content or size, not |                                                  |
+|                                  |   status code                                                                                                  |                                                  |
+| Host-level DNS resolution        | `DNSStubListener=no` + `Cache=no` unconditional on all non-`smc_ltp` hosts — host glibc is directly exposed to | See `06_failure-modes.md` — mitigation candidate |
+|   bypasses any stub/cache        |   any WAN-path DNS anomaly with no resolver-level mitigation in place today                                    |   exists but is not yet fleet-validated          |
+| `smc_qos` role exists but is | last == 'rct'` — silently no-ops on every `rcp`/`nbn_accelerate` site | `03_communication-flows.md` previously stated | routing-issue investigation, |
+|   gated `when: |  |   Ansible-managed QoS was "planned, not started" |   `ingress-shaping-not-managed-or-extended-\` |
+|   inventory_dir.split('/') |  |   — that's stale. The role exists and |   `20260730_1245.md` |
+|  |  |   `--tags qos` runs during rcp deploys, it just |  |
+|  |  |   never fires due to the gate. Manual TBF/ifb |  |
+|  |  |   shaping remains the only active mechanism on |  |
+|  |  |   rcp, and it has NOT been extended to |  |
+|  |  |   newly-fixed VLANs at every site (2 missing at |  |
+|  |  |   Pandanus Park, 10 at Umoona, 8 at Old Looma as |  |
+|  |  |   of 2026-07-30) |  |
+| Fixed-topology                   | Confirmed at Horn Island: the boilerplate two-interface starlink block is applied regardless of whether a      | routing-issue investigation,                     |
+|   `starlink01`/`starlink02`      |   backup circuit actually exists, inflating `interfacecheckv2.sh`'s per-cycle ping count for no operational    |   `starlink-backup-no-lease-l2-investigation-\`  |
+|   interfaces defined even at     |   benefit. Topology generation should condition this block on actual provisioning, not apply it                |   `20260730_1400.md`                             |
+|   sites with no Starlink         |   unconditionally per flavor                                                                                   |                                                  |
+|   circuit ordered                |                                                                                                                |                                                  |
+| `watchdog.auto_reboot: 0` does   | (1) Line 16 templates `WATCHDOG_AUTO_REBOOT = "{{ watchdog.auto_reboot \| int }}"` without wrapping in `int()` | ansible-wifi session, 2026-09-03, open item —    |
+|   not actually disable automatic |   like every other templated scalar in the file, so it renders the **string** `"0"` — truthy in Python — meaning |   SCRATCHPAD.md `ansible-wifi`                   |
+|   reboots — two independent      |   the guard at line 641 is always true. (2) Separately, the second reboot path at line 653                     |                                                  |
+|   defects in                     |   (`if not args.dry_run: reboot()`) never consults the flag at any value. Confirmed live, not from the         |                                                  |
+|   `roles/smc_rise_watchdog/\`    |   template alone: `/opt/rise/status/watchdog.json` on a `flavor` set to `auto_reboot: 0` emits                 |                                                  |
+|   `templates/rise_watchdog.py.j2` |   `"auto_reboot":"0"` (quoted). **Not yet fixed — do not apply blind.** `fb7ff6fa`-style precedent exists of a |                                                  |
+|                                  |   guard being deliberate and masking a spurious-reboot case the diff doesn't show; check `rct` and `nbn_wh`    |                                                  |
+|                                  |   values before changing anything                                                                              |                                                  |
+| **No per-device `role: internet` | `roles/prometheus_prometheus/files/rules.yml` has `NodeStarlinkInterfacecheckPacketLoss` (~line 173),          | ansible-wifi session,                            |
+|                                  |   aggregated across ALL `role="starlink"` devices, firing only at                                              |                                                  |
+| Prometheus alert exists —**      | 100% combined loss sustained `for: 60m` — appropriate for a small backup-link category where losing all of     | 2026-09-08, galiwinku-smc01                      |
+|                                  |   them at once is the only thing worth paging on. There is                                                     |                                                  |
+| **only an aggregated Starlink rule** | **no equivalent alert for `role="internet"` interfaces at all.** The only other related rule,                  | vlan523/vlan525 outage                           |
+|   **and a stale-collector rule,** |   `HostInterfacecheckTextfileCollectorNotUpdated` (~line 383), checks whether `interfacecheckv2.sh`'s own      |                                                  |
+|   **neither of which pages on a** |   textfile output has gone stale (file-mtime > 450s) — it says nothing about whether an individual             |                                                  |
+|   **single dead internet link**  |   `role: internet` device is failing while the script continues running fine and faithfully reporting that     |                                                  |
+|                                  |   failure into an unwatched metric (`my_node_interfacecheck_loss_ratio`). This is fleet-wide, not              |                                                  |
+|                                  |   galiwinku-specific — every multi-WAN SMC site has the same blind spot, and it is precisely why the           |                                                  |
+|                                  |   vlan523/vlan525 outage at galiwinku (see `06_failure-modes.md` "interfacecheckv2.sh's Unconditional dhclient |                                                  |
+|                                  |   Restart") went undetected for hours, requiring manual SSH diagnosis. **Recommended fix (not yet implemented** |                                                  |
+|                                  |   **anywhere):** a PER-DEVICE alert on `my_node_interfacecheck_loss_ratio` scoped to `role="internet"`, NOT    |                                                  |
+|                                  |   aggregated like the Starlink rule (one-of-many internet links being down is expected/tolerable and shouldn't |                                                  |
+|                                  |   page immediately, but a sustained single-device failure — 30-60+ minutes — should), modeled closely on the   |                                                  |
+|                                  |   Starlink rule's structure but per-device instead of aggregated, with a threshold realistic for this fleet's  |                                                  |
+|                                  |   known link flakiness. See `SKILL.md` "Key Prometheus Alerts Reference" — that table lists                    |                                                  |
+|                                  |   `NodeStarlinkInterfacecheckPacketLoss` but has no `role="internet"` row; do not read its absence there as    |                                                  |
+|                                  |   evidence the coverage exists elsewhere.                                                                      |                                                  |
 
 ## Known Operational Bugs (rcp fleet — confirmed 2026-06-30)
 
@@ -779,4 +802,67 @@ inert today: `cw-graylog01` is not provisioned and `inventories/cw/prod` has no 
 carry only the client-side `smc_bases_graylog` block.
 
 Rotating the already-exposed material would mean every committed copy plus git history, and is tracked as its own roadmap item rather than something to fold into unrelated work.
+
+## 2026-09-08 — upstream keepalived VIP config bug: `lb_algo rr` silently ignores the lweb03 drain intent (`202.171.100.138`)
+
+**Not owned by `ansible-wifi`** — this is the APN keepalived/LVS director config behind `wifi-02.activ8me.net.au`, recorded here because it affects an endpoint every `nbn_accelerate` SMC talks to. See
+`03_communication-flows.md` for the endpoint's architecture (it is APN's own VIP, not a third party).
+
+| Item               | Finding                                                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The bug            | The `virtual_server` uses `lb_algo rr`. **Plain `rr` does not honour `real_server` weights — only `wrr` does.**                                                                 |
+| The ignored intent | The config sets `weight 65535` on `lweb04` with `lweb03` left at the default `1`, which reads as an intent to **drain `lweb03`**. Under `rr` that intent is silently discarded and |
+|                    |   `lweb03` still takes roughly **50% of new connections**.                                                                                                                      |
+| Was this           | **No.** Both backends were verified healthy on 2026-09-08 (HTTP 200 plain, and HTTP 200 with `Host: corellia`), so the mis-set algorithm was **not** the cause of that day's incident — |
+|   the cause?       |   but the drain is genuinely not working and will not work whenever it is next relied upon.                                                                                     |
+| Related setting    | `persistence_timeout 86400` pins each client source IP to one real server for 24 hours, so even a corrected `wrr` would take up to a day to fully drain existing                |
+|                    |   client affinities.                                                                                                                                                            |
+| Fix                | Change `lb_algo rr` to `lb_algo wrr` on the director pair (`202.171.100.132`/`.133`). Outside this repo — raise with whoever owns the keepalived config.                        |
+
+**Investigation limit:** SSH to `202.171.100.132:22` is filtered from `cw-teleport01`, so the running config could not be re-read live from an SMC-side vantage point during the session.
+
+## 2026-09-11 — portal-FQDN regression: two separate incidents, one still live on 2 sites
+
+`smc_bases_portal_fqdn` controls the captive-portal redirect target. When it's wrong, it points captives at the Teleport proxy hostname instead of the real portal domain — the T&C page never loads, so
+no pin ever gets issued. Full live-diagnosis methodology (two mechanisms, pitfalls, fleet audit tooling): `14_pin-activation-diagnosis.md`.
+
+**Two independent regressions, confirmed via git archaeology, not just inference:**
+
+| Inventory                                                        | Bad from           | Fixed in git       | Duration   | Fix commit                                                                 |
+| ---------------------------------------------------------------- | ------------------ | ------------------ | ---------- | -------------------------------------------------------------------------- |
+| `nbn_accelerate`                                                 | 2025-06-27         | 2025-07-28         | ~1 month   | Direct, deliberate revert                                                  |
+|   (`inventories/nbn_accelerate/group_vars/smc_bases.yml`)        |   (`bdce3d05`)     |   (`9f395726`)     |            |                                                                            |
+| `nbn_wh` (`inventories/nbn_wh/group_vars/smc_bases.yml`)         | 2025-07-01         | 2026-09-03         | **~14 months** | **Incidental** — bundled inside an unrelated squid-blocklist-transport     |
+|                                                                  |   (`ec99f5d8`)     |   (`2dee86a8`)     |            |   refactor; the commit's headline never mentions the portal fix            |
+
+**Git being fixed does not mean a box is fixed.** `squid.conf`/Apache vhosts/cron only regenerate when the relevant role actually re-runs on that box — a box provisioned (or whose `smc_squid` last
+ran) inside the bad window keeps serving the broken redirect indefinitely afterward, however long ago git was corrected. Confirmed live 2026-09-11, full fleet sweep (26 reachable `nbn_accelerate` +
+`nbn_wh` sites, config-side check = `deny_info` value + `squid.conf` mtime + enabled Apache vhosts + `sslcertcopy` cron):
+
+- **RESOLVED 2026-09-11 — all 3 originally-broken sites fixed and recovery confirmed live.** `hope-vale-smc01` (`squid.conf` dated 2025-06-27, the exact regression-introduction moment — untouched for
+  14+ months) and `kowanyama-smc01` (dated 2025-07-05, mid-window) were each showing only 1–2 successful `wifi/access` activations in a 15-day window pre-fix, against 57–893 at every
+  comparable/control site (`14_pin-activation-diagnosis.md` §14.7). Operator re-ran `smc_squid` (tag `squid` only — `smc_dns` was already correct, `smc_application`'s stale vhost is inert; see the
+  Failure mechanism note above) against both ~11:34; **first new activation confirmed on both within 3–9 minutes** (11:37:50), and both kept accumulating normally through the rest of the day
+  (`kowanyama` 1→10, `hope-vale` 2→6, tracked live). `bungardi-smc01` (`nbn_wh`, `squid.conf` dated 2025-09-18) was fixed separately ~11:58 via the backdoor-SSH path (§Backdoor SSH Access in
+  `03_communication-flows.md`) once its flapping Teleport agent — caused by uplink packet loss, not a hung box — allowed access; config re-verified correct, recovery-confirmation watch was still
+  pending as of the last check in this investigation.
+- **Fixed but with leftover cruft (3 sites, all also fixed above):** `hope-vale-smc01`/`kowanyama-smc01`/`bungardi-smc01`, plus `galiwinku-smc01` (fixed 2026-09-08), `doomadgee-smc01` (fixed
+  2025-07-28, the day of the git revert), `darlngunaya-smc01` (never actually affected, see below, but carries an unrelated orphaned vhost). All still carry a stale
+  `teleport.communitywifi.net.au.conf` Apache vhost and its `sslcertcopy` cron entry — the roles have no cleanup step for either, so removal is manual.
+- **Correction (2026-09-11, same day as the finding below was first written): `kaltjiti-fergon-smc01` was never affected.** An earlier pass of this entry claimed it was fixed 2026-09-08 in the same
+  batch as `galiwinku`. Re-verified live: single vhost (`communitywifi.net.au.conf` only, no `teleport.*`), `squid.conf` dated 2024-08-07 (the original fleet-wide baseline, predates the 2025-06-27
+  regression entirely), correct `deny_info`. The original claim traced back to output-interleaving corruption in an early parallel sweep (multiple `tsh ssh` sessions appending to one shared file
+  without per-host isolation) that a later "clean" rerun failed to fully purge before being written up. **Lesson: verify a fleet-sweep finding against a single, isolated, freshly-read capture for that
+  exact host before writing it into this file — a table built from a batch run is not itself suffient evidence if the run's isolation was ever in question.**
+- **`bungardi-smc01` (`nbn_wh`) — confirmed actively broken (2026-09-11, tunnel recovered).** The earlier "no tunnel connection found" failures were transient — a retry within the hour succeeded.
+  `deny_info` still points at `teleport.communitywifi.net.au`; `squid.conf` mtime is **2025-09-18** (mid-regression, post-`nbn_accelerate`-fix-window but well before the `nbn_wh` fix landed
+  2026-09-03). Pin-activation audit: 2 marks, 2 activations in the log window — same dead signature as `hope-vale`/`kowanyama`. Independently corroborated by the operator's Eclipse-side "PIN Last
+  Issued" report, which showed `bungardi` last issuing 2026-09-01 (10 days stale) against every healthy site showing same-day — see the new evidence-source note below. **Third confirmed-broken site**,
+  alongside `hope-vale-smc01` and `kowanyama-smc01`.
+- **`darlngunaya-smc01` (`nbn_wh`) is currently correct** but its `squid.conf` mtime (2024-10) predates both the 2025-07-01 regression and the 2026-09-03 fix — `smc_squid` simply hasn't run on it
+  since before the bug existed, so it never carried either value. It does have an orphaned `teleport.*` Apache vhost from Oct 2024, unrelated to this specific regression.
+- **The remaining ~21 sites** have `squid.conf` predating 2025-06-27 entirely (fleet-wide `smc_squid` run of 2024-08-07) — never affected.
+
+**Process lesson:** the `nbn_wh` fix landing inside an unrelated commit (headline: blocklist-feed transport, not portal FQDN) is exactly the kind of change where a targeted write-back audit misses
+things — `git show --stat` on every commit that touches a shared vars file, not just commits whose headline names the file, should be part of any future sweep for this class of regression.
 

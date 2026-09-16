@@ -1,0 +1,99 @@
+# Invoice Finance Analyst — pipeline task runner
+# Usage: just <task> | just --list
+# Requires: just (https://github.com/casey/just)
+
+set shell := ["bash", "-c"]
+
+venv_python := "/Volumes/Data/_ai/_skills/skills-working-cache/invoice-finance-analyst/venv/bin/python"
+
+# List available tasks
+default:
+    @just --list
+
+# ── Validation ────────────────────────────────────────────────────────────────
+
+# Validate example fixture CSVs (read-only, no writes)
+validate-examples:
+    {{venv_python}} scripts/validate_inputs.py --csv examples/supplier_invoice_sample.csv --mapping examples/mapping_supplier_invoice.yaml
+    {{venv_python}} scripts/validate_inputs.py --csv examples/sales_billing_sample.csv --mapping examples/mapping_sales_billing.yaml
+    {{venv_python}} scripts/validate_inputs.py --csv examples/rate_card_sample.csv --mapping examples/mapping_rate_card.yaml
+    {{venv_python}} scripts/validate_inputs.py --csv examples/service_map_sample.csv --mapping examples/mapping_service_map.yaml
+
+# Validate one CSV with its mapping file
+validate csv mapping:
+    {{venv_python}} scripts/validate_inputs.py --csv {{csv}} --mapping {{mapping}}
+
+# ── Pipeline ──────────────────────────────────────────────────────────────────
+
+# Phase 1B: load example fixtures into db/
+load-examples:
+    {{venv_python}} scripts/load_inputs.py --csv examples/supplier_invoice_sample.csv --mapping examples/mapping_supplier_invoice.yaml --name invoice
+    {{venv_python}} scripts/load_inputs.py --csv examples/sales_billing_sample.csv --mapping examples/mapping_sales_billing.yaml --name sales_billing
+    {{venv_python}} scripts/load_inputs.py --csv examples/rate_card_sample.csv --mapping examples/mapping_rate_card.yaml --name rate_card
+    {{venv_python}} scripts/load_inputs.py --csv examples/service_map_sample.csv --mapping examples/mapping_service_map.yaml --name service_map
+    {{venv_python}} scripts/load_inputs.py --csv examples/prior_invoice_sample.csv --mapping examples/mapping_supplier_invoice.yaml --name prior_invoice
+    {{venv_python}} scripts/load_inputs.py --csv examples/prior_sales_billing_sample.csv --mapping examples/mapping_sales_billing.yaml --name prior_sales_billing
+
+# Phase 1B: reconciliation → db/*.parquet + output/<run_id>/*.md
+reconcile:
+    {{venv_python}} scripts/invoice_analysis_skeleton.py
+
+# Phase 2: rate variance + margin → db/*.parquet
+rate-card:
+    {{venv_python}} scripts/rate_card_analysis.py
+
+# Phase 3: MoM trend → db/*.parquet (requires prior period data in db/)
+trend:
+    {{venv_python}} scripts/trend_analysis.py
+
+# Phase 4: LLM analyst report (requires OPENAI_API_KEY env var)
+analyse:
+    {{venv_python}} scripts/llm_analyst.py
+
+# Deterministic pipeline: validate + load examples + Phase 1B/2/3 analysis
+pipeline:
+    @echo "── Phase 1A: validate ──────────────────────"
+    just validate-examples
+    @echo "── Phase 1B: load ──────────────────────────"
+    just load-examples
+    @echo "── Phase 1B: reconcile ─────────────────────"
+    just reconcile
+    @echo "── Phase 2: rate-card ──────────────────────"
+    just rate-card
+    @echo "── Phase 3: trend ──────────────────────────"
+    just trend
+    @echo "LLM analyst step skipped; run 'just analyse' separately when credentials are configured."
+
+# ── Tests ─────────────────────────────────────────────────────────────────────
+
+# Run all 219 tests
+test:
+    {{venv_python}} -m pytest tests/
+
+# Run tests for a specific phase: just test-phase 1a|1b|2|3|4
+test-phase phase:
+    #!/usr/bin/env bash
+    case "{{phase}}" in
+      1a) module="test_validate_inputs" ;;
+      1b) module="test_reconciliation" ;;
+      2)  module="test_rate_card_analysis" ;;
+      3)  module="test_trend_analysis" ;;
+      4)  module="test_llm_analyst" ;;
+      *)  echo "Unknown phase: {{phase}}. Use 1a, 1b, 2, 3, or 4."; exit 1 ;;
+    esac
+    {{venv_python}} -m pytest tests/${module}.py -v
+
+# ── Context / governance ──────────────────────────────────────────────────────
+
+# Rebuild graphify knowledge graph
+graphify:
+    graphify update .
+
+# Rebuild repomix governance context pack
+repomix:
+    repomix --config repomix.config.json
+
+# Rebuild both generated context artifacts
+context:
+    just graphify
+    just repomix

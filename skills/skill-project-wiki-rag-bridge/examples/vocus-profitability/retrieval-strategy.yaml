@@ -1,0 +1,78 @@
+# retrieval-strategy.yaml — Vocus profitability example
+# Illustrates per-document strategy routing for three representative document classes.
+# Schema: schemas/retrieval-strategy.schema.yaml
+# Template: templates/retrieval-strategy.yaml
+
+version: 1
+
+project:
+  id: "apn-vocus-profitability"
+  slug: "vocus_profitability"
+  name: "Vocus Profitability"
+
+strategy_defaults:
+  exact_facts: "direct_structured_lookup"
+  tables: "table_aware_lookup"
+  structured_sections: "section_clause_lookup"
+  cross_document_semantic: "vector_rag"
+  invoices: "tabular_analytics"
+  pdfs: "extract_first"
+
+documents:
+  # DCR: long structured markdown reference — section/table lookup primary
+  - document_id: "dcr-vocus-wholesale-billing"
+    path: "docs/dcr-vocus-wholesale-billing.md"
+    document_class: "structured_markdown_reference"
+    authority: "project_local"
+    primary: "direct_structured_lookup"
+    secondary: "table_aware_lookup"
+    fallback: "vector_rag"
+    rag_suitability: "partially_suitable"
+    benchmark_required: true
+    benchmark_status: "passed"
+    index_allowed: false
+    reason: >
+      HYBRID_DIRECT_FIRST from benchmark. 9/10 structured queries passed; table queries passed
+      for rate tables. Vector RAG falls back for broad semantic questions only. Source file
+      remains authoritative — do not index full doc into RAG as a substitute for direct lookup.
+
+  # Rate card: financial tabular — table lookup only, no RAG needed
+  - document_id: "vocus-rate-card-fy2025"
+    path: "docs/vocus-rate-card-fy2025.md"
+    document_class: "financial_rate_card"
+    authority: "project_local"
+    primary: "table_aware_lookup"
+    secondary: "direct_structured_lookup"
+    fallback: "direct_structured_lookup"
+    rag_suitability: "not_suitable"
+    benchmark_required: true
+    benchmark_status: "passed"
+    index_allowed: false
+    reason: >
+      TABLE_LOOKUP_FIRST from benchmark. All 7 price/rate queries passed via table_aware_lookup.
+      Vector RAG produced no useful results for exact rate queries. index_allowed remains false
+      — table lookup is sufficient and indexing would add cost with no benefit.
+
+  # NBN wiki article: knowledge article — suitable for vector RAG wiki indexing
+  - document_id: "nbn-wba-rebate-overview"
+    path: "/Volumes/Data/_ai/_wiki/wiki_stuff/domains/nbn/nbn-wba-rebate-overview.md"
+    document_class: "knowledge_article"
+    authority: "wiki_authoritative_markdown"
+    primary: "vector_rag"
+    secondary: "heading_aware_lookup"
+    fallback: "keyword_lookup"
+    rag_suitability: "suitable"
+    benchmark_required: false
+    benchmark_status: "not_run"
+    index_allowed: false
+    reason: >
+      knowledge_article class confirmed by profile-file. recommend-strategy: rag_suitability
+      suitable. No benchmark required — knowledge articles are the correct content type for
+      wiki vector RAG. index_allowed set to true by prompt 05 after wiki domain indexing.
+
+rules:
+  source_files_remain_authoritative: true
+  profile_before_index: true
+  benchmark_before_default_route: true
+  evidence_bundle_required: true
+  vector_rag_not_universal_default: true

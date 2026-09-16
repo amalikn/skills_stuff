@@ -1,0 +1,6 @@
+Supplier Service ID,Internal Service ID,Customer ID,Service Type,Active
+LOC000001,SVC-0001,CUST-001,NBN Fibre 100/20,true
+LOC000002,SVC-0002,,NBN Copper 25/5,true
+LOC000003,SVC-0003,CUST-003,NBN Wireless 25/5,true
+LOC000004,SVC-0004,CUST-004,NBN Fibre 50/20,true
+LOC000005,SVC-0005,CUST-002,NBN Fibre 100/20,true

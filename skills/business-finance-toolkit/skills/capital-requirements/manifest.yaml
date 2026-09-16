@@ -1,0 +1,7 @@
+id: capital-requirements
+name: Capital Requirements
+lifecycle: VALIDATED
+inputs: [inventory, operating_buffer, setup_cost, timing]
+outputs: [capital_requirement, working_capital_drivers, buffer_rationale]
+human_approval: required_for_funding
+implementation: bftoolkit.calculators.capital:required_capital

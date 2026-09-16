@@ -1,0 +1,32 @@
+---
+- name: Configure web tier
+  hosts: webservers
+  gather_facts: false
+  tags: [web]
+  pre_tasks:
+    - name: Announce play start
+      ansible.builtin.debug:
+        msg: "Starting web tier configuration"
+  tasks:
+    - name: Ensure example package is present (no-op example)
+      ansible.builtin.debug:
+        msg: "Would install nginx here"
+      tags: [packages]
+    - name: Ensure example service is running (no-op example)
+      ansible.builtin.debug:
+        msg: "Would ensure nginx is running here"
+      tags: [service]
+      notify: Restart web service
+  handlers:
+    - name: Restart web service
+      ansible.builtin.debug:
+        msg: "Would restart nginx here"
+
+- name: Configure database tier
+  hosts: dbservers
+  gather_facts: false
+  tags: [db]
+  tasks:
+    - name: Ensure example database package is present (no-op example)
+      ansible.builtin.debug:
+        msg: "Would install postgresql here"

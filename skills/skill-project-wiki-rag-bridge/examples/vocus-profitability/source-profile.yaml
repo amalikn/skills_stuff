@@ -1,0 +1,118 @@
+# source-profile.yaml — Vocus profitability example profiles
+# Illustrates three representative document classes for this project.
+# Schema: schemas/document-profile.schema.yaml
+# Note: path values are illustrative; real paths follow project_stuff layout.
+
+profiles:
+
+  # Profile 1: DCR — long structured markdown reference (primary project source)
+  - document_id: "dcr-vocus-wholesale-billing"
+    title: "Domestic Contract Reference — Vocus Wholesale Billing"
+    path: "/Volumes/Data/_ai/_project/project_stuff/apn/vocus-profitability/docs/dcr-vocus-wholesale-billing.md"
+    file_type: ".md"
+    size_bytes: 184320
+    line_count: 2847
+    estimated_tokens: 46000
+    document_class: "structured_markdown_reference"
+    has_headings: true
+    heading_count: 142
+    heading_levels: [1, 2, 3, 4]
+    has_tables: true
+    table_count: 31
+    has_section_ids: true
+    section_ids:
+      - "C2.11"
+      - "C2.12"
+      - "C3.1"
+      - "C3.4"
+      - "C4.1"
+      - "S1.1"
+      - "S2.3"
+    has_toc: true
+    has_frontmatter: false
+    has_repeated_entities: true
+    has_dates: true
+    has_amounts: true
+    has_definitions: true
+    has_cross_references: true
+    contains_sensitive_data: false
+    authoritative: true
+    recommended_retrieval_modes:
+      - direct_structured_lookup
+      - section_clause_lookup
+      - table_aware_lookup
+      - vector_rag
+    index_allowed: false
+    notes:
+      - "Primary source for rebate, credit, and billing clause lookups."
+      - "Long file — structured lookup preferred over vector RAG for exact-fact questions."
+      - "Benchmark required before setting index_allowed: true."
+
+  # Profile 2: Rate card — tabular financial reference
+  - document_id: "vocus-rate-card-fy2025"
+    title: "Vocus Rate Card FY2025"
+    path: "/Volumes/Data/_ai/_project/project_stuff/apn/vocus-profitability/docs/vocus-rate-card-fy2025.md"
+    file_type: ".md"
+    size_bytes: 28400
+    line_count: 412
+    estimated_tokens: 7100
+    document_class: "financial_rate_card"
+    has_headings: true
+    heading_count: 12
+    heading_levels: [1, 2]
+    has_tables: true
+    table_count: 8
+    has_section_ids: false
+    section_ids: []
+    has_toc: false
+    has_frontmatter: false
+    has_repeated_entities: true
+    has_dates: true
+    has_amounts: true
+    has_definitions: false
+    has_cross_references: false
+    contains_sensitive_data: false
+    authoritative: true
+    recommended_retrieval_modes:
+      - table_aware_lookup
+      - direct_structured_lookup
+      - vector_rag
+    index_allowed: false
+    notes:
+      - "Tabular pricing data — table_aware_lookup is primary route."
+      - "Vector RAG not suitable for exact price lookups."
+      - "Benchmark confirmed TABLE_LOOKUP_FIRST."
+
+  # Profile 3: NBN wiki article — knowledge article suitable for vector RAG
+  - document_id: "nbn-wba-rebate-overview"
+    title: "NBN WBA Rebate Overview"
+    path: "/Volumes/Data/_ai/_wiki/wiki_stuff/domains/nbn/nbn-wba-rebate-overview.md"
+    file_type: ".md"
+    size_bytes: 9800
+    line_count: 184
+    estimated_tokens: 2450
+    document_class: "knowledge_article"
+    has_headings: true
+    heading_count: 8
+    heading_levels: [1, 2, 3]
+    has_tables: false
+    table_count: 0
+    has_section_ids: false
+    section_ids: []
+    has_toc: false
+    has_frontmatter: true
+    has_repeated_entities: false
+    has_dates: false
+    has_amounts: false
+    has_definitions: true
+    has_cross_references: true
+    contains_sensitive_data: false
+    authoritative: false
+    recommended_retrieval_modes:
+      - vector_rag
+      - heading_aware_lookup
+    index_allowed: false
+    notes:
+      - "Wiki article — suitable for vector RAG indexing into rag__wiki_nbn."
+      - "Knowledge-style content; not for exact-fact lookup."
+      - "index_allowed: true after wiki domain indexing approval (prompt 05)."

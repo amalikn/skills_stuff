@@ -1,12 +1,6 @@
 ---
 name: skill-staleness-audit
-description: >-
-  Repo-wide audit for facts that have quietly stopped being true — superseded
-  figures, stale gates, verdicts that never reached the data layer, checks that
-  cannot fail. Materiality-ranked, evidence-backed, and hardens the checks so
-  each finding cannot recur. Use when nothing specific has changed but the
-  corpus may have drifted. NOT for propagating one known change (use
-  skill-project-coherence) and NOT for bootstrapping (use skill-ai-it).
+description: "Repo-wide audit for stale facts, superseded figures, checks that can't fail."
 ---
 
 <!-- claim-scan:examples reason="names filenames as examples of a class, not as references" -->

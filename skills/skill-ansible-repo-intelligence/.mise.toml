@@ -1,0 +1,8 @@
+[tools]
+python = "3.14"
+
+# Runtime isolation for skill-ansible-repo-intelligence.
+# The virtual environment is rebuildable cache state and lives outside this
+# source tree under skills-working-cache per the skills_stuff storage policy:
+#   /Volumes/Data/_ai/_skills/skills-working-cache/skill-ansible-repo-intelligence/venv/
+# Ephemeral runtime state (logs, pid files) lives under skills-runtime/.

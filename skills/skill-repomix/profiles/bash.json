@@ -1,0 +1,17 @@
+{
+  "id": "bash",
+  "displayName": "Bash and Shell",
+  "description": "All Bash and shell scripting: application libraries, BATS tests, ShellCheck configuration, deployment scripts, Docker, systemd, and Makefiles. Narrow scope at runtime with --include when only one context is relevant.",
+  "detect": {"anyFiles": ["Makefile", "Dockerfile", "docker-compose.yml", "docker-compose.yaml", ".bashrc", ".bash_profile", ".bash_aliases", ".bash_functions", ".shellcheckrc"], "anyDirectories": ["lib", "functions", "bats", "systemd", "deploy", "ops", "infra"]},
+  "include": ["**/*.sh", "**/*.bash", "**/*.zsh", "**/*.bats", ".bashrc", ".bash_profile", ".bash_aliases", ".bash_functions", ".shellcheckrc", "bin/**", "lib/**", "functions/**", "tests/**", "deploy/**", "ops/**", "infra/**", "scripts/**", "Makefile", "Dockerfile*", "compose*.yaml", "compose*.yml", ".dockerignore", "systemd/**/*.service", "systemd/**/*.timer", "systemd/**/*.socket", "config/**/*.conf", "config/**/*.cfg", "README.md", "AGENTS.md", "ARCHITECTURE.md", "AI_NAVIGATION.md", "CHANGELOG.md"],
+  "ignore": [".ai-context/**", "**/.env", "**/.env.*", "**/*.pem", "**/*.key", "**/node_modules/**", "**/logs/**", "**/runtime/**", "**/cache/**", "**/tmp/**"],
+  "priorityFiles": [".shellcheckrc", "Makefile", "Dockerfile*", ".bashrc", ".bash_profile", "lib/**", "functions/**"],
+  "securitySensitivePatterns": ["**/.env*", "**/*.pem", "**/*.key", "**/credentials*", "**/secrets*"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 90000,
+  "notes": [
+    "Covers all shell scripting: Bash libraries, BATS tests, ShellCheck config, deployment scripts, Docker, systemd, and Makefiles.",
+    "Narrow at runtime with --include when only one context is needed (e.g. --include 'systemd/**' for systemd-only work).",
+    "Exclude test fixture files that may contain sample credentials."
+  ]
+}

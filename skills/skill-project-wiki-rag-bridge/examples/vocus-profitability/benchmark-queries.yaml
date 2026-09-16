@@ -1,0 +1,132 @@
+# benchmark-queries.yaml — Vocus profitability DCR benchmark query set (example)
+# Document: dcr-vocus-wholesale-billing.md (structured_markdown_reference)
+# Usage: rag-tools benchmark-file docs/dcr-vocus-wholesale-billing.md --queries this-file.yaml
+# Note: Query content is illustrative — based on DCR document structure, not real billing data.
+
+version: 1
+
+document_id: "dcr-vocus-wholesale-billing"
+document_class: "structured_markdown_reference"
+
+queries:
+  - id: "Q1"
+    query: "rebate calculation period 3"
+    expected_source:
+      section_id: "C2.11"
+      heading_contains: "Rebate"
+      table_contains: "Period 3"
+    expected_terms:
+      - "rebate"
+      - "period"
+    expected_answer_contains:
+      - "period 3"
+    retrieval_modes:
+      - structured
+      - table
+    notes: "Tests section-ID-based clause retrieval for rebate period 3."
+
+  - id: "Q2"
+    query: "credit note eligibility conditions"
+    expected_source:
+      section_id: "C3.1"
+      heading_contains: "Credit"
+      table_contains: null
+    expected_terms:
+      - "credit"
+      - "eligibility"
+    expected_answer_contains:
+      - "credit note"
+    retrieval_modes:
+      - structured
+    notes: "Tests heading-based lookup for credit note policy section."
+
+  - id: "Q3"
+    query: "discount rate service type A"
+    expected_source:
+      section_id: null
+      heading_contains: null
+      table_contains: "Service Type A"
+    expected_terms:
+      - "discount"
+      - "service"
+    expected_answer_contains:
+      - "service type"
+    retrieval_modes:
+      - table
+      - structured
+    notes: "Tests table lookup for discount rate by service type."
+
+  - id: "Q4"
+    query: "late payment penalty clause"
+    expected_source:
+      section_id: "C4.1"
+      heading_contains: "Payment"
+      table_contains: null
+    expected_terms:
+      - "payment"
+      - "penalty"
+    expected_answer_contains:
+      - "late"
+    retrieval_modes:
+      - structured
+    notes: "Tests heading-level navigation for payment terms section."
+
+  - id: "Q5"
+    query: "monthly billing cycle cutoff date"
+    expected_source:
+      section_id: null
+      heading_contains: "Billing"
+      table_contains: null
+    expected_terms:
+      - "billing"
+      - "cycle"
+    expected_answer_contains:
+      - "monthly"
+    retrieval_modes:
+      - structured
+      - table
+    notes: "Tests heading-based lookup for billing schedule."
+
+  - id: "Q6"
+    query: "clawback trigger conditions volume threshold"
+    expected_source:
+      section_id: "S2.3"
+      heading_contains: "Clawback"
+      table_contains: null
+    expected_terms:
+      - "clawback"
+      - "threshold"
+    expected_answer_contains:
+      - "volume"
+    retrieval_modes:
+      - structured
+    notes: "Tests section-ID retrieval for clawback policy clause."
+
+  - id: "Q7"
+    query: "campaign eligibility excluded services"
+    expected_source:
+      section_id: null
+      heading_contains: "Excluded"
+      table_contains: "Excluded Services"
+    expected_terms:
+      - "excluded"
+      - "services"
+    expected_answer_contains:
+      - "campaign"
+    retrieval_modes:
+      - table
+      - structured
+    notes: "Tests table lookup for excluded services in campaign eligibility table."
+
+  - id: "Q8"
+    query: "nonexistent term that should return no match"
+    expected_source:
+      section_id: null
+      heading_contains: null
+      table_contains: null
+    expected_terms: []
+    expected_answer_contains: []
+    retrieval_modes:
+      - structured
+      - table
+    notes: "Negative test — should produce fallback_needed: true for both modes."

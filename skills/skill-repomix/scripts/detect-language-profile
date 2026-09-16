@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+REPO="$PWD"
+JSON=0
+PRIMARY_ONLY=0
+EXPLAIN=0
+
+usage() {
+  cat <<'USAGE'
+Usage: detect-language-profile [--repo PATH] [--json] [--primary-only] [--explain]
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --repo) REPO="$2"; shift 2 ;;
+    --json) JSON=1; shift ;;
+    --primary-only) PRIMARY_ONLY=1; shift ;;
+    --explain) EXPLAIN=1; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'Unknown option: %s\n' "$1" >&2; exit 2 ;;
+  esac
+done
+
+REPO="$(cd "$REPO" && pwd)"
+profiles=()
+evidence=()
+
+add_profile() {
+  local p="$1" e="$2"
+  profiles+=("$p")
+  evidence+=("$e")
+}
+
+[[ -f "$REPO/pyproject.toml" || -f "$REPO/setup.py" || -f "$REPO/requirements.txt" ]] && add_profile python "python manifest"
+[[ -f "$REPO/package.json" ]] && add_profile javascript-typescript "package.json"
+[[ -f "$REPO/go.mod" || -f "$REPO/go.work" ]] && add_profile go "go manifest"
+[[ -f "$REPO/Cargo.toml" ]] && add_profile rust "Cargo.toml"
+[[ -f "$REPO/pom.xml" || -f "$REPO/build.gradle" || -f "$REPO/build.gradle.kts" ]] && add_profile java-kotlin "JVM build file"
+compgen -G "$REPO/*.sln" >/dev/null && add_profile dotnet ".sln"
+[[ -f "$REPO/Gemfile" ]] && add_profile ruby "Gemfile"
+[[ -f "$REPO/composer.json" ]] && add_profile php "composer.json"
+[[ -f "$REPO/ansible.cfg" || -d "$REPO/roles" || -d "$REPO/playbooks" ]] && add_profile ansible "Ansible structure"
+find "$REPO" -maxdepth 2 -name '*.tf' -print -quit 2>/dev/null | grep -q . && add_profile terraform "*.tf"
+[[ -f "$REPO/dbt_project.yml" || -d "$REPO/sql" || -d "$REPO/models" ]] && add_profile data-sql "data/SQL structure"
+[[ -d "$REPO/docs" ]] && add_profile documentation "docs/"
+find "$REPO" -maxdepth 2 \( -name '*.sh' -o -name 'Dockerfile' -o -name 'Makefile' \) -print -quit 2>/dev/null | grep -q . && add_profile bash "shell, Docker, or Makefile"
+
+count="${#profiles[@]}"
+if [[ "$count" -eq 0 ]]; then
+  primary="base"
+  secondary=""
+  repo_type="unknown"
+  recommended="base"
+  confidence="low"
+elif [[ "$count" -eq 1 ]]; then
+  primary="${profiles[0]}"
+  secondary=""
+  repo_type="single"
+  recommended="$primary"
+  confidence="high"
+else
+  primary="${profiles[0]}"
+  secondary="$(IFS=,; echo "${profiles[*]:1}")"
+  repo_type="mixed"
+  recommended="mixed-monorepo"
+  confidence="high"
+fi
+
+if [[ "$PRIMARY_ONLY" -eq 1 ]]; then
+  printf '%s\n' "$primary"
+  exit 0
+fi
+
+if [[ "$JSON" -eq 1 ]]; then
+  esc() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
+  printf '{\n'
+  printf '  "primary": "%s",\n' "$(esc "$primary")"
+  printf '  "secondary": ['
+  if [[ -n "$secondary" ]]; then
+    IFS=',' read -r -a sec <<<"$secondary"
+    for i in "${!sec[@]}"; do
+      [[ "$i" -gt 0 ]] && printf ', '
+      printf '"%s"' "$(esc "${sec[$i]}")"
+    done
+  fi
+  printf '],\n'
+  printf '  "repositoryType": "%s",\n' "$repo_type"
+  printf '  "recommendedProfile": "%s",\n' "$recommended"
+  printf '  "confidence": "%s",\n' "$confidence"
+  printf '  "evidence": ['
+  for i in "${!evidence[@]}"; do
+    [[ "$i" -gt 0 ]] && printf ', '
+    printf '"%s"' "$(esc "${evidence[$i]}")"
+  done
+  printf ']\n}\n'
+else
+  printf 'primary=%s\n' "$primary"
+  printf 'secondary=%s\n' "$secondary"
+  printf 'repository_type=%s\n' "$repo_type"
+  printf 'recommended_profile=%s\n' "$recommended"
+  printf 'confidence=%s\n' "$confidence"
+  if [[ "$EXPLAIN" -eq 1 ]]; then
+    printf 'evidence=%s\n' "$(IFS=';'; echo "${evidence[*]}")"
+  fi
+fi

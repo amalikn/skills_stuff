@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT=""
+PROFILE=""
+AUTO=0
+WITH_WRAPPERS=0
+WITH_POLICY=0
+WITH_CONFIG=0
+WITH_IGNORE=0
+WITH_INSTRUCTION=0
+FORCE=0
+DRY_RUN=0
+
+usage() {
+  cat <<'USAGE'
+Usage: install-skill-into-project --project PATH [options]
+  --profile PROFILE
+  --auto-profile
+  --with-wrappers
+  --with-policy
+  --with-config
+  --with-ignore
+  --with-instruction
+  --force
+  --dry-run
+USAGE
+}
+
+copy_one() {
+  local src="$1" dst="$2"
+  if [[ -e "$dst" && "$FORCE" -ne 1 ]]; then
+    printf 'SKIP existing: %s\n' "$dst"
+    return
+  fi
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    printf 'WOULD COPY: %s -> %s\n' "$src" "$dst"
+  else
+    mkdir -p "$(dirname "$dst")"
+    cp "$src" "$dst"
+  fi
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --project) PROJECT="$2"; shift 2 ;;
+    --profile) PROFILE="$2"; shift 2 ;;
+    --auto-profile) AUTO=1; shift ;;
+    --with-wrappers) WITH_WRAPPERS=1; shift ;;
+    --with-policy) WITH_POLICY=1; shift ;;
+    --with-config) WITH_CONFIG=1; shift ;;
+    --with-ignore) WITH_IGNORE=1; shift ;;
+    --with-instruction) WITH_INSTRUCTION=1; shift ;;
+    --force) FORCE=1; shift ;;
+    --dry-run) DRY_RUN=1; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'Unknown option: %s\n' "$1" >&2; exit 2 ;;
+  esac
+done
+
+[[ -n "$PROJECT" ]] || { usage; exit 2; }
+PROJECT="$(cd "$PROJECT" && pwd)"
+
+if [[ "$AUTO" -eq 1 ]]; then
+  PROFILE="$("$SCRIPT_DIR/detect-language-profile" --repo "$PROJECT" --primary-only)"
+fi
+printf 'Selected profile: %s\n' "${PROFILE:-base}"
+
+[[ "$WITH_CONFIG" -eq 1 ]] && copy_one "$ROOT/templates/repomix.config.json" "$PROJECT/repomix.config.json"
+[[ "$WITH_IGNORE" -eq 1 ]] && copy_one "$ROOT/templates/.repomixignore" "$PROJECT/.repomixignore"
+[[ "$WITH_INSTRUCTION" -eq 1 ]] && copy_one "$ROOT/templates/repomix-instruction.md" "$PROJECT/repomix-instruction.md"
+[[ "$WITH_POLICY" -eq 1 ]] && copy_one "$ROOT/templates/repomix-mcp-routing-policy.md" "$PROJECT/docs/policies/repomix-mcp-routing-policy.md"
+
+if [[ "$WITH_WRAPPERS" -eq 1 ]]; then
+  for f in repomix-current repomix-review repomix-security repomix-reference detect-language-profile _repomix-common.sh; do
+    copy_one "$ROOT/scripts/$f" "$PROJECT/scripts/$f"
+    [[ "$DRY_RUN" -eq 1 ]] || chmod +x "$PROJECT/scripts/$f"
+  done
+fi

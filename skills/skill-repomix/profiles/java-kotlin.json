@@ -1,0 +1,13 @@
+{
+  "id": "java-kotlin",
+  "displayName": "Java and Kotlin",
+  "description": "Java and Kotlin repositories.",
+  "detect": {"anyFiles": ["pom.xml", "build.gradle", "build.gradle.kts"], "anyDirectories": ["src/main", "src/test"]},
+  "include": ["pom.xml", "build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts", "gradle.properties", "gradle/**/*", "src/main/**/*.java", "src/main/**/*.kt", "src/test/**/*.java", "src/test/**/*.kt"],
+  "ignore": [".gradle/**", "target/**", "build/**", "out/**", "*.class"],
+  "priorityFiles": ["pom.xml", "build.gradle", "build.gradle.kts"],
+  "securitySensitivePatterns": ["**/application-local.*", "**/.env*"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 130000,
+  "notes": []
+}

@@ -1,0 +1,43 @@
+{
+  "output": {
+    "filePath": ".ai-context/governance-pack.md",
+    "style": "markdown"
+  },
+  "include": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "AI_NAVIGATION.md",
+    "README.md",
+    "ARCHITECTURE.md",
+    "ROADMAP.md",
+    "SETUP.md",
+    "SCRATCHPAD.md",
+    "CHANGELOG.md",
+    "ARCHCORE_PROMOTION_CANDIDATES.md",
+    "context-map.yaml",
+    "justfile",
+    "scripts/README.md",
+    "conftest.py",
+    "docs/data_contract.md",
+    "docs/output_schema.md",
+    "examples/README.md",
+    "examples/mapping_*.yaml",
+    "internal-invoice-analysis/SKILL.md"
+  ],
+  "ignore": [
+    "node_modules/**",
+    ".git/**",
+    "dist/**",
+    "build/**",
+    "__pycache__/**",
+    ".venv/**",
+    ".pytest_cache/**",
+    ".remember/**",
+    "graphify-out/**",
+    ".ai-context/**",
+    "db/**",
+    "output/**",
+    "docs/feedback/**",
+    "docs/invoice_analysis_framework.md"
+  ]
+}

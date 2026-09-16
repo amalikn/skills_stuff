@@ -1,0 +1,13 @@
+{
+  "id": "rust",
+  "displayName": "Rust",
+  "description": "Rust repositories.",
+  "detect": {"anyFiles": ["Cargo.toml", "Cargo.lock"], "anyDirectories": ["src", "crates"]},
+  "include": ["Cargo.toml", "Cargo.lock", "rust-toolchain*", "rustfmt.toml", "clippy.toml", "src/**/*.rs", "tests/**/*.rs", "benches/**/*.rs", "examples/**/*.rs", "crates/**/Cargo.toml", "crates/**/*.rs"],
+  "ignore": ["target/**"],
+  "priorityFiles": ["Cargo.toml", "Cargo.lock"],
+  "securitySensitivePatterns": ["**/.env*"],
+  "defaultCompression": false,
+  "defaultTokenBudget": 120000,
+  "notes": []
+}

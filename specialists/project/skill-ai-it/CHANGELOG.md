@@ -2,41 +2,60 @@
 
 ## Contents
 
+- [20260914_1345 — fix: templates/repomix.config.json's ignore key had the wrong schema](#20260914_1345--fix-templatesrepomixconfigjsons-ignore-key-had-the-wrong-schema)
 - [20260828_2104](#20260828_2104)
 - [20260825_2150](#20260825_2150)
 - [20260825_2030](#20260825_2030)
-- [20260811_0914 — fix: refresh now invokes the deterministic upgrade; nav-script path bug corrected](#20260811_0914-fix-refresh-now-invokes-the-deterministic-upgrade-nav-script-path-bug-corrected)
-- [20260811_0859 — fix: Claude install converted from copy to symlink](#20260811_0859-fix-claude-install-converted-from-copy-to-symlink)
-- [20260811_0855 — fix: coherence sweep for the governance-checks capability + version bump](#20260811_0855-fix-coherence-sweep-for-the-governance-checks-capability-version-bump)
-- [20260811_0838 — feat: governance coherence checker as a standard capability](#20260811_0838-feat-governance-coherence-checker-as-a-standard-capability)
-- [20260529_0426 — fix: coherence sweep — SCRATCHPAD, AI_NAVIGATION duplicate, README layout, context-map routing gap](#20260529_0426-fix-coherence-sweep-scratchpad-ai_navigation-duplicate-readme-layout-context-map-routing-gap)
-- [20260529_0142 — feat: Watchman filesystem event monitoring](#20260529_0142-feat-watchman-filesystem-event-monitoring)
-- [20260523_1045 — fix: Archcore candidate report completion gate](#20260523_1045-fix-archcore-candidate-report-completion-gate)
-- [20260523_0000 — feat: Archcore promotion candidate reporting](#20260523_0000-feat-archcore-promotion-candidate-reporting)
-- [20260522_1755 — fix: embedded justfile fallback + deploy templates/ and patterns/ to installed copy](#20260522_1755-fix-embedded-justfile-fallback-deploy-templates-and-patterns-to-installed-copy)
-- [20260522_1807 — feat: markdown quality rules enforced during file creation/update](#20260522_1807-feat-markdown-quality-rules-enforced-during-file-creationupdate)
-- [20260522_1900 — remove: mise removed from skill entirely](#20260522_1900-remove-mise-removed-from-skill-entirely)
-- [20260522_1800 — refactor: just-preferred task-runner strategy replaces mise-first](#20260522_1800-refactor-just-preferred-task-runner-strategy-replaces-mise-first)
-- [20260522_1700 — fix: scripts/README.md update obligation added to navigation block](#20260522_1700-fix-scriptsreadmemd-update-obligation-added-to-navigation-block)
-- [20260522_1643 — fix: scripts/README.md creation in refresh mode](#20260522_1643-fix-scriptsreadmemd-creation-in-refresh-mode)
-- [20260522_1434 — full coherence sweep](#20260522_1434-full-coherence-sweep)
-- [20260522_1432 — ARCHITECTURE.md tool-stack update for active CLI roles](#20260522_1432-architecturemd-tool-stack-update-for-active-cli-roles)
-- [20260522_1431 — tool-stack auto-invocation policy](#20260522_1431-tool-stack-auto-invocation-policy)
-- [20260522_1417 — coherence cleanup](#20260522_1417-coherence-cleanup)
-- [20260522_1253 — script and task inventory capability](#20260522_1253-script-and-task-inventory-capability)
-- [20260522_1246 — tool-stack architecture documentation](#20260522_1246-tool-stack-architecture-documentation)
-- [20260522_1234 — Archcore initialization in main workflow](#20260522_1234-archcore-initialization-in-main-workflow)
-- [20260522_1200 — Archcore preflight auto-init](#20260522_1200-archcore-preflight-auto-init)
-- [20260522_1147 — local preflight opt-in policy](#20260522_1147-local-preflight-opt-in-policy)
-- [20260522_1100 — preflight template CLI compatibility](#20260522_1100-preflight-template-cli-compatibility)
-- [20260522_1045 — package coherence pass](#20260522_1045-package-coherence-pass)
-- [20260522_0930 — CHANGELOG governance integration](#20260522_0930-changelog-governance-integration)
-- [20260522_0900 — initial navigation module](#20260522_0900-initial-navigation-module)
-- [20260529 — feat: AI navigation control-layer upgrade](#20260529-feat-ai-navigation-control-layer-upgrade)
-- [20260529_HHMM — deterministic navigation-control automation](#20260529_hhmm-deterministic-navigation-control-automation)
+- [20260811_0914 — fix: refresh now invokes the deterministic upgrade; nav-script path bug corrected](#20260811_0914--fix-refresh-now-invokes-the-deterministic-upgrade-nav-script-path-bug-corrected)
+- [20260811_0859 — fix: Claude install converted from copy to symlink](#20260811_0859--fix-claude-install-converted-from-copy-to-symlink)
+- [20260811_0855 — fix: coherence sweep for the governance-checks capability + version bump](#20260811_0855--fix-coherence-sweep-for-the-governance-checks-capability--version-bump)
+- [20260811_0838 — feat: governance coherence checker as a standard capability](#20260811_0838--feat-governance-coherence-checker-as-a-standard-capability)
+- [20260529_0426 — fix: coherence sweep — SCRATCHPAD, AI_NAVIGATION duplicate, README layout, context-map routing gap](#20260529_0426--fix-coherence-sweep--scratchpad-ai_navigation-duplicate-readme-layout-context-map-routing-gap)
+- [20260529_0142 — feat: Watchman filesystem event monitoring](#20260529_0142--feat-watchman-filesystem-event-monitoring)
+- [20260523_1045 — fix: Archcore candidate report completion gate](#20260523_1045--fix-archcore-candidate-report-completion-gate)
+- [20260523_0000 — feat: Archcore promotion candidate reporting](#20260523_0000--feat-archcore-promotion-candidate-reporting)
+- [20260522_1755 — fix: embedded justfile fallback + deploy templates/ and patterns/ to installed copy](#20260522_1755--fix-embedded-justfile-fallback--deploy-templates-and-patterns-to-installed-copy)
+- [20260522_1807 — feat: markdown quality rules enforced during file creation/update](#20260522_1807--feat-markdown-quality-rules-enforced-during-file-creationupdate)
+- [20260522_1900 — remove: mise removed from skill entirely](#20260522_1900--remove-mise-removed-from-skill-entirely)
+- [20260522_1800 — refactor: just-preferred task-runner strategy replaces mise-first](#20260522_1800--refactor-just-preferred-task-runner-strategy-replaces-mise-first)
+- [20260522_1700 — fix: scripts/README.md update obligation added to navigation block](#20260522_1700--fix-scriptsreadmemd-update-obligation-added-to-navigation-block)
+- [20260522_1643 — fix: scripts/README.md creation in refresh mode](#20260522_1643--fix-scriptsreadmemd-creation-in-refresh-mode)
+- [20260522_1434 — full coherence sweep](#20260522_1434--full-coherence-sweep)
+- [20260522_1432 — ARCHITECTURE.md tool-stack update for active CLI roles](#20260522_1432--architecturemd-tool-stack-update-for-active-cli-roles)
+- [20260522_1431 — tool-stack auto-invocation policy](#20260522_1431--tool-stack-auto-invocation-policy)
+- [20260522_1417 — coherence cleanup](#20260522_1417--coherence-cleanup)
+- [20260522_1253 — script and task inventory capability](#20260522_1253--script-and-task-inventory-capability)
+- [20260522_1246 — tool-stack architecture documentation](#20260522_1246--tool-stack-architecture-documentation)
+- [20260522_1234 — Archcore initialization in main workflow](#20260522_1234--archcore-initialization-in-main-workflow)
+- [20260522_1200 — Archcore preflight auto-init](#20260522_1200--archcore-preflight-auto-init)
+- [20260522_1147 — local preflight opt-in policy](#20260522_1147--local-preflight-opt-in-policy)
+- [20260522_1100 — preflight template CLI compatibility](#20260522_1100--preflight-template-cli-compatibility)
+- [20260522_1045 — package coherence pass](#20260522_1045--package-coherence-pass)
+- [20260522_0930 — CHANGELOG governance integration](#20260522_0930--changelog-governance-integration)
+- [20260522_0900 — initial navigation module](#20260522_0900--initial-navigation-module)
+- [20260529 — feat: AI navigation control-layer upgrade](#20260529--feat-ai-navigation-control-layer-upgrade)
+- [20260529_HHMM — deterministic navigation-control automation](#20260529_hhmm--deterministic-navigation-control-automation)
 - [20260812_1300](#20260812_1300)
 
 ---
+
+## 20260914_1345 — fix: templates/repomix.config.json's ignore key had the wrong schema
+
+### Fixed
+
+- **`ignore` was a flat array; repomix (≥1.x) expects `{"customPatterns": [...]}`.** A flat array is not a schema error repomix rejects — it is silently dropped, so every project bootstrapped from
+  this template got a working `include` list and a **no-op `ignore`** list. Found via `skill-project-coherence` on a governed project (`apn/cambium-swap`) after a file move stopped matching an
+  `ignore` entry that, on investigation, had never actually excluded anything — verified empirically: `repomix --config` with the flat-array form left the excluded files in the pack; converting to
+  `{"customPatterns": [...]}` and re-running removed them (file count and token count both dropped, confirming the fix rather than assuming it from the shape alone).
+- Fixed in both `templates/repomix.config.json` (the file this skill copies into a bootstrapped project) and the embedded fallback block in `SKILL.md` (used when the templates file is unreachable) —
+  the two must not diverge, per this skill's own template-precedence rule.
+- **Not fixed retroactively in every project this skill has already bootstrapped.** Each carries its own `repomix.config.json` as a project-owned file after bootstrap, not a live pointer back here;
+  propagating this fix to existing projects is a `refresh`-mode or manual task for whichever agent next touches each one, not something this changelog entry can reach for them.
+
+### Notes
+
+- The three project-specific patterns the discovering project's config carried into its own `ignore` array (its two immutable-baseline documents' old root path, since superseded by the project's own
+  file move) are that project's own content and were fixed there, not folded into this template.
 
 ## 20260828_2104
 

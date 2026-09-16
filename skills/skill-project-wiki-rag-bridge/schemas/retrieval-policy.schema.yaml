@@ -1,0 +1,105 @@
+# retrieval-policy.schema.yaml
+# Schema for <project>/rag/retrieval-policy.yaml
+#
+# The rag-tools validate-policy CLI currently validates the flat top-level keys
+# listed in the "Flat validator contract" section below. All other fields are
+# validated only by human/agent review.
+
+schema_name: retrieval-policy
+version: 1
+applies_to: "<project>/rag/retrieval-policy.yaml"
+
+# --- Flat validator contract (validated by rag-tools validate-policy) ---
+
+flat_validator_keys:
+  version:
+    type: integer
+    required: true
+    value: 1
+    notes: "Must be integer 1."
+
+  project_slug:
+    type: string
+    required: true
+    pattern: "^[a-z0-9_]+$"
+    notes: "Underscores only. No spaces, hyphens, or uppercase."
+    example: "vocus_profitability"
+    failure_cases:
+      - "project_slug: vocus-profitability  # hyphens not allowed"
+      - "project_slug: VocusProfitability   # uppercase not allowed"
+
+  project_collection:
+    type: string
+    required: true
+    pattern: "^rag__project_[a-z0-9_]+$"
+    notes: "Must use rag__project_ prefix. Must match project_slug."
+    example: "rag__project_vocus_profitability"
+    failure_cases:
+      - "rag__vocus_profitability   # missing project_ prefix"
+      - "vocus_profitability        # no rag__ prefix at all"
+
+  allowed_wiki_domains:
+    type: list of string
+    required: true
+    item_pattern: "^[a-z0-9_]+$"
+    notes: "List of domain slugs. Each must exist in domain-registry.yaml."
+    example:
+      - "nbn"
+      - "vocus"
+    failure_cases:
+      - "allowed_wiki_domains: []       # empty list — no wiki access"
+      - "allowed_wiki_domains: [ALL]    # not a valid slug"
+
+  allowed_wiki_collections:
+    type: list of string
+    required: true
+    item_pattern: "^rag__wiki_[a-z0-9_]+$"
+    notes: "Must correspond 1:1 with allowed_wiki_domains. Each = rag__wiki_<domain>."
+    example:
+      - "rag__wiki_nbn"
+      - "rag__wiki_vocus"
+    failure_cases:
+      - "rag__wiki_ALL           # forbidden"
+      - "rag__nbn                # missing wiki_ infix"
+
+  forbidden_collections:
+    type: list of string
+    required: true
+    notes: "Must include at minimum all globally forbidden collection names."
+    minimum_required:
+      - "rag__global_all_docs"
+      - "rag__wiki_all"
+      - "rag__all"
+      - "default"
+      - "documents"
+      - "knowledge"
+      - "main"
+
+  required_filters:
+    type: list of string
+    required: true
+    notes: "Filters that must be applied to every query. Minimum: project_slug and wiki_domain."
+    minimum_required:
+      - "project_slug"
+      - "wiki_domain"
+
+  citation_rules:
+    type: object
+    required: true
+    required_keys:
+      - cite_sources
+      - cite_collection_name
+      - cite_source_file
+      - cite_section_path
+      - cite_heading
+    notes: "All citation flags should be true. Setting any to false must have justification."
+
+# --- Common validation failures ---
+
+common_failures:
+  - "project_slug and project_collection slug don't match"
+  - "allowed_wiki_collections contains a name not in allowed_wiki_domains"
+  - "allowed_wiki_collections contains a forbidden name"
+  - "missing required_filters key"
+  - "YAML parse error due to unquoted colon in values"
+  - "version field missing or wrong type (must be integer, not string)"

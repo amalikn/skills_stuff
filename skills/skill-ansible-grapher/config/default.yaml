@@ -1,0 +1,91 @@
+# skill-ansible-grapher — default configuration
+#
+# Precedence (highest wins): CLI arguments > environment variables > profile > this file.
+# Do NOT put machine-specific absolute executable paths here — they are resolved at
+# runtime (PATH lookup, then ANSIBLE_GRAPHER_*_BIN env override, then --*-bin flag).
+
+output:
+  # Relative to the current working directory (the calling project), never inside
+  # this skill directory and never beside source inventories/playbooks.
+  default_output_dir: ".ai-artifacts/ansible-grapher"
+  overwrite_by_default: false
+  keep_dot_files: true
+  deterministic_filenames: true
+  # Marker file written into every generated output_dir root. Cleanup refuses to run
+  # recursively unless this marker is present and matches the expected schema.
+  ownership_marker: ".ansible-grapher-owned"
+
+profiles:
+  default_inventory_profile: "inventory-summary"
+  default_playbook_profile: "playbook-summary"
+
+variables:
+  show_variables_by_default: false
+
+dynamic_inventory:
+  # Deny-by-default. Executable inventory scripts / cloud plugins require
+  # --allow-dynamic-inventory or ANSIBLE_GRAPHER_ALLOW_DYNAMIC_INVENTORY=1.
+  allow_by_default: false
+
+compatibility:
+  # Each grapher runs in its own isolated venv with its own ansible-core version,
+  # independent of the system ansible-core used for --syntax-check/--list validation
+  # (see docs/tool-capabilities.md). A mismatch is reported (manifest + final report)
+  # regardless of this setting; this setting only controls whether it's a hard failure.
+  # Precedence: CLI flag > env var (ANSIBLE_GRAPHER_STRICT_ANSIBLE_VERSION_MATCH) >
+  # profile value > this default.
+  strict_ansible_version_match_default: false
+  # Whether development/prerelease grapher builds (e.g. "2.11.0-dev0") are permitted.
+  # Precedence: CLI flag > env var (ANSIBLE_GRAPHER_ALLOW_DEVELOPMENT_TOOL_VERSIONS) >
+  # profile value > this default.
+  allow_development_tool_versions_default: true
+
+python_runtime:
+  # The managed working-cache venv is used by default; scripts/justfile fail clearly
+  # (exit 5) rather than silently using system python3 when it is missing. Fallback is
+  # opt-in only: --allow-system-python-fallback or
+  # ANSIBLE_GRAPHER_ALLOW_SYSTEM_PYTHON_FALLBACK=1. See scripts/_resolve_python.sh.
+  supported_version_min: "3.10"
+  supported_version_max: "3.14"
+
+discovery:
+  max_files_scanned: 5000
+  max_recursion_depth: 12
+  exclude_dirs:
+    - ".git"
+    - ".venv"
+    - "venv"
+    - "node_modules"
+    - ".tox"
+    - ".cache"
+    - ".pytest_cache"
+    - "__pycache__"
+    - ".ai-artifacts"
+    - ".ansible-grapher-backup"
+    - "collections/ansible_collections"
+
+thresholds:
+  # Warn (do not block) once these are exceeded; recommend a narrower profile.
+  max_inventory_hosts_before_warning: 200
+  max_auto_selected_playbooks: 5
+  max_generated_artifacts: 40
+  max_output_file_size_mb_before_warning: 15
+
+timeouts:
+  default_command_timeout_seconds: 120
+
+redaction:
+  # Argument names whose values are replaced with "***REDACTED***" in logs/manifests.
+  redact_flags:
+    - "--extra-vars"
+    - "-e"
+    - "--vault-password-file"
+    - "--vault-pass-file"
+    - "--vault-id"
+    - "--ask-vault-pass"
+    - "--ask-vault-password"
+  redact_value_patterns:
+    - "(?i)password"
+    - "(?i)secret"
+    - "(?i)token"
+    - "(?i)api_key"

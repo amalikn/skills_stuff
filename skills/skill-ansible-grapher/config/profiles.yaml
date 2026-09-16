@@ -1,0 +1,119 @@
+# skill-ansible-grapher — graph profiles
+#
+# Each profile maps to actual, locally-verified CLI flags for the relevant tool
+# (see docs/tool-capabilities.md). The wrapper (scripts/ansible-grapher) translates
+# a profile name into these options; unsupported flags on the installed version
+# produce a warning or validation failure, never silent misuse.
+
+inventory_profiles:
+  inventory-summary:
+    description: "Concise inventory hierarchy. Variables disabled. SVG + DOT."
+    show_variables: false
+    graph_attributes: "rankdir=TB;"
+    formats: ["dot", "svg"]
+    strict_ansible_version_match: false
+    allow_development_tool_versions: true
+
+  inventory-detailed:
+    description: "Detailed group/host relationships with extra spacing for larger inventories."
+    show_variables: false
+    graph_attributes: "rankdir=TB;nodesep=0.6;ranksep=0.8;"
+    formats: ["dot", "svg", "png"]
+    strict_ansible_version_match: false
+    allow_development_tool_versions: true
+
+  inventory-left-right:
+    description: "Wide infrastructure diagrams, left-to-right."
+    show_variables: false
+    graph_attributes: "rankdir=LR;"
+    formats: ["dot", "svg"]
+    strict_ansible_version_match: false
+    allow_development_tool_versions: true
+
+  inventory-uml:
+    description: "Inheritance-style topology, left-to-right, orthogonal edges where Graphviz supports it."
+    show_variables: false
+    graph_attributes: "rankdir=LR;splines=ortho;"
+    formats: ["dot", "svg"]
+    strict_ansible_version_match: false
+    allow_development_tool_versions: true
+
+playbook_profiles:
+  playbook-summary:
+    description: "Plays, tasks, roles. Role tasks and handlers omitted. General documentation."
+    include_role_tasks: false
+    show_handlers: false
+    renderer: "graphviz"
+    formats: ["svg"]
+    # Interactive/local use: report Ansible-version mismatches and dev-version tool
+    # builds as warnings, not hard failures — this stack's playbook grapher venv
+    # intentionally pins a different ansible-core (see docs/tool-capabilities.md).
+    strict_ansible_version_match: false
+    allow_development_tool_versions: true
+
+  playbook-roles:
+    description: "Role-focused view: only-roles, grouped by name."
+    only_roles: true
+    group_roles_by_name: true
+    hide_plays_without_roles: true
+    renderer: "graphviz"
+    formats: ["svg"]
+    strict_ansible_version_match: false
+    allow_development_tool_versions: true
+
+  playbook-detailed:
+    description: "Full detail: role tasks, handlers, collapsible nodes, DOT retained."
+    include_role_tasks: true
+    show_handlers: true
+    collapsible_nodes: true
+    renderer: "graphviz"
+    save_dot_file: true
+    formats: ["svg", "dot"]
+    strict_ansible_version_match: false
+    allow_development_tool_versions: true
+
+  playbook-mermaid:
+    description: "Mermaid flowchart for Markdown embedding, left-to-right, grouped roles."
+    group_roles_by_name: true
+    renderer: "mermaid-flowchart"
+    renderer_mermaid_orientation: "LR"
+    formats: ["mmd"]
+    strict_ansible_version_match: false
+    allow_development_tool_versions: true
+
+  playbook-json:
+    description: "Machine-readable JSON graph, preserving source-location metadata."
+    renderer: "json"
+    formats: ["json"]
+    strict_ansible_version_match: false
+    allow_development_tool_versions: true
+
+combined_profiles:
+  documentation-pack:
+    description: "Inventory SVG+DOT, playbook SVG, Mermaid, JSON, manifest, Markdown index, validation report."
+    inventory_profile: "inventory-summary"
+    playbook_profile: "playbook-summary"
+    extra_playbook_renderers: ["mermaid-flowchart", "json"]
+    write_manifest: true
+    write_index: true
+    write_validation_report: true
+
+  ci-light:
+    description: "Deterministic, low-cost. DOT/JSON/Mermaid only. No viewer launch, no variables, no timestamped filenames."
+    inventory_profile: "inventory-summary"
+    playbook_profile: "playbook-json"
+    extra_playbook_renderers: []
+    write_manifest: true
+    write_index: true
+    write_validation_report: true
+    no_browser: true
+    no_timestamps_in_filenames: true
+    # CI hardening (differs deliberately from interactive profiles above):
+    strict_ansible_version_match: true
+    allow_development_tool_versions: false
+    no_system_python_fallback: true
+    no_dynamic_inventory: true
+    no_variable_display: true
+    bounded_artifacts: true
+    no_network_dependency: true
+    machine_readable_validation_report: true

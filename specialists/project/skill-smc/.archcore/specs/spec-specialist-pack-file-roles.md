@@ -1,7 +1,7 @@
 ---
 title: Specialist Pack File Roles
 type: spec
-status: proposed
+status: accepted
 provenance: promoted from AI_NAVIGATION.md + exports/claude_code/project/skill-smc/adapter.md on 20260626
 ---
 

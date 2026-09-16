@@ -1,0 +1,7 @@
+id: unit-economics
+name: Unit Economics
+lifecycle: VALIDATED
+inputs: [selling_price, variable_cost, selling_cost, volume_assumptions]
+outputs: [contribution, margin, break_even_inputs, assumptions]
+human_approval: required_for_pricing_or_pilot
+implementation: bftoolkit.calculators.unit_economics:unit_economics

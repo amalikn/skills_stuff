@@ -14,6 +14,7 @@
 - Tier 9: SMP iptables ipset failure
 - Tier 10: smc_application loop input failure
 - Tier 11: --check does not gate command+async restart handlers
+- Cross-Tier: reject vs drop, ICMP-TTL origin location, on-box tooling gotchas
 
 ## 5. Troubleshooting Workflows
 
@@ -48,6 +49,13 @@
    2026-09-08 against a site with a hung/unreachable Teleport agent). See
    `03_communication-flows.md` §Backdoor SSH Access for the port formula and procedure — it gets you
    a root shell to actually run steps 1-4 from inside the box instead of guessing from outside.
+
+   On a multi-WAN site, a reconnect failure here (e.g. `ssh: connect to host ... No route to host`,
+   `ssh exited with error status 255; restarting ssh` in the `autossh-teleport-openssh` unit's own log)
+   can be caused by ECMP hash pinning routing the reconnect onto a currently-dead nexthop rather than
+   the tunnel itself being broken — see `06_failure-modes.md` "ECMP Multipath Hashing Pins
+   Fixed-Destination Traffic to a Single (Possibly Dead) Nexthop". The fix there improves the odds a
+   *subsequent* reconnect attempt succeeds; it does not make an already-hung attempt recover on its own.
 
 4. Overlayroot healthy?
    mount | grep overlay
@@ -404,5 +412,34 @@ Validation:
 
 Full incident writeup: local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/docs/pandanus-park-checkmode-async-restart-incident-20260730_1140.md
 ```
+
+### Cross-Tier: Reject vs Drop, Where a Rejection Was Generated, and On-Box Tooling Gotchas
+
+Established during the 2026-09-08 galiwinku port-80 investigation (see `06_failure-modes.md` "Port-80 Source-IP Allowlist on the APN VIP"). These techniques are not specific to that incident — they
+answer the general "is it them or us?" question on any SMC.
+
+**Locate where a rejection is generated, using the ICMP error's TTL.** Compare the TTL of the returned ICMP error against the TTL of known-good replies from the same host:
+
+- **TTLs match** → the rejection genuinely originates at the far end.
+- **The error's TTL is much higher** → a nearby middlebox forged it, and the far end never saw the packet.
+
+Worked example: the ICMP admin-prohibited arrived at `ttl 49`, identical to genuine ping replies from the same host (`ttl 49`), proving a far-end origin ~13–14 hops away. The SYN quoted inside the
+ICMP error's payload showed `ttl 51` (sent at 64), corroborating the hop count independently.
+
+**Measure the failure latency to separate a reject from a drop.** An active reject returns in **~1 RTT**; a drop/blackhole shows as a **multi-second timeout**. A "connection failed" that comes back
+instantly is almost always something answering, not something missing.
+
+**On-box tooling gotchas (SMC appliances):**
+
+- **`traceroute` is NOT installed.** Available instead: `mtr`, `nping`, `nmap`, `tracepath`, `busybox`.
+- **`mtr --interface <if>` binds correctly in TCP mode (`-T`) but NOT in ICMP mode.** An ICMP trace requested on `vlan534` silently egressed via `eno1`. **Always verify hop 1 matches the intended
+  gateway before trusting any interface-bound trace** — the wrong-interface result looks completely plausible.
+- **`mtr` showing "0.0% loss" at the final hop does NOT mean the service is reachable.** It counts *any* response for that TTL as success, including an ICMP rejection. A clean-looking mtr is fully
+  compatible with a hard-rejected service.
+- **`tcpdump` buffers its output** — reading the capture file while it is still running shows nothing. Wait for it to exit, use `-U`, or (preferred) `-w file.pcap` and decode separately.
+- **A `host <ip>` tcpdump filter will NOT match returning ICMP errors.** Their outer header is gateway→us, not peer→us. Use `'host <ip> or icmp'`, and decode with `-vv` to see the embedded quoted
+  packet and its TTL (which is what the TTL technique above depends on).
+- **`curl -w ... 2>&1 | tail -1` masks the real error.** Capture `rc=$?` separately — exit **7** ("No route to host", never established) and exit **56** ("Connection reset by peer", established then
+  reset) are completely different diagnoses and the piped one-liner hides which one you got.
 
 ---

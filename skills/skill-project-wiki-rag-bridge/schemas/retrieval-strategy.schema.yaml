@@ -1,0 +1,99 @@
+# Schema: retrieval-strategy.schema.yaml
+# Purpose: Validates <project>/rag/retrieval-strategy.yaml files.
+# Authority: skill-project-wiki-rag-bridge / archcore specs layer
+
+schema_name: retrieval-strategy
+version: 1
+applies_to: "<project-root>/rag/retrieval-strategy.yaml"
+
+purpose: >
+  Per-project retrieval strategy configuration. Records the chosen primary, secondary, and
+  fallback retrieval mode for each candidate document, along with RAG suitability, benchmark
+  status, and the index_allowed gate. Produced by prompt 02b; updated by prompt 02c.
+
+required_top_level_keys:
+  - version       # integer, must be 1
+  - project       # object with id, slug, name
+  - strategy_defaults  # object with mode keys
+  - documents     # list of document strategy entries
+  - rules         # object with boolean policy flags
+
+required_project_keys:
+  - id            # string; unique project identifier
+  - slug          # string; lowercase alphanumeric + underscores; matches Qdrant slug
+  - name          # string; human-readable project name
+
+required_strategy_defaults_keys:
+  - exact_facts
+  - tables
+  - structured_sections
+  - cross_document_semantic
+  - invoices
+  - pdfs
+
+required_document_entry_keys:
+  - document_id           # string; file stem (no extension)
+  - path                  # string; relative path from project root
+  - document_class        # string; one of the allowed document_class values
+  - primary               # string; primary retrieval mode
+  - rag_suitability       # string; suitable | partially_suitable | not_suitable
+  - benchmark_required    # boolean
+  - benchmark_status      # string; not_run | passed | partial | failed
+  - index_allowed         # boolean; must be false unless benchmark_status: passed AND rag_suitability in (suitable, partially_suitable)
+  - reason                # string; explains route selection
+
+optional_document_entry_keys:
+  - authority             # string; project_local | wiki_authoritative_markdown | external_reference
+  - secondary             # string; secondary retrieval mode
+  - fallback              # string; fallback retrieval mode
+
+allowed_document_class_values:
+  - structured_markdown_reference
+  - legal_contract_or_terms
+  - financial_rate_card
+  - invoice_or_billing_report
+  - operational_runbook
+  - policy_document
+  - meeting_notes
+  - knowledge_article
+  - source_code_docs
+  - unstructured_pdf
+  - scanned_pdf
+  - tabular_dataset
+  - mixed_content
+  - unknown
+
+allowed_retrieval_modes:
+  - direct_structured_lookup
+  - section_clause_lookup
+  - heading_aware_lookup
+  - table_aware_lookup
+  - tabular_analytics
+  - keyword_lookup
+  - vector_rag
+  - extraction_required
+  - hybrid_direct_first
+  - hybrid_rag_first
+
+required_rules_keys:
+  - source_files_remain_authoritative   # must be true
+  - profile_before_index                # must be true
+  - benchmark_before_default_route      # must be true
+  - evidence_bundle_required            # must be true
+  - vector_rag_not_universal_default    # must be true
+
+validation_notes:
+  - index_allowed must be false when rag_suitability is not_suitable
+  - index_allowed must be false when benchmark_status is not_run or failed
+  - index_allowed may be true only when both rag_suitability is suitable or partially_suitable AND benchmark_status is passed
+  - document_class must be one of the allowed values; unknown triggers a warning
+  - strategy_defaults values are free strings but should match allowed_retrieval_modes
+  - version must be the integer 1
+
+common_failure_cases:
+  - "index_allowed: true without benchmark_status: passed — forbidden"
+  - "rag_suitability: not_suitable with index_allowed: true — forbidden"
+  - "benchmark_required: false for a structured or tabular document — should be true"
+  - "missing reason field — required for audit traceability"
+  - "document_class: unknown — profile-file must be re-run or classification done manually"
+  - "document_id does not match file stem — misalignment causes retrieval routing failures"

@@ -1,0 +1,13 @@
+{
+  "id": "mixed-monorepo",
+  "displayName": "Mixed Monorepo",
+  "description": "Multi-language or workspace repositories.",
+  "detect": {"anyFiles": ["pnpm-workspace.yaml", "go.work", "Cargo.toml", "*.sln", "settings.gradle"], "anyDirectories": ["packages", "apps", "services", "crates"]},
+  "include": ["README.md", "AGENTS.md", "ARCHITECTURE.md", "AI_NAVIGATION.md", "context-map.yaml", "CHANGELOG.md", "package.json", "pnpm-workspace.yaml", "go.work", "Cargo.toml", "*.sln", "settings.gradle*", "packages/*/package.json", "apps/*/package.json", "services/*/pyproject.toml", "crates/*/Cargo.toml"],
+  "ignore": ["**/node_modules/**", "**/.venv/**", "**/target/**", "**/dist/**", "**/build/**", "**/bin/**", "**/obj/**"],
+  "priorityFiles": ["ARCHITECTURE.md", "AI_NAVIGATION.md", "package.json", "pnpm-workspace.yaml", "go.work", "Cargo.toml"],
+  "securitySensitivePatterns": ["**/.env*", "**/secrets/**", "**/credentials/**"],
+  "defaultCompression": true,
+  "defaultTokenBudget": 80000,
+  "notes": ["Prefer package-level scopes. Do not automatically pack every implementation package."]
+}
