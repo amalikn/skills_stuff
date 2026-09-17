@@ -82,6 +82,19 @@ same pass as this note (2026-09-17, staleness audit).
 
 ## Session history (summaries — full detail in memory-keeper)
 
+### 2026-09-17 (~21:21-22:15) — first whole-pack staleness audit, coherence sweep, first-ever commit
+
+- Ran skill-staleness-audit in full detail mode: gate PASSED, checks 133→145. Found and fixed 13 defects, the two most material being a KEEP-block in this file that still claimed only the XV2 family
+  had an adapter (superseded above — all four landed the same day) and a self-contradiction inside `AI_NAVIGATION.md` itself (line 89 said `.archcore/` was empty while lines 35/63 of the same file
+  said 6 documents accepted). Also fixed a stale `RUNBOOK.md` header banner, a blanket "everything USER_STATED" staleness-risk note in `references/05_known-issues.md` that no longer matched the
+  VERIFIED-OBSERVED state of all four families, a frozen `manifest.json` version/timestamp, a superseded R195P `stable_fact`, and two "5 reference files" miscounts (file `06` already existed). Added
+  `check_manifest_freshness` and populated the previously-empty `COUNT_CLAIMS` registry in `scripts/check_governance.py`, both negative-tested.
+- Coherence sweep then propagated those fixes further: checks 145→150. `AI_NAVIGATION.md` and `context-map.yaml` were both missing routing rows/entries for reference files 05 and 06;
+  `.archcore/README.md` and its manifest-version-discipline rule still claimed no automated check existed for manifest freshness, immediately after the audit added one. Verified `skill-smc` only ever
+  references this pack by topic, never by version or file count, so nothing there needed reconciling.
+- **Committed this pack to git for the first time.** It had accumulated a full day of real work (four live-verified adapters, `site-addressing.yaml` expanded to all 10 sites, SNMP vault entries,
+  `.archcore/` rules and ADRs) with zero version-control history until now. `skills_stuff` repo (this pack is a subpath, remote `amalikn/skills_stuff`), commit `1d25892`, 39 files, pushed to `main`.
+
 ### 2026-09-17 ~11:35a-12:15p — live device access, first adapter code, formal-schema question resolved
 
 - Moved the former cambium-support-login.sh here from `cambium-swap` as `scripts/cambium-portal.sh`, added a `fetch-release` subcommand; used it to fetch the exact firmware-version-matched CLI
