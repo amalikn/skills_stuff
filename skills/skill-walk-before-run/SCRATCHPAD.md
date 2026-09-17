@@ -19,12 +19,15 @@ only and has been removed from the parent file, not copied. See `BRIEF.md` for t
 
 - [x] **Build `skill-walk-before-run`** — done 2026-09-16. Package at `skills/skill-walk-before-run/` (SKILL.md, README.md, CHANGELOG.md, BRIEF.md — the brief moved here from `pending_skills/` as the
   colocated provenance record). Symlinked into `~/.claude/skills` and `~/.codex/skills`. Invocation is `/skill-walk-before-run` (alias `/skill-wbr`).
-- [ ] **Acceptance tests 2/3/4/5 still unvalidated, 0 RESOLVED entries yet.** The 3-project trial itself has run for real (cambium-swap, jdm, atar — all RED, all well-formed per review), but the
-  negative-control, adversarial, Step-0-visibility, and assumption-stability acceptance tests were never separately exercised, and no RED has yet been closed out to RESOLVED. The real hypothesis under
-  test — does a RED verdict actually change behaviour — isn't tested until the three named cheap tests get run and logged. That's the next real action, not more invocations. (Status as of 2026-09-16;
-  supersedes the original "run acceptance tests, then trial" framing now that the trial has run.)
-- [ ] **cambium-swap: which device family is the confirmed bench/demo unit?** Gates the current `next_test`'s track (b) — GenieACS/CWMP applies only if it's cnPilot/CPE; otherwise track (a), direct
-  SNMP/cnMaestro-API against the bench unit, applies. Not yet identified. See `ledger.jsonl`, project `cambium-swap`, entry `ts` `2026-09-16T16:32:36+10:00`.
+- [ ] **Acceptance tests 2/3/4/5 still unvalidated.** The 3-project trial itself has run for real (cambium-swap, jdm, atar — all RED, all well-formed per review), but the negative-control,
+  adversarial, Step-0-visibility, and assumption-stability acceptance tests were never separately exercised. One RESOLVED entry now exists (`ledger.jsonl`, cambium-swap, `ts`
+  `2026-09-17T10:58:42+10:00`), but it closes a narrower prerequisite assumption (this session's device-access governance actually working end-to-end) — the main cambium-swap RED chain (real device
+  protocol behaviour vs. what stage 6's bake-off assumed) is still open. The real hypothesis under test — does a RED verdict actually change behaviour — still isn't tested by the three named cheap
+  acceptance tests. That's the next real action, not more invocations. (Status as of 2026-09-17.)
+- [ ] **cambium-swap: bench/demo unit identified, but it's neither track's assumed family.** Real device contact confirmed 2026-09-17 (SSH via Teleport, `show version`) against `HOP_XV2_AP1_IP3_1`,
+  Hope Vale Tower 1 — an **Enterprise Wi-Fi AP (model `XV2-2T0`)**, not ePMP/cnMatrix/cnWave (track (a), SNMP/`CAMBIUM-PMP80211-MIB`) and not cnPilot/CPE (track (b), TR-069/CWMP). The RED chain's
+  `next_test` was written for those two tracks only; a third, CLI-over-SSH path just proved real-device access but hasn't yet produced the SNMP/API capture the RED actually needs to resolve. See
+  `ledger.jsonl`, project `cambium-swap`, entries `ts` `2026-09-16T19:47:00+1000` (still-open RED, two-track next_test) and `ts` `2026-09-17T10:58:42+10:00` (RESOLVED, access-governance only).
 
 ---
 
@@ -32,8 +35,9 @@ only and has been removed from the parent file, not copied. See `BRIEF.md` for t
 
 | Item                  | Detail                                                                                                                                                                       |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ledger                | `skills/skill-walk-before-run/ledger.jsonl` — JSONL, one object/line. 6 entries as of 2026-09-16 (skill self-invocation, jdm, atar, psy-assess, and 2 for cambium-swap — the |
-|                       |   second, `ts` `16:32:36`, is a proper append superseding the first, not an edit of it). Field reference: `skills/skill-walk-before-run/schemas/ledger-entry.md`.            |
+| Ledger                | `skills/skill-walk-before-run/ledger.jsonl` — JSONL, one object/line. 8 entries as of 2026-09-17 (skill self-invocation, jdm, atar, psy-assess, and 4 for cambium-swap — 3   |
+|                       |   RED forming a proper superseding-append chain, plus 1 RESOLVED for the narrower access-governance assumption; see Open items above). Field                                 |
+|                       |   reference: `skills/skill-walk-before-run/schemas/ledger-entry.md`.                                                                                                         |
 | Trial project ledgers | `.wbr-ledger.jsonl` mirror + `SCRATCHPAD.md` § Open items pointer, in each of `project_stuff/apn/cambium-swap`, `project_stuff/me/uae/atar`,                                 |
 |                       |   `project_stuff/me/japan/tracks/jdm` — recovery copies, canonical stays `ledger.jsonl` above. Uncommitted in their own repos as of 2026-09-16.                              |
 
