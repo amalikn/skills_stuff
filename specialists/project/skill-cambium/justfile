@@ -1,0 +1,82 @@
+# just task catalog for skill-cambium.
+# Usage: just --list | just <task>
+#
+# Recipes go through {{py}}, never a bare interpreter — see skill-ai-it's Runtime isolation doctrine.
+
+set dotenv-load := false
+
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-cambium"
+py := wc + "/.venv/bin/python"
+
+# List available tasks
+default:
+    @just --list
+
+# Build the working-cache venv from the mise-pinned runtime. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @test -f requirements.txt && {{py}} -m pip install --quiet --upgrade pip -r requirements.txt || true
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Fail early rather than falling back to the host interpreter
+_require-venv:
+    @test -x "{{py}}" || { echo "venv missing at {{py}} — run: just bootstrap" >&2; exit 1; }
+
+# Report which runtime the recipes will actually use
+runtimes:
+    @printf 'python  '; {{py}} -c "import sys; print(sys.version.split()[0], sys.executable)" 2>/dev/null || echo "MISSING — run: just bootstrap"
+
+# Governance coherence checks — must exit 0 before durable work is called complete.
+check: _require-venv
+    @{{py}} scripts/check_governance.py
+
+# Extract a site's asset register into device-inventory.csv — reference implementation, not general-purpose.
+# See scripts/extract-asset-register.py's own docstring before re-running against a new site.
+extract-asset-register: _require-venv
+    @{{py}} scripts/extract-asset-register.py
+
+# Log into support.cambiumnetworks.com (agent-browser + KeePassXC), optional Downloads search.
+# Needs a live MFA code from the operator — run from an interactive shell. Read-only against the portal.
+cambium-login search="":
+    @if [ -n "{{search}}" ]; then scripts/cambium-portal.sh login --search "{{search}}"; else scripts/cambium-portal.sh login; fi
+
+# Log in, find a specific firmware/documentation release, download its files into <dest>.
+# Example: just cambium-fetch-release "XV2" "6.6.0.3-r9" /tmp/xv2-660-docs
+cambium-fetch-release model version dest:
+    @scripts/cambium-portal.sh fetch-release "{{model}}" "{{version}}" "{{dest}}"
+
+# Open a tsh tunnel to a device's management interface (site-aware cluster/smc-host routing).
+# This is generic Teleport tunneling, not a Cambium-specific concern — the canonical script lives
+# in skill-smc (which owns tsh/Teleport mechanics), called here rather than duplicated.
+# Example: just tunnel hope-vale 10.255.4.5 20045
+# Blocks for the tunnel's lifetime (default 120s) — run in the background if you need to keep
+# working. Requires an active `tsh login` for the site's cluster already (burringurrah needs
+# interactive MFA — this doesn't log in for you).
+smc_scripts := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/scripts"
+tunnel site device_ip local_port="20000" device_port="443" duration="120":
+    @{{smc_scripts}}/teleport-tunnel.sh "{{site}}" "{{device_ip}}" "{{local_port}}" "{{device_port}}" "{{duration}}"
+
+# Run the ePMP adapter's getters (facts/interfaces/wireless_link/clients) against a live tunnel.
+# `host` is CAMBIUM_HOST (e.g. localhost:20045 from `just tunnel`); role is "sm" or "ap", selecting
+# the cambium-devices/epmp-<role> vault credential. Never prints the password.
+# Example: just epmp-getters localhost:20045 sm
+epmp-getters host role="sm": _require-venv
+    #!/usr/bin/env bash
+    set -euo pipefail
+    EPMP_USER=$(kp show -s -a UserName cambium-devices/epmp-{{role}})
+    EPMP_PASS=$(kp show -s -a Password cambium-devices/epmp-{{role}})
+    CAMBIUM_HOST="{{host}}" CAMBIUM_USER="$EPMP_USER" CAMBIUM_PASS="$EPMP_PASS" \
+        {{py}} scripts/cambium_epmp_adapter.py
+
+# Check whether a JSON file has any credential-shaped fields, WITHOUT printing their values.
+# Run this on any captured config/status dump before viewing it by hand — see 05_known-issues.md
+# Security Incidents for why: printing a value to "check if it's real" has caused two live
+# secret exposures this pack's history. Exits 1 if anything was flagged.
+# Example: just scan-fields captures/some-dump.json
+scan-fields path: _require-venv
+    @{{py}} scripts/scan-config-fields.py "{{path}}"
+
+# Run safe local preflight checks
+preflight: runtimes check

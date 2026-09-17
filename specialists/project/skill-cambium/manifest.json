@@ -1,0 +1,67 @@
+{
+  "specialist_type": "project",
+  "subject_name": "cambium",
+  "slug": "skill-cambium",
+  "subject_id": null,
+  "title": "Cambium Device Fleet Operations",
+  "description": "Operational knowledge base for APN's Cambium wireless fleet (Enterprise Wi-Fi, cnPilot R-series, ePMP AP/SM, cnWave 60 GHz): device families and firmware, local-admin credential vault structure, cnMaestro estate, per-site asset registers and their naming conventions, and device-inventory schema. Complements skill-smc, which owns the SMC box / ansible-wifi provisioning layer.",
+  "tags": [
+    "cambium",
+    "wireless",
+    "epmp",
+    "cnpilot",
+    "cnwave",
+    "cnmaestro",
+    "asset-register",
+    "credentials"
+  ],
+  "environment": "cambium-swap",
+  "owner": null,
+  "site": null,
+  "role": null,
+  "scope_boundary": "In scope: Cambium device families and firmware baselines, local-admin credential vault structure and access, cnMaestro estate/instances, site asset-register conventions and extraction, device-inventory.csv schema. Out of scope: SMC box services, Ansible authoring, ansible-wifi topology — see skill-smc. Out of scope: cambium-swap's own vendor-continuity/exit-planning business analysis — that stays project-local in cambium-swap.",
+  "parent_refs": [],
+  "related_refs": [
+    "/Volumes/Data/_ai/_project/project_stuff/apn/cambium-swap",
+    "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc",
+    "/Volumes/Data/_ansible/ansible-wifi",
+    "/Volumes/Data/_ansible/local-knowledge-ansible"
+  ],
+  "source_bias": "stable-operational",
+  "created_at": "2026-09-17T00:00:00Z",
+  "updated_at": "2026-09-17T21:45:00Z",
+  "version": "0.3.3",
+  "dependencies": [],
+  "known_constraints": [
+    "No plaintext secrets in this pack or its consuming projects — device credentials are KeePassXC vault references only (<secret:keepassxc:cambium-devices/<entry>>), never values",
+    "Site asset registers have no standard template across sites — each grew independently; always read the register's own IP/MAC columns, never parse an address back out of a device name",
+    "hardware_revision is UNKNOWN for every catalogued model as of 2026-09-17 — no cnMaestro export has been performed against real hardware yet"
+  ],
+  "stable_facts": [
+    {
+      "statement": "cambium-devices/ KeePassXC vault group is flat, not nested by family — entries are cambium-devices/<family-or-variant> (e.g. enterprise-wifi, epmp-ap, epmp-ap-legacy, epmp-sm, epmp-sm-legacy, enterprise-wifi-legacy, cnwave-60ghz, cnpilot-r-series), each username admin. '-legacy' suffix entries hold the pre-recredentialing factory password for field units not yet updated to the standard one.",
+      "confidence": 0.95,
+      "tags": ["credentials", "vault", "keepassxc"]
+    },
+    {
+      "statement": "rcp-flavour sites carry R195P residential CPE; nbn_accelerate-flavour sites do not (operator-confirmed 2026-09-17, program-level rule, not a coincidence of any one site).",
+      "confidence": 0.9,
+      "tags": ["r195p", "cnpilot", "rcp", "nbn_accelerate"]
+    },
+    {
+      "statement": "R195P management IP derivation superseded 2026-09-17 (see references/05_known-issues.md, evidence E113): the assumed EXT10XX -> 10.255.10.XX rule was wrong for Burringurrah — the real, cnMaestro-confirmed R195P subnet is 10.255.11.x, live-verified via SSH against two real units (BUR-R195P-1055, BUR-R195P-1047). That subnet is a mixed XV2+R195P cluster sharing OUI bc:a9:93, not R195P-exclusive. Not yet confirmed as the fleet-wide rule beyond Burringurrah.",
+      "confidence": 0.85,
+      "tags": ["r195p", "asset-register", "verified-observed", "burringurrah"]
+    },
+    {
+      "statement": "Canonical site identifier is ansible-wifi's site_name (inventories/<flavour>/group_vars/<site>.yml), e.g. hope-vale, burringurrah — not an asset register's own display name (e.g. 'Hope Vale').",
+      "confidence": 0.95,
+      "tags": ["site-naming", "ansible-wifi"]
+    },
+    {
+      "statement": "As of 2026-09-17, all four Cambium device families this pack tracks have a real, live-verified adapter: Enterprise Wi-Fi XV2/E-series and ePMP AP/SM (scripts/cambium_xv2_adapter.py, scripts/cambium_epmp_adapter.py, REST/SSH), cnWave 60GHz (scripts/cambium_cnwave_adapter.py, JWT REST), and cnPilot R195P (scripts/cambium_r195p_adapter.py, SSH-only, no REST API confirmed). See references/06_device-api-cli-reference.md for per-family data points and CHANGELOG.md for the live-test evidence trail.",
+      "confidence": 0.95,
+      "tags": ["adapters", "verified-observed", "xv2", "epmp", "cnwave", "r195p"]
+    }
+  ]
+}

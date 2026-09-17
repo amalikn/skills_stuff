@@ -1,0 +1,423 @@
+# Per-site Cambium device-family IP addressing reality: register/derivation claims vs
+# live-confirmed reality. Machine-readable companion to
+# references/03_asset-register-conventions.md's "Per-Site IP Addressing Reality" section, which
+# carries the same facts as prose.
+#
+# Provenance is structured and self-contained (date/devices/method as real fields, not a prose
+# sentence) rather than citing an external evidence-register ID — this pack is meant to be usable
+# by any project touching this hardware, not just the one whose evidence register happened to log
+# the confirming session, and a structured field is what makes this file actually queryable
+# (filter by date, by method, by device) instead of just readable. `notes` is free text, for a
+# genuine one-off caveat that doesn't belong in a field of its own yet — if the same kind of caveat
+# shows up twice, give it a real field instead of writing the same sentence shape twice.
+#
+# method values (extend this list before inventing a new free-text description):
+#   ssh-cli-session    - authenticated SSH session, vendor CLI commands
+#   ssh-rest-session    - authenticated SSH session AND an authenticated REST/HTTPS API session
+#   luci-api-session    - authenticated LuCI-derived HTTPS JSON API session (ePMP family)
+#   arp-mac-oui-match   - live ARP table on the site's SMC box, host's MAC OUI matched against
+#                         oui_reference
+#   arp-absence         - live ARP table checked, zero hosts found in the claimed range (negative
+#                         evidence)
+#   cnmaestro-export     - operator-supplied cnMaestro Cloud device-list export (MAC/IP/serial/
+#                         firmware/status per device) — ground truth, not inferred; see
+#                         cambium-swap evidence E113
+#   snmp-get-session     - a real SNMPv2c GET (sysDescr/sysName) against the device, using an
+#                         operator-supplied community from the KeePassXC vault (cambium-devices/
+#                         apn-snmp-ro for rcp sites, cambium-devices/nbn-snmp-ro for nbn_accelerate
+#                         sites — confirmed as the correct split live, not guessed)
+#
+# Scope: ONLY the Cambium-specific "which octet does family X live on at site Y" fact. Does NOT
+# duplicate site -> smc-host -> Teleport cluster — that's resolved live from ansible-wifi by
+# skill-smc's scripts/teleport-tunnel.sh, never hardcoded here or there.
+#
+# Only add a site/family entry once it has been checked (live ARP, an adapter session, a
+# cnMaestro export, or a combination). With 20+ nbn_accelerate sites and 18+ rcp sites and only
+# hope-vale (nbn_accelerate) plus nine rcp sites checked so far, this file is still far from
+# complete — never add a row you haven't verified, and never guess a pattern for an unchecked site
+# by analogy to a checked one. The nine checked rcp sites already disagree with each other on
+# which octet each family lands on (see the per-site host_count/octet_pattern spread below) — one
+# site's pattern is never a safe guess for another, even within the same smc_flavour.
+#
+# trust values:
+#   verified     - live ARP/MAC-OUI match or a real adapter session confirmed this pattern
+#   contradicted - the register or a derivation rule claims a pattern, live evidence shows a
+#                  different one (or shows nothing at all, e.g. R195P)
+#   unverified   - not yet checked live; do not add rows for this, it's the default absence state
+
+schema_version: 3
+updated: "2026-09-17"  # all nine rcp sites + 3 new XV2 OUI blocks + SNMP confirmations added; see git history/CHANGELOG for exact time
+
+# Cambium MAC OUIs confirmed against real devices this fleet uses — the fastest way to identify
+# a device family from a bare ARP table at a site you haven't touched yet: match the OUI, don't
+# guess from IP range or hostname. Add an OUI here only once confirmed against a real device.
+oui_reference:
+  "bc:a9:93":
+    family: enterprise-wifi-xv2
+    verified:
+      date: "2026-09-17"
+      method: ssh-rest-session
+      site: hope-vale
+    notes: "NOT XV2-exclusive at every site — at Burringurrah this same OUI block is shared with cnpilot-r195p (confirmed via cnMaestro export and live SSH, cambium-swap evidence E113/E114); do not assume a bare bc:a9:93 ARP hit is XV2 without a hostname/serial cross-check"
+  "58:c1:7a":
+    family: epmp
+    verified:
+      date: "2026-09-17"
+      method: luci-api-session
+      site: hope-vale
+    notes: "covers both ePMP AP and ePMP SM, same OUI block — ALSO not exclusive: the Enterprise Wi-Fi E-series (E500 at tjuntjuntjara, E430H at mowanjum) uses this same OUI block too (confirmed via cnMaestro export, cambium-swap evidence E116); a bare 58:c1:7a ARP hit could be ePMP or E-series, cross-check hostname/serial"
+  "fc:11:65":
+    family: enterprise-wifi-xv2
+    verified:
+      date: "2026-09-17"
+      method: cnmaestro-export
+      site: burringurrah
+    notes: "a SECOND, separate XV2 OUI block from bc:a9:93's — Burringurrah's XV2 fleet uses this one, not bc:a9:93 (which at Burringurrah is R195P instead). Also seen at horn-island, mornington, wujal-wujal, bidyadanga. Different procurement/hardware batch than Hope Vale's bc:a9:93 units — do not assume one XV2 OUI generalises across sites"
+  "b4:a2:5c":
+    family: enterprise-wifi-xv2
+    verified:
+      date: "2026-09-17"
+      method: cnmaestro-export
+      site: horn-island
+    notes: "a THIRD XV2 OUI block, seen alongside bc:a9:93 and fc:11:65 at horn-island/mornington/wujal-wujal — same caution as fc:11:65 above, this family has no single reliable OUI fleet-wide"
+  "bc:e6:7c":
+    family: enterprise-wifi-xv2
+    verified:
+      date: "2026-09-17"
+      method: cnmaestro-export
+      site: tjuntjuntjara
+    notes: "a FOURTH XV2 OUI block, seen at tjuntjuntjara/mowanjum/jigalong/kalumburu (co-resident with bc:a9:93 at the latter two) — same caution as fc:11:65/b4:a2:5c above"
+
+sites:
+  hope-vale:
+    flavour: nbn_accelerate
+    families:
+      enterprise-wifi-xv2:
+        octet_pattern: "10.255.3.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: ssh-rest-session
+          devices: [HOP_XV2_AP1_IP3_1, HOP_XV2_AP5_IP3_5, HOP_XV2_AP6_IP3_6]
+          firmware: "6.6.0.3-r9"
+        notes: "SNMPv2c also confirmed live (method snmp-get-session, cambium-devices/nbn-snmp-ro), 10.255.3.1 — sysDescr='Cambium XV2-2T0 Two Radio Dual Band Wi-Fi 6 2x2 Integrated Omni Outdoor Access Point'"
+      epmp-ap:
+        octet_pattern: "10.255.0.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: luci-api-session
+          devices: [HOP_3000L_T1_Omni0_20]
+        notes: "SNMPv2c also confirmed live (method snmp-get-session, cambium-devices/nbn-snmp-ro), 10.255.0.20 — sysDescr shows the underlying Linux kernel string, not a Cambium-branded one"
+      epmp-sm:
+        octet_pattern: "10.255.4.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: luci-api-session
+          devices: [HOP_F25_AP5_IP4_5]
+      cnwave-60ghz:
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: ssh-rest-session
+          devices: [HOP_T1_V5K_IP4_100, HOP_T2_V2K_IP4_101]
+        notes: "REST API (POST /local/userLogin -> JWT), not SSH CLI — the SSH TUI has no official documentation and no adapter was built for it. Role matters: HOP_T1_V5K_IP4_100 is the onboard E2E controller (POP), HOP_T2_V2K_IP4_101 is a plain Client Node — /api/getTopology and /api/getCtrlStatusDump return data only from the E2E-role node. See cambium-swap evidence E118/E119 and scripts/cambium_cnwave_adapter.py. SNMPv2c also confirmed live (method snmp-get-session, cambium-devices/nbn-snmp-ro), 10.255.4.100 — sysDescr='Cambium cnWave V5000 Distribution Node, Version 1.4'"
+
+  burringurrah:
+    flavour: rcp
+    families:
+      enterprise-wifi-xv2:
+        register_octet_pattern: "10.255.3.x"
+        live_octet_pattern: "10.255.11.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 9
+        notes: "device-inventory.csv reconciled against the operator's cnMaestro export (cambium-swap evidence E114) — was contradicted, now corrected. 10.255.11.x is a MIXED XV2+R195P cluster (both families share the bc:a9:93 OUI block here); the earlier arp-mac-oui-match host_count of 41 was not XV2-exclusive as first assumed"
+      epmp-sm:
+        octet_pattern: "10.255.21.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: arp-mac-oui-match
+          host_count: 44
+          oui: "58:c1:7a"
+        notes: "one outlier row (BUR_F300-25SM_AP4_IP_3_11) still recorded at 10.255.3.11, not re-checked individually"
+      cnpilot-r195p:
+        register_octet_pattern: "10.255.10.x"
+        derivation_rule: "EXT10XX -> 10.255.10.XX, per 03_asset-register-conventions.md — CONFIRMED WRONG, see live_octet_pattern below"
+        live_octet_pattern: "10.255.11.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 53
+        notes: "resolved via operator-supplied cnMaestro export (cambium-swap evidence E113/E114) — real subnet is 10.255.11.x, shared with enterprise-wifi-xv2 above, not 10.255.10.x. Also found a row-misalignment bug in the original asset-register extraction: EXT1055's device-inventory.csv row carried EXT1059's MAC. device-inventory.csv fully reconciled against this export. SNMPv2c also confirmed live (method snmp-get-session, cambium-devices/apn-snmp-ro, not nbn-snmp-ro — rcp sites use the apn community), 10.255.11.55 — sysDescr='cnPilot R195P 4.7.3-R21', sysName='BUR-R195P-1055'"
+  horn-island:
+    flavour: rcp
+    families:
+      enterprise-wifi-xv2:
+        octet_pattern: "10.255.3.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 13
+      cnpilot-r195p:
+        octet_pattern: "10.255.11.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 125
+        notes: "dominant pattern shown; 107 hosts there. Also present: 10.255.12.x (18 hosts) — multiple towers/segments at this site, not a single clean octet"
+      epmp-ap:
+        octet_pattern: "10.255.0.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 8
+      epmp-sm:
+        octet_pattern: "10.255.21.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 130
+        notes: "dominant pattern shown; 108 hosts there. Also present: 10.255.22.x (22 hosts) — multiple towers/segments at this site, not a single clean octet"
+
+  tjuntjuntjara:
+    flavour: rcp
+    families:
+      enterprise-wifi-xv2:
+        octet_pattern: "10.255.3.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 8
+      cnpilot-r195p:
+        octet_pattern: "10.255.1.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 74
+      epmp-ap:
+        octet_pattern: "10.255.0.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 3
+      epmp-sm:
+        octet_pattern: "10.255.2.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 71
+        notes: "dominant pattern shown; 64 hosts there. Also present: 10.255.3.x (7 hosts) — multiple towers/segments at this site, not a single clean octet"
+
+  mornington:
+    flavour: rcp
+    families:
+      enterprise-wifi-xv2:
+        octet_pattern: "10.255.3.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 23
+      cnpilot-r195p:
+        octet_pattern: "10.255.11.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 359
+        notes: "dominant pattern shown; 183 hosts there. Also present: 10.255.12.x (174 hosts), 10.255.13.x (2 hosts) — multiple towers/segments at this site, not a single clean octet"
+      epmp-ap:
+        octet_pattern: "10.255.0.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 12
+      epmp-sm:
+        octet_pattern: "10.255.21.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 343
+        notes: "dominant pattern shown; 178 hosts there. Also present: 10.255.22.x (163 hosts), 10.255.23.x (2 hosts) — multiple towers/segments at this site, not a single clean octet"
+
+  mowanjum:
+    flavour: rcp
+    families:
+      enterprise-wifi-xv2:
+        octet_pattern: "10.255.3.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 14
+      cnpilot-r195p:
+        octet_pattern: "10.255.1.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 78
+      epmp-ap:
+        octet_pattern: "10.255.0.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 5
+      epmp-sm:
+        octet_pattern: "10.255.2.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 63
+
+  jigalong:
+    flavour: rcp
+    families:
+      enterprise-wifi-xv2:
+        octet_pattern: "10.255.3.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 6
+      cnpilot-r195p:
+        octet_pattern: "10.255.1.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 57
+      epmp-ap:
+        octet_pattern: "10.255.0.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 3
+      epmp-sm:
+        octet_pattern: "10.255.2.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 72
+        notes: "dominant pattern shown; 71 hosts there. Also present: 10.255.0.x (1 hosts) — multiple towers/segments at this site, not a single clean octet"
+
+  kalumburu:
+    flavour: rcp
+    families:
+      enterprise-wifi-xv2:
+        octet_pattern: "10.255.3.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 12
+      cnpilot-r195p:
+        octet_pattern: "10.255.1.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 108
+        notes: "dominant pattern shown; 106 hosts there. Also present: 10.255.11.x (2 hosts) — multiple towers/segments at this site, not a single clean octet"
+      epmp-ap:
+        octet_pattern: "10.255.0.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 10
+      epmp-sm:
+        octet_pattern: "10.255.2.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 110
+        notes: "dominant pattern shown; 99 hosts there. Also present: 10.255.0.x (6 hosts), 10.255.3.x (5 hosts) — multiple towers/segments at this site, not a single clean octet"
+
+  wujal-wujal:
+    flavour: rcp
+    families:
+      enterprise-wifi-xv2:
+        octet_pattern: "10.255.3.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 10
+      cnpilot-r195p:
+        octet_pattern: "10.255.11.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 87
+      epmp-ap:
+        octet_pattern: "10.255.0.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 8
+      epmp-sm:
+        octet_pattern: "10.255.21.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 88
+        notes: "dominant pattern shown; 80 hosts there. Also present: 10.255.3.x (8 hosts) — multiple towers/segments at this site, not a single clean octet"
+
+  bidyadanga:
+    flavour: rcp
+    families:
+      enterprise-wifi-xv2:
+        octet_pattern: "10.255.3.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 11
+      cnpilot-r195p:
+        octet_pattern: "10.255.11.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 206
+        notes: "dominant pattern shown; 192 hosts there. Also present: 10.255.12.x (14 hosts) — multiple towers/segments at this site, not a single clean octet"
+      epmp-ap:
+        octet_pattern: "10.255.0.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 8
+      epmp-sm:
+        octet_pattern: "10.255.21.x"
+        trust: verified
+        verified:
+          date: "2026-09-17"
+          method: cnmaestro-export
+          host_count: 200
+        notes: "dominant pattern shown; 178 hosts there. Also present: 10.255.22.x (10 hosts), 10.255.23.x (7 hosts), 10.255.3.x (5 hosts) — multiple towers/segments at this site, not a single clean octet"
