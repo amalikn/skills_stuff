@@ -64,6 +64,22 @@ Login mechanics (REST `POST /api/login` cookie/XSRF flow, `tsh` tunnel form, SSH
 | Network health (routes/ARP)  | `GET /api/ip_route-summary`       | `show ip route`,                              | Lower priority — mostly redundant with LibreNMS, kept for CLI-only    |
 |                              |                                   | `show arp`, `show ip neighbour`               | troubleshooting parity. Documented only, not yet queried live.        |
 
+### SNMP (cnPilotMIB) — Read-Only Identity Data, Confirmed Live 2026-09-18
+
+The gap noted in `cambium-swap`'s pass-08 research (no dedicated XV2/Wi-Fi 6 MIB in any public mirror) turned out not to block a real walk: the 2015-vintage `cnPilotMIB` mirror
+(`artifacts/mibs/librenms/cnpilote/CAMBIUM-MIB` in `cambium-swap`, module `cnPilotMIB ::= { cambium 22 }`) still matches cleanly against live `XV2-22H` Wi-Fi 6 firmware `6.6.0.3-r9`. A live SNMPv2c
+walk of `cambiumAccessPointEntry` — base OID `.1.3.6.1.4.1.17713.22.1.1.1` — against 4 hope-vale units (`HOP_XV2_AP26/27/28/29`) returned all 15 columns correctly: MAC (index `.1`, dash-separated —
+convert to this project's colon-separated convention), name (`.2`), IP (`.3`), **serial number (`.4`)**, model (`.5`), CPU/memory (`.6`/`.7`), SW version (`.8`), uptime (`.9`), hardware type (`.10`,
+e.g. "Two Radio Dual Band Wi-Fi 6 2x2 Wall Plate Indoor Access Point"), regulatory (`.11`), cnMaestro connection status/account ID (`.12`/`.13`), client count (`.14`), upgrade status (`.15`).
+
+This is the only confirmed way to get `serial_msn` for a device that never appears in a cnMaestro Cloud export (REST `get_facts` needs an authenticated session on the device itself, which is fine when
+reachable that way, but SNMP is lower-friction when only read-only community access is available). Evidence: `cambium-swap` evidence E130; automated by `cambium-swap`'s
+`scripts/snmp_resolve_unknowns.py`.
+
+**Do not assume this generalises** to `XV2-2T0`, `E500` or `E430` without testing one live unit of each first — `cnPilotMIB` matching `22H` firmware is not proof it matches other cnPilot E-series
+firmware branches. `scripts/snmp_resolve_unknowns.py`'s `FAMILY_OID_MAP` is deliberately scoped to exactly what has been verified; extend it (and this note) only after a hands-on test, not by
+inference.
+
 ### Enterprise Wi-Fi E-series (`E500`, `E430`) — Same Adapter, Confirmed Live 2026-09-17
 
 Older cnPilot E-series hardware, but the same Falcon-family REST API and CLI as XV2 above — no separate adapter needed. Confirmed live against real units: `E500` (`TJN_E500_AP4_IP3_40`, Tjuntjuntjara,

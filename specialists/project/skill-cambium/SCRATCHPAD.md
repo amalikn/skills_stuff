@@ -92,8 +92,9 @@ same pass as this note (2026-09-17, staleness audit).
 - Coherence sweep then propagated those fixes further: checks 145→150. `AI_NAVIGATION.md` and `context-map.yaml` were both missing routing rows/entries for reference files 05 and 06;
   `.archcore/README.md` and its manifest-version-discipline rule still claimed no automated check existed for manifest freshness, immediately after the audit added one. Verified `skill-smc` only ever
   references this pack by topic, never by version or file count, so nothing there needed reconciling.
-- **Committed this pack to git for the first time.** It had accumulated a full day of real work (four live-verified adapters, `site-addressing.yaml` expanded to all 10 sites, SNMP vault entries,
-  `.archcore/` rules and ADRs) with zero version-control history until now. `skills_stuff` repo (this pack is a subpath, remote `amalikn/skills_stuff`), commit `1d25892`, 39 files, pushed to `main`.
+- **Committed this pack to git for the first time.** It had accumulated a full day of real work (four live-verified adapters, `references/site-addressing.yaml` expanded to all 10 sites, SNMP vault
+  entries, `.archcore/` rules and ADRs) with zero version-control history until now. `skills_stuff` repo (this pack is a subpath, remote `https://github.com/amalikn/skills_stuff`), commit `1d25892`,
+  39 files, pushed to `main`.
 
 ### 2026-09-17 ~11:35a-12:15p — live device access, first adapter code, formal-schema question resolved
 

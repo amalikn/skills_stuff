@@ -8,6 +8,7 @@
 - [`kp` Wrapper Gotchas](#kp-wrapper-gotchas)
 - [Reference Convention](#reference-convention)
 - [Confirmed Live Network Path to a Site (Hope Vale, 2026-09-17)](#confirmed-live-network-path-to-a-site-hope-vale-2026-09-17)
+- [cnMaestro REST API v2 Access (2026-09-18)](#cnmaestro-rest-api-v2-access-2026-09-18)
 
 ---
 
@@ -22,16 +23,23 @@ the `<secret:keepassxc:...>` reference syntax below.
 Vault: `~/Library/CloudStorage/OneDrive-Personal/A/APN_keepassDB.kdbx`, group `cambium-devices/`. Structure decided 2026-09-16, operator-corrected mid-build from an initial nested
 `cambium-devices/<family>/admin` layout to a **flat** one:
 
-| Entry                                    | Covers                                                           |
-| ---------------------------------------- | ---------------------------------------------------------------- |
-| `cambium-devices/enterprise-wifi`        | XV2-2T0, XV2-22H, E500, E430 (standard password)                 |
-| `cambium-devices/enterprise-wifi-legacy` | Un-recredentialed XV2 stragglers (old factory password)          |
-| `cambium-devices/epmp-ap`                | ePMP 3000, ePMP 3000L (standard password)                        |
-| `cambium-devices/epmp-ap-legacy`         | ePMP 1000, ePMP 1000 2.4 GHz / 5 GHz Connectorized (old default) |
-| `cambium-devices/epmp-sm`                | Force 300-16, Force 300-25 (standard password)                   |
-| `cambium-devices/epmp-sm-legacy`         | Force 180; un-recredentialed Force 300 stragglers (old default)  |
-| `cambium-devices/cnpilot-r-series`       | R195P                                                            |
-| `cambium-devices/cnwave-60ghz`           | V5000, V3000, V2000, V1000                                       |
+| Entry                                 | Covers                                                                                                                                                       |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cambium-devices/enterprise-wifi`     | XV2-2T0, XV2-22H, E500, E430 (standard password)                                                                                                             |
+| `cambium-devices/enterprise-wifi-\`   | Un-recredentialed XV2 stragglers (old factory password)                                                                                                      |
+|   `legacy`                            |                                                                                                                                                              |
+| `cambium-devices/epmp-ap`             | ePMP 3000, ePMP 3000L (standard password)                                                                                                                    |
+| `cambium-devices/epmp-ap-legacy`      | ePMP 1000, ePMP 1000 2.4 GHz / 5 GHz Connectorized (old default)                                                                                             |
+| `cambium-devices/epmp-sm`             | Force 300-16, Force 300-25 (standard password)                                                                                                               |
+| `cambium-devices/epmp-sm-legacy`      | Force 180; un-recredentialed Force 300 stragglers (old default)                                                                                              |
+| `cambium-devices/cnpilot-r-series`    | R195P                                                                                                                                                        |
+| `cambium-devices/cnwave-60ghz`        | V5000, V3000, V2000, V1000                                                                                                                                   |
+| `cambium-devices/apn-snmp-ro`         | SNMPv2c read-only community, `rcp`-flavour sites (2026-09-17)                                                                                                |
+| `cambium-devices/apn-snmp-rw`         | SNMPv2c read-write community, `rcp`-flavour sites — untested                                                                                                 |
+| `cambium-devices/nbn-snmp-ro`         | SNMPv2c read-only community, `nbn_accelerate`-flavour sites                                                                                                  |
+| `cambium-devices/nbn-snmp-rw`         | SNMPv2c read-write community, `nbn_accelerate`-flavour sites — untested                                                                                      |
+| `cambium-devices/nbn-cnmaestro-api`   | cnMaestro REST API v2 OAuth2 client (URL/UserName = client_id, Password = client_secret) for the `cw-cnmaestro01`/`nbn_accelerate` controller — see "cnMaestro |
+|                                       |   REST API v2 Access" below                                                                                                                                  |
 
 Every entry's username is `admin`. Don't create a fresh sub-group per family — put the family/variant name directly in the entry title under the flat `cambium-devices/` group.
 
@@ -92,3 +100,30 @@ fields). The REST API's `/api/device-summary` alone returned a much larger struc
 gateway/DNS/VLAN), radio channel list, station count, and — notably — the device's live cnMaestro connection state and target hostname. The web UI/API is the richer, more complete management surface;
 SSH's `show` commands look like a narrower read-only convenience layer on the same underlying state. Not yet explored: the SSH CLI's full command set beyond `show version` — untested whether deeper
 `show` subcommands reach API parity.
+
+## cnMaestro REST API v2 Access (2026-09-18)
+
+Confirmed live against the `cw-cnmaestro01` on-prem controller for the `nbn_accelerate` fleet — host resolves publicly to `13.237.46.180` (reachable directly, no Teleport tunnel needed for the API
+itself), instance version `3.0.0-r34` (operator-confirmed), though the API v2 shape matches the archived `cnmaestro-onprem-6.0.0` user guide exactly.
+
+**Auth — the one real gotcha:** OAuth2 client_credentials against `/api/v2/access/token`, **not** `/api/v2/token`. The wrong path still returns HTTP 400 with plausible-looking OAuth2 error bodies
+(`{"error":"unauthorized_client"}` for HTTP Basic auth, `{"error":"invalid_request"}` for credentials-in-body) instead of a 404, so a wrong-path guess reads exactly like a credential problem — cost
+real time before the correct path was found in `evidence/archived-docs/E01-cnmaestro-onprem-6.0.0-user-guide.txt` (cambium-swap), line 20330, "Access API" chapter. Correct form:
+
+```bash
+curl -sk -X POST -u "<client_id>:<client_secret>" -d "grant_type=client_credentials" \
+  https://13.237.46.180/api/v2/access/token
+# -> {"access_token":"...","token_type":"bearer","expires_in":3600}
+```
+
+Credential = `cambium-devices/nbn-cnmaestro-api` (URL/UserName field = client_id, Password field = client_secret — cnMaestro calls this an "API Client", created under its own System → API Clients
+page, named `cw-teleport01` on this instance).
+
+**Site/tower device grouping — the actual payoff.** cnMaestro organises every device into a named `network` object (roughly: site, or a site's sub-chain — e.g. `Doomadgee`, `Doomadgee -T1-T5`,
+`Pukatja - T1-T15-P2P`). `GET /api/v2/networks` lists them all; `GET /api/v2/devices?network=<name>&fields=mac,name` (query-string filter, **not** a `/networks/{id}/devices` path segment — this
+instance's v2 API explicitly rejects the path form: `"Network/Tower/Site/ManagedAccount filters are not supported at path level in V2. ... rewrite as api/v2/devices?network=default&site=office"`)
+returns that network's member devices. This is authoritative device→site ground truth from cnMaestro's own admin-configured hierarchy — a materially better source than inferring site from device
+naming conventions or from live ARP tables on each site's SMC box (both of which cambium-swap tried first; see cambium-swap evidence E124 for the full three-pass resolution chain applied to a
+635-device multi-site export). Resolved a site (`Aurukun`, 83 devices across 8 network sub-objects) that neither the device-name-prefix pass nor the ARP-table pass had found any trace of at all.
+
+Never called a write endpoint (config/reboot/onboard) against this API — only `GET /api/v2/access/token`, `GET /api/v2/networks`, `GET /api/v2/devices`.

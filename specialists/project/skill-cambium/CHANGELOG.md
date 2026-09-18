@@ -27,6 +27,13 @@
 - [20260917_2057](#20260917_2057)
 - [20260917_2130](#20260917_2130)
 - [20260917_2145](#20260917_2145)
+- [20260918_0855 — cnMaestro REST API v2 access documented; vault table gained 5 missing entries](#20260918_0855--cnmaestro-rest-api-v2-access-documented-vault-table-gained-5-missing-entries)
+- [20260918_0930 — site-addressing.yaml restructured by flavour, populated for all 27 nbn_accelerate sites, generator script added](#20260918_0930--site-addressingyaml-restructured-by-flavour-populated-for-all-27-nbn_accelerate-sites-generator-script-added)
+- [20260918_1045 — two missing OUI blocks added after operator flagged oui_reference as stale](#20260918_1045--two-missing-oui-blocks-added-after-operator-flagged-oui_reference-as-stale)
+- [20260918_1050 — generate_site_addressing_families.py gained --oui-audit mode](#20260918_1050--generate_site_addressing_familiespy-gained---oui-audit-mode)
+- [20260918_1055 — full regenerate-and-verify pass: 8 missing families added, oui_reference restructured to a real site map](#20260918_1055--full-regenerate-and-verify-pass-8-missing-families-added-oui_reference-restructured-to-a-real-site-map)
+- [20260918_1100 — YAML formatting cleanup, content accuracy fixes, FAMILY_MAP bug found and fixed](#20260918_1100--yaml-formatting-cleanup-content-accuracy-fixes-family_map-bug-found-and-fixed)
+- [20260918_1115 — cnPilotMIB SNMP read-only identity data confirmed live on XV2-22H Wi-Fi 6 firmware](#20260918_1115--cnpilotmib-snmp-read-only-identity-data-confirmed-live-on-xv2-22h-wi-fi-6-firmware)
 
 ---
 
@@ -677,3 +684,154 @@ when written. Found 13 defects (11 from the defect register, 2 more from the Pha
 
 - `python3 scripts/check_governance.py`: 145/145 passing after this pass's edits (routing-table and context-map.yaml additions raised the assertion count further from `20260917_2130`'s own 144/144
   note).
+
+## 20260918_0855 — cnMaestro REST API v2 access documented; vault table gained 5 missing entries
+
+Triggered by `cambium-swap` work (splitting a 635-device nbn_accelerate system-level cnMaestro export into per-site files, evidence E124) that used two vault entries — `nbn-cnmaestro-api` and the four
+`*-snmp-ro`/`*-snmp-rw` entries added under evidence E122 — neither of which had ever been written back to this pack's own vault table, despite the Standing Write-Back Contract.
+
+### Fixed
+
+- `references/02_device-access-and-vault.md`'s Vault Structure table — added `<secret:keepassxc:cambium-devices/apn-snmp-ro>`, `apn-snmp-rw`, `nbn-snmp-ro`, `nbn-snmp-rw` (existed in the vault since
+  E122, never documented here) and `<secret:keepassxc:cambium-devices/nbn-cnmaestro-api>` (new this session).
+- Added a new "cnMaestro REST API v2 Access" section: the real auth endpoint is `/api/v2/access/token`, not the more guessable `/api/v2/token` (which returns HTTP 400 with plausible-looking OAuth2
+  error bodies instead of a 404, so a wrong-path guess reads exactly like a credential failure); the `GET /api/v2/devices?network=<name>&fields=...` query-filter pattern for authoritative device→site
+  grouping (this API's v2 explicitly rejects the `/networks/{id}/devices` path-segment form some other cnMaestro doc examples suggest); confirmed live against the real `cw-cnmaestro01` controller
+  (v3.0.0-r34) even though the API shape was found in an archived 6.0.0 doc.
+- Verified both edits by reading the file back (Standing Write-Back Contract requirement) — `grep` for `nbn-cnmaestro-api`, `/api/v2/access/token`, and `Aurukun` all found in the written file.
+
+### Notes
+
+- Full resolution story (three-pass: name-match → live ARP → this API) lives in `cambium-swap`'s evidence E124 and CHANGELOG `20260918_0850` entry — not duplicated here, per the equipment-knowledge
+  routing rule (this pack owns the API/CLI surface knowledge, the consuming project owns the project-specific rationale and evidence chain).
+- Governance check not re-run this pass (no `just check` invoked) — flagged for the next full pass over this pack.
+
+## 20260918_0930 — site-addressing.yaml restructured by flavour, populated for all 27 nbn_accelerate sites, generator script added
+
+Prompted by `cambium-swap` populating 27 per-site nbn_accelerate `_cnmaestro-inventory.csv` files (evidence E124) — this file previously had only `hope-vale` filled in for that flavour, the other 26
+sites entirely undocumented.
+
+### Changed
+
+- `references/site-addressing.yaml` `schema_version` 3→4. `sites:` and the new `site_short_names:` (see Added) are now nested one level deeper, under each site's flavour (`rcp` / `nbn_accelerate`),
+  not flat. Every site's now-redundant `flavour:` field was removed — implied by its parent key instead. Operator-requested change, prompted by the file growing to 35 total sites and the discovery
+  that a short device-name code (`KAL`) collides across flavours (`kalumburu` in `rcp`, `kaltjiti-fergon` in `nbn_accelerate`) — nesting by flavour makes that collision structurally visible instead of
+  a footnote.
+- Populated `families:` (octet_pattern/host_count per device family, `method: cnmaestro-export`, `trust: verified`) for all 26 previously-undocumented `nbn_accelerate` sites, derived from
+  `cambium-swap`'s newly-split per-site export CSVs. `hope-vale`'s existing hand-authored block (including its live SSH/REST/SNMP verification notes) was preserved untouched, not regenerated.
+
+### Added
+
+- `references/site-addressing.yaml` `site_short_names:` — the short device-name code(s) each site's cnMaestro export actually uses (`HOP`, `DMG`, `GAL`, ...), nested by flavour for the same collision
+  reason as above, with inline notes for the handful of sites with no short code at all (`aurukun`, `indulkana`, `warakurna` — identified via cnMaestro network objects or a device-name suffix instead
+  of a leading code, per cambium-swap evidence E124).
+- `scripts/generate_site_addressing_families.py` — derives the `families:` block for one or more sites straight from their reconciled cnMaestro-export CSV, at the operator's request to make this a
+  persistent reusable tool rather than the scratchpad one-off script this session first used to populate the 26 new sites. Deliberately never writes `references/site-addressing.yaml` directly — prints
+  a YAML fragment for review/merge, since the file also carries hand-authored live-session notes (SSH/REST/SNMP narrative) a CSV-only script has no way to derive or preserve. Cataloged in
+  `scripts/README.md`.
+
+### Verified
+
+- `python3 -c "import yaml; yaml.safe_load(open('references/site-addressing.yaml'))"` — parses cleanly, `schema_version: 4`, 27 `nbn_accelerate` sites + 9 `rcp` sites in both `sites:` and
+  `site_short_names:`, `hope-vale`'s and every `rcp` site's pre-existing hand-authored `notes:`/verification fields intact (spot-checked programmatically, not just by eye).
+- `just check` not re-run this pass — flagged for the next full pass over this pack, same as the `20260918_0855` entry above.
+
+### Notes
+
+- Full resolution methodology for the 26 new nbn_accelerate sites (three-pass: name-match → live ARP → cnMaestro REST API) lives in `cambium-swap`'s evidence E124 — not duplicated here, per the
+  equipment-knowledge routing rule.
+
+## 20260918_1045 — two missing OUI blocks added after operator flagged oui_reference as stale
+
+Operator flagged `references/site-addressing.yaml`'s `oui_reference` block as possibly stale. Audited `cambium-swap`'s now-3174-row `device-inventory.csv` against the 5 documented blocks and found two
+real gaps: `00:04:56` (419 devices — dominant ePMP Force 300-16/25 OUI fleet-wide, also 85 60 GHz cnWave nodes, not ePMP-exclusive) and `30:cb:c7` (20 devices, cnWave-only so far). Both added with
+`method: cnmaestro-export`, matching the file's existing verification convention. `updated:` header bumped. See `cambium-swap` evidence E129 for the audit detail (not duplicated here).
+
+## 20260918_1050 — generate_site_addressing_families.py gained --oui-audit mode
+
+Operator asked whether the earlier OUI staleness fix (evidence-adjacent, `20260918_1045`) was captured in the persistent script rather than done ad hoc again.
+
+### Added
+
+- `scripts/generate_site_addressing_families.py --oui-audit`: reports OUI blocks present in `device-inventory.csv` but missing from `oui_reference`, with host_count/family/site breakdown — the same
+  computation done by hand for the `00:04:56`/`30:cb:c7` find. Prints a YAML-shaped stub (family left `UNKNOWN` for a human to pick from the breakdown, notes left as a prompt) rather than a
+  ready-to-paste entry — deciding family-exclusivity and writing the cross-site caution prose is a judgment call this script doesn't make. Never writes `references/site-addressing.yaml` directly, same
+  principle as the existing `families:` mode. Verified both ways: clean run reports nothing missing (both new OUIs already added), and a run against a copy of the file with `00:04:56` stripped out
+  correctly re-detects it.
+- `scripts/README.md` updated.
+
+### Verification
+
+- `python3 scripts/generate_site_addressing_families.py --oui-audit` — reports clean.
+- Negative test: same command against `references/site-addressing.yaml` with the `"00:04:56"` line removed correctly re-surfaces it with the right host_count/family/site breakdown.
+
+## 20260918_1055 — full regenerate-and-verify pass: 8 missing families added, oui_reference restructured to a real site map
+
+Operator asked to regenerate `families:` for every site and diff against the file, then fix what the diff found — consistently, and with `oui_reference`'s site data as a real structured field instead
+of prose.
+
+### Fixed
+
+- Regenerating every site with `scripts/generate_site_addressing_families.py --all --all-flavours` and diffing against the file found 8 completely missing family entries at the 8 older rcp sites that
+  were never given full coverage: `epmp-ap` at burringurrah; `cnwave-60ghz` at horn-island/mornington/wujal-wujal; `enterprise-wifi-eseries` at jigalong/kalumburu/mowanjum/tjuntjuntjara. Added all 8,
+  all `method: cnmaestro-export`, same shape as every other entry — no mixing.
+- The diff also found `host_count` disagreements on several already-present families (e.g. mornington `epmp-sm`: file said 343, regenerated CSV says 188). Left alone deliberately — several existing
+  entries were verified via `arp-mac-oui-match` (live-connected hosts only) not `cnmaestro-export` (every registered device including offline), so a mismatch there is two different, both-legitimate
+  measurements, not an error. Overwriting would have silently swapped verification method without saying so.
+
+### Changed
+
+- Every `oui_reference` entry's `verified.site` rewritten from a single dominant site + "also seen at X, Y, Z" prose into a full `site: {sitename: host_count, ...}` map, regenerated straight from
+  `device-inventory.csv`. All 7 entries (the original 5 plus the 2 added in `20260918_1045`) now share the identical shape — the original 5 had no `host_count` field at all; the 2 new ones did; none
+  were structurally consistent with each other before this pass.
+- `updated:` header bumped with the detail.
+
+### Verification
+
+- `python3 -c "import yaml; yaml.safe_load(...)"` — parses cleanly.
+- `python3 scripts/check_governance.py` — 154/154 passing.
+
+## 20260918_1100 — YAML formatting cleanup, content accuracy fixes, FAMILY_MAP bug found and fixed
+
+Operator follow-up on `20260918_1055`: wrap the new header comment properly (and re-flow it, not just cap it), move it above `schema_version:`, wrap every `oui_reference` `notes:` field as a YAML
+folded scalar (`notes: >-`) instead of a long single-line quoted string, and verify the notes are still accurate content-wise — then verify `scripts/generate_site_addressing_families.py` itself is
+current.
+
+### Fixed
+
+- Moved the long inline `updated:` comment to a proper wrapped block comment above `schema_version:`; wrapped the pre-existing top-of-file header comment (lines 1–58) to actually use the 160-column
+  budget instead of sitting under-filled at ~120 (58 lines → 47) — the two indented enumerations (`method values:`, `trust values:`) were left untouched, since reflowing a list breaks its alignment.
+- Converted all 34 `notes: "..."` quoted-string fields to `notes: >-` folded block scalars, wrapped at 160 columns — a quoted single-line string can't be wrapped without changing its literal type, a
+  folded scalar can.
+- Content accuracy pass on `oui_reference`, caught two real errors while re-reading the notes just written in `20260918_1055`: the `fc:11:65` note claimed "five known blocks total" for the
+  enterprise-wifi-xv2 family — there are only four (`bc:a9:93`, `fc:11:65`, `b4:a2:5c`, `bc:e6:7c`); fixed and named all four explicitly. The two ePMP OUI blocks (`58:c1:7a`, `00:04:56`) didn't
+  cross-reference each other the way the four XV2 blocks do each other — added reciprocal "one of two known ePMP OUI blocks" notes to both.
+- `scripts/generate_site_addressing_families.py`'s `FAMILY_MAP` was missing 4 of the 60 GHz cnWave device types (`V2000 CN/DN`, `V1000 CN/DN`) that [cambium-swap's
+  scripts/reconcile_cnmaestro_export.py](/Volumes/Data/_ai/_project/project_stuff/apn/cambium-swap/scripts/reconcile_cnmaestro_export.py)'s `TYPE_MAP` already had (synced there in `20260918_1030`,
+  never synced here) — rows of those types were silently dropped from `compute_families()`. Fixed. Re-running the corrected script against every rcp site found two real consequences: mornington's
+  `cnwave-60ghz` `families:` entry was undercounted (10→11 hosts), and bidyadanga was missing a `cnwave-60ghz` entry entirely (now added, 2 hosts — noted that 4 of its 6 cnWave devices are IPv6-only
+  in the export and aren't counted by this octet-based method at all).
+
+### Verification
+
+- `python3 -c "import yaml; yaml.safe_load(...)"` — parses cleanly throughout every edit in this pass.
+- Character-length check (not `awk`, which counts UTF-8 bytes and false-flagged two lines containing em-dashes) confirms zero comment lines over 160 characters.
+- `python3 scripts/check_governance.py` — 154/154 passing.
+
+## 20260918_1115 — cnPilotMIB SNMP read-only identity data confirmed live on XV2-22H Wi-Fi 6 firmware
+
+Standing Write-Back Contract entry for work done in `cambium-swap`: the pass-08 research gap ("no dedicated XV2/Wi-Fi 6 MIB in any public mirror") turned out not to block a real SNMP walk, and
+`cambium-swap` built a reusable script around the finding — both facts belong here, not just in that project's own CHANGELOG.
+
+### Added — `references/06_device-api-cli-reference.md`
+
+- New "SNMP (cnPilotMIB) — Read-Only Identity Data" subsection under Enterprise Wi-Fi (XV2): the 2015-vintage `cnPilotMIB` mirror ([cambium-swap's
+  artifacts/mibs/librenms/cnpilote/CAMBIUM-MIB](/Volumes/Data/_ai/_project/project_stuff/apn/cambium-swap/artifacts/mibs/librenms/cnpilote/CAMBIUM-MIB)) matches cleanly against live `XV2-22H` Wi-Fi 6
+  firmware `6.6.0.3-r9`. A live SNMPv2c walk of `cambiumAccessPointEntry` (base OID `.1.3.6.1.4.1.17713.22.1.1.1`) against 4 hope-vale units correctly returned all 15 columns, including serial number
+  (index `.4`) — the field a cnMaestro-export-based reconciliation pass can never fill for a device cnMaestro itself does not track. Cross-referenced: `cambium-swap` evidence E130, its [new
+  scripts/snmp_resolve_unknowns.py](/Volumes/Data/_ai/_project/project_stuff/apn/cambium-swap/scripts/snmp_resolve_unknowns.py).
+- Explicit scope-discipline note: this MIB match is confirmed only for `XV2-22H`. Do not assume it covers `XV2-2T0`, `E500` or `E430` firmware without testing one live unit of each first.
+
+### Verification
+
+- Read back `references/06_device-api-cli-reference.md` in the same session — new subsection present between the adapter data-points table and the E-series subsection, as intended.
