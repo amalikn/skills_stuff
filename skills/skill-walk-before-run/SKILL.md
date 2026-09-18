@@ -8,7 +8,7 @@ description: >-
   overwhelming. Manual invocation only.
 metadata:
   aliases: skill-wbr
-  version: 0.1.1
+  version: 0.1.2
 ---
 
 # Skill: Walk Before Run
@@ -89,18 +89,26 @@ third party (redirect to the cheapest available proxy); deliberate learning proj
 
 ## Ledger (RED, waiver, or RED-to-resolved only — never GREEN or AMBER)
 
-Append one line of JSON to `ledger.jsonl`, alongside this file, in the skill's own directory (create it if absent). Full field reference: [`schemas/ledger-entry.md`](schemas/ledger-entry.md).
+Never append to `ledger.jsonl` or a project's `.wbr-ledger.jsonl` directly (no raw Bash redirection, no inline Python/sed `open()`/`.write()` — an OPA policy hard-blocks these at the tool layer
+regardless of intent). Always call [`scripts/append_entry.py`](scripts/append_entry.py), which validates the entry against [`schemas/ledger-entry.md`](schemas/ledger-entry.md), appends to the
+canonical `ledger.jsonl`, and performs the project write-back below in the same call:
+
+```bash
+python3 scripts/append_entry.py --entry-json '<JSON object, fields below>' --project-root '<target project root dir>'
+```
+
+`--entry-json` fields — `ts` and `branch` are filled in automatically if omitted:
 
 On RED:
 
 ```json
-{"ts":"<ISO 8601, local offset>","project":"<project>","branch":"<git branch, or \"n/a\">","verdict":"RED","assumption":"<the one line from Step 0>","reason":"<which signal(s) fired>","next_test":"<cheapest real-world test>","waiver":false,"learned":null}
+{"project":"<project>","verdict":"RED","assumption":"<the one line from Step 0>","reason":"<which signal(s) fired>","next_test":"<cheapest real-world test>","waiver":false}
 ```
 
-On resolution, append instead:
+On resolution:
 
 ```json
-{"ts":"<ISO 8601, local offset>","project":"<project>","branch":"<git branch, or \"n/a\">","verdict":"RESOLVED","assumption":"<same assumption>","result":"PASS|FAIL","killed":"<what this invalidated, or none>","learned":null}
+{"project":"<project>","verdict":"RESOLVED","assumption":"<same assumption>","result":"PASS|FAIL","killed":"<what this invalidated, or none>"}
 ```
 
 A waiver is allowed; record it with its reason in `learned` and set `"waiver":true`. Two waivers on the same assumption is itself a finding — say so plainly on the next invocation. `learned` is
@@ -108,7 +116,8 @@ capture only: never act on it or use it to modify this skill.
 
 ## Project write-back (RED or RESOLVED only — same condition as the ledger)
 
-`ledger.jsonl` is the source of truth. Two appends happen on this condition, both append-only, never edited in place:
+`ledger.jsonl` is the source of truth. `scripts/append_entry.py` performs both of the following automatically when `--project-root` is given — never done by hand, both append-only, never edited in
+place:
 
 1. **Mirror, always:** if `.wbr-ledger.jsonl` exists in the target project's own root, append the same JSON line to it. If it doesn't — whether never created or deleted since — first seed it with
    every one of this project's entries already in `ledger.jsonl` (filtered by `project`), then the current one; self-healing against deletion, not just first-write. Recovery copy only — read only if
@@ -125,4 +134,4 @@ On resolution, append a new line rather than editing the one above:
 - [x] **skill-walk-before-run RESOLVED, <date>** — <same assumption>, result: PASS|FAIL. Full entry: `<path to this skill>/ledger.jsonl`.
 ```
 
-If the target project has no `SCRATCHPAD.md`, skip the pointer silently — the mirror still happens regardless.
+If the target project has no `SCRATCHPAD.md`, the script skips the pointer silently — the mirror still happens regardless.

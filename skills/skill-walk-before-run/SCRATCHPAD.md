@@ -28,6 +28,9 @@ only and has been removed from the parent file, not copied. See `BRIEF.md` for t
   Hope Vale Tower 1 — an **Enterprise Wi-Fi AP (model `XV2-2T0`)**, not ePMP/cnMatrix/cnWave (track (a), SNMP/`CAMBIUM-PMP80211-MIB`) and not cnPilot/CPE (track (b), TR-069/CWMP). The RED chain's
   `next_test` was written for those two tracks only; a third, CLI-over-SSH path just proved real-device access but hasn't yet produced the SNMP/API capture the RED actually needs to resolve. See
   `ledger.jsonl`, project `cambium-swap`, entries `ts` `2026-09-16T19:47:00+1000` (still-open RED, two-track next_test) and `ts` `2026-09-17T10:58:42+10:00` (RESOLVED, access-governance only).
+- [ ] **`scripts/append_entry.py` has no dedup/idempotency guard.** Added 2026-09-17 (decision #16) as the sole sanctioned ledger writer, but it always appends — it does not check whether an identical
+  entry already exists. Surfaced while reconciling the cambium-swap bypass entry (canonical + mirror were already identical; re-running the script would have duplicated both, so a manual
+  SCRATCHPAD-pointer-only fix was used instead). Revisit if a second reconciliation case shows this pattern recurring — a `--dedup-check` before append would remove the need to hand-verify each time.
 
 ---
 
@@ -35,9 +38,12 @@ only and has been removed from the parent file, not copied. See `BRIEF.md` for t
 
 | Item                  | Detail                                                                                                                                                                       |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ledger                | `skills/skill-walk-before-run/ledger.jsonl` — JSONL, one object/line. 8 entries as of 2026-09-17 (skill self-invocation, jdm, atar, psy-assess, and 4 for cambium-swap — 3   |
-|                       |   RED forming a proper superseding-append chain, plus 1 RESOLVED for the narrower access-governance assumption; see Open items above). Field                                 |
-|                       |   reference: `skills/skill-walk-before-run/schemas/ledger-entry.md`.                                                                                                         |
+| Ledger                | `skills/skill-walk-before-run/ledger.jsonl` — JSONL, one object/line. 9 entries as of 2026-09-17 (skill self-invocation, jdm, atar, psy-assess, and 5 for cambium-swap — 3   |
+|                       |   RED forming a proper superseding-append chain, plus 2 RESOLVED). The 5th cambium-swap entry (`ts` `2026-09-17T12:10:44+10:00`, RESOLVED) was written by a bypass script    |
+|                       |   outside the skill — see decision #16 below. Field reference: `skills/skill-walk-before-run/schemas/ledger-entry.md`.                                                       |
+| Sole writer + guard   | `scripts/append_entry.py` (added 2026-09-17, decision #16) is the only sanctioned writer — validates the schema, appends canonical, does mirror + SCRATCHPAD write-back in   |
+|                       |   one call. Enforced by an OPA policy rule in the workspace's existing gate: `_ai/_tool/tools_stuff/opa/bundle/policies/agent_authz.rego` hard-blocks any other Bash/Write/  |
+|                       |   Edit path to `ledger.jsonl`/`.wbr-ledger.jsonl`. Tests: `_ai/_tool/tools_stuff/opa/tests/agent_authz_test.rego`.                                                           |
 | Trial project ledgers | `.wbr-ledger.jsonl` mirror + `SCRATCHPAD.md` § Open items pointer, in each of `project_stuff/apn/cambium-swap`, `project_stuff/me/uae/atar`,                                 |
 |                       |   `project_stuff/me/japan/tracks/jdm` — recovery copies, canonical stays `ledger.jsonl` above. Uncommitted in their own repos as of 2026-09-16.                              |
 
@@ -45,6 +51,15 @@ only and has been removed from the parent file, not copied. See `BRIEF.md` for t
 
 ## Recent decisions
 
+- 2026-09-17 — decision #16: a cambium-swap-side script bypassed the skill entirely, writing a RESOLVED entry straight into `ledger.jsonl` via raw Python (landed in the real canonical file, since
+  `~/.claude/skills/skill-walk-before-run` symlinks here) with no schema validation, no mirror, no SCRATCHPAD pointer. Fixed with two layers: `scripts/append_entry.py` is now the only sanctioned
+  writer (validates, appends canonical, does mirror + pointer write-back in one call), and an OPA policy rule in the workspace's existing gate hard-blocks any other Bash/Write/Edit path to
+  `ledger.jsonl`/`.wbr-ledger.jsonl` — positioned ahead of the `python3 -c` safe-prefix rule that let the bypass through. Deliberate departure from v0.1's "no helper scripts" stance: that was about
+  not speculatively building tooling pre-trial, this is a script added because a bypass already happened. 38/38 `opa test` cases pass (8 new); verified live against the running `opa run --watch`
+  server. Full detail: memory-keeper channel `wbr`.
+- 2026-09-17 — reconciliation, not a new decision: asked to fix the bypass entry by re-running it through the new script, checked first instead — canonical `ledger.jsonl` and cambium-swap's
+  `.wbr-ledger.jsonl` mirror were already byte-identical for that entry (manually mirrored correctly at the time). Re-running the script would have duplicated both, since it has no dedup check
+  (tracked as a new Open item above). Only the standardized SCRATCHPAD pointer bullet was actually missing; added that alone, worded as a retroactive addition.
 - 2026-09-16 — decision #13: when a project holds multiple unresolved REDs that form a genuine dependency chain, the gate's next action must name the earliest untested step, never a later one that
   merely looks more relevant — output-only tie-break, scoped to genuinely sequential REDs (independent ones stay under #12). Documented in BRIEF.md, not encoded into `SKILL.md` logic.
 - 2026-09-16 — decision #14 **RETRACTED**: a cambium-swap `next_test` correction was applied as an in-place edit of an existing ledger entry, wrongly citing #6's typo-fix amendment as precedent.
@@ -83,6 +98,17 @@ only and has been removed from the parent file, not copied. See `BRIEF.md` for t
 ---
 
 ## Session history
+
+### 2026-09-17 (continued) — decision #16: bypass caught, `append_entry.py` + OPA hard-block built and verified, cambium-swap reconciled
+- Operator surfaced a cambium-swap-side script that had written a RESOLVED entry straight into `ledger.jsonl` via raw Python, bypassing the skill entirely (no schema check, no mirror, no SCRATCHPAD
+  pointer) — asked whether that was the right thing to do, then asked for a hook+helper to stop it recurring.
+- Built `scripts/append_entry.py` as the sole sanctioned ledger writer, and a new OPA policy rule (in the workspace's existing `agent_authz.rego` gate) hard-blocking any other Bash/Write/Edit path to
+  `ledger.jsonl`/`.wbr-ledger.jsonl`. Updated `SKILL.md`/`README.md`/`CHANGELOG.md`/`BRIEF.md` (decision #16) to match; version 0.1.1 → 0.1.2.
+- Verified rather than assumed: `opa test` 38/38 (8 new cases), live-confirmed against the running `opa run --watch` server that the exact bypass command is now blocked and the sanctioned script is
+  not, and exercised `append_entry.py` end-to-end against scratch copies (validation, mirror self-heal, SCRATCHPAD pointer, no-SCRATCHPAD skip).
+- Reconciled the cambium-swap bypass entry: found canonical `ledger.jsonl` and the project's `.wbr-ledger.jsonl` mirror were already identical for it (hand-mirrored correctly at the time), so did not
+  re-run the script (would have duplicated both — no dedup check exists yet, tracked as a new Open item). Added only the missing standardized SCRATCHPAD pointer bullet.
+- Evidence basis: memory-keeper channel `wbr`, 4 new keys. Checkpoint `slurp-20260917-wbr-append-entry-opa-guard`.
 
 ### 2026-09-16 (continued V) — decision #13, a self-caught append-only violation, decision #15, local SCRATCHPAD.md
 - Added decision #13 (RED-ordering priority for genuinely sequential unresolved REDs) to BRIEF.md at operator request, documentation-only.
@@ -143,6 +169,9 @@ only and has been removed from the parent file, not copied. See `BRIEF.md` for t
 
 ## Memory pointers
 
+- memory-keeper channel `wbr` (2026-09-17), 37 keys total: 33 from prior sessions (see below) + 4 new this session (`wbr.error.cambium-swap-ledger-bypass-script-20260917`,
+  `wbr.decision.append-entry-script-plus-opa-hardblock-20260917`, `wbr.progress.append-entry-verification-20260917`, `wbr.decision.cambium-swap-reconciliation-no-rerun-20260917`). Checkpoint, both
+  backends: `slurp-20260917-wbr-append-entry-opa-guard` (MK `523f7f65`, PC `81289f59-c4d1-41a7-9a0e-72fb901dc3b2`). Project `skills_stuff`, channel `wbr`.
 - memory-keeper channel `wbr` (2026-09-16), 33 keys total: 27 from prior sessions (see below) + 6 new this session (`wbr.decision.brief-decision-13-red-ordering-priority-20260916`,
   `wbr.error.inplace-edit-violated-append-only-20260916`, `wbr.decision.cambium-swap-stand-down-inference-wrong-20260916`, `wbr.progress.local-scratchpad-created-20260916`,
   `wbr.decision.no-roadmap-split-from-brief-20260916`, `wbr.task.cambium-swap-bench-unit-family-unknown-20260916`). Checkpoint, both backends:

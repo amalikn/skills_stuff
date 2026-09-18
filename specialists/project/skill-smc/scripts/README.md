@@ -418,6 +418,29 @@ LOOKBACK=60 ./correlate-pin-activation.sh bungardi       # widen the activation 
 **Runs entirely from a non-Linux operator machine.** The one GNU-`date`-dependent step (Apache-log-timestamp → epoch) happens on the remote Ubuntu box over `tsh ssh`; the join itself and the
 lease-epoch → human-readable conversion happen locally with a portable `date -d` / `date -r` fallback, so this works unmodified from a Mac.
 
+### `teleport-tunnel.sh`
+
+Opens a `tsh` local-port-forward tunnel from this workstation to any device reachable from a site's SMC box — Cambium APs/SMs, or anything else on that site's management network. Written 2026-09-17
+for `cambium-swap`/`skill-cambium` device-access work, then generalised and moved here since it's Teleport tunneling, not a Cambium-specific concern — this pack owns `tsh`/Teleport mechanics, per each
+pack's own `RUNBOOK.md`/`AGENTS.md` boundary.
+
+**Site -> SMC-host is resolved live from ansible-wifi's own inventory, never hardcoded.** Each site has a `[<site>_smc_bases]` group in exactly one `inventories/<flavour>/prod` file; the script
+`grep`s for it and `awk`s out the first host listed. Only the flavour->cluster split (`nbn_accelerate`/`nbn_wh`/`cw` -> `teleport.communitywifi.net.au`, `rcp`/`rct`/`wh`/`apn` -> `teleport.apn.au`) is
+a small fixed table in the script — that's a structural fact about the two clusters (see `../references/01_overview.md`'s Cluster split table), not per-site data.
+
+```bash
+./teleport-tunnel.sh hope-vale 10.255.3.1 20001 443 120     # a Cambium XV2's web UI
+./teleport-tunnel.sh burringurrah 10.255.11.45               # defaults: local port 20000, 443, 120s
+```
+
+Requires an active `tsh login --proxy=<cluster>` session for the target site's cluster already — does not log in for you (`rcp`/`rct`/`wh`-flavour clusters need interactive MFA). Blocks for
+`duration_seconds` once the tunnel is confirmed listening; background it (`&`) to keep working while it's open.
+
+| Script               | Touches                                                | Safety                                  | Notes                                                                      |
+| -------------------- | ------------------------------------------------------ | --------------------------------------- | -------------------------------------------------------------------------- |
+| `teleport-tunnel.sh` | `tsh` (Teleport session), ansible-wifi                 | `external-network`,                     | Opens a real tunnel to a live device; never writes anything, never         |
+|                      |   inventories (read-only)                              |   `requires-credentials`                |   touches ansible-wifi                                                     |
+
 ## Usage
 
 ```bash

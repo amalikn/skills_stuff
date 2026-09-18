@@ -22,23 +22,24 @@ When `skill-ai-it` runs in `bootstrap`, `navigation-add`, or `refresh` mode and 
 
 - `bootstrap` and `refresh` emit `ARCHCORE_PROMOTION_CANDIDATES.md` after `archcore init`. No `.archcore/` content files are created.
 - `promote` is the **only** mode that writes `.archcore/` content files (adr, rules, specs, guides, plans).
-- `promote` also writes `.archcore/README.md` as the durable index, carries the *never promote* reasoning into it, and then **deletes** `ARCHCORE_PROMOTION_CANDIDATES.md`. The candidates file is a
-  queue that exists between surfacing and promoting — it lives at the repo root, which `bootstrap` and `refresh` both rewrite, so nothing durable can be kept in it.
+- `promote` also writes `.archcore/index.guide.md` as the durable index (not `.archcore/README.md` — `archcore status` rejects any `.md` under `.archcore/` that isn't named `<slug>.<type>.md` with
+  YAML frontmatter, and a bare `README.md` reports as an issue rather than an index), carries the *never promote* reasoning into it, and then **deletes** `ARCHCORE_PROMOTION_CANDIDATES.md`. The
+  candidates file is a queue that exists between surfacing and promoting — it lives at the repo root, which `bootstrap` and `refresh` both rewrite, so nothing durable can be kept in it.
 
 Do not populate `.archcore/` content during bootstrap or refresh. Surface candidates; require explicit authorization to promote.
 
 ## Source mapping
 
-| Content | Archcore target |
-|---|---|
-| Final architecture decision | `.archcore/adr/` |
-| Durable project/agent rule | `.archcore/rules/` |
-| Technical/design contract | `.archcore/specs/` |
-| Operating procedure | `.archcore/guides/` |
-| Implementation plan | `.archcore/plans/` |
-| Reference material | `.archcore/docs/` |
-| Open proposal | `.archcore/rfc/` |
-| Early idea | `.archcore/ideas/` |
+| Content                     | Archcore target     |
+| --------------------------- | ------------------- |
+| Final architecture decision | `.archcore/adr/`    |
+| Durable project/agent rule  | `.archcore/rules/`  |
+| Technical/design contract   | `.archcore/specs/`  |
+| Operating procedure         | `.archcore/guides/` |
+| Implementation plan         | `.archcore/plans/`  |
+| Reference material          | `.archcore/docs/`   |
+| Open proposal               | `.archcore/rfc/`    |
+| Early idea                  | `.archcore/ideas/`  |
 
 ## Extraction heuristics
 
@@ -90,16 +91,16 @@ Apply these heuristics when scanning governance files to build `ARCHCORE_PROMOTI
 
 ## Exclusion table
 
-| Category | Rationale |
-|---|---|
-| `CHANGELOG.md` | History and corroboration only — not a source of durable truth. Never extract directly. |
-| Generated files (`.ai-context/`, `graphify-out/`, `repomix-output.md`) | Rebuildable outputs — not canonical. |
-| TODOs and unresolved questions | Transient. Resolve before promoting. |
-| Session notes (unmarked SCRATCHPAD sections) | Temporary. Only KEEP-marked blocks are candidates. |
-| Rules inherited from parent/global AGENTS.md | Already governed upstream. Avoid duplication. |
-| Draft plans and speculative roadmap items | Not accepted/approved. |
-| Completed or obsolete roadmap items | History only. |
-| One-off troubleshooting or incident-specific notes | Not reusable as operating procedures. |
+| Category                                                               | Rationale                                                                               |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `CHANGELOG.md`                                                         | History and corroboration only — not a source of durable truth. Never extract directly. |
+| Generated files (`.ai-context/`, `graphify-out/`, `repomix-output.md`) | Rebuildable outputs — not canonical.                                                    |
+| TODOs and unresolved questions                                         | Transient. Resolve before promoting.                                                    |
+| Session notes (unmarked SCRATCHPAD sections)                           | Temporary. Only KEEP-marked blocks are candidates.                                      |
+| Rules inherited from parent/global AGENTS.md                           | Already governed upstream. Avoid duplication.                                           |
+| Draft plans and speculative roadmap items                              | Not accepted/approved.                                                                  |
+| Completed or obsolete roadmap items                                    | History only.                                                                           |
+| One-off troubleshooting or incident-specific notes                     | Not reusable as operating procedures.                                                   |
 
 ## Candidate report format
 

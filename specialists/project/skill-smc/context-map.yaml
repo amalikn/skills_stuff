@@ -102,6 +102,11 @@ routing:
       and the 2026-09-11 nbn_accelerate/nbn_wh fleet case study.
     read:
     - references/14_pin-activation-diagnosis.md
+  cambium_asset_registers:
+    description: Pointer only -- ansible-wifi site_name join point for a Cambium asset
+      register. Full naming-convention/extraction knowledge lives in skill-cambium.
+    read:
+    - references/15_cambium-asset-registers.md
   smcbox_basics:
     description: SMC box definition, inventory flavors, Teleport access pattern, satellite
       constraints, APN vs NBN Accelerate cluster structural comparison.

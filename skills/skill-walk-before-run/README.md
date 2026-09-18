@@ -28,9 +28,10 @@ session-start auto-fire and no self-modification in v0.1.
 - `CHANGELOG.md` — behavioural revisions between versions.
 - `BRIEF.md` — the frozen creation brief: full decision-logic rationale, parked v0.2 ideas, acceptance tests, and the calibration example. Not loaded at runtime; kept as the provenance record.
 - `schemas/ledger-entry.md` — field reference and examples for `ledger.jsonl` entries. Not loaded at runtime; `SKILL.md`'s inline JSON templates are sufficient to act on.
+- `scripts/append_entry.py` — added in v0.1.2, incident-driven rather than a parked-list earn-in (see [`BRIEF.md`](BRIEF.md) decision #16): the only sanctioned writer to `ledger.jsonl`. An OPA policy
+  rule hard-blocks any other write path to `ledger.jsonl` or a project's `.wbr-ledger.jsonl` mirror.
 
-No `scripts/`, `references/`, `evals/` or `docs/` directories yet. Each has a named earn-in trigger in the brief's parked list (§ "Parked for v0.2") and is added only when the trial actually presses
-on it.
+No `references/`, `evals/` or `docs/` directories yet. Each has a named earn-in trigger in the brief's parked list (§ "Parked for v0.2") and is added only when the trial actually presses on it.
 
 ## Where the mutable state lives
 

@@ -60,18 +60,19 @@ regeneration.
 
 Determine the mode before editing. If the user does not specify a mode, infer it from existing files and requested action.
 
-| Mode             | Trigger                                                 | Behaviour                                                                                                               |
-| ---------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `bootstrap`      | New or lightly populated folder                         | Create the base governance scaffold and conditional project files.                                                      |
-| `navigation-add` | Existing project lacks `AI_NAVIGATION.md`               | Add the AI navigation starter module and wire it into AGENTS/CLAUDE/README. Where managed blocks already exist, run the |
-|                  |   or `context-map.yaml`                                 |   deterministic upgrade sequence rather than hand-editing them.                                                         |
-| `refresh`        | Existing governance files are present                   | **Run the deterministic upgrade sequence FIRST** (see [Deterministic Navigation-Control Automation](#deterministic-navigation-control-automation)) — it rewrites managed |
-|                  |                                                         |   blocks, restamps the version, and adds missing `context-map.yaml` keys mechanically. Only then re-scan content,       |
-|                  |                                                         |   update routing/index sections, append missing blocks, and preserve custom content by hand.                            |
-| `audit`          | User asks whether context is complete/stale/conflicting | Report missing files, stale sections, routing gaps, drift, and proposed fixes. Do not edit unless requested.            |
-| `promote`        | User authorizes promotion from                          | Write or propose `.archcore/` content files (adr, rules, specs, guides, plans). Only mode that creates `.archcore/`     |
-|                  |   `ARCHCORE_PROMOTION_CANDIDATES.md` or explicitly      |   content. Do not silently promote.                                                                                     |
-|                  |   requests durable promotion                            |                                                                                                                         |
+| Mode             | Trigger                                               | Behaviour                                                                                                                 |
+| ---------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `bootstrap`      | New or lightly populated folder                       | Create the base governance scaffold and conditional project files.                                                        |
+| `navigation-add` | Existing project lacks `AI_NAVIGATION.md`             | Add the AI navigation starter module and wire it into AGENTS/CLAUDE/README. Where managed blocks already exist, run the   |
+|                  |   or `context-map.yaml`                               |   deterministic upgrade sequence rather than hand-editing them.                                                           |
+| `refresh`        | Existing governance files are present                 | **Run the deterministic upgrade sequence FIRST** (see [Deterministic Navigation-Control Automation](#deterministic-navigation-control-automation)) — it rewrites managed |
+|                  |                                                       |   blocks, restamps the version, and adds missing `context-map.yaml` keys mechanically. Only then re-scan content, update  |
+|                  |                                                       |   routing/index sections, append missing blocks, and preserve custom content by hand.                                     |
+| `audit`          | User asks whether context                             | Report missing files, stale sections, routing gaps, drift, and proposed fixes. Do not edit unless requested.              |
+|                  |   is complete/stale/conflicting                       |                                                                                                                           |
+| `promote`        | User authorizes promotion from                        | Write or propose `.archcore/` content files (adr, rules, specs, guides, plans). Only mode that creates `.archcore/`       |
+|                  |   `ARCHCORE_PROMOTION_CANDIDATES.md` or explicitly    |   content. Do not silently promote.                                                                                       |
+|                  |   requests durable promotion                          |                                                                                                                           |
 
 ### Mode selection rules
 
@@ -168,7 +169,8 @@ skill-ai-it/
 │   ├── AGENTS-governance-checks-block.md
 │   ├── scripts-README.md
 │   ├── check_governance.py
-│   └── context-preflight.sh
+│   ├── context-preflight.sh
+│   └── .markdownlint-cli2.jsonc
 └── patterns/
     ├── archcore-routing.md
     ├── memory-bank-structure.md
@@ -193,24 +195,26 @@ skill-ai-it/
    and `graphify-out` unless the user asks to inspect them.
 2. Classify what you find:
 
-| Signal                                                                                                 | Inference                                                                             |
-| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
-| `.py`, `.ts`, `.js`, `.go`, `.rb`, `.rs`, `.java` files                                                | Code project                                                                          |
-| `docker-compose.yml`, `Dockerfile`, `Makefile`, `*.tf`                                                 | Infrastructure / ops                                                                  |
-| `*.eml`, `communications/` folder                                                                      | Communications tracking                                                               |
-| `*.md` files only, no code                                                                             | Docs / knowledge base                                                                 |
-| Mix of the above                                                                                       | Mixed project                                                                         |
-| `AI_NAVIGATION.md`, `context-map.yaml`                                                                 | AI navigation module already present                                                  |
-| `.archcore/`                                                                                           | Structured durable project truth present                                              |
-| `archcore` CLI available and `.archcore/` missing                                                      | Initialize `.archcore/` with `archcore init` in bootstrap/navigation-add/refresh mode |
-| `justfile`, `Justfile`                                                                                 | just task catalog present — preferred lightweight runnable task catalog               |
-| `scripts/`, `Makefile`, `Taskfile.yml`, `justfile`, `package.json` scripts, or common automation files | Script/task inventory useful; create or refresh `scripts/README.md`                   |
-| `memory-bank/`                                                                                         | Memory Bank-style project memory present                                              |
-| `graphify-out/`, `.ai-context/`                                                                        | Generated AI context/navigation artifacts present                                     |
-| `repomix.config.json`                                                                                  | Deterministic context-pack config present                                             |
-| `README.md` exists                                                                                     | Read it first before generating                                                       |
-| `CHANGELOG.md` exists                                                                                  | Read recent entries to understand project evolution and governance changes            |
-| `AGENTS.md` exists                                                                                     | Update, do not overwrite                                                              |
+| Signal                                                                                                       | Inference                                                                             |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| `.py`, `.ts`, `.js`, `.go`, `.rb`, `.rs`, `.java` files                                                      | Code project                                                                          |
+| `docker-compose.yml`, `Dockerfile`, `Makefile`, `*.tf`                                                       | Infrastructure / ops                                                                  |
+| `*.eml`, `communications/` folder                                                                            | Communications tracking                                                               |
+| `*.md` files only, no code                                                                                   | Docs / knowledge base                                                                 |
+| Mix of the above                                                                                             | Mixed project                                                                         |
+| `AI_NAVIGATION.md`, `context-map.yaml`                                                                       | AI navigation module already present                                                  |
+| `.archcore/`                                                                                                 | Structured durable project truth present                                              |
+| `archcore` CLI available and `.archcore/` missing                                                            | Initialize `.archcore/` with `archcore init` in bootstrap/navigation-add/refresh mode |
+| `justfile`, `Justfile`                                                                                       | just task catalog present — preferred lightweight runnable task catalog               |
+| `scripts/`, `Makefile`, `Taskfile.yml`, `justfile`, `package.json` scripts, or common automation files       | Script/task inventory useful; create or refresh `scripts/README.md`                   |
+| `memory-bank/`                                                                                               | Memory Bank-style project memory present                                              |
+| `graphify-out/`, `.ai-context/`                                                                              | Generated AI context/navigation artifacts present                                     |
+| `repomix.config.json`                                                                                        | Deterministic context-pack config present                                             |
+| `.markdownlint-cli2.jsonc`, `.markdownlint.json(c)`, `.markdownlint.yaml`, or a `markdownlint-cli2` key      | Markdown lint config already owned by the project — do not create/overwrite           |
+|   in `package.json`                                                                                          |                                                                                       |
+| `README.md` exists                                                                                           | Read it first before generating                                                       |
+| `CHANGELOG.md` exists                                                                                        | Read recent entries to understand project evolution and governance changes            |
+| `AGENTS.md` exists                                                                                           | Update, do not overwrite                                                              |
 
 3. Check the **parent folder** for:
    - `AGENTS.md` — read it to inherit conventions, routing patterns, internal domain
@@ -291,29 +295,34 @@ From inventory + content reads, determine:
 
 ### File creation/update policy
 
-| File                           | Bootstrap                                      | Navigation-add                  | Refresh                                                   | Audit                |
-| ------------------------------ | ---------------------------------------------: | ------------------------------: | --------------------------------------------------------: | -------------------: |
-| `README.md`                    | create/update                                  | update pointers                 | update index/pointers only                                | check                |
-| `AGENTS.md`                    | create/update                                  | add navigation block            | refresh managed block only                                | check                |
-| `CLAUDE.md`                    | create/update                                  | ensure wrapper                  | ensure wrapper                                            | check                |
-| `SCRATCHPAD.md`                | create/update                                  | update memory pointers          | append/protect KEEP                                       | check                |
-| `CHANGELOG.md`                 | create/update                                  | append navigation addition      | append refresh summary                                    | check                |
-| `.archcore/`                   | initialize if CLI available                    | initialize if CLI available     | initialize if CLI available                               | check                |
-| Graphify / `graphify-out/`     | run if CLI available                           | run if CLI available            | run if CLI available                                      | check                |
-| `repomix.config.json`          | initialize if CLI available                    | initialize if CLI available     | run to refresh context pack                               | check                |
-| `AI_NAVIGATION.md`             | create if useful                               | create                          | update managed sections only                              | check                |
-| `context-map.yaml`             | create if useful                               | create                          | write `.proposed` if risky                                | check                |
-| `scripts/README.md`            | create if scripts/tasks exist                  | add pointer if                  | create from template if scripts/tasks exist and file      | check                |
-|                                |                                                |   scripts/tasks exist           |   missing; update managed blocks if exists                |                      |
-| `justfile`                     | create from template if no canonical runner    | no unless needed                | propose only if drift/conflict                            | check                |
-|                                |   exists and scripts/automation present        |                                 |                                                           |                      |
-| `scripts/check_governance.py`  | create from template, tuned to                 | add if governance               | **create from template if missing**; if present, extend   | run it, report       |
-|                                |   inferred invariants                          |   surfaces exist                |   registries for new artifacts — never narrow an          |   failures and       |
-|                                |                                                |                                 |   existing check                                          |   coverage gaps      |
-| `scripts/context-preflight.sh` | explicit request only                          | explicit request only           | audit/propose only                                        | check                |
-| `ARCHITECTURE.md`              | conditional                                    | no unless needed                | update pointers only                                      | check                |
-| `CONVENTIONS.md`               | conditional                                    | no unless needed                | update pointers only                                      | check                |
-| `ROADMAP.md`                   | conditional                                    | no unless needed                | update progress only                                      | check                |
+| File                           | Bootstrap                                            | Navigation-add                      | Refresh                                                 | Audit        |
+| ------------------------------ | ---------------------------------------------------: | ----------------------------------: | ------------------------------------------------------: | -----------: |
+| `README.md`                    | create/update                                        | update pointers                     | update index/pointers only                              | check        |
+| `AGENTS.md`                    | create/update                                        | add navigation block                | refresh managed block only                              | check        |
+| `CLAUDE.md`                    | create/update                                        | ensure wrapper                      | ensure wrapper                                          | check        |
+| `SCRATCHPAD.md`                | create/update                                        | update memory pointers              | append/protect KEEP                                     | check        |
+| `CHANGELOG.md`                 | create/update                                        | append navigation addition          | append refresh summary                                  | check        |
+| `.archcore/`                   | initialize if CLI available                          | initialize if CLI available         | initialize if CLI available                             | check        |
+| Graphify / `graphify-out/`     | run if CLI available                                 | run if CLI available                | run if CLI available                                    | check        |
+| `repomix.config.json`          | initialize if CLI available                          | initialize if CLI available         | run to refresh context pack                             | check        |
+| `.markdownlint-cli2.jsonc`     | create unless a markdown lint config already exists  | create unless a markdown lint       | create unless a markdown lint config already exists     | check        |
+|                                |                                                      |   config already exists             |                                                         |              |
+| `AI_NAVIGATION.md`             | create if useful                                     | create                              | update managed sections only                            | check        |
+| `context-map.yaml`             | create if useful                                     | create                              | write `.proposed` if risky                              | check        |
+| `scripts/README.md`            | create if scripts/tasks exist                        | add pointer if scripts/tasks exist  | create from template if scripts/tasks exist and file    | check        |
+|                                |                                                      |                                     |   missing; update managed blocks if exists              |              |
+| `justfile`                     | create from template if no canonical runner exists   | no unless needed                    | propose only if drift/conflict                          | check        |
+|                                |   and scripts/automation present                     |                                     |                                                         |              |
+| `scripts/check_governance.py`  | create from template, tuned to inferred invariants   | add if governance surfaces exist    | **create from template if missing**; if present, extend | run it,      |
+|                                |                                                      |                                     |   registries for new artifacts — never narrow an        |   report     |
+|                                |                                                      |                                     |   existing check                                        |   failures   |
+|                                |                                                      |                                     |                                                         |   and        |
+|                                |                                                      |                                     |                                                         |   coverage   |
+|                                |                                                      |                                     |                                                         |   gaps       |
+| `scripts/context-preflight.sh` | explicit request only                                | explicit request only               | audit/propose only                                      | check        |
+| `ARCHITECTURE.md`              | conditional                                          | no unless needed                    | update pointers only                                    | check        |
+| `CONVENTIONS.md`               | conditional                                          | no unless needed                    | update pointers only                                    | check        |
+| `ROADMAP.md`                   | conditional                                          | no unless needed                    | update progress only                                    | check        |
 
 ---
 
@@ -373,8 +382,8 @@ After `archcore init` (or when `.archcore/` already exists in `bootstrap` or `re
 
 - On `refresh`: re-scan and update `ARCHCORE_PROMOTION_CANDIDATES.md`; do not overwrite existing `.archcore/` content.
 - On `audit`: report what candidates would be surfaced; do not write the file.
-- On `promote`: read `ARCHCORE_PROMOTION_CANDIDATES.md`; write or propose `.archcore/` content files with provenance headers and `status: proposed`; write or update `.archcore/README.md` as the index;
-  carry any still-relevant *never promote* reasoning into that index; then **delete `ARCHCORE_PROMOTION_CANDIDATES.md`**.
+- On `promote`: read `ARCHCORE_PROMOTION_CANDIDATES.md`; write or propose `.archcore/` content files with provenance headers and `status: proposed`; write or update `.archcore/index.guide.md` as the
+  index; carry any still-relevant *never promote* reasoning into that index; then **delete `ARCHCORE_PROMOTION_CANDIDATES.md`**.
 
 #### The candidates file is transient — promote deletes it
 
@@ -387,11 +396,14 @@ Two reasons, and the second is the one that bites:
 2. **It lives at the repo root, which `bootstrap` and `refresh` both rewrite.** Anything durable recorded there is destroyed by the next skill invocation with no trace. Observed 2026-08-25: a
    post-promotion ledger was written into it and would have been silently erased on the next refresh.
 
-**The durable index is `.archcore/README.md`**, written or updated by `promote`: what each document governs, the `status:` of the set, how to propose another, and — carried out of the candidates file
-before it is deleted — what is **deliberately never promoted** and why. That last table is the part a future scan needs, or it re-proposes the same rejected candidates every refresh.
+**The durable index is `.archcore/index.guide.md`**, written or updated by `promote`: what each document governs, the `status:` of the set, how to propose another, and — carried out of the candidates
+file before it is deleted — what is **deliberately never promoted** and why. That last table is the part a future scan needs, or it re-proposes the same rejected candidates every refresh.
 
-Point the project's orphan check at `.archcore/README.md`, not at the candidates file. Register the candidates filename in the checker's `CONDITIONAL_PATHS` with its reason, so historical mentions in
-`CHANGELOG.md` do not fail path resolution once the file is gone — history is not a live claim.
+**Not `.archcore/README.md`.** `archcore status` rejects any `.md` under `.archcore/` that isn't named `<slug>.<type>.md` with YAML frontmatter — a bare `README.md` there reports as an issue, not an
+index. Give `index.guide.md` frontmatter too: `title`, `status: accepted`, `tags: [index]` — it is itself an archcore document, not an exception to the naming rule.
+
+Point the project's orphan check at `.archcore/index.guide.md`, not at the candidates file. Register the candidates filename in the checker's `CONDITIONAL_PATHS` with its reason, so historical
+mentions in `CHANGELOG.md` do not fail path resolution once the file is gone — history is not a live claim.
 
 ---
 
@@ -728,9 +740,11 @@ Before answering, planning, editing, or creating files in this project:
 8. If sources conflict, stop and report the conflict instead of guessing.
 9. Do not treat `SCRATCHPAD.md` as durable truth unless content is marked `KEEP` or promoted into `.archcore/`, ROADMAP, or memory-bank.
 10. Do not treat Graphify (`graphify-out/`) or Repomix (`.ai-context/`) output as canonical truth. These are generated support artifacts only, always rebuildable.
-11. Before running scripts or automation, inspect `justfile`, `scripts/README.md`, `Taskfile.yml`, `Makefile`, and `package.json` when present. Prefer `just --list` and `just <task>` when a `justfile` exists.
+11. Before running scripts or automation, inspect `justfile`, `scripts/README.md`, `Taskfile.yml`, `Makefile`, and `package.json` when present.
+    Prefer `just --list` and `just <task>` when a `justfile` exists.
 12. Treat uncataloged scripts as `unknown` safety until inspected.
-13. Run defined audit/check commands before completing work. Where `scripts/check_governance.py` exists, that includes it — and when it fails, fix the project, not the check. Adding a new artifact class, generated output, or a constant restated across files requires extending its registries in the same pass.
+13. Run defined audit/check commands before completing work. Where `scripts/check_governance.py` exists, that includes it — and when it fails, fix the project, not the check.
+    Adding a new artifact class, generated output, or a constant restated across files requires extending its registries in the same pass.
 14. When adding, modifying, or removing scripts or tasks, update `scripts/README.md` to reflect the change — purpose, inputs, outputs, safety label, and idempotency.
 15. After making changes, update `CHANGELOG.md` for all durable governance/navigation changes.
 16. Preserve user-authored content outside managed sections. Do not rewrite custom project notes.
@@ -884,6 +898,22 @@ Repeat-run append format:
 
 - <file.proposed> — <reason>
 ```
+
+#### .markdownlint-cli2.jsonc
+
+Create during `bootstrap`, `navigation-add`, and `refresh` unless the project already owns a markdown lint config — check for `.markdownlint-cli2.jsonc`, `.markdownlint-cli2.yaml`,
+`.markdownlint.json(c)`, `.markdownlint.yaml`, or a `markdownlint-cli2` key in `package.json` first, and skip (report as skipped, not overwritten) if any is present.
+
+Preferred source template: `templates/.markdownlint-cli2.jsonc`. It encodes the same rule the *Markdown quality rules* section already enforces on every file this skill writes — prose wraps at 200
+columns, tables/code/headings exempt, `MD024` allows repeated headings across non-sibling sections — so `just lint-md` (or a bare `markdownlint-cli2` run) checks the same standard the skill already
+applies by hand, instead of a stricter or looser one fighting it.
+
+The template's `ignores` list covers generated/support surfaces common across this skill's own vocabulary (`graphify-out/`, `.ai-context/`, `.remember/`, `.code-context-notes/`, `.staleness-audit/`,
+`node_modules/`, `.git/`). Add project-specific exemptions — immutable baseline/seed docs, archived research passes predating the project's markdown conventions — as additional `ignores` entries; do
+not strip the shared ones.
+
+On `refresh`, if the file exists and was written by this skill (its header comment cites this policy), merge in any newly-relevant generated-support ignores that the project has gained since; leave
+project-specific ignores entries untouched. If the file exists without that header, treat it as user-owned and do not touch it.
 
 ---
 
@@ -1611,6 +1641,11 @@ Preferred source template: `templates/scripts-README.md`.
 
 Create or update `scripts/README.md` from the template. Populate entries for each discovered script or task runner entry. Do not create an empty `scripts/README.md` if no scripts or tasks exist.
 
+**Only "Execution Policy" / "Preferred Execution Order" / "Maintenance Rules" belong inside the `skill-ai-it:scripts` managed block** — that is the exact content
+`upgrade_navigation_control_layer.py`'s `build_scripts_block()` regenerates. "Runtimes", "Task Inventory", "Raw Script Inventory", "Safety Labels", and "Notes" are project-specific and must sit
+OUTSIDE the markers (the template already places them there). Nesting them inside the managed block, as the template did until 2026-09-18, means the next `nav-upgrade` silently discards them — the
+upgrader reports `replaced-managed-block` and that reads like success.
+
 ### Optional/generated support files
 
 These are created only on explicit user request or generated by supporting tools. They are not created automatically and are not canonical truth.
@@ -1682,8 +1717,8 @@ After creating/updating files in the target folder:
 - [ ] Parent README/AGENTS updated if they exist
 - [ ] If `archcore` CLI is available and the run mode allowed changes, `.archcore/` exists or the initialization failure is reported
 - [ ] If `.archcore/` exists after `bootstrap`, `navigation-add`, or `refresh`, `ARCHCORE_PROMOTION_CANDIDATES.md` exists in the target root or the final report explicitly explains why it was not
-  created/updated. After `promote` the opposite holds: the candidates file must be **gone**, its *never promote* reasoning carried into `.archcore/README.md`, and no governance surface still routing
-  to it
+  created/updated. After `promote` the opposite holds: the candidates file must be **gone**, its *never promote* reasoning carried into `.archcore/index.guide.md`, and no governance surface still
+  routing to it
 - [ ] `ARCHCORE_PROMOTION_CANDIDATES.md` was read back or section-checked before final response when it was created or updated
 - [ ] No `.archcore/adr/`, `.archcore/rules/`, `.archcore/specs/`, `.archcore/guides/`, or `.archcore/plans/` content files were written unless mode is `promote` or the operator explicitly authorized
   promotion
@@ -1709,9 +1744,11 @@ After creating/updating files in the target folder:
 - [ ] In `audit` mode, coverage gaps (artifact classes no check covers) were reported separately from failures
 - [ ] `AGENTS.md` contains an AI navigation/context preflight block or equivalent local rule
 - [ ] `repomix.config.json` includes governance files and excludes generated/heavy folders when created
+- [ ] `.markdownlint-cli2.jsonc` exists (created from `templates/.markdownlint-cli2.jsonc` or already owned by the project) — never both created and left conflicting with an existing config
 - [ ] If `repomix.config.json` exists and `.archcore/` exists, `.archcore/**/*.md` is included; `ARCHCORE_PROMOTION_CANDIDATES.md` is included only while it exists (pre-promote)
-- [ ] After `promote`: `.archcore/README.md` indexes every document written, the orphan check points at it rather than at the candidates file, and the candidates filename is registered in
-  `CONDITIONAL_PATHS` so historical mentions do not fail path resolution
+- [ ] After `promote`: `.archcore/index.guide.md` (with `title`/`status`/`tags` frontmatter — not `.archcore/README.md`, which `archcore status` rejects) indexes every document written, the orphan
+  check points at it rather than at the candidates file, and the candidates filename is registered in `CONDITIONAL_PATHS` so historical mentions do not fail path resolution
+- [ ] `archcore status` was run after `promote` and reports the new documents cleanly (no "unrecognized file" issues)
 - [ ] If a repo-local `scripts/context-preflight.sh` was explicitly requested, it is executable or the user was told to run `chmod +x scripts/context-preflight.sh`
 - [ ] Existing YAML/JSON files were not destructively regenerated during refresh mode
 - [ ] Existing `.archcore/` documents were not directly edited unless explicitly authorized

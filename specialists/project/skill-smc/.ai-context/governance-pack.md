@@ -65,6 +65,8 @@ references/
   11_vagrant-lab.md
   12_content-filtering.md
   13_known-issues.md
+  14_pin-activation-diagnosis.md
+  15_cambium-asset-registers.md
 scripts/
   README.md
 AGENTS.md
@@ -527,6 +529,11 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
 - **SSH only** — Teleport DB/Kubernetes/app access features not in use
 - **Access is exclusively `tsh ssh root@<hostname>` (Teleport CLI) — there is no SSH-wrapping MCP in use and no plain-`ssh` path to an SMC.** A `ssh root@<hostname>.teleport.<domain>` form only works
   if `tsh config` has already generated a `ProxyCommand`-wired `~/.ssh/config` entry for that specific cluster and `tsh login` is active; `tsh ssh` directly is the authoritative form.
+- **Canonical local-port-forward tunnel to a device behind an SMC box** (operator-supplied form, 2026-09-17): `tsh ssh --proxy <cluster> -L <local_port>:<device_ip>:<device_port> root@<smc-hostname>`.
+  The explicit `--proxy` flag matters — an earlier attempt without it (just `tsh ssh -L ... root@<host>`) was flaky in an agent-harness background-task context (intermittent "Unable to connect to ssh
+  proxy" and shell-quoting errors); with `--proxy` named explicitly it connected reliably first try. Verified live 2026-09-17: `tsh ssh --proxy teleport.communitywifi.net.au -L 10000:10.255.3.1:443
+  root@hope-vale-smc01` tunnelled a real device's HTTPS web UI to `localhost:10000` (HTTP 200). Device port convention (see `skill-cambium` for the device side): `443` for current Cambium web UIs,
+  `80` for older ones (operator-stated: ePMP 1000 uses HTTP not HTTPS).
 
 ### APN Cluster vs NBN Accelerate Cluster — Structural Comparison (2026-08-03)
 
@@ -2451,11 +2458,14 @@ known per-site values, and the recommended fleet-wide audit. For the method used
 ## Contents
 
 - [7. Hardware Differences: x86 vs Raspberry Pi](#7-hardware-differences-x86-vs-raspberry-pi)
+- [Ubuntu Core suitability assessment (2026-09-17)](#ubuntu-core-suitability-assessment-2026-09-17)
+- [Other OS alternatives assessment (2026-09-17)](#other-os-alternatives-assessment-2026-09-17)
 - [8. Overlay Filesystem (Critical Concept)](#8-overlay-filesystem-critical-concept)
 - [Orphaned persistent journal after the volatile conversion (~44 GB fleet-wide, reclaimed 2026-07-28)](#orphaned-persistent-journal-after-the-volatile-conversion-44-gb-fleet-wide-reclaimed-2026-07-28)
-- [Fleet status-probe gotchas — three checks that read as fleet-wide failures but are wrong paths (verified 2026-08-25)](#fleet-status-probe-gotchas-three-checks-that-read-as-fleet-wide-failures-but-are-wrong-paths-verified-2026-08-25)
+- [Fleet status-probe gotchas — three checks that read as fleet-wide failures but are wrong paths (verified 2026-08-25)](#fleet-status-probe-gotchas--three-checks-that-read-as-fleet-wide-failures-but-are-wrong-paths-verified-2026-08-25)
 - [Write-rate sweeps are blind to burst writers (2026-08-26)](#write-rate-sweeps-are-blind-to-burst-writers-2026-08-26)
 - [The 24 h write baseline, and what two attribution passes buy you (2026-08-27/28 capture)](#the-24-h-write-baseline-and-what-two-attribution-passes-buy-you-2026-08-2728-capture)
+- [Cambium radio and AP estate by flavour (operator-stated 2026-09-14)](#cambium-radio-and-ap-estate-by-flavour-operator-stated-2026-09-14)
 - Hardware differences: x86 vs Raspberry Pi
 - NBN Accelerate / NBN WH hardware inventory (first live fleet sweep)
 - Overlay filesystem structure and runtime behavior
@@ -2477,27 +2487,27 @@ because no coherence sweep had re-checked this specific file against those corre
 | ------------------ | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | CPU arch           | x86_64                                    | ARM64 (aarch64)                                                                                                                     |
 | RAM                | 4–16 GB typical                           | 8 GB (Model 4B; measured 7807 MB — corrected 2026-09-03, was 1.9 GB)                                                                |
-| Storage            | SSD or CFast (Innodisk CFast 3ME3 /       | **Always SD card** (Swissbit industrial microSD, monitored via `sbdm.py`/`sbdm-cli`) — USB storage may be physically present but is     |
+| Storage            | SSD or CFast (Innodisk CFast 3ME3 /       | **Always SD card** (Swissbit industrial microSD, monitored via `sbdm.py`/`sbdm-cli`) — USB storage may be physically present but is |
 |                    |   Transcend TS128GSSD420K confirmed       |   reserved for future use, not the root/primary storage device                                                                      |
-|                    |   brands, monitored via                   |                                                                                                                                     |
-|                    |   `smartmon.py`/`smartctl`)               |                                                                                                                                     |
+|                    |   brands, monitored                       |                                                                                                                                     |
+|                    |   via `smartmon.py`/`smartctl`)           |                                                                                                                                     |
 | Swap               | Traditional swap partition                | zram (`/dev/zram0`, ~1.2 GB, compressed)                                                                                            |
-| DNS                | **Not platform-determined — corrected**       | Same — Unbound + Stubby, unless `smc_ltp` (never applies to RPi flavors; `smc_ltp` is `rcp`-only)                                   |
-|                    |   **2026-08-03.** Every flavor (both x86 and  |                                                                                                                                     |
+| DNS                | **Not platform-determined — corrected**   | Same — Unbound + Stubby, unless `smc_ltp` (never applies to RPi flavors; `smc_ltp` is `rcp`-only)                                   |
+|                    |   **2026-08-03.** Every flavor (both x86 and |                                                                                                                                     |
 |                    |   RPi) runs Unbound + Stubby              |                                                                                                                                     |
-|                    |   (DNS-over-TLS) by default; the *only*     |                                                                                                                                     |
+|                    |   (DNS-over-TLS) by default; the *only*   |                                                                                                                                     |
 |                    |   hosts that get BIND/named instead are   |                                                                                                                                     |
 |                    |   members of the `smc_ltp` inventory      |                                                                                                                                     |
 |                    |   group — a static, `rcp`-only, 7-site    |                                                                                                                                     |
 |                    |   allowlist, unrelated to CPU             |                                                                                                                                     |
 |                    |   architecture. See `02_service-map.md`   |                                                                                                                                     |
-|                    |   and `08_ansible-authoring.md` "smc_ltp  |                                                                                                                                     |
-|                    |   Sub-Group".                             |                                                                                                                                     |
+|                    |   and `08_ansible-authoring.md`           |                                                                                                                                     |
+|                    |   "smc_ltp Sub-Group".                    |                                                                                                                                     |
 | VoIP | **Not platform-determined either —** | last == | Not deployed |
 |  |   **corrected 2026-08-03.** Asterisk is gated |   'rcp'`), not "x86" generally — confirmed live 2026-08-03 that `nbn_accelerate` (also x86) does **not** have Asterisk (`systemctl |  |
-|  |   to `rcp` specifically |   is-active asterisk` → inactive/not found on `warakurna-smc01`/`indulkana-smc01`). See `08_ansible-authoring.md` "Flavor/Cluster |  |
-|  |   (`inventory_dir.split('/') |   Conditional Branching". |  |
-| Antivirus/security | **`nbn_accelerate`** **only** (ClamAV + Lynis) —  | Not deployed on any RPi flavor                                                                                                      |
+|  |   to `rcp` |   is-active asterisk` → inactive/not found on `warakurna-smc01`/`indulkana-smc01`). See `08_ansible-authoring.md` "Flavor/Cluster |  |
+|  |   specifically (`inventory_dir.split('/') |   Conditional Branching". |  |
+| Antivirus/security | **`nbn_accelerate`** **only** (ClamAV + Lynis) — | Not deployed on any RPi flavor                                                                                                      |
 |                    |   confirmed live 2026-08-03 on            |                                                                                                                                     |
 |                    |   `warakurna-smc01`/`indulkana-smc01`,    |                                                                                                                                     |
 |                    |   both installed. `rcp` does not get this |                                                                                                                                     |
@@ -2518,19 +2528,58 @@ flavor-exclusive gates (`inventory_dir.split('/')|last == '<flavor>'`) or invent
 applies to "all x86" or "all RPi" without checking whether it's gated by `ansible_architecture`, `hotspot_flavor`, or an exact flavor/group name — see `08_ansible-authoring.md` "Flavor/Cluster
 Conditional Branching" for the full selector-mechanism reference.
 
+### Ubuntu Core suitability assessment (2026-09-17)
+
+**Design recommendation — not implemented or canary-tested:** retain Ubuntu Server LTS as the standard OS for new Raspberry Pi SMCs; do not introduce Ubuntu Core into the current SMC appliance
+fleet. This is an SMC-workload conclusion, not a claim that Ubuntu Core is unsuitable for embedded devices generally.
+
+The existing `smc_bases.yml` design assumes a conventional Ubuntu host that Ansible manages as `root`: it runs APT/package tasks and directly manages `/etc`, `/usr/local`, `/var`, systemd units,
+netplan/systemd-networkd, DHCP/DNS, hostapd, iptables/netfilter-persistent, Teleport/autossh, Prometheus and application services. RISE already makes the normal Server root filesystem disposable with
+overlayroot, while preserving the existing package, service and recovery model. Replacing Ubuntu Server with Core would therefore be a platform redesign, not an image substitution.
+
+**VERIFIED_PRIMARY (Canonical, retrieved 2026-09-17):** Ubuntu Core is image-based, immutable and transaction-based; applications and configuration are managed by snapd. It expects custom images for
+the target application, and Core cannot run `classic` snaps. Strict snap confinement requires explicit interfaces for system, network and device access. These are valuable properties for a
+purpose-built appliance, but conflict with assuming ordinary Debian packages, unrestricted root-owned files and arbitrary unit/service management.
+
+Before reconsidering Core, create a separate greenfield appliance design and canary. It must package the full workload (or reduce it sharply), define all required snap interfaces, own the
+model/gadget/image and refresh policy, and prove on a Pi under realistic constrained-link conditions: hostapd/AP mode, DHCP/DNS, netfilter/traffic control, routing/failover, Teleport reverse access,
+telemetry, storage-health collection, updates and recovery. Treat an existing SMC migration as out of scope until that canary has passed; it should not be used as an SD-card reliability shortcut.
+
+**Sources:** Canonical, [Ubuntu Core documentation](https://documentation.ubuntu.com/core/) (last updated 2026-04-21); [Using Ubuntu Core](https://documentation.ubuntu.com/core/how-to-guides/using-ubuntu-core/)
+(last updated 2026-08-21); [Snap confinement](https://documentation.ubuntu.com/security/security-features/privilege-restriction/snap-confinement/) (retrieved 2026-09-17).
+
+### Other OS alternatives assessment (2026-09-17)
+
+**Design recommendation — not implemented or canary-tested:** no other operating system is recommended over Ubuntu Server LTS for the current full SMC workload. Standardise new Raspberry Pi SMCs on
+the same Server release that has been ARM-canary-qualified for the fleet; OS release selection is separate from this operating-system choice.
+
+| Candidate | Fit for the current SMC | Decision |
+| --- | --- | --- |
+| Raspberry Pi OS Lite | The closest alternative: a 64-bit, Debian/APT-based Pi OS with vendor firmware packaging. It still needs a full port and qualification of the Ubuntu-specific Ansible assumptions (netplan, systemd units, package names, boot paths and update policy), with no demonstrated reliability or operations benefit over Ubuntu Server. | Do not adopt routinely. Reconsider only if a future Pi board/HAT requires a vendor driver or firmware unavailable on qualified Ubuntu Server. |
+| Debian Stable | Also requires a package/network/boot and fleet-operations port, while removing alignment with the existing Ubuntu SMC stack. | No benefit established; do not adopt. |
+| OpenWrt | A strong router/AP OS, but it is a different appliance ecosystem. Its image/package and network-management model would require reimplementing the SMC's host configuration, services, observability and application stack. | Consider only for a deliberately reduced router/AP product, not an SMC replacement. |
+| Fedora IoT/CoreOS, NixOS, similar declarative or immutable systems | Repeat the Core problem in different forms: a new image, package, service and operational model must be designed and supported. | No current case for adoption. |
+
+**VERIFIED_PRIMARY (retrieved 2026-09-17):** Raspberry Pi OS is Debian-based and supports APT-managed packages, including Pi kernel and firmware updates; OpenWrt is a Linux distribution for embedded
+devices, typically wireless routers. The suitability decisions above are an inference from those models and the verified SMC workload, not claims of general-purpose superiority.
+
+**Sources:** Raspberry Pi, [Raspberry Pi OS documentation](https://www.raspberrypi.com/documentation/computers/os.html) (retrieved 2026-09-17); OpenWrt, [Documentation overview](https://openwrt.org/docs/start)
+(retrieved 2026-09-17).
+
 ### Storage health monitoring — two different tools, clarified 2026-07-13
 
 The table above says x86 storage is "monitored by SBDM/SMART" — this undersells how split the two mechanisms actually are. Confirmed live 2026-07-13:
 
-| Tool                 | Binary                        | Works on                               | Fails on                                                                                             |
-| -------------------- | ----------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `smartmon.py` (wraps | n/a (uses system `smartctl`)  | x86 rcp: Innodisk CFast, Transcend SSD | RPi/mmcblk SD cards — `smartctl --scan-open` finds zero devices; SD/eMMC doesn't expose classic ATA  |
-|   `smartctl`)        |                               |   (both report via ATA SMART)          |   SMART attributes the way SATA/USB-SAT drives do                                                    |
-| `sbdm.py` (wraps     | `roles/smc_node_exporter/\`   | RPi/rct/wh: genuine Swissbit-branded   | x86 rcp: Innodisk/Transcend hardware isn't Swissbit-branded — `sbdm-cli` returns "No supported disks |
-|   `sbdm-cli`,        |   `files/{x86-64,aarch64}/\`  |   industrial microSD cards (model "SD  |   found" (exit 3), and `sbdm.py` currently exits 0 with **zero stdout output**, producing a 0-byte       |
-|   "Swissbit Device   |   `sbdm-cli` — deployed to    |   card SB AFNI0", series S-58)         |   `sbdm.prom`. This is the root cause of the standing "sbdm.prom = 0 bytes" bug tracked as a known   |
-|   Manager")          |   **both** architectures          |                                        |   issue on tjuntjuntjara/burringurrah/warburton — expected behavior for non-Swissbit hardware, not a |
-|                      |                               |                                        |   bug in those specific nodes.                                                                       |
+| Tool                   | Binary                         | Works on                         | Fails on                                                                                                |
+| ---------------------- | ------------------------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `smartmon.py`          | n/a (uses system `smartctl`)   | x86 rcp: Innodisk CFast,         | RPi/mmcblk SD cards — `smartctl --scan-open` finds zero devices; SD/eMMC doesn't expose classic ATA     |
+|   (wraps `smartctl`)   |                                |   Transcend SSD (both report via |   SMART attributes the way SATA/USB-SAT drives do                                                       |
+|                        |                                |   ATA SMART)                     |                                                                                                         |
+| `sbdm.py` (wraps       | `roles/smc_node_exporter/\`    | RPi/rct/wh: genuine              | x86 rcp: Innodisk/Transcend hardware isn't Swissbit-branded — `sbdm-cli` returns "No supported disks    |
+|   `sbdm-cli`,          |   `files/{x86-64,aarch64}/\`   |   Swissbit-branded industrial    |   found" (exit 3), and `sbdm.py` currently exits 0 with **zero stdout output**, producing a 0-byte      |
+|   "Swissbit            |   `sbdm-cli` — deployed to     |   microSD cards (model "SD card  |   `sbdm.prom`. This is the root cause of the standing "sbdm.prom = 0 bytes" bug tracked as a known      |
+|   Device Manager")     |   **both** architectures       |   SB AFNI0", series S-58)        |   issue on tjuntjuntjara/burringurrah/warburton — expected behavior for non-Swissbit hardware, not a    |
+|                        |                                |                                  |   bug in those specific nodes.                                                                          |
 
 So: x86 rcp nodes are monitored by `smartmon.py`/`smartctl` only (SBDM silently no-ops there). RPi rct/wh nodes are monitored by `sbdm.py`/`sbdm-cli` only (SMART silently no-ops there, confirmed
 `smartmon.prom` has metric headers but zero data lines on every RPi node checked). Never assume both tools produce meaningful data on both platforms.
@@ -2643,14 +2692,14 @@ No live hardware inventory existed for this cluster before this sweep — everyt
 total, `aurukun-smc03` unreachable at capture time), via `scripts/collect-fleet-health.sh`. **`nbn_wh` is the operator-confirmed `wh`-flavor equivalent on this cluster** — compare it against the
 `rct`/`wh` row in the platform table above, not against `nbn_accelerate`'s x86 baseline.
 
-| Chassis                            | Count | CPU                       | RAM   | Storage                                                   | Flavor           | Kernel                               |
-| ---------------------------------- | ----- | ------------------------- | ----- | --------------------------------------------------------- | ---------------- | ------------------------------------ |
-| AAEON BOXER-6641                   | 11    | Intel Core i5-8500T @     | 15Gi  | Transcend TS128GSSD420K SSD                               | `nbn_accelerate` | `5.15.0-119-generic` (fleet-uniform) |
-|                                    |       |   2.10GHz                 |       |                                                           |                  |                                      |
-| AAEON BOXER-6404                   | 15    | Intel Celeron J1900 @     | 7.7Gi | Innodisk CFast 3ME3                                       | `nbn_accelerate` | `5.15.0-117-generic` (2 outliers —   |
-|                                    |       |   1.99GHz                 |       |                                                           |                  |   see below)                         |
-| Raspberry Pi, Cortex-A72 (`-raspi` | 2     | ARM64, 4-core Cortex-A72  | 7.6Gi | Swissbit SB AFNI0 microSD (`sbdm.prom` populated,         | `nbn_wh`         | `5.15.0-1064-raspi` /                |
-|   kernel, no dmidecode)            |       |                           |       |   `smartmon.prom` header-only — same split as `rct`/`wh`) |                  |   `5.15.0-1078-raspi`                |
+| Chassis                             | Count | CPU                   | RAM   | Storage                                                        | Flavor           | Kernel                             |
+| ----------------------------------- | ----- | --------------------- | ----- | -------------------------------------------------------------- | ---------------- | ---------------------------------- |
+| AAEON BOXER-6641                    | 11    | Intel Core i5-8500T   | 15Gi  | Transcend TS128GSSD420K SSD                                    | `nbn_accelerate` | `5.15.0-119-generic`               |
+|                                     |       |   @ 2.10GHz           |       |                                                                |                  |   (fleet-uniform)                  |
+| AAEON BOXER-6404                    | 15    | Intel Celeron J1900   | 7.7Gi | Innodisk CFast 3ME3                                            | `nbn_accelerate` | `5.15.0-117-generic` (2 outliers — |
+|                                     |       |   @ 1.99GHz           |       |                                                                |                  |   see below)                       |
+| Raspberry Pi, Cortex-A72 (`-raspi`  | 2     | ARM64,                | 7.6Gi | Swissbit SB AFNI0 microSD (`sbdm.prom` populated,              | `nbn_wh`         | `5.15.0-1064-raspi`                |
+|   kernel, no dmidecode)             |       |   4-core Cortex-A72   |       |   `smartmon.prom` header-only — same split as `rct`/`wh`)      |                  |   / `5.15.0-1078-raspi`            |
 
 Same BOXER-6641/BOXER-6404 chassis family already documented for the `rcp` fleet (`amata-smc01` was independently confirmed BOXER-6641 during the earlier disk-fault incident) — this is not new
 hardware, just the first time it's been inventoried for this specific cluster.
@@ -2787,19 +2836,19 @@ actually matters:
 | ---------------------------------------- | ---------------------------------------------------------------------------------- | ----------------------- |
 | Overlay prep (`smc_rise_enable_overlay`) | journal to 100M, `*.gz` >7d, `auth.log` to 200 lines, apt cache, teleport logs >7d | active application logs |
 | Watchdog `cleanup_always()`              | `/opt/rise/cache`, `/tmp`, `/var/tmp`, apt, journal                                | active application logs |
-| Watchdog `cleanup_logs_gated()`          | **rotated** siblings, and only once Graylog confirms ingestion                         | anything un-rotated     |
+| Watchdog `cleanup_logs_gated()`          | **rotated** siblings, and only once Graylog confirms ingestion                     | anything un-rotated     |
 
 None of them can shrink an un-rotated **active** log — which is precisely the file that fills the overlay. `smc_rise_logcaps` closes that gap by **discovery rather than enumeration**: `rise_logcap.py`
 walks `/var /opt /srv /home` (`-xdev`, ~1.3 s on a Pi 4) and buckets everything over `watch_mb`:
 
 | Bucket     | Gets a logrotate stanza? | Hard-capped? | Rationale                                                                                                                                     |
 | ---------- | ------------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **managed**    | yes                      | yes          | live, log-shaped, unclaimed by any other config                                                                                               |
-| **foreign**    | **no**                       | yes          | another `/etc/logrotate.d` config owns it; a duplicate entry aborts the entire daily logrotate run. Ownership is no guarantee of a *sane*       |
+| **managed** | yes                      | yes          | live, log-shaped, unclaimed by any other config                                                                                               |
+| **foreign** | **no**                   | yes          | another `/etc/logrotate.d` config owns it; a duplicate entry aborts the entire daily logrotate run. Ownership is no guarantee of a *sane*     |
 |            |                          |              |   policy — see the rsyslog note below                                                                                                         |
-| **rotated**    | **no**                       | yes          | `.1`/`.2.gz`/`.old`/`.bak` — rotating a rotation is meaningless, but it costs the overlay the same                                            |
-| **stale**      | no                       | no           | unwritten for `stale_days`; reported only, `prune_stale` defaults false because retention is an operator decision                             |
-| **ineligible** | no                       | **never**        | oversized but not log-shaped, or binary (NUL byte in first 4 KB). Always reported; blocks the overlay-enable preflight                        |
+| **rotated** | **no**                   | yes          | `.1`/`.2.gz`/`.old`/`.bak` — rotating a rotation is meaningless, but it costs the overlay the same                                            |
+| **stale**  | no                       | no           | unwritten for `stale_days`; reported only, `prune_stale` defaults false because retention is an operator decision                             |
+| **ineligible** | no                       | **never**    | oversized but not log-shaped, or binary (NUL byte in first 4 KB). Always reported; blocks the overlay-enable preflight                        |
 
 The **ineligible** bucket is the design's whole point: an unknown oversized file becomes a Prometheus metric and a blocked preflight rather than a silent reboot loop. That is what makes this scale
 without anyone maintaining a list of paths.
@@ -2861,7 +2910,7 @@ mount | grep overlay   # should return nothing
 
 | Flavor               | Platform  | Root partition                       | Firmware/boot                | Track   | Status                      |
 | -------------------- | --------- | ------------------------------------ | ---------------------------- | ------- | --------------------------- |
-| rct / wh             | RPi ARM64 | **READ-ONLY** (overlayroot active)       | WRITABLE (/boot vfat)        | Track B | Root done; firmware pending |
+| rct / wh             | RPi ARM64 | **READ-ONLY** (overlayroot active)   | WRITABLE (/boot vfat)        | Track B | Root done; firmware pending |
 | rcp / nbn_accelerate | x86       | **WRITABLE** (bare ext4, no overlayroot) | WRITABLE (/boot + /boot/efi) | Track A | Primary migration target    |
 
 ### `smc_disk_failover` role — EFI BootNext mechanism, not a guaranteed live-corruption failover
@@ -2990,17 +3039,17 @@ Canary result (kalumburu, 4.1 GB): 37 G → 41 G free, 32% → 24% used, all che
 A uniform status probe pushed over `tsh ssh` to every rcp node returned negative on three keys for **all 17 nodes**, including 15 verified working four weeks earlier. Unanimous failure across
 known-good nodes is a probe bug, not a fleet event. All three were wrong-path assumptions:
 
-| Wrong check                                | Correct check                         | Why                                                                                                             |
-| ------------------------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `test -L /var/log/interfacecheck`          | `test -L /var/log/interfacecheck.log` | `smc_rsyslog` symlinks the **log file**, not a directory:                                                           |
-|                                            |                                       |   `/var/log/interfacecheck.log -> /var/log/smc-groups/interfacecheck.log`. squid and mosquitto *are* directory    |
-|                                            |                                       |   symlinks, so the three are not symmetrical.                                                                   |
-| `test -L /opt/apn-mqtt-client/status.json` | `find / -maxdepth 5 -name status.\`   | The app lives at `/run/apn-mqtt-client/` (a real file, already on tmpfs since `/run` is tmpfs) on most nodes,   |
-|                                            |   `json -path '*mqtt*'`               |   or `/var/www/apn-mqtt-client/` (a symlink into `/run`) on others. Never `/opt/`. Both forms are the *fixed*     |
-|                                            |                                       |   state — a real file under `/run` is not a gap.                                                                |
-| `systemctl is-active fluent-bit`           | `pgrep -c fluent-bit`                 | fluent-bit has **no systemd unit**. `graylog-sidecar` spawns it directly as a child:                                |
-|                                            |                                       |   `/opt/fluent-bit/bin/fluent-bit -c /var/lib/graylog-sidecar/generated/<id>/apn-gelf-http.conf`. `is-active`   |
-|                                            |                                       |   returns `inactive` on a perfectly healthy node.                                                               |
+| Wrong check                                | Correct check                          | Why                                                                                                            |
+| ------------------------------------------ | -------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `test -L /var/log/interfacecheck`          | `test -L /var/log/interfacecheck.log`  | `smc_rsyslog` symlinks the **log file**, not a directory:                                                      |
+|                                            |                                        |   `/var/log/interfacecheck.log -> /var/log/smc-groups/interfacecheck.log`. squid and mosquitto *are* directory |
+|                                            |                                        |   symlinks, so the three are not symmetrical.                                                                  |
+| `test -L /opt/apn-mqtt-client/status.json` | `find / -maxdepth 5 -name status.\`    | The app lives at `/run/apn-mqtt-client/` (a real file, already on tmpfs since `/run` is tmpfs) on most nodes,  |
+|                                            |   `json -path '*mqtt*'`                |   or `/var/www/apn-mqtt-client/` (a symlink into `/run`) on others. Never `/opt/`. Both forms are the *fixed*  |
+|                                            |                                        |   state — a real file under `/run` is not a gap.                                                               |
+| `systemctl is-active fluent-bit`           | `pgrep -c fluent-bit`                  | fluent-bit has **no systemd unit**. `graylog-sidecar` spawns it directly as a child:                           |
+|                                            |                                        |   `/opt/fluent-bit/bin/fluent-bit -c /var/lib/graylog-sidecar/generated/<id>/apn-gelf-http.conf`. `is-active`  |
+|                                            |                                        |   returns `inactive` on a perfectly healthy node.                                                              |
 
 **Rule:** before recording a negative status finding, check whether the *known-good* nodes also fail it. If they do, fix the probe, not the fleet. Recording these three unverified would have produced
 three false fleet-wide regressions in the canonical tracker.
@@ -3043,16 +3092,16 @@ for `fatrace`.
 Some of the largest writers on an SMC fire **once or twice a day for a few seconds** and move hundreds of MB. No sampling window of practical length catches them. Two independent windows (300 s and
 600 s) run on 2026-08-26 agreed closely on continuous writers and **missed every one of the following**:
 
-| Writer                         | Volume per event                                                        | Notes                                                                                     |
-| ------------------------------ | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `snapd` snap refresh           | **image written twice** — `/var/lib/snapd/cache/` then                      | Refresh times scatter across the clock (observed 02:25/10:00/14:23/17:20/19:55) — snapd's |
-|                                |   `/var/lib/snapd/snaps/`. `lxd_40575.snap` = 115.3 MB × 2 = **230.6 MB**   |   own randomised timer. Same node looks clean one day, heavy the next.                    |
-| `squidguard` blacklist refresh | 24.3 MB `.tar.gz` + 24.3 MB `.bak`, then extraction into a 624–657 MB   | Observed at **15:29 on 7 of 9 nodes simultaneously** — one fleet-wide cron                    |
-|                                |   tree                                                                  |                                                                                           |
-| `apt` metadata churn           | `pkgcache.bin` ~67 MB + `srcpkgcache.bin` ~67 MB + ~117 MB lists ≈ 250  | Only on nodes where apt timers are unmasked                                               |
-|                                |   MB/day                                                                |                                                                                           |
-| `dhcpd` lease-DB rewrite       | full-file rewrite, up to 294 MB                                         | Episodic. `dhcpd` measured 1.30 MB in one 5-min window and 0.02 MB in the next 10-min     |
-|                                |                                                                         |   window on the same node.                                                                |
+| Writer                         | Volume per event                                                      | Notes                                                                                       |
+| ------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `snapd` snap refresh           | **image written twice** — `/var/lib/snapd/cache/` then                | Refresh times scatter across the clock (observed 02:25/10:00/14:23/17:20/19:55) — snapd's   |
+|                                |   `/var/lib/snapd/snaps/`. `lxd_40575.snap` = 115.3 MB × 2 = **230.6 MB** |   own randomised timer. Same node looks clean one day, heavy the next.                      |
+| `squidguard` blacklist refresh | 24.3 MB `.tar.gz` + 24.3 MB `.bak`, then extraction into a 624–657    | Observed at **15:29 on 7 of 9 nodes simultaneously** — one fleet-wide cron                  |
+|                                |   MB tree                                                             |                                                                                             |
+| `apt` metadata churn           | `pkgcache.bin` ~67 MB + `srcpkgcache.bin` ~67 MB + ~117 MB lists ≈    | Only on nodes where apt timers are unmasked                                                 |
+|                                |   250 MB/day                                                          |                                                                                             |
+| `dhcpd` lease-DB rewrite       | full-file rewrite, up to 294 MB                                       | Episodic. `dhcpd` measured 1.30 MB in one 5-min window and 0.02 MB in the next 10-min       |
+|                                |                                                                       |   window on the same node.                                                                  |
 
 **Method rule going forward: pair every sampling window with a 24 h large-file scan.** Neither alone is sufficient.
 
@@ -3155,6 +3204,35 @@ restored, not suppressed. Textbook RULE-008 — low write volume as the visible 
 
 mornington 672.8 MB/day against umoona's 100.9 — the largest single line item in the dataset, 2.1× the fleet median, not explained by site size. mornington also carries the known 64 MB `auth.log` and
 the unremediated auth-filter.
+
+## Cambium radio and AP estate by flavour (operator-stated 2026-09-14)
+
+Recorded while bootstrapping the Cambium/cnMaestro continuity project (`/Volumes/Data/_ai/_project/project_stuff/apn/cambium-swap/`), after Cambium Networks, Ltd was reported to have filed a Notice of
+Intention to appoint an administrator (10 Sep 2026). The Cambium devices sit behind the SMC but are managed through cnMaestro, not ansible-wifi. Treat the SMC's DHCP and DNS as the discovery path
+those devices depend on.
+
+| Flavour                         | Cambium devices (source)                                                                                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `rct`                           | ePMP 1000 2.4 GHz Connectorized and ePMP 1000 5 GHz Connectorized APs (operator-stated); being migrated to MikroTik "metal" APs and XV2-2T0                        |
+| `wh`                            | ePMP 1000 APs (operator-stated; exact variant not yet identified); being migrated to MikroTik "metal" APs and XV2-2T0                                              |
+| `rcp` / `smc_ltp`               | Hardware profiles in `inventories/rcp/group_vars/smc_ltp.yml`: cnPilot r195P, XV2-2T0, XV2-22H, ePMP Force 300-16, Force 300-25 (SMs), ePMP 3000L (AP)             |
+| Fleet-wide (flavour not mapped) | Enterprise Wi-Fi XV2-2T0, XV2-22H, E500, E430; cnPilot R195P; ePMP APs 3000, 3000L, 1000; ePMP SMs Force 300-16, Force 300-25, Force 180; cnWave 60 GHz V5000,     |
+|                                 |   V3000, V2000, V1000                                                                                                                                              |
+
+Terminology (operator correction, 2026-09-14): ePMP 3000/3000L/1000 are **APs** (point-to-multipoint access points), and the Force units are **SMs**. "DN" is not the right term for ePMP here; it is
+cnWave vocabulary.
+
+SMC facts that matter to cnMaestro continuity:
+
+- `smc_dhcpd` hands Cambium vendor-class clients DHCP option 43 = `https://<cnmaestro_address>`. That is the address, not the FQDN, so a cnMaestro recovery that changes the public IP needs an SMC-wide
+  DHCP change unless the Elastic IP is kept.
+- The `smc_ltp` flavour points at the On-Premises instance `lt-cnmaestro.apn.au` and runs `smc_cnmaestro_provisioning` against its local REST API.
+- The r195P router template hard-codes `cns_static_url=https://cloud.cambiumnetworks.com`, so those routers are managed by the Cambium-hosted cnMaestro Cloud, not by APN's On-Prem instances.
+- `smc_dns_mgmt` deploys an empty `cambium-rpz` response-policy zone (`force: no`); its live contents are node-managed and unrecorded.
+- The cnMaestro On-Premises 6.0.0 User Guide documents a 90-day grace period after the instance loses subscription sync with the Cambium Cloud Anchor. At expiry "all the devices will be moved to the
+  onboarding queue", so new low-touch onboarding and device approval stop once the Anchor is gone.
+
+Full analysis, evidence and tests live in the cambium-swap project; do not duplicate them here.
 ````
 
 ## File: references/08_ansible-authoring.md
@@ -5321,6 +5399,8 @@ tsh ssh root@<host> "ssh -i /var/local/sslurlcapture/sslurlcapture.id_rsa -o Str
 # SMC Captive Portal
 
 ## Contents
+
+- [11. Captive Portal — Architecture, Known Gaps, and Troubleshooting](#11-captive-portal--architecture-known-gaps-and-troubleshooting)
 - Two-tier architecture (incl. PHP SAPI — mod_php, NOT PHP-FPM)
 - APN vs NBN Accelerate protocol differences
 - Eclipse config.txt sync
@@ -5337,18 +5417,22 @@ tsh ssh root@<host> "ssh -i /var/local/sslurlcapture/sslurlcapture.id_rsa -o Str
 
 The captive portal is a two-tier system:
 
-| Tier | Component | Role |
-|---|---|---|
+| Tier   | Component                                   | Role                                                                              |
+| ------ | ------------------------------------------- | --------------------------------------------------------------------------------- |
 | Remote | Eclipse server (`wifi.activ8me.net.au:443`) | Site config source of truth; pushes config.txt; can run arbitrary Commands on SMC |
-| Local | Kohana PHP app at `/var/www/html/wifi` | Renders portal; reads config.txt; calls Eclipse on each page load |
+| Local  | Kohana PHP app at `/var/www/html/wifi`      | Renders portal; reads config.txt; calls Eclipse on each page load                 |
 
 Apache serves the portal and the Kohana framework handles routing, templating, and Eclipse integration.
 
-**PHP SAPI — corrected 2026-07-28.** This file previously stated flatly that "PHP-FPM processes `.php` files". That is **not true of the production fleet**. Verified on three sampled `rcp` hosts (horn-island, kalumburu, mornington): **zero** `php*-fpm` packages installed, `libapache2-mod-php` installed, `apache2ctl -M` shows `php_module (shared)`, and no `/etc/php/8.1/fpm/` directory exists at all. Production SMCs run **mod_php, executing as `www-data` inside the Apache process** — there is no FPM pool, no socket, and no `proxy_fcgi`.
+**PHP SAPI — corrected 2026-07-28.** This file previously stated flatly that "PHP-FPM processes `.php` files". That is **not true of the production fleet**. Verified on three sampled `rcp` hosts
+(horn-island, kalumburu, mornington): **zero** `php*-fpm` packages installed, `libapache2-mod-php` installed, `apache2ctl -M` shows `php_module (shared)`, and no `/etc/php/8.1/fpm/` directory exists
+at all. Production SMCs run **mod_php, executing as `www-data` inside the Apache process** — there is no FPM pool, no socket, and no `proxy_fcgi`.
 
-This matters for any permissions question: file/directory access is decided by `www-data`'s rights, and there is no FPM pool config (`open_basedir`, `chroot`, unit sandboxing) to blame when something is unwritable. See §11.8.
+This matters for any permissions question: file/directory access is decided by `www-data`'s rights, and there is no FPM pool config (`open_basedir`, `chroot`, unit sandboxing) to blame when something
+is unwritable. See §11.8.
 
-The PHP-FPM material in §11.4 below describes work done on `family-friendly-smc01` in June 2026 that was **reverted and never reached the production fleet** — read it as history, not as current architecture.
+The PHP-FPM material in §11.4 below describes work done on `family-friendly-smc01` in June 2026 that was **reverted and never reached the production fleet** — read it as history, not as current
+architecture.
 
 ### 11.2 Eclipse config.txt sync
 
@@ -5359,11 +5443,13 @@ The PHP-FPM material in §11.4 below describes work done on `family-friendly-smc
 2. If non-empty, executes it via `system($command)` — used for software updates (e.g. `git pull`)
 3. Fetches fresh site config JSON from Eclipse and writes it to config.txt
 
-**What Eclipse syncs**: JSON blob containing `VIEW_TEMPLATE_VERSION`, `WELCOME_MSG`, `VLAN_501_ACCESS_METHOD`, `PREPAID_BLOCKS`, `TC_SPEED`, `Limited_Sites`, `Asterisk`, `Hardware_List`, `Software_List`, `Command`, etc.
+**What Eclipse syncs**: JSON blob containing `VIEW_TEMPLATE_VERSION`, `WELCOME_MSG`, `VLAN_501_ACCESS_METHOD`, `PREPAID_BLOCKS`, `TC_SPEED`, `Limited_Sites`, `Asterisk`, `Hardware_List`,
+`Software_List`, `Command`, etc.
 
 **What Eclipse does NOT sync**: PHP view template files — those come from the Bitbucket git clone at provision time and are only updated if Eclipse sends a `Command` with a git pull.
 
-**First-request bootstrap**: If config.txt is missing (fresh provision, no Eclipse contact yet), the app defaults to `VIEW_TEMPLATE_VERSION=v1` → serves the v1 template with `p.a8me.au` base URLs. After first PHP request hits the live host, Eclipse populates config.txt (v3, `wifi.a8me.au`).
+**First-request bootstrap**: If config.txt is missing (fresh provision, no Eclipse contact yet), the app defaults to `VIEW_TEMPLATE_VERSION=v1` → serves the v1 template with `p.a8me.au` base URLs.
+After first PHP request hits the live host, Eclipse populates config.txt (v3, `wifi.a8me.au`).
 
 **Check Eclipse reachability**:
 ```bash
@@ -5380,11 +5466,11 @@ grep VIEW_TEMPLATE_VERSION /var/www/html/wifi/application/config/config.txt
 
 ### 11.3 View template versions
 
-| Version | Base href | Notes |
-|---|---|---|
-| v1 | `https://p.a8me.au/` | Old/legacy; loads when config.txt missing |
-| v3 | `http://wifi.a8me.au/` | Standard for RCP/NBN SMCs (NBN-59-config-management branch) |
-| v4 | `http://wifi.a8me.au/` | SMP variant (release/rct_v4 branch) |
+| Version | Base href              | Notes                                                       |
+| ------- | ---------------------- | ----------------------------------------------------------- |
+| v1      | `https://p.a8me.au/`   | Old/legacy; loads when config.txt missing                   |
+| v3      | `http://wifi.a8me.au/` | Standard for RCP/NBN SMCs (NBN-59-config-management branch) |
+| v4      | `http://wifi.a8me.au/` | SMP variant (release/rct_v4 branch)                         |
 
 Eclipse sets `VIEW_TEMPLATE_VERSION` in config.txt. If the portal is showing `p.a8me.au` URLs, config.txt is missing or stale.
 
@@ -5395,7 +5481,8 @@ Eclipse sets `VIEW_TEMPLATE_VERSION` in config.txt. If the portal is showing `p.
 > - The enabled-modules list in `roles/smc_application/tasks/ubuntu-apache-install-configure.yml` is only `rewrite` and `ssl` — **no `proxy`, no `proxy_fcgi`**.
 > - Production `rcp` hosts have **no `php*-fpm` package installed** and run mod_php instead (see §11.1).
 >
-> This matches the long-standing SCRATCHPAD open item recording that the Ansible PHP-FPM change was reverted and needs a different approach. Treat everything below as a record of the `family-friendly-smc01` hotfix work only. **Do not use it to reason about production portal behaviour.**
+> This matches the long-standing SCRATCHPAD open item recording that the Ansible PHP-FPM change was reverted and needs a different approach. Treat everything below as a record of the
+> `family-friendly-smc01` hotfix work only. **Do not use it to reason about production portal behaviour.**
 
 **Symptom**: Portal returns raw PHP source code instead of rendered HTML.
 
@@ -5428,13 +5515,18 @@ a2enmod proxy_fcgi setenvif
 a2enconf php8.1-fpm     # enables /etc/apache2/conf-available/php8.1-fpm.conf (installed by php8.1-fpm package)
 systemctl restart apache2
 ```
-This enables the PHP-packaged Apache config which sets `SetHandler` globally. The Ansible template approach (above) would embed `SetHandler` directly in the VirtualHost, making it self-contained and not dependent on `a2enconf php8.1-fpm`. ~~the Ansible template approach is now canonical~~ — **neither is canonical**; the Ansible template change was reverted and production runs mod_php with no FPM at all (§11.1).
+This enables the PHP-packaged Apache config which sets `SetHandler` globally. The Ansible template approach (above) would embed `SetHandler` directly in the VirtualHost, making it self-contained and
+not dependent on `a2enconf php8.1-fpm`. ~~the Ansible template approach is now canonical~~ — **neither is canonical**; the Ansible template change was reverted and production runs mod_php with no FPM
+at all (§11.1).
 
-**Historical note (corrected 2026-07-28)**: the live hotfix on `family-friendly-smc01` 2026-06-23 (`a2enconf php8.1-fpm`) did happen. The follow-on claim that a permanent Ansible fix "landed 2026-06-26" is **false** — the change was reverted and is not in the repo. Note also that `ubuntu-php-install-configure.yml`'s `php_pkg_suffixes` list *does* include `fpm`, but that install path is gated behind `php_reinstall_needed`, and no production `rcp` host actually has an FPM package installed. Do not infer the running SAPI from the package list — check `apache2ctl -M` on the box.
+**Historical note (corrected 2026-07-28)**: the live hotfix on `family-friendly-smc01` 2026-06-23 (`a2enconf php8.1-fpm`) did happen. The follow-on claim that a permanent Ansible fix "landed
+2026-06-26" is **false** — the change was reverted and is not in the repo. Note also that `ubuntu-php-install-configure.yml`'s `php_pkg_suffixes` list *does* include `fpm`, but that install path is
+gated behind `php_reinstall_needed`, and no production `rcp` host actually has an FPM package installed. Do not infer the running SAPI from the package list — check `apache2ctl -M` on the box.
 
 ### 11.5 PHP short_open_tag issue (Kohana v3 views)
 
-**Symptom**: Portal renders but shows `Undefined variable $error`, `Undefined variable $captive_portal_message`, or `Undefined variable $version` inline in the HTML. Action buttons (Terms and Conditions, Start Browsing) may be absent.
+**Symptom**: Portal renders but shows `Undefined variable $error`, `Undefined variable $captive_portal_message`, or `Undefined variable $version` inline in the HTML. Action buttons (Terms and
+Conditions, Start Browsing) may be absent.
 
 **Root cause**: PHP 8.1 has `short_open_tag = Off` by default.
 - `<? if (isset($var)) { ?>` → **NOT processed** as PHP; passes through as literal text
@@ -5508,6 +5600,10 @@ stat /var/www/html/wifi/application/config/config.txt
 python3 -m json.tool /var/www/html/wifi/application/config/config.txt | grep VIEW_TEMPLATE
 ```
 
+**Portal responding is not the same as pins being issued.** §11.7 above confirms the portal is *reachable*; it says nothing about whether anyone completing the flow actually gets online. For that —
+pin validity right now (`iptables -t mangle -L ECLIPSE_MARK`) vs pin issuance over time (the `wifi/access` Apache log audit trail) — see the dedicated `references/14_pin-activation-diagnosis.md`,
+including its `audit-pin-activation.sh` tool and the pitfalls in reading either mechanism alone.
+
 ---
 
 ### 11.8 `Directory APPPATH/cache must be writable` — portal dead at bootstrap (2026-07-28)
@@ -5522,11 +5618,13 @@ python3 -m json.tool /var/www/html/wifi/application/config/config.txt | grep VIE
         throw new Kohana_Exception('Directory :dir must be writable', ...);
 ```
 
-`Debug::path()` rewrites the `APPPATH` prefix to the literal token `APPPATH/`, which is why no real path appears in the message. Kohana catches and *prints* the exception, which is why the status is 200 and apache's error log stays silent — **a status-code-only health check cannot detect this**.
+`Debug::path()` rewrites the `APPPATH` prefix to the literal token `APPPATH/`, which is why no real path appears in the message. Kohana catches and *prints* the exception, which is why the status is
+200 and apache's error log stays silent — **a status-code-only health check cannot detect this**.
 
 **The same exception exists for logs** at `system/classes/kohana/log/file.php:31`. Fix both `application/cache` and `application/logs`, or the failure just moves one step later.
 
-**Cause**: the directories are `0755 root:root` while Apache runs mod_php as `www-data` (§11.1). They land at 0755 whenever git recreates them — the tracked content is only a `.gitignore` stub, so a fresh clone applies umask 022. `roles/smc_application` chmods them to `0777` explicitly; if that task is skipped, the portal dies.
+**Cause**: the directories are `0755 root:root` while Apache runs mod_php as `www-data` (§11.1). They land at 0755 whenever git recreates them — the tracked content is only a `.gitignore` stub, so a
+fresh clone applies umask 022. `roles/smc_application` chmods them to `0777` explicitly; if that task is skipped, the portal dies.
 
 **Check**:
 ```bash
@@ -5538,7 +5636,8 @@ curl -s http://$V/ | head -c 40
 # expect HTML, not the error string
 ```
 
-⚠️ **Do not probe `http://localhost/` with a `Host:` header** — Apache serves the `000-default` vhost regardless and returns `/var/www/html/index.html` (10671 bytes), which looks healthy on a completely dead portal. This produced a wrong "no impact" conclusion during the 2026-07-28 incident. Always curl the real ServerName.
+⚠️ **Do not probe `http://localhost/` with a `Host:` header** — Apache serves the `000-default` vhost regardless and returns `/var/www/html/index.html` (10671 bytes), which looks healthy on a
+completely dead portal. This produced a wrong "no impact" conclusion during the 2026-07-28 incident. Always curl the real ServerName.
 
 **Fix**:
 ```bash
@@ -5547,32 +5646,28 @@ ansible -i inventories/<flavor>/prod <hosts> -m file \
 # repeat for .../application/logs
 ```
 
-**Incident**: 2026-07-21 → 07-28, 10 of 16 in-scope `rcp` sites fully down for 7 days. Root cause was an Ansible tag gap, not drift — see `08_ansible-authoring.md` and rule-005 in the ansible-wifi repo. Undetected because the Kohana usage/status crons run as **root**, for whom a 0755 root-owned dir is writable, so they kept succeeding and Eclipse kept receiving data throughout. Full RCA: `local-knowledge-ansible/ansible-wifi/issues/rcp-fleet/rcp-captive-portal-cache-perms-outage-20260728_1240.md`.
+**Incident**: 2026-07-21 → 07-28, 10 of 16 in-scope `rcp` sites fully down for 7 days. Root cause was an Ansible tag gap, not drift — see `08_ansible-authoring.md` and rule-005 in the ansible-wifi
+repo. Undetected because the Kohana usage/status crons run as **root**, for whom a 0755 root-owned dir is writable, so they kept succeeding and Eclipse kept receiving data throughout. Full RCA:
+`local-knowledge-ansible/ansible-wifi/issues/rcp-fleet/rcp-captive-portal-cache-perms-outage-20260728_1240.md`.
 
 ### 11.9 APN vs NBN Accelerate portal protocol differences (2026-08-03, code-inspection only — not live-validated)
 
-Everything in §11.1–11.8 above was extracted from APN-cluster (`rcp`) incidents and live hosts. Two
-group_vars-level differences apply on the NBN Accelerate cluster (`nbn_accelerate`/`nbn_wh`) that are
-**not yet confirmed against a live cw-cluster host**:
+Everything in §11.1–11.8 above was extracted from APN-cluster (`rcp`) incidents and live hosts. Two group_vars-level differences apply on the NBN Accelerate cluster (`nbn_accelerate`/`nbn_wh`) that
+are **not yet confirmed against a live cw-cluster host**:
 
-| Var | APN cluster (`rcp`/`rct`/`wh`) | NBN Accelerate cluster (`nbn_accelerate`/`nbn_wh`) |
-|---|---|---|
-| `smc_bases_portal_protocol` | `http` | `https` — cw-side portals are HTTPS-only |
-| `smc_bases_blocked_url_redirect` | `activ8me.net.au/blocked/wifi/` | `blocked.communitywifi.net.au` |
+| Var                              | APN cluster (`rcp`/`rct`/`wh`)  | NBN Accelerate cluster (`nbn_accelerate`/`nbn_wh`) |
+| -------------------------------- | ------------------------------- | -------------------------------------------------- |
+| `smc_bases_portal_protocol`      | `http`                          | `https` — cw-side portals are HTTPS-only           |
+| `smc_bases_blocked_url_redirect` | `activ8me.net.au/blocked/wifi/` | `blocked.communitywifi.net.au`                     |
 
-Implications worth checking before assuming §11.1–11.8 troubleshooting steps transfer directly to a
-cw-cluster host:
-- The `curl` verification commands in §11.7 (`curl -s wifi.a8me.au | grep ...`) use APN-cluster
-  hostnames/base-hrefs (`p.a8me.au`/`wifi.a8me.au`, §11.3) — a cw-cluster host's equivalent hostname
-  and expected base href are not documented anywhere in this pack yet.
-- HTTPS termination on the cw side means an Apache vhost/TLS-cert config exists that has no APN-side
-  equivalent to reference — not yet located or documented.
-- The 0755-vs-0777 cache/logs permissions bug (§11.8) is Kohana-framework-level and independent of
-  transport protocol, so it plausibly applies identically on cw-cluster hosts, but this is inferred,
+Implications worth checking before assuming §11.1–11.8 troubleshooting steps transfer directly to a cw-cluster host:
+- The `curl` verification commands in §11.7 (`curl -s wifi.a8me.au | grep ...`) use APN-cluster hostnames/base-hrefs (`p.a8me.au`/`wifi.a8me.au`, §11.3) — a cw-cluster host's equivalent hostname and
+  expected base href are not documented anywhere in this pack yet.
+- HTTPS termination on the cw side means an Apache vhost/TLS-cert config exists that has no APN-side equivalent to reference — not yet located or documented.
+- The 0755-vs-0777 cache/logs permissions bug (§11.8) is Kohana-framework-level and independent of transport protocol, so it plausibly applies identically on cw-cluster hosts, but this is inferred,
   not confirmed live.
 
-See `01_overview.md` "APN Cluster vs NBN Accelerate Cluster — Structural Comparison" for the source
-of these two var values, and `13_known-issues.md` "NBN Accelerate cluster coverage gap" for the
+See `01_overview.md` "APN Cluster vs NBN Accelerate Cluster — Structural Comparison" for the source of these two var values, and `13_known-issues.md` "NBN Accelerate cluster coverage gap" for the
 broader live-validation gap this note is part of.
 ````
 
@@ -5857,21 +5952,22 @@ curl -sv http://1.1.1.1/ 2>&1 | grep -E "Location|302|wifi"
 
 ## Contents
 
-- [Knowledge Gaps (by design — require execution layer)](#knowledge-gaps-by-design-require-execution-layer)
+- [Knowledge Gaps (by design — require execution layer)](#knowledge-gaps-by-design--require-execution-layer)
 - [Coverage Gaps (partial knowledge)](#coverage-gaps-partial-knowledge)
 - [Skill Staleness Risks](#skill-staleness-risks)
 - [Fleet-Wide Architecture Risks (identified, not yet remediated)](#fleet-wide-architecture-risks-identified-not-yet-remediated)
-- [Known Operational Bugs (rcp fleet — confirmed 2026-06-30)](#known-operational-bugs-rcp-fleet-confirmed-2026-06-30)
-- [Known Operational Bugs (NBN Accelerate cluster — full fleet sweep, 2026-08-03)](#known-operational-bugs-nbn-accelerate-cluster-full-fleet-sweep-2026-08-03)
+- [Known Operational Bugs (rcp fleet — confirmed 2026-06-30)](#known-operational-bugs-rcp-fleet--confirmed-2026-06-30)
+- [Known Operational Bugs (NBN Accelerate cluster — full fleet sweep, 2026-08-03)](#known-operational-bugs-nbn-accelerate-cluster--full-fleet-sweep-2026-08-03)
 - [Known Site Issues (as of 2026-06-30)](#known-site-issues-as-of-2026-06-30)
 - [Out of Scope (permanent)](#out-of-scope-permanent)
-- [2026-07-28 — fleet fatrace sweep findings (all 16 rcp incl. new-looma)](#2026-07-28-fleet-fatrace-sweep-findings-all-16-rcp-incl-new-looma)
-- [2026-08-18 — `delye-smc01` 5-minute reboot loop: a 2.6 GiB Laravel log vs a 3.81 GiB overlay (RESOLVED)](#2026-08-18-delye-smc01-5-minute-reboot-loop-a-26-gib-laravel-log-vs-a-381-gib-overlay-resolved)
-- [2026-08-18 — `rise-watchdog.service` dead with `status=226/NAMESPACE` whenever overlay is off](#2026-08-18-rise-watchdogservice-dead-with-status226namespace-whenever-overlay-is-off)
-- [2026-08-18 — Ubuntu's stock rsyslog logrotate has no size limit (fleet-wide)](#2026-08-18-ubuntus-stock-rsyslog-logrotate-has-no-size-limit-fleet-wide)
-- [2026-08-18 — legacy `ozai` logger still writing post-RISE; graylog-sidecar logs accumulate forever](#2026-08-18-legacy-ozai-logger-still-writing-post-rise-graylog-sidecar-logs-accumulate-forever)
-- [2026-08-18 — plaintext secrets in `group_vars`, and a copied Graylog config that shared them](#2026-08-18-plaintext-secrets-in-group_vars-and-a-copied-graylog-config-that-shared-them)
-- [2026-09-08 — upstream keepalived VIP config bug: `lb_algo rr` silently ignores the lweb03 drain intent (`202.171.100.138`)](#2026-09-08-upstream-keepalived-vip-config-bug-lb_algo-rr-silently-ignores-the-lweb03-drain-intent-202171100138)
+- [2026-07-28 — fleet fatrace sweep findings (all 16 rcp incl. new-looma)](#2026-07-28--fleet-fatrace-sweep-findings-all-16-rcp-incl-new-looma)
+- [2026-08-18 — `delye-smc01` 5-minute reboot loop: a 2.6 GiB Laravel log vs a 3.81 GiB overlay (RESOLVED)](#2026-08-18--delye-smc01-5-minute-reboot-loop-a-26-gib-laravel-log-vs-a-381-gib-overlay-resolved)
+- [2026-08-18 — `rise-watchdog.service` dead with `status=226/NAMESPACE` whenever overlay is off](#2026-08-18--rise-watchdogservice-dead-with-status226namespace-whenever-overlay-is-off)
+- [2026-08-18 — Ubuntu's stock rsyslog logrotate has no size limit (fleet-wide)](#2026-08-18--ubuntus-stock-rsyslog-logrotate-has-no-size-limit-fleet-wide)
+- [2026-08-18 — legacy `ozai` logger still writing post-RISE; graylog-sidecar logs accumulate forever](#2026-08-18--legacy-ozai-logger-still-writing-post-rise-graylog-sidecar-logs-accumulate-forever)
+- [2026-08-18 — plaintext secrets in `group_vars`, and a copied Graylog config that shared them](#2026-08-18--plaintext-secrets-in-group_vars-and-a-copied-graylog-config-that-shared-them)
+- [2026-09-08 — upstream keepalived VIP config bug: `lb_algo rr` silently ignores the lweb03 drain intent (`202.171.100.138`)](#2026-09-08--upstream-keepalived-vip-config-bug-lb_algo-rr-silently-ignores-the-lweb03-drain-intent-202171100138)
+- [2026-09-11 — portal-FQDN regression: two separate incidents, one still live on 2 sites](#2026-09-11--portal-fqdn-regression-two-separate-incidents-one-still-live-on-2-sites)
 
 ---
 
@@ -6674,6 +6770,290 @@ Rotating the already-exposed material would mean every committed copy plus git h
 | Fix                | Change `lb_algo rr` to `lb_algo wrr` on the director pair (`202.171.100.132`/`.133`). Outside this repo — raise with whoever owns the keepalived config.                        |
 
 **Investigation limit:** SSH to `202.171.100.132:22` is filtered from `cw-teleport01`, so the running config could not be re-read live from an SMC-side vantage point during the session.
+
+## 2026-09-11 — portal-FQDN regression: two separate incidents, one still live on 2 sites
+
+`smc_bases_portal_fqdn` controls the captive-portal redirect target. When it's wrong, it points captives at the Teleport proxy hostname instead of the real portal domain — the T&C page never loads, so
+no pin ever gets issued. Full live-diagnosis methodology (two mechanisms, pitfalls, fleet audit tooling): `14_pin-activation-diagnosis.md`.
+
+**Two independent regressions, confirmed via git archaeology, not just inference:**
+
+| Inventory                                                        | Bad from           | Fixed in git       | Duration   | Fix commit                                                                 |
+| ---------------------------------------------------------------- | ------------------ | ------------------ | ---------- | -------------------------------------------------------------------------- |
+| `nbn_accelerate`                                                 | 2025-06-27         | 2025-07-28         | ~1 month   | Direct, deliberate revert                                                  |
+|   (`inventories/nbn_accelerate/group_vars/smc_bases.yml`)        |   (`bdce3d05`)     |   (`9f395726`)     |            |                                                                            |
+| `nbn_wh` (`inventories/nbn_wh/group_vars/smc_bases.yml`)         | 2025-07-01         | 2026-09-03         | **~14 months** | **Incidental** — bundled inside an unrelated squid-blocklist-transport     |
+|                                                                  |   (`ec99f5d8`)     |   (`2dee86a8`)     |            |   refactor; the commit's headline never mentions the portal fix            |
+
+**Git being fixed does not mean a box is fixed.** `squid.conf`/Apache vhosts/cron only regenerate when the relevant role actually re-runs on that box — a box provisioned (or whose `smc_squid` last
+ran) inside the bad window keeps serving the broken redirect indefinitely afterward, however long ago git was corrected. Confirmed live 2026-09-11, full fleet sweep (26 reachable `nbn_accelerate` +
+`nbn_wh` sites, config-side check = `deny_info` value + `squid.conf` mtime + enabled Apache vhosts + `sslcertcopy` cron):
+
+- **RESOLVED 2026-09-11 — all 3 originally-broken sites fixed and recovery confirmed live.** `hope-vale-smc01` (`squid.conf` dated 2025-06-27, the exact regression-introduction moment — untouched for
+  14+ months) and `kowanyama-smc01` (dated 2025-07-05, mid-window) were each showing only 1–2 successful `wifi/access` activations in a 15-day window pre-fix, against 57–893 at every
+  comparable/control site (`14_pin-activation-diagnosis.md` §14.7). Operator re-ran `smc_squid` (tag `squid` only — `smc_dns` was already correct, `smc_application`'s stale vhost is inert; see the
+  Failure mechanism note above) against both ~11:34; **first new activation confirmed on both within 3–9 minutes** (11:37:50), and both kept accumulating normally through the rest of the day
+  (`kowanyama` 1→10, `hope-vale` 2→6, tracked live). `bungardi-smc01` (`nbn_wh`, `squid.conf` dated 2025-09-18) was fixed separately ~11:58 via the backdoor-SSH path (§Backdoor SSH Access in
+  `03_communication-flows.md`) once its flapping Teleport agent — caused by uplink packet loss, not a hung box — allowed access; config re-verified correct, recovery-confirmation watch was still
+  pending as of the last check in this investigation.
+- **Fixed but with leftover cruft (3 sites, all also fixed above):** `hope-vale-smc01`/`kowanyama-smc01`/`bungardi-smc01`, plus `galiwinku-smc01` (fixed 2026-09-08), `doomadgee-smc01` (fixed
+  2025-07-28, the day of the git revert), `darlngunaya-smc01` (never actually affected, see below, but carries an unrelated orphaned vhost). All still carry a stale
+  `teleport.communitywifi.net.au.conf` Apache vhost and its `sslcertcopy` cron entry — the roles have no cleanup step for either, so removal is manual.
+- **Correction (2026-09-11, same day as the finding below was first written): `kaltjiti-fergon-smc01` was never affected.** An earlier pass of this entry claimed it was fixed 2026-09-08 in the same
+  batch as `galiwinku`. Re-verified live: single vhost (`communitywifi.net.au.conf` only, no `teleport.*`), `squid.conf` dated 2024-08-07 (the original fleet-wide baseline, predates the 2025-06-27
+  regression entirely), correct `deny_info`. The original claim traced back to output-interleaving corruption in an early parallel sweep (multiple `tsh ssh` sessions appending to one shared file
+  without per-host isolation) that a later "clean" rerun failed to fully purge before being written up. **Lesson: verify a fleet-sweep finding against a single, isolated, freshly-read capture for that
+  exact host before writing it into this file — a table built from a batch run is not itself suffient evidence if the run's isolation was ever in question.**
+- **`bungardi-smc01` (`nbn_wh`) — confirmed actively broken (2026-09-11, tunnel recovered).** The earlier "no tunnel connection found" failures were transient — a retry within the hour succeeded.
+  `deny_info` still points at `teleport.communitywifi.net.au`; `squid.conf` mtime is **2025-09-18** (mid-regression, post-`nbn_accelerate`-fix-window but well before the `nbn_wh` fix landed
+  2026-09-03). Pin-activation audit: 2 marks, 2 activations in the log window — same dead signature as `hope-vale`/`kowanyama`. Independently corroborated by the operator's Eclipse-side "PIN Last
+  Issued" report, which showed `bungardi` last issuing 2026-09-01 (10 days stale) against every healthy site showing same-day — see the new evidence-source note below. **Third confirmed-broken site**,
+  alongside `hope-vale-smc01` and `kowanyama-smc01`.
+- **`darlngunaya-smc01` (`nbn_wh`) is currently correct** but its `squid.conf` mtime (2024-10) predates both the 2025-07-01 regression and the 2026-09-03 fix — `smc_squid` simply hasn't run on it
+  since before the bug existed, so it never carried either value. It does have an orphaned `teleport.*` Apache vhost from Oct 2024, unrelated to this specific regression.
+- **The remaining ~21 sites** have `squid.conf` predating 2025-06-27 entirely (fleet-wide `smc_squid` run of 2024-08-07) — never affected.
+
+**Process lesson:** the `nbn_wh` fix landing inside an unrelated commit (headline: blocklist-feed transport, not portal FQDN) is exactly the kind of change where a targeted write-back audit misses
+things — `git show --stat` on every commit that touches a shared vars file, not just commits whose headline names the file, should be part of any future sweep for this class of regression.
+````
+
+## File: references/14_pin-activation-diagnosis.md
+````markdown
+# SMC Pin Activation Diagnosis
+
+## Contents
+
+- [14.1 The core distinction: validity vs issuance](#141-the-core-distinction-validity-vs-issuance)
+- [14.2 Mechanism 1 — is a pin currently valid (`iptables -t mangle`)](#142-mechanism-1--is-a-pin-currently-valid-iptables--t-mangle)
+- [14.3 Mechanism 2 — was a pin actually issued (Apache access log)](#143-mechanism-2--was-a-pin-actually-issued-apache-access-log)
+- [14.4 Correlating MAC ↔ IP via `dhcpd.leases`](#144-correlating-mac--ip-via-dhcpdleases)
+- [14.5 Controller code path](#145-controller-code-path)
+- [14.6 Pitfalls](#146-pitfalls)
+- [14.7 Fleet case study — 2026-09-11 portal-FQDN regression](#147-fleet-case-study--2026-09-11-portal-fqdn-regression)
+- [14.8 Reusable tooling](#148-reusable-tooling)
+
+## 14.1 The core distinction: validity vs issuance
+
+Two independent mechanisms answer two different questions, and conflating them is the mistake to avoid. Neither one alone tells the full story:
+
+| Question                                                       | Mechanism                                 | Answers                                                                        |
+| -------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------ |
+| Is this pin valid **right now**?                               | `iptables -t mangle -L ECLIPSE_MARK`      | Current state — a snapshot. Says nothing about how or when the mark got there. |
+| Was a pin **actually issued/activated** through this box's portal? | Apache access log, `wifi/access` endpoint | An audit trail over time — every activation attempt, with outcome.             |
+
+A mark can exist with **no** corresponding activation in the local Apache log — see [14.6](#146-pitfalls) ("marks ≠ activations"). Conversely, a burst of failed activation attempts (log entries with a
+non-302 status) with zero marks tells you the portal is reachable but issuance is failing — a different failure mode than a redirect-FQDN regression (see [10_captive-portal.md](10_captive-portal.md)
+and [13_known-issues.md](13_known-issues.md)).
+
+Use **both**. A single mechanism checked in isolation under-diagnoses: mangle-only makes a long-broken site with a couple of still-valid legacy pins look "fine"; log-only (on a box whose local logs
+were recently rotated or rebuilt) can wrongly read a healthy site as dead.
+
+## 14.2 Mechanism 1 — is a pin currently valid (`iptables -t mangle`)
+
+```bash
+iptables -t mangle -L ECLIPSE_MARK -v -x -n
+```
+
+One rule per currently-valid activated PIN, keyed on the client's MAC:
+
+```
+    pkts      bytes target     prot opt in     out     source               destination
+       0        0 CONNMARK   all  --  *      *       0.0.0.0/0            0.0.0.0/0            MACea:7c:64:70:0f:9e CONNMARK set 0x80061241
+```
+
+- **`CONNMARK set 0x8xxxxxxx`** — top nibble carries flag bits, the low 30 bits are the pin-class id. The `0x8` high bit is always set on a valid mark; that's what the tier-routing rules in
+  [14.2.1](#tier-routing) key on.
+- **`pkts`/`bytes` on this specific rule** = traffic from *this* MAC since *this rule* was installed (i.e. since this pin was last activated/pushed) — not since boot, not since some global counter
+  reset. Zero pkts/bytes on a currently-valid mark means that device hasn't sent traffic since activation, not that the mark is fake.
+- **Rule count = number of currently-valid pins, full stop.** This is the only number in either mechanism that answers "how many working pins does this site have right now."
+
+This tells you validity **now**. It does **not** tell you issuance — a mark can exist purely because Eclipse pushed it server-side (periodic sync), with no local activation ever having happened on
+this box. See [14.6](#146-pitfalls).
+
+### Tier routing (`iptables -t nat -L SQUID_REDIRECT`)
+
+```bash
+iptables -t nat -L SQUID_REDIRECT -v -x -n
+```
+
+```
+    pkts      bytes target     prot opt in     out     source               destination
+  131923  7863304 REDIRECT   tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            connmark match  0x0 redir ports 3128
+       0        0 REDIRECT   tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            connmark match  0x0/0x80000000 redir ports 3130
+      58     3712 REDIRECT   tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            redir ports 3131
+```
+
+| Port | Connmark match                  | Tier                                                               |
+| ---- | ------------------------------- | ------------------------------------------------------------------ |
+| **3128** | `0x0`                           | No pin — captive-portal redirect (the "you need to activate" path) |
+| **3130** | `0x0/0x80000000` (top bit only) | Top-bit-only tier — a lesser access class, not full any-data       |
+| **3131** | (catch-all, already marked)     | Any-data PIN — full unrestricted access                            |
+
+**Chain-level `pkts`/`bytes` here are cumulative since these NAT rules were last (re)loaded** — typically since `smc_squid`/`smc_iptables` last ran on this box, which can be a very long time ago on a
+box that hasn't been re-provisioned (confirmed live: a box whose rules were last loaded over a year prior still showed millions of accumulated packets on port 3131 despite having only one
+currently-valid mark — that large number is *history*, not *now*; the mark count is *now*). Don't read a large 3131 total as proof the site is currently healthy — cross-check it against the mark count
+and the mtime of whatever last touched the NAT/mangle rules (squid.conf regeneration, typically).
+
+A site where **3128 dominates and 3131 is near-zero**, alongside a near-empty `ECLIPSE_MARK` chain, is the live signature of "essentially everyone hitting this network right now has no valid pin."
+
+## 14.3 Mechanism 2 — was a pin actually issued (Apache access log)
+
+```bash
+zcat -f /var/log/apache2/access.log* /var/log/apache2/other_vhosts_access.log* 2>/dev/null | grep 'wifi/access'
+```
+
+Endpoint: `POST /index.php/wifi/access/<epoch>`.
+
+| Status | Meaning                                                                            |
+| ------ | ---------------------------------------------------------------------------------- |
+| **302** | Successful activation — redirect out of the portal, pin applied                    |
+| **200** | Failure — the controller re-renders the welcome page inline instead of redirecting |
+
+```
+10.0.57.199 - - [06/Sep/2026:10:05:34 +1000] "POST /index.php/wifi/access/1788653131 HTTP/1.1" 302 363 "https://communitywifi.net.au/" "Mozilla/5.0 (iPhone; ...)"
+```
+
+Client IP + timestamp + status is the audit trail. **A count of 302s over a window is the closest thing to a real issuance-rate metric this fleet has** — see the case study in
+[14.7](#147-fleet-case-study--2026-09-11-portal-fqdn-regression) for what that looks like used comparatively across sites.
+
+Related endpoints worth including in a fuller audit, same log grep pattern: `prepaid`, `payment`, `token` (purchased pins), `index`, `terms`, `limited`, `resume`, `success`, `me`.
+
+**Verified timing** (2026-09-06, hope-vale-smc01): device `10.0.57.199`'s activation POST landed at `10:05:34`; the first allowed Squid flow for that same client appeared **9 seconds later** at
+`10:05:43`. The activation → mark → traffic-allowed pipeline is fast once it works; a device stuck at the portal for minutes is a different, earlier-stage failure (DNS/redirect/FQDN — see
+[10_captive-portal.md §11.7](10_captive-portal.md)), not a slow activation.
+
+## 14.4 Correlating MAC ↔ IP via `dhcpd.leases`
+
+Both mechanisms above key on different identifiers — mangle on MAC, the access log on client IP. To connect a specific mark to a specific log entry (or vice versa), for a **one-off manual check**:
+
+```bash
+grep -B2 -A8 '<ip-or-mac>' /var/lib/dhcp/dhcpd.leases | grep -E 'lease|hardware ethernet|client-hostname'
+```
+
+`dhcpd.leases` is append-only and can be large (multi-MB) on a busy site — grep for the specific identifier rather than reading the whole file. Each block looks like:
+
+```
+lease 10.0.36.140 {
+  starts epoch 1789102221; # Fri Sep 11 14:50:21 2026
+  ends epoch 1789145421; # Sat Sep 12 02:50:21 2026
+  cltt epoch 1789106232; # Fri Sep 11 15:57:12 2026
+  binding state active;
+  hardware ethernet 56:39:cf:bd:8e:dd;
+}
+```
+
+`starts`/`ends`/`cltt` are already Unix epoch on this fleet's dhcpd config (`# <human>` is just a trailing comment) — no date parsing needed if you're scripting against them.
+
+### The join-order bug — do not `tail -1` the lease blocks for an IP
+
+**`dhcpd.leases` is append-only, and a given IP accumulates multiple lease blocks over time** (each renewal appends a new block; ISC dhcpd's own semantics treat the *last* block as the
+current/authoritative state). That matters for a live-appliance snapshot, but it is the **wrong** block to use when correlating a *historical* activation timestamp — "the last block in the file for
+this IP" can have a `starts` epoch **after** the activation you're trying to explain.
+
+**Confirmed live 2026-09-11, `hope-vale-smc01`, IP `10.0.36.28`:** the last lease block in the file for that IP had `starts epoch` = `15:53:29`, but the real `wifi/access` activation for that IP was
+logged at `15:52:41` — **48 seconds before** the lease that block claims created the binding. The correct block (an earlier renewal, same MAC) was further up the file. A naive `tail -1` join would
+have reported a technically-true-later MAC as the one active at activation time — usually harmless if it's the same device renewing, but not something to assert as fact without checking.
+
+**The correct method: scan every lease block recorded for that IP, and pick the one whose `starts` epoch is the *latest one still `<=` the activation epoch* — the lease actually in force at that
+instant, not the file's last word on that IP.** If no known lease had started by the activation time at all (the earliest known lease is itself later — also seen live, 4 of 30 sampled IPs on
+`hope-vale-smc01` in the same session), there is no confirmed binding; report that explicitly rather than guessing.
+
+**This is exactly what `scripts/correlate-pin-activation.sh` automates** — do not hand-roll this join for anything beyond a single spot-check; the ordering bug is easy to reintroduce. It also handles
+the data gaps found live on this fleet: an IP with no lease record at all in the window (`no-lease-found`), and a matched lease block that itself has no `hardware ethernet` line
+(`no-mac-in-lease-record`) — both print an explicit label rather than a blank field or a silent wrong answer. See [14.8](#148-reusable-tooling).
+
+## 14.5 Controller code path
+
+`application/classes/controller/wifi.php` → `action_access` confirms the flow end-to-end:
+
+1. Client accepts Terms & Conditions.
+2. Controller calls Eclipse `get_free_pin_monthly` (or the paid equivalent for `prepaid`/`payment`/`token`).
+3. Controller deauth+auth's the client at the AP/gateway level, which is what actually installs the `ECLIPSE_MARK` rule (mechanism 1).
+4. Controller issues a `302` (success) or re-renders the welcome page with an inline error, `200` (failure) — this is mechanism 2.
+
+This is why the two mechanisms normally track each other tightly (9-second gap, confirmed above) — but see [14.6](#146-pitfalls) for the one path that decouples them.
+
+## 14.6 Pitfalls
+
+- **Log location varies by box.** On some boxes `/var/log/apache2/access.log` is missing or empty and portal hits land in `other_vhosts_access.log` instead — confirmed live on `bungardi-smc01`, where
+  `access.log` was absent entirely. **Always check both**, and both need `zcat -f` across their rotated `.gz` siblings — Apache's default logrotate policy on this fleet keeps roughly 14 days, so a
+  3-month historical comparison from logs alone is not possible; only the mark count (a snapshot) and Prometheus-derived traffic proxies (see [13_known-issues.md](13_known-issues.md) — no
+  application-level metric exists) reach further back.
+- **Marks ≠ activations.** On `hope-vale-smc01` (2026-09), one of the currently-valid marks (MAC `ea:7c:...` → `10.0.37.250`) had **no** corresponding `wifi/access` POST anywhere in the retained log
+  window. The pin was generated Eclipse-side and pushed to the box by its periodic sync (roughly every 5 minutes) — the local box never ran the activation flow for it. Do not assume every mark implies
+  a local activation event; do not assume every activation implies the reverse either without checking.
+- **A near-empty `ECLIPSE_MARK` chain does not mean a dead site.** Confirmed live 2026-09-11 on `amata-smc01` (a healthy control site): the mangle snapshot read **0 currently-valid marks** at the
+  exact moment it was sampled, on a box whose `wifi/access` log showed **628 successful activations** in the same window (dozens that same morning, minutes apart). Marks evidently don't sit around
+  long enough on this fleet for a point-in-time sample to reliably catch a nonzero count even on a thriving site — whatever expires/reissues them cycles faster than the snapshot interval. **Never call
+  a site dead on mark count alone; the `wifi/access` log's 302 count over a real time window is the more trustworthy signal, and the two should always be read together, not the mangle table in
+  isolation.** This is the mirror-image failure mode of the previous bullet: that one is "mark present, no activation logged"; this one is "activation-rich, mark snapshot reads zero."
+- **Pin-generation timestamps and numbers are Eclipse-side only** — not queryable from the SMC appliance or from Grafana (confirmed no captive-portal/pin-issuance Prometheus metric exists anywhere in
+  this fleet's monitoring — see [13_known-issues.md](13_known-issues.md)). **The operator does have a separate Eclipse admin report** ("PIN Last Issued" per site, by site ID/community name) outside
+  this fleet's own tooling entirely — confirmed 2026-09-11 as a third, independent corroborating source: it flagged `bungardi` at 10 days stale (last issued 2026-09-01) while every healthy site showed
+  same-day, matching this file's own two mechanisms exactly. Treat a stale date there as a trigger to run `audit-pin-activation.sh` against that site, not as a replacement for it — it gives a
+  last-issued date, not the pkts/marks/tier detail needed to diagnose *why*.
+- **The local per-box MariaDB (`community_connect`) is not the pin store to check.** It exists on some boxes (deployed, in-progress work per the operator, not the production issuance path) and is
+  empty/inactive on others — confirmed live 2026-09-11 (schema-less on a freshly-rebuilt box, service not even running on three separate control sites). Don't spend time here; go straight to the two
+  mechanisms above.
+
+## 14.7 Fleet case study — 2026-09-11 portal-FQDN regression
+
+Context: `inventories/nbn_accelerate` and `inventories/nbn_wh` both independently had periods where `smc_bases_portal_fqdn` pointed at the Teleport proxy hostname instead of the real portal domain —
+see [13_known-issues.md](13_known-issues.md) for the full git-archaeology timeline (two separate regressions, `nbn_accelerate` ~1 month in 2025, `nbn_wh` ~14 months from 2025-07-01 to 2026-09-03).
+Applying both mechanisms above across the flagged sites plus healthy controls, same ~15-day log window (28/29 Aug → 11 Sep 2026), settled the question definitively:
+
+| Site                                             | Valid marks now | 3128 (no-pin) pkts | 3131 (any-data) pkts | 302 (activated) | 200 (failed) |
+| ------------------------------------------------ | --------------- | ------------------ | -------------------- | --------------- | ------------ |
+| hope-vale-smc01                                  | 2               | 131,966            | 58                   | **2**           | 0            |
+| kowanyama-smc01                                  | 1               | 1,187,849          | 2,163,868            | **1**           | 0            |
+| bungardi-smc01 (`nbn_wh`, confirmed 2026-09-11)  | 2               | 698                | 167                  | **2**           | 0            |
+| galiwinku-smc01 (fixed 2026-09-08)               | 370             | 74,109             | 57,095               | 474             | 101          |
+| kaltjiti-fergon-smc01 (control — never affected) | 150             | 5,138              | 18,065               | 179             | 105          |
+| doomadgee-smc01 (control)                        | 570             | 505,770            | 161,201              | 893             | 207          |
+| amata-smc01 (control)                            | 183             | 26                 | 15                   | 628             | 44           |
+| aurukun-smc01 (control)                          | 650             | 126                | 990                  | 724             | 87           |
+
+`hope-vale`/`kowanyama`/`bungardi` had **1–2 successful activations in a 15-day window**, against 179–893 everywhere else checked. This is decisive, not a proxy-metric inference — both mechanisms
+independently confirm the same three sites, and only those three, currently have a dead pin-issuance pipeline. `kowanyama`'s large 3131 total despite one current mark is exactly the pitfall described
+in [14.2](#tier-routing) — its NAT rules haven't reloaded since 2025-07-05, so that counter reflects over a year of history from pins that *were* valid at various points, not current traffic.
+`bungardi` was initially unreachable over Teleport ("no tunnel connection found") — a retry within the hour succeeded; a transient tunnel-registration issue, not a real second outage.
+
+Cross-referenced against the config-regression sweep (deny_info/squid.conf mtime/stale Apache vhost/cron — see [13_known-issues.md](13_known-issues.md)): `hope-vale`, `kowanyama`, and `bungardi` are
+the only three sites whose `deny_info` still points at the Teleport hostname today. The pin-activation evidence and the config evidence agree independently — and the operator's own Eclipse-side "PIN
+Last Issued" report agrees with both (see the pitfalls bullet above), a third independent source landing on the same three sites.
+
+## 14.8 Reusable tooling
+
+- **`scripts/audit-pin-activation.sh <site> [<site> ...]`** — runs both mechanisms per host (mangle marks, NAT tier counters, `wifi/access` log audit across both log files and all rotations) and
+  prints the comparison table above. See `scripts/README.md`.
+- **`scripts/correlate-pin-activation.sh <site> [<site> ...]`** — the per-pin follow-up to the above: for every real activation at a site, joins in its MAC and DHCP lease window (§14.4) and current
+  live status, one row per pin. Written 2026-09-11 in response to an operator request for exactly this timeline; implements the correct time-windowed lease join described in §14.4 rather than the
+  naive last-block lookup. See `scripts/README.md`.
+- **`scripts/collect-fleet-health.sh`**'s `05-portal-fqdn-status` capture — the config-side half of this case study (deny_info, squid.conf mtime, Apache vhosts, sslcertcopy cron). Run both together
+  when investigating a suspected portal-issuance problem: config state explains *why*, this file's two mechanisms confirm *whether it's actually happening* and *how severely*.
+````
+
+## File: references/15_cambium-asset-registers.md
+````markdown
+# Cambium Asset Registers — Pointer
+
+## Contents
+
+- [Canonical Home](#canonical-home)
+- [What Stays Here](#what-stays-here)
+
+---
+
+## Canonical Home
+
+Full asset-register naming-convention, per-site drift, site-name convention, and R195P IP-derivation knowledge now lives in `skill-cambium`'s `references/03_asset-register-conventions.md` (moved
+2026-09-17 — this pack originally held that content before `skill-cambium` existed). Read it there; this pack owns the SMC/Ansible layer, not the device/hardware layer.
+
+## What Stays Here
+
+One fact genuinely belongs to this pack, not `skill-cambium`: any Cambium asset-register work must use ansible-wifi's own `site_name` (`inventories/<flavour>/group_vars/<site>.yml`) as the canonical
+site identifier — e.g. `hope-vale`, `burringurrah` — not a register's own display name. That's the ansible-wifi join point, which is this pack's concern. See `01_overview.md` for how ansible-wifi
+organizes its site inventories.
 ````
 
 ## File: scripts/README.md
@@ -6682,13 +7062,17 @@ Title: skill-smc — Reusable Diagnostic and Validation Scripts
 Category: script-inventory
 Status: current
 Authority: local-supplement
-Scope: Reusable read-only diagnostic tooling for SMC WAN-routing/topology-drift investigations and fleet-wide hardware/service-health audits, plus generic ansible-lint pre-push/CI gate scripts for the
-  ansible-wifi repo
-Summary: Four categories — (1) WAN-routing diagnostics (evidence capture + drift analysis + topology/hardware cross-check + task-runner template), promoted from the 2026-07-29/30 APN routing-issue
+Scope: Reusable read-only diagnostic tooling for SMC WAN-routing/topology-drift investigations, fleet-wide hardware/service-health audits, and captive-portal pin-activation diagnosis, plus generic
+  ansible-lint pre-push/CI gate scripts for the ansible-wifi repo
+Summary: Five categories — (1) WAN-routing diagnostics (evidence capture + drift analysis + topology/hardware cross-check + task-runner template), promoted from the 2026-07-29/30 APN routing-issue
   investigation; (2) ansible-lint baseline/delta-gate scripts, promoted 2026-07-31 from `local-knowledge-ansible/ansible-wifi/scripts/`, for a pre-push hook that blocks only NEW lint violations; (3)
-  fleet hardware/security/service-health audit (evidence capture + task-runner), written 2026-08-03 for the first full NBN Accelerate cluster sweep; (4) pack governance validation
-  (check_governance.py), added 2026-09-08 to turn this pack's own routing/version-discipline rules into assertions.
-Read before running the WAN-routing tools: the "hook covers netplan" discriminator they automate, and why it works, is documented in `../references/03_communication-flows.md`.
+  fleet hardware/security/service-health audit (evidence capture + task-runner), written 2026-08-03 for the first full NBN Accelerate cluster sweep, extended 2026-09-11 with a portal-FQDN-regression
+  capture; (4) pack governance validation (check_governance.py), added 2026-09-08 to turn this pack's own routing/version-discipline rules into assertions; (5) captive-portal pin-activation diagnosis
+  — `audit-pin-activation.sh` (fleet-wide per-site totals) and `correlate-pin-activation.sh` (per-pin timeline: IP + MAC + lease window + live status for every real activation at one site), both added
+  2026-09-11 from the nbn_accelerate/nbn_wh portal-FQDN regression investigation.
+Read before running the WAN-routing tools: the "hook covers netplan" discriminator they automate, and why it works, is documented in `../references/03_communication-flows.md`. Read before running
+either pin-activation tool: `../references/14_pin-activation-diagnosis.md` — the mechanisms they check answer different questions and neither alone is reliable, and §14.4 documents a real join-order
+  bug that `correlate-pin-activation.sh` exists specifically to avoid.
 
 # scripts/
 
@@ -6733,16 +7117,38 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 
 **Fleet hardware/security/service-health audit (promoted 2026-08-03, different category — full-fleet hardware/software inventory, not WAN-routing-specific):**
 
-| Script                  | Touches                        | Safety    | Notes                                                                                                                         |
-| ----------------------- | ------------------------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| [collect-fleet-health.sh](collect-fleet-health.sh) | Live SMC appliances            | **read-only** | Same hardcoded-command, host-names-only contract as `collect-smc-evidence.sh`. Bundles ~20 read-only commands into 4 grouped  |
-|                         |   over Teleport                |           |   captures (not one-command-per-round-trip) to stay tractable at fleet scale over satellite links — see the script's own      |
-|                         |                                |           |   header note                                                                                                                 |
-| [fleet-health.justfile](fleet-health.justfile) | Wraps                          | **read-only** | Unlike `routing-diagnostics.justfile`, ships with a real current site list (the NBN Accelerate cluster, confirmed live via    |
-|                         |   `collect-fleet-health.sh`    |           |   `tsh ls` 2026-08-03) rather than a placeholder — edit `sites` or override on the command line for a different fleet         |
+| Script                  | Touches                           | Safety    | Notes                                                                                                                      |
+| ----------------------- | --------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [collect-fleet-health.sh](collect-fleet-health.sh) | Live SMC appliances over Teleport | **read-only** | Same hardcoded-command, host-names-only contract as `collect-smc-evidence.sh`. Bundles ~20 read-only commands into 5       |
+|                         |                                   |           |   grouped captures (not one-command-per-round-trip) to stay tractable at fleet scale over satellite links — see the        |
+|                         |                                   |           |   script's own header note. Capture 5 (`05-portal-fqdn-status`, added 2026-09-11) is the config-side half of the           |
+|                         |                                   |           |   pin-activation diagnosis below — run alongside `audit-pin-activation.sh` when investigating a suspected                  |
+|                         |                                   |           |   portal-issuance problem                                                                                                  |
+| [fleet-health.justfile](fleet-health.justfile) | Wraps `collect-fleet-health.sh`   | **read-only** | Unlike `routing-diagnostics.justfile`, ships with a real current site list (the NBN Accelerate cluster, confirmed live via |
+|                         |   `audit-pin-activation.sh`       |           |   `tsh ls` 2026-08-03) rather than a placeholder — edit `sites` or override on the command line for a different fleet.     |
+|                         |                                   |           |   Also wraps `audit-pin-activation.sh` (`pin-audit`/`pin-audit-sites`) and a `portal-fqdn-check` quick-check,              |
+|                         |                                   |           |   added 2026-09-11                                                                                                         |
 
 **Requires explicit hosts as arguments — no default site list in the script itself** (the justfile's `sites` variable supplies the default site list for `just collect`, the script always requires
 args).
+
+**Captive-portal pin-activation diagnosis (added 2026-09-11, different category — live-impact confirmation, not hardware/software inventory):**
+
+| Script                      | Touches         | Safety    | Notes                                                                                                                                    |
+| --------------------------- | --------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| [audit-pin-activation.sh](audit-pin-activation.sh) | Live SMC        | **read-only** | Same hardcoded-command, host-names-only contract as `collect-fleet-health.sh`. Checks TWO independent mechanisms per host —              |
+|                             |   appliances    |           |   `iptables -t mangle -L ECLIPSE_MARK` (pin validity now) and the Apache `wifi/access` log across both `access.log` and                  |
+|                             |   over Teleport |           |   `other_vhosts_access.log` with all rotations (pin issuance over time) — and prints a comparison table. Read                            |
+|                             |                 |           |   `../references/14_pin-activation-diagnosis.md` before interpreting results; the two mechanisms answer different questions and reading  |
+|                             |                 |           |   either one alone has misled in practice (see that file's pitfalls section)                                                             |
+| [correlate-pin-activation.sh](correlate-pin-activation.sh) | Live SMC        | **read-only** | Different question from the script above: not "is this site healthy" but "for THIS site, give me every real activation with its IP, MAC, |
+|                             |   appliances    |           |   DHCP lease window, and current live status." Joins the Apache `wifi/access` log (WHEN/WHICH-IP) against `/var/lib/dhcp/dhcpd.leases`   |
+|                             |   over Teleport |           |   (WHICH-MAC, keyed on IP over a time window) against `iptables -t mangle` (is that MAC live NOW). Picks the lease block whose `starts`  |
+|                             |                 |           |   epoch is the latest one still `<=` the activation time — NOT just "the last block in the file for that IP", which is provably wrong    |
+|                             |                 |           |   (confirmed live 2026-09-11, hope-vale: a later lease renewal can start after an earlier real activation). Flags its own best-effort    |
+|                             |                 |           |   fallback explicitly rather than silently guessing. See `../references/14_pin-activation-diagnosis.md` §14.4.                           |
+
+**Requires explicit hosts as arguments — no default site list in the script itself**, same contract as the other fleet-scale scripts above.
 
 **Ansible-lint pre-push/CI gate (promoted 2026-07-31, different category — no SMC/host access at all):**
 
@@ -6960,7 +7366,7 @@ anyway. See the "Mandatory pre-check" note in `../references/08_ansible-authorin
 
 ### `collect-fleet-health.sh`
 
-Captures a broad hardware + software-inventory snapshot from each appliance into `<output-root>/evidence/<YYYYMMDD_hhmm>/<host>/`, grouped into 4 files instead of one-per-command (see the script
+Captures a broad hardware + software-inventory snapshot from each appliance into `<output-root>/evidence/<YYYYMMDD_hhmm>/<host>/`, grouped into 5 files instead of one-per-command (see the script
 header for why):
 
 | Capture file | Covers | Why it matters |
@@ -6983,11 +7389,21 @@ header for why):
 | `04-portal-packages.txt` | Apache vhost config, mobile-app-backend + Kohana portal dir presence, installed versions of | Confirms/refutes the code-inspection-only |
 |  |   `bind9`/`unbound`/`stubby`/`apache2`/`php*`/`clamav`/`lynis`/`prometheus`/`node-exporter`/`fluent-bit`/`teleport`/`isc-dhcp-server` |   portal-protocol and package claims in |
 |  |  |   `01_overview.md`/`10_captive-portal.md` |
+| `05-portal-fqdn-status.txt` | `deny_info` captive-portal directive, `squid.conf` mtime, enabled Apache vhosts, `sslcertcopy` cron entries | Settles whether a box still carries the |
+|   (added 2026-09-11) |  |   portal-FQDN regression (config points |
+|  |  |   at the Teleport hostname instead of the |
+|  |  |   real portal domain) — see |
+|  |  |   `13_known-issues.md` and |
+|  |  |   `14_pin-activation-diagnosis.md`. |
+|  |  |   `squid.conf` mtime matters as much as |
+|  |  |   the value: git being fixed doesn't mean |
+|  |  |   the box regenerated it |
 
 ```bash
 ./collect-fleet-health.sh warakurna indulkana bungardi        # named sites
 # or, with the pre-populated NBN Accelerate site list:
 just -f fleet-health.justfile collect
+just -f fleet-health.justfile portal-fqdn-check                # quick cross-host summary of capture 5
 just -f fleet-health.justfile freshclam-check                 # quick cross-host summary
 just -f fleet-health.justfile chassis-models
 ```
@@ -7000,6 +7416,90 @@ when read, but silently resolves to a nonexistent `scripts/scripts/...` or `scri
 `fleet-health.justfile`'s recipes use `./collect-fleet-health.sh` (sibling file) and `../evidence` (one level up) for this reason — if you add a recipe to a justfile that lives in `scripts/`, match
 that convention, and **run every new recipe for real before trusting it**, the way this one was dogfooded: three of its four quick-check recipes had real bugs (wrong paths, and the same
 exit-code-of-last-command quirk documented in `collect-fleet-health.sh`'s header) that a syntax check alone would never have caught.
+
+### `audit-pin-activation.sh`
+
+Checks the two independent mechanisms described in `../references/14_pin-activation-diagnosis.md` per appliance and prints a comparison table — this is the live-impact confirmation, not a config check
+(that's `collect-fleet-health.sh`'s `05-portal-fqdn-status` capture, above). Run both together when investigating a suspected portal-issuance problem: config state explains *why*, this script confirms
+*whether it's actually happening* and *how severely*.
+
+| Column                      | Source                                        | Meaning                                                                                                                |
+| --------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `marks`                     | `iptables -t mangle -L ECLIPSE_MARK`          | Currently-valid pins, right now — a snapshot, not a rate                                                               |
+| `3128(nopin)` / `3131(pin)` | `iptables -t nat -L SQUID_REDIRECT`           | Packet counts per tier — cumulative since the NAT rules were last reloaded, not "now" (can span over a year on a box   |
+|                             |                                               |   that hasn't been re-provisioned)                                                                                     |
+| `302`                       | Apache `wifi/access` log, both `access.log*`  | Successful pin activations in whatever window this box's log retention covers (~14 days typical on this fleet)         |
+|                             |   and `other_vhosts_access.log*`,             |                                                                                                                        |
+|                             |   all rotations                               |                                                                                                                        |
+| `200`                       | same log                                      | Failed activation attempts (portal re-rendered with an inline error instead of redirecting)                            |
+| `404`                       | same log                                      | Requests to the endpoint that didn't resolve — usually a stale/malformed link, not a portal failure                    |
+
+```bash
+./audit-pin-activation.sh hope-vale kowanyama galiwinku       # named sites
+# or, with the pre-populated NBN Accelerate site list:
+just -f fleet-health.justfile pin-audit
+just -f fleet-health.justfile pin-audit-sites "hope-vale kowanyama"
+```
+
+**Read the two "pitfalls" bullets in `../references/14_pin-activation-diagnosis.md` before treating a `marks` reading of `0` as "site dead," or a `302` count of `0` as proof no one has a working pin —
+both were confirmed live on 2026-09-11 to individually mislead on an otherwise-healthy site. The table above is only trustworthy read as a whole, columns cross-checked against each other, not any
+single column in isolation.**
+
+### `correlate-pin-activation.sh`
+
+Answers a different question from the script above: not "is this site's pin pipeline healthy" but "for this ONE site, walk me through every real activation" — one row per successful (`302`)
+`wifi/access` POST, joined against that client's DHCP lease (for the MAC) and the current mangle table (is that MAC's pin still live). Written 2026-09-11 in direct response to an operator request for
+this exact per-pin timeline, after a manual one-off version of the same join (done live against `hope-vale-smc01`) proved the idea sound but used a naive "last lease block in the file" lookup.
+
+**The join-order bug this script exists to fix.** `dhcpd.leases` is append-only; a later lease renewal for the same IP can have a `starts` timestamp AFTER an earlier real activation under an *older*
+lease for that IP. Taking "the last block in the file" (what the manual one-off version did) picks the wrong MAC in that case. This script instead scans every lease block recorded for the activated IP
+and picks the one whose `starts` epoch is the **latest one still `<=` the activation epoch** — the lease that was actually in force at that instant. Confirmed live 2026-09-11 on `hope-vale-smc01`:
+across a 30-activation sample, 4 of 30 IPs had no lease block that had already started by their activation time (their earliest known lease started later) — the script flags these explicitly as a
+best-effort fallback rather than silently asserting a MAC it can't confirm.
+
+**Handles missing data explicitly, not silently** — per the operator's own requirement ("as long as the data is there in the files"): an IP with no lease record at all in `dhcpd.leases` prints
+`no-lease-found`; a matched lease block that itself lacks a `hardware ethernet` line (confirmed to occur live) prints `no-mac-in-lease-record` rather than an unlabelled blank field. Both are visibly
+distinct from a normal successful join.
+
+| Column                      | Source                               | Meaning                                                                                                        |
+| --------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `IP`                        | Apache `wifi/access` log             | Client IP that submitted the activation                                                                        |
+| `Activated`                 | Apache `wifi/access` log             | Timestamp of the successful (`302`) activation                                                                 |
+| `MAC`                       | `/var/lib/dhcp/dhcpd.leases`         | The MAC holding that IP at (or nearest before) the activation instant — see join-order note above              |
+| `Lease start` / `Lease end` | `/var/lib/dhcp/dhcpd.leases`         | The matched lease's own window (both are epoch `starts`/`ends` fields, converted to local time)                |
+| `Live?`                     | `iptables -t mangle -L ECLIPSE_MARK` | Is that MAC's pin valid **right now** (check time, not activation time — a since-expired pin correctly reads `no`) |
+
+```bash
+./correlate-pin-activation.sh hope-vale                 # one site, default last 30 activations
+./correlate-pin-activation.sh hope-vale kowanyama        # multiple sites, one table each
+LOOKBACK=60 ./correlate-pin-activation.sh bungardi       # widen the activation window
+```
+
+**Runs entirely from a non-Linux operator machine.** The one GNU-`date`-dependent step (Apache-log-timestamp → epoch) happens on the remote Ubuntu box over `tsh ssh`; the join itself and the
+lease-epoch → human-readable conversion happen locally with a portable `date -d` / `date -r` fallback, so this works unmodified from a Mac.
+
+### `teleport-tunnel.sh`
+
+Opens a `tsh` local-port-forward tunnel from this workstation to any device reachable from a site's SMC box — Cambium APs/SMs, or anything else on that site's management network. Written 2026-09-17
+for `cambium-swap`/`skill-cambium` device-access work, then generalised and moved here since it's Teleport tunneling, not a Cambium-specific concern — this pack owns `tsh`/Teleport mechanics, per each
+pack's own `RUNBOOK.md`/`AGENTS.md` boundary.
+
+**Site -> SMC-host is resolved live from ansible-wifi's own inventory, never hardcoded.** Each site has a `[<site>_smc_bases]` group in exactly one `inventories/<flavour>/prod` file; the script
+`grep`s for it and `awk`s out the first host listed. Only the flavour->cluster split (`nbn_accelerate`/`nbn_wh`/`cw` -> `teleport.communitywifi.net.au`, `rcp`/`rct`/`wh`/`apn` -> `teleport.apn.au`) is
+a small fixed table in the script — that's a structural fact about the two clusters (see `../references/01_overview.md`'s Cluster split table), not per-site data.
+
+```bash
+./teleport-tunnel.sh hope-vale 10.255.3.1 20001 443 120     # a Cambium XV2's web UI
+./teleport-tunnel.sh burringurrah 10.255.11.45               # defaults: local port 20000, 443, 120s
+```
+
+Requires an active `tsh login --proxy=<cluster>` session for the target site's cluster already — does not log in for you (`rcp`/`rct`/`wh`-flavour clusters need interactive MFA). Blocks for
+`duration_seconds` once the tunnel is confirmed listening; background it (`&`) to keep working while it's open.
+
+| Script               | Touches                                                | Safety                                  | Notes                                                                      |
+| -------------------- | ------------------------------------------------------ | --------------------------------------- | -------------------------------------------------------------------------- |
+| `teleport-tunnel.sh` | `tsh` (Teleport session), ansible-wifi                 | `external-network`,                     | Opens a real tunnel to a live device; never writes anything, never         |
+|                      |   inventories (read-only)                              |   `requires-credentials`                |   touches ansible-wifi                                                     |
 
 ## Usage
 
@@ -7015,6 +7515,7 @@ just analyse-md
 
 # fleet-health.justfile ships with a real site list already — usable directly from skill-smc/scripts/:
 just -f fleet-health.justfile collect
+just -f fleet-health.justfile pin-audit
 ```
 
 ## Requirements
@@ -7258,7 +7759,7 @@ has no equivalent and would delete them" -->
 
 - [Mandatory read order](#mandatory-read-order)
 - [Source priority](#source-priority)
-- [Reference routing (task → file)](#reference-routing-task-file)
+- [Reference routing (task → file)](#reference-routing-task--file)
 - [Project context files](#project-context-files)
 - [Update rules](#update-rules)
 - [Drift handling](#drift-handling)
@@ -7294,21 +7795,23 @@ When sources conflict:
 
 ## Reference routing (task → file)
 
-| Task                                                                                                                 | Read                                   |
-| -------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| Live incident: box unreachable, service down, alert firing                                                           | `references/05_troubleshooting.md`     |
-| Identify which services are present / service names / config paths                                                   | `references/02_service-map.md`         |
-| Understand external comms paths (Teleport, Prometheus, Graylog)                                                      | `references/03_communication-flows.md` |
-| Understand dependencies between services                                                                             | `references/04_dependency-tree.md`     |
-| Identify known failure signatures and fix patterns                                                                   | `references/06_failure-modes.md`       |
-| Hardware differences, overlayroot, persistence risk                                                                  | `references/07_hardware-overlay.md`    |
-| Ansible authoring: topology vars, cache, validation, blast radius, smc_ltp sub-group, "low touch" onboarding history | `references/08_ansible-authoring.md`   |
-| URL capture v2, PCAP layout, fetch/process, dns_query assumptions                                                    | `references/09_url-capture-pcap.md`    |
-| Captive portal, Kohana, Eclipse config sync, portal PHP (mod_php, not PHP-FPM)                                       | `references/10_captive-portal.md`      |
-| Vagrant lab bring-up and virtualization issues                                                                       | `references/11_vagrant-lab.md`         |
-| VLAN 501, content filtering, MAC randomization, CAKE                                                                 | `references/12_content-filtering.md`   |
-| Coverage gaps, staleness risk, unvalidated assumptions                                                               | `references/13_known-issues.md`        |
-| SMC box definition, inventory flavors, Teleport access pattern, APN vs NBN Accelerate cluster differences            | `references/01_overview.md`            |
+| Task                                                                                                                 | Read                                        |
+| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Live incident: box unreachable, service down, alert firing                                                           | `references/05_troubleshooting.md`          |
+| Identify which services are present / service names / config paths                                                   | `references/02_service-map.md`              |
+| Understand external comms paths (Teleport, Prometheus, Graylog)                                                      | `references/03_communication-flows.md`      |
+| Understand dependencies between services                                                                             | `references/04_dependency-tree.md`          |
+| Identify known failure signatures and fix patterns                                                                   | `references/06_failure-modes.md`            |
+| Hardware differences, overlayroot, persistence risk                                                                  | `references/07_hardware-overlay.md`         |
+| Ansible authoring: topology vars, cache, validation, blast radius, smc_ltp sub-group, "low touch" onboarding history | `references/08_ansible-authoring.md`        |
+| URL capture v2, PCAP layout, fetch/process, dns_query assumptions                                                    | `references/09_url-capture-pcap.md`         |
+| Captive portal, Kohana, Eclipse config sync, portal PHP (mod_php, not PHP-FPM)                                       | `references/10_captive-portal.md`           |
+| Vagrant lab bring-up and virtualization issues                                                                       | `references/11_vagrant-lab.md`              |
+| VLAN 501, content filtering, MAC randomization, CAKE                                                                 | `references/12_content-filtering.md`        |
+| Coverage gaps, staleness risk, unvalidated assumptions                                                               | `references/13_known-issues.md`             |
+| Pin validity (mangle) vs pin issuance (Apache access log) diagnosis, marks-≠-activations pitfalls                    | `references/14_pin-activation-diagnosis.md` |
+| Cambium asset-register — ansible-wifi site_name join point (full content moved to skill-cambium)                     | `references/15_cambium-asset-registers.md`  |
+| SMC box definition, inventory flavors, Teleport access pattern, APN vs NBN Accelerate cluster differences            | `references/01_overview.md`                 |
 
 ## Project context files
 
@@ -7336,6 +7839,8 @@ When sources conflict:
 | `references/11_vagrant-lab.md`                     | Vagrant lab setup                                                       | Content     |
 | `references/12_content-filtering.md`               | VLAN 501 filtering stack                                                | Content     |
 | `references/13_known-issues.md`                    | Known gaps and staleness                                                | Content     |
+| `references/14_pin-activation-diagnosis.md`        | Pin validity vs pin issuance diagnosis, fleet case study                | Content     |
+| `references/15_cambium-asset-registers.md`         | Pointer only — full content in skill-cambium; site_name join point here | Content     |
 | `exports/claude_code/project/skill-smc/adapter.md` | Claude Code source→install mapping                                      | Adapter     |
 | `exports/claude_code/project/skill-smc/install.md` | Claude Code installation steps                                          | Adapter     |
 | `CHANGELOG.md`                                     | Pack version history and governance changes                             | Medium-high |
@@ -7467,49 +7972,222 @@ Everything else (PROFILE.md, SYSTEM_PROMPT.md, manifest.json, exports/, .archcor
 
 ## Contents
 
-- [20260908_1955 — skill-ai-it refresh: navigation-control upgrade, `check_governance.py` adopted, `AI_NAVIGATION.md` declared project-managed (v0.1.33 -> v0.1.34)](#20260908_1955-skill-ai-it-refresh-navigation-control-upgrade-check_governancepy-adopted-ai_navigationmd-declared-project-managed-v0133---v0134)
-- [20260908_1515 — `wifi-02.activ8me.net.au` is APN's own LVS VIP, not a third party; port-80 source-IP allowlist failure mode; reject-vs-drop diagnostics (v0.1.32 -> v0.1.33)](#20260908_1515-wifi-02activ8menetau-is-apns-own-lvs-vip-not-a-third-party-port-80-source-ip-allowlist-failure-mode-reject-vs-drop-diagnostics-v0132---v0133)
-- [20260908_1430 — galiwinku-smc01 multi-WAN session write-back: ECMP hash-pinning root cause, VRF-disable landed, topology/monitoring gaps (v0.1.31 -> v0.1.32)](#20260908_1430-galiwinku-smc01-multi-wan-session-write-back-ecmp-hash-pinning-root-cause-vrf-disable-landed-topologymonitoring-gaps-v0131---v0132)
-- [20260908_1330 — Backdoor SSH access documented: raw reverse-tunnel path around a hung Teleport node agent, confirmed live against nbn_accelerate (v0.1.30 -> v0.1.31)](#20260908_1330-backdoor-ssh-access-documented-raw-reverse-tunnel-path-around-a-hung-teleport-node-agent-confirmed-live-against-nbn_accelerate-v0130---v0131)
-- [20260908_1200 — Pack-structure self-audit: RUNBOOK version drift, install.md staleness, reference-update-discipline gap, vestigial evidence/, and archcore status promotion (v0.1.29 -> v0.1.30)](#20260908_1200-pack-structure-self-audit-runbook-version-drift-installmd-staleness-reference-update-discipline-gap-vestigial-evidence-and-archcore-status-promotion-v0129---v0130)
-- [20260907_1600 — Two Ansible silent-failure gotchas, an `rcp` systemd-mask fix, and the `auto_reboot: 0` truthy-string bug fed back from `ansible-wifi` (v0.1.28 -> v0.1.29)](#20260907_1600-two-ansible-silent-failure-gotchas-an-rcp-systemd-mask-fix-and-the-auto_reboot-0-truthy-string-bug-fed-back-from-ansible-wifi-v0128---v0129)
-- [20260907_1530 — Silent Total Hang confirmed on `rcp` (pandanus-park-smc01), first non-`wh` instance (v0.1.27 -> v0.1.28)](#20260907_1530-silent-total-hang-confirmed-on-rcp-pandanus-park-smc01-first-non-wh-instance-v0127---v0128)
-- [20260907_1200 — Standing write-back contract added to SKILL.md: the update obligation now travels with the skill, not each consuming project's governance file (v0.1.26 -> v0.1.27)](#20260907_1200-standing-write-back-contract-added-to-skillmd-the-update-obligation-now-travels-with-the-skill-not-each-consuming-projects-governance-file-v0126---v0127)
-- [20260904_1000 — WAN uplink dead-DHCP failure mode documented, self-heal cron distinguished from real flapping (v0.1.25 -> v0.1.26)](#20260904_1000-wan-uplink-dead-dhcp-failure-mode-documented-self-heal-cron-distinguished-from-real-flapping-v0125---v0126)
-- [20260827_1800 — Code notes documented as an authoring surface; stale lint paragraph corrected (v0.1.24 -> v0.1.25)](#20260827_1800-code-notes-documented-as-an-authoring-surface-stale-lint-paragraph-corrected-v0124---v0125)
-- [20260825_1800 — Raspberry Pi capture group added to the broad collector (v0.1.23 -> v0.1.24)](#20260825_1800-raspberry-pi-capture-group-added-to-the-broad-collector-v0123---v0124)
-- [20260825_1745 — broad diagnostic collector added; narrow collector's interfacecheck path corrected (v0.1.22 -> v0.1.23)](#20260825_1745-broad-diagnostic-collector-added-narrow-collectors-interfacecheck-path-corrected-v0122---v0123)
-- [20260818_1350 — pre-push gate mechanics corrected, plaintext-secret exposure recorded (v0.1.21 -> v0.1.22)](#20260818_1350-pre-push-gate-mechanics-corrected-plaintext-secret-exposure-recorded-v0121---v0122)
-- [20260818_1300 — delye-smc01 RESOLVED; `overlay.size_ratio` proven inert; fleet percentages corrected (v0.1.20 -> v0.1.21)](#20260818_1300-delye-smc01-resolved-overlaysize_ratio-proven-inert-fleet-percentages-corrected-v0120---v0121)
-- [20260818_1200 — RISE metric delivery path: agent mode, remote_write allowlist, and the alerting void (v0.1.19 -> v0.1.20)](#20260818_1200-rise-metric-delivery-path-agent-mode-remote_write-allowlist-and-the-alerting-void-v0119---v0120)
-- [20260818_1130 — overlayroot copy_up cost model, `smc_rise_logcaps`, and three fleet-class findings (v0.1.18 → v0.1.19)](#20260818_1130-overlayroot-copy_up-cost-model-smc_rise_logcaps-and-three-fleet-class-findings-v0118-v0119)
-- [20260803_1825 — new-looma-smc01 second whole-host outage confirmed via live Prometheus (v0.1.17 → v0.1.18)](#20260803_1825-new-looma-smc01-second-whole-host-outage-confirmed-via-live-prometheus-v0117-v0118)
-- [20260803_1810 — Grafana CW exploration unblocked: dashboard inventory + RISE metric names (v0.1.16 → v0.1.17)](#20260803_1810-grafana-cw-exploration-unblocked-dashboard-inventory-rise-metric-names-v0116-v0117)
-- [20260803_1745 — ClamAV freshclam root cause confirmed: ClamAV 0.103.x end-of-life (v0.1.15 → v0.1.16)](#20260803_1745-clamav-freshclam-root-cause-confirmed-clamav-0103x-end-of-life-v0115-v0116)
-- [20260803_1730 — Full NBN Accelerate fleet sweep: 28 hosts, hardware inventory, fleet-wide ClamAV finding (v0.1.14 → v0.1.15)](#20260803_1730-full-nbn-accelerate-fleet-sweep-28-hosts-hardware-inventory-fleet-wide-clamav-finding-v0114-v0115)
-- [20260803_1615 — First live NBN Accelerate validation: confirms cluster comparison, finds ClamAV CDN-block (v0.1.13 → v0.1.14)](#20260803_1615-first-live-nbn-accelerate-validation-confirms-cluster-comparison-finds-clamav-cdn-block-v0113-v0114)
-- [20260803_1545 — project-coherence sweep: routing/architecture staleness fixed (v0.1.12 → v0.1.13)](#20260803_1545-project-coherence-sweep-routingarchitecture-staleness-fixed-v0112-v0113)
-- [20260803_1530 — smc_ltp/"low touch" mechanism confirmed: manual step, no enforcement (v0.1.11 → v0.1.12)](#20260803_1530-smc_ltplow-touch-mechanism-confirmed-manual-step-no-enforcement-v0111-v0112)
-- [20260803_1515 — smc_ltp/"low touch" correlation resolved: 3 sites added to the group, 7 members confirmed (v0.1.10 → v0.1.11)](#20260803_1515-smc_ltplow-touch-correlation-resolved-3-sites-added-to-the-group-7-members-confirmed-v0110-v0111)
-- [20260803_1445 — "Low touch" onboarding method and site deployment history added (v0.1.9 → v0.1.10)](#20260803_1445-low-touch-onboarding-method-and-site-deployment-history-added-v019-v0110)
-- [20260803_1400 — smc_ltp properly explored and documented; membership undercount fixed (v0.1.8 → v0.1.9)](#20260803_1400-smc_ltp-properly-explored-and-documented-membership-undercount-fixed-v018-v019)
-- [20260803_1230 — NBN Accelerate cluster gap-fill (v0.1.7 → v0.1.8)](#20260803_1230-nbn-accelerate-cluster-gap-fill-v017-v018)
-- [20260731_1312 — Fed back Pia Wadjari labeling case + proposed convention; multiwan-disable git archaeology](#20260731_1312-fed-back-pia-wadjari-labeling-case-proposed-convention-multiwan-disable-git-archaeology)
-- [20260731_1215 — Two residual gaps closed from the routing-issue Problem 3 deep-dive](#20260731_1215-two-residual-gaps-closed-from-the-routing-issue-problem-3-deep-dive)
-- [20260731_1330 — Broadened cross-repo feed-back governance (prevent future full-sweep need)](#20260731_1330-broadened-cross-repo-feed-back-governance-prevent-future-full-sweep-need)
-- [20260731_1245 — Full local-knowledge-ansible/ansible-wifi extraction pass](#20260731_1245-full-local-knowledge-ansibleansible-wifi-extraction-pass)
-- [20260729_2324 — WAN-routing coverage expansion + reusable diagnostic scripts (APN routing-issue investigation)](#20260729_2324-wan-routing-coverage-expansion-reusable-diagnostic-scripts-apn-routing-issue-investigation)
-- [20260728_1240 — v0.1.5: captive-portal PHP SAPI correction + APPPATH/cache failure mode + Ansible tag hazard (project-coherence run)](#20260728_1240-v015-captive-portal-php-sapi-correction-apppathcache-failure-mode-ansible-tag-hazard-project-coherence-run)
-- [20260703_1300 — v0.1.4: DNS architecture corrections + garimba-smc01 failure mode (project-coherence run)](#20260703_1300-v014-dns-architecture-corrections-garimba-smc01-failure-mode-project-coherence-run)
-- [20260626_1845 — v0.1.3: project-coherence checklist + references/10-13 content update](#20260626_1845-v013-project-coherence-checklist-references10-13-content-update)
-- [20260626_1820 — Coherence sweep: repomix config, adapter.md, spec, ARCHITECTURE.md](#20260626_1820-coherence-sweep-repomix-config-adaptermd-spec-architecturemd)
-- [20260626_1812 — README and ARCHITECTURE added](#20260626_1812-readme-and-architecture-added)
-- [20260626_1810 — Archcore promotion](#20260626_1810-archcore-promotion)
-- [20260626_1808 — Governance scaffold bootstrap](#20260626_1808-governance-scaffold-bootstrap)
-- [0.1.2 — 2026-06-26](#012-2026-06-26)
-- [0.1.1 — 2026-06-26](#011-2026-06-26)
-- [Unreleased — 2026-05-08](#unreleased-2026-05-08)
-- [0.1.0 — 2026-04-15](#010-2026-04-15)
+- [20260917_0001 — Other Raspberry Pi OS options assessed; Ubuntu Server remains the only recommended full-SMC platform (v0.1.42 -> v0.1.43)](#20260917_0001--other-raspberry-pi-os-options-assessed-ubuntu-server-remains-the-only-recommended-full-smc-platform-v0142---v0143)
+- [20260917_0000 — Ubuntu Server retained for Raspberry Pi SMCs; Core is a greenfield-only option pending an appliance canary (v0.1.41 -> v0.1.42)](#20260917_0000--ubuntu-server-retained-for-raspberry-pi-smcs-core-is-a-greenfield-only-option-pending-an-appliance-canary-v0141---v0142)
+- [20260917_1620 — teleport-tunnel.sh added: generic ansible-wifi-inventory-driven tunnel helper, moved from skill-cambium (v0.1.40 -> v0.1.41)](#20260917_1620--teleport-tunnelsh-added-generic-ansible-wifi-inventory-driven-tunnel-helper-moved-from-skill-cambium-v0140---v0141)
+- [20260914_1300 — Cambium radio/AP estate by flavour recorded from the cambium-swap continuity project (v0.1.39 -> v0.1.40)](#20260914_1300--cambium-radioap-estate-by-flavour-recorded-from-the-cambium-swap-continuity-project-v0139---v0140)
+- [20260911_1732 — Per-pin activation timeline tool added: correlate-pin-activation.sh, fixes a live-confirmed lease join-order bug (v0.1.38 -> v0.1.39)](#20260911_1732--per-pin-activation-timeline-tool-added-correlate-pin-activationsh-fixes-a-live-confirmed-lease-join-order-bug-v0138---v0139)
+- [20260911_1240 — Incident closed: all 3 sites' fix + recovery confirmed live in references/13_known-issues.md (v0.1.37 -> v0.1.38)](#20260911_1240--incident-closed-all-3-sites-fix--recovery-confirmed-live-in-references13_known-issuesmd-v0137---v0138)
+- [20260911_1210 — Correction: kaltjiti-fergon-smc01 was never affected; bungardi-smc01 fixed live (v0.1.36 -> v0.1.37)](#20260911_1210--correction-kaltjiti-fergon-smc01-was-never-affected-bungardi-smc01-fixed-live-v0136---v0137)
+- [20260911_1120 — bungardi-smc01 confirmed as third broken site; Eclipse "PIN Last Issued" admin report documented as a third corroborating evidence source (v0.1.35 -> v0.1.36)](#20260911_1120--bungardi-smc01-confirmed-as-third-broken-site-eclipse-pin-last-issued-admin-report-documented-as-a-third-corroborating-evidence-source-v0135---v0136)
+- [20260911_1115 — Pin-activation diagnosis added: two independent mechanisms, `audit-pin-activation.sh`, portal-FQDN-regression capture, live fleet case study (v0.1.34 -> v0.1.35)](#20260911_1115--pin-activation-diagnosis-added-two-independent-mechanisms-audit-pin-activationsh-portal-fqdn-regression-capture-live-fleet-case-study-v0134---v0135)
+- [20260908_1955 — skill-ai-it refresh: navigation-control upgrade, `check_governance.py` adopted, `AI_NAVIGATION.md` declared project-managed (v0.1.33 -> v0.1.34)](#20260908_1955--skill-ai-it-refresh-navigation-control-upgrade-check_governancepy-adopted-ai_navigationmd-declared-project-managed-v0133---v0134)
+- [20260908_1515 — `wifi-02.activ8me.net.au` is APN's own LVS VIP, not a third party; port-80 source-IP allowlist failure mode; reject-vs-drop diagnostics (v0.1.32 -> v0.1.33)](#20260908_1515--wifi-02activ8menetau-is-apns-own-lvs-vip-not-a-third-party-port-80-source-ip-allowlist-failure-mode-reject-vs-drop-diagnostics-v0132---v0133)
+- [20260908_1430 — galiwinku-smc01 multi-WAN session write-back: ECMP hash-pinning root cause, VRF-disable landed, topology/monitoring gaps (v0.1.31 -> v0.1.32)](#20260908_1430--galiwinku-smc01-multi-wan-session-write-back-ecmp-hash-pinning-root-cause-vrf-disable-landed-topologymonitoring-gaps-v0131---v0132)
+- [20260908_1330 — Backdoor SSH access documented: raw reverse-tunnel path around a hung Teleport node agent, confirmed live against nbn_accelerate (v0.1.30 -> v0.1.31)](#20260908_1330--backdoor-ssh-access-documented-raw-reverse-tunnel-path-around-a-hung-teleport-node-agent-confirmed-live-against-nbn_accelerate-v0130---v0131)
+- [20260908_1200 — Pack-structure self-audit: RUNBOOK version drift, install.md staleness, reference-update-discipline gap, vestigial evidence/, and archcore status promotion (v0.1.29 -> v0.1.30)](#20260908_1200--pack-structure-self-audit-runbook-version-drift-installmd-staleness-reference-update-discipline-gap-vestigial-evidence-and-archcore-status-promotion-v0129---v0130)
+- [20260907_1600 — Two Ansible silent-failure gotchas, an `rcp` systemd-mask fix, and the `auto_reboot: 0` truthy-string bug fed back from `ansible-wifi` (v0.1.28 -> v0.1.29)](#20260907_1600--two-ansible-silent-failure-gotchas-an-rcp-systemd-mask-fix-and-the-auto_reboot-0-truthy-string-bug-fed-back-from-ansible-wifi-v0128---v0129)
+- [20260907_1530 — Silent Total Hang confirmed on `rcp` (pandanus-park-smc01), first non-`wh` instance (v0.1.27 -> v0.1.28)](#20260907_1530--silent-total-hang-confirmed-on-rcp-pandanus-park-smc01-first-non-wh-instance-v0127---v0128)
+- [20260907_1200 — Standing write-back contract added to SKILL.md: the update obligation now travels with the skill, not each consuming project's governance file (v0.1.26 -> v0.1.27)](#20260907_1200--standing-write-back-contract-added-to-skillmd-the-update-obligation-now-travels-with-the-skill-not-each-consuming-projects-governance-file-v0126---v0127)
+- [20260904_1000 — WAN uplink dead-DHCP failure mode documented, self-heal cron distinguished from real flapping (v0.1.25 -> v0.1.26)](#20260904_1000--wan-uplink-dead-dhcp-failure-mode-documented-self-heal-cron-distinguished-from-real-flapping-v0125---v0126)
+- [20260827_1800 — Code notes documented as an authoring surface; stale lint paragraph corrected (v0.1.24 -> v0.1.25)](#20260827_1800--code-notes-documented-as-an-authoring-surface-stale-lint-paragraph-corrected-v0124---v0125)
+- [20260825_1800 — Raspberry Pi capture group added to the broad collector (v0.1.23 -> v0.1.24)](#20260825_1800--raspberry-pi-capture-group-added-to-the-broad-collector-v0123---v0124)
+- [20260825_1745 — broad diagnostic collector added; narrow collector's interfacecheck path corrected (v0.1.22 -> v0.1.23)](#20260825_1745--broad-diagnostic-collector-added-narrow-collectors-interfacecheck-path-corrected-v0122---v0123)
+- [20260818_1350 — pre-push gate mechanics corrected, plaintext-secret exposure recorded (v0.1.21 -> v0.1.22)](#20260818_1350--pre-push-gate-mechanics-corrected-plaintext-secret-exposure-recorded-v0121---v0122)
+- [20260818_1300 — delye-smc01 RESOLVED; `overlay.size_ratio` proven inert; fleet percentages corrected (v0.1.20 -> v0.1.21)](#20260818_1300--delye-smc01-resolved-overlaysize_ratio-proven-inert-fleet-percentages-corrected-v0120---v0121)
+- [20260818_1200 — RISE metric delivery path: agent mode, remote_write allowlist, and the alerting void (v0.1.19 -> v0.1.20)](#20260818_1200--rise-metric-delivery-path-agent-mode-remote_write-allowlist-and-the-alerting-void-v0119---v0120)
+- [20260818_1130 — overlayroot copy_up cost model, `smc_rise_logcaps`, and three fleet-class findings (v0.1.18 → v0.1.19)](#20260818_1130--overlayroot-copy_up-cost-model-smc_rise_logcaps-and-three-fleet-class-findings-v0118--v0119)
+- [20260803_1825 — new-looma-smc01 second whole-host outage confirmed via live Prometheus (v0.1.17 → v0.1.18)](#20260803_1825--new-looma-smc01-second-whole-host-outage-confirmed-via-live-prometheus-v0117--v0118)
+- [20260803_1810 — Grafana CW exploration unblocked: dashboard inventory + RISE metric names (v0.1.16 → v0.1.17)](#20260803_1810--grafana-cw-exploration-unblocked-dashboard-inventory--rise-metric-names-v0116--v0117)
+- [20260803_1745 — ClamAV freshclam root cause confirmed: ClamAV 0.103.x end-of-life (v0.1.15 → v0.1.16)](#20260803_1745--clamav-freshclam-root-cause-confirmed-clamav-0103x-end-of-life-v0115--v0116)
+- [20260803_1730 — Full NBN Accelerate fleet sweep: 28 hosts, hardware inventory, fleet-wide ClamAV finding (v0.1.14 → v0.1.15)](#20260803_1730--full-nbn-accelerate-fleet-sweep-28-hosts-hardware-inventory-fleet-wide-clamav-finding-v0114--v0115)
+- [20260803_1615 — First live NBN Accelerate validation: confirms cluster comparison, finds ClamAV CDN-block (v0.1.13 → v0.1.14)](#20260803_1615--first-live-nbn-accelerate-validation-confirms-cluster-comparison-finds-clamav-cdn-block-v0113--v0114)
+- [20260803_1545 — project-coherence sweep: routing/architecture staleness fixed (v0.1.12 → v0.1.13)](#20260803_1545--project-coherence-sweep-routingarchitecture-staleness-fixed-v0112--v0113)
+- [20260803_1530 — smc_ltp/"low touch" mechanism confirmed: manual step, no enforcement (v0.1.11 → v0.1.12)](#20260803_1530--smc_ltplow-touch-mechanism-confirmed-manual-step-no-enforcement-v0111--v0112)
+- [20260803_1515 — smc_ltp/"low touch" correlation resolved: 3 sites added to the group, 7 members confirmed (v0.1.10 → v0.1.11)](#20260803_1515--smc_ltplow-touch-correlation-resolved-3-sites-added-to-the-group-7-members-confirmed-v0110--v0111)
+- [20260803_1445 — "Low touch" onboarding method and site deployment history added (v0.1.9 → v0.1.10)](#20260803_1445--low-touch-onboarding-method-and-site-deployment-history-added-v019--v0110)
+- [20260803_1400 — smc_ltp properly explored and documented; membership undercount fixed (v0.1.8 → v0.1.9)](#20260803_1400--smc_ltp-properly-explored-and-documented-membership-undercount-fixed-v018--v019)
+- [20260803_1230 — NBN Accelerate cluster gap-fill (v0.1.7 → v0.1.8)](#20260803_1230--nbn-accelerate-cluster-gap-fill-v017--v018)
+- [20260731_1312 — Fed back Pia Wadjari labeling case + proposed convention; multiwan-disable git archaeology](#20260731_1312--fed-back-pia-wadjari-labeling-case--proposed-convention-multiwan-disable-git-archaeology)
+- [20260731_1215 — Two residual gaps closed from the routing-issue Problem 3 deep-dive](#20260731_1215--two-residual-gaps-closed-from-the-routing-issue-problem-3-deep-dive)
+- [20260731_1330 — Broadened cross-repo feed-back governance (prevent future full-sweep need)](#20260731_1330--broadened-cross-repo-feed-back-governance-prevent-future-full-sweep-need)
+- [20260731_1245 — Full local-knowledge-ansible/ansible-wifi extraction pass](#20260731_1245--full-local-knowledge-ansibleansible-wifi-extraction-pass)
+- [20260729_2324 — WAN-routing coverage expansion + reusable diagnostic scripts (APN routing-issue investigation)](#20260729_2324--wan-routing-coverage-expansion--reusable-diagnostic-scripts-apn-routing-issue-investigation)
+- [20260728_1240 — v0.1.5: captive-portal PHP SAPI correction + APPPATH/cache failure mode + Ansible tag hazard (project-coherence run)](#20260728_1240--v015-captive-portal-php-sapi-correction--apppathcache-failure-mode--ansible-tag-hazard-project-coherence-run)
+- [20260703_1300 — v0.1.4: DNS architecture corrections + garimba-smc01 failure mode (project-coherence run)](#20260703_1300--v014-dns-architecture-corrections--garimba-smc01-failure-mode-project-coherence-run)
+- [20260626_1845 — v0.1.3: project-coherence checklist + references/10-13 content update](#20260626_1845--v013-project-coherence-checklist--references10-13-content-update)
+- [20260626_1820 — Coherence sweep: repomix config, adapter.md, spec, ARCHITECTURE.md](#20260626_1820--coherence-sweep-repomix-config-adaptermd-spec-architecturemd)
+- [20260626_1812 — README and ARCHITECTURE added](#20260626_1812--readme-and-architecture-added)
+- [20260626_1810 — Archcore promotion](#20260626_1810--archcore-promotion)
+- [20260626_1808 — Governance scaffold bootstrap](#20260626_1808--governance-scaffold-bootstrap)
+- [0.1.2 — 2026-06-26](#012--2026-06-26)
+- [0.1.1 — 2026-06-26](#011--2026-06-26)
+- [Unreleased — 2026-05-08](#unreleased--2026-05-08)
+- [0.1.0 — 2026-04-15](#010--2026-04-15)
+
+---
+
+## 20260917_0001 — Other Raspberry Pi OS options assessed; Ubuntu Server remains the only recommended full-SMC platform (v0.1.42 -> v0.1.43)
+
+Extended the Raspberry Pi operating-system assessment in `references/07_hardware-overlay.md`. Raspberry Pi OS Lite is the closest technical alternative, but its Pi-specific Debian/APT model still
+requires a complete port and qualification of the Ubuntu-based SMC automation without an established benefit. Debian has the same porting cost. OpenWrt is suitable only for a reduced router/AP
+product; Fedora IoT/CoreOS, NixOS and comparable immutable/declarative choices create another full appliance-platform redesign. No production repository, fleet configuration or device image changed.
+Primary Raspberry Pi and OpenWrt documentation was read directly on 2026-09-17. Manifest bumped to v0.1.43.
+
+## 20260917_0000 — Ubuntu Server retained for Raspberry Pi SMCs; Core is a greenfield-only option pending an appliance canary (v0.1.41 -> v0.1.42)
+
+Recorded a design recommendation in `references/07_hardware-overlay.md`: retain Ubuntu Server LTS for new Raspberry Pi SMCs. The existing fleet is a root-managed, package-based network appliance
+with direct systemd, filesystem, netfilter, DHCP/DNS, hostapd, Teleport and monitoring control; RISE overlayroot already supplies a disposable-root strategy without changing that operating model.
+Ubuntu Core is a valid embedded platform but is not a drop-in Server replacement: Core uses image/snap lifecycle management and strict confinement, and does not run classic snaps. Reconsider it only
+as a separately designed, reduced-scope appliance with a Pi canary proving privileged networking, access, observability, update/recovery and constrained-link behaviour. No production repository,
+fleet configuration or device image was changed. Canonical documentation was read directly on 2026-09-17. Manifest bumped to v0.1.42.
+
+## 20260917_1620 — teleport-tunnel.sh added: generic ansible-wifi-inventory-driven tunnel helper, moved from skill-cambium (v0.1.40 -> v0.1.41)
+
+### Added
+
+- `scripts/teleport-tunnel.sh` — opens a `tsh` local-port-forward tunnel to any device reachable from a site's SMC box. Written first in `skill-cambium` for its own Cambium device-access work, then
+  moved here on operator correction ("it's not Cambium tunnel, it's teleport tunnel") since this pack owns `tsh`/Teleport mechanics, per each pack's boundary. Resolves site -> SMC-host live from
+  ansible-wifi's own `[<site>_smc_bases]` inventory groups (never hardcoded); only the flavour->cluster split is a small fixed table in the script, since that's structural (see
+  `references/01_overview.md`'s Cluster split table), not per-site data.
+- `scripts/README.md` — new `teleport-tunnel.sh` section and safety-table row.
+
+### Notes
+
+- `skill-cambium`'s own `just tunnel` recipe now calls this script's canonical path directly rather than keeping a copy — same cross-pack pattern `cambium-portal.sh` already uses in the other
+  direction (that script lives in `skill-cambium`, `skill-smc` had nothing calling it).
+- `python3 scripts/check_governance.py`: 182/182 passing.
+
+## 20260914_1300 — Cambium radio/AP estate by flavour recorded from the cambium-swap continuity project (v0.1.39 -> v0.1.40)
+
+**Trigger:** bootstrapping `apn/cambium-swap` (Cambium / cnMaestro vendor-continuity investigation after the reported Cambium Networks, Ltd administration notice) invoked this skill for SMC-side
+Cambium touchpoints. Standing write-back contract applied.
+
+**Added** to `references/07_hardware-overlay.md` a new section, "Cambium radio and AP estate by flavour (operator-stated 2026-09-14)":
+
+- RCT runs ePMP 1000 2.4 GHz and 5 GHz Connectorized APs; WH runs ePMP 1000.
+- Both are being migrated to MikroTik "metal" APs (operator confirmed) and XV2-2T0, because ePMP 1000 is old and unsupported.
+- The `smc_ltp` hardware profiles are listed, alongside the full fleet list.
+- ePMP terminology: AP and SM, not DN.
+- SMC-side continuity facts:
+  - DHCP option 43 carries the cnMaestro IP, not the FQDN.
+  - `lt-cnmaestro.apn.au` is On-Premises.
+  - The r195P routers are pinned to cnMaestro Cloud.
+  - The live `cambium-rpz` zone contents are unrecorded.
+  - The cnMaestro 90-day Anchor grace period ends device onboarding.
+
+No ansible-wifi change. Read back after writing.
+
+## 20260911_1732 — Per-pin activation timeline tool added: correlate-pin-activation.sh, fixes a live-confirmed lease join-order bug (v0.1.38 -> v0.1.39)
+
+**Trigger:** while confirming `bungardi-smc01`'s portal-FQDN fix (v0.1.38), the operator asked for a specific per-pin view that neither existing script gives: "for this site, tell me when a pin was
+activated, what IP it had, what MAC address, when did the lease start, when did it end" — a timeline, not `audit-pin-activation.sh`'s per-site totals. A manual one-off version of this join, run live
+against `hope-vale-smc01` to answer the immediate question, worked but used `tail -1` to pick the current lease block for each activated IP.
+
+**Bug found during that manual run, before it was promoted to a script:** `dhcpd.leases` is append-only, and `tail -1` picks the LAST lease block recorded for an IP — which is not necessarily the one
+that was actually in force at a given historical activation time. Confirmed live: `hope-vale-smc01`, IP `10.0.36.28` — its last-in-file lease block has `starts epoch` = 15:53:29, but the real
+`wifi/access` activation for that IP was logged at 15:52:41, **48 seconds earlier**. The correct block (an earlier renewal) was further up the file.
+
+**Fix: `scripts/correlate-pin-activation.sh` added**, doing the join properly — for each IP, scans every recorded lease block and picks the one whose `starts` epoch is the *latest one still `<=` the
+activation epoch*, not the file's last word on that IP. Falls back to the earliest known lease (flagged with an explicit WARNING note) when no lease had started by activation time at all — confirmed
+on a live 30-activation sample against `hope-vale-smc01`, this happened for 4 of 30 IPs. Also handles two other data gaps found live rather than failing silently: an IP with no lease record at all
+(`no-lease-found`) and a matched lease block missing its `hardware ethernet` line (`no-mac-in-lease-record`, added after a live run produced a blank, unlabelled field for exactly this case). Runs from
+a non-Linux operator machine: the one GNU-`date`-dependent step happens remotely on the Ubuntu appliance over `tsh ssh`; the join and lease-epoch formatting happen locally with a portable `date
+-d`/`date -r` fallback.
+
+**Also updated:** `references/14_pin-activation-diagnosis.md` §14.4 rewritten with the join-order bug, the confirmed evidence, and the correct algorithm (previously just a one-line manual `grep`
+example); §14.8 tooling list gained the new script. `scripts/README.md` gained a full write-up (table + usage) mirroring the existing `audit-pin-activation.sh` entry, plus updates to the file's
+top-of-doc summary/read-first pointers. `fleet-health.justfile` gained a `pin-correlate` recipe alongside the existing `pin-audit`/`pin-audit-sites`.
+
+**Verification:** live-run against `hope-vale-smc01` (30-row and 60-row lookback), plus three isolated synthetic-fixture unit tests covering the no-lease, lease-starts-after-activation (WARNING), and
+missing-hardware-ethernet-line code paths individually — all three confirmed correct in isolation before trusting the live-data run's coverage of them.
+
+## 20260911_1240 — Incident closed: all 3 sites' fix + recovery confirmed live in references/13_known-issues.md (v0.1.37 -> v0.1.38)
+
+**Trigger:** the previous entry's known-issues update left a dangling "see the fix confirmation above" reference that pointed at nothing — the actual fix-and-recovery evidence (11:37:50 first new
+activation on `hope-vale`/`kowanyama`, `bungardi` fixed ~11:58) had only been written to the `ansible-wifi`-side RCA doc, `SCRATCHPAD.md`, and memory-keeper, never into `skill-smc` itself. Closed that
+gap and updated with the full live recovery trajectory tracked afterward.
+
+- `references/13_known-issues.md`: rewrote the "Still actively broken" bullet (now stale — all 3 fixed) into a "RESOLVED 2026-09-11" bullet with the actual fix mechanism (`smc_squid` tag only), timing
+  (11:34 for hope-vale/kowanyama, ~11:58 for bungardi via backdoor-SSH), first-activation confirmation timing (3–9 minutes), and the observed post-fix trajectory (`kowanyama` 1→10, `hope-vale` 2→6
+  across ~1 hour of live tracking) — useful as a reference shape for how fast recovery should look after this class of fix in future incidents.
+
+Applied to: `references/13_known-issues.md`, `manifest.json`, `CHANGELOG.md`.
+
+---
+
+## 20260911_1210 — Correction: kaltjiti-fergon-smc01 was never affected; bungardi-smc01 fixed live (v0.1.36 -> v0.1.37)
+
+**Trigger:** Operator asked which sites carry the stale `teleport.communitywifi.net.au.conf` vhost/cron for cleanup. A fresh, isolated live re-check (fixing an exit-code handling bug in the sweep
+script itself along the way — `grep -c` returning 1 on zero matches was making `tsh` report a false connection error) found `kaltjiti-fergon-smc01` has a single vhost only, `squid.conf` dated
+2024-08-07 (predates the regression entirely), and correct `deny_info`. It was **never affected** — the v0.1.35/v0.1.36 entries wrongly listed it as a 4th site "fixed 2026-09-08, same batch as
+`galiwinku`". Traced to output-interleaving corruption in the very first parallel-`tsh ssh` sweep (multiple sessions appending to one shared file with no per-host isolation), which a later "clean"
+rerun did not fully purge before the finding was written up and catalogued.
+
+- `references/13_known-issues.md`: corrected the "fixed but with leftover cruft" list (now `hope-vale`/`kowanyama`/`bungardi`/`galiwinku`/`doomadgee`/`darlngunaya`, not `kaltjiti-fergon`) and added an
+  explicit correction note with the root cause and a process lesson (verify a fleet-sweep finding against a single, isolated, freshly-read capture before writing it into this file).
+- `references/14_pin-activation-diagnosis.md`: relabeled `kaltjiti-fergon-smc01`'s row in the §14.7 case-study table from "(fixed 2026-09-08, same batch)" to "(control — never affected)"; the numeric
+  data in that row (150 marks, 179 activations) was independently re-verified live and is accurate, only the narrative label was wrong.
+- **`bungardi-smc01` fixed live ~11:58** (operator, via the backdoor-SSH path documented in `03_communication-flows.md` §Backdoor SSH Access) — re-verified: `deny_info` correct, `squid.conf`
+  regenerated. All 3 originally-broken sites (`hope-vale`/`kowanyama`/`bungardi`) are now fixed; recovery-confirmation watch extended to cover `bungardi` the same way as the other two.
+- Superseded, not silently edited: the v0.1.35/v0.1.36 `CHANGELOG.md` entries above are left as the historical record of what was believed at the time, per this pack's convention of correcting forward
+  rather than rewriting past entries.
+
+Applied to: `references/13_known-issues.md`, `references/14_pin-activation-diagnosis.md`, `manifest.json`, `CHANGELOG.md`. Also corrected in `ansible-wifi`'s own case files:
+`local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/teleport-fqdn/portal-fqdn-regression-20260911_1140.md` and `SCRATCHPAD.md`.
+
+---
+
+## 20260911_1120 — bungardi-smc01 confirmed as third broken site; Eclipse "PIN Last Issued" admin report documented as a third corroborating evidence source (v0.1.35 -> v0.1.36)
+
+**Trigger:** Operator shared a screenshot of the Eclipse admin "PIN Last Issued" report (per-site last-issue date, all `nbn_accelerate`/`nbn_wh` communities) and flagged `bungardi` as still
+suspiciously unresolved from the prior session's "unreachable" status, plus a batch of sites showing `Sep 10` as possibly-nothing-but-worth-checking.
+
+- `bungardi-smc01`'s Teleport tunnel recovered on retry (the earlier "no tunnel connection found" was transient). Live-audited: `deny_info` still points at `teleport.communitywifi.net.au`,
+  `squid.conf` mtime 2025-09-18, 2 marks / 2 activations in the log window — same dead signature as `hope-vale`/`kowanyama`. **Third confirmed-broken site.**
+- Ran `audit-pin-activation.sh` against the six operator-flagged `Sep 10`/`Sep 9` sites (`arawerr`, `loanbun`, `burawa`, `warakurna`, `pipalyatjara`, `mungkarta`): all showed healthy 302 counts
+  (57–526) — cleared as false alarms, normal daily variance.
+- Documented the Eclipse "PIN Last Issued" report itself in `references/14_pin-activation-diagnosis.md` §14.6 as a third independent evidence source (outside this fleet's own tooling) — corrects the
+  prior framing that pin-generation data was Eclipse-side and effectively unreachable; it's unreachable from *this fleet's* tooling specifically, but the operator has a working admin view for it.
+  Landed on the same three sites as both of this pack's own mechanisms, independently.
+- Updated `references/13_known-issues.md`'s `bungardi-smc01` entry from "could not be verified live" to confirmed-broken, and updated the "still actively broken" list fleet-wide from 2 sites to 3.
+- Updated the §14.7 case-study table with `bungardi`'s real numbers.
+
+Applied to: `references/13_known-issues.md`, `references/14_pin-activation-diagnosis.md`, `manifest.json`, `CHANGELOG.md`.
+
+---
+
+## 20260911_1115 — Pin-activation diagnosis added: two independent mechanisms, `audit-pin-activation.sh`, portal-FQDN-regression capture, live fleet case study (v0.1.34 -> v0.1.35)
+
+**Trigger:** Operator-directed investigation into low utilization at 3 suspected `nbn_accelerate` sites, escalated to a full fleet sweep across `nbn_accelerate` + `nbn_wh`, then handed the operator's
+own diagnostic methodology (previously undocumented in this pack) for distinguishing pin validity from pin issuance, with an instruction to turn it into reusable tooling.
+
+- New `references/14_pin-activation-diagnosis.md`: the two independent mechanisms — `iptables -t mangle -L ECLIPSE_MARK` (pin valid right now, a snapshot) vs the Apache `wifi/access` log audit trail
+  (pin actually issued, an audit trail over time; `302`=success, `200`=failure) — plus tier routing (`iptables -t nat -L SQUID_REDIRECT`, ports 3128/3130/3131), MAC↔IP correlation via `dhcpd.leases`,
+  the controller code path (`wifi.php action_access` → Eclipse `get_free_pin_monthly` → mark applied → redirect, verified 9-second mark-to-first-allowed-flow timing), and five pitfalls found live
+  during this investigation (log location varies by box — `access.log` absent entirely on `bungardi-smc01`; marks ≠ activations — an Eclipse-pushed mark on `hope-vale-smc01` had no local activation
+  POST; the inverse — `amata-smc01` read 0 current marks against 628 recent activations, so mark count alone is not a reliable "is this site dead" signal; pin-generation timestamps are Eclipse-side
+  only; local per-box MariaDB is in-progress work, not the production pin store — operator-confirmed, do not chase it).
+- New `scripts/audit-pin-activation.sh`: runs both mechanisms per host in one SSH round-trip, prints a comparison table (marks / 3128 / 3131 / 302 / 200 / 404). Same hardcoded-command,
+  host-names-only, no-default-site-list contract as the existing fleet scripts. Dogfooded live against `hope-vale-smc01` and `amata-smc01` before being catalogued — the `amata` zero-marks finding
+  above came directly out of that dogfooding run, not a hypothetical.
+- `scripts/collect-fleet-health.sh`: added capture 5, `05-portal-fqdn-status` (`deny_info`, `squid.conf` mtime, enabled Apache vhosts, `sslcertcopy` cron) — the config-side half of this diagnosis.
+  Dogfooded live against `hope-vale-smc01`.
+- `scripts/fleet-health.justfile`: added `pin-audit`/`pin-audit-sites` (wraps the new script) and `portal-fqdn-check` (quick cross-host summary of capture 5, same pattern as `freshclam-check`) — logic
+  verified against a real capture before being trusted.
+- `references/13_known-issues.md`: new dated entry documenting **two separate portal-FQDN regressions**, not one — `nbn_accelerate` (2025-06-27 to 2025-07-28, ~1 month, deliberate revert) and `nbn_wh`
+  (2025-07-01 to 2026-09-03, **~14 months**, fixed *incidentally* inside an unrelated squid-blocklist-transport commit whose headline never mentions the portal fix). Live fleet-sweep status as of
+  2026-09-11: `hope-vale-smc01` and `kowanyama-smc01` still actively broken (confirmed by both mechanisms — 1–2 successful activations in a 15-day window vs 179–893 at every control site);
+  `galiwinku-smc01` and `kaltjiti-fergon-smc01` fixed 2026-09-08 (same batch, `kaltjiti-fergon` not previously documented as affected); `doomadgee-smc01` fixed at the original 2025-07-28 revert;
+  `bungardi-smc01` (`nbn_wh`) unverifiable live — Teleport tunnel registration failure, matches a known intermittent pattern on this fleet, flagged as the highest-priority open unknown;
+  `darlngunaya-smc01` (`nbn_wh`) never affected (config predates the regression entirely). Process lesson recorded: a fix bundled inside an unrelated commit is exactly what a headline-only write-back
+  sweep misses — `git show --stat` on every commit touching a shared vars file, not just commits that name it, needed for this class of regression.
+- `references/10_captive-portal.md` §11.7: cross-reference added — "portal responding" (existing end-to-end verification) is not the same claim as "pins are being issued" (new reference).
+- Catalogued the new reference file in all four required surfaces (`RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, `context-map.yaml`) and the new script in `scripts/README.md`, per
+  `rule-reference-update-discipline.md`.
+
+Applied to: `references/14_pin-activation-diagnosis.md` (new), `scripts/audit-pin-activation.sh` (new), `scripts/collect-fleet-health.sh`, `scripts/fleet-health.justfile`, `scripts/README.md`,
+`references/13_known-issues.md`, `references/10_captive-portal.md`, `RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `manifest.json`, `CHANGELOG.md`.
 
 ---
 
@@ -8693,6 +9371,18 @@ routing:
     description: Known coverage gaps, unvalidated assumptions, live-validation limits.
     read:
     - references/13_known-issues.md
+  pin_activation_diagnosis:
+    description: Two independent mechanisms for captive-portal pin diagnosis -- iptables
+      mangle ECLIPSE_MARK (pin validity now) vs Apache wifi/access log (pin issuance
+      over time). Marks-are-not-activations pitfalls, MAC/IP correlation via dhcpd.leases,
+      and the 2026-09-11 nbn_accelerate/nbn_wh fleet case study.
+    read:
+    - references/14_pin-activation-diagnosis.md
+  cambium_asset_registers:
+    description: Pointer only -- ansible-wifi site_name join point for a Cambium asset
+      register. Full naming-convention/extraction knowledge lives in skill-cambium.
+    read:
+    - references/15_cambium-asset-registers.md
   smcbox_basics:
     description: SMC box definition, inventory flavors, Teleport access pattern, satellite
       constraints, APN vs NBN Accelerate cluster structural comparison.
@@ -8830,8 +9520,8 @@ update_rules:
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "2026-09-08T19:55:00Z",
-  "version": "0.1.34",
+  "updated_at": "2026-09-17T00:00:00Z",
+  "version": "0.1.43",
   "dependencies": [],
   "known_constraints": [
     "SMC boxes run overlayroot — changes do not persist across reboot unless lower dir is remounted rw",
@@ -9150,8 +9840,10 @@ practical.
 | Local Vagrant lab bring-up and known virtualization issues                                                                                          | `references/11_vagrant-lab.md`                 |
 | Family-friendly VLAN 501 access, filtering stack, MAC randomization, CAKE                                                                           | `references/12_content-filtering.md`           |
 | Coverage gaps, live-validation limits, stale assumptions                                                                                            | `references/13_known-issues.md`                |
+| Pin validity (mangle) vs pin issuance (Apache access log) — two mechanisms, marks-≠-activations pitfalls, fleet case study                          | `references/14_pin-activation-diagnosis.md`    |
 | Reusable read-only scripts: WAN-routing/topology-drift investigation tooling (evidence capture, drift analyser, topology/hardware cross-check),     | `scripts/README.md`                            |
-|   plus ansible-lint pre-push/CI gate scripts                                                                                                        |                                                |
+|   plus ansible-lint pre-push/CI gate scripts, fleet hardware/service-health + portal-FQDN-status audit, and pin-activation diagnosis                |                                                |
+| Cambium asset-register naming grammar, per-site drift, `rcp`-vs-`nbn_accelerate` R195P rule, R195P IP-derivation formula, extraction gotchas        | `references/15_cambium-asset-registers.md`     |
 
 ## Runtime Paths
 
@@ -9412,6 +10104,21 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Session history (summaries)
 
+### 2026-09-17 — Other OS alternatives assessed for Raspberry Pi SMCs (v0.1.42 -> v0.1.43)
+
+- No operating system is recommended over Ubuntu Server LTS for the current full SMC workload. Raspberry Pi OS Lite and Debian retain APT but still require an unproven OS/automation port; OpenWrt is
+  viable only for a deliberately reduced router/AP appliance; immutable/declarative systems require a full platform redesign.
+- Written to `references/07_hardware-overlay.md`; manifest bumped to v0.1.43. Evidence basis: ansible-wifi workload inspection plus Raspberry Pi and OpenWrt primary documentation, retrieved
+  2026-09-17.
+
+### 2026-09-17 — Ubuntu Core assessment for Raspberry Pi SMCs (v0.1.41 -> v0.1.42)
+
+- Design recommendation only; no production change or canary: retain Ubuntu Server LTS for Raspberry Pi SMCs. The current appliance depends on root-managed APT packages, ordinary host files,
+  systemd units and privileged network services; RISE overlayroot already provides a disposable-root mitigation without replacing that operational model.
+- Canonical Ubuntu Core documentation read directly: Core is image/snap-managed, immutable and transaction-based, with strict confinement and no classic snaps. It is viable only as a separately designed
+  greenfield appliance that proves the full privileged networking, access, telemetry, update/recovery and constrained-link surface on a Pi canary.
+- Written to `references/07_hardware-overlay.md`; manifest bumped to v0.1.42. Evidence basis: ansible-wifi role/playbook inspection plus Canonical documentation, retrieved 2026-09-17.
+
 ### 2026-08-03 — new-looma-smc01 second whole-host outage confirmed via live Prometheus (v0.1.17 → v0.1.18)
 - Operator reported "new-looma-smc01 is back online" — a bare status ping. Rather than just acknowledge it, queried live Prometheus (`mcp-grafana-apn`, still connected from the previous exploration)
   to verify and get exact timestamps.
@@ -9632,6 +10339,11 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Memory pointers (navigation only)
 
+- memory-keeper channel: `skill-smc` / keys added 2026-09-08 (skill-ai-it refresh slurp): `skill-smc.decision.skill-ai-it-refresh-mode-correction-20260908`,
+  `skill-smc.decision.ai-navigation-declared-manual-20260908`, `skill-smc.note.check-governance-adopted-and-tuning-20260908`, `skill-smc.progress.v0134-refresh-20260908`,
+  `skill-smc.note.mk-pc-backend-divergence-20260908`. Checkpoint: `slurp-20260908-skill-ai-it-refresh` (both backends).
+- project-context project ID `0bf38158-d30f-4b0f-8653-f6f93d22a068`: notes added 2026-09-08 mirroring the same session; **note this backend was ~5 weeks stale (last prior entry 2026-08-03) before this
+  update** — see `skill-smc.note.mk-pc-backend-divergence-20260908` for the memory-keeper-only entries from 2026-09-07 that were never mirrored here.
 - memory-keeper channel: `skill-smc` / keys added 2026-08-03 (this pass): `skill-smc.discovery.new-looma-outage-confirmed-20260803`
 - memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.discovery.grafana-dashboard-inventory-rise-metrics-20260803`
 - memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.task.grafana-cw-exploration-blocked-20260803`
@@ -9685,6 +10397,7 @@ metadata:
 - [Communication Flows (Quick Reference)](#communication-flows-quick-reference)
 - [Runtime Environments](#runtime-environments)
 - [References](#references)
+- [Related Skills](#related-skills)
 - [Source](#source)
 
 ---
@@ -9859,8 +10572,19 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - `references/11_vagrant-lab.md` — local Vagrant lab bring-up and virtualization issues.
 - `references/12_content-filtering.md` — family-friendly VLAN 501 filtering, MAC randomization, CAKE.
 - `references/13_known-issues.md` — coverage gaps, live-validation limits, and staleness risks.
+- `references/14_pin-activation-diagnosis.md` — pin validity (mangle) vs pin issuance (Apache access log): two independent mechanisms, marks-≠-activations pitfalls, and the 2026-09-11 fleet case
+  study.
+- `references/15_cambium-asset-registers.md` — pointer only: the ansible-wifi `site_name` join point for a Cambium asset register. Full asset-register naming-convention/extraction knowledge now lives
+  in `skill-cambium` — see Related Skills below.
 - `scripts/` — reusable read-only diagnostic tooling for WAN-routing/topology-drift investigations (evidence capture, the "hook covers netplan" drift analyser, and a topology_vars-vs-live-hardware
-  cross-check), plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate); see `scripts/README.md`.
+  cross-check), fleet hardware/service-health + portal-FQDN-status audit, captive-portal pin-activation diagnosis, plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate);
+  see `scripts/README.md`.
+
+## Related Skills
+
+- **`skill-cambium`** — the Cambium device/hardware layer this fleet's boxes provision and manage: device families/firmware, local-admin credential vault, cnMaestro estate, asset-register conventions,
+  device-inventory schema. Call it for anything about the radios/APs themselves rather than the SMC box or Ansible. It calls back here for: SMC service troubleshooting, Ansible topology/role
+  questions, `smc_cnmaestro_provisioning` behaviour, Teleport access. Neither pack duplicates the other's content — cross-reference, don't copy.
 
 ## Source
 - specialist_type: project

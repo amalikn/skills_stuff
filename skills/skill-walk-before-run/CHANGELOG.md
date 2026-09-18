@@ -1,11 +1,22 @@
 ---
 Title: skill-walk-before-run — CHANGELOG
 Status: current
-Last reviewed: 2026-09-16
+Last reviewed: 2026-09-17
 Summary: Behavioural revisions to skill-walk-before-run between versions.
 ---
 
 # Changelog
+
+## v0.1.2 — 2026-09-17
+
+Incident-driven, not a design round — a project-side script bypassed this skill and wrote straight into `ledger.jsonl` (wrong location, no schema validation, no mirror/SCRATCHPAD write-back). See
+[`BRIEF.md`](BRIEF.md) decision #16.
+
+- Added `scripts/append_entry.py` as the only sanctioned writer to `ledger.jsonl`: validates the entry against `schemas/ledger-entry.md`, appends to the canonical ledger, and performs the project
+  mirror + SCRATCHPAD pointer write-back in the same call.
+- Added an OPA policy rule (`agent_authz.rego`, in the workspace's existing PreToolUse gate) that hard-blocks any Bash write-pattern targeting `ledger.jsonl`/`.wbr-ledger.jsonl` unless it invokes
+  `append_entry.py`, and hard-blocks Write/Edit targeting either filename outright.
+- Rewrote SKILL.md's Ledger and Project write-back sections to call the script instead of describing a manual append.
 
 ## v0.1.1 — 2026-09-16
 

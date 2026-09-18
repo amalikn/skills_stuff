@@ -62,6 +62,7 @@ When sources conflict:
 | VLAN 501, content filtering, MAC randomization, CAKE                                                                 | `references/12_content-filtering.md`        |
 | Coverage gaps, staleness risk, unvalidated assumptions                                                               | `references/13_known-issues.md`             |
 | Pin validity (mangle) vs pin issuance (Apache access log) diagnosis, marks-≠-activations pitfalls                    | `references/14_pin-activation-diagnosis.md` |
+| Cambium asset-register — ansible-wifi site_name join point (full content moved to skill-cambium)                     | `references/15_cambium-asset-registers.md`  |
 | SMC box definition, inventory flavors, Teleport access pattern, APN vs NBN Accelerate cluster differences            | `references/01_overview.md`                 |
 
 ## Project context files
@@ -91,6 +92,7 @@ When sources conflict:
 | `references/12_content-filtering.md`               | VLAN 501 filtering stack                                                | Content     |
 | `references/13_known-issues.md`                    | Known gaps and staleness                                                | Content     |
 | `references/14_pin-activation-diagnosis.md`        | Pin validity vs pin issuance diagnosis, fleet case study                | Content     |
+| `references/15_cambium-asset-registers.md`         | Pointer only — full content in skill-cambium; site_name join point here | Content     |
 | `exports/claude_code/project/skill-smc/adapter.md` | Claude Code source→install mapping                                      | Adapter     |
 | `exports/claude_code/project/skill-smc/install.md` | Claude Code installation steps                                          | Adapter     |
 | `CHANGELOG.md`                                     | Pack version history and governance changes                             | Medium-high |

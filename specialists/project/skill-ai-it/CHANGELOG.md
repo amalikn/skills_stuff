@@ -2,6 +2,9 @@
 
 ## Contents
 
+- [20260918_1357 — fix: promote instructions named `.archcore/README.md`, which `archcore status` rejects](#20260918_1357--fix-promote-instructions-named-archcorereadmemd-which-archcore-status-rejects)
+- [20260918_1340 — fix: three coherence gaps surfaced by bootstrapping `unified-network-controller`](#20260918_1340--fix-three-coherence-gaps-surfaced-by-bootstrapping-unified-network-controller)
+- [20260918_1320 — feat: `.markdownlint-cli2.jsonc` promoted from `cambium-swap` to a skill standard](#20260918_1320--feat-markdownlint-cli2jsonc-promoted-from-cambium-swap-to-a-skill-standard)
 - [20260914_1345 — fix: templates/repomix.config.json's ignore key had the wrong schema](#20260914_1345--fix-templatesrepomixconfigjsons-ignore-key-had-the-wrong-schema)
 - [20260828_2104](#20260828_2104)
 - [20260825_2150](#20260825_2150)
@@ -38,6 +41,68 @@
 - [20260812_1300](#20260812_1300)
 
 ---
+
+## 20260918_1357 — fix: promote instructions named `.archcore/README.md`, which `archcore status` rejects
+
+### Fixed
+
+- **`SKILL.md`'s `promote` mode and `patterns/archcore-routing.md` both instructed writing `.archcore/README.md` as the durable index — `archcore status` rejects any `.md` under `.archcore/` that
+  isn't named `<slug>.<type>.md` with YAML frontmatter, so a bare `README.md` reports as an issue rather than functioning as an index.** This was already known: recorded in auto-memory on 2026-09-11
+  from a prior `promote` run on an unrelated project, with a note that "the proper fix is in the canonical skill sources under skills_stuff (not yet done)." It resurfaced running `/skill-ai-it
+  promote` against `unified-network-controller` (2026-09-18) before the canonical fix had landed. Corrected both files to `.archcore/index.guide.md` with `title`/`status`/`tags` frontmatter, matching
+  the format `cambium-swap`'s own `.archcore/index.guide.md` already used (independently worked around the same bug during its own promote pass on 2026-09-14). Added an explicit "not
+  `.archcore/README.md`" callout and a post-`promote` `archcore status` verification step to the completion checklist so the fix stays visible instead of silently reverting the next time someone edits
+  that section from memory.
+- Historical `CHANGELOG.md` entries describing the old (broken) behavior were left as-is — they are a record of what `promote` did at the time, not a live instruction.
+
+### Notes
+
+- Not retroactively applied to `cambium-swap`, which had already worked around this locally before the bug was ever recorded — no drift to fix there.
+- Applied directly to `unified-network-controller` in the same session — see that project's own `CHANGELOG.md`.
+
+## 20260918_1340 — fix: three coherence gaps surfaced by bootstrapping `unified-network-controller`
+
+### Fixed
+
+- **`check_interpreter_pinning` had no way to exempt a venv-builder recipe's own `mise exec -- python -m venv .venv` line** — the one legitimate implicit-interpreter call, since `{{py}}` cannot exist
+  before the venv it points at is built. `cambium-swap` had already patched this locally (`VENV_BUILDER_RECIPES`, recipe-name tracking during the line scan) but the fix never reached
+  `templates/check_governance.py`, so every other project generated from the template — including `unified-network-controller` moments after this one — hit the same false failure on its own
+  `bootstrap` recipe. Ported the registry and recipe-tracking into the canonical template. Also added `node` to the bare-interpreter regex: the check's own docstring already claimed to flag a bare
+  `node`, but the pattern never included it.
+- **Two lines inside `upgrade_navigation_control_layer.py`'s generated `AGENTS.md` navigation block exceeded the 200-column wrap rule this skill enforces on every file it writes** (208 and 281
+  characters) — content the deterministic script writes via `python3`, bypassing the editor-side wrap-on-save hook that would normally catch this. Wrapped both at natural clause boundaries in the
+  script's own template string, and mirrored the fix into `SKILL.md`'s embedded fallback block (same template-precedence rule as the `repomix.config.json` fix in `20260914_1345`: the two must not
+  diverge).
+- **`templates/scripts-README.md` nested the entire file body inside the `skill-ai-it:scripts` managed block**, but `upgrade_navigation_control_layer.py`'s `build_scripts_block()` only ever
+  regenerates the small "Execution Policy" / "Preferred Execution Order" / "Maintenance Rules" portion. Every other section the template shipped — Runtimes, Task Inventory, Raw Script Inventory,
+  Safety Labels, Notes — sat inside the markers anyway, so the first `nav-upgrade` a bootstrapped project ever ran **silently discarded all of it**, reporting `replaced-managed-block`, which reads
+  like success. Caught live on `unified-network-controller`: a fully populated Task/Raw Script Inventory (including the one real cataloged script, `wc-lab/scripts/bootstrap-vm.sh`) was overwritten
+  down to three generic sections. Restructured the template so only the three managed sections sit inside the markers and the rest sits after `<!-- END MANAGED -->`, and added an explicit warning in
+  `SKILL.md`'s scripts/README.md section so the next agent authoring one of these files doesn't reintroduce the nesting.
+
+### Notes
+
+- None of these three fixes were retroactively applied to every project this skill has already bootstrapped — each carries its own copies of these files as project-owned content after bootstrap, same
+  precedent as `20260914_1345`. Apply via `refresh` mode (or by re-running `nav-upgrade` plus a manual `scripts/README.md` restructure) per project.
+- `unified-network-controller`'s own copies of `check_governance.py` and `scripts/README.md` were fixed directly in the same session — see that project's own `CHANGELOG.md`.
+
+## 20260918_1320 — feat: `.markdownlint-cli2.jsonc` promoted from `cambium-swap` to a skill standard
+
+### Added
+
+- `templates/.markdownlint-cli2.jsonc` — the operator's `cambium-swap` config (200-column prose wrap, tables/code/headings exempt, `MD024` `siblings_only`) generalized into a reusable template: the
+  `config` block copied as-is (it already matches `/Volumes/Data/_ai/governance/categories/markdown-guide.md`'s wrap rule verbatim), the `ignores` list reduced to generated/support surfaces common
+  across this skill's own vocabulary, with project-specific entries (immutable baseline docs, archived research passes) left as a commented example for the bootstrapping agent to fill in rather than
+  copied over wholesale.
+- New "Always-created files" entry in `SKILL.md` (`#### .markdownlint-cli2.jsonc`) — create in `bootstrap`/`navigation-add`/`refresh` unless the project already owns a markdown lint config; on
+  refresh, merge in newly-relevant shared ignores but never touch project-specific entries or a file this skill didn't write.
+- Mode table, Phase 1 inventory signal table, Skill Package Layout listing, and the completion checklist all updated to reference the new file.
+
+### Notes
+
+- Not retroactively applied to every project this skill has already bootstrapped — each project's own governance file set is project-owned after creation, same precedent as the `repomix.config.json`
+  schema fix in `20260914_1345`. Apply via `refresh` mode per project.
+- Triggered mid-bootstrap of `apn/unified-network-controller`, which received the new file directly in the same session (see that project's own `CHANGELOG.md`).
 
 ## 20260914_1345 — fix: templates/repomix.config.json's ignore key had the wrong schema
 

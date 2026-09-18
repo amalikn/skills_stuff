@@ -3,6 +3,8 @@
 ## Contents
 
 - [7. Hardware Differences: x86 vs Raspberry Pi](#7-hardware-differences-x86-vs-raspberry-pi)
+- [Ubuntu Core suitability assessment (2026-09-17)](#ubuntu-core-suitability-assessment-2026-09-17)
+- [Other OS alternatives assessment (2026-09-17)](#other-os-alternatives-assessment-2026-09-17)
 - [8. Overlay Filesystem (Critical Concept)](#8-overlay-filesystem-critical-concept)
 - [Orphaned persistent journal after the volatile conversion (~44 GB fleet-wide, reclaimed 2026-07-28)](#orphaned-persistent-journal-after-the-volatile-conversion-44-gb-fleet-wide-reclaimed-2026-07-28)
 - [Fleet status-probe gotchas — three checks that read as fleet-wide failures but are wrong paths (verified 2026-08-25)](#fleet-status-probe-gotchas--three-checks-that-read-as-fleet-wide-failures-but-are-wrong-paths-verified-2026-08-25)
@@ -70,6 +72,44 @@ conditions in Ansible roles for genuinely platform-driven behavior — but as th
 flavor-exclusive gates (`inventory_dir.split('/')|last == '<flavor>'`) or inventory-group gates (`smc_ltp`) that happen to correlate with platform for some rows and not others. Don't assume a row
 applies to "all x86" or "all RPi" without checking whether it's gated by `ansible_architecture`, `hotspot_flavor`, or an exact flavor/group name — see `08_ansible-authoring.md` "Flavor/Cluster
 Conditional Branching" for the full selector-mechanism reference.
+
+### Ubuntu Core suitability assessment (2026-09-17)
+
+**Design recommendation — not implemented or canary-tested:** retain Ubuntu Server LTS as the standard OS for new Raspberry Pi SMCs; do not introduce Ubuntu Core into the current SMC appliance
+fleet. This is an SMC-workload conclusion, not a claim that Ubuntu Core is unsuitable for embedded devices generally.
+
+The existing `smc_bases.yml` design assumes a conventional Ubuntu host that Ansible manages as `root`: it runs APT/package tasks and directly manages `/etc`, `/usr/local`, `/var`, systemd units,
+netplan/systemd-networkd, DHCP/DNS, hostapd, iptables/netfilter-persistent, Teleport/autossh, Prometheus and application services. RISE already makes the normal Server root filesystem disposable with
+overlayroot, while preserving the existing package, service and recovery model. Replacing Ubuntu Server with Core would therefore be a platform redesign, not an image substitution.
+
+**VERIFIED_PRIMARY (Canonical, retrieved 2026-09-17):** Ubuntu Core is image-based, immutable and transaction-based; applications and configuration are managed by snapd. It expects custom images for
+the target application, and Core cannot run `classic` snaps. Strict snap confinement requires explicit interfaces for system, network and device access. These are valuable properties for a
+purpose-built appliance, but conflict with assuming ordinary Debian packages, unrestricted root-owned files and arbitrary unit/service management.
+
+Before reconsidering Core, create a separate greenfield appliance design and canary. It must package the full workload (or reduce it sharply), define all required snap interfaces, own the
+model/gadget/image and refresh policy, and prove on a Pi under realistic constrained-link conditions: hostapd/AP mode, DHCP/DNS, netfilter/traffic control, routing/failover, Teleport reverse access,
+telemetry, storage-health collection, updates and recovery. Treat an existing SMC migration as out of scope until that canary has passed; it should not be used as an SD-card reliability shortcut.
+
+**Sources:** Canonical, [Ubuntu Core documentation](https://documentation.ubuntu.com/core/) (last updated 2026-04-21); [Using Ubuntu Core](https://documentation.ubuntu.com/core/how-to-guides/using-ubuntu-core/)
+(last updated 2026-08-21); [Snap confinement](https://documentation.ubuntu.com/security/security-features/privilege-restriction/snap-confinement/) (retrieved 2026-09-17).
+
+### Other OS alternatives assessment (2026-09-17)
+
+**Design recommendation — not implemented or canary-tested:** no other operating system is recommended over Ubuntu Server LTS for the current full SMC workload. Standardise new Raspberry Pi SMCs on
+the same Server release that has been ARM-canary-qualified for the fleet; OS release selection is separate from this operating-system choice.
+
+| Candidate | Fit for the current SMC | Decision |
+| --- | --- | --- |
+| Raspberry Pi OS Lite | The closest alternative: a 64-bit, Debian/APT-based Pi OS with vendor firmware packaging. It still needs a full port and qualification of the Ubuntu-specific Ansible assumptions (netplan, systemd units, package names, boot paths and update policy), with no demonstrated reliability or operations benefit over Ubuntu Server. | Do not adopt routinely. Reconsider only if a future Pi board/HAT requires a vendor driver or firmware unavailable on qualified Ubuntu Server. |
+| Debian Stable | Also requires a package/network/boot and fleet-operations port, while removing alignment with the existing Ubuntu SMC stack. | No benefit established; do not adopt. |
+| OpenWrt | A strong router/AP OS, but it is a different appliance ecosystem. Its image/package and network-management model would require reimplementing the SMC's host configuration, services, observability and application stack. | Consider only for a deliberately reduced router/AP product, not an SMC replacement. |
+| Fedora IoT/CoreOS, NixOS, similar declarative or immutable systems | Repeat the Core problem in different forms: a new image, package, service and operational model must be designed and supported. | No current case for adoption. |
+
+**VERIFIED_PRIMARY (retrieved 2026-09-17):** Raspberry Pi OS is Debian-based and supports APT-managed packages, including Pi kernel and firmware updates; OpenWrt is a Linux distribution for embedded
+devices, typically wireless routers. The suitability decisions above are an inference from those models and the verified SMC workload, not claims of general-purpose superiority.
+
+**Sources:** Raspberry Pi, [Raspberry Pi OS documentation](https://www.raspberrypi.com/documentation/computers/os.html) (retrieved 2026-09-17); OpenWrt, [Documentation overview](https://openwrt.org/docs/start)
+(retrieved 2026-09-17).
 
 ### Storage health monitoring — two different tools, clarified 2026-07-13
 

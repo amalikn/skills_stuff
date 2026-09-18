@@ -54,6 +54,7 @@ practical.
 | Pin validity (mangle) vs pin issuance (Apache access log) — two mechanisms, marks-≠-activations pitfalls, fleet case study                          | `references/14_pin-activation-diagnosis.md`    |
 | Reusable read-only scripts: WAN-routing/topology-drift investigation tooling (evidence capture, drift analyser, topology/hardware cross-check),     | `scripts/README.md`                            |
 |   plus ansible-lint pre-push/CI gate scripts, fleet hardware/service-health + portal-FQDN-status audit, and pin-activation diagnosis                |                                                |
+| Cambium asset-register naming grammar, per-site drift, `rcp`-vs-`nbn_accelerate` R195P rule, R195P IP-derivation formula, extraction gotchas        | `references/15_cambium-asset-registers.md`     |
 
 ## Runtime Paths
 

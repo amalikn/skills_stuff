@@ -379,3 +379,15 @@ if `ledger.jsonl` is ever actually lost, reconstruct it by concatenating every k
     be a cnPilot/CPE model, add GenieACS to `wc-lab`, smoke-test wiring with `genieacs-sim`, then repoint at the real unit for CWMP — preserving #14's still-valid finding that a simulator alone never
     substitutes for that repoint. Lesson recorded in that entry's own `learned` field: absence of a specific phrase ("no production access") in project docs is not the same as absence of all real-
     hardware access — ask the operator directly rather than inferring a stand-down from adjacent wording. Open item unchanged from #14: which device family the bench unit actually is.
+16. **`scripts/append_entry.py` added, plus an OPA hard-block on any other write path — decided 2026-09-17:** a cambium-swap-side script bypassed this skill entirely, writing a RESOLVED entry straight
+    into `ledger.jsonl` via a raw Python `open(...).write()` instead of invoking `/skill-wbr`. It landed at the wrong path (a `~/.claude/skills/` runtime install, not the canonical `skills_stuff`
+    copy), skipped schema validation, and skipped the project mirror and SCRATCHPAD pointer entirely. This is a departure from v0.1's "no helper scripts" stance recorded in the brief's revision note
+    above — that stance was about not speculatively building tooling before a first trial; this is the opposite case, a script added in direct response to an actual bypass that already happened, not a
+    hypothetical. Two changes: (1) `scripts/append_entry.py` is now the only sanctioned writer — it validates against `schemas/ledger-entry.md`, appends to canonical `ledger.jsonl`, and performs the
+    mirror + SCRATCHPAD write-back from the "Project write-back" section in the same call, so a valid entry can't land in the ledger without also reaching the mirror. (2) The workspace's existing OPA
+    policy gate (`agent_authz.rego`, already in the PreToolUse chain for every Bash/Write/Edit call) now hard-blocks any Bash command referencing `ledger.jsonl`/`.wbr-ledger.jsonl` alongside a write
+    marker (`.write(`, `>>`, `sed -i`, `tee -a`) unless the command invokes `append_entry.py`, and hard-blocks Write/Edit targeting either filename outright — this fires ahead of the "safe bash
+    prefix" allowlist (which included the bare `python3 -c` prefix that let the original bypass through unprompted) and ahead of the general governed-workspace write-allow. SKILL.md's Ledger and
+    Project write-back sections were rewritten to call the script instead of describing a manual append, since the manual form is now what the gate blocks. 38/38 `opa test` cases pass, including new
+    cases for this rule; verified live against `opa run --watch` (already running, picked up the change without restart) that the exact incident command is now blocked and that invoking the script is
+    not.

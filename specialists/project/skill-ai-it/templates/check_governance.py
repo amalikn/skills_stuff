@@ -101,6 +101,11 @@ TASK_RUNNER: str | None = None  # e.g. "justfile"
 # Files whose prose names task-runner recipes.
 RUNNER_REFERENCES: tuple[str, ...] = ()  # e.g. ("scripts/README.md", "AGENTS.md")
 
+# Recipes that BUILD the venv from the mise pin — e.g. "bootstrap" in templates/justfile. {{py}} cannot exist yet when
+# these run, so their own `mise exec -- python -m venv .venv` line is the one legitimate implicit-interpreter call, not
+# a violation of the rule it otherwise enforces. Leave empty if the project has no such recipe.
+VENV_BUILDER_RECIPES: frozenset[str] = frozenset({"bootstrap"})
+
 # Generated artifact -> inputs it must not be older than.
 DERIVED: dict[str, tuple[str, ...]] = {
     # "docs/CLASS-PROFILES.md": ("scripts/class_profiles.py", "process/vehicle-classes.yaml"),
@@ -320,6 +325,13 @@ def check_interpreter_pinning() -> None:
     Both are the "it works on the machine it was written on" class. Recipes must address {{py}} by path and depend on
     _require-venv. Node has no venv layer, so `mise exec -- node` is the legitimate explicit form for it and is allowed.
 
+    Exception: VENV_BUILDER_RECIPES (e.g. "bootstrap") create the venv from the mise pin, so {{py}} cannot exist yet
+    when they run — their own `mise exec -- python -m venv .venv` line is the one legitimate implicit call, not a
+    violation of the rule it otherwise enforces. Found missing during unified-network-controller's bootstrap
+    (2026-09-18): the template's own `bootstrap` recipe failed the check it ships with, because nothing tracked which
+    recipe a line belongs to. `cambium-swap` had already patched this locally; ported back here so every project
+    generated from this template gets it, instead of each one rediscovering and re-fixing it independently.
+
     Rule: the runtime-isolation section of skill-ai-it's SKILL.md, and the RUNTIME PINNING header of templates/justfile.
     """
     if TASK_RUNNER is None:
@@ -327,7 +339,12 @@ def check_interpreter_pinning() -> None:
     runner = read(TASK_RUNNER)
     if runner is None:
         return
+    recipe: str | None = None
     for lineno, line in enumerate(runner.splitlines(), 1):
+        header = re.match(r"^([a-zA-Z_][\w-]*)\s*(?:[*+a-zA-Z_][^:]*)?:(?!=)", line)
+        if header:
+            recipe = header.group(1)
+            continue
         if not line.startswith((" ", "\t")):
             continue  # only recipe bodies are commands; headers and variable assignments are not
         stripped = line.strip()
@@ -337,13 +354,13 @@ def check_interpreter_pinning() -> None:
         # printed (`printf 'python  '`), not a command being run.
         scan = re.sub(r"'[^']*'|\"[^\"]*\"", lambda m: " " * len(m.group(0)), stripped)
         counted()
-        if re.search(r"mise\s+exec\b[^|;]*--\s+python", scan):
+        if re.search(r"mise\s+exec\b[^|;]*--\s+python", scan) and recipe not in VENV_BUILDER_RECIPES:
             fail(
                 "runtime",
                 f"{TASK_RUNNER}:{lineno} reaches Python through an implicit `mise exec -- python` — address the venv "
                 f"interpreter by path via {{{{py}}}} and guard it with _require-venv",
             )
-        for match in re.finditer(r"(?<![-\w/])(python3?|npx|ruby)\b", scan):
+        for match in re.finditer(r"(?<![-\w/])(python3?|npx|ruby|node)\b", scan):
             # `mise exec -- <interp>` is handled above for python; for the rest it is the sanctioned explicit form.
             if re.search(r"mise\s+(exec\b[^|;]*--|run)\s*$", scan[: match.start()]):
                 continue

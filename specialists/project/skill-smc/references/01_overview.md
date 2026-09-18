@@ -43,6 +43,11 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
 - **SSH only** — Teleport DB/Kubernetes/app access features not in use
 - **Access is exclusively `tsh ssh root@<hostname>` (Teleport CLI) — there is no SSH-wrapping MCP in use and no plain-`ssh` path to an SMC.** A `ssh root@<hostname>.teleport.<domain>` form only works
   if `tsh config` has already generated a `ProxyCommand`-wired `~/.ssh/config` entry for that specific cluster and `tsh login` is active; `tsh ssh` directly is the authoritative form.
+- **Canonical local-port-forward tunnel to a device behind an SMC box** (operator-supplied form, 2026-09-17): `tsh ssh --proxy <cluster> -L <local_port>:<device_ip>:<device_port> root@<smc-hostname>`.
+  The explicit `--proxy` flag matters — an earlier attempt without it (just `tsh ssh -L ... root@<host>`) was flaky in an agent-harness background-task context (intermittent "Unable to connect to ssh
+  proxy" and shell-quoting errors); with `--proxy` named explicitly it connected reliably first try. Verified live 2026-09-17: `tsh ssh --proxy teleport.communitywifi.net.au -L 10000:10.255.3.1:443
+  root@hope-vale-smc01` tunnelled a real device's HTTPS web UI to `localhost:10000` (HTTP 200). Device port convention (see `skill-cambium` for the device side): `443` for current Cambium web UIs,
+  `80` for older ones (operator-stated: ePMP 1000 uses HTTP not HTTPS).
 
 ### APN Cluster vs NBN Accelerate Cluster — Structural Comparison (2026-08-03)
 

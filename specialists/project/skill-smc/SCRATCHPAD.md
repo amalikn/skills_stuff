@@ -246,6 +246,21 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Session history (summaries)
 
+### 2026-09-17 — Other OS alternatives assessed for Raspberry Pi SMCs (v0.1.42 -> v0.1.43)
+
+- No operating system is recommended over Ubuntu Server LTS for the current full SMC workload. Raspberry Pi OS Lite and Debian retain APT but still require an unproven OS/automation port; OpenWrt is
+  viable only for a deliberately reduced router/AP appliance; immutable/declarative systems require a full platform redesign.
+- Written to `references/07_hardware-overlay.md`; manifest bumped to v0.1.43. Evidence basis: ansible-wifi workload inspection plus Raspberry Pi and OpenWrt primary documentation, retrieved
+  2026-09-17.
+
+### 2026-09-17 — Ubuntu Core assessment for Raspberry Pi SMCs (v0.1.41 -> v0.1.42)
+
+- Design recommendation only; no production change or canary: retain Ubuntu Server LTS for Raspberry Pi SMCs. The current appliance depends on root-managed APT packages, ordinary host files,
+  systemd units and privileged network services; RISE overlayroot already provides a disposable-root mitigation without replacing that operational model.
+- Canonical Ubuntu Core documentation read directly: Core is image/snap-managed, immutable and transaction-based, with strict confinement and no classic snaps. It is viable only as a separately designed
+  greenfield appliance that proves the full privileged networking, access, telemetry, update/recovery and constrained-link surface on a Pi canary.
+- Written to `references/07_hardware-overlay.md`; manifest bumped to v0.1.42. Evidence basis: ansible-wifi role/playbook inspection plus Canonical documentation, retrieved 2026-09-17.
+
 ### 2026-08-03 — new-looma-smc01 second whole-host outage confirmed via live Prometheus (v0.1.17 → v0.1.18)
 - Operator reported "new-looma-smc01 is back online" — a bare status ping. Rather than just acknowledge it, queried live Prometheus (`mcp-grafana-apn`, still connected from the previous exploration)
   to verify and get exact timestamps.

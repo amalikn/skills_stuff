@@ -16,11 +16,12 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 
 ## Specialist Packs — Project
 
-| Pack                   | Path                                        | Status                                             |
-| ---------------------- | ------------------------------------------- | -------------------------------------------------- |
-| `skill-ai-it`          | `specialists/project/skill-ai-it/`          | Stable — just-only task runner; mise fully removed |
-| `skill-smc`            | `specialists/project/skill-smc/`            | Active                                             |
-| `skill-mx02-migration` | `specialists/project/skill-mx02-migration/` | Active                                             |
+| Pack                   | Path                                        | Status                                                              |
+| ---------------------- | ------------------------------------------- | ------------------------------------------------------------------- |
+| `skill-ai-it`          | `specialists/project/skill-ai-it/`          | Stable — just-only task runner; mise fully removed                  |
+| `skill-smc`            | `specialists/project/skill-smc/`            | Active                                                              |
+| `skill-cambium`        | `specialists/project/skill-cambium/`        | Active — bootstrapped 2026-09-17, cross-referenced with `skill-smc` |
+| `skill-mx02-migration` | `specialists/project/skill-mx02-migration/` | Active                                                              |
 
 ## Current Focus
 - Project specialist coverage now includes:
