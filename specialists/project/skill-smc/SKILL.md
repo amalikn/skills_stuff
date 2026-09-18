@@ -19,6 +19,7 @@ metadata:
 - [Communication Flows (Quick Reference)](#communication-flows-quick-reference)
 - [Runtime Environments](#runtime-environments)
 - [References](#references)
+- [Related Skills](#related-skills)
 - [Source](#source)
 
 ---
@@ -62,12 +63,14 @@ remounted read-write first. Always check overlayroot status before assuming a ch
 
 Treat these paths as part of the SMC working surface:
 
-| Path                                                          | Relationship to SMC work                                                                        |
-| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `/Volumes/Data/_ansible/ansible-wifi`                         | Production Ansible repo: roles, inventory, topology, SMC service deployment                     |
-| `/Volumes/Data/_ansible/ansible-malik`                        | Operator playbooks for SMC operations, including `smc_get_pcapv*.yml` URL-capture fetch/process |
-| `/Volumes/Data/_ai/_scripts/scripts_stuff/python/dns_query`   | DNS reporting pipeline consuming SMC URL-capture PCAP output                                    |
-| `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi` | Local-only plans, reports, OPA artifacts, and SMC investigation knowledge for `ansible-wifi`    |
+| Path                                                            | Relationship to SMC work                                                                                                           |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `/Volumes/Data/_ansible/ansible-wifi`                           | Production Ansible repo: roles, inventory, topology, SMC service deployment                                                        |
+| `/Volumes/Data/_ansible/ansible-malik`                          | Operator playbooks for SMC operations, including `smc_get_pcapv*.yml` URL-capture fetch/process                                    |
+| `/Volumes/Data/_ai/_scripts/scripts_stuff/python/dns_query`     | DNS reporting pipeline consuming SMC URL-capture PCAP output                                                                       |
+| `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi`   | Local-only plans, reports, OPA artifacts, and SMC investigation knowledge for `ansible-wifi`                                       |
+| `/Volumes/Data/_ai/_project/project_stuff/apn/unified-\`        | FOSS network controller build (Nautobot + adapter layer) intended to eventually replace/complement `smc_cnmaestro_provisioning`'s  |
+|   `network-controller`                                          |   role — call `skill-cambium` first for device-layer questions, this pack for SMC/Ansible-layer questions                          |
 
 When behavior, layout, or troubleshooting assumptions change in one of these surfaces, update the corresponding references in the others during the same session where practical.
 
@@ -195,9 +198,17 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - `references/13_known-issues.md` — coverage gaps, live-validation limits, and staleness risks.
 - `references/14_pin-activation-diagnosis.md` — pin validity (mangle) vs pin issuance (Apache access log): two independent mechanisms, marks-≠-activations pitfalls, and the 2026-09-11 fleet case
   study.
+- `references/15_cambium-asset-registers.md` — pointer only: the ansible-wifi `site_name` join point for a Cambium asset register. Full asset-register naming-convention/extraction knowledge now lives
+  in `skill-cambium` — see Related Skills below.
 - `scripts/` — reusable read-only diagnostic tooling for WAN-routing/topology-drift investigations (evidence capture, the "hook covers netplan" drift analyser, and a topology_vars-vs-live-hardware
   cross-check), fleet hardware/service-health + portal-FQDN-status audit, captive-portal pin-activation diagnosis, plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate);
   see `scripts/README.md`.
+
+## Related Skills
+
+- **`skill-cambium`** — the Cambium device/hardware layer this fleet's boxes provision and manage: device families/firmware, local-admin credential vault, cnMaestro estate, asset-register conventions,
+  device-inventory schema. Call it for anything about the radios/APs themselves rather than the SMC box or Ansible. It calls back here for: SMC service troubleshooting, Ansible topology/role
+  questions, `smc_cnmaestro_provisioning` behaviour, Teleport access. Neither pack duplicates the other's content — cross-reference, don't copy.
 
 ## Source
 - specialist_type: project

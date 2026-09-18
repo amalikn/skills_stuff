@@ -835,3 +835,17 @@ Standing Write-Back Contract entry for work done in `cambium-swap`: the pass-08 
 ### Verification
 
 - Read back `references/06_device-api-cli-reference.md` in the same session — new subsection present between the adapter data-points table and the E-series subsection, as intended.
+
+## 20260918_1155 — unified-network-controller added as a Related Workspace
+
+Operator split the "Option 3" FOSS controller workstream out of `cambium-swap` into its own sibling project, `unified-network-controller`, and asked that this pack and `skill-smc` both know about
+it, and it about them.
+
+### Changed — `SKILL.md`, `RUNBOOK.md`
+
+- Added `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller` to the Related Workspaces tables in both files: the FOSS controller build (Nautobot + adapter layer) that consumes
+  this pack's device-access/API knowledge for its Cambium vendor adapter, without duplicating it — same cross-reference discipline as the existing `cambium-swap`/`skill-smc` relationships.
+
+### Verification
+
+- `python3 scripts/check_governance.py` — 154/154 passing.

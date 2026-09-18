@@ -2,6 +2,10 @@
 
 ## Contents
 
+- [20260918_1153 — unified-network-controller added as a Related Workspace (v0.1.43 -> v0.1.44)](#20260918_1153--unified-network-controller-added-as-a-related-workspace-v0143---v0144)
+- [20260917_0001 — Other Raspberry Pi OS options assessed; Ubuntu Server remains the only recommended full-SMC platform (v0.1.42 -> v0.1.43)](#20260917_0001--other-raspberry-pi-os-options-assessed-ubuntu-server-remains-the-only-recommended-full-smc-platform-v0142---v0143)
+- [20260917_0000 — Ubuntu Server retained for Raspberry Pi SMCs; Core is a greenfield-only option pending an appliance canary (v0.1.41 -> v0.1.42)](#20260917_0000--ubuntu-server-retained-for-raspberry-pi-smcs-core-is-a-greenfield-only-option-pending-an-appliance-canary-v0141---v0142)
+- [20260917_1620 — teleport-tunnel.sh added: generic ansible-wifi-inventory-driven tunnel helper, moved from skill-cambium (v0.1.40 -> v0.1.41)](#20260917_1620--teleport-tunnelsh-added-generic-ansible-wifi-inventory-driven-tunnel-helper-moved-from-skill-cambium-v0140---v0141)
 - [20260914_1300 — Cambium radio/AP estate by flavour recorded from the cambium-swap continuity project (v0.1.39 -> v0.1.40)](#20260914_1300--cambium-radioap-estate-by-flavour-recorded-from-the-cambium-swap-continuity-project-v0139---v0140)
 - [20260911_1732 — Per-pin activation timeline tool added: correlate-pin-activation.sh, fixes a live-confirmed lease join-order bug (v0.1.38 -> v0.1.39)](#20260911_1732--per-pin-activation-timeline-tool-added-correlate-pin-activationsh-fixes-a-live-confirmed-lease-join-order-bug-v0138---v0139)
 - [20260911_1240 — Incident closed: all 3 sites' fix + recovery confirmed live in references/13_known-issues.md (v0.1.37 -> v0.1.38)](#20260911_1240--incident-closed-all-3-sites-fix--recovery-confirmed-live-in-references13_known-issuesmd-v0137---v0138)
@@ -53,6 +57,52 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260918_1153 — unified-network-controller added as a Related Workspace (v0.1.43 -> v0.1.44)
+
+Operator split the "Option 3" FOSS controller workstream out of `cambium-swap` into its own sibling project, `unified-network-controller`, and asked that this pack and `skill-cambium` both know about
+it, and it about them.
+
+### Changed — `SKILL.md`
+
+- Added `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller` to the Related Workspaces table: the FOSS network controller build (Nautobot + adapter layer) intended to eventually
+  replace/complement `smc_cnmaestro_provisioning`'s role. Same cross-reference discipline as the existing `skill-cambium` relationship — call `skill-cambium` first for device-layer questions, this
+  pack for SMC/Ansible-layer questions.
+
+### Notes
+
+- No `check_governance.py` in this pack to run; verified by reading `SKILL.md` back after writing.
+
+## 20260917_0001 — Other Raspberry Pi OS options assessed; Ubuntu Server remains the only recommended full-SMC platform (v0.1.42 -> v0.1.43)
+
+Extended the Raspberry Pi operating-system assessment in `references/07_hardware-overlay.md`. Raspberry Pi OS Lite is the closest technical alternative, but its Pi-specific Debian/APT model still
+requires a complete port and qualification of the Ubuntu-based SMC automation without an established benefit. Debian has the same porting cost. OpenWrt is suitable only for a reduced router/AP
+product; Fedora IoT/CoreOS, NixOS and comparable immutable/declarative choices create another full appliance-platform redesign. No production repository, fleet configuration or device image changed.
+Primary Raspberry Pi and OpenWrt documentation was read directly on 2026-09-17. Manifest bumped to v0.1.43.
+
+## 20260917_0000 — Ubuntu Server retained for Raspberry Pi SMCs; Core is a greenfield-only option pending an appliance canary (v0.1.41 -> v0.1.42)
+
+Recorded a design recommendation in `references/07_hardware-overlay.md`: retain Ubuntu Server LTS for new Raspberry Pi SMCs. The existing fleet is a root-managed, package-based network appliance with
+direct systemd, filesystem, netfilter, DHCP/DNS, hostapd, Teleport and monitoring control; RISE overlayroot already supplies a disposable-root strategy without changing that operating model. Ubuntu
+Core is a valid embedded platform but is not a drop-in Server replacement: Core uses image/snap lifecycle management and strict confinement, and does not run classic snaps. Reconsider it only as a
+separately designed, reduced-scope appliance with a Pi canary proving privileged networking, access, observability, update/recovery and constrained-link behaviour. No production repository, fleet
+configuration or device image was changed. Canonical documentation was read directly on 2026-09-17. Manifest bumped to v0.1.42.
+
+## 20260917_1620 — teleport-tunnel.sh added: generic ansible-wifi-inventory-driven tunnel helper, moved from skill-cambium (v0.1.40 -> v0.1.41)
+
+### Added
+
+- `scripts/teleport-tunnel.sh` — opens a `tsh` local-port-forward tunnel to any device reachable from a site's SMC box. Written first in `skill-cambium` for its own Cambium device-access work, then
+  moved here on operator correction ("it's not Cambium tunnel, it's teleport tunnel") since this pack owns `tsh`/Teleport mechanics, per each pack's boundary. Resolves site -> SMC-host live from
+  ansible-wifi's own `[<site>_smc_bases]` inventory groups (never hardcoded); only the flavour->cluster split is a small fixed table in the script, since that's structural (see
+  `references/01_overview.md`'s Cluster split table), not per-site data.
+- `scripts/README.md` — new `teleport-tunnel.sh` section and safety-table row.
+
+### Notes
+
+- `skill-cambium`'s own `just tunnel` recipe now calls this script's canonical path directly rather than keeping a copy — same cross-pack pattern `cambium-portal.sh` already uses in the other
+  direction (that script lives in `skill-cambium`, `skill-smc` had nothing calling it).
+- `python3 scripts/check_governance.py`: 182/182 passing.
 
 ## 20260914_1300 — Cambium radio/AP estate by flavour recorded from the cambium-swap continuity project (v0.1.39 -> v0.1.40)
 
