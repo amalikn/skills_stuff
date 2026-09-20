@@ -199,6 +199,22 @@ invention, which is what the earlier "adapter bug" reading got wrong.
 adapter returns two of them plus `ipv4_addresses`, which NAPALM does not define. So "NAPALM-style" describes the response's *shape*, not conformance to the interface contract: code written against
 NAPALM's documented fields will find four of the six missing.
 
+### SNMP layer — added 2026-09-21
+
+A third layer beside `raw-endpoint` and `adapter-normalized`. Derived from live `snmpwalk -On` captures by `scripts/snmp_schema_from_walk.py`, never from a MIB mirror, because the live agents expose
+more columns than the mirrors document.
+
+| Family | Schema | Entry OID | Columns | Rows | Walked against |
+| --- | --- | --- | --- | --- | --- |
+| `enterprise-wifi` | `snmp-radio-entry` | `.1.3.6.1.4.1.17713.22.1.2.1` | 18 | 2 | XV2 `6.6.0.3-r9`, hope-vale |
+| `epmp-ap` | `snmp-connected-sta` | `.1.3.6.1.4.1.17713.21.1.2.30.1` | 42 (13 undocumented) | 10 | ePMP 3000L `4.7.0.1`, hope-vale |
+| `cnwave-60ghz` | `snmp-link-entry` | `.1.3.6.1.4.1.17713.60.1.1.1` | 6 | 2 | V5000 DN `1.4`, mornington |
+
+Read `x-oid-column` as the column number under the **entry** OID — note each entry ends in `.1`, and a row is `<entry>.<column>.<index>`. `x-undocumented-in-mib` marks a column the live agent returns
+that no mirror held here names; those keep `column_N` names rather than invented ones.
+
+cnWave columns `.5` and `.6` are recorded with their observed values and deliberately left unnamed: nothing here documents their meaning, and naming them would be authoring rather than deriving.
+
 ## Extending the standard
 
 `scripts/schema_tool.py` has three verbs. `observe` contracts one device, `merge` folds observations into the standard, `check` reports a new observation's divergence from it.

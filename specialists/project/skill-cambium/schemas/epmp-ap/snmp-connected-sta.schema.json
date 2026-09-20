@@ -1,0 +1,496 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "cambium/epmp-ap/snmp-connected-sta.schema.json",
+ "title": "Cambium epmp-ap \u2014 snmp-connected-sta",
+ "description": "Derived from a live SNMP walk, not from a MIB mirror. The live agent may expose more columns than the mirror documents; those carry `x-undocumented-in-mib`. `x-oid-column` is the column number under the table ENTRY oid \u2014 note the entry ends in `.1` and a row reads `<entry>.<column>.<index>`. No end-user identifying values are recorded.",
+ "x-cambium": {
+  "family": "epmp-ap",
+  "endpoint": "snmp-connected-sta",
+  "layer": "snmp",
+  "entry_oid": ".1.3.6.1.4.1.17713.21.1.2.30.1",
+  "observations": 10,
+  "models": [
+   "ePMP-3000L"
+  ],
+  "firmware": [
+   "4.7.0.1"
+  ],
+  "sites": [
+   "hope-vale"
+  ],
+  "generated_utc": "2026-09-20T21:31:04Z"
+ },
+ "type": "array",
+ "items": {
+  "type": "object",
+  "properties": {
+   "column_30": {
+    "type": "string",
+    "x-oid-column": 30,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "Sector"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_31": {
+    "type": "string",
+    "x-oid-column": 31,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "Sector"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_32": {
+    "type": "integer",
+    "x-oid-column": 32,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "0"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_33": {
+    "type": "integer",
+    "x-oid-column": 33,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "36",
+     "39"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_34": {
+    "type": "integer",
+    "x-oid-column": 34,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "1"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_36": {
+    "type": "integer",
+    "x-oid-column": 36,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "0"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_37": {
+    "type": "integer",
+    "x-oid-column": 37,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "0"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_38": {
+    "type": "string",
+    "x-oid-column": 38,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "5 GHz Force 300-16 Radio (ROW/ETSI)",
+     "5 GHz Force 300-25 Radio (ROW/ETSI)"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_39": {
+    "type": "integer",
+    "x-oid-column": 39,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "0"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_40": {
+    "type": "integer",
+    "x-oid-column": 40,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "0"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_41": {
+    "type": "integer",
+    "x-oid-column": 41,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "0"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_42": {
+    "type": "integer",
+    "x-oid-column": 42,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "0"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_43": {
+    "type": "string",
+    "x-oid-column": 43,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "4.7.0.1"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "connectedSTAAID": {
+    "type": "integer",
+    "x-oid-column": 2,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10
+   },
+   "connectedSTAChannel": {
+    "type": "integer",
+    "x-oid-column": 3,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "5865"
+    ]
+   },
+   "connectedSTAClickTHWAddr": {
+    "type": "string",
+    "x-oid-column": 15,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-identifying": true,
+    "x-note": "End-user identifying \u2014 values are never recorded in this contract."
+   },
+   "connectedSTAClickTHostName": {
+    "type": "string",
+    "x-oid-column": 18,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-identifying": true,
+    "x-note": "End-user identifying \u2014 values are never recorded in this contract."
+   },
+   "connectedSTAClickTWebPort": {
+    "type": "integer",
+    "x-oid-column": 16,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "443"
+    ]
+   },
+   "connectedSTAClickTWebSec": {
+    "type": "integer",
+    "x-oid-column": 17,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "1"
+    ]
+   },
+   "connectedSTADLMCS": {
+    "type": "integer",
+    "x-oid-column": 9,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "12",
+     "14",
+     "16",
+     "18",
+     "19"
+    ]
+   },
+   "connectedSTADLRSSI": {
+    "type": "integer",
+    "x-oid-column": 5,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10
+   },
+   "connectedSTADLRateMbps": {
+    "type": "string",
+    "x-oid-column": 28,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     " 43M",
+     " 86M",
+     "130M",
+     "173M",
+     "192M"
+    ]
+   },
+   "connectedSTADLSNR": {
+    "type": "integer",
+    "x-oid-column": 7,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "15",
+     "18",
+     "23",
+     "24",
+     "34",
+     "38",
+     "39",
+     "50"
+    ]
+   },
+   "connectedSTADistance": {
+    "type": "integer",
+    "x-oid-column": 29,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "149",
+     "299",
+     "449",
+     "599"
+    ]
+   },
+   "connectedSTAIP": {
+    "type": "string",
+    "x-oid-column": 10,
+    "x-snmp-type": "IpAddress",
+    "x-observed-count": 10,
+    "x-identifying": true,
+    "x-note": "End-user identifying \u2014 values are never recorded in this contract."
+   },
+   "connectedSTAMAC": {
+    "type": "string",
+    "x-oid-column": 1,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-identifying": true,
+    "x-note": "End-user identifying \u2014 values are never recorded in this contract."
+   },
+   "connectedSTAMcastGRP0": {
+    "type": "string",
+    "x-oid-column": 22,
+    "x-snmp-type": "IpAddress",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "1.0.0.0"
+    ]
+   },
+   "connectedSTAMcastGRP1": {
+    "type": "string",
+    "x-oid-column": 23,
+    "x-snmp-type": "IpAddress",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "1.0.0.0"
+    ]
+   },
+   "connectedSTAMcastGRP2": {
+    "type": "string",
+    "x-oid-column": 24,
+    "x-snmp-type": "IpAddress",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "1.0.0.0"
+    ]
+   },
+   "connectedSTAMcastGRP3": {
+    "type": "string",
+    "x-oid-column": 25,
+    "x-snmp-type": "IpAddress",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "1.0.0.0"
+    ]
+   },
+   "connectedSTAMcastGRP4": {
+    "type": "string",
+    "x-oid-column": 26,
+    "x-snmp-type": "IpAddress",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "1.0.0.0"
+    ]
+   },
+   "connectedSTAMcastTotalGroups": {
+    "type": "integer",
+    "x-oid-column": 21,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "1"
+    ]
+   },
+   "connectedSTAMirDLRate": {
+    "type": "string",
+    "x-oid-column": 14,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "N/A"
+    ]
+   },
+   "connectedSTAMirSrc": {
+    "type": "string",
+    "x-oid-column": 12,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "OFF"
+    ]
+   },
+   "connectedSTAMirULRate": {
+    "type": "string",
+    "x-oid-column": 13,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "N/A"
+    ]
+   },
+   "connectedSTAPriority": {
+    "type": "string",
+    "x-oid-column": 11,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "NORMAL"
+    ]
+   },
+   "connectedSTASessionTime": {
+    "type": "string",
+    "x-oid-column": 27,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 10
+   },
+   "connectedSTATXCapacity": {
+    "type": "integer",
+    "x-oid-column": 19,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "100",
+     "22",
+     "30",
+     "67",
+     "75"
+    ]
+   },
+   "connectedSTATXQuality": {
+    "type": "integer",
+    "x-oid-column": 20,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "100",
+     "98",
+     "99"
+    ]
+   },
+   "connectedSTAULMCS": {
+    "type": "integer",
+    "x-oid-column": 8,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "11",
+     "15",
+     "16",
+     "18",
+     "19",
+     "4"
+    ]
+   },
+   "connectedSTAULRSSI": {
+    "type": "integer",
+    "x-oid-column": 4,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "-59",
+     "-60",
+     "-61",
+     "-66",
+     "-68",
+     "-71",
+     "-74"
+    ]
+   },
+   "connectedSTAULSNR": {
+    "type": "integer",
+    "x-oid-column": 6,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 10,
+    "x-candidate-values": [
+     "16",
+     "19",
+     "22",
+     "24",
+     "29",
+     "30",
+     "31"
+    ]
+   }
+  },
+  "required": [
+   "column_30",
+   "column_31",
+   "column_32",
+   "column_33",
+   "column_34",
+   "column_36",
+   "column_37",
+   "column_38",
+   "column_39",
+   "column_40",
+   "column_41",
+   "column_42",
+   "column_43",
+   "connectedSTAAID",
+   "connectedSTAChannel",
+   "connectedSTAClickTHWAddr",
+   "connectedSTAClickTHostName",
+   "connectedSTAClickTWebPort",
+   "connectedSTAClickTWebSec",
+   "connectedSTADLMCS",
+   "connectedSTADLRSSI",
+   "connectedSTADLRateMbps",
+   "connectedSTADLSNR",
+   "connectedSTADistance",
+   "connectedSTAIP",
+   "connectedSTAMAC",
+   "connectedSTAMcastGRP0",
+   "connectedSTAMcastGRP1",
+   "connectedSTAMcastGRP2",
+   "connectedSTAMcastGRP3",
+   "connectedSTAMcastGRP4",
+   "connectedSTAMcastTotalGroups",
+   "connectedSTAMirDLRate",
+   "connectedSTAMirSrc",
+   "connectedSTAMirULRate",
+   "connectedSTAPriority",
+   "connectedSTASessionTime",
+   "connectedSTATXCapacity",
+   "connectedSTATXQuality",
+   "connectedSTAULMCS",
+   "connectedSTAULRSSI",
+   "connectedSTAULSNR"
+  ],
+  "x-records-observed": 10
+ },
+ "x-observed-count": 10
+}

@@ -294,6 +294,90 @@ which are the PMP450/Canopy tree (`enterprises 161.19`). Walked live 2026-09-20 
 
 **ePMP reports session time per SM directly** (`.27`, format `0001:22:51:32`), so ePMP link sessions do not need poll-based reconstruction the way Wi-Fi client sessions do.
 
+## cnWave 60 GHz — SNMP Exists, on Its Own Arm, and Is Enabled Per Device
+
+Walked live 2026-09-21 from `mornington-smc01` and `bidyadanga-smc01`. This section corrects an assumption that nearly entered the record as fact.
+
+**cnWave uses `cambium 60` — `.1.3.6.1.4.1.17713.60` — not the ePMP arm (`21`) or the Enterprise Wi-Fi arm (`22`).** A walk of 21 or 22 against a cnWave returns nothing even on a unit where SNMP is
+working perfectly, which is exactly how this was first mis-called.
+
+| OID | Contents confirmed live |
+| --- | --- |
+| `.1.3.6.1.2.1.1.1.0` | `sysDescr`, e.g. `Cambium cnWave V5000 Distribution Node, Version 1.4` |
+| `.1.3.6.1.4.1.17713.60.1.1.1` | Per-link entry. `.2` interface name (`terra0`, `terra16`), `.3` local MAC, `.4` peer MAC, `.7` signal in dBm (observed `-61`, `-63`). `.5` and `.6` have no documented meaning in any mirror held here and are deliberately left unread |
+
+**Enablement is per device, and on the sampled fleet it is mostly off.**
+
+| Site | Programme | cnWave probed | SNMP answers |
+| --- | --- | --- | --- |
+| mornington | `rcp` | 11 | 3 — V5000 DN, 2× V3000 CN |
+| bidyadanga | `rcp` | 2 | 2 — V1000 DN + V1000 CN |
+| horn-island | `rcp` | 5 | 0 |
+| wujal-wujal | `rcp` | 1 | 0 |
+| hope-vale | `nbn_accelerate` | 2 of 7 | 0 — devices unreachable, see below |
+
+Every non-responder was pingable. **A cnWave SNMP timeout means "not enabled on this unit", never "this family has no SNMP".**
+
+**Two limits on the above, both load-bearing.**
+
+1. **A single site cannot settle a family-wide question.** A first pass at hope-vale timed out on every cnWave and very nearly became "cnWave has no SNMP". Those units were simply down — no ICMP and
+   no TCP on 443, 80 or 22 — while a control XV2 on the same hop answered normally. Sampling `rcp` sites reversed the conclusion.
+2. **The sample is `rcp`-only.** `nbn_accelerate` holds 93 of the fleet's 117 cnWave against `rcp`'s 24 and is unsampled: hope-vale was unreachable, and **aurukun, doomadgee, galiwinku, kowanyama and
+   pukatja carry no `management_ip` in `inventory/device-inventory.csv` at all — 86 devices with no address on record.** Treat "cnWave speaks SNMP" as proven and any enablement *rate* as an `rcp`
+   observation only. Closing the gap means deriving addresses from SMC-side ARP.
+
+## Cross-Programme SNMP Comparison — Same Family, Both Teleport Targets
+
+A family's contract must be checked on **both** programmes before it is called stable, because firmware and configuration track the programme, not the model. Walked 2026-09-21.
+
+| Family | `nbn_accelerate` (`teleport.communitywifi.net.au`) | `rcp` (`teleport.apn.au`) | Variation |
+| --- | --- | --- | --- |
+| ePMP AP | hope-vale `10.255.0.20`: 10 SMs, 430 table rows | mornington `10.255.0.10`: 29 SMs, 1247 rows. horn-island `10.255.0.10`: 14 SMs, 602 rows | **None.** Exactly 43 columns per SM on every unit, both programmes |
+| Enterprise Wi-Fi | hope-vale `10.255.3.26`, firmware `6.6.0.3-r9`: 36 `cambiumRadioEntry` rows | horn-island `10.255.3.10`, firmware **`7.1.1-r5`**: 36 rows | **None.** The radio contract survives the 6.6 → 7.1 firmware jump |
+| Enterprise Wi-Fi | — | mornington `10.255.3.10`: no SNMP response at all | Per-device enablement varies *within* a programme, exactly as it does for cnWave |
+| cnWave 60 GHz | unsampled — see the cnWave section above | 5 of 19 answer across four sites | Not comparable yet; the nbn side holds 93 of 117 units and has no addresses on record |
+
+**What this buys:** the ePMP and Enterprise Wi-Fi OID contracts can be treated as programme-independent and firmware-stable across the versions in the fleet. **What it does not buy:** any assumption
+that a given device has SNMP switched on. Reachability and enablement are per-device facts on every family, and must be probed, never inferred from a sibling at the same site.
+
+## Per-Device SNMP Enablement Survey — the actionable list
+
+Full per-device results: [snmp-enablement-survey-20260921.csv](snmp-enablement-survey-20260921.csv). 27 devices probed 2026-09-21 across five sites and three families.
+
+**13 devices are pingable but silent on SNMP v2c.** Those are the actionable rows — a live device that does not answer is either missing an SNMP config or answering only to a community other than the
+one tried. The CSV records `community_tried` per row precisely so that question can be settled without re-deriving which credential was used where:
+
+| Programme | Community tried | Sites |
+| --- | --- | --- |
+| `rcp` | `cambium-devices/apn-snmp-ro` | mornington, horn-island, bidyadanga, wujal-wujal |
+| `nbn_accelerate` | `cambium-devices/nbn-snmp-ro` | hope-vale |
+
+**Distinguish the three outcomes before concluding anything**, because they are not interchangeable:
+
+| `icmp` | `snmp_v2c` | What it means |
+| --- | --- | --- |
+| `UP` | `OK` | SNMP enabled and the tried community is correct |
+| `UP` | `TIMEOUT` | **Actionable.** Device healthy; SNMP not enabled, or a different community. Worth retrying with the other programme's community and with any site-local one |
+| `DOWN` | `TIMEOUT` | **Carries no information about SNMP.** The device is unreachable. Do not count these as evidence either way — this is exactly the trap hope-vale set |
+
+Three of the 13 silent units at mornington were confirmed healthy beyond ping (`10.255.4.111` answers on both tcp/443 and tcp/22), so for those the SNMP silence is definitely configuration rather
+than device state.
+
+**Not yet probed:** the remaining five hope-vale cnWave, and the 86 `nbn_accelerate` cnWave at aurukun, doomadgee, galiwinku, kowanyama and pukatja that carry no `management_ip` in the inventory.
+
+## SNMP Mechanics That Have Each Cost a Wrong Reading
+
+Three, all confirmed on the 2026-09-21 walks:
+
+- **A table entry OID ends in `.1`, the Entry node**, and a row reads `<entry>.<column>.<index>`. Using the table OID instead shifts column and index by one, and every row then parses as a separate
+  object carrying only its first field. This produced 420 "subscriber links" for an ePMP AP with 10 registered.
+- **A scalar is instance `.0` of its object.** `cambiumAPNumberOfConnectedSTA` answers at `.1.3.6.1.4.1.17713.21.1.2.10.0`; an exact-match lookup on the bare OID returns nothing at all.
+- **An empty table walks as `noSuchObject`, not as an empty table** — read the scalar count alongside it. Confirmed again on 2026-09-21: `HOP_XV2_AP26` returned `noSuchObject` for `cambiumClientTable`
+  **and** `0` for `cambiumAPTotalClients`, i.e. genuinely zero clients rather than an unimplemented subtree.
+
+**Undocumented column confirmed:** `cambiumAPConnectedSTAEntry.43` carries the subscriber's firmware string (`4.7.0.1` on all ten hope-vale SMs). The MIB mirror documents 29 columns; the live agent
+returns 42.
+
 ## cnPilot R195P — Addressing Resolved via cnMaestro Cloud Export
 
 First attempted 2026-09-17 with live ARP alone (E110/E112 below) — inconclusive on the true address, though it correctly proved the `EXT10XX → 10.255.10.XX` derivation rule

@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260921_0742](#20260921_0742)
 - [20260920_2339](#20260920_2339)
 - [20260920_1951](#20260920_1951)
 - [20260920_1856](#20260920_1856)
@@ -48,6 +49,44 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260921_0742
+
+### cnWave speaks SNMP on its own arm; the SNMP layer gets contracted; a single-site conclusion nearly became a fact (v0.6.4 -> v0.6.5)
+
+Live walks from `hope-vale-smc01`, `mornington-smc01`, `horn-island-smc01` and `bidyadanga-smc01` while building the `unified-network-controller` adapter layer. Written back here per the Standing
+Write-Back Contract.
+
+**The correction worth reading first.** A first pass at hope-vale timed out on every cnWave and very nearly entered the record as "cnWave has no SNMP". Those units were simply down — no ICMP and no TCP
+on 443, 80 or 22 — while a control XV2 on the same hop answered normally. Sampling `rcp` sites reversed it completely: **cnWave speaks SNMP on `cambium 60`** (`.1.3.6.1.4.1.17713.60`), its own
+enterprise arm, which is why walking `21` or `22` finds nothing even on a unit where SNMP works. Confirmed across two sites, three models (V1000, V3000, V5000) and both Distribution and Client roles.
+
+**Enablement is per device and mostly off** on the sampled fleet: mornington 3 of 11, bidyadanga 2 of 2, horn-island 0 of 5, wujal-wujal 0 of 1 — every non-responder pingable. A cnWave timeout means
+"not enabled here", never "this family has no SNMP".
+
+**Sampling limit, recorded rather than glossed.** All five responders are `rcp`. `nbn_accelerate` holds 93 of the fleet's 117 cnWave and is unsampled, because hope-vale was unreachable and the other
+five nbn cnWave sites — aurukun, doomadgee, galiwinku, kowanyama, pukatja, **86 devices** — carry no `management_ip` in the inventory at all. That address gap is now a documented inventory finding in
+its own right.
+
+**Cross-programme comparison added**, on the principle that a family's contract is not stable until it is checked on both Teleport targets. ePMP is identical across both — exactly 43 columns per SM at
+hope-vale (10 SMs), mornington (29) and horn-island (14). Enterprise Wi-Fi's radio contract survives the firmware jump: 36 `cambiumRadioEntry` rows on both `6.6.0.3-r9` and `7.1.1-r5`. Per-device
+enablement varies within a programme for Wi-Fi too — mornington `10.255.3.10` is silent.
+
+**Three SNMP mechanics documented, each having already cost a wrong reading.** A table entry OID ends in `.1` and a row is `<entry>.<column>.<index>` — using the table OID instead produced 420
+"subscriber links" for an AP with 10. A scalar is instance `.0` of its object. An empty table walks as `noSuchObject`, confirmed again when `HOP_XV2_AP26` returned that for `cambiumClientTable` **and**
+`0` for `cambiumAPTotalClients` — genuinely zero clients, not an unimplemented subtree.
+
+**Per-device survey filed** as [references/snmp-enablement-survey-20260921.csv](references/snmp-enablement-survey-20260921.csv) — 27 devices, five sites, three families, with the community tried
+recorded per row so the "wrong community or not configured?" question is answerable without re-deriving which credential was used where. **13 rows are the actionable ones: pingable but silent.**
+Three outcomes are kept distinct because they are not interchangeable — `UP`/`OK` means enabled and the community is right, `UP`/`TIMEOUT` is actionable, and `DOWN`/`TIMEOUT` carries no information
+about SNMP at all. That last distinction is the whole hope-vale lesson in one table row.
+
+**Schemas.** New `snmp` layer in `schemas/`, derived by the new `scripts/snmp_schema_from_walk.py` from live walks rather than from mirrors: `schemas/enterprise-wifi/snmp-radio-entry.schema.json` (18 columns),
+`schemas/epmp-ap/snmp-connected-sta.schema.json` (42 columns, 13 undocumented in the mirror, including `.43` carrying subscriber firmware), `schemas/cnwave-60ghz/snmp-link-entry.schema.json` (6 columns; `.5` and `.6` left unnamed because
+nothing here documents them).
+
+Checks **226 -> 228**.
+
 
 ## 20260920_2339
 

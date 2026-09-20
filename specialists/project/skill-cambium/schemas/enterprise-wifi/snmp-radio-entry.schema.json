@@ -1,0 +1,237 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "cambium/enterprise-wifi/snmp-radio-entry.schema.json",
+ "title": "Cambium enterprise-wifi \u2014 snmp-radio-entry",
+ "description": "Derived from a live SNMP walk, not from a MIB mirror. The live agent may expose more columns than the mirror documents; those carry `x-undocumented-in-mib`. `x-oid-column` is the column number under the table ENTRY oid \u2014 note the entry ends in `.1` and a row reads `<entry>.<column>.<index>`. No end-user identifying values are recorded.",
+ "x-cambium": {
+  "family": "enterprise-wifi",
+  "endpoint": "snmp-radio-entry",
+  "layer": "snmp",
+  "entry_oid": ".1.3.6.1.4.1.17713.22.1.2.1",
+  "observations": 2,
+  "models": [
+   "XV2"
+  ],
+  "firmware": [
+   "6.6.0.3-r9"
+  ],
+  "sites": [
+   "hope-vale"
+  ],
+  "generated_utc": "2026-09-20T21:31:04Z"
+ },
+ "type": "array",
+ "items": {
+  "type": "object",
+  "properties": {
+   "cambiumRadioChannel": {
+    "type": "string",
+    "x-oid-column": 6,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "1",
+     "165"
+    ]
+   },
+   "cambiumRadioChannelWidth": {
+    "type": "string",
+    "x-oid-column": 7,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "20"
+    ]
+   },
+   "cambiumRadioInterference": {
+    "type": "string",
+    "x-oid-column": 17,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "0",
+     "7"
+    ]
+   },
+   "cambiumRadioNoiseFloor": {
+    "type": "string",
+    "x-oid-column": 16,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "-106",
+     "-97"
+    ]
+   },
+   "cambiumRadioNumClients": {
+    "type": "integer",
+    "x-oid-column": 5,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "0"
+    ]
+   },
+   "cambiumRadioTxPower": {
+    "type": "integer",
+    "x-oid-column": 8,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "23",
+     "26"
+    ]
+   },
+   "column_1": {
+    "type": "integer",
+    "x-oid-column": 1,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "0",
+     "1"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_10": {
+    "type": "integer",
+    "x-oid-column": 10,
+    "x-snmp-type": "Counter32",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "2994",
+     "58"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_11": {
+    "type": "integer",
+    "x-oid-column": 11,
+    "x-snmp-type": "Counter32",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "34679086",
+     "350941"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_12": {
+    "type": "integer",
+    "x-oid-column": 12,
+    "x-snmp-type": "Counter32",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "260953",
+     "8233"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_13": {
+    "type": "string",
+    "x-oid-column": 13,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "ON"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_14": {
+    "type": "integer",
+    "x-oid-column": 14,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "0"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_15": {
+    "type": "integer",
+    "x-oid-column": 15,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "0"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_18": {
+    "type": "string",
+    "x-oid-column": 18,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "1/1/0/0",
+     "12/5/0/0"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_2": {
+    "type": "string",
+    "x-oid-column": 2,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "B4-A2-5C-B5-E8-9A",
+     "B4-A2-5C-B5-E8-AA"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_3": {
+    "type": "string",
+    "x-oid-column": 3,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "2.4GHz",
+     "5GHz"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_4": {
+    "type": "integer",
+    "x-oid-column": 4,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "3"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_9": {
+    "type": "integer",
+    "x-oid-column": 9,
+    "x-snmp-type": "Counter32",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "1387",
+     "139709"
+    ],
+    "x-undocumented-in-mib": true
+   }
+  },
+  "required": [
+   "cambiumRadioChannel",
+   "cambiumRadioChannelWidth",
+   "cambiumRadioInterference",
+   "cambiumRadioNoiseFloor",
+   "cambiumRadioNumClients",
+   "cambiumRadioTxPower",
+   "column_1",
+   "column_10",
+   "column_11",
+   "column_12",
+   "column_13",
+   "column_14",
+   "column_15",
+   "column_18",
+   "column_2",
+   "column_3",
+   "column_4",
+   "column_9"
+  ],
+  "x-records-observed": 2
+ },
+ "x-observed-count": 2
+}

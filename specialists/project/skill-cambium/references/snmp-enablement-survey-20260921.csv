@@ -1,0 +1,28 @@
+site,programme,teleport_proxy,community_tried,family,management_ip,model_or_role,icmp,snmp_v2c,sysdescr_or_note
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.10,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.11,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.20,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.21,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.30,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.31,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.111,UNKNOWN,UP,TIMEOUT,no response; tcp/443 and tcp/22 OPEN so device healthy
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.40,V5000 Distribution Node,UP,OK,Cambium cnWave V5000 Distribution Node Version 1.4
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.43,V3000 Client Node,UP,OK,Cambium cnWave V3000 Client Node Version 1.4
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.45,V3000 Client Node,UP,OK,Cambium cnWave V3000 Client Node Version 1.4
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.46,UNKNOWN,DOWN,TIMEOUT,device unreachable; SNMP result carries no information
+horn-island,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.10,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+horn-island,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.11,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+horn-island,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.12,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+horn-island,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.13,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+horn-island,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.14,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+bidyadanga,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.20,V1000 Distribution Node,UP,OK,Cambium cnWave V1000 Distribution Node Version 1.4
+bidyadanga,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.21,V1000 Client Node,UP,OK,Cambium cnWave V1000 Client Node Version 1.4
+wujal-wujal,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,cnWave 60GHz,10.255.4.10,UNKNOWN,UP,TIMEOUT,no response; pingable so check community or enablement
+hope-vale,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.104,UNKNOWN,DOWN,TIMEOUT,unreachable; no ICMP and no TCP on 443/80/22; SNMP result carries no information
+hope-vale,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.110,UNKNOWN,DOWN,TIMEOUT,unreachable; no ICMP and no TCP on 443/80/22; SNMP result carries no information
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,Enterprise Wi-Fi,10.255.3.10,UNKNOWN,NOT-TESTED,TIMEOUT,no response; per-device enablement varies for Wi-Fi too
+horn-island,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,Enterprise Wi-Fi,10.255.3.10,XV2-2T0 fw 7.1.1-r5,NOT-TESTED,OK,36 cambiumRadioEntry rows; contract identical to firmware 6.6.0.3-r9
+hope-vale,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,Enterprise Wi-Fi,10.255.3.26,XV2-2T0 fw 6.6.0.3-r9,UP,OK,36 cambiumRadioEntry rows; ClientTable noSuchObject with TotalClients 0 i.e. genuinely no clients
+mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,ePMP AP,10.255.0.10,MOR_T1_3000L_W_IP0_10,NOT-TESTED,OK,29 SMs and 1247 table rows i.e. 43 columns per SM
+horn-island,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,ePMP AP,10.255.0.10,HRN_3000L_T1_Omni0_10,NOT-TESTED,OK,14 SMs and 602 table rows i.e. 43 columns per SM
+hope-vale,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,ePMP AP,10.255.0.20,ePMP 3000L fw 4.7.0.1,UP,OK,10 SMs and 430 table rows i.e. 43 columns per SM

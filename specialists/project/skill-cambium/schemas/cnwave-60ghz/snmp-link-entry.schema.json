@@ -1,0 +1,104 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "cambium/cnwave-60ghz/snmp-link-entry.schema.json",
+ "title": "Cambium cnwave-60ghz \u2014 snmp-link-entry",
+ "description": "Derived from a live SNMP walk, not from a MIB mirror. The live agent may expose more columns than the mirror documents; those carry `x-undocumented-in-mib`. `x-oid-column` is the column number under the table ENTRY oid \u2014 note the entry ends in `.1` and a row reads `<entry>.<column>.<index>`. No end-user identifying values are recorded.",
+ "x-cambium": {
+  "family": "cnwave-60ghz",
+  "endpoint": "snmp-link-entry",
+  "layer": "snmp",
+  "entry_oid": ".1.3.6.1.4.1.17713.60.1.1.1",
+  "observations": 2,
+  "models": [
+   "V5000"
+  ],
+  "firmware": [
+   "1.4"
+  ],
+  "sites": [
+   "mornington"
+  ],
+  "generated_utc": "2026-09-20T21:37:42Z"
+ },
+ "type": "array",
+ "items": {
+  "type": "object",
+  "properties": {
+   "column_2": {
+    "type": "string",
+    "x-oid-column": 2,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "terra0",
+     "terra16"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_3": {
+    "type": "string",
+    "x-oid-column": 3,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "12:04:56:88:5f:81",
+     "22:04:56:88:5f:81"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_4": {
+    "type": "string",
+    "x-oid-column": 4,
+    "x-snmp-type": "STRING",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "12:04:56:88:4c:43",
+     "12:04:56:88:74:0a"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_5": {
+    "type": "integer",
+    "x-oid-column": 5,
+    "x-snmp-type": "Gauge32",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "12"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_6": {
+    "type": "integer",
+    "x-oid-column": 6,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "10",
+     "12"
+    ],
+    "x-undocumented-in-mib": true
+   },
+   "column_7": {
+    "type": "integer",
+    "x-oid-column": 7,
+    "x-snmp-type": "INTEGER",
+    "x-observed-count": 2,
+    "x-candidate-values": [
+     "-61",
+     "-63"
+    ],
+    "x-undocumented-in-mib": true
+   }
+  },
+  "required": [
+   "column_2",
+   "column_3",
+   "column_4",
+   "column_5",
+   "column_6",
+   "column_7"
+  ],
+  "x-records-observed": 2
+ },
+ "x-observed-count": 2
+}
