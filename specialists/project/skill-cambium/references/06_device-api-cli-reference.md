@@ -306,25 +306,33 @@ working perfectly, which is exactly how this was first mis-called.
 | `.1.3.6.1.2.1.1.1.0` | `sysDescr`, e.g. `Cambium cnWave V5000 Distribution Node, Version 1.4` |
 | `.1.3.6.1.4.1.17713.60.1.1.1` | Per-link entry. `.2` interface name (`terra0`, `terra16`), `.3` local MAC, `.4` peer MAC, `.7` signal in dBm (observed `-61`, `-63`). `.5` and `.6` have no documented meaning in any mirror held here and are deliberately left unread |
 
-**Enablement is per device, and on the sampled fleet it is mostly off.**
+**Enablement splits by PROGRAMME, not by model or firmware.** This only became visible after sampling both Teleport targets; an `rcp`-only sample said "mostly off" and was wrong about the fleet.
 
-| Site | Programme | cnWave probed | SNMP answers |
+| Site | Programme | cnWave reachable | SNMP answers |
 | --- | --- | --- | --- |
-| mornington | `rcp` | 11 | 3 — V5000 DN, 2× V3000 CN |
-| bidyadanga | `rcp` | 2 | 2 — V1000 DN + V1000 CN |
+| galiwinku | `nbn_accelerate` | 27 | **27** |
+| doomadgee | `nbn_accelerate` | 5 | **5** |
+| kowanyama | `nbn_accelerate` | 4 | **4** |
+| pukatja | `nbn_accelerate` | 4 | **4** |
+| mornington | `rcp` | 10 | 3 |
+| bidyadanga | `rcp` | 2 | 2 |
 | horn-island | `rcp` | 5 | 0 |
 | wujal-wujal | `rcp` | 1 | 0 |
-| hope-vale | `nbn_accelerate` | 2 of 7 | 0 — devices unreachable, see below |
 
-Every non-responder was pingable. **A cnWave SNMP timeout means "not enabled on this unit", never "this family has no SNMP".**
+**`nbn_accelerate`: 40 of 40 reachable units answer. `rcp`: 5 of 19.** Same three models, same firmware `1.4`, both node roles on both sides — so this is a provisioning difference between the two
+programmes, not a hardware or version one. On `rcp` it is worth treating as config drift; on `nbn_accelerate` SNMP is effectively already the collection path.
+
+Every `rcp` non-responder was pingable. **A cnWave SNMP timeout means "not enabled on this unit", never "this family has no SNMP".**
 
 **Two limits on the above, both load-bearing.**
 
 1. **A single site cannot settle a family-wide question.** A first pass at hope-vale timed out on every cnWave and very nearly became "cnWave has no SNMP". Those units were simply down — no ICMP and
    no TCP on 443, 80 or 22 — while a control XV2 on the same hop answered normally. Sampling `rcp` sites reversed the conclusion.
-2. **The sample is `rcp`-only.** `nbn_accelerate` holds 93 of the fleet's 117 cnWave against `rcp`'s 24 and is unsampled: hope-vale was unreachable, and **aurukun, doomadgee, galiwinku, kowanyama and
-   pukatja carry no `management_ip` in `inventory/device-inventory.csv` at all — 86 devices with no address on record.** Treat "cnWave speaks SNMP" as proven and any enablement *rate* as an `rcp`
-   observation only. Closing the gap means deriving addresses from SMC-side ARP.
+2. **The address gap was closed by ARP, and it changed the answer.** `nbn_accelerate` holds 93 of the fleet's 117 cnWave, and five of its six cnWave sites carried no `management_ip` in
+   `inventory/device-inventory.csv` at all. Addresses were derived 2026-09-21 by ping-sweeping `10.255.4.0/24` from each site's SMC box and joining `ip neigh` against the inventory's MAC column —
+   40 cnWave resolved, against 12 recoverable from the stale 2026-09-18 ARP captures. **Two sites still yield nothing: `aurukun` and `hope-vale` return zero ARP entries for that subnet**, so the
+   cnWave network is not reachable from their SMC boxes at all. That is a routing or VLAN question, not an SNMP one.
+   Those addresses belong in the inventory. Until they are there, the derivation must be repeated: ping-sweep the cnWave subnet from the site SMC box, then join `ip neigh` on the inventory MAC column. The raw sweeps from this run are local evidence only and are not committed.
 
 ## Cross-Programme SNMP Comparison — Same Family, Both Teleport Targets
 
@@ -344,7 +352,7 @@ that a given device has SNMP switched on. Reachability and enablement are per-de
 
 Full per-device results: [snmp-enablement-survey-20260921.csv](snmp-enablement-survey-20260921.csv). 27 devices probed 2026-09-21 across five sites and three families.
 
-**13 devices are pingable but silent on SNMP v2c.** Those are the actionable rows — a live device that does not answer is either missing an SNMP config or answering only to a community other than the
+**13 devices are pingable but silent on SNMP v2c — all of them `rcp`.** Every reachable `nbn_accelerate` device answered. Those are the actionable rows — a live device that does not answer is either missing an SNMP config or answering only to a community other than the
 one tried. The CSV records `community_tried` per row precisely so that question can be settled without re-deriving which credential was used where:
 
 | Programme | Community tried | Sites |

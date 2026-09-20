@@ -26,3 +26,62 @@ hope-vale,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-
 mornington,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,ePMP AP,10.255.0.10,MOR_T1_3000L_W_IP0_10,NOT-TESTED,OK,29 SMs and 1247 table rows i.e. 43 columns per SM
 horn-island,rcp,teleport.apn.au,cambium-devices/apn-snmp-ro,ePMP AP,10.255.0.10,HRN_3000L_T1_Omni0_10,NOT-TESTED,OK,14 SMs and 602 table rows i.e. 43 columns per SM
 hope-vale,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,ePMP AP,10.255.0.20,ePMP 3000L fw 4.7.0.1,UP,OK,10 SMs and 430 table rows i.e. 43 columns per SM
+doomadgee,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.10,V5000,UP,OK,"Cambium cnWave V5000 Distribution Node, Version 1.4"
+doomadgee,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.100,V5000,UP,OK,"Cambium cnWave V5000 Distribution Node, Version 1.4"
+doomadgee,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.11,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+doomadgee,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.12,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+doomadgee,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.14,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.100,V5000,UP,OK,"Cambium cnWave V5000 Distribution Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.101,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.102,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.103,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.104,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.105,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.106,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.107,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.108,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.109,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.110,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.120,V5000,UP,OK,"Cambium cnWave V5000 Distribution Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.121,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.122,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.123,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.124,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.125,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.126,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.127,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.128,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.129,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.130,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.131,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.150,NOT-IN-INVENTORY,UP,OK,Linux GAL_T3_F25AP_T3-T5_IP4_150 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.151,NOT-IN-INVENTORY,UP,OK,Linux GAL_T5_F25SM_T3-T5_IP4_151 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.160,NOT-IN-INVENTORY,UP,OK,Linux GAL_T17_F16AP_T17-T37_IP4_160 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.161,NOT-IN-INVENTORY,UP,OK,Linux GAL_T37_F16SM_T17-T37_IP4_161 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.170,NOT-IN-INVENTORY,UP,OK,Linux GAL_T25_F16AP_T25-T34_IP4_170 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.171,NOT-IN-INVENTORY,UP,OK,Linux GAL_T34_F16SM_T25-T34_IP4_171 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.25,NOT-IN-INVENTORY,UP,OK,Linux GAL_F25_AP25_IP4_25 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.26,NOT-IN-INVENTORY,UP,OK,Linux GAL_F25_AP26_IP4_26 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.27,NOT-IN-INVENTORY,UP,OK,Linux GAL_F25_AP27_IP4_27 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.28,NOT-IN-INVENTORY,UP,OK,Linux GAL_F25_AP28_IP4_28 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.30,NOT-IN-INVENTORY,UP,OK,Linux GAL_F25_AP30_IP4_30 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.31,NOT-IN-INVENTORY,UP,OK,Linux GAL_F25_AP31_IP4_31 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.32,NOT-IN-INVENTORY,UP,OK,Linux GAL_F25_AP32_IP4_32 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.33,NOT-IN-INVENTORY,UP,OK,Linux GAL_F25_AP33_IP4_33 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.35,NOT-IN-INVENTORY,UP,OK,Linux GAL_F25_AP35_IP4_35 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.36,NOT-IN-INVENTORY,UP,OK,Linux GAL_F25_AP36_IP4_36 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.38,NOT-IN-INVENTORY,UP,OK,Linux GAL_F16_AP38_IP4_38 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.80,UNKNOWN,UP,OK,"Cambium cnWave V2000 Distribution Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.81,UNKNOWN,UP,OK,"Cambium cnWave V2000 Client Node, Version 1.4"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.90,V3000,UP,OK,"Cambium cnWave V3000 Distribution Node, Version 1.5.1"
+galiwinku,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.91,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.5.1"
+kowanyama,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.10,V3000,UP,OK,"Cambium cnWave V3000 Distribution Node, Version 1.4"
+kowanyama,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.11,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+kowanyama,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.110,NOT-IN-INVENTORY,UP,OK,Linux KOW_T16-T2_P2P_Master 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+kowanyama,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,other-on-subnet,10.255.4.111,NOT-IN-INVENTORY,UP,OK,Linux KOW_T16-T2_P2P_SLAVE 3.14.77 #1 SMP PREEMPT Tue Mar 28 15:35:42 UTC 2023 armv7l
+kowanyama,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.20,V3000,UP,OK,"Cambium cnWave V3000 Distribution Node, Version 1.4"
+kowanyama,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.21,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+pukatja,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.10,V3000,UP,OK,"Cambium cnWave V3000 Distribution Node, Version 1.4"
+pukatja,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.11,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"
+pukatja,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.20,V3000,UP,OK,"Cambium cnWave V3000 Distribution Node, Version 1.4"
+pukatja,nbn_accelerate,teleport.communitywifi.net.au,cambium-devices/nbn-snmp-ro,cnWave 60GHz,10.255.4.21,V3000,UP,OK,"Cambium cnWave V3000 Client Node, Version 1.4"

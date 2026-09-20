@@ -2,7 +2,7 @@
 
 ## Contents
 
-- [20260921_0742](#20260921_0742)
+- [20260921_1015](#20260921_1015)
 - [20260920_2339](#20260920_2339)
 - [20260920_1951](#20260920_1951)
 - [20260920_1856](#20260920_1856)
@@ -50,7 +50,7 @@
 
 ---
 
-## 20260921_0742
+## 20260921_1015
 
 ### cnWave speaks SNMP on its own arm; the SNMP layer gets contracted; a single-site conclusion nearly became a fact (v0.6.4 -> v0.6.5)
 
@@ -61,7 +61,10 @@ Write-Back Contract.
 on 443, 80 or 22 — while a control XV2 on the same hop answered normally. Sampling `rcp` sites reversed it completely: **cnWave speaks SNMP on `cambium 60`** (`.1.3.6.1.4.1.17713.60`), its own
 enterprise arm, which is why walking `21` or `22` finds nothing even on a unit where SNMP works. Confirmed across two sites, three models (V1000, V3000, V5000) and both Distribution and Client roles.
 
-**Enablement is per device and mostly off** on the sampled fleet: mornington 3 of 11, bidyadanga 2 of 2, horn-island 0 of 5, wujal-wujal 0 of 1 — every non-responder pingable. A cnWave timeout means
+**Enablement splits by PROGRAMME, and the first answer was wrong.** An `rcp`-only sample said "mostly off". Closing the address gap and probing `nbn_accelerate` reversed it:
+**40 of 40 reachable nbn units answer; 5 of 19 on rcp.** Same three models, same firmware `1.4`, both node roles on both sides, so this is a provisioning difference between the programmes rather
+than a hardware or version one. Addresses were derived by ping-sweeping `10.255.4.0/24` from each SMC box and joining `ip neigh` against the inventory MAC column — 40 cnWave resolved against the 12  <!-- path:example -->
+recoverable from stale ARP. `aurukun` and `hope-vale` return zero ARP for that subnet, so their cnWave network is unreachable from the SMC box: a routing question, not an SNMP one. A cnWave timeout means
 "not enabled here", never "this family has no SNMP".
 
 **Sampling limit, recorded rather than glossed.** All five responders are `rcp`. `nbn_accelerate` holds 93 of the fleet's 117 cnWave and is unsampled, because hope-vale was unreachable and the other
