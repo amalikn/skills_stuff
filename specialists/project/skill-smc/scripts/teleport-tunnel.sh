@@ -6,9 +6,9 @@
 # Site -> SMC-host is resolved live from ansible-wifi's own inventory (never hardcoded here — a
 # site list drifts, ansible-wifi's inventory is the canonical source): each site has a
 # `[<site>_smc_bases]` group in exactly one `inventories/<flavour>/prod` file; the first host under
-# that group is the SMC box to tunnel through. Only the flavour->cluster split is a small fixed
-# table below — a structural fact about the two Teleport clusters (see references/01_overview.md's
-# "Cluster split" table), not per-site data ansible-wifi's inventory encodes directly.
+# that group is the SMC box to tunnel through. Only the flavour->Teleport-target split is a small
+# fixed table below — a structural fact about the two Teleport deployments (see references/
+# 01_overview.md's split table), not per-site data ansible-wifi's inventory encodes directly.
 #
 # Usage:
 #   scripts/teleport-tunnel.sh <site> <target_ip> [local_port] [target_port] [duration_seconds]
@@ -23,8 +23,20 @@
 # background (`&`, or your tool's background-task support) if you need to keep working while it's
 # open — this script does not background itself.
 #
-# Requires: an active `tsh login --proxy=<cluster>` session for the target site's cluster already
-# in place — this script does not log in for you (rcp/rct/wh-flavour clusters need interactive MFA).
+# Requires: an active `tsh login --proxy=<target>` session for the site's Teleport target already
+# in place — this script does not log in for you (rcp/rct/wh-flavour targets need interactive MFA).
+#
+# Port convention for multi-agent/multi-device dispatch (operator instruction, 2026-09-18): when
+# more than one device tunnel might be open at once (parallel subagents, or several families in one
+# session), assign each device family its OWN fixed local_port so concurrent tunnels never collide
+# and a stale leftover tunnel on a shared port can't silently mask a fresh one. Reserve 20101-20199
+# for this kind of ad hoc Cambium device-tunnel work; the per-family assignment currently in use
+# (extend this list rather than picking new numbers ad hoc):
+#   XV2:    20101
+#   ePMP:   20102
+#   cnWave: 20103
+# R195P needs no tunnel — it's nested SSH (`tsh ssh root@<smc-host>` then `ssh admin@<device-ip>`
+# from the SMC box), not a local port-forward.
 
 set -euo pipefail
 

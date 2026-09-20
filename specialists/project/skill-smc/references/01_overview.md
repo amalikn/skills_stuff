@@ -43,11 +43,25 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
 - **SSH only** — Teleport DB/Kubernetes/app access features not in use
 - **Access is exclusively `tsh ssh root@<hostname>` (Teleport CLI) — there is no SSH-wrapping MCP in use and no plain-`ssh` path to an SMC.** A `ssh root@<hostname>.teleport.<domain>` form only works
   if `tsh config` has already generated a `ProxyCommand`-wired `~/.ssh/config` entry for that specific cluster and `tsh login` is active; `tsh ssh` directly is the authoritative form.
-- **Canonical local-port-forward tunnel to a device behind an SMC box** (operator-supplied form, 2026-09-17): `tsh ssh --proxy <cluster> -L <local_port>:<device_ip>:<device_port> root@<smc-hostname>`.
-  The explicit `--proxy` flag matters — an earlier attempt without it (just `tsh ssh -L ... root@<host>`) was flaky in an agent-harness background-task context (intermittent "Unable to connect to ssh
-  proxy" and shell-quoting errors); with `--proxy` named explicitly it connected reliably first try. Verified live 2026-09-17: `tsh ssh --proxy teleport.communitywifi.net.au -L 10000:10.255.3.1:443
-  root@hope-vale-smc01` tunnelled a real device's HTTPS web UI to `localhost:10000` (HTTP 200). Device port convention (see `skill-cambium` for the device side): `443` for current Cambium web UIs,
-  `80` for older ones (operator-stated: ePMP 1000 uses HTTP not HTTPS).
+- **Canonical local-port-forward tunnel to a device behind an SMC box** (operator-supplied form, 2026-09-17): `tsh ssh --proxy <teleport> -L <local_port>:<device_ip>:<device_port>
+  root@<smc-hostname>`. The explicit `--proxy` flag matters — an earlier attempt without it (just `tsh ssh -L ... root@<host>`) was flaky in an agent-harness background-task context (intermittent
+  "Unable to connect to ssh proxy" and shell-quoting errors); with `--proxy` named explicitly it connected reliably first try. Verified live 2026-09-17: `tsh ssh --proxy teleport.communitywifi.net.au
+  -L 10000:10.255.3.1:443 root@hope-vale-smc01` tunnelled a real device's HTTPS web UI to `localhost:10000` (HTTP 200). Device port convention (see `skill-cambium` for the device side): `443` for
+  current Cambium web UIs, `80` for older ones (operator-stated: ePMP 1000 uses HTTP not HTTPS).
+- **`--cluster=` is NOT a substitute for `--proxy=` on `teleport.communitywifi.net.au`, for ANY command — not just `-L` tunnels — and getting this wrong produces an error that convincingly fakes a
+  real outage (incident 2026-09-18).** Two independent agent sessions in `cambium-swap` ran `tsh ls --cluster=teleport.communitywifi.net.au` / `tsh ssh --cluster=teleport.communitywifi.net.au
+  root@hope-vale-smc01` and got `ERROR: connection error: desc = "transport: authentication handshake failed: EOF"` on every attempt, while `tsh status` showed a fully valid cached session (hours
+  left) and plain `curl https://teleport.communitywifi.net.au/webapi/ping` returned a clean 200. Both sessions concluded this meant a fleet-wide Teleport outage, and one further concluded
+  `hope-vale-smc01` itself was missing/decommissioned (it isn't — it just couldn't be reached through the wrong flag). The operator reproduced and fixed it in under a minute: `tsh ls
+  --proxy=teleport.communitywifi.net.au` lists the full node roster (including `hope-vale-smc01`) and `tsh ssh --proxy=teleport.communitywifi.net.au root@hope-vale-smc01` connects cleanly. **Root
+  cause:** `teleport.communitywifi.net.au` is its own independently-logged-in root Teleport target (its own separate `tsh status` profile) — it is not subordinate to `teleport.apn.au`. `--cluster=`
+  asks tsh to route to a target as a subordinate via a trust relationship from your current root context; that relationship doesn't exist here, so the gRPC handshake fails with EOF — a transport-layer
+  error that gives no hint it's a flag-choice problem rather than a server problem. **Rule: always pass `--proxy=teleport.communitywifi.net.au` explicitly on every `tsh` command against this Teleport
+  target** (`tsh ls`, `tsh ssh`, tunnels — not just the tunnel case documented above), never `--cluster=`. For a device tunnel specifically, prefer `scripts/teleport-tunnel.sh` over a hand-written
+  `tsh` invocation — it already hardcodes `--proxy` correctly and resolves the right target from ansible-wifi's inventory automatically (its internal shell variable is still named `CLUSTER`; left
+  as-is, a code rename is out of scope here), so this class of mistake can't happen through it. The 2026-09-18 incident happened because both agent sessions wrote raw `tsh ls`/`tsh ssh <cmd>` calls by
+  hand instead of going through it — that path still needs `--proxy=` added by hand. Before ever concluding this Teleport target is down or a node is missing/decommissioned, re-run the same command
+  with `--proxy=` explicit first — if that works, it was this flag, not an outage.
 
 ### APN Cluster vs NBN Accelerate Cluster — Structural Comparison (2026-08-03)
 
@@ -56,38 +70,38 @@ The 7 inventory flavors split into two independently-managed Ansible clusters, n
 `nbn_wh`) by direct comparison, so the two are not conflated. Both clusters follow the same **1 central-infra inventory + N site-fleet inventories** topology, but NBN Accelerate is materially thinner
 and has real functional differences beyond the SSH endpoint — do not assume "communitywifi.net.au = apn.au with a different domain" without checking this table.
 
-|                         | APN cluster (`teleport.apn.au`)                                   | NBN Accelerate cluster (`teleport.communitywifi.net.au`)                                               |
-| ----------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Central-infra inventory | `inventories/apn/` — jenkins, prometheus_aws,                     | `inventories/cw/` — jenkins, prometheus_aws, teleport_aws; **no graylog/opensearch host groups**       |
-|                         |   teleport_aws, **graylog_servers, opensearch_servers**           |                                                                                                        |
-| Site-fleet inventories  | `rcp` (x86, ~10 sites, VoIP), `rct` (RPi, ~300+ sites — largest   | `nbn_accelerate` (x86, ~20 sites), `nbn_wh` (x86, 2 real sites + 1 generic template)                   |
-|                         |   fleet in repo), `wh` (x86, ~15 sites)                           |                                                                                                        |
-| Kernel-update pipeline  | Full automated Jenkins kernel-update pipeline                     | **Absent** — `cw/group_vars/jenkins.yml` has no kernel-update keys or toggle at all                    |
-|                         |   (`jenkins_update_kernel` batch/quarantine config) in            |                                                                                                        |
-|                         |   `apn/group_vars/jenkins.yml`; per-flavor                        |                                                                                                        |
-|                         |   `smc_update_kernel` toggle                                      |                                                                                                        |
-| Mobile app backend      | Not present                                                       | `smc_bases_mobile_app` / `smc_bases_wifi_community_app_backend_git` — dedicated mobile-app backend     |
-|                         |                                                                   |   deploy, `nbn_accelerate` only                                                                        |
-| Kiosk mode              | Not present                                                       | `smc_dss_kiosk` toggle, `nbn_accelerate/group_vars/smc_bases.yml`                                      |
-| Teleport alert routing  | Centralized in `prometheus.yml` only (noc/dev MS Teams webhooks)  | Same, **plus** a separate `group_vars/teleport_monitoring.yml` (dedicated MS Teams webhook) on         |
-|                         |                                                                   |   `nbn_accelerate`/`nbn_wh` — no apn-side equivalent file                                              |
-| Captive portal protocol | `smc_bases_portal_protocol: http` (rcp/rct/wh)                    | `smc_bases_portal_protocol: https` — cw-side portals are HTTPS-only                                    |
-| Blocked-URL redirect    | `activ8me.net.au/blocked/wifi/`                                   | `blocked.communitywifi.net.au`                                                                         |
-| VoIP (Asterisk)         | `rcp` only (`inventory_dir == 'rcp'` gate)                        | Not present on any cw-cluster flavor                                                                   |
-| ClamAV +                | Not applied to `rcp`                                              | Applied to `nbn_accelerate` only (`inventory_dir == 'nbn_accelerate'` gate) — genuine cw-only          |
-|   Lynis hardening       |                                                                   |   security-hardening difference, not hardware-driven. **Live-confirmed 2026-08-03: installed on 26/26** |
-|                         |                                                                   |   **hosts, but `clamav-freshclam` failing on 26/26 — root cause confirmed: fleet-wide `clamav 0.103.x`** |
-|                         |                                                                   |   **is past its 2025-09-14 database-update end-of-life, CDN now hard-blocks it (HTTP 403)**, fix is a  |
-|                         |                                                                   |   version upgrade to 1.0/1.4 LTS, not a retry. See `13_known-issues.md`.                               |
-| `smc_ltp` sub-group     | `rcp`-only static group (`inventories/rcp/prod`), 7 sites (all    | Not present — no cw-cluster equivalent                                                                 |
-|                         |   "low touch"-onboarded) — dual purpose: (1) CNMaestro-managed    |                                                                                                        |
-|                         |   Cambium ePMP/cnPilot wireless backhaul provisioning, (2)        |                                                                                                        |
-|                         |   switches DNS resolver from unbound+stubby to bind9+RPZ. See     |                                                                                                        |
-|                         |   `08_ansible-authoring.md` "smc_ltp Sub-Group"                   |                                                                                                        |
-| Hardware                | `hotspot_flavor` groups `{rct, wh, nbn_wh}` as "big box"          | (same row — the split spans both clusters)                                                             |
-|   form-factor split     |   (overlay+GPS+telemetry) and `{rcp, nbn_accelerate}` as "small   |                                                                                                        |
-|                         |   box" — **this split is identical across both clusters**,        |                                                                                                        |
-|                         |   not cluster-specific                                            |                                                                                                        |
+|                         | APN cluster (`teleport.apn.au`)                                    | NBN Accelerate cluster (`teleport.communitywifi.net.au`)                                              |
+| ----------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Central-infra inventory | `inventories/apn/` — jenkins, prometheus_aws,                      | `inventories/cw/` — jenkins, prometheus_aws, teleport_aws; **no graylog/opensearch host groups**      |
+|                         |   teleport_aws, **graylog_servers, opensearch_servers**            |                                                                                                       |
+| Site-fleet inventories  | `rcp` (x86, ~10 sites, VoIP), `rct` (RPi, ~300+ sites — largest    | `nbn_accelerate` (x86, ~20 sites), `nbn_wh` (x86, 2 real sites + 1 generic template)                  |
+|                         |   fleet in repo), `wh` (x86, ~15 sites)                            |                                                                                                       |
+| Kernel-update pipeline  | Full automated Jenkins kernel-update pipeline                      | **Absent** — `cw/group_vars/jenkins.yml` has no kernel-update keys or toggle at all                   |
+|                         |   (`jenkins_update_kernel` batch/quarantine config) in             |                                                                                                       |
+|                         |   `apn/group_vars/jenkins.yml`; per-flavor                         |                                                                                                       |
+|                         |   `smc_update_kernel` toggle                                       |                                                                                                       |
+| Mobile app backend      | Not present                                                        | `smc_bases_mobile_app` / `smc_bases_wifi_community_app_backend_git` — dedicated mobile-app backend    |
+|                         |                                                                    |   deploy, `nbn_accelerate` only                                                                       |
+| Kiosk mode              | Not present                                                        | `smc_dss_kiosk` toggle, `nbn_accelerate/group_vars/smc_bases.yml`                                     |
+| Teleport alert routing  | Centralized in `prometheus.yml` only (noc/dev MS Teams webhooks)   | Same, **plus** a separate `group_vars/teleport_monitoring.yml` (dedicated MS Teams webhook) on        |
+|                         |                                                                    |   `nbn_accelerate`/`nbn_wh` — no apn-side equivalent file                                             |
+| Captive portal protocol | `smc_bases_portal_protocol: http` (rcp/rct/wh)                     | `smc_bases_portal_protocol: https` — cw-side portals are HTTPS-only                                   |
+| Blocked-URL redirect    | `activ8me.net.au/blocked/wifi/`                                    | `blocked.communitywifi.net.au`                                                                        |
+| VoIP (Asterisk)         | `rcp` only (`inventory_dir == 'rcp'` gate)                         | Not present on any cw-cluster flavor                                                                  |
+| ClamAV +                | Not applied to `rcp`                                               | Applied to `nbn_accelerate` only (`inventory_dir == 'nbn_accelerate'` gate) — genuine cw-only         |
+|   Lynis hardening       |                                                                    |   security-hardening difference, not hardware-driven. **Live-confirmed 2026-08-03: installed on 26/26** |
+|                         |                                                                    |   **hosts, but `clamav-freshclam` failing on 26/26 — root cause confirmed: fleet-wide `clamav 0.103.x`** |
+|                         |                                                                    |   **is past its 2025-09-14 database-update end-of-life, CDN now hard-blocks it (HTTP 403)**, fix is a |
+|                         |                                                                    |   version upgrade to 1.0/1.4 LTS, not a retry. See `13_known-issues.md`.                              |
+| `smc_ltp` sub-group     | `rcp`-only static group (`inventories/rcp/prod`), 7 sites (all     | Not present — no cw-cluster equivalent                                                                |
+|                         |   "low touch"-onboarded) — dual purpose: (1) CNMaestro-managed     |                                                                                                       |
+|                         |   Cambium ePMP/cnPilot wireless backhaul provisioning, (2)         |                                                                                                       |
+|                         |   switches DNS resolver from unbound+stubby to bind9+RPZ. See      |                                                                                                       |
+|                         |   `08_ansible-authoring.md` "smc_ltp Sub-Group"                    |                                                                                                       |
+| Hardware                | `hotspot_flavor` groups `{rct, wh, nbn_wh}` as "big box"           | (same row — the split spans both clusters)                                                            |
+|   form-factor split     |   (overlay+GPS+telemetry) and `{rcp, nbn_accelerate}` as "small    |                                                                                                       |
+|                         |   box" — **this split is identical across both clusters**,         |                                                                                                       |
+|                         |   not cluster-specific                                             |                                                                                                       |
 
 **Genuinely identical across both clusters:** the `all.yml`/`teleport.yml`/`prometheus.yml`/ `smc_bases.yml` variable *vocabulary* (only values differ per site), the hardware form-factor branching
 (`hotspot_flavor` "small box" vs "big box" applies the same way on both sides), and the hub-and-spoke inventory topology itself (a central-infra inventory with no `topology_vars/`, feeding N
