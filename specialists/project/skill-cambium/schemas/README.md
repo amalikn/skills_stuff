@@ -181,6 +181,14 @@ adapter. Contracting its keys as fields was a defect in the schema tool, not in 
 fields". Such endpoints are now listed in the tool's `MAP_SHAPED` registry and contracted as `additionalProperties` describing the **value** shape, with the observed keys recorded separately. The
 R-series interface value is three fields: `ipv4_addresses`, `is_up`, `mac_address`.
 
+**Verified against upstream, 2026-09-20.** NAPALM's own documentation shows `get_interfaces` returning a dict keyed by interface name — `{"Ethernet1/1": {"is_up": …, "is_enabled": …, "description": …,
+"last_flapped": …, "speed": …, "mac_address": …}}` (the NAPALM project's own docs — `mock_driver.rst` and `cli.rst` in its documentation tree). The keying convention is genuine rather than this pack's
+invention, which is what the earlier "adapter bug" reading got wrong.
+
+**The value fields are a different matter, and the docstring's claim oversells them.** NAPALM defines six — `is_up`, `is_enabled`, `description`, `last_flapped`, `speed`, `mac_address`. The R-series
+adapter returns two of them plus `ipv4_addresses`, which NAPALM does not define. So "NAPALM-style" describes the response's *shape*, not conformance to the interface contract: code written against
+NAPALM's documented fields will find four of the six missing.
+
 ## Extending the standard
 
 `scripts/schema_tool.py` has three verbs. `observe` contracts one device, `merge` folds observations into the standard, `check` reports a new observation's divergence from it.

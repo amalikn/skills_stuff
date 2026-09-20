@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260920_1856](#20260920_1856)
 - [20260920_1758](#20260920_1758)
 - [20260920_1745](#20260920_1745)
 - [20260920_1652](#20260920_1652)
@@ -45,6 +46,20 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260920_1856
+
+### Verified against upstream — the NAPALM claim holds, but the docstring oversells conformance
+
+An earlier entry asserted that returning a map keyed by interface name is NAPALM's convention. That was argued from this pack's own XV2 `get_interfaces` docstring, which is the same repo claiming its
+own conformance — not an authoritative source. Context7 was unavailable at the time and the claim went in unverified.
+
+Now checked against NAPALM's own published documentation: `get_interfaces` does return a dict keyed by interface name, so **the
+claim stands and the correction it supported was right**.
+
+The check added something the local evidence could not. NAPALM defines six value fields — `is_up`, `is_enabled`, `description`, `last_flapped`, `speed`, `mac_address` — and the R-series adapter
+returns two of them plus `ipv4_addresses`, which NAPALM does not define. **"NAPALM-style" therefore describes the response shape, not conformance to the interface contract**, and code written against
+NAPALM's documented fields will find four of the six absent. Recorded in `schemas/README.md` beside the map-shape note.
 
 ## 20260920_1758
 
