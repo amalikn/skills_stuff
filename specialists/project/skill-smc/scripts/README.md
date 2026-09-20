@@ -256,15 +256,13 @@ Captures the following read-only views from each appliance into `<output-root>/e
 |                                              |                                        |   `analyse-topology-interface-match.py`'s cross-model naming hint                                            |
 | `netplan`                                    | `cat /etc/netplan/*.yaml`              | What `smc_network` actually rendered — compare against the deployed topology                                 |
 | `dhclient-enter-hooks`                       | `cat /etc/dhcp/dhclient-enter-hooks`   | What `smc_application` rendered — **the interface list that decides ECMP membership**                        |
-| `dhclient-enter-hooks-d`                     | `cat /etc/dhcp/dhclient-enter-hooks.\` | Stock Debian fragments only; kept to prove the override is not here (see capture trap below)                 |
-|                                              |   `d/*`                                |                                                                                                              |
+| `dhclient-enter-hooks-d`                     | `cat /etc/dhcp/dhclient-enter-hooks.d/*` | Stock Debian fragments only; kept to prove the override is not here (see capture trap below)                 |
 | `dhclient-script`                            | `cat /etc/dhcp/dhclient-script`        | Base `add_default_gateway()` and `is_router_reachable()`                                                     |
 | `dhclient-units`                             | `systemctl list-units 'dhclient@*'`    | Which interfaces are actually being leased                                                                   |
 | `iptables-save`                              | `iptables-save`                        | All tables in one dump — the authoritative ruleset snapshot                                                  |
 | `iptables-filter` / `-nat` / `-mangle`       | `iptables [-t <table>] -S`             | Per-table views — `filter`-only misses NAT/mangle entirely (see capture trap below)                          |
 |   / `-raw`                                   |                                        |                                                                                                              |
-| `interfacecheck`                             | `cat /usr/local/bin/\`                 | The ping check and its `dhclient@` restart behaviour                                                         |
-|                                              |   `interfacecheckv2.sh`                |                                                                                                              |
+| `interfacecheck`                             | `cat /usr/local/bin/interfacecheckv2.sh`                 | The ping check and its `dhclient@` restart behaviour                                                         |
 | `internet-ingress-shaping-script` /          | script/unit/status                     | The manual TBF/`ifb` ingress-shaping mechanism — see `../references/03_communication-flows.md`, "Manual      |
 |   `internet-shaping-service`                 |                                        |   TBF/`ifb` Ingress Shaping"                                                                                 |
 |   / `internet-shaping-unit-status`           |                                        |                                                                                                              |

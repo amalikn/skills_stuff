@@ -14,8 +14,8 @@ This file is the navigation index for the `skill-cambium` specialist pack. Load 
 | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `/Volumes/Data/_ai/_project/project_stuff/apn/cambium-swap`            | Live source of truth — its own `inventory/` holds the device-family matrix, device inventory, cnMaestro instance list, and  |
 |                                                                        |   site asset registers                                                                                                      |
-| `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-\`       | FOSS controller build (Nautobot + adapter layer) replacing cnMaestro's monitoring/dashboard and TR-069 provisioning roles — |
-|   `controller`                                                         |   consumes this pack's device-access/API knowledge, does not duplicate it; split out of `cambium-swap` 2026-09-18           |
+| `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller`       | FOSS controller build (Nautobot + adapter layer) replacing cnMaestro's monitoring/dashboard and TR-069 provisioning roles — |
+|                                                            |   consumes this pack's device-access/API knowledge, does not duplicate it; split out of `cambium-swap` 2026-09-18           |
 | `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc` | SMC box / ansible-wifi provisioning layer — the Cambium fleet's management plane. Cross-reference at the                    |
 |                                                                        |   `smc_cnmaestro_provisioning` role boundary                                                                                |
 | `/Volumes/Data/_ansible/ansible-wifi`                                  | Production Ansible source; canonical `site_name` values live in `inventories/<flavour>/group_vars/<site>.yml`               |

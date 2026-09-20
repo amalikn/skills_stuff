@@ -42,7 +42,7 @@ needed.
 
 Disconfirming result agreed up front: if this works in well under an hour with zero schema/dependencies, that kills the case for building the elaborate tooling now — it would mean solving a problem
 the project doesn't have yet. (Full reasoning on why multi-vendor doesn't change this: a schema designed from one vendor's shape, before a second vendor exists to design against, is a guess that gets
-redone anyway. The actual cross-vendor abstraction already exists — `cambium-swap`'s `docs/migration/controller-option3/option-3-architecture.md`'s adapter contract, `get_facts`/`get_interfaces`/... —
+redone anyway. The actual cross-vendor abstraction already exists — `unified-network-controller`'s `docs/controller-option3/option-3-architecture.md`'s adapter contract, `get_facts`/`get_interfaces`/... —
 each vendor just needs its own skill pack implementing those same method names, same pattern as `skill-smc`/`skill-cambium` already being separate packs.)
 
 Operator confirmed: proceed with the code test (not the docs-only alternative), and **all Cambium development work goes into `skill-cambium`, not into `cambium-swap`** — `cambium-swap` is the
@@ -58,7 +58,7 @@ live-deployment/evidence project; `skill-cambium` is the cross-project canonical
   - `.get_interfaces()` — calls `GET /api/device-summary`, extracts `port_stats` into a NAPALM-shaped per-port dict (is_up/speed/duplex/rx/tx counters/errors).
   - `main()` reads `CAMBIUM_HOST`/`CAMBIUM_USER`/`CAMBIUM_PASS` from env — **never hardcode or print `CAMBIUM_PASS`**.
 - Reference/evidence work already committed in `cambium-swap` (read-only prerequisite knowledge, already proven live before this adapter was written):
-  - `docs/migration/controller-option3/cambium-vendor-adapter-data-points.md` — the curated (not exhaustive) list of which REST endpoints/CLI commands matter for the controller, mapped to adapter
+  - `unified-network-controller/docs/controller-option3/cambium-vendor-adapter-data-points.md` — the curated (not exhaustive) list of which REST endpoints/CLI commands matter for the controller, mapped to adapter
     method names. This adapter file implements two rows of that table.
   - Evidence E99 (SSH CLI `show version`), E100 (web UI tunnel HTTP 200), E101 (authenticated REST API session — `platform-info`/`device-summary` real data), E102 (exact firmware-version-matched CLI
     Reference Guide, Release 6.6.0.3, superseding the 7.2 guide for this specific fleet).
@@ -98,7 +98,7 @@ Verify with `nc -z -w3 localhost 10001`.
     rule.
   - `skill-cambium/CHANGELOG.md` — new entry for the adapter script + the resolved test.
   - `skill-cambium/SCRATCHPAD.md` — this file is stale (still says "Phase: Bootstrap"); fold this session's work in properly once the test is done, not before (avoid two half-updated state files).
-- **Then decide** (operator call, not pre-decided): extend this same adapter with `get_radios`/`get_wlans`/`get_clients`/`get_config` (the remaining rows in `cambium-vendor-adapter-data-points.md`),
+- **Then decide** (operator call, not pre-decided): extend this same adapter with `get_radios`/`get_wlans`/`get_clients`/`get_config` (the remaining rows in `unified-network-controller/docs/controller-option3/cambium-vendor-adapter-data-points.md`),
   or move to the "stub files for the other 4 Cambium families" option that was deferred in favor of this test, or pause Cambium adapter work entirely until Option 3's controller bake-off actually
   needs it.
 
@@ -121,4 +121,4 @@ Verify with `nc -z -w3 localhost 10001`.
 | Device credential | `<secret:keepassxc:cambium-devices/enterprise-wifi>`, username `admin`                                                                                                           |
 | Auth endpoint     | `POST /api/login` JSON body, `api_token`+`XSRF-TOKEN` cookies, `X-XSRF-TOKEN` header on every later call, `POST /api/logout` to end                                              |
 | Related project   | `/Volumes/Data/_ai/_project/project_stuff/apn/cambium-swap` — evidence E99-E102,                                                                                                 |
-|                   |   `docs/migration/controller-option3/cambium-vendor-adapter-data-points.md`, `option-3-architecture.md`                                                                          |
+|                   |   `unified-network-controller/docs/controller-option3/cambium-vendor-adapter-data-points.md`, `unified-network-controller/docs/controller-option3/option-3-architecture.md`                                                                          |

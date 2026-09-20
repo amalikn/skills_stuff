@@ -28,13 +28,13 @@
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "2026-09-20T18:46:00Z",
-  "version": "0.1.47",
+  "updated_at": "20260920_2342",
+  "version": "0.1.48",
   "dependencies": [],
   "known_constraints": [
-    "SMC boxes run overlayroot — changes do not persist across reboot unless lower dir is remounted rw",
+    "SMC boxes run overlayroot \u2014 changes do not persist across reboot unless lower dir is remounted rw",
     "Ansible connects via Teleport proxy, not direct SSH",
-    "topology_vars.py plugin output is cached in hidden .*.yml files — mtime-based, may be stale after git checkout"
+    "topology_vars.py plugin output is cached in hidden .*.yml files \u2014 mtime-based, may be stale after git checkout"
   ],
   "stable_facts": [
     {
@@ -105,7 +105,7 @@
       ]
     },
     {
-      "statement": "Kohana::init() unconditionally requires APPPATH/cache AND APPPATH/logs to be writable by the web user, throwing 'Directory :dir must be writable' before routing. It prints rather than raises, so the response is HTTP 200 with a ~40-byte body and apache error.log stays empty — status-code-only health checks cannot detect a dead portal.",
+      "statement": "Kohana::init() unconditionally requires APPPATH/cache AND APPPATH/logs to be writable by the web user, throwing 'Directory :dir must be writable' before routing. It prints rather than raises, so the response is HTTP 200 with a ~40-byte body and apache error.log stays empty \u2014 status-code-only health checks cannot detect a dead portal.",
       "confidence": 0.99,
       "tags": [
         "captive-portal",

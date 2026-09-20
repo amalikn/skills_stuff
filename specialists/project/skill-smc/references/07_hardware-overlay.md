@@ -120,9 +120,9 @@ The table above says x86 storage is "monitored by SBDM/SMART" — this undersell
 | `smartmon.py`          | n/a (uses system `smartctl`)   | x86 rcp: Innodisk CFast,         | RPi/mmcblk SD cards — `smartctl --scan-open` finds zero devices; SD/eMMC doesn't expose classic ATA     |
 |   (wraps `smartctl`)   |                                |   Transcend SSD (both report via |   SMART attributes the way SATA/USB-SAT drives do                                                       |
 |                        |                                |   ATA SMART)                     |                                                                                                         |
-| `sbdm.py` (wraps       | `roles/smc_node_exporter/\`    | RPi/rct/wh: genuine              | x86 rcp: Innodisk/Transcend hardware isn't Swissbit-branded — `sbdm-cli` returns "No supported disks    |
-|   `sbdm-cli`,          |   `files/{x86-64,aarch64}/\`   |   Swissbit-branded industrial    |   found" (exit 3), and `sbdm.py` currently exits 0 with **zero stdout output**, producing a 0-byte      |
-|   "Swissbit            |   `sbdm-cli` — deployed to     |   microSD cards (model "SD card  |   `sbdm.prom`. This is the root cause of the standing "sbdm.prom = 0 bytes" bug tracked as a known      |
+| `sbdm.py` (wraps       | `roles/smc_node_exporter/files/{x86-64,aarch64}/sbdm-cli`    | RPi/rct/wh: genuine              | x86 rcp: Innodisk/Transcend hardware isn't Swissbit-branded — `sbdm-cli` returns "No supported disks    |
+|   `sbdm-cli`,          |      |   Swissbit-branded industrial    |   found" (exit 3), and `sbdm.py` currently exits 0 with **zero stdout output**, producing a 0-byte      |
+|   "Swissbit            |     — deployed to             |   microSD cards (model "SD card  |   `sbdm.prom`. This is the root cause of the standing "sbdm.prom = 0 bytes" bug tracked as a known      |
 |   Device Manager")     |   **both** architectures       |   SB AFNI0", series S-58)        |   issue on tjuntjuntjara/burringurrah/warburton — expected behavior for non-Swissbit hardware, not a    |
 |                        |                                |                                  |   bug in those specific nodes.                                                                          |
 
@@ -589,8 +589,8 @@ known-good nodes is a probe bug, not a fleet event. All three were wrong-path as
 | `test -L /var/log/interfacecheck`          | `test -L /var/log/interfacecheck.log`  | `smc_rsyslog` symlinks the **log file**, not a directory:                                                      |
 |                                            |                                        |   `/var/log/interfacecheck.log -> /var/log/smc-groups/interfacecheck.log`. squid and mosquitto *are* directory |
 |                                            |                                        |   symlinks, so the three are not symmetrical.                                                                  |
-| `test -L /opt/apn-mqtt-client/status.json` | `find / -maxdepth 5 -name status.\`    | The app lives at `/run/apn-mqtt-client/` (a real file, already on tmpfs since `/run` is tmpfs) on most nodes,  |
-|                                            |   `json -path '*mqtt*'`                |   or `/var/www/apn-mqtt-client/` (a symlink into `/run`) on others. Never `/opt/`. Both forms are the *fixed*  |
+| `test -L /opt/apn-mqtt-client/status.json` | `find / -maxdepth 5 -name status.json -path '*mqtt*'`    | The app lives at `/run/apn-mqtt-client/` (a real file, already on tmpfs since `/run` is tmpfs) on most nodes,  |
+|                                            |                   |   or `/var/www/apn-mqtt-client/` (a symlink into `/run`) on others. Never `/opt/`. Both forms are the *fixed*  |
 |                                            |                                        |   state — a real file under `/run` is not a gap.                                                               |
 | `systemctl is-active fluent-bit`           | `pgrep -c fluent-bit`                  | fluent-bit has **no systemd unit**. `graylog-sidecar` spawns it directly as a child:                           |
 |                                            |                                        |   `/opt/fluent-bit/bin/fluent-bit -c /var/lib/graylog-sidecar/generated/<id>/apn-gelf-http.conf`. `is-active`  |

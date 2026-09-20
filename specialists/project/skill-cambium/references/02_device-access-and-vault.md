@@ -26,8 +26,7 @@ Vault: `~/Library/CloudStorage/OneDrive-Personal/A/APN_keepassDB.kdbx`, group `c
 | Entry                                 | Covers                                                                                                                                                       |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `cambium-devices/enterprise-wifi`     | XV2-2T0, XV2-22H, E500, E430 (standard password)                                                                                                             |
-| `cambium-devices/enterprise-wifi-\`   | Un-recredentialed XV2 stragglers (old factory password)                                                                                                      |
-|   `legacy`                            |                                                                                                                                                              |
+| `cambium-devices/enterprise-wifi-legacy`   | Un-recredentialed XV2 stragglers (old factory password)                                                                                                      |
 | `cambium-devices/epmp-ap`             | ePMP 3000, ePMP 3000L (standard password)                                                                                                                    |
 | `cambium-devices/epmp-ap-legacy`      | ePMP 1000, ePMP 1000 2.4 GHz / 5 GHz Connectorized (old default)                                                                                             |
 | `cambium-devices/epmp-sm`             | Force 300-16, Force 300-25 (standard password)                                                                                                               |

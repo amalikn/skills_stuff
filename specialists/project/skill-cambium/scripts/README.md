@@ -4,7 +4,7 @@ Runnable scripts and task entrypoints for skill-cambium. Prefer `just --list` / 
 (`/Volumes/Data/_ai/_skills/skills-working-cache/skill-cambium/.venv`, built by `just bootstrap` from `.mise.toml` + `requirements.txt`). Raw script inventory below is for reference, not direct
 invocation.
 
-`just tunnel` does not run a script from this directory — it calls [skill-smc's `teleport-tunnel.sh`](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/scripts/teleport-tunnel.sh) directly, since Teleport
+`just tunnel` does not run a script from this directory — it calls [skill-smc's `skill-smc/scripts/teleport-tunnel.sh`](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/scripts/teleport-tunnel.sh) directly, since Teleport
 tunneling is that pack's concern, not this one's. Consuming projects call the canonical path directly rather than this pack keeping its own copy — same pattern as `cambium-portal.sh` below, in the
 other direction.
 
@@ -107,7 +107,7 @@ other direction.
 |  |  |  |  |  |  |   for secrets |
 | `generate_site_addressing_families.py` | Derives a site's `families:` block | `--flavour rcp\|nbn_accelerate`, | YAML fragment to | `safe` | Yes | Onboarding a |
 |  | (octet_pattern/host_count per device | `--site <slug>` or `--all`, | stdout — never writes |  |  | new site's |
-|  | family) | optional `--inventory-root` | `site-addressing.yaml` |  |  | export, or |
+|  | family) | optional `--inventory-root` | `references/site-addressing.yaml` |  |  | export, or |
 |  |   for `references/site-addressing.yaml` |  |  |  |  |  |
 |  | straight from a site's reconciled | (default: cambium-swap's | directly (hand-authored |  |  | regenerating |
 |  | `*_cnmaestro-inventory.csv` — the same | `inventory/asset-register/`) | live-session notes there |  |  | one after its |

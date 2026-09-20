@@ -48,15 +48,50 @@ SELF = Path(__file__).resolve().relative_to(ROOT).as_posix()
 # failing — coverage is measured by the assertion count, so an empty registry reads honestly as "not covered yet".
 
 # Governance surfaces whose path references must resolve.
-SURFACES: tuple[str, ...] = (
-    "README.md",
-    "AGENTS.md",
-    "SKILL.md",
-    "RUNBOOK.md",
-    "AI_NAVIGATION.md",
-    "SCRATCHPAD.md",
-    "CHANGELOG.md",
-)
+# DERIVED, not hand-listed. Until 2026-09-20 this was a fixed tuple, so `references/**` — where this package's
+# actual content lives — sat outside every path check. The sibling project `unified-network-controller` had the same
+# hole and it hid two genuinely broken links under a green suite; see its
+# `.archcore/rules/govern-a-derived-population-never-a-hand-list.rule.md`. A check's POPULATION is derived; a check's
+# PERMISSIONS (CONDITIONAL_PATHS, markers) stay explicit and per-entry reasoned.
+#
+# `references/**` is EXCLUDED, and the reason is stated rather than left as an omission: those files use slash
+# notation for things that are not filesystem paths — KeePassXC vault groups (`cambium-devices/epmp-ap`), CIDR
+# blocks (`10.255.0.1/19`), sibling-repo paths — and a path check run over them reports ~50 non-defects. Bringing
+# them in needs a token discriminator that tells a filesystem path from a vault group, not a longer exemption list;
+# a check that mostly reports non-defects is one nobody reads. Their split-path tokens ARE checked, by
+# check_split_path_tokens, which scans every markdown file in the package.
+# A path claim may legitimately name a file in a SIBLING repo — `cambium-swap`'s inventory, `skill-smc`'s scripts,
+# the controller project's design docs. Declaring those roots makes such references VERIFIED rather than merely
+# unchecked: if a sibling renames or moves the target, this package's routing into it fails loudly. An absent root is
+# reported as SKIPPED, never as passed. `.` is included so a self-reference written with the package-name prefix
+# (`skill-cambium/CHANGELOG.md`) resolves.
+SIBLING_ROOTS: dict[str, str] = {
+    "self-parent":                "..",
+    "apn-projects":               "../../../../../_project/project_stuff/apn",
+    "cambium-swap":               "../../../../../_project/project_stuff/apn/cambium-swap",
+    "unified-network-controller": "../../../../../_project/project_stuff/apn/unified-network-controller",
+    "skill-smc":                  "../skill-smc",
+}
+
+
+def _sibling_roots() -> list[Path]:
+    roots: list[Path] = []
+    for name, rel in sorted(SIBLING_ROOTS.items()):
+        base = (ROOT / rel).resolve()
+        if base.is_dir():
+            roots.append(base)
+        else:
+            print(f"  ... SKIPPED (not passed): sibling root `{name}` absent at {rel}; its references were not verified")
+    return roots
+
+
+def _live_surfaces() -> tuple[str, ...]:
+    found = [p.relative_to(ROOT).as_posix()
+             for pat in ("*.md", "scripts/README.md")
+             for p in ROOT.glob(pat)]
+    return tuple(sorted(set(found)))
+
+
 
 # Index file -> (folder it indexes, glob). Enforces BOTH directions: links resolve, and members are linked.
 CATALOGS: dict[str, tuple[str, str]] = {
@@ -215,9 +250,32 @@ def members(folder: str, glob: str) -> list[Path]:
 # --------------------------------------------------------------------------------------------------------------- TIER 1
 
 
+def check_split_path_tokens() -> None:
+    """No backticked path is split across two table rows by a trailing backslash.
+
+    A wide table cell wraps mid-filename and leaves the token ending in a backslash with its tail on the next row.
+    The reference is unfollowable for a reader and invisible to check_referenced_paths, which skips anything that
+    does not look like a path — so the defect hides from the very check that should catch it. Found 20 times across
+    this package and its siblings on 2026-09-20. A line that legitimately discusses backslash continuation carries
+    the EXAMPLE_MARKER.
+    """
+    for path in sorted(ROOT.rglob("*.md")):
+        rel = path.relative_to(ROOT).as_posix()
+        if rel.startswith((".git/", "graphify-out/", ".ai-context/")) or rel == "CHANGELOG.md":
+            continue
+        counted()  # one assertion per FILE: "this file splits no path token across rows".
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if EXAMPLE_MARKER in line:
+                continue
+            for m in re.finditer(r"`([^`\n]*\\)`", line):
+                fail("split-path", f"{rel}:{number} splits `{m.group(1)}` across rows; a wrapped table cell broke a "
+                                   f"path token in half — join it onto one line")
+
+
 def check_referenced_paths() -> None:
-    """Every repo-relative path named in a governance surface resolves on disk."""
-    for surface in SURFACES:
+    """Every path named in a live governance surface resolves — here, or inside a declared sibling checkout."""
+    _siblings = _sibling_roots()
+    for surface in _live_surfaces():
         text = read(surface)
         if text is None:
             fail("surface", f"{surface} is listed as a governance surface but does not exist")
@@ -241,8 +299,10 @@ def check_referenced_paths() -> None:
             # Resolve relative to the file that MAKES the reference first, then relative to ROOT. Resolving only
             # against ROOT false-fails every correct relative link written inside a subfolder README.
             near = (ROOT / surface).parent / tok
-            if not near.exists() and not (ROOT / tok).exists():
-                fail("path", f"{surface} references `{tok}` which does not exist")
+            if near.exists() or (ROOT / tok).exists() or any((b / tok).exists() for b in _siblings):
+                continue
+            fail("path", f"{surface} references `{tok}`, which exists neither here nor under any declared "
+                         f"sibling root ({', '.join(sorted(SIBLING_ROOTS))})")
 
 
 def check_index_links() -> None:
@@ -268,7 +328,7 @@ def check_count_claims() -> None:
     for noun, (folder, glob) in COUNT_CLAIMS.items():
         actual = len(members(folder, glob))
         pattern = re.compile(rf"(\d+)\s+{re.escape(noun)}\b", re.IGNORECASE)
-        for surface in SURFACES:
+        for surface in _live_surfaces():
             text = read(surface)
             if text is None:
                 continue
@@ -533,6 +593,7 @@ def check_manifest_freshness() -> None:
 
 CHECKS = (
     check_referenced_paths,
+    check_split_path_tokens,
     check_index_links,
     check_count_claims,
     check_catalog_coverage,

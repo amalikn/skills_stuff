@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)](#20260920_2342--path-checking-widened-past-five-files-20-split-filenames-joined-ansible-wifi-declared-as-a-sibling-root-v0147---v0148)
 - [20260920_1846 — `snmpget` installed across rcp/nbn_accelerate; two fleet assumptions disproved (v0.1.46 -> v0.1.47)](#20260920_1846--snmpget-installed-across-rcpnbn_accelerate-two-fleet-assumptions-disproved-v0146---v0147)
 - [20260918_1700 — teleport-tunnel.sh port convention for concurrent dispatch (v0.1.45 -> v0.1.46)](#20260918_1700--teleport-tunnelsh-port-convention-for-concurrent-dispatch-v0145---v0146)
 - [20260918_1620 — `--cluster=` vs `--proxy=` incident documented: an agent misdiagnosis that faked a real outage (v0.1.44 -> v0.1.45)](#20260918_1620----cluster-vs---proxy-incident-documented-an-agent-misdiagnosis-that-faked-a-real-outage-v0144---v0145)
@@ -60,6 +61,31 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)
+
+Ported from `unified-network-controller`'s staleness audit of the same evening, which found the same defects there and promoted the underlying rule to
+`unified-network-controller/.archcore/rules/govern-a-derived-population-never-a-hand-list.rule.md`.
+
+**Nineteen split filenames, the most of any package in this family.** A wide table cell wraps mid-filename and leaves the token ending in a backslash with its tail on the next row — unfollowable
+for a reader, and invisible to `check_referenced_paths`, which skips anything that does not look like a path. So the defect hid from the very check that should have caught it. All joined across
+`SKILL.md`, `references/07_hardware-overlay.md`, `references/13_known-issues.md` and `scripts/README.md`; one was a THREE-row split. `check_split_path_tokens()` now asserts the shape directly and
+scans every markdown file in the package, not only the governance surfaces.
+
+**`SURFACES` was a hand-list of five files**, so `ARCHITECTURE.md`, `PROFILE.md`, `SYSTEM_PROMPT.md` and anything added later were outside every path check. Now derived from the tree.
+`CHANGELOG.md` and `SCRATCHPAD.md` are excluded with the reason stated in the code: both are append-only history, and SCRATCHPAD's 2026-06-26 entry recording that a dead `references/PROFILE.md`
+pointer was *removed* reads to a path check as a live broken reference. Exempt history by marker, never by rewriting it. `references/**` is excluded for a different stated reason — its slash
+notation is mostly device paths, CIDR blocks and systemd units rather than repo paths.
+
+**`SIBLING_ROOTS` added, with `ansible-wifi` as the important one.** This package's entire subject is that repository, and its prose names roles, inventories and flavour files by their path there.
+Those references are now *verified* rather than merely unchecked: if ansible-wifi renames a role, this package's routing into it fails loudly. An absent root prints SKIPPED, never passed.
+
+**Bare basenames resolve on a unique match only.** `01_overview.md` unambiguously means `references/01_overview.md` within one package, so it resolves; a name carried by more than one file is
+reported as ambiguous rather than silently accepted, and a rename still fails. Evidence-collector OUTPUT filenames (`MANIFEST.txt`, `SUMMARY.txt`, the numbered capture files), git refs
+(`origin/main`) and the Apache log name `wifi/access` are registered as conditional paths with per-entry reasons — they are not repo paths despite the shape.
+
+Both new check behaviours negative-tested in both directions. Checks **184 -> 286**.
+
 
 ## 20260920_1846 — `snmpget` installed across rcp/nbn_accelerate; two fleet assumptions disproved (v0.1.46 -> v0.1.47)
 

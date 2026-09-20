@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260920_2339](#20260920_2339)
 - [20260920_1951](#20260920_1951)
 - [20260920_1856](#20260920_1856)
 - [20260920_1758](#20260920_1758)
@@ -47,6 +48,33 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260920_2339
+
+### Path checking now covers this package's root docs, and a split-filename defect class is enforced (v0.6.3 -> v0.6.4)
+
+Ported from `unified-network-controller`'s staleness audit of the same evening
+(`unified-network-controller/docs/reports/staleness-audits/staleness-audit-20260920_2324.md`), which found the same two defects there.
+
+**`SURFACES` was a hand-list of seven files.** `PLAN-xv2-adapter-live-test.md` and anything added later sat outside every path check. It is now derived from the tree — root `*.md` plus
+`scripts/README.md`. `references/**` stays excluded, and the reason is stated in the code rather than left as an omission: those files use slash notation for KeePassXC vault groups
+(`cambium-devices/epmp-ap`), CIDR blocks and sibling-repo paths, and a path check over them reports about fifty non-defects, which is a check nobody reads. Bringing them in needs a token  <!-- path:example -->
+discriminator, not a longer exemption list.
+
+**Three references pointed at a path that no longer exists anywhere.** `PLAN-xv2-adapter-live-test.md` cited `cambium-swap`'s `docs/migration/controller-option3/option-3-architecture.md` and  <!-- path:example -->
+`cambium-vendor-adapter-data-points.md`. Those files moved to `unified-network-controller/docs/controller-option3/` in the 2026-09-18 split, so both the root and the path changed and every citation  <!-- path:example -->
+here silently sent the reader nowhere. Repointed.
+
+**`SIBLING_ROOTS` added.** A reference into `cambium-swap`, `unified-network-controller` or `skill-smc` now resolves against a declared root, which makes it *verified* rather than merely unchecked —
+if a sibling renames the target, this package's routing into it fails loudly. An absent root prints SKIPPED, never passed. Bare basenames are deliberately NOT resolved this way, so
+`scripts/README.md`'s `site-addressing.yaml` and `teleport-tunnel.sh` were qualified to `references/site-addressing.yaml` and `skill-smc/scripts/teleport-tunnel.sh`.  <!-- path:example -->
+
+**`check_split_path_tokens()` added.** A wide table cell had wrapped mid-filename in three places here (`SKILL.md`, `RUNBOOK.md`, `references/02_device-access-and-vault.md`), leaving a token ending
+in a backslash with its tail on the next row — unfollowable for a reader, and invisible to the path check, which skips anything that does not look like a path. Twenty-one instances were found across
+this package and its siblings. Both new checks were negative-tested in both directions.
+
+Checks **167 -> 225**.
+
 
 ## 20260920_1951
 

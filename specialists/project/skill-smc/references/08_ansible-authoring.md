@@ -514,7 +514,7 @@ tmpfs the *only* published fstype, dropping the real root-disk `/` metrics. Remo
 
 Why this is cleanly scoped (verified live on mornington, `findmnt -t tmpfs` = 9 mounts): the **existing** `--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|run)($|/)` already drops
 `/dev/shm` and every `/run/*` tmpfs, so removing the fs-type exclusion surfaces **exactly** the four `/tmp`/`/var/...` mounts and nothing noisy (no `/dev/shm`, no `/run/*`, no PrivateTmp — those
-aren't separate mounts in the host namespace). systemd note: **do not** add `#` comment lines inside the `\`-continued `ExecStart` block — systemd does not support comments mid-continuation and it
+aren't separate mounts in the host namespace). systemd note: **do not** add `#` comment lines inside the `\`-continued `ExecStart` block — systemd does not support comments mid-continuation and it  <!-- path:example -->
 breaks unit parsing (keep the rationale in this doc instead).
 
 Deploy: `smc_prometheus.yml --tags node_exporter` (copies the unit, restarts node_exporter — brief scrape gap only). Verified 2026-07-23 across 15/16 nodes (new-looma offline at the time): all four

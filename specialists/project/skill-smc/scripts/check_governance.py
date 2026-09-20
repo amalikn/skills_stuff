@@ -28,13 +28,59 @@ SELF = Path(__file__).resolve().relative_to(ROOT).as_posix()
 # --------------------------------------------------------------------------------------------------------------- CONFIG
 
 # Governance surfaces whose path references must resolve on disk.
-SURFACES: tuple[str, ...] = (
-    "README.md",
-    "AGENTS.md",
-    "SKILL.md",
-    "RUNBOOK.md",
-    "AI_NAVIGATION.md",
-)
+# DERIVED, not hand-listed. Until 2026-09-20 this was a fixed tuple, so `references/**` — where this package's
+# actual content lives — sat outside every path check. The sibling project `unified-network-controller` had the same
+# hole and it hid two genuinely broken links under a green suite; see its
+# `.archcore/rules/govern-a-derived-population-never-a-hand-list.rule.md`. A check's POPULATION is derived; a check's
+# PERMISSIONS (CONDITIONAL_PATHS, markers) stay explicit and per-entry reasoned.
+#
+# `references/**` is EXCLUDED, and the reason is stated rather than left as an omission: those files use slash
+# notation for things that are not filesystem paths — device paths, CIDR blocks, systemd unit paths, sibling-repo
+# paths — and a path check run over them reports mostly non-defects, which is a check nobody reads. Bringing them in
+# needs a token discriminator, not a longer exemption list. Their split-path tokens ARE checked, by
+# check_split_path_tokens, which scans every markdown file in the package.
+# A path claim may legitimately name a file in a SIBLING repo — this package's entire subject is the `ansible-wifi`
+# repository, and its prose names roles, inventories and flavour files by their path THERE. Declaring those roots
+# makes such references VERIFIED rather than merely unchecked: if ansible-wifi renames a role, this package's routing
+# into it fails loudly instead of quietly pointing nowhere. An absent root is reported as SKIPPED, never as passed.
+SIBLING_ROOTS: dict[str, str] = {
+    "self-parent":   "..",
+    "ansible-wifi":  "../../../../../../_ansible/ansible-wifi",
+    "ansible-notes": "../../../../../../_ansible/local-knowledge-ansible/ansible-wifi",
+    "ansible-root":  "../../../../../../_ansible",
+    "apn-projects":  "../../../../../_project/project_stuff/apn",
+    "skill-cambium": "../skill-cambium",
+}
+
+
+def _sibling_roots() -> list[Path]:
+    roots: list[Path] = []
+    for name, rel in sorted(SIBLING_ROOTS.items()):
+        base = (ROOT / rel).resolve()
+        if base.is_dir():
+            roots.append(base)
+        else:
+            print(f"  ... SKIPPED (not passed): sibling root `{name}` absent at {rel}; its references were not verified")
+    return roots
+
+
+_APPEND_ONLY: frozenset[str] = frozenset({"CHANGELOG.md", "SCRATCHPAD.md"})
+
+
+def _live_surfaces() -> tuple[str, ...]:
+    found = [p.relative_to(ROOT).as_posix()
+             for pat in ("*.md", "scripts/README.md")
+             for p in ROOT.glob(pat)]
+    # These two are append-only history. Its entries name files by the basename they carried when the entry was
+    # written, which is a true record of what was true then — "exempt history by marker, never by rewriting it".
+    # Rewriting past entries to satisfy a path check is the failure that exemption exists to prevent. SCRATCHPAD.md's
+    # session log is the same shape: its 2026-06-26 entry records that a dead `references/PROFILE.md` pointer was
+    # REMOVED, which a path check reads as a live broken reference. The gain from deriving the population is the
+    # files that were never in scope at all — ARCHITECTURE.md, PROFILE.md, SYSTEM_PROMPT.md, and anything added
+    # later — not these two.
+    return tuple(sorted(s for s in set(found) if s not in _APPEND_ONLY))
+
+
 
 # Index file -> (folder it indexes, glob). Enforces BOTH directions: every reference file is named in the index, and
 # every name in the index resolves to a real file. These four are the surfaces rule-reference-update-discipline.md
@@ -60,6 +106,23 @@ EXAMPLE_MARKER = "path:example"
 # Paths a governance surface references CONDITIONALLY ("when present"), or that are legitimately external-looking
 # tokens the path checker should not chase.
 CONDITIONAL_PATHS: frozenset[str] = frozenset({
+    # Names the evidence collector PRODUCES, documented so an operator knows what to expect in a capture bundle.
+    # They are outputs, not inputs, and nothing in this package is required to contain them.
+    "01-identity-hardware.txt",
+    "02-services-security.txt",
+    "03-apps-scripts-cron.txt",
+    "04-portal-packages.txt",
+    "05-portal-fqdn-status.txt",
+    "MANIFEST.txt",
+    "SUMMARY.txt",                        # also ambiguous: four captures carry this name, by design
+    # Not filesystem paths at all, despite the slash.
+    "origin/main",                        # git ref
+    "origin/master",                      # git ref
+    "wifi/access",                        # Apache log name on the SMC appliance, not a path in this repo
+    "scripts/scripts/...",                # ellipsis in prose showing a nesting shape, not a real path
+    # Fragments of this package's own canonical absolute path, quoted in prose about where it lives.
+    "specialists/project",
+    "skills_stuff/specialists/project/skill-smc",
     "graphify-out/GRAPH_REPORT.md",       # generated; this pack has no graphify-out/ yet
     "graphify-out/graph.json",
     "memory-bank/activeContext.md",       # this pack uses SCRATCHPAD.md, not a memory-bank
@@ -137,9 +200,32 @@ def members(folder: str, glob: str) -> list[Path]:
 # --------------------------------------------------------------------------------------------------------------- TIER 1
 
 
+def check_split_path_tokens() -> None:
+    """No backticked path is split across two table rows by a trailing backslash.
+
+    A wide table cell wraps mid-filename and leaves the token ending in a backslash with its tail on the next row.
+    The reference is unfollowable for a reader and invisible to check_referenced_paths, which skips anything that
+    does not look like a path — so the defect hides from the very check that should catch it. Found 20 times across
+    this package and its siblings on 2026-09-20. A line that legitimately discusses backslash continuation carries
+    the EXAMPLE_MARKER.
+    """
+    for path in sorted(ROOT.rglob("*.md")):
+        rel = path.relative_to(ROOT).as_posix()
+        if rel.startswith((".git/", "graphify-out/", ".ai-context/")) or rel == "CHANGELOG.md":
+            continue
+        counted()  # one assertion per FILE: "this file splits no path token across rows".
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if EXAMPLE_MARKER in line:
+                continue
+            for m in re.finditer(r"`([^`\n]*\\)`", line):
+                fail("split-path", f"{rel}:{number} splits `{m.group(1)}` across rows; a wrapped table cell broke a "
+                                   f"path token in half — join it onto one line")
+
+
 def check_referenced_paths() -> None:
     """Every repo-relative path named in a governance surface resolves on disk."""
-    for surface in SURFACES:
+    _siblings = _sibling_roots()
+    for surface in _live_surfaces():
         text = read(surface)
         if text is None:
             fail("surface", f"{surface} is listed as a governance surface but does not exist")
@@ -160,9 +246,24 @@ def check_referenced_paths() -> None:
             if suffix and suffix not in REPO_SUFFIXES:
                 continue
             counted()
-            near = (ROOT / surface).parent / tok
-            if not near.exists() and not (ROOT / tok).exists():
-                fail("path", f"{surface} references `{tok}` which does not exist")
+            if ((ROOT / surface).parent / tok).exists() or (ROOT / tok).exists():
+                continue
+            if any((b / tok).exists() for b in _siblings):
+                continue
+            # A BARE basename — `01_overview.md`, `flavors.json` — is how this package's own prose refers to its
+            # reference and config files, and that is legitimate: within one package the name is unambiguous. It
+            # resolves only on a UNIQUE match, so a rename still fails and an ambiguous name is reported rather
+            # than silently accepted.
+            if "/" not in tok:
+                hits = [h for h in ROOT.rglob(tok)
+                        if not h.relative_to(ROOT).as_posix().startswith((".git/", ".ai-context/", "graphify-out/"))]
+                if len(hits) == 1:
+                    continue
+                if len(hits) > 1:
+                    fail("path", f"{surface} references `{tok}`, which is ambiguous — {len(hits)} files carry that "
+                                 f"name; qualify it with its folder")
+                    continue
+            fail("path", f"{surface} references `{tok}` which does not exist")
 
 
 def check_catalog_coverage() -> None:
@@ -238,6 +339,7 @@ def check_version_single_source() -> None:
 
 CHECKS = (
     check_referenced_paths,
+    check_split_path_tokens,
     check_catalog_coverage,
     check_version_single_source,
 )

@@ -132,16 +132,16 @@ assuming `cw`/`apn`/`rct`/`wh` are ungated by design.
 |   local forward or Stubby        |   health; if the Teleport connection drops, DHCP/LAN client DNS on that SMC has no fallback once Unbound's     |                                                  |
 |   upstream reachability          |   cache expires (positive TTL up to 24h, negative TTL up to 5min) — failure would be silent until users notice |                                                  |
 | **No HTTP-level captive-portal** | Nothing probes whether the portal actually serves. The only portal-adjacent signals are the Kohana             | rcp portal outage RCA, 2026-07-28,               |
-|   **monitoring anywhere in**     |   `status:update:usage` / `status:update:status` crons, which run as **root** and therefore keep succeeding even |   `issues/rcp-fleet/rcp-captive-portal-cache-\`  |
-|   **the fleet**                  |   when the portal is dead for `www-data` — Eclipse keeps receiving data throughout an outage. This let 10 of   |   `perms-outage-20260728_1240.md`                |
+|   **monitoring anywhere in**     |   `status:update:usage` / `status:update:status` crons, which run as **root** and therefore keep succeeding even |   `issues/rcp-fleet/rcp-captive-portal-cache-perms-outage-20260728_1240.md`  |
+|   **the fleet**                  |   when the portal is dead for `www-data` — Eclipse keeps receiving data throughout an outage. This let 10 of   |                   |
 |                                  |   16 `rcp` sites sit fully down for 7 days undetected. A naive probe would not help either: the failure        |                                                  |
 |                                  |   returns **HTTP 200** with a 40-byte error body, so any check must assert on response body content or size, not |                                                  |
 |                                  |   status code                                                                                                  |                                                  |
 | Host-level DNS resolution        | `DNSStubListener=no` + `Cache=no` unconditional on all non-`smc_ltp` hosts — host glibc is directly exposed to | See `06_failure-modes.md` — mitigation candidate |
 |   bypasses any stub/cache        |   any WAN-path DNS anomaly with no resolver-level mitigation in place today                                    |   exists but is not yet fleet-validated          |
 | `smc_qos` role exists but is | last == 'rct'` — silently no-ops on every `rcp`/`nbn_accelerate` site | `03_communication-flows.md` previously stated | routing-issue investigation, |
-|   gated `when: |  |   Ansible-managed QoS was "planned, not started" |   `ingress-shaping-not-managed-or-extended-\` |
-|   inventory_dir.split('/') |  |   — that's stale. The role exists and |   `20260730_1245.md` |
+|   gated `when: |  |   Ansible-managed QoS was "planned, not started" |   `ingress-shaping-not-managed-or-extended-20260730_1245.md` |
+|   inventory_dir.split('/') |  |   — that's stale. The role exists and |    |
 |  |  |   `--tags qos` runs during rcp deploys, it just |  |
 |  |  |   never fires due to the gate. Manual TBF/ifb |  |
 |  |  |   shaping remains the only active mechanism on |  |
@@ -150,16 +150,16 @@ assuming `cw`/`apn`/`rct`/`wh` are ungated by design.
 |  |  |   Pandanus Park, 10 at Umoona, 8 at Old Looma as |  |
 |  |  |   of 2026-07-30) |  |
 | Fixed-topology                   | Confirmed at Horn Island: the boilerplate two-interface starlink block is applied regardless of whether a      | routing-issue investigation,                     |
-|   `starlink01`/`starlink02`      |   backup circuit actually exists, inflating `interfacecheckv2.sh`'s per-cycle ping count for no operational    |   `starlink-backup-no-lease-l2-investigation-\`  |
-|   interfaces defined even at     |   benefit. Topology generation should condition this block on actual provisioning, not apply it                |   `20260730_1400.md`                             |
+|   `starlink01`/`starlink02`      |   backup circuit actually exists, inflating `interfacecheckv2.sh`'s per-cycle ping count for no operational    |   `starlink-backup-no-lease-l2-investigation-20260730_1400.md`  |
+|   interfaces defined even at     |   benefit. Topology generation should condition this block on actual provisioning, not apply it                |                                |
 |   sites with no Starlink         |   unconditionally per flavor                                                                                   |                                                  |
 |   circuit ordered                |                                                                                                                |                                                  |
 | `watchdog.auto_reboot: 0` does   | (1) Line 16 templates `WATCHDOG_AUTO_REBOOT = "{{ watchdog.auto_reboot \| int }}"` without wrapping in `int()` | ansible-wifi session, 2026-09-03, open item —    |
 |   not actually disable automatic |   like every other templated scalar in the file, so it renders the **string** `"0"` — truthy in Python — meaning |   SCRATCHPAD.md `ansible-wifi`                   |
 |   reboots — two independent      |   the guard at line 641 is always true. (2) Separately, the second reboot path at line 653                     |                                                  |
 |   defects in                     |   (`if not args.dry_run: reboot()`) never consults the flag at any value. Confirmed live, not from the         |                                                  |
-|   `roles/smc_rise_watchdog/\`    |   template alone: `/opt/rise/status/watchdog.json` on a `flavor` set to `auto_reboot: 0` emits                 |                                                  |
-|   `templates/rise_watchdog.py.j2` |   `"auto_reboot":"0"` (quoted). **Not yet fixed — do not apply blind.** `fb7ff6fa`-style precedent exists of a |                                                  |
+|   `roles/smc_rise_watchdog/templates/rise_watchdog.py.j2`    |   template alone: `/opt/rise/status/watchdog.json` on a `flavor` set to `auto_reboot: 0` emits                 |                                                  |
+|    |   `"auto_reboot":"0"` (quoted). **Not yet fixed — do not apply blind.** `fb7ff6fa`-style precedent exists of a |                                                  |
 |                                  |   guard being deliberate and masking a spurious-reboot case the diff doesn't show; check `rct` and `nbn_wh`    |                                                  |
 |                                  |   values before changing anything                                                                              |                                                  |
 | **No per-device `role: internet` | `roles/prometheus_prometheus/files/rules.yml` has `NodeStarlinkInterfacecheckPacketLoss` (~line 173),          | ansible-wifi session,                            |
@@ -219,8 +219,7 @@ failing the race. Do not kill an apt holding the lock without checking what it i
 |   → node_exporter parse error             |                                                                                                         |   writes `NaN` on empty sed match instead of   |
 |                                           |                                                                                                         |   feeding it into `bc`) — deploy deferred to a |
 |                                           |                                                                                                         |   later session, not yet on any node.          |
-|                                           |                                                                                                         |   `roles/smc_network/templates/\`              |
-|                                           |                                                                                                         |   `interfacecheckv2.sh.j2`                     |
+|                                           |                                                                                                         |   `roles/smc_network/templates/interfacecheckv2.sh.j2`              |
 | Kohana PHP cron error (root cause revised | 1,440 syslog entries/day fleet-wide; possible silent bridge_501 public WiFi outage on Eclipse-enabled   | **Investigated live 2026-07-15, no active**    |
 |   2026-07-09 — see below)                 |   sites, not just log spam                                                                              |   **failure found.** The 2026-07-09 theory does |
 |                                           |                                                                                                         |   not hold up: `wifi.activ8me.net.au:443` TLS  |
@@ -463,16 +462,14 @@ Not covered: `cw` flavor itself (central-infra only, no site-level hosts to chec
 |                           |   (confirmed on horn-island — the same file      |                                                                                                                       |
 |                           |   pattern appeared transiently in fatrace top-5  |                                                                                                                       |
 |                           |   twice,                                         |                                                                                                                       |
-|                           |   `smc-file-writing-analysis/docs/log-audit-\`   |                                                                                                                       |
-|                           |   `results.md` 20260716_1500 and 20260717_1020,  |                                                                                                                       |
+|                           |   `smc-file-writing-analysis/docs/log-audit-results.md`   |                                                                                                                       |
 |                           |   gone both times when checked live immediately  |                                                                                                                       |
 |                           |   after), but sometimes orphaned. bidyadanga: 2  |                                                                                                                       |
 |                           |   files from April 2024 (68K+235K). wujal-wujal: |                                                                                                                       |
 |                           |   4 files from May 2025–March 2026 (~1.1MB       |                                                                                                                       |
 |                           |   total), newly found. Likely an                 |                                                                                                                       |
 |                           |   interrupted/crashed rewrite. See               |                                                                                                                       |
-|                           |   `smc-file-writing-analysis/docs/log-audit-\`   |                                                                                                                       |
-|                           |   `results.md` 20260717_1020 "Finding 2".        |                                                                                                                       |
+|                           |   `smc-file-writing-analysis/docs/log-audit-results.md`   |                                                                                                                       |
 | guda-guda-smc01           | ~~graylog-sidecar `active` but writing to local~~ | Resolved — see `smc-file-writing-analysis/docs/log-audit-results.md` 20260714_0830 entry                              |
 |                           |   ~~disk, not tmpfs~~ **RESOLVED 2026-07-14** — turned |                                                                                                                       |
 |                           |   out a standard `smc_graylog.yml` redeploy      |                                                                                                                       |
@@ -492,8 +489,7 @@ Not covered: `cw` flavor itself (central-infra only, no site-level hosts to chec
 |                           |   `gl.aws.apn.au`, confirmed via live curl       |                                                                                                                       |
 |                           |   binary search — server-side, not               |                                                                                                                       |
 |                           |   bidyadanga-specific. See                       |                                                                                                                       |
-|                           |   `smc-file-writing-analysis/docs/log-audit-\`   |                                                                                                                       |
-|                           |   `results.md` 20260716_1230. ~~graylog-sidecar~~ |                                                                                                                       |
+|                           |   `smc-file-writing-analysis/docs/log-audit-results.md`   |                                                                                                                       |
 |                           |   ~~`active` but writing to local disk~~ **RESOLVED** |                                                                                                                       |
 |                           |   **2026-07-14** — same as guda-guda, standard   |                                                                                                                       |
 |                           |   `smc_graylog.yml` redeploy fixed it, no        |                                                                                                                       |
@@ -525,8 +521,7 @@ Not covered: `cw` flavor itself (central-infra only, no site-level hosts to chec
 |                           |   retained history). A provisioning gap (devices |                                                                                                                       |
 |                           |   never claimed in cnMaestro), not a             |                                                                                                                       |
 |                           |   logging-severity setting. See                  |                                                                                                                       |
-|                           |   `smc-file-writing-analysis/docs/log-audit-\`   |                                                                                                                       |
-|                           |   `results.md` 20260716_1530.                    |                                                                                                                       |
+|                           |   `smc-file-writing-analysis/docs/log-audit-results.md`   |                                                                                                                       |
 | bungardi-smc01            | Multi-incident cluster, 2026-07-21→07-27 (master | Partially resolved (hostapd/netlink/kernel reboot); Teleport reverse-tunnel registration and eth0/WAN flakiness       |
 |                           |   branch), each with a distinct root cause: (1)  |   remain open — needs field/WAN follow-up. Diagnostic pattern worth reusing: a driver hang can masquerade as lock     |
 |                           |   `apt-get clean` exiting rc=100 traced to a     |   contention via D-state processes — check `ps` state column before assuming a lock-file/flock issue                  |
@@ -561,8 +556,8 @@ Not covered: `cw` flavor itself (central-infra only, no site-level hosts to chec
 |                           |   needs re-establishing once the box is          |                                                                                                                       |
 |                           |   writable again                                 |                                                                                                                       |
 | pandanus-park-smc01 (rcp) | `interfacecheckv2.sh`'s 5-minute cron restarted  | Not fully investigated — `enp2s0` restart cause open;                                                                 |
-|                           |   `enp2s0`, `vlan531`, `vlan532`, `vlan621`,     |   `local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/docs/pandanus-park-interfacecheck-chronic-restart-\` |
-|                           |   `vlan631` on **every single cycle**, continuously, |   `20260730_1140.md`                                                                                                  |
+|                           |   `enp2s0`, `vlan531`, `vlan532`, `vlan621`,     |   `local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/docs/pandanus-park-interfacecheck-chronic-restart-20260730_1140.md` |
+|                           |   `vlan631` on **every single cycle**, continuously, |                                                                                                     |
 |                           |   for 24h+ (as of 2026-07-30).                   |                                                                                                                       |
 |                           |   `vlan531`/`vlan532` are expected to clear once |                                                                                                                       |
 |                           |   the corrected dhclient hook deploys            |                                                                                                                       |
@@ -582,8 +577,8 @@ Not covered: `cw` flavor itself (central-infra only, no site-level hosts to chec
 |                           |   topology/routing investigation it was found    |                                                                                                                       |
 |                           |   during, not yet fixed                          |                                                                                                                       |
 | warburton-smc01 (rcp)     | `iptables.smp.j2`'s starlink `INPUT ... -j DROP` | Open, unresolved —                                                                                                    |
-|                           |   rule on `vlan621` (the only site with a live   |   `local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/docs/starlink-backup-no-lease-l2-investigation-\`    |
-|                           |   SMP-backup lease at check time) shows 1.68M    |   `20260730_1400.md`                                                                                                  |
+|                           |   rule on `vlan621` (the only site with a live   |   `local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/docs/starlink-backup-no-lease-l2-investigation-20260730_1400.md`    |
+|                           |   SMP-backup lease at check time) shows 1.68M    |                                                                                                     |
 |                           |   packets/3.3GB dropped over 2 weeks. Two        |                                                                                                                       |
 |                           |   5-minute live `tcpdump` captures (Warburton +  |                                                                                                                       |
 |                           |   Old Looma) found zero unsolicited third-party  |                                                                                                                       |
@@ -619,8 +614,7 @@ Not covered: `cw` flavor itself (central-infra only, no site-level hosts to chec
 |                           |   a physical-layer issue                         |                                                                                                                       |
 |                           |   (power/cabling/interference), not confirmed.   |                                                                                                                       |
 |                           |   See                                            |                                                                                                                       |
-|                           |   `smc-file-writing-analysis/docs/log-audit-\`   |                                                                                                                       |
-|                           |   `results.md` 20260716_1530.                    |                                                                                                                       |
+|                           |   `smc-file-writing-analysis/docs/log-audit-results.md`   |                                                                                                                       |
 
 **2026-07-16 synthesis — the fleet's 5 highest fatrace nodes generalize into two distinct causes, not one shared bug** (full detail: `smc-file-writing-analysis/docs/log-audit-results.md`
 20260716_1118): (1) **mornington, warburton, bidyadanga, wujal-wujal** are high because they're currently the busiest public-WiFi sites — live `/var/log/syslog` tail on all 4 shows `dhcpd`+ `dhclient`

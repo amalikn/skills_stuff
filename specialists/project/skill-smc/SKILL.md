@@ -69,8 +69,8 @@ Treat these paths as part of the SMC working surface:
 | `/Volumes/Data/_ansible/ansible-malik`                          | Operator playbooks for SMC operations, including `smc_get_pcapv*.yml` URL-capture fetch/process                                    |
 | `/Volumes/Data/_ai/_scripts/scripts_stuff/python/dns_query`     | DNS reporting pipeline consuming SMC URL-capture PCAP output                                                                       |
 | `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi`   | Local-only plans, reports, OPA artifacts, and SMC investigation knowledge for `ansible-wifi`                                       |
-| `/Volumes/Data/_ai/_project/project_stuff/apn/unified-\`        | FOSS network controller build (Nautobot + adapter layer) intended to eventually replace/complement `smc_cnmaestro_provisioning`'s  |
-|   `network-controller`                                          |   role — call `skill-cambium` first for device-layer questions, this pack for SMC/Ansible-layer questions                          |
+| `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller`        | FOSS network controller build (Nautobot + adapter layer) intended to eventually replace/complement `smc_cnmaestro_provisioning`'s  |
+|                                             |   role — call `skill-cambium` first for device-layer questions, this pack for SMC/Ansible-layer questions                          |
 
 When behavior, layout, or troubleshooting assumptions change in one of these surfaces, update the corresponding references in the others during the same session where practical.
 

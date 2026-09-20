@@ -57,8 +57,8 @@ stays project-local.
 | Path                                                                    | Relationship                                                                                                               |
 | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `/Volumes/Data/_ai/_project/project_stuff/apn/cambium-swap`             | Live source of truth for the device-family matrix, device inventory, and cnMaestro estate                                  |
-| `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-\`        | FOSS controller build replacing cnMaestro's monitoring/dashboard and TR-069 provisioning roles — consumes this pack's      |
-|   `controller`                                                          |   device-access/API knowledge for its vendor adapter layer; split out of `cambium-swap` 2026-09-18                         |
+| `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller`        | FOSS controller build replacing cnMaestro's monitoring/dashboard and TR-069 provisioning roles — consumes this pack's      |
+|                                                             |   device-access/API knowledge for its vendor adapter layer; split out of `cambium-swap` 2026-09-18                         |
 | `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc`  | SMC box / ansible-wifi provisioning layer — the fleet's management plane                                                   |
 | `/Volumes/Data/_ansible/ansible-wifi`                                   | Canonical `site_name` values, per-site inventory                                                                           |
 | `/Volumes/Data/_ansible/local-knowledge-ansible`                        | Local-only SMC/Cambium investigation knowledge — check before assuming a gap is unresearched                               |
