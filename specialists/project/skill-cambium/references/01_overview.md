@@ -49,6 +49,28 @@ Borrowed from `cambium-swap`'s own convention — apply it in this pack too. Tag
 As of 2026-09-17, no cnMaestro export or authenticated device session has happened against APN's real Cambium hardware — everything in this pack is `USER_STATED` (operator-supplied) or extracted from
 site asset registers, not `VERIFIED-OBSERVED`. See `05_known-issues.md`.
 
+## Wireless Security Posture Across the Fleet
+
+Derived from the 2026-09-20 36-site sweep — 98 service records and 207 client records across the enterprise Wi-Fi family — and confirmed as intent by the operator on 2026-09-21.
+
+| Field | Every value observed fleet-wide |
+| --- | --- |
+| `security` (service) | `open`, `wpa2-psk` |
+| `key_management` (client) | `NONE`, `PSK` |
+| `encryption` (client) | *(empty)*, `WPA2` |
+| `cipher` (client) | *(empty)*, `CCMP` |
+| `mode` (client) | `bgn`, `ac`, `axa` |
+
+**The open SSIDs are deliberate.** This is public community Wi-Fi and open is the operator's intent, not a misconfiguration or a drift finding. Do not raise it as a defect, and do not "fix" it in a
+template or a config push.
+
+Two consequences worth carrying:
+
+- **No WPA3 anywhere on the estate** — no SAE in `key_management`. Management frame protection (802.11w / PMF) is optional under WPA2 and mandatory under WPA3, so PMF is effectively absent fleet-wide.
+  Any consumer that needs a per-client `mfp` value can safely assume false **today**, and must re-check the moment WPA3 or OWE appears.
+- **Every client is 802.11n or later.** `mode` is never a legacy `bg`, so WMM is negotiated on every association — HT operation requires it, since block-ack and frame aggregation are defined over the
+  QoS access categories. A per-client WMM capability flag is therefore derivable from `mode` and never needs fabricating.
+
 ## Where the Live Data Lives
 
 This pack documents conventions and stable facts. The actual per-model matrix and per-device inventory are **not duplicated here** — they live in, and are only current in, `cambium-swap`:
