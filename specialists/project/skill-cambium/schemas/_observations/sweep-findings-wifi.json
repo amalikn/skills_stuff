@@ -1,0 +1,19 @@
+{
+  "swept_utc": "2026-09-20T06:50:12Z",
+  "sites": 36,
+  "observations_made": 35,
+  "findings": [
+    {
+      "site": "kalumburu",
+      "family": "enterprise-wifi",
+      "status": "no-login",
+      "detail": "no device at this site accepted the vault credential"
+    },
+    {
+      "site": "wandawuy",
+      "family": "enterprise-wifi",
+      "status": "bad-json",
+      "endpoint": "client-summary"
+    }
+  ]
+}

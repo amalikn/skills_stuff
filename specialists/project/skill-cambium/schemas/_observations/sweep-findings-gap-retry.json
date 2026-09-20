@@ -1,0 +1,188 @@
+{
+  "swept_utc": "2026-09-20T07:21:33Z",
+  "sites": 6,
+  "observations_made": 7,
+  "findings": [
+    {
+      "site": "horn-island",
+      "family": "cnpilot-r-series",
+      "device": "HOR-R195P-1158",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: SSH command failed (exit 255): 'true' ->"
+    },
+    {
+      "site": "horn-island",
+      "family": "epmp-sm",
+      "device": "HRN_F300-25SM_AP9_EXT2051_IP_22_",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "hope-vale",
+      "family": "cnwave-60ghz",
+      "device": "HOP_T25_V2K_IP4_104",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "hope-vale",
+      "family": "cnwave-60ghz",
+      "device": "HOP_T26_V2K_IP4_105",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "hope-vale",
+      "family": "cnwave-60ghz",
+      "device": "HOP_T27_V2K_IP4_106",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "hope-vale",
+      "family": "cnwave-60ghz",
+      "device": "TBD",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "warakurna",
+      "family": "epmp-ap",
+      "device": "T1_SpareOmni_IP_0_12_Warakurna",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "warakurna",
+      "family": "epmp-ap",
+      "device": "T1_Omni1_IP_0_10_Warakurna",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "warakurna",
+      "family": "epmp-sm",
+      "device": "T6_F300_IP3_61_Warakurna",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "kalumburu",
+      "family": "enterprise-wifi",
+      "status": "no-login",
+      "detail": "no device at this site accepted the vault credential"
+    },
+    {
+      "site": "kalumburu",
+      "family": "epmp-ap",
+      "device": "Tower1_Omni 1_IP_0_10",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: Cambium ePMP login failed: {'msg': 'auth_failed', 'success': 0}"
+    },
+    {
+      "site": "kalumburu",
+      "family": "epmp-ap",
+      "device": "Tower1_Force 300_IP_0_11_master",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: Cambium ePMP login failed: {'msg': 'auth_failed', 'success': 0}"
+    },
+    {
+      "site": "kalumburu",
+      "family": "epmp-ap",
+      "device": "Tower7_Force300_IP_0_72_master",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: Cambium ePMP login failed: {'msg': 'auth_failed', 'success': 0}"
+    },
+    {
+      "site": "kalumburu",
+      "family": "epmp-ap",
+      "device": "Tower2_Force 300_IP_0_22_master",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: Cambium ePMP login failed: {'msg': 'auth_failed', 'success': 0}"
+    },
+    {
+      "site": "kalumburu",
+      "family": "epmp-sm",
+      "device": "Tower1_Force 300_IP_0_12_slave",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: Cambium ePMP login failed: {'msg': 'auth_failed', 'success': 0}"
+    },
+    {
+      "site": "kalumburu",
+      "family": "epmp-sm",
+      "device": "Tower2_Force 300 _IP_0_21_slave",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: Cambium ePMP login failed: {'msg': 'auth_failed', 'success': 0}"
+    },
+    {
+      "site": "kalumburu",
+      "family": "epmp-sm",
+      "device": "Force300_EXT1020_IP2_20",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "kalumburu",
+      "family": "epmp-sm",
+      "device": "Force300_EXT1003_IP2_3",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "mornington",
+      "family": "cnpilot-r-series",
+      "device": "MOR-R195P-1044",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: SSH command failed (exit 255): 'true' ->"
+    },
+    {
+      "site": "mornington",
+      "family": "cnpilot-r-series",
+      "device": "MOR-R195P-1001",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: SSH command failed (exit 255): 'true' ->"
+    },
+    {
+      "site": "mornington",
+      "family": "cnpilot-r-series",
+      "device": "MOR-R195P-1002",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: SSH command failed (exit 255): 'true' ->"
+    },
+    {
+      "site": "mornington",
+      "family": "cnpilot-r-series",
+      "device": "MOR-R195P-1003",
+      "status": "adapter-failed",
+      "detail": "admin@localhost: Permission denied (publickey,password)."
+    },
+    {
+      "site": "mornington",
+      "family": "cnwave-60ghz",
+      "device": "NEW_T3_T1-T3_CN_IP4_111",
+      "status": "adapter-failed",
+      "detail": "RuntimeError: POST /local/getCnAgentStatus -> HTTP 400:"
+    },
+    {
+      "site": "mornington",
+      "family": "epmp-sm",
+      "device": "MOR_F300-16SM_EXT1078_IP_21_78",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "mornington",
+      "family": "epmp-sm",
+      "device": "MOR_F300-16SM_EXT1001_IP_21_1",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "site": "mornington",
+      "family": "epmp-sm",
+      "device": "MOR_F300-16SM_EXT1002_IP_21_2",
+      "status": "adapter-failed",
+      "detail": "urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    }
+  ]
+}

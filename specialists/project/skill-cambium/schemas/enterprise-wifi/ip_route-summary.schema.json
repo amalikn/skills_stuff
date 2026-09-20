@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/enterprise-wifi/ip_route-summary.schema.json",
+  "title": "Cambium enterprise-wifi \u2014 ip_route-summary",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "enterprise-wifi",
+    "endpoint": "ip_route-summary",
+    "layer": "raw-endpoint",
+    "observations": 36,
+    "models": [
+      "E500",
+      "XV2"
+    ],
+    "firmware": [
+      "4.2.2-r5",
+      "4.2.2.1-r3",
+      "4.2.3-r2",
+      "4.2.3.1-r17",
+      "4.2.3.1-r9",
+      "6.6.0.2-r5",
+      "6.6.0.3-r9",
+      "6.6.2.1-r5"
+    ],
+    "sites": [
+      "amata",
+      "ampilatwatja",
+      "arawerr",
+      "arreyonga",
+      "aurukun",
+      "bidyadanga",
+      "bungardi",
+      "burawa",
+      "burringurrah",
+      "darlngunaya",
+      "doomadgee",
+      "galiwinku",
+      "gan-gan",
+      "hope-vale",
+      "horn-island",
+      "indulkana",
+      "jigalong",
+      "junjuwa",
+      "kaltjiti-fergon",
+      "kalumburu",
+      "koonibba",
+      "kowanyama",
+      "kurnangki",
+      "loanbun",
+      "mimili",
+      "mindi-rardi",
+      "mornington",
+      "mowanjum",
+      "mungkarta",
+      "pipalyatjara",
+      "pormparaaw",
+      "pukatja",
+      "tjuntjuntjara",
+      "wandawuy",
+      "warakurna",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "devname": {
+        "type": "string",
+        "x-candidate-values": [
+          "VLAN500"
+        ],
+        "x-observed-count": 72
+      },
+      "flags": {
+        "type": "string",
+        "x-candidate-values": [
+          "U",
+          "UG"
+        ],
+        "x-observed-count": 72
+      },
+      "gateway": {
+        "type": "string",
+        "x-observed-count": 72
+      },
+      "ip_addr": {
+        "type": "string",
+        "x-observed-count": 72
+      },
+      "mask": {
+        "type": "string",
+        "x-observed-count": 72
+      },
+      "metric": {
+        "type": "string",
+        "x-candidate-values": [
+          "0"
+        ],
+        "x-observed-count": 72
+      },
+      "refs": {
+        "type": "string",
+        "x-candidate-values": [
+          "0"
+        ],
+        "x-observed-count": 72
+      },
+      "use": {
+        "type": "string",
+        "x-candidate-values": [
+          "0"
+        ],
+        "x-observed-count": 72
+      }
+    },
+    "required": [
+      "devname",
+      "flags",
+      "gateway",
+      "ip_addr",
+      "mask",
+      "metric",
+      "refs",
+      "use"
+    ],
+    "x-observed-count": 0,
+    "x-optional": {},
+    "x-evidence": {
+      "observations_with_records": 36,
+      "observations_empty": 0,
+      "empty_at": [],
+      "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+    }
+  },
+  "x-observed-count": 0
+}

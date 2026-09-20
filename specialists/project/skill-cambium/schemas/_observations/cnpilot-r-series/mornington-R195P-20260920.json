@@ -1,0 +1,824 @@
+{
+  "x-observation": {
+    "captured_utc": "2026-09-20T07:40:42Z",
+    "family": "cnpilot-r-series",
+    "model": "R195P",
+    "firmware": "4.7.3-R21",
+    "site": "mornington",
+    "layer": "adapter-normalized",
+    "driver": "stdin",
+    "strict_pii": true
+  },
+  "endpoints": {
+    "facts": {
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "type": "string",
+          "x-identifying": true,
+          "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+          "x-observed-count": 1
+        },
+        "kernel_version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "lan_mac_address": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "model": {
+          "type": "string",
+          "x-candidate-values": [
+            "R195P"
+          ],
+          "x-observed-count": 1
+        },
+        "raw_uname": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "soc": {
+          "type": "string",
+          "x-candidate-values": [
+            "MT7621"
+          ],
+          "x-observed-count": 1
+        },
+        "vendor": {
+          "type": "string",
+          "x-identifying": true,
+          "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+          "x-observed-count": 1
+        },
+        "wan_mac_address": {
+          "type": "null",
+          "x-nullable": true,
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "hostname",
+        "kernel_version",
+        "lan_mac_address",
+        "model",
+        "raw_uname",
+        "soc",
+        "vendor",
+        "wan_mac_address"
+      ],
+      "x-records-observed": 1
+    },
+    "interfaces": {
+      "type": "object",
+      "properties": {
+        "apcli0": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "apclii0": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "br0": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "x-candidate-values": [
+                  "192.168.11.1/24"
+                ],
+                "x-observed-count": 1
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "eth2": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "eth2.1": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "eth2.2": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "eth2.3": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "eth2.500": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "x-candidate-values": [
+                  "10.255.11.3/19"
+                ],
+                "x-observed-count": 1
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "eth2.501": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq0": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq1": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq10": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq11": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq12": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq13": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq14": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq15": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq2": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq3": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq4": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq5": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq6": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq7": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq8": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "imq9": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "lo": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "x-candidate-values": [
+                  "127.0.0.1/8"
+                ],
+                "x-observed-count": 1
+              },
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "ra0": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "rai0": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "wan3": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "wan3.501": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "x-candidate-values": [
+                  "10.0.11.3/19"
+                ],
+                "x-observed-count": 1
+              },
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "wds0": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "wds1": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "wds2": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "wds3": {
+          "type": "object",
+          "properties": {
+            "ipv4_addresses": {
+              "type": "array",
+              "items": {
+                "type": "null",
+                "x-observed-count": 0
+              },
+              "x-observed-count": 1
+            },
+            "is_up": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "mac_address": {
+              "type": "string",
+              "x-identifying": true,
+              "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "apcli0",
+        "apclii0",
+        "br0",
+        "eth2",
+        "eth2.1",
+        "eth2.2",
+        "eth2.3",
+        "eth2.500",
+        "eth2.501",
+        "imq0",
+        "imq1",
+        "imq10",
+        "imq11",
+        "imq12",
+        "imq13",
+        "imq14",
+        "imq15",
+        "imq2",
+        "imq3",
+        "imq4",
+        "imq5",
+        "imq6",
+        "imq7",
+        "imq8",
+        "imq9",
+        "lo",
+        "ra0",
+        "rai0",
+        "wan3",
+        "wan3.501",
+        "wds0",
+        "wds1",
+        "wds2",
+        "wds3"
+      ],
+      "x-records-observed": 1
+    }
+  }
+}

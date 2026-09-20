@@ -78,3 +78,4 @@ stays project-local.
 - `references/04_device-inventory-schema.md` — `device-inventory.csv` column contract, `UNKNOWN` discipline, extraction workflow.
 - `references/05_known-issues.md` — coverage gaps, unverified assumptions, staleness risks.
 - `references/06_device-api-cli-reference.md` — device REST API / SSH CLI data points per adapter method, config-backup source, write-ops boundary.
+- `schemas/` — the machine-readable **response contract** per family and endpoint, derived from live devices rather than vendor documentation, with `schemas/_observations/` holding the inputs that justify it. Read `schemas/README.md` before writing adapter field mappings, `schemas/SWEEP-LOG.md` for how the evidence was gathered and what two discarded sweeps got wrong, and run `scripts/schema_tool.py check` before assuming a new site or firmware matches.

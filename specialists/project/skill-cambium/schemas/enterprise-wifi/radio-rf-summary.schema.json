@@ -1,0 +1,372 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/enterprise-wifi/radio-rf-summary.schema.json",
+  "title": "Cambium enterprise-wifi \u2014 radio-rf-summary",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "enterprise-wifi",
+    "endpoint": "radio-rf-summary",
+    "layer": "raw-endpoint",
+    "observations": 35,
+    "models": [
+      "E500",
+      "XV2"
+    ],
+    "firmware": [
+      "4.2.2-r5",
+      "4.2.2.1-r3",
+      "4.2.3-r2",
+      "4.2.3.1-r17",
+      "4.2.3.1-r9",
+      "6.6.0.2-r5",
+      "6.6.0.3-r9",
+      "6.6.2.1-r5"
+    ],
+    "sites": [
+      "amata",
+      "ampilatwatja",
+      "arawerr",
+      "arreyonga",
+      "aurukun",
+      "bidyadanga",
+      "bungardi",
+      "burawa",
+      "burringurrah",
+      "darlngunaya",
+      "galiwinku",
+      "gan-gan",
+      "hope-vale",
+      "horn-island",
+      "indulkana",
+      "jigalong",
+      "junjuwa",
+      "kaltjiti-fergon",
+      "kalumburu",
+      "koonibba",
+      "kowanyama",
+      "kurnangki",
+      "loanbun",
+      "mimili",
+      "mindi-rardi",
+      "mornington",
+      "mowanjum",
+      "mungkarta",
+      "pipalyatjara",
+      "pormparaaw",
+      "pukatja",
+      "tjuntjuntjara",
+      "wandawuy",
+      "warakurna",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "busy_cu": {
+        "type": "string",
+        "x-candidate-values": [
+          "0",
+          "24"
+        ],
+        "x-observed-count": 70
+      },
+      "chan_if": {
+        "type": "string",
+        "x-observed-count": 70
+      },
+      "chan_thp": {
+        "type": "string",
+        "x-candidate-values": [
+          "NA"
+        ],
+        "x-observed-count": 54
+      },
+      "nf": {
+        "type": "string",
+        "x-observed-count": 70
+      },
+      "non_wifi_cu": {
+        "type": "string",
+        "x-candidate-values": [
+          "0",
+          "1",
+          "2",
+          "4",
+          "7"
+        ],
+        "x-observed-count": 54
+      },
+      "per": {
+        "type": "string",
+        "x-observed-count": 70
+      },
+      "rx_cu": {
+        "type": "string",
+        "x-observed-count": 70
+      },
+      "tot_rx_cu": {
+        "type": "string",
+        "x-observed-count": 54
+      },
+      "total_cu": {
+        "type": "string",
+        "x-observed-count": 70
+      },
+      "tx_cu": {
+        "type": "string",
+        "x-observed-count": 70
+      },
+      "u_cu": {
+        "type": "string",
+        "x-observed-count": 54
+      },
+      "band": {
+        "type": "string",
+        "x-observed-count": 16
+      },
+      "cu": {
+        "type": "string",
+        "x-observed-count": 16
+      },
+      "cur_thp": {
+        "type": "string",
+        "x-candidate-values": [
+          "0 Kbps"
+        ],
+        "x-observed-count": 8
+      },
+      "nav": {
+        "type": "string",
+        "x-candidate-values": [
+          "0"
+        ],
+        "x-observed-count": 16
+      },
+      "total_if": {
+        "type": "string",
+        "x-candidate-values": [
+          "1",
+          "5"
+        ],
+        "x-observed-count": 2
+      }
+    },
+    "required": [
+      "busy_cu",
+      "chan_if",
+      "nf",
+      "per",
+      "rx_cu",
+      "total_cu",
+      "tx_cu"
+    ],
+    "x-observed-count": 0,
+    "x-optional": {
+      "band": {
+        "observed_on": 8,
+        "of": 35,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "chan_thp": {
+        "observed_on": 27,
+        "of": 35,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "cu": {
+        "observed_on": 8,
+        "of": 35,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "cur_thp": {
+        "observed_on": 8,
+        "of": 35,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "nav": {
+        "observed_on": 8,
+        "of": 35,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "non_wifi_cu": {
+        "observed_on": 27,
+        "of": 35,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "tot_rx_cu": {
+        "observed_on": 27,
+        "of": 35,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "total_if": {
+        "observed_on": 1,
+        "of": 35,
+        "seen_at": [
+          "junjuwa/XV2"
+        ]
+      },
+      "u_cu": {
+        "observed_on": 27,
+        "of": 35,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      }
+    },
+    "x-evidence": {
+      "observations_with_records": 35,
+      "observations_empty": 0,
+      "empty_at": [],
+      "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+    }
+  },
+  "x-observed-count": 0
+}

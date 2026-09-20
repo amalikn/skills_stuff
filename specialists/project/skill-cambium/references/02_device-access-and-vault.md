@@ -71,10 +71,11 @@ In any file, reference a device's access value as `<secret:keepassxc:cambium-dev
 
 ## Confirmed Live Network Path to a Site (Hope Vale, 2026-09-17)
 
-Verified end-to-end from an agent session: `tsh ssh root@hope-vale-smc01` (cluster `teleport.communitywifi.net.au`, per `skill-smc`'s `nbn_accelerate` → communitywifi cluster split) reaches the site's
-SMC box directly — no `~/.ssh/config` ProxyCommand entry needed, `tsh ssh` is sufficient on its own. From that box, `bridge_500` (`10.255.0.1/19`) is the device management network and spans the whole
-`10.255.0.0–31.255` range used by both Hope Vale and Burringurrah naming conventions (see `03_asset-register-conventions.md`) — a device's `management_ip` from `device-inventory.csv` is reachable by
-plain `ping`/`ssh` from the SMC box once the Teleport session is up. Not reachable from a workstation directly (no route over the general APN/community-wifi VPN tunnel); the SMC box is the only hop.
+Verified end-to-end from an agent session: `tsh ssh root@hope-vale-smc01` (Teleport target `teleport.communitywifi.net.au`, per `skill-smc`'s `nbn_accelerate` → communitywifi project split) reaches
+the site's SMC box directly — no `~/.ssh/config` ProxyCommand entry needed, `tsh ssh` is sufficient on its own. From that box, `bridge_500` (`10.255.0.1/19`) is the device management network and spans
+the whole `10.255.0.0–31.255` range used by both Hope Vale and Burringurrah naming conventions (see `03_asset-register-conventions.md`) — a device's `management_ip` from `device-inventory.csv` is
+reachable by plain `ping`/`ssh` from the SMC box once the Teleport session is up. Not reachable from a workstation directly (no route over the general APN/community-wifi VPN tunnel); the SMC box is
+the only hop.
 
 **Resolved (2026-09-17):** the credential-materialization block above was fixed with a narrow `Bash(kp show ... cambium-devices/*)` allow-list added to the calling project's own
 `.claude/settings.local.json` — scope it to `kp show` reads only, never a blanket credential allow. Separately, `kp` itself was not resolving on `PATH` inside the Bash tool's shell (no shell rc file
@@ -83,9 +84,15 @@ adds `~/.config/keepassxc`) — fixed globally with `ln -sf ~/.config/keepassxc/
 genuine device response — Enterprise Wi-Fi XV2-2T0, serial `WLYB0501N05R`, firmware `6.6.0.3-r9`, confirming the whole vault→Teleport→device chain works, not just each piece in isolation.
 
 **Web UI access, canonical form (2026-09-17):** the SSH-nested-command approach above works, but the operator's own standard practice is a local-port-forward tunnel straight to the device's web UI —
-see `skill-smc`'s `references/01_overview.md` for the exact `tsh ssh --proxy <cluster> -L <local_port>:<device_ip>:<device_port> root@<smc-hostname>` form (the explicit `--proxy` flag is what made it
+see `skill-smc`'s `references/01_overview.md` for the exact `tsh ssh --proxy <teleport> -L <local_port>:<device_ip>:<device_port> root@<smc-hostname>` form (the explicit `--proxy` flag is what made it
 reliable — an earlier attempt without it was flaky). Verified live against the same Tower 1 AP on port 443 (HTTP 200 through the tunnel). Port convention: `443` for current Cambium web UIs (Enterprise
 Wi-Fi, ePMP 3000-family), `80` for older ones — operator-stated example: ePMP 1000 serves plain HTTP, not HTTPS.
+
+**`--proxy=` is required, `--cluster=` is wrong, for EVERY `tsh` command against `teleport.communitywifi.net.au` — not just this tunnel case.** `--cluster=` routes to it as a subordinate target (a
+trust relationship that doesn't exist — it's its own root), and fails with `transport: authentication handshake failed: EOF`, an error that convincingly fakes a real outage or a missing/decommissioned
+node. Real incident, 2026-09-18: two agent sessions doing Cambium device work here hit exactly this and wrongly concluded Hope Vale's `hope-vale-smc01` was down/deregistered. It wasn't — `tsh ls
+--proxy=teleport.communitywifi.net.au` and `tsh ssh --proxy=teleport.communitywifi.net.au root@hope-vale-smc01` both worked immediately once the right flag was used. Full detail: skill-smc's
+`references/01_overview.md`.
 
 **Enterprise Wi-Fi (XV2/Falcon UI) REST API, confirmed live 2026-09-17:** the web UI is an AngularJS app ("falcon") calling a JSON REST API on the device itself, not just a config form. Auth: `POST
 /api/login` with JSON body `{"username": "...", "password": "..."}` (header `Content-Type: application/json`); success returns `{"success":true}` plus two cookies, `api_token` and `XSRF-TOKEN`. Every

@@ -16,10 +16,22 @@ Role matters here, confirmed live 2026-09-17 against two real Hope Vale nodes:
   body — those are E2E-controller-only, not per-node. Check get_e2e_info().get("enabled") before trusting get_topology() or
   get_ctrl_status_dump() to return anything.
 
-Several endpoints seen in the JS bundle return HTTP 400 with an empty body when called with `{}` (getRadioStats, getNetworkStats,
-getKeyPerformanceIndex, getCnAgentStatus, and — inconsistently, only on some nodes — getGpsBrief) — they likely need parameters not yet
-reverse-engineered (a radio MAC, a time range, ...). get_gps() below tolerates this and returns None rather than raising; the others are not
-wrapped at all, treat as a known gap, not a bug in this adapter.
+getGpsBrief returns HTTP 400 with an empty body on at least one real node (no GPS fix, or a missing param this adapter doesn't send yet) —
+get_gps() below tolerates that specific failure and returns None rather than raising.
+
+getRadioStats/getNetworkStats/getKeyPerformanceIndex/getCnAgentStatus (confirmed live 2026-09-18 against a real V5000 POP node,
+DMG_T12_V5000_DN_IP4_100, Doomadgee) all 400 on a bare `{}` POST to `/api/<name>` — **that path prefix was the actual bug, not a missing
+param**: the Angular frontend's own JS bundle (main.<hash>.js, same reverse-engineering technique as every other endpoint here) calls these
+four under `/local/`, not `/api/` like getTopology/getCtrlStatusDump. Correct request shapes, read from the JS's own `http.post(...)` call
+sites and confirmed live:
+- `POST /local/getRadioStats` — `{"macs": [<node_mac>]}` — the physical node MAC (e.g. `00:04:56:88:bb:25`), NOT a `wlan_mac_addrs` radio
+  MAC from get_topology() — passing a radio MAC returns `{"success":true,"message":"[]"}` (empty, not an error).
+- `POST /local/getNetworkStats` — `{"macs": [<node_mac>], "ifaces": [<iface names>]}` — per-interface Ethernet counters. `ifaces` must be
+  non-empty (`[]` still 400s); `"nic1"` confirmed live.
+- `POST /local/getKeyPerformanceIndex` — `{"mac": <node_mac>}` (singular key, not `macs`) — node MAC required, same as getRadioStats; a
+  radio MAC returns nulled-out placeholder data with HTTP 200, not an error.
+- `POST /local/getCnAgentStatus` — `{}` — genuinely takes no params, exactly as the JS calls it; the earlier 400s were entirely the
+  `/api/` vs `/local/` path mismatch.
 
 SNMP is documented (SNMPv2c RO/RW + SNMPv3, MIB TERRAGRAPH-RADIO-MIB) but never confirmed live — no community string is known. The R195P
 Ansible template's SNMP Get/Set community values are encrypted blobs in the device's own config-encryption format, identical across every
@@ -164,6 +176,27 @@ class CambiumCnWaveAdapter:
         on Meta's Terragraph platform) — E2E-controller-only, same caveat as get_topology()."""
         return self._request("/api/getCtrlStatusDump")
 
+    def get_radio_stats(self, node_mac: str) -> dict:
+        """Per-radio RF/TDD stats for one node (rf sync temps, tx/rx byte+packet rates, TDD slot ratio, ...). Confirmed live 2026-09-18.
+        `node_mac` is the node's own MAC (get_facts()'s mac_address / get_topology()'s node mac_addr) — a wlan_mac_addrs radio MAC returns
+        an empty result, not an error, so a mismatch here fails silently rather than raising."""
+        return self._request("/local/getRadioStats", {"macs": [node_mac]})
+
+    def get_network_stats(self, node_mac: str, ifaces: list[str]) -> dict:
+        """Per-interface Ethernet counters (rx/tx packets, bytes, errors, drops) for one node. Confirmed live 2026-09-18 with
+        ifaces=["nic1"]. `ifaces` must be non-empty — an empty list 400s."""
+        return self._request("/local/getNetworkStats", {"macs": [node_mac], "ifaces": ifaces})
+
+    def get_key_performance_index(self, node_mac: str) -> dict:
+        """Node-level KPI summary (totalSectors, totalLinks, uptime, tx/rx byte rate) plus a per-sector link-count map. Confirmed live
+        2026-09-18. Takes a single `mac` (node MAC, not a list) — a radio MAC returns nulled-out placeholder values with HTTP 200."""
+        return self._request("/local/getKeyPerformanceIndex", {"mac": node_mac})
+
+    def get_cn_agent_status(self) -> dict:
+        """This node's CN-agent connection status to cnMaestro (code/status/message/ts). Confirmed live 2026-09-18 — genuinely takes no
+        params; the {} body matches the JS bundle's own call exactly."""
+        return self._request("/local/getCnAgentStatus", {})
+
     def get_config(self) -> dict:
         """Config snapshot for backup/diff, merging the two confirmed-live config-read endpoints. REDACTS every credential-shaped field via
         REDACT_KEY_PATTERN before returning — not yet seen a real secret in this family's config live, but the pattern applies
@@ -178,9 +211,11 @@ class CambiumCnWaveAdapter:
 def _cmd_getters(adapter: CambiumCnWaveAdapter) -> int:
     adapter.login()
     try:
+        facts = adapter.get_facts()
         e2e = adapter.get_e2e_info()
+        node_mac = facts.get("mac_address")
         result = {
-            "facts": adapter.get_facts(),
+            "facts": facts,
             "e2e_info": e2e,
             "status": adapter.get_status(),
             "capability": adapter.get_capability(),
@@ -188,6 +223,11 @@ def _cmd_getters(adapter: CambiumCnWaveAdapter) -> int:
             "gps": adapter.get_gps(),
             "config": adapter.get_config(),
         }
+        if node_mac:
+            result["radio_stats"] = adapter.get_radio_stats(node_mac)
+            result["network_stats"] = adapter.get_network_stats(node_mac, ["nic1"])
+            result["key_performance_index"] = adapter.get_key_performance_index(node_mac)
+        result["cn_agent_status"] = adapter.get_cn_agent_status()
         if e2e.get("enabled"):
             result["topology"] = adapter.get_topology()
             result["ctrl_status_dump"] = adapter.get_ctrl_status_dump()

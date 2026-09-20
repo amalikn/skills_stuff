@@ -241,9 +241,21 @@ def main() -> int:
     adapter = CambiumEPMPAdapter(host, username, password)
 
     if args.include_config:
+        # Single combined login: facts/interfaces/wireless_link/clients/config all in one
+        # session, mirroring cambium_r195p_adapter.py's --include-config shape. This family has a
+        # real 5-session RW cap (see references/06_device-api-cli-reference.md) — a prior version
+        # of this branch called get_config() alone and left _cmd_getters()'s own separate
+        # login/logout pair unused, which would have cost a second session for no reason.
         adapter.login()
         try:
-            print(json.dumps(adapter.get_config(), indent=2))
+            result = {
+                "facts": adapter.get_facts(),
+                "interfaces": adapter.get_interfaces(),
+                "wireless_link": adapter.get_wireless_link(),
+                "clients": adapter.get_clients(),
+                "config": adapter.get_config(),
+            }
+            print(json.dumps(result, indent=2))
         finally:
             adapter.logout()
         return 0

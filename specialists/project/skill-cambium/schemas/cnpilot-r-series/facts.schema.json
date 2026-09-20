@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/cnpilot-r-series/facts.schema.json",
+  "title": "Cambium cnpilot-r-series \u2014 facts",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "cnpilot-r-series",
+    "endpoint": "facts",
+    "layer": "adapter-normalized",
+    "observations": 9,
+    "models": [
+      "R195P"
+    ],
+    "firmware": [
+      "4.7.3-R21",
+      "4.7.5-R2",
+      "4.8.1-R4"
+    ],
+    "sites": [
+      "bidyadanga",
+      "burringurrah",
+      "horn-island",
+      "jigalong",
+      "kalumburu",
+      "mornington",
+      "mowanjum",
+      "tjuntjuntjara",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "object",
+  "properties": {
+    "hostname": {
+      "type": "string",
+      "x-identifying": true,
+      "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+      "x-observed-count": 9
+    },
+    "kernel_version": {
+      "type": "string",
+      "x-observed-count": 9
+    },
+    "lan_mac_address": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "x-observed-count": 9,
+      "x-type-varies": true,
+      "x-nullable": true
+    },
+    "model": {
+      "type": "string",
+      "x-candidate-values": [
+        "R195P"
+      ],
+      "x-observed-count": 9
+    },
+    "raw_uname": {
+      "type": "string",
+      "x-observed-count": 9
+    },
+    "soc": {
+      "type": "string",
+      "x-candidate-values": [
+        "MT7621"
+      ],
+      "x-observed-count": 9
+    },
+    "vendor": {
+      "type": "string",
+      "x-identifying": true,
+      "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+      "x-observed-count": 9
+    },
+    "wan_mac_address": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "x-observed-count": 9,
+      "x-type-varies": true,
+      "x-nullable": true
+    }
+  },
+  "required": [
+    "hostname",
+    "kernel_version",
+    "lan_mac_address",
+    "model",
+    "raw_uname",
+    "soc",
+    "vendor",
+    "wan_mac_address"
+  ],
+  "x-observed-count": 0,
+  "x-optional": {},
+  "x-evidence": {
+    "observations_with_records": 9,
+    "observations_empty": 0,
+    "empty_at": [],
+    "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+  }
+}

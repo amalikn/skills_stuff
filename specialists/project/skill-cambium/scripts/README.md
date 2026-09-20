@@ -4,7 +4,7 @@ Runnable scripts and task entrypoints for skill-cambium. Prefer `just --list` / 
 (`/Volumes/Data/_ai/_skills/skills-working-cache/skill-cambium/.venv`, built by `just bootstrap` from `.mise.toml` + `requirements.txt`). Raw script inventory below is for reference, not direct
 invocation.
 
-`just tunnel` does not run a script from this directory — it calls [skill-smc's `teleport-tunnel.sh`](/Users/malik.ahmad/.claude/skills/skill-smc/scripts/teleport-tunnel.sh) directly, since Teleport
+`just tunnel` does not run a script from this directory — it calls [skill-smc's `teleport-tunnel.sh`](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/scripts/teleport-tunnel.sh) directly, since Teleport
 tunneling is that pack's concern, not this one's. Consuming projects call the canonical path directly rather than this pack keeping its own copy — same pattern as `cambium-portal.sh` below, in the
 other direction.
 
@@ -23,6 +23,9 @@ other direction.
 
 | Script                      | Purpose                        | Inputs                                | Outputs                        | Safety           | Idempotent   | When to use                |
 | --------------------------- | ------------------------------ | ------------------------------------- | ------------------------------ | ---------------- | ------------ | -------------------------- |
+| `fleet_schema_sweep.py` | Stage 2 of the schema exercise: picks one representative device per family per site, contracts its responses, and records unreachable or empty as findings rather than skips | `--inventory` (cambium-swap's device-inventory.csv), optional `--sites`/`--families`; credentials read from the `cambium-devices/` vault | Observations under `schemas/_observations/<family>/`, plus a findings log | `safe`, `external-network`, `requires-secrets`, `requires-credentials` | Yes — resumable, skips a site/family that already has an observation | Building or refreshing the fleet-wide contract |
+| `schema_divergence_report.py` | Reports where devices of one family disagree about their own response shape — universal fields versus splits by model, firmware or site, plus type conflicts | `--schemas` (the schemas tree) | A generated markdown divergence report | `safe`, `modifies-files` | Yes — regenerated from observations each run | After a sweep, to decide where the adapter needs a branch rather than a default |
+| `schema_tool.py` | Derives, merges and enforces the device response contract — `observe` one device, `merge` observations into the family standard, `check` a new observation for divergence | Live device via `--driver falcon` (usually a Teleport port-forward) or an adapter's stdout via `--driver stdin`; `CAMBIUM_USER`/`CAMBIUM_PASS` | JSON Schema files under `schemas/<family>/`, observations under `schemas/_observations/`; no response values recorded | `safe`, `external-network`, `requires-secrets`, `requires-credentials` | Yes — read-only | Before writing adapter field mappings; when a new site, model or firmware appears |
 | `check_governance.py` | Governance coherence checks for this pack — | This pack's own files | Console, exit status | `safe` | Yes | Before claiming |
 |  |   turns its documented claims |  |  |  |  |   any durable |
 |  |   into assertions |  |  |  |  |   change to this |

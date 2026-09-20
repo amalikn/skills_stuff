@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/cnwave-60ghz/e2e_info.schema.json",
+  "title": "Cambium cnwave-60ghz \u2014 e2e_info",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "cnwave-60ghz",
+    "endpoint": "e2e_info",
+    "layer": "adapter-normalized",
+    "observations": 5,
+    "models": [
+      "V1000",
+      "V3000",
+      "V5000"
+    ],
+    "firmware": [
+      "1.4",
+      "1.5.2",
+      "10.11.0.98"
+    ],
+    "sites": [
+      "bidyadanga",
+      "doomadgee",
+      "horn-island",
+      "mornington",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "object",
+  "properties": {
+    "available": {
+      "type": "boolean",
+      "x-candidate-values": [
+        false,
+        true
+      ],
+      "x-observed-count": 5
+    },
+    "enabled": {
+      "type": "boolean",
+      "x-candidate-values": [
+        true
+      ],
+      "x-observed-count": 5
+    }
+  },
+  "required": [
+    "available",
+    "enabled"
+  ],
+  "x-observed-count": 0,
+  "x-optional": {},
+  "x-evidence": {
+    "observations_with_records": 5,
+    "observations_empty": 0,
+    "empty_at": [],
+    "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+  }
+}

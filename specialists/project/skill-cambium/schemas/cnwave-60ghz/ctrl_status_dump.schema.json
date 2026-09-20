@@ -1,0 +1,5234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/cnwave-60ghz/ctrl_status_dump.schema.json",
+  "title": "Cambium cnwave-60ghz \u2014 ctrl_status_dump",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "cnwave-60ghz",
+    "endpoint": "ctrl_status_dump",
+    "layer": "adapter-normalized",
+    "observations": 5,
+    "models": [
+      "V1000",
+      "V3000",
+      "V5000"
+    ],
+    "firmware": [
+      "1.4",
+      "1.5.2",
+      "10.11.0.98"
+    ],
+    "sites": [
+      "bidyadanga",
+      "doomadgee",
+      "horn-island",
+      "mornington",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "object",
+  "properties": {
+    "cambiumVersion": {
+      "type": "string",
+      "x-observed-count": 5
+    },
+    "statusReports": {
+      "type": "object",
+      "properties": {
+        "00:04:56:8b:a5:39": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 "
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V1000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "V5XL056PF3F8"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:8b:a5:39": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:8ba5:3901::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:8b:a7:4b": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 "
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V1000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "V5XL05LX1111"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:8b:a7:4b": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        false
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:8ba5:3900::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:bb:25": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 "
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V5000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "VYZF00D10H12"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra16": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra17": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra18": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra19": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra20": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra21": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra22": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra23": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra24": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra25": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra26": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra27": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra28": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra29": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra30": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra31": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:bb:25": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "22:04:56:88:bb:25": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:c2:3f": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 1500m"
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V3000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "VYZF0481WFFR"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "l2gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:c2:3f": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        false
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:88bb:2500::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "30:cb:c7:73:ea:f6": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 "
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V2000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "VYZF02N1VC42"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "miireg": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "42:cb:c7:73:ea:f6": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        false
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:88bb:2500::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:97:86": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 1500m"
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cpuId": {
+              "type": "string",
+              "x-candidate-values": [
+                "B10F425732032810"
+              ],
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V3000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "V5YK02J4917W"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:97:86": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        false
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:88ba:9f00::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:ae:0b": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 1500m"
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cpuId": {
+              "type": "string",
+              "x-candidate-values": [
+                "8A8F7A0EE6469127"
+              ],
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V3000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "V5YK022DKF1C"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "Reboot"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:ae:0b": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        false
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:88ba:9f00::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:ba:9f": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 "
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cpuId": {
+              "type": "string",
+              "x-candidate-values": [
+                "733DCCB6EF405579"
+              ],
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V5000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "VYZF0044FVM5"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra16": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra17": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra18": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra19": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra20": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra21": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra22": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra23": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra24": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra25": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra26": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra27": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra28": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra29": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra30": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra31": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:ba:9f": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "22:04:56:88:ba:9f": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:c3:45": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 1500m"
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cpuId": {
+              "type": "string",
+              "x-candidate-values": [
+                "ABDDBB6678A00A05"
+              ],
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V3000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "VYZF0410WJ9D"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:c3:45": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        false
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:88ba:9f00::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:c4:ca": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 1500m"
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cpuId": {
+              "type": "string",
+              "x-candidate-values": [
+                "93C11D68DA04D0F7"
+              ],
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V3000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "VYZG00DFZLDP"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "Reboot"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:c4:ca": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        false
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:88ba:9f00::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:4c:43": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 1500m"
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V3000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "V5XE01LD4RXJ"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:4c:43": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        false
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:885f:8100::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:5f:81": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 "
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V5000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "V5XF02PJTCTG"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra16": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra17": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra18": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra19": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra20": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra21": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra22": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra23": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra24": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra25": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra26": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra27": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra28": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra29": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra30": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra31": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:5f:81": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "22:04:56:88:5f:81": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:74:0a": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 1500m"
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V3000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "V5XL01KB73DS"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:74:0a": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        false
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:885f:8100::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:c1:b3": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 1500m"
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V3000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "VYZF044HSJMM"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "LongPowerCycle"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:c1:b3": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:88c1:b301::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "00:04:56:88:c1:e7": {
+          "type": "object",
+          "properties": {
+            "cambiumVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "cbConfig": {
+              "type": "string",
+              "x-candidate-values": [
+                "cb1 1500m"
+              ],
+              "x-observed-count": 1
+            },
+            "configMd5": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "dhcpEnabled": {
+              "type": "boolean",
+              "x-candidate-values": [
+                false
+              ],
+              "x-observed-count": 1
+            },
+            "firmwareVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareBoardId": {
+              "type": "string",
+              "x-candidate-values": [
+                "V3000"
+              ],
+              "x-observed-count": 1
+            },
+            "hardwareModel": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "hardwareSn": {
+              "type": "string",
+              "x-candidate-values": [
+                "VYZF03Z4H5M3"
+              ],
+              "x-observed-count": 1
+            },
+            "ipv4Address": {
+              "type": "string",
+              "x-candidate-values": [
+                ""
+              ],
+              "x-observed-count": 1
+            },
+            "ipv6Address": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "lastAckGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "lastRebootReason": {
+              "type": "string",
+              "x-candidate-values": [
+                "Reboot"
+              ],
+              "x-observed-count": 1
+            },
+            "neighborConnectionStatus": {
+              "type": "object",
+              "properties": {},
+              "x-observed-count": 1
+            },
+            "networkInterfaceMacs": {
+              "type": "object",
+              "properties": {
+                "br0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "br0.500": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "ip6tnl0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "l2gre0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "lo": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "nic3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "sit0": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    "00:00:00:00"
+                  ],
+                  "x-observed-count": 1
+                },
+                "terra0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra1": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra10": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra11": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra12": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra13": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra14": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra15": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra2": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra3": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra4": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra5": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra6": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra7": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra8": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "terra9": {
+                  "type": "string",
+                  "x-observed-count": 1
+                },
+                "wlan0": {
+                  "type": "string",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nodeIsPrimary": {
+              "type": "boolean",
+              "x-candidate-values": [
+                true
+              ],
+              "x-observed-count": 1
+            },
+            "nodeReachability": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "nodeType": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "radioStatus": {
+              "type": "object",
+              "properties": {
+                "12:04:56:88:c1:e7": {
+                  "type": "object",
+                  "properties": {
+                    "gpsSync": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        false
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "initialized": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "nodeParamsSet": {
+                      "type": "boolean",
+                      "x-candidate-values": [
+                        true
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "sentGpsTimestamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "timeStamp": {
+              "type": "integer",
+              "x-observed-count": 1
+            },
+            "tunnelEndpoint": {
+              "type": "string",
+              "x-candidate-values": [
+                "fd00:ceed:88c1:b300::1,"
+              ],
+              "x-observed-count": 1
+            },
+            "ubootVersion": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "upgradeStatus": {
+              "type": "object",
+              "properties": {
+                "nextImage": {
+                  "type": "object",
+                  "properties": {
+                    "hardwareBoardIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "null",
+                        "x-observed-count": 0
+                      },
+                      "x-observed-count": 1
+                    },
+                    "md5": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "model": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "x-candidate-values": [
+                        ""
+                      ],
+                      "x-observed-count": 1
+                    }
+                  },
+                  "x-observed-count": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "upgradeReqId": {
+                  "type": "string",
+                  "x-candidate-values": [
+                    ""
+                  ],
+                  "x-observed-count": 1
+                },
+                "usType": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "whenToCommit": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "version": {
+              "type": "string",
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        }
+      },
+      "x-observed-count": 5
+    },
+    "timeStamp": {
+      "type": "integer",
+      "x-observed-count": 5
+    },
+    "version": {
+      "type": "string",
+      "x-observed-count": 5
+    }
+  },
+  "required": [
+    "cambiumVersion",
+    "statusReports",
+    "timeStamp",
+    "version"
+  ],
+  "x-observed-count": 0,
+  "x-optional": {},
+  "x-evidence": {
+    "observations_with_records": 5,
+    "observations_empty": 0,
+    "empty_at": [],
+    "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+  }
+}

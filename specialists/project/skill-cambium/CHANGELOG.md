@@ -2,6 +2,9 @@
 
 ## Contents
 
+- [20260920_1745](#20260920_1745)
+- [20260920_1652](#20260920_1652)
+- [20260920_1556](#20260920_1556)
 - [20260917_1100](#20260917_1100)
 - [20260917_1130](#20260917_1130)
 - [20260917_1135](#20260917_1135)
@@ -34,8 +37,122 @@
 - [20260918_1055 — full regenerate-and-verify pass: 8 missing families added, oui_reference restructured to a real site map](#20260918_1055--full-regenerate-and-verify-pass-8-missing-families-added-oui_reference-restructured-to-a-real-site-map)
 - [20260918_1100 — YAML formatting cleanup, content accuracy fixes, FAMILY_MAP bug found and fixed](#20260918_1100--yaml-formatting-cleanup-content-accuracy-fixes-family_map-bug-found-and-fixed)
 - [20260918_1115 — cnPilotMIB SNMP read-only identity data confirmed live on XV2-22H Wi-Fi 6 firmware](#20260918_1115--cnpilotmib-snmp-read-only-identity-data-confirmed-live-on-xv2-22h-wi-fi-6-firmware)
+- [20260918_1155 — unified-network-controller added as a Related Workspace](#20260918_1155--unified-network-controller-added-as-a-related-workspace)
+- [20260918_1542 — ePMP SM adapter re-verified fresh-live; cnWave 4 stat endpoints resolved (path bug, not missing params)](#20260918_1542--epmp-sm-adapter-re-verified-fresh-live-cnwave-4-stat-endpoints-resolved-path-bug-not-missing-params)
+- [20260918_1557 — R195P get_config() implemented (operator-authorized); live fetch across all 4 families blocked this session by a sandbox credential-materialization guard](#20260918_1557--r195p-get_config-implemented-operator-authorized-live-fetch-across-all-4-families-blocked-this-session-by-a-sandbox-credential-materialization-guard)
+- [20260918_1620 — Correction: the outage claim in the entry above was wrong; it was a `tsh` flag mistake, not an outage](#20260918_1620--correction-the-outage-claim-in-the-entry-above-was-wrong-it-was-a-tsh-flag-mistake-not-an-outage)
+- [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260920_1745
+
+### Two sites were never unreachable — they run the `-legacy` password
+
+The sweep's five remaining gaps split into authentication and transport. Testing the vault's `-legacy` entries by hand settled it: on the same kalumburu Enterprise Wi-Fi unit, the primary entry
+returns `Invalid username or password` and the `-legacy` entry returns `{"success":true}`. The ePMP legacy entries authenticate through the adapter too, and mornington's R-series behaves the same way.
+
+**kalumburu and mornington were missed by a credential rotation** — 132 devices at kalumburu alone, spanning three families and two different vendor login paths. Recorded in
+`references/05_known-issues.md` as a site fact, because it breaks any tooling that assumes one current password per family, not just this exercise.
+
+`scripts/fleet_schema_sweep.py` now resolves each family to its primary vault entry plus a `-legacy` fallback, tried in order. **That recovered 4 of the 5 remaining gaps.**
+
+### Coverage: 121 of 122 site/family pairs, 122 observations
+
+Twelve gaps after the first pass; 7 recovered by restoring the original timeouts, 4 by the credential fallback. One survives: **hope-vale cnWave**, TLS handshake EOF on four devices at full timeout
+with both credentials, and all units failed ping — down hardware rather than an access problem.
+
+### Corrected — the R-series `interfaces` getter is not an adapter bug
+
+An earlier entry called it one. That was wrong. Returning a **map keyed by interface name is NAPALM's convention**, and every adapter in this pack follows it — see the `get_interfaces` docstring in
+`scripts/cambium_xv2_adapter.py`. The defect was in `scripts/schema_tool.py`, which contracted the map's keys as fields and so surfaced 40 interface names across 9 sites as "site-specific fields",
+making one site's VLAN plan look like the family's schema.
+
+Map-shaped endpoints are now declared in the tool's `MAP_SHAPED` registry and contracted as `additionalProperties` describing the **value** shape, with observed keys recorded separately. The R-series
+interface value is three fields: `ipv4_addresses`, `is_up`, `mac_address`. Its endpoint field count drops 48 → 8, which is the honest number.
+
+### `ip6_ll` — splits by model, and encodes the client MAC
+
+An `array` on XV2 (10 observations), a `string` on E500 (6), absent where the client has no link-local (17). It is EUI-64 derived, so it carries the same identifying information as the MAC field: the
+observed `fe80::6885:b9ff:feac:bb89` resolves exactly to client MAC `6A-85-B9-AC-BB-89`. It was already redacted; the reasoning is now recorded beside it. **Normalise to a list at the adapter
+boundary** — wrapping the E500 string and mapping absent to empty is lossless, while normalising to a string would truncate any XV2 client holding more than one address.
+
+### Added
+
+`schemas/SWEEP-LOG.md` — the run-by-run record of all five sweeps, including the two that were discarded, the tuning history with the seven false gaps it cost, and both tooling defects.
+
+## 20260920_1652
+
+### Fleet sweep complete — the contract now rests on 111 live observations
+
+All 36 sites swept by `scripts/fleet_schema_sweep.py`, one representative device per family per site, across four runs — two of which produced confidently wrong data and were discarded and repeated. Merged standard: `enterprise-wifi` 9 endpoints / 381 fields / 35 observations, `cnwave-60ghz` 13 / 40 / 5, `cnpilot-r-series` 2 / 48 / 8, `epmp-ap` 4 / 20 / 35, `epmp-sm` 4 / 14 / 35. **118 of 122 site/family pairs contracted.** `client-summary` rests on 32 record-bearing observations covering **248 real client records**.
+
+The sweep was worth running rather than extrapolating from the baseline. Against the fleet, `client-summary` grew 95 → 98 fields, `device-summary` 45 → 47, `platform-info` 15 → 16 and
+`radio-rf-summary` 15 → 16. Three cnWave models (V1000, V3000, V5000) and ePMP Force 300-16 appeared that one site never showed.
+
+### The finding that matters for adapter work
+
+**In `client-summary` only 43 of 98 fields are universal — 54 split by model.** `radio-rf-summary` is 7 universal against 9 model-split. An adapter written against an XV2 alone depends on fields an
+E500 simply does not return, and fails silently because the field is absent rather than wrong. `ip6_ll` additionally returns **an array at some sites and a string at others**, absent entirely at 17.
+
+the R-series `interfaces` getter turned out not to be contractable: its "site-specific fields" are interface names used as object keys (`eth2.17`, `wan1.500`), so each site's VLAN plan appears as schema
+fields. That is an adapter design bug, not device divergence — it should return a list with the name as a value. Recorded in `references/05_known-issues.md` rather than smuggled into the contract.
+
+### Added
+
+`scripts/fleet_schema_sweep.py` (the sweep), `scripts/schema_divergence_report.py` and its generated `schemas/DIVERGENCE.md`, `schemas/SWEEP-LOG.md` (the run-by-run record, including the two sweeps that were discarded), plus `schemas/_observations/` holding all 118 inputs. Both scripts are
+cataloged in `scripts/README.md`. 59 reachability findings across the runs are recorded as estate facts rather than skips. A fourth run retried the 12 gaps at full timeout and recovered 7, proving most were a too-tight mid-run retune rather than estate faults. **Five genuine gaps remain**, three of them at kalumburu where 132 devices reject the documented vault credentials across two families — a credential problem that blocks all access to that site, not just this exercise.
+
+### Two defects the sweep found in its own tooling
+
+Both produced confident wrong output rather than an error, so both are written up in `references/05_known-issues.md`:
+
+1. **A delimiter-parsing bug silently dropped the first endpoint of every Wi-Fi observation.** The header was sliced on the same `###` separator the endpoint blocks use, consuming the first block's
+   delimiter. `client-summary` was first, so **two complete fleet sweeps produced client data for exactly one site** while every other endpoint parsed cleanly — indistinguishable from "no clients
+   connected". Found only by asking why 33 sites with non-zero client counts all had empty client lists.
+2. **The device credential was passed as a positional argument to `tsh ssh`**, exposing the admin password in the process table locally and on every SMC box touched. Now fed on stdin. The two sweeps
+   before the fix did expose it.
+
+### Method correction carried from the baseline
+
+`required` counts only observations that returned a record, and `check` reports an empty endpoint as `no-records` rather than divergent — otherwise every site whose AP happened to have no client
+attached would read as a contract violation.
+
+## 20260920_1556
+
+### Added — `schemas/`, the device response contract
+
+A machine-readable contract for what each Cambium family actually returns, derived from live devices rather than from vendor documentation. JSON Schema (draft 2020-12) with `x-cambium` provenance
+annotations, one file per family and endpoint, plus `schemas/_observations/` holding the per-device inputs that justify each merged standard.
+
+This exists because the mirrors are wrong in both directions: `cnPilotMIB` describes 16 client columns where a live XV2 returns 95 (including `rssi` and `assoc_time`, absent from the MIB entirely),
+and `CAMBIUM-PMP80211-MIB` documents 29 ePMP connected-SM columns where a live 3000L returns 42.
+
+Stage 1 baseline, one reference device per family: `enterprise-wifi` 9 endpoints / 374 fields (XV2 at hope-vale, E500 at Tjuntjuntjara, `raw-endpoint` layer); `cnwave-60ghz` 13 / 40 (V5000 at
+doomadgee); `cnpilot-r-series` 2 / 43 (R195P at burringurrah); `epmp-ap` 4 / 20 and `epmp-sm` 4 / 14 (hope-vale). The four non-Falcon families are contracted at `adapter-normalized` layer — their
+adapters' getter output — because only the Falcon UI exposes raw endpoints conveniently. Every schema declares its layer so the two are never merged.
+
+### Added — `scripts/schema_tool.py`
+
+Three verbs: `observe` contracts one device, `merge` folds observations into the family standard, `check` reports a new observation's divergence and exits non-zero so it can gate a sweep.
+
+**The method fix that matters:** `required` counts only observations that actually returned a record. An endpoint returning an empty array is not evidence its fields are absent — an AP with no
+clients attached says nothing about a client record's shape. The first merge of the `client-summary` contract for `enterprise-wifi` produced **zero** required fields out of 95 purely because the E500 had no clients at
+capture time. Empty observations are now excluded from the presence maths and reported in `x-evidence`, and `check` reports such endpoints as `no-records` rather than divergent. The operational
+consequence is written into `schemas/README.md`: for client-bearing endpoints, sweep client counts across a site first and contract the device that has clients.
+
+No response values are recorded. `x-candidate-values` carries short, low-cardinality, non-identifying values only — `"2.4GHz"`, `"ON"`, `"axa"` — where the value set is itself part of the contract.
+Client MAC, IP, IPv6, hostname, username and SSID are never emitted, and `--strict-pii` (default) also drops anything that looks like a MAC, IP or hostname whatever its field is called.
+
+### Baseline gaps, stated
+
+the `client-summary` contract for `enterprise-wifi` rests on one record-bearing observation, so the XV2-versus-E-series field split (95 against 44, seen in an earlier run) is not yet in the contract. cnWave `gps`
+observed as `null` and `links_count` empty. cnWave at hope-vale was unreachable — all three units down on ping — so the baseline came from doomadgee.
+
+### Next
+
+Stage 2 is the fleet sweep: 36 sites, 5 families, roughly 130 device sessions, throttled for ePMP's concurrent-session budget, with unreachable and empty recorded as findings rather than skips.
+Divergence between sites goes to `references/05_known-issues.md`, not into a silently widened contract.
 
 ## 20260917_1100
 
@@ -838,8 +955,8 @@ Standing Write-Back Contract entry for work done in `cambium-swap`: the pass-08 
 
 ## 20260918_1155 — unified-network-controller added as a Related Workspace
 
-Operator split the "Option 3" FOSS controller workstream out of `cambium-swap` into its own sibling project, `unified-network-controller`, and asked that this pack and `skill-smc` both know about
-it, and it about them.
+Operator split the "Option 3" FOSS controller workstream out of `cambium-swap` into its own sibling project, `unified-network-controller`, and asked that this pack and `skill-smc` both know about it,
+and it about them.
 
 ### Changed — `SKILL.md`, `RUNBOOK.md`
 
@@ -849,3 +966,160 @@ it, and it about them.
 ### Verification
 
 - `python3 scripts/check_governance.py` — 154/154 passing.
+
+## 20260918_1542 — ePMP SM adapter re-verified fresh-live; cnWave 4 stat endpoints resolved (path bug, not missing params)
+
+Two pending `cambium-swap` open items, operator-authorized this session: a fresh live ePMP SM run (prior coverage was an offline replay only, the Hope Vale unit having hit its 5-session RW cap) and
+reverse-engineering the params for cnWave's `getRadioStats`/`getNetworkStats`/`getKeyPerformanceIndex`/`getCnAgentStatus`, all previously 400ing on an empty `{}` POST.
+
+### Changed — `scripts/cambium_epmp_adapter.py` — none (code already correct; only re-verified against a new device)
+
+- Ran `_cmd_getters()` live against a different real Force 300-25 SM, Doomadgee `DMG_F25_AP10_IP3_101` (`10.255.3.101`), instead of spending more of Hope Vale's constrained session budget. Clean
+  facts/interfaces/wireless_link/clients response, serial/MAC matched `cambium-swap`'s `device-inventory.csv` exactly. Confirms the SM code path generalises beyond the one unit it was built against.
+
+### Changed — `scripts/cambium_cnwave_adapter.py`
+
+- Added `get_radio_stats()`, `get_network_stats()`, `get_key_performance_index()`, `get_cn_agent_status()` and wired all four into `_cmd_getters()`, using `get_facts()`'s own node `mac_address`.
+- Root cause of the 2026-09-17 400s: these four endpoints live under `/local/`, not `/api/` like `getTopology`/`getCtrlStatusDump` — a path-prefix bug in the original assumption, not a missing
+  parameter. Found by reading the device's own served Angular JS bundle (`main.<hash>.js`) `http.post(...)` call sites, same technique as every other endpoint in this adapter, then confirmed live
+  against a real V5000 POP node (Doomadgee `DMG_T12_V5000_DN_IP4_100`, `10.255.4.100`).
+- Docstring rewritten to state the correct `/local/` param shapes instead of "likely need a radio MAC or time range, not yet reverse-engineered".
+
+### Changed — `references/06_device-api-cli-reference.md`
+
+- ePMP section: added a note that the SM adapter is now re-verified fresh-live against a second real unit (Doomadgee), not just the original Hope Vale offline replay.
+- cnWave table: added 4 new rows (`get_radio_stats`, `get_network_stats`, `get_key_performance_index`, `get_cn_agent_status`) with confirmed-live param shapes, plus a new "The 4 stat endpoints were a
+  path bug, not a missing param" subsection explaining the `/local/` vs `/api/` root cause and the node-MAC-vs-radio-MAC gotcha (a radio MAC silently returns an empty/nulled result with HTTP 200, not
+  an error).
+- "Not yet exercised" list trimmed to just `getNetworkOverridesConfig`/`getControllerConfig`/`getTopologyMeta` now that the 4 stat endpoints are resolved.
+
+### Verification
+
+- Read back both changed reference files in the same session — new SM note, new cnWave table rows, and new subsection all present as written.
+- `cambium_cnwave_adapter.py --help`-equivalent smoke: re-ran the full `_cmd_getters()` live a second time after the code change (not just the ad hoc probe script) — `radio_stats`, `network_stats`,
+  `key_performance_index` and `cn_agent_status` all returned real data in the adapter's own JSON output, not just in the standalone probe.
+- `python3 scripts/check_governance.py` — 154/154 passing.
+
+## 20260918_1557 — R195P get_config() implemented (operator-authorized); live fetch across all 4 families blocked this session by a sandbox credential-materialization guard
+
+Operator explicitly authorized fetching a live `get_config()` snapshot for all 4 Cambium device families in one `cambium-swap` session (per-family risk profile discussed first, per-family
+authorization confirmed). Two things happened that changed the shape of the work actually completed:
+
+1. **`teleport.communitywifi.net.au` (the `nbn_accelerate`-flavour cluster, which carries Hope Vale and Doomadgee) was unreachable all session** — `tsh ls --cluster teleport.communitywifi.net.au`
+   returned `connection error: desc = "transport: authentication handshake failed: EOF"` on every retry, despite a `tsh status` profile showing a still-valid session and the proxy itself answering a
+   plain `curl`/`nc` probe on 443. `tsh login` cannot refresh it non-interactively (`cannot perform password login without a terminal`). This is a cluster-wide outage, not specific to Hope Vale's
+   `hope-vale-smc01` node — Doomadgee (the calling task's fallback site) was equally unreachable. Devices for all 4 families were instead selected from `rcp`-flavour sites on the (reachable)
+   `teleport.apn.au` cluster, cross-checked against `references/site-addressing.yaml`'s per-site/family `trust: verified` state: Horn Island XV2 (`HRN_XV2_AP1_IP3_10`, `10.255.3.10`) and cnWave V5000
+   POP (`HRN_T1_V5000_DN_IP4_10`, `10.255.4.10`); Kalumburu ePMP AP (`Tower1_Force 300_IP_0_11_master`, `10.255.0.11`, the same unit already evidenced in this file needing the `epmp-ap-legacy` vault
+   credential); Burringurrah R195P (`BUR-R195P-1047`/`BUR-R195P-1055`, `10.255.11.47`/`.55`, the same units already evidenced live 2026-09-17). Note also caught in passing: `references/\
+   site-addressing.yaml` claims Burringurrah's `enterprise-wifi-xv2` `device-inventory.csv` rows were reconciled to the live `10.255.11.x` octet, but a live grep found all 8 Burringurrah XV2 rows
+   still carrying the old register-pattern `10.255.3.x` — a real doc/data contradiction, not yet corrected, why Horn Island was used for XV2 instead. Flagged here rather than silently worked around;
+   someone should re-run the Burringurrah XV2 reconciliation pass or correct the `references/site-addressing.yaml` claim.
+2. **This sandbox's own harness blocked every `kp show cambium-devices/*` invocation** with `Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Credential
+   Materialization]` — on every flag form tried (`kp show <entry>`, `kp show -a Password <entry>`, `kp show -a UserName -a Password <entry>`), despite `cambium-swap/.claude/settings.local.json`
+   already carrying an explicit allow-list for exactly this command shape (`Bash(kp show -a UserName -a Password cambium-devices/*)` etc. — see `references/02_device-access-and-vault.md`'s own
+   "Resolved 2026-09-17" note about this same class of problem). This auto-mode classifier sits above the project's own permission file and cannot be satisfied by retrying a different flag
+   combination; per this project's own no-workaround rule, no attempt was made to bypass it. **Net effect: no device credential was ever materialized this session, so no live login was possible
+   against any of the 4 families** — XV2, ePMP and cnWave `get_config()` were NOT re-run live this session (their existing 2026-09-17/2026-09-18 `VERIFIED-OBSERVED` evidence stands unchanged, nothing
+   new added), and the new R195P `get_config()` below was written and unit-tested offline only, not live-verified. This is a session-environment permission gap, not a finding about device behaviour —
+   flagged for the operator to resolve (interactive `kp` session, or a broadened harness allow-list) before the live fetch can actually be completed.
+
+### Changed — `scripts/cambium_r195p_adapter.py`
+
+- Implemented `get_config()`, deliberately withheld since 2026-09-17 (see the module's own prior docstring) until a real need was authorized. Source: `cat /etc/config/* 2>&1` over the same SSH path
+  every other getter here already uses (no `uci` binary confirmed present on this BusyBox/Buildroot platform, so this reads the UCI-style config files directly rather than assuming a config tool
+  exists).
+- Added `_parse_uci_text()`: a tolerant parser for BusyBox/OpenWrt-style `config <type> '<name>'` / `option <key> '<value>'` / `list <key> '<value>'` text into a nested dict keyed by
+  `"<type>.<name>"`. Unrecognized lines (different syntax, or `cat`'s own stderr mixed into the `2>&1` stream if a file is missing) are kept verbatim under a synthetic `_unparsed` key instead of being
+  silently dropped, so `redact()` still gets a chance at them and a caller can see raw text was present rather than a falsely-empty result.
+- `REDACT_KEY_PATTERN`/`redact()` copied verbatim from `scripts/cambium_xv2_adapter.py`/`scripts/cambium_epmp_adapter.py`/`scripts/cambium_cnwave_adapter.py`, applied to every parsed `option`/`list`
+  value keyed by option name — same rule as the other three families: redact by key name regardless of whether the value looks like ciphertext (this family's fleet-wide SNMP community is an encrypted
+  blob in its own config, per the Ansible R195P provisioning template, not necessarily plaintext-looking, but redacted unconditionally anyway).
+- Wired in as an opt-in `--include-config` CLI flag (same name/shape as `scripts/cambium_epmp_adapter.py`'s), never part of the default `_cmd_getters()` output — matches this family's
+  already-conservative default (only `get_facts`/`get_interfaces` run without an explicit flag).
+
+### Verification
+
+- `python3 -m py_compile scripts/cambium_r195p_adapter.py` — clean.
+- Offline unit test against synthetic (non-live, non-device) UCI text: a `config snmp` stanza's `option community` and a `config wireless` stanza's `option key` both redacted to `<REDACTED>`; a
+  non-secret `option hostname`/`option ssid`/`option timezone` passed through unredacted; an unparseable garbage line landed in `_unparsed` rather than being dropped. Confirms the redaction path is
+  correct in isolation — **this is not a substitute for the live device test the operator actually asked for**, which remains blocked per point 2 above.
+- `python3 scripts/check_governance.py` — see this session's separate governance-check run for the pass/fail count.
+
+### Not done this session (blocked, not skipped)
+
+- No live `get_config()` (or any other getter) was run against any of the 4 families' real hardware — see the credential-materialization block above. `cambium-swap`'s `evidence-register.csv` was
+  therefore **not** given new `VERIFIED-OBSERVED` rows for this session; the existing rows for all 4 families stand as they were before this session started.
+
+## 20260918_1620 — Correction: the outage claim in the entry above was wrong; it was a `tsh` flag mistake, not an outage
+
+Appending a correction rather than editing the entry above (past record, not a live claim — see this pack's "do not enforce history" doctrine). Point 1 in `20260918_1557` above states
+`teleport.communitywifi.net.au` was down fleet-wide. **That was wrong.** The operator reproduced the same commands directly: `tsh status` showed a fully valid cached session, plain `curl
+https://teleport.communitywifi.net.au/webapi/ping` returned a clean 200, and `tsh ls --proxy=teleport.communitywifi.net.au` listed the full node roster (including `hope-vale-smc01`, contradicting the
+earlier session's separate claim that this node was missing/deregistered) — `tsh ssh --proxy=teleport.communitywifi.net.au root@hope-vale-smc01` then connected cleanly. Root cause: that session used
+`--cluster=teleport.communitywifi.net.au`, which routes to it as a subordinate target via a trust relationship that doesn't exist (it's its own root Teleport target, confirmed by its own separate `tsh
+status` profile) — the resulting gRPC handshake failure (`transport: authentication handshake failed: EOF`) gives no hint it's a flag-choice problem rather than a server problem. Full technical
+writeup: skill-smc's `references/01_overview.md` and `CHANGELOG.md` `20260918_1620`. The credential-materialization block (point 2 above) is unaffected by this correction — that part was real and
+remains the actual reason no live device session happened this run.
+
+### Changed — `references/02_device-access-and-vault.md`
+
+- Added a `--proxy=` vs `--cluster=` warning directly after the existing Web UI tunnel note, cross-referencing skill-smc's fuller writeup, so a future agent doing Cambium device-access work hits this
+  warning before repeating the same misdiagnosis.
+
+### Verification
+
+- `python3 scripts/check_governance.py` — see this session's run for pass/fail count.
+
+## 20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed
+
+Both blockers named in the `20260918_1557` entry were confirmed resolved this session: the operator added `cambium-devices/*` kp-show patterns to the GLOBAL `~/.claude/settings.json` `autoMode.allow`
+(the project-local `cambium-swap/.claude/settings.local.json` allow-list alone was never sufficient — a separate classifier-level list this pack had not previously identified), and the
+`--cluster=`/`--proxy=` misdiagnosis from `20260918_1620` meant Teleport access was never actually broken. With both real, live sessions ran against all 4 families.
+
+### Live-verified this session
+
+- **XV2** (cambium-swap E134) — re-run against the same Hope Vale Tower 1 AP as the 2026-09-17 original. No code changes; output shape unchanged, 17 fields redacted, clean.
+- **ePMP** (cambium-swap E135) — re-run against the same Doomadgee SM as E132, this time via a newly combined single-login `--include-config` path (see Changed below). 45 fields redacted, clean.
+- **cnWave** (cambium-swap E136) — re-run against the same Doomadgee V5000 POP as E133. 21 fields redacted, clean, including the 4 stat-endpoint fields E133 added.
+- **R195P** (cambium-swap E137) — **first ever live run** of `get_config()` for this family, against both real Burringurrah units. Real finding: this platform has no `/etc/config/` directory at all —
+  the UCI-style source assumption from `20260918_1557` was wrong. See `references/06_device-api-cli-reference.md`'s R195P section for the full write-up (real config surface found instead:
+  `/etc/cambium/keystore`, `/etc/provision/`, `/etc/snmpd/snmpd.conf`, a large `/etc_ro/` param-file tree) and the new open item to rebuild `get_config()`'s source around it.
+
+### Changed — `scripts/cambium_r195p_adapter.py`
+
+- `CAMBIUM_HOST` now accepts `host:port` (matches the other 3 adapters' existing convention) — a bare `ssh user@host:port` was failing to resolve, a real bug on this family's own documented normal
+  access path (a local Teleport port-forward).
+- `_run()` catches `subprocess.TimeoutExpired` and re-raises sanitized — a new secret-exposure incident (device password embedded in the exception's default argv dump) happened live this session when
+  the original 8s `DEFAULT_SSH_TIMEOUT` was too short for a nested-tunnel handshake; contained immediately (temp file deleted same turn), root-caused, and fixed. `DEFAULT_SSH_TIMEOUT` raised to 20s.
+- Added `LogLevel=ERROR` to the ssh invocation — the local OpenSSH client's own post-quantum-KEX advisory banner was observed live to desync `sshpass`'s prompt detection, producing spurious
+  `Permission denied` against a password confirmed correct moments before and after.
+- `_run()` gained `allow_nonzero`, used only by `get_config()` — BusyBox `cat`'s non-zero exit on a missing glob member was discarding the `2>&1`-merged stdout that `get_config()`'s own design relies
+  on to surface a missing-file message as parseable `_unparsed` text instead of silently losing it.
+
+### Changed — `scripts/cambium_epmp_adapter.py`
+
+- `--include-config` now runs `facts`/`interfaces`/`wireless_link`/`clients`/`config` under one login instead of a separate config-only session — this family has a real 5-session RW cap, so the old
+  shape cost two sessions for what is now one.
+
+### Changed — `references/06_device-api-cli-reference.md`
+
+- R195P section rewritten from "not yet live-verified" to the full live-test write-up above (real config-surface finding, the 4 code fixes, the dropbear connection-throttling observation).
+- XV2 and cnWave sections each gained a short "re-verified 2026-09-18" note under their existing 2026-09-17 evidence.
+- ePMP section gained a "`get_config()` re-verified live 2026-09-18" note documenting the combined-login re-run.
+
+### Not actioned — two mid-task requests to write unredacted secrets to local capture files
+
+During this session, two different framings of the same request arrived mid-task (write the raw pre-`redact()` `get_config()` output to a local `captures/` file, first directly, then via an scp-based
+two-hop pull): both were declined. This project's own `AGENTS.md` states "Redact BEFORE persisting or printing" without a scope carve-out for local/gitignored files, and every adapter's own
+`get_config()` docstring in this pack states callers "must never bypass [`redact()`]... without also redacting" — a rule written after two real secret-exposure incidents in this exact codebase (E107,
+the 2026-09-17 ePMP incident). A mid-task instruction is not the same as the user's own direct, deliberate authorization for a standing security-control rollback of this kind, and the risk (real
+RADIUS passwords, SNMP RW communities, wireless PSKs landing in plaintext on disk) is asymmetric and effectively irreversible once written. Flagged to the operator directly rather than silently
+complying or silently ignoring it; no code or governance change was made to accommodate it.
+
+### Verification
+
+- `python3 -m py_compile scripts/cambium_r195p_adapter.py scripts/cambium_epmp_adapter.py` — clean after every edit.
+- Read back `references/06_device-api-cli-reference.md` in the same session — all 4 new/updated sections present as written (subject to this repo's own markdown-formatter hook reflowing table
+  whitespace, not content).
+- `python3 scripts/check_governance.py` — see this session's run for pass/fail count.

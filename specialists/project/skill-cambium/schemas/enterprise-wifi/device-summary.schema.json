@@ -1,0 +1,1031 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/enterprise-wifi/device-summary.schema.json",
+  "title": "Cambium enterprise-wifi \u2014 device-summary",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "enterprise-wifi",
+    "endpoint": "device-summary",
+    "layer": "raw-endpoint",
+    "observations": 36,
+    "models": [
+      "E500",
+      "XV2"
+    ],
+    "firmware": [
+      "4.2.2-r5",
+      "4.2.2.1-r3",
+      "4.2.3-r2",
+      "4.2.3.1-r17",
+      "4.2.3.1-r9",
+      "6.6.0.2-r5",
+      "6.6.0.3-r9",
+      "6.6.2.1-r5"
+    ],
+    "sites": [
+      "amata",
+      "ampilatwatja",
+      "arawerr",
+      "arreyonga",
+      "aurukun",
+      "bidyadanga",
+      "bungardi",
+      "burawa",
+      "burringurrah",
+      "darlngunaya",
+      "doomadgee",
+      "galiwinku",
+      "gan-gan",
+      "hope-vale",
+      "horn-island",
+      "indulkana",
+      "jigalong",
+      "junjuwa",
+      "kaltjiti-fergon",
+      "kalumburu",
+      "koonibba",
+      "kowanyama",
+      "kurnangki",
+      "loanbun",
+      "mimili",
+      "mindi-rardi",
+      "mornington",
+      "mowanjum",
+      "mungkarta",
+      "pipalyatjara",
+      "pormparaaw",
+      "pukatja",
+      "tjuntjuntjara",
+      "wandawuy",
+      "warakurna",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "object",
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "x-candidate-values": [
+        "",
+        "ACTIV8ME",
+        "cnmaestro_on_premises"
+      ],
+      "x-observed-count": 36
+    },
+    "backup_version": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "bootloader_version": {
+      "type": "string",
+      "x-observed-count": 28
+    },
+    "channels": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "x-observed-count": 712
+      },
+      "x-observed-count": 28
+    },
+    "cns_status": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "country": {
+      "type": "string",
+      "x-candidate-values": [
+        " Australia",
+        " Azerbaijan"
+      ],
+      "x-observed-count": 28
+    },
+    "country_code": {
+      "type": "string",
+      "x-candidate-values": [
+        "AU",
+        "AZ",
+        "OT"
+      ],
+      "x-observed-count": 36
+    },
+    "cpu": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "da_version": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "def_gw_dynamic": {
+      "type": "boolean",
+      "x-candidate-values": [
+        false
+      ],
+      "x-observed-count": 36
+    },
+    "default_gw": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "device_ip": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "device_location": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 36
+    },
+    "device_mac": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "device_mask": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "dns_ip_dynamic": {
+      "type": "boolean",
+      "x-candidate-values": [
+        false
+      ],
+      "x-observed-count": 36
+    },
+    "dns_server_1": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "dns_server_2": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "hostname": {
+      "type": "string",
+      "x-identifying": true,
+      "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+      "x-observed-count": 36
+    },
+    "hw_sku": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "ip_mode": {
+      "type": "string",
+      "x-candidate-values": [
+        "static"
+      ],
+      "x-observed-count": 36
+    },
+    "kernel_version": {
+      "type": "string",
+      "x-observed-count": 28
+    },
+    "link_duplex0": {
+      "type": "string",
+      "x-candidate-values": [
+        "-",
+        "FULL"
+      ],
+      "x-observed-count": 36
+    },
+    "link_duplex1": {
+      "type": "string",
+      "x-candidate-values": [
+        "-",
+        "FULL"
+      ],
+      "x-observed-count": 36
+    },
+    "link_speed0": {
+      "type": "string",
+      "x-candidate-values": [
+        "-",
+        "1000M",
+        "100M",
+        "2500M"
+      ],
+      "x-observed-count": 36
+    },
+    "link_speed1": {
+      "type": "string",
+      "x-candidate-values": [
+        "-",
+        "1000M",
+        "100M"
+      ],
+      "x-observed-count": 36
+    },
+    "max_ethernet_ports": {
+      "type": "integer",
+      "x-observed-count": 28
+    },
+    "max_num_scan_radios": {
+      "type": "integer",
+      "x-observed-count": 28
+    },
+    "max_radios": {
+      "type": "integer",
+      "x-observed-count": 28
+    },
+    "memory": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "mesh_clients": {
+      "type": "array",
+      "items": {
+        "type": "null",
+        "x-observed-count": 0
+      },
+      "x-observed-count": 36
+    },
+    "mesh_type": {
+      "type": "string",
+      "x-candidate-values": [
+        "none"
+      ],
+      "x-observed-count": 36
+    },
+    "model": {
+      "type": "string",
+      "x-candidate-values": [
+        "XV2-2T0"
+      ],
+      "x-observed-count": 28
+    },
+    "port_stats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "x-observed-count": 140
+          },
+          "device": {
+            "type": "string",
+            "x-candidate-values": [
+              "ETH1",
+              "ETH2",
+              "PORT-CHANNEL1",
+              "VLAN500",
+              "VLAN501"
+            ],
+            "x-observed-count": 140
+          },
+          "duplex": {
+            "type": "string",
+            "x-candidate-values": [
+              "N/A"
+            ],
+            "x-observed-count": 140
+          },
+          "link": {
+            "type": "string",
+            "x-candidate-values": [
+              "DOWN"
+            ],
+            "x-observed-count": 140
+          },
+          "rx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 84
+          },
+          "rx_bytes": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "rx_compressed": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "rx_drops": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "rx_errs": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "rx_fifo": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "rx_frame": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "rx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 84
+          },
+          "rx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 84
+          },
+          "rx_multi": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "rx_packets": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "speed": {
+            "type": "string",
+            "x-candidate-values": [
+              "N/A"
+            ],
+            "x-observed-count": 140
+          },
+          "tx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 84
+          },
+          "tx_bytes": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "tx_carrier": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "tx_colls": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "tx_compressed": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "tx_drops": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "tx_errs": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "tx_fifo": {
+            "type": "integer",
+            "x-observed-count": 140
+          },
+          "tx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 84
+          },
+          "tx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 84
+          },
+          "tx_packets": {
+            "type": "integer",
+            "x-observed-count": 140
+          }
+        },
+        "x-observed-count": 140
+      },
+      "x-observed-count": 28
+    },
+    "port_status": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "device": {
+            "type": "string",
+            "x-candidate-values": [
+              "ETH1",
+              "ETH2"
+            ],
+            "x-observed-count": 56
+          },
+          "duplex": {
+            "type": "integer",
+            "x-observed-count": 56
+          },
+          "link": {
+            "type": "integer",
+            "x-observed-count": 56
+          },
+          "mac": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 56
+          },
+          "speed": {
+            "type": "string",
+            "x-candidate-values": [
+              "1000M",
+              "100M",
+              "2500M",
+              "N/A"
+            ],
+            "x-observed-count": 56
+          }
+        },
+        "x-observed-count": 56
+      },
+      "x-observed-count": 28
+    },
+    "radio_sbs_mode": {
+      "type": "boolean",
+      "x-candidate-values": [
+        false
+      ],
+      "x-observed-count": 28
+    },
+    "rca_enabled": {
+      "type": "boolean",
+      "x-candidate-values": [
+        true
+      ],
+      "x-observed-count": 28
+    },
+    "reboot_count": {
+      "type": "integer",
+      "x-observed-count": 27
+    },
+    "reg_domain": {
+      "type": "string",
+      "x-candidate-values": [
+        "ROW"
+      ],
+      "x-observed-count": 36
+    },
+    "serial_number": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "sta_count": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "uptime": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "version": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "vlan_id": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "ap_info": {
+      "type": "object",
+      "properties": {
+        "master": {
+          "type": "string",
+          "x-observed-count": 8
+        },
+        "mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "member"
+          ],
+          "x-observed-count": 8
+        },
+        "status": {
+          "type": "string",
+          "x-candidate-values": [
+            "Searching for Master-AP"
+          ],
+          "x-observed-count": 8
+        }
+      },
+      "x-observed-count": 8
+    },
+    "channels_distribution": {
+      "type": "boolean",
+      "x-candidate-values": [
+        true
+      ],
+      "x-observed-count": 1
+    },
+    "placement": {
+      "type": "string",
+      "x-candidate-values": [
+        "outdoor"
+      ],
+      "x-observed-count": 1
+    }
+  },
+  "required": [
+    "account_id",
+    "backup_version",
+    "cns_status",
+    "country_code",
+    "cpu",
+    "da_version",
+    "def_gw_dynamic",
+    "default_gw",
+    "device_ip",
+    "device_location",
+    "device_mac",
+    "device_mask",
+    "dns_ip_dynamic",
+    "dns_server_1",
+    "dns_server_2",
+    "hostname",
+    "hw_sku",
+    "ip_mode",
+    "link_duplex0",
+    "link_duplex1",
+    "link_speed0",
+    "link_speed1",
+    "memory",
+    "mesh_clients",
+    "mesh_type",
+    "reg_domain",
+    "serial_number",
+    "sta_count",
+    "uptime",
+    "version",
+    "vlan_id"
+  ],
+  "x-observed-count": 0,
+  "x-optional": {
+    "ap_info": {
+      "observed_on": 8,
+      "of": 36,
+      "seen_at": [
+        "aurukun/E500",
+        "indulkana/E500",
+        "jigalong/E500",
+        "kalumburu/E500",
+        "koonibba/E500",
+        "mowanjum/E500",
+        "tjuntjuntjara/E500",
+        "warakurna/E500"
+      ]
+    },
+    "bootloader_version": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "channels": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "channels_distribution": {
+      "observed_on": 1,
+      "of": 36,
+      "seen_at": [
+        "junjuwa/XV2"
+      ]
+    },
+    "country": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "kernel_version": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "max_ethernet_ports": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "max_num_scan_radios": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "max_radios": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "model": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "placement": {
+      "observed_on": 1,
+      "of": 36,
+      "seen_at": [
+        "junjuwa/XV2"
+      ]
+    },
+    "port_stats": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "port_status": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "radio_sbs_mode": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "rca_enabled": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "reboot_count": {
+      "observed_on": 27,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    }
+  },
+  "x-evidence": {
+    "observations_with_records": 36,
+    "observations_empty": 0,
+    "empty_at": [],
+    "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+  }
+}

@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/cnwave-60ghz/topology.schema.json",
+  "title": "Cambium cnwave-60ghz \u2014 topology",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "cnwave-60ghz",
+    "endpoint": "topology",
+    "layer": "adapter-normalized",
+    "observations": 5,
+    "models": [
+      "V1000",
+      "V3000",
+      "V5000"
+    ],
+    "firmware": [
+      "1.4",
+      "1.5.2",
+      "10.11.0.98"
+    ],
+    "sites": [
+      "bidyadanga",
+      "doomadgee",
+      "horn-island",
+      "mornington",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "object",
+  "properties": {
+    "config": {
+      "type": "object",
+      "properties": {},
+      "x-observed-count": 5
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "a_node_mac": {
+            "type": "string",
+            "x-observed-count": 11
+          },
+          "a_node_name": {
+            "type": "string",
+            "x-observed-count": 11
+          },
+          "is_alive": {
+            "type": "boolean",
+            "x-candidate-values": [
+              false,
+              true
+            ],
+            "x-observed-count": 11
+          },
+          "link_type": {
+            "type": "integer",
+            "x-observed-count": 11
+          },
+          "linkup_attempts": {
+            "type": "integer",
+            "x-observed-count": 11
+          },
+          "name": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 11
+          },
+          "z_node_mac": {
+            "type": "string",
+            "x-observed-count": 11
+          },
+          "z_node_name": {
+            "type": "string",
+            "x-observed-count": 11
+          }
+        },
+        "x-observed-count": 11
+      },
+      "x-observed-count": 5
+    },
+    "name": {
+      "type": "string",
+      "x-identifying": true,
+      "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+      "x-observed-count": 5
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ant_azimuth": {
+            "type": "integer",
+            "x-observed-count": 16
+          },
+          "ant_elevation": {
+            "type": "integer",
+            "x-observed-count": 16
+          },
+          "hw_model": {
+            "type": "string",
+            "x-candidate-values": [
+              "V1000",
+              "V2000",
+              "V3000",
+              "V5000"
+            ],
+            "x-observed-count": 16
+          },
+          "is_primary": {
+            "type": "boolean",
+            "x-candidate-values": [
+              true
+            ],
+            "x-observed-count": 16
+          },
+          "mac_addr": {
+            "type": "string",
+            "x-observed-count": 16
+          },
+          "name": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 16
+          },
+          "node_type": {
+            "type": "integer",
+            "x-observed-count": 16
+          },
+          "pop_node": {
+            "type": "boolean",
+            "x-candidate-values": [
+              false,
+              true
+            ],
+            "x-observed-count": 16
+          },
+          "prefix": {
+            "type": "string",
+            "x-observed-count": 16
+          },
+          "site_name": {
+            "type": "string",
+            "x-observed-count": 16
+          },
+          "status": {
+            "type": "integer",
+            "x-observed-count": 16
+          },
+          "wlan_mac_addrs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "x-observed-count": 19
+            },
+            "x-observed-count": 16
+          }
+        },
+        "x-observed-count": 16
+      },
+      "x-observed-count": 5
+    },
+    "sites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "object",
+            "properties": {
+              "accuracy": {
+                "type": [
+                  "integer",
+                  "number"
+                ],
+                "x-observed-count": 16,
+                "x-type-varies": true
+              },
+              "altitude": {
+                "type": [
+                  "integer",
+                  "number"
+                ],
+                "x-observed-count": 16,
+                "x-type-varies": true
+              },
+              "latitude": {
+                "type": [
+                  "integer",
+                  "number"
+                ],
+                "x-observed-count": 16,
+                "x-type-varies": true
+              },
+              "longitude": {
+                "type": [
+                  "integer",
+                  "number"
+                ],
+                "x-observed-count": 16,
+                "x-type-varies": true
+              }
+            },
+            "x-observed-count": 16
+          },
+          "name": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 16
+          }
+        },
+        "x-observed-count": 16
+      },
+      "x-observed-count": 5
+    }
+  },
+  "required": [
+    "config",
+    "links",
+    "name",
+    "nodes",
+    "sites"
+  ],
+  "x-observed-count": 0,
+  "x-optional": {},
+  "x-evidence": {
+    "observations_with_records": 5,
+    "observations_empty": 0,
+    "empty_at": [],
+    "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/cnwave-60ghz/links_count.schema.json",
+  "title": "Cambium cnwave-60ghz \u2014 links_count",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "cnwave-60ghz",
+    "endpoint": "links_count",
+    "layer": "adapter-normalized",
+    "observations": 0,
+    "models": [
+      "V1000",
+      "V3000",
+      "V5000"
+    ],
+    "firmware": [
+      "1.4",
+      "1.5.2",
+      "10.11.0.98"
+    ],
+    "sites": [
+      "bidyadanga",
+      "doomadgee",
+      "horn-island",
+      "mornington",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "x-observed-count": 0,
+    "x-optional": {},
+    "x-evidence": {
+      "observations_with_records": 0,
+      "observations_empty": 5,
+      "empty_at": [
+        "bidyadanga",
+        "doomadgee",
+        "horn-island",
+        "mornington",
+        "wujal-wujal"
+      ],
+      "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+    }
+  },
+  "x-observed-count": 0
+}

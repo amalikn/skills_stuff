@@ -1,0 +1,944 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/enterprise-wifi/radio-summary.schema.json",
+  "title": "Cambium enterprise-wifi \u2014 radio-summary",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "enterprise-wifi",
+    "endpoint": "radio-summary",
+    "layer": "raw-endpoint",
+    "observations": 36,
+    "models": [
+      "E500",
+      "XV2"
+    ],
+    "firmware": [
+      "4.2.2-r5",
+      "4.2.2.1-r3",
+      "4.2.3-r2",
+      "4.2.3.1-r17",
+      "4.2.3.1-r9",
+      "6.6.0.2-r5",
+      "6.6.0.3-r9",
+      "6.6.2.1-r5"
+    ],
+    "sites": [
+      "amata",
+      "ampilatwatja",
+      "arawerr",
+      "arreyonga",
+      "aurukun",
+      "bidyadanga",
+      "bungardi",
+      "burawa",
+      "burringurrah",
+      "darlngunaya",
+      "doomadgee",
+      "galiwinku",
+      "gan-gan",
+      "hope-vale",
+      "horn-island",
+      "indulkana",
+      "jigalong",
+      "junjuwa",
+      "kaltjiti-fergon",
+      "kalumburu",
+      "koonibba",
+      "kowanyama",
+      "kurnangki",
+      "loanbun",
+      "mimili",
+      "mindi-rardi",
+      "mornington",
+      "mowanjum",
+      "mungkarta",
+      "pipalyatjara",
+      "pormparaaw",
+      "pukatja",
+      "tjuntjuntjara",
+      "wandawuy",
+      "warakurna",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "atf": {
+        "type": "string",
+        "x-candidate-values": [
+          "OFF",
+          "ON"
+        ],
+        "x-observed-count": 72
+      },
+      "band": {
+        "type": "string",
+        "x-observed-count": 72
+      },
+      "cchannel": {
+        "type": "string",
+        "x-observed-count": 56
+      },
+      "channel": {
+        "type": "string",
+        "x-observed-count": 72
+      },
+      "channel-selection": {
+        "type": "string",
+        "x-candidate-values": [
+          "auto",
+          "static"
+        ],
+        "x-observed-count": 56
+      },
+      "channel-width": {
+        "type": "string",
+        "x-candidate-values": [
+          "20",
+          "40"
+        ],
+        "x-observed-count": 72
+      },
+      "channel_bonds": {
+        "type": "string",
+        "x-observed-count": 56
+      },
+      "channel_mode": {
+        "type": "string",
+        "x-candidate-values": [
+          "unlocked"
+        ],
+        "x-observed-count": 56
+      },
+      "device": {
+        "type": "integer",
+        "x-observed-count": 56
+      },
+      "dfs_detected_count": {
+        "type": "integer",
+        "x-observed-count": 64
+      },
+      "exclude_list": {
+        "type": "string",
+        "x-candidate-values": [
+          "NA"
+        ],
+        "x-observed-count": 56
+      },
+      "mac": {
+        "type": "string",
+        "x-identifying": true,
+        "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+        "x-observed-count": 72
+      },
+      "management-rate": {
+        "type": "string",
+        "x-candidate-values": [
+          "default"
+        ],
+        "x-observed-count": 56
+      },
+      "mesh": {
+        "type": "string",
+        "x-candidate-values": [
+          "OFF"
+        ],
+        "x-observed-count": 72
+      },
+      "min-unicast-rate": {
+        "type": "string",
+        "x-candidate-values": [
+          "1",
+          "6",
+          "default"
+        ],
+        "x-observed-count": 56
+      },
+      "multicast_to_unicast": {
+        "type": "string",
+        "x-candidate-values": [
+          "ON"
+        ],
+        "x-observed-count": 56
+      },
+      "multicast_to_unicast_mode": {
+        "type": "string",
+        "x-candidate-values": [
+          "amsdu"
+        ],
+        "x-observed-count": 56
+      },
+      "non-unicast-rate": {
+        "type": "string",
+        "x-candidate-values": [
+          "default"
+        ],
+        "x-observed-count": 56
+      },
+      "num_clients": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "num_wlans": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "per": {
+        "type": "integer",
+        "x-observed-count": 56
+      },
+      "power": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "quality": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "radio_config_state": {
+        "type": "string",
+        "x-candidate-values": [
+          "ON"
+        ],
+        "x-observed-count": 56
+      },
+      "radio_state": {
+        "type": "string",
+        "x-candidate-values": [
+          "ON"
+        ],
+        "x-observed-count": 72
+      },
+      "rx_avg_kbps": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "rx_bps": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "rx_bytes": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "rx_max_kbps": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "rx_min_kbps": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "rx_pkts": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "rx_pps": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "rx_threshold": {
+        "type": "integer",
+        "x-observed-count": 56
+      },
+      "tx_avg_kbps": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "tx_bps": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "tx_bytes": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "tx_max_kbps": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "tx_min_kbps": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "tx_pkts": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "tx_pps": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "uiquality": {
+        "type": "string",
+        "x-candidate-values": [
+          "average",
+          "excellent",
+          "poor"
+        ],
+        "x-observed-count": 72
+      },
+      "utilization": {
+        "type": "integer",
+        "x-observed-count": 72
+      },
+      "wifi_capabilities": {
+        "type": "string",
+        "x-observed-count": 56
+      },
+      "wifi_mode": {
+        "type": "string",
+        "x-candidate-values": [
+          "11axa",
+          "11axg"
+        ],
+        "x-observed-count": 56
+      },
+      "dfs_status": {
+        "type": "integer",
+        "x-observed-count": 8
+      },
+      "multicast_rate": {
+        "type": "string",
+        "x-candidate-values": [
+          "11",
+          "6"
+        ],
+        "x-observed-count": 16
+      },
+      "unicast_rates": {
+        "type": "string",
+        "x-observed-count": 16
+      }
+    },
+    "required": [
+      "atf",
+      "band",
+      "channel",
+      "channel-width",
+      "dfs_detected_count",
+      "mac",
+      "mesh",
+      "num_clients",
+      "num_wlans",
+      "power",
+      "quality",
+      "radio_state",
+      "rx_avg_kbps",
+      "rx_bps",
+      "rx_bytes",
+      "rx_max_kbps",
+      "rx_min_kbps",
+      "rx_pkts",
+      "rx_pps",
+      "tx_avg_kbps",
+      "tx_bps",
+      "tx_bytes",
+      "tx_max_kbps",
+      "tx_min_kbps",
+      "tx_pkts",
+      "tx_pps",
+      "uiquality",
+      "utilization"
+    ],
+    "x-observed-count": 0,
+    "x-optional": {
+      "cchannel": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "channel-selection": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "channel_bonds": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "channel_mode": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "device": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "dfs_status": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "exclude_list": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "management-rate": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "min-unicast-rate": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "multicast_rate": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "multicast_to_unicast": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "multicast_to_unicast_mode": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "non-unicast-rate": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "per": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "radio_config_state": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "rx_threshold": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "unicast_rates": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "wifi_capabilities": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      },
+      "wifi_mode": {
+        "observed_on": 28,
+        "of": 36,
+        "seen_at": [
+          "amata/XV2",
+          "ampilatwatja/XV2",
+          "arawerr/XV2",
+          "arreyonga/XV2",
+          "bidyadanga/XV2",
+          "bungardi/XV2",
+          "burawa/XV2",
+          "burringurrah/XV2",
+          "darlngunaya/XV2",
+          "doomadgee/XV2",
+          "galiwinku/XV2",
+          "gan-gan/XV2",
+          "hope-vale/XV2",
+          "horn-island/XV2",
+          "junjuwa/XV2",
+          "kaltjiti-fergon/XV2",
+          "kowanyama/XV2",
+          "kurnangki/XV2",
+          "loanbun/XV2",
+          "mimili/XV2",
+          "mindi-rardi/XV2",
+          "mornington/XV2",
+          "mungkarta/XV2",
+          "pipalyatjara/XV2",
+          "pormparaaw/XV2",
+          "pukatja/XV2",
+          "wandawuy/XV2",
+          "wujal-wujal/XV2"
+        ]
+      }
+    },
+    "x-evidence": {
+      "observations_with_records": 36,
+      "observations_empty": 0,
+      "empty_at": [],
+      "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+    }
+  },
+  "x-observed-count": 0
+}

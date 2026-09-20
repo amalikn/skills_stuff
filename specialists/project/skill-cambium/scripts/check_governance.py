@@ -106,6 +106,9 @@ CONDITIONAL_PATHS: frozenset[str] = frozenset({
     ".archcore/adr",
     ".archcore/specs",
     "ARCHCORE_PROMOTION_CANDIDATES.md",  # deleted by `promote` 2026-09-17; CHANGELOG.md's mentions of it are history, not a live claim
+    "cambium-swap/.claude/settings.local.json",  # real file, lives in the sibling cambium-swap project outside this pack's own tree —
+                                                  # a documented cross-reference-don't-copy pointer (see CHANGELOG.md's staleness-audit
+                                                  # entry), not a broken link; this checker only resolves paths inside ROOT
 })
 
 # Task runner file, or None if the project has none.

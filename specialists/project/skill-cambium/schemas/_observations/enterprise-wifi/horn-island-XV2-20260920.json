@@ -1,0 +1,2642 @@
+{
+  "x-observation": {
+    "captured_utc": "2026-09-20T06:48:31Z",
+    "family": "enterprise-wifi",
+    "model": "XV2",
+    "firmware": "6.6.0.3-r9",
+    "site": "horn-island",
+    "layer": "raw-endpoint",
+    "driver": "stdin",
+    "strict_pii": true,
+    "clients_on_target": "1",
+    "devices_probed": 13
+  },
+  "endpoints": {
+    "client-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "age": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "assoc_time": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "authorized": {
+            "type": "boolean",
+            "x-candidate-values": [
+              true
+            ],
+            "x-observed-count": 1
+          },
+          "avg_rssi": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "avg_snr": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "band": {
+            "type": "string",
+            "x-observed-count": 1
+          },
+          "channel": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "channelBond40mhz": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "channelBond80mhz": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "cipher": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "coord_x": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "coord_y": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "dataRssi": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "dataSilence": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "dataSnr": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "data_rate": {
+            "type": "number",
+            "x-observed-count": 1
+          },
+          "dev_cat": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "dev_class": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "dev_src_idx": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "dev_type": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 1
+          },
+          "deviceSource": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "deviceType": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "encryption": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "fastRoaming": {
+            "type": "string",
+            "x-candidate-values": [
+              "none"
+            ],
+            "x-observed-count": 1
+          },
+          "g_client_type": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "ga_auth": {
+            "type": "boolean",
+            "x-candidate-values": [
+              false
+            ],
+            "x-observed-count": 1
+          },
+          "ga_expiry": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "ga_mode": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "ga_type": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "ga_type_code": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "group": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "iap": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "ip": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 1
+          },
+          "is_6ghz_capable": {
+            "type": "boolean",
+            "x-candidate-values": [
+              false
+            ],
+            "x-observed-count": 1
+          },
+          "key_management": {
+            "type": "string",
+            "x-candidate-values": [
+              "NONE"
+            ],
+            "x-observed-count": 1
+          },
+          "mac": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 1
+          },
+          "manufacturer": {
+            "type": "string",
+            "x-candidate-values": [
+              "[Local MAC]"
+            ],
+            "x-observed-count": 1
+          },
+          "media_type": {
+            "type": "string",
+            "x-candidate-values": [
+              "11axg"
+            ],
+            "x-observed-count": 1
+          },
+          "mediastreams": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "mgmtRssi": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "mgmtRxRate": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "mgmtSilence": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "mgmtSnr": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "mgmtTxRate": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "mode": {
+            "type": "string",
+            "x-candidate-values": [
+              "bgn"
+            ],
+            "x-observed-count": 1
+          },
+          "name": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 1
+          },
+          "netbiosName": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "override_dhcp": {
+            "type": "boolean",
+            "x-candidate-values": [
+              false
+            ],
+            "x-observed-count": 1
+          },
+          "per": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "power_state": {
+            "type": "boolean",
+            "x-candidate-values": [
+              false
+            ],
+            "x-observed-count": 1
+          },
+          "qos": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "radio": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "radius_id": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "rssi": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_bps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_bytes": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_err": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_pkts": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_pps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_rate": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_retries": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "sid": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "silence": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "snr": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "ssid": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 1
+          },
+          "stats.rxBytes": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "stats.rxPackets": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "stats.txBytes": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "stats.txPackets": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "statsPeriod": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "streams": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "timeAssoc": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_bps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_bytes": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_err": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_pkts": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_pps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_rate": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_retries": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "user": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "userAgent1": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "userAgent2": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "userAgent3": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "user_name": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 1
+          },
+          "vendor": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 1
+          },
+          "vlan": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "vlanNumber": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "vlan_pool_name": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "wlan": {
+            "type": "integer",
+            "x-observed-count": 1
+          }
+        },
+        "required": [
+          "age",
+          "assoc_time",
+          "authorized",
+          "avg_rssi",
+          "avg_snr",
+          "band",
+          "channel",
+          "channelBond40mhz",
+          "channelBond80mhz",
+          "cipher",
+          "coord_x",
+          "coord_y",
+          "dataRssi",
+          "dataSilence",
+          "dataSnr",
+          "data_rate",
+          "dev_cat",
+          "dev_class",
+          "dev_src_idx",
+          "dev_type",
+          "deviceSource",
+          "deviceType",
+          "encryption",
+          "fastRoaming",
+          "g_client_type",
+          "ga_auth",
+          "ga_expiry",
+          "ga_mode",
+          "ga_type",
+          "ga_type_code",
+          "group",
+          "iap",
+          "ip",
+          "is_6ghz_capable",
+          "key_management",
+          "mac",
+          "manufacturer",
+          "media_type",
+          "mediastreams",
+          "mgmtRssi",
+          "mgmtRxRate",
+          "mgmtSilence",
+          "mgmtSnr",
+          "mgmtTxRate",
+          "mode",
+          "name",
+          "netbiosName",
+          "override_dhcp",
+          "per",
+          "power_state",
+          "qos",
+          "radio",
+          "radius_id",
+          "rssi",
+          "rx_avg_kbps",
+          "rx_bps",
+          "rx_bytes",
+          "rx_err",
+          "rx_max_kbps",
+          "rx_min_kbps",
+          "rx_pkts",
+          "rx_pps",
+          "rx_rate",
+          "rx_retries",
+          "sid",
+          "silence",
+          "snr",
+          "ssid",
+          "stats.rxBytes",
+          "stats.rxPackets",
+          "stats.txBytes",
+          "stats.txPackets",
+          "statsPeriod",
+          "streams",
+          "timeAssoc",
+          "tx_avg_kbps",
+          "tx_bps",
+          "tx_bytes",
+          "tx_err",
+          "tx_max_kbps",
+          "tx_min_kbps",
+          "tx_pkts",
+          "tx_pps",
+          "tx_rate",
+          "tx_retries",
+          "user",
+          "userAgent1",
+          "userAgent2",
+          "userAgent3",
+          "user_name",
+          "vendor",
+          "vlan",
+          "vlanNumber",
+          "vlan_pool_name",
+          "wlan"
+        ]
+      },
+      "x-records-observed": 1
+    },
+    "radio-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "atf": {
+            "type": "string",
+            "x-candidate-values": [
+              "OFF"
+            ],
+            "x-observed-count": 2
+          },
+          "band": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "cchannel": {
+            "type": "string",
+            "x-candidate-values": [
+              "auto"
+            ],
+            "x-observed-count": 2
+          },
+          "channel": {
+            "type": "string",
+            "x-candidate-values": [
+              "100",
+              "11"
+            ],
+            "x-observed-count": 2
+          },
+          "channel-selection": {
+            "type": "string",
+            "x-candidate-values": [
+              "auto"
+            ],
+            "x-observed-count": 2
+          },
+          "channel-width": {
+            "type": "string",
+            "x-candidate-values": [
+              "20"
+            ],
+            "x-observed-count": 2
+          },
+          "channel_bonds": {
+            "type": "string",
+            "x-candidate-values": [
+              "100",
+              "11"
+            ],
+            "x-observed-count": 2
+          },
+          "channel_mode": {
+            "type": "string",
+            "x-candidate-values": [
+              "unlocked"
+            ],
+            "x-observed-count": 2
+          },
+          "device": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "dfs_detected_count": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "exclude_list": {
+            "type": "string",
+            "x-candidate-values": [
+              "NA"
+            ],
+            "x-observed-count": 2
+          },
+          "mac": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 2
+          },
+          "management-rate": {
+            "type": "string",
+            "x-candidate-values": [
+              "default"
+            ],
+            "x-observed-count": 2
+          },
+          "mesh": {
+            "type": "string",
+            "x-candidate-values": [
+              "OFF"
+            ],
+            "x-observed-count": 2
+          },
+          "min-unicast-rate": {
+            "type": "string",
+            "x-candidate-values": [
+              "1",
+              "6"
+            ],
+            "x-observed-count": 2
+          },
+          "multicast_to_unicast": {
+            "type": "string",
+            "x-candidate-values": [
+              "ON"
+            ],
+            "x-observed-count": 2
+          },
+          "multicast_to_unicast_mode": {
+            "type": "string",
+            "x-candidate-values": [
+              "amsdu"
+            ],
+            "x-observed-count": 2
+          },
+          "non-unicast-rate": {
+            "type": "string",
+            "x-candidate-values": [
+              "default"
+            ],
+            "x-observed-count": 2
+          },
+          "num_clients": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "num_wlans": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "per": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "power": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "quality": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "radio_config_state": {
+            "type": "string",
+            "x-candidate-values": [
+              "ON"
+            ],
+            "x-observed-count": 2
+          },
+          "radio_state": {
+            "type": "string",
+            "x-candidate-values": [
+              "ON"
+            ],
+            "x-observed-count": 2
+          },
+          "rx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_bps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_bytes": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_pkts": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_pps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_threshold": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_bps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_bytes": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_pkts": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_pps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "uiquality": {
+            "type": "string",
+            "x-candidate-values": [
+              "average",
+              "excellent"
+            ],
+            "x-observed-count": 2
+          },
+          "utilization": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "wifi_capabilities": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "wifi_mode": {
+            "type": "string",
+            "x-candidate-values": [
+              "11axa",
+              "11axg"
+            ],
+            "x-observed-count": 2
+          }
+        },
+        "required": [
+          "atf",
+          "band",
+          "cchannel",
+          "channel",
+          "channel-selection",
+          "channel-width",
+          "channel_bonds",
+          "channel_mode",
+          "device",
+          "dfs_detected_count",
+          "exclude_list",
+          "mac",
+          "management-rate",
+          "mesh",
+          "min-unicast-rate",
+          "multicast_to_unicast",
+          "multicast_to_unicast_mode",
+          "non-unicast-rate",
+          "num_clients",
+          "num_wlans",
+          "per",
+          "power",
+          "quality",
+          "radio_config_state",
+          "radio_state",
+          "rx_avg_kbps",
+          "rx_bps",
+          "rx_bytes",
+          "rx_max_kbps",
+          "rx_min_kbps",
+          "rx_pkts",
+          "rx_pps",
+          "rx_threshold",
+          "tx_avg_kbps",
+          "tx_bps",
+          "tx_bytes",
+          "tx_max_kbps",
+          "tx_min_kbps",
+          "tx_pkts",
+          "tx_pps",
+          "uiquality",
+          "utilization",
+          "wifi_capabilities",
+          "wifi_mode"
+        ]
+      },
+      "x-records-observed": 2
+    },
+    "radio-rf-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "busy_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "chan_if": {
+            "type": "string",
+            "x-candidate-values": [
+              "0",
+              "52"
+            ],
+            "x-observed-count": 2
+          },
+          "chan_thp": {
+            "type": "string",
+            "x-candidate-values": [
+              "NA"
+            ],
+            "x-observed-count": 2
+          },
+          "nf": {
+            "type": "string",
+            "x-candidate-values": [
+              "-104",
+              "-105"
+            ],
+            "x-observed-count": 2
+          },
+          "non_wifi_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "0",
+              "7"
+            ],
+            "x-observed-count": 2
+          },
+          "per": {
+            "type": "string",
+            "x-candidate-values": [
+              "29",
+              "42"
+            ],
+            "x-observed-count": 2
+          },
+          "rx_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "tot_rx_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "0",
+              "44"
+            ],
+            "x-observed-count": 2
+          },
+          "total_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "1",
+              "56"
+            ],
+            "x-observed-count": 2
+          },
+          "tx_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "1",
+              "4"
+            ],
+            "x-observed-count": 2
+          },
+          "u_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "44",
+              "99"
+            ],
+            "x-observed-count": 2
+          }
+        },
+        "required": [
+          "busy_cu",
+          "chan_if",
+          "chan_thp",
+          "nf",
+          "non_wifi_cu",
+          "per",
+          "rx_cu",
+          "tot_rx_cu",
+          "total_cu",
+          "tx_cu",
+          "u_cu"
+        ]
+      },
+      "x-records-observed": 2
+    },
+    "device-summary": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "ACTIV8ME"
+          ],
+          "x-observed-count": 1
+        },
+        "backup_version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "bootloader_version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "x-observed-count": 25
+          },
+          "x-observed-count": 1
+        },
+        "cns_status": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "country": {
+          "type": "string",
+          "x-candidate-values": [
+            " Australia"
+          ],
+          "x-observed-count": 1
+        },
+        "country_code": {
+          "type": "string",
+          "x-candidate-values": [
+            "AU"
+          ],
+          "x-observed-count": 1
+        },
+        "cpu": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "da_version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "def_gw_dynamic": {
+          "type": "boolean",
+          "x-candidate-values": [
+            false
+          ],
+          "x-observed-count": 1
+        },
+        "default_gw": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "device_ip": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "device_location": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "device_mac": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "device_mask": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "dns_ip_dynamic": {
+          "type": "boolean",
+          "x-candidate-values": [
+            false
+          ],
+          "x-observed-count": 1
+        },
+        "dns_server_1": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "dns_server_2": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "hostname": {
+          "type": "string",
+          "x-identifying": true,
+          "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+          "x-observed-count": 1
+        },
+        "hw_sku": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "ip_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "static"
+          ],
+          "x-observed-count": 1
+        },
+        "kernel_version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "link_duplex0": {
+          "type": "string",
+          "x-candidate-values": [
+            "FULL"
+          ],
+          "x-observed-count": 1
+        },
+        "link_duplex1": {
+          "type": "string",
+          "x-candidate-values": [
+            "-"
+          ],
+          "x-observed-count": 1
+        },
+        "link_speed0": {
+          "type": "string",
+          "x-candidate-values": [
+            "100M"
+          ],
+          "x-observed-count": 1
+        },
+        "link_speed1": {
+          "type": "string",
+          "x-candidate-values": [
+            "-"
+          ],
+          "x-observed-count": 1
+        },
+        "max_ethernet_ports": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_num_scan_radios": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_radios": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "memory": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "mesh_clients": {
+          "type": "array",
+          "items": {
+            "type": "null",
+            "x-observed-count": 0
+          },
+          "x-observed-count": 1
+        },
+        "mesh_type": {
+          "type": "string",
+          "x-candidate-values": [
+            "none"
+          ],
+          "x-observed-count": 1
+        },
+        "model": {
+          "type": "string",
+          "x-candidate-values": [
+            "XV2-2T0"
+          ],
+          "x-observed-count": 1
+        },
+        "port_stats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "x-observed-count": 5
+              },
+              "device": {
+                "type": "string",
+                "x-candidate-values": [
+                  "ETH1",
+                  "ETH2",
+                  "PORT-CHANNEL1",
+                  "VLAN500",
+                  "VLAN501"
+                ],
+                "x-observed-count": 5
+              },
+              "duplex": {
+                "type": "string",
+                "x-candidate-values": [
+                  "N/A"
+                ],
+                "x-observed-count": 5
+              },
+              "link": {
+                "type": "string",
+                "x-candidate-values": [
+                  "DOWN"
+                ],
+                "x-observed-count": 5
+              },
+              "rx_avg_kbps": {
+                "type": "integer",
+                "x-observed-count": 3
+              },
+              "rx_bytes": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "rx_compressed": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "rx_drops": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "rx_errs": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "rx_fifo": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "rx_frame": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "rx_max_kbps": {
+                "type": "integer",
+                "x-observed-count": 3
+              },
+              "rx_min_kbps": {
+                "type": "integer",
+                "x-observed-count": 3
+              },
+              "rx_multi": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "rx_packets": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "speed": {
+                "type": "string",
+                "x-candidate-values": [
+                  "N/A"
+                ],
+                "x-observed-count": 5
+              },
+              "tx_avg_kbps": {
+                "type": "integer",
+                "x-observed-count": 3
+              },
+              "tx_bytes": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "tx_carrier": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "tx_colls": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "tx_compressed": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "tx_drops": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "tx_errs": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "tx_fifo": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "tx_max_kbps": {
+                "type": "integer",
+                "x-observed-count": 3
+              },
+              "tx_min_kbps": {
+                "type": "integer",
+                "x-observed-count": 3
+              },
+              "tx_packets": {
+                "type": "integer",
+                "x-observed-count": 5
+              }
+            },
+            "x-observed-count": 5
+          },
+          "x-observed-count": 1
+        },
+        "port_status": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "device": {
+                "type": "string",
+                "x-candidate-values": [
+                  "ETH1",
+                  "ETH2"
+                ],
+                "x-observed-count": 2
+              },
+              "duplex": {
+                "type": "integer",
+                "x-observed-count": 2
+              },
+              "link": {
+                "type": "integer",
+                "x-observed-count": 2
+              },
+              "mac": {
+                "type": "string",
+                "x-identifying": true,
+                "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+                "x-observed-count": 2
+              },
+              "speed": {
+                "type": "string",
+                "x-candidate-values": [
+                  "100M",
+                  "N/A"
+                ],
+                "x-observed-count": 2
+              }
+            },
+            "x-observed-count": 2
+          },
+          "x-observed-count": 1
+        },
+        "radio_sbs_mode": {
+          "type": "boolean",
+          "x-candidate-values": [
+            false
+          ],
+          "x-observed-count": 1
+        },
+        "rca_enabled": {
+          "type": "boolean",
+          "x-candidate-values": [
+            true
+          ],
+          "x-observed-count": 1
+        },
+        "reboot_count": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "reg_domain": {
+          "type": "string",
+          "x-candidate-values": [
+            "ROW"
+          ],
+          "x-observed-count": 1
+        },
+        "serial_number": {
+          "type": "string",
+          "x-candidate-values": [
+            "WLZA13WQF61K"
+          ],
+          "x-observed-count": 1
+        },
+        "sta_count": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "uptime": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "vlan_id": {
+          "type": "integer",
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "account_id",
+        "backup_version",
+        "bootloader_version",
+        "channels",
+        "cns_status",
+        "country",
+        "country_code",
+        "cpu",
+        "da_version",
+        "def_gw_dynamic",
+        "default_gw",
+        "device_ip",
+        "device_location",
+        "device_mac",
+        "device_mask",
+        "dns_ip_dynamic",
+        "dns_server_1",
+        "dns_server_2",
+        "hostname",
+        "hw_sku",
+        "ip_mode",
+        "kernel_version",
+        "link_duplex0",
+        "link_duplex1",
+        "link_speed0",
+        "link_speed1",
+        "max_ethernet_ports",
+        "max_num_scan_radios",
+        "max_radios",
+        "memory",
+        "mesh_clients",
+        "mesh_type",
+        "model",
+        "port_stats",
+        "port_status",
+        "radio_sbs_mode",
+        "rca_enabled",
+        "reboot_count",
+        "reg_domain",
+        "serial_number",
+        "sta_count",
+        "uptime",
+        "version",
+        "vlan_id"
+      ],
+      "x-records-observed": 1
+    },
+    "platform-info": {
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "type": "string",
+          "x-identifying": true,
+          "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+          "x-observed-count": 1
+        },
+        "max_bss_per_radio": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_clients": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_ethernet_ports": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_num_scan_radios": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_radios": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_wlans": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "model": {
+          "type": "string",
+          "x-candidate-values": [
+            "XV2-2T0"
+          ],
+          "x-observed-count": 1
+        },
+        "r1_default_unicast_ratelist": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "r1_max_width": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "r2_default_unicast_ratelist": {
+          "type": "string",
+          "x-candidate-values": [
+            "6b 9 12b 18 24b 36 48 54"
+          ],
+          "x-observed-count": 1
+        },
+        "sbs_mode_support": {
+          "type": "boolean",
+          "x-candidate-values": [
+            false
+          ],
+          "x-observed-count": 1
+        },
+        "sku": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "type": {
+          "type": "string",
+          "x-candidate-values": [
+            "Jaguar"
+          ],
+          "x-observed-count": 1
+        },
+        "wifi_cert_test_mode": {
+          "type": "boolean",
+          "x-candidate-values": [
+            false
+          ],
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "hostname",
+        "max_bss_per_radio",
+        "max_clients",
+        "max_ethernet_ports",
+        "max_num_scan_radios",
+        "max_radios",
+        "max_wlans",
+        "model",
+        "r1_default_unicast_ratelist",
+        "r1_max_width",
+        "r2_default_unicast_ratelist",
+        "sbs_mode_support",
+        "sku",
+        "type",
+        "wifi_cert_test_mode"
+      ],
+      "x-records-observed": 1
+    },
+    "interface-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "x-observed-count": 5
+          },
+          "device": {
+            "type": "string",
+            "x-candidate-values": [
+              "ETH1",
+              "ETH2",
+              "PORT-CHANNEL1",
+              "VLAN500",
+              "VLAN501"
+            ],
+            "x-observed-count": 5
+          },
+          "duplex": {
+            "type": "string",
+            "x-candidate-values": [
+              "N/A"
+            ],
+            "x-observed-count": 5
+          },
+          "link": {
+            "type": "string",
+            "x-candidate-values": [
+              "DOWN"
+            ],
+            "x-observed-count": 5
+          },
+          "rx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 3
+          },
+          "rx_bytes": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "rx_compressed": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "rx_drops": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "rx_errs": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "rx_fifo": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "rx_frame": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "rx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 3
+          },
+          "rx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 3
+          },
+          "rx_multi": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "rx_packets": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "speed": {
+            "type": "string",
+            "x-candidate-values": [
+              "N/A"
+            ],
+            "x-observed-count": 5
+          },
+          "tx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 3
+          },
+          "tx_bytes": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "tx_carrier": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "tx_colls": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "tx_compressed": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "tx_drops": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "tx_errs": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "tx_fifo": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "tx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 3
+          },
+          "tx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 3
+          },
+          "tx_packets": {
+            "type": "integer",
+            "x-observed-count": 5
+          }
+        },
+        "required": [
+          "address",
+          "device",
+          "duplex",
+          "link",
+          "rx_bytes",
+          "rx_compressed",
+          "rx_drops",
+          "rx_errs",
+          "rx_fifo",
+          "rx_frame",
+          "rx_multi",
+          "rx_packets",
+          "speed",
+          "tx_bytes",
+          "tx_carrier",
+          "tx_colls",
+          "tx_compressed",
+          "tx_drops",
+          "tx_errs",
+          "tx_fifo",
+          "tx_packets"
+        ]
+      },
+      "x-records-observed": 5
+    },
+    "wlan-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "band": {
+            "type": "string",
+            "x-candidate-values": [
+              "all"
+            ],
+            "x-observed-count": 2
+          },
+          "guest_access": {
+            "type": "string",
+            "x-candidate-values": [
+              "disabled"
+            ],
+            "x-observed-count": 2
+          },
+          "interface": {
+            "type": "string",
+            "x-candidate-values": [
+              "wlan0",
+              "wlan1"
+            ],
+            "x-observed-count": 2
+          },
+          "mac": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 2
+          },
+          "num_clients": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_bps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_bytes": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_pkts": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_pps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "security": {
+            "type": "string",
+            "x-candidate-values": [
+              "open",
+              "wpa2-psk"
+            ],
+            "x-observed-count": 2
+          },
+          "ssid": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 2
+          },
+          "tunnel_mode": {
+            "type": "string",
+            "x-candidate-values": [
+              "OFF"
+            ],
+            "x-observed-count": 2
+          },
+          "tx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_bps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_bytes": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_pkts": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_pps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "vlan": {
+            "type": "integer",
+            "x-observed-count": 2
+          }
+        },
+        "required": [
+          "band",
+          "guest_access",
+          "interface",
+          "mac",
+          "num_clients",
+          "rx_avg_kbps",
+          "rx_bps",
+          "rx_bytes",
+          "rx_max_kbps",
+          "rx_min_kbps",
+          "rx_pkts",
+          "rx_pps",
+          "security",
+          "ssid",
+          "tunnel_mode",
+          "tx_avg_kbps",
+          "tx_bps",
+          "tx_bytes",
+          "tx_max_kbps",
+          "tx_min_kbps",
+          "tx_pkts",
+          "tx_pps",
+          "vlan"
+        ]
+      },
+      "x-records-observed": 2
+    },
+    "ethports-config": {
+      "type": "object",
+      "properties": {
+        "eth1_acl_policy": {
+          "type": "string",
+          "x-candidate-values": [
+            "radius"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_called_sta_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-MAC"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_called_sta_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_dynamic_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_mac_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_mac_auth_delimiter": {
+          "type": "string",
+          "x-candidate-values": [
+            ":"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_mac_auth_fallback": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_mac_auth_uppercase": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_nas_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-HOSTNAME"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_nas_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_nas_ip": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-IP"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_nas_ip_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_interim_interval": {
+          "type": "string",
+          "x-candidate-values": [
+            "1800"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "none"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "load-balance"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_acl_policy": {
+          "type": "string",
+          "x-candidate-values": [
+            "radius"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_called_sta_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-MAC"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_called_sta_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_dynamic_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_mac_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_mac_auth_delimiter": {
+          "type": "string",
+          "x-candidate-values": [
+            ":"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_mac_auth_fallback": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_mac_auth_uppercase": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_nas_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-HOSTNAME"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_nas_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_nas_ip": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-IP"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_nas_ip_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_interim_interval": {
+          "type": "string",
+          "x-candidate-values": [
+            "1800"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "none"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "load-balance"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_access_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth1_allowed_vlan": {
+          "type": "string",
+          "x-candidate-values": [
+            "500,501,502"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_channelgroup": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "trunk"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_native_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth1_phy_duplex": {
+          "type": "string",
+          "x-candidate-values": [
+            "full"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_phy_speed": {
+          "type": "string",
+          "x-candidate-values": [
+            "auto"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_tag_native": {
+          "type": "string",
+          "x-candidate-values": [
+            "enable"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_access_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth2_allowed_vlan": {
+          "type": "string",
+          "x-candidate-values": [
+            "500,501,502"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_channelgroup": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "trunk"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_native_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth2_phy_duplex": {
+          "type": "string",
+          "x-candidate-values": [
+            "full"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_phy_speed": {
+          "type": "string",
+          "x-candidate-values": [
+            "auto"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_tag_native": {
+          "type": "string",
+          "x-candidate-values": [
+            "enable"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_tunnel_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "eth1_acl_policy",
+        "eth1_called_sta_id",
+        "eth1_called_sta_id_custom",
+        "eth1_dynamic_auth",
+        "eth1_mac_auth",
+        "eth1_mac_auth_delimiter",
+        "eth1_mac_auth_fallback",
+        "eth1_mac_auth_uppercase",
+        "eth1_nas_id",
+        "eth1_nas_id_custom",
+        "eth1_nas_ip",
+        "eth1_nas_ip_custom",
+        "eth1_rad_acct_1_host",
+        "eth1_rad_acct_1_port",
+        "eth1_rad_acct_1_secret",
+        "eth1_rad_acct_2_host",
+        "eth1_rad_acct_2_port",
+        "eth1_rad_acct_2_secret",
+        "eth1_rad_acct_3_host",
+        "eth1_rad_acct_3_port",
+        "eth1_rad_acct_3_secret",
+        "eth1_rad_acct_attempts",
+        "eth1_rad_acct_interim_interval",
+        "eth1_rad_acct_mode",
+        "eth1_rad_acct_timeout",
+        "eth1_rad_auth_1_host",
+        "eth1_rad_auth_1_port",
+        "eth1_rad_auth_1_secret",
+        "eth1_rad_auth_2_host",
+        "eth1_rad_auth_2_port",
+        "eth1_rad_auth_2_secret",
+        "eth1_rad_auth_3_host",
+        "eth1_rad_auth_3_port",
+        "eth1_rad_auth_3_secret",
+        "eth1_rad_auth_attempts",
+        "eth1_rad_auth_timeout",
+        "eth1_rad_mode",
+        "eth2_acl_policy",
+        "eth2_called_sta_id",
+        "eth2_called_sta_id_custom",
+        "eth2_dynamic_auth",
+        "eth2_mac_auth",
+        "eth2_mac_auth_delimiter",
+        "eth2_mac_auth_fallback",
+        "eth2_mac_auth_uppercase",
+        "eth2_nas_id",
+        "eth2_nas_id_custom",
+        "eth2_nas_ip",
+        "eth2_nas_ip_custom",
+        "eth2_rad_acct_1_host",
+        "eth2_rad_acct_1_port",
+        "eth2_rad_acct_1_secret",
+        "eth2_rad_acct_2_host",
+        "eth2_rad_acct_2_port",
+        "eth2_rad_acct_2_secret",
+        "eth2_rad_acct_3_host",
+        "eth2_rad_acct_3_port",
+        "eth2_rad_acct_3_secret",
+        "eth2_rad_acct_attempts",
+        "eth2_rad_acct_interim_interval",
+        "eth2_rad_acct_mode",
+        "eth2_rad_acct_timeout",
+        "eth2_rad_auth_1_host",
+        "eth2_rad_auth_1_port",
+        "eth2_rad_auth_1_secret",
+        "eth2_rad_auth_2_host",
+        "eth2_rad_auth_2_port",
+        "eth2_rad_auth_2_secret",
+        "eth2_rad_auth_3_host",
+        "eth2_rad_auth_3_port",
+        "eth2_rad_auth_3_secret",
+        "eth2_rad_auth_attempts",
+        "eth2_rad_auth_timeout",
+        "eth2_rad_mode",
+        "interface_eth1_access_vlan",
+        "interface_eth1_allowed_vlan",
+        "interface_eth1_channelgroup",
+        "interface_eth1_mode",
+        "interface_eth1_native_vlan",
+        "interface_eth1_phy_duplex",
+        "interface_eth1_phy_speed",
+        "interface_eth1_tag_native",
+        "interface_eth2_access_vlan",
+        "interface_eth2_allowed_vlan",
+        "interface_eth2_channelgroup",
+        "interface_eth2_mode",
+        "interface_eth2_native_vlan",
+        "interface_eth2_phy_duplex",
+        "interface_eth2_phy_speed",
+        "interface_eth2_tag_native",
+        "interface_eth2_tunnel_mode"
+      ],
+      "x-records-observed": 1
+    },
+    "ip_route-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "devname": {
+            "type": "string",
+            "x-candidate-values": [
+              "VLAN500"
+            ],
+            "x-observed-count": 2
+          },
+          "flags": {
+            "type": "string",
+            "x-candidate-values": [
+              "U",
+              "UG"
+            ],
+            "x-observed-count": 2
+          },
+          "gateway": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "ip_addr": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "mask": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "metric": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "refs": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "use": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          }
+        },
+        "required": [
+          "devname",
+          "flags",
+          "gateway",
+          "ip_addr",
+          "mask",
+          "metric",
+          "refs",
+          "use"
+        ]
+      },
+      "x-records-observed": 2
+    }
+  }
+}

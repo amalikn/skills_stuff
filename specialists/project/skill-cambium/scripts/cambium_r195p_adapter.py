@@ -24,50 +24,130 @@ Never hardcode or print CAMBIUM_PASS — pull it from the KeePassXC vault (`kp s
 an env var at the call site.
 
 Confirmed live 2026-09-17 against two real Burringurrah units, BUR-R195P-1047 (10.255.11.47) and BUR-R195P-1055 (10.255.11.55) — see
-cambium-swap evidence E113/E114/E118. Deliberately did NOT run `cat /etc/config/*` or any full-config dump this session (this family's SNMP
+cambium-swap evidence E113/E114/E118. Deliberately did NOT run `cat /etc/config/*` or any full-config dump that session (this family's SNMP
 Get/Set community strings are known to be configured fleet-wide per the Ansible R195P provisioning template — encrypted there, but real —
-and this project has two prior secret-exposure incidents on other families from exactly this kind of unscoped dump); get_config() below is
-therefore NOT implemented. Add it deliberately, with REDACT_KEY_PATTERN applied, if a real need for it shows up — never as a blind
-`cat /etc/config` dump.
+and this project has two prior secret-exposure incidents on other families from exactly this kind of unscoped dump).
+
+get_config() ADDED 2026-09-18 under explicit operator authorization to fetch a live snapshot across all 4 Cambium device families in one
+session (cambium-swap evidence E134-series) — the condition this docstring originally asked for ("a real need... never as a blind default")
+is now met. It wraps the exact `cat /etc/config/* 2>&1` dump this docstring spent a year deliberately avoiding, but never returns it
+unredacted: the raw UCI-style text is parsed into a nested dict and passed through the same REDACT_KEY_PATTERN/redact() shape used verbatim
+by cambium_xv2_adapter.py/cambium_epmp_adapter.py/cambium_cnwave_adapter.py, keyed by option name so the fleet-wide SNMP community (an
+encrypted blob in this family's own config, not necessarily plaintext-looking) is redacted by key name regardless of whether the value looks
+like ciphertext — same rule the other three adapters already apply. Opt-in only, via `--include-config` (same flag name/shape as
+cambium_epmp_adapter.py), never part of the default `_cmd_getters()` output.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import re
 import subprocess
 import sys
 
-DEFAULT_SSH_TIMEOUT = 8
+REDACT_KEY_PATTERN = re.compile(
+    r"pass|psk|secret|key|shared|community|radius|credential|token|auth",
+    re.IGNORECASE,
+)
+
+
+def redact(obj):
+    """Recursively replace any dict value whose key looks credential-shaped with a placeholder.
+
+    Copied verbatim from cambium_xv2_adapter.py / cambium_epmp_adapter.py / cambium_cnwave_adapter.py in this directory — deliberately not
+    re-derived, per this project's standing rule after two prior secret-exposure incidents on other families.
+    """
+    if isinstance(obj, dict):
+        return {
+            k: "<REDACTED>" if REDACT_KEY_PATTERN.search(k) else redact(v)
+            for k, v in obj.items()
+        }
+    if isinstance(obj, list):
+        return [redact(x) for x in obj]
+    return obj
+
+
+DEFAULT_SSH_TIMEOUT = 20
+# Was 8 (fine for the direct-tunnel path this constant was originally tested against, 2026-09-17).
+# Live-tested 2026-09-18 through a nested Teleport --proxy= tunnel to a device reachable only via a
+# site's SMC box: the device's own sshd (dropbear) answers its banner instantly (confirmed with a
+# raw socket probe), but the fuller key-exchange + password-auth round trip over that extra hop
+# exceeded the old 8s ConnectTimeout and raised subprocess.TimeoutExpired. Bumped to 20s rather than
+# reverting the nested-tunnel access path, since that path is this family's documented normal case.
 
 
 class CambiumR195PAdapter:
     """Talks to one cnPilot R195P's real BusyBox/Buildroot shell over SSH, via the system ssh/sshpass binaries."""
 
     def __init__(self, host: str, username: str, password: str, timeout: int = DEFAULT_SSH_TIMEOUT) -> None:
-        self.host = host
+        # Accept "host:port" the same way CAMBIUM_HOST is already written for the other 3 (HTTPS)
+        # adapters in this directory, e.g. "localhost:20004" for a local Teleport port-forward —
+        # this family's own module docstring says the normal access path IS a tsh tunnel through
+        # the site's SMC box, so a bare `ssh user@host:port` (which ssh parses as a literal,
+        # unresolvable hostname) was a real bug on the documented default path, not an edge case.
+        if ":" in host:
+            hostname, _, port_str = host.rpartition(":")
+            if port_str.isdigit():
+                self.host = hostname
+                self._port: str | None = port_str
+            else:
+                self.host = host
+                self._port = None
+        else:
+            self.host = host
+            self._port = None
         self._username = username
         self._password = password
         self._timeout = timeout
 
-    def _run(self, remote_command: str) -> str:
+    def _run(self, remote_command: str, allow_nonzero: bool = False) -> str:
         """Run one remote shell command over SSH and return its stdout, raising on a non-zero exit or a timeout.
 
         Uses `sshpass -p <password> ssh ...` — the same pattern this project's own live sessions used by hand. `StrictHostKeyChecking=no`
         matches those sessions too: these are internal management-network devices reached through an already-authenticated Teleport
         tunnel, not internet-facing hosts.
+
+        `allow_nonzero` (added 2026-09-18, first live get_config() run): `get_config()`'s own `cat /etc/config/* 2>&1` deliberately merges
+        BusyBox `cat`'s stderr into the captured stdout stream so a missing config file shows up as parseable text under `_unparsed`
+        rather than being lost — see that method's and `_parse_uci_text()`'s docstrings. But BusyBox `cat` exits non-zero as soon as ANY
+        one of several glob-matched files fails to open, even though the useful output for every other file is still on stdout. The
+        default strict behaviour below raised on that non-zero exit and discarded the merged stdout entirely, silently defeating the
+        `2>&1` design intent — confirmed live against a real Burringurrah unit (not every `/etc/config/*` type exists on every unit, so
+        this is the common case here, not a rare edge case). Only `get_config()` opts into tolerating this.
         """
         cmd = [
             "sshpass", "-p", self._password,
             "ssh",
             "-o", "StrictHostKeyChecking=no",
             "-o", f"ConnectTimeout={self._timeout}",
+            # LogLevel=ERROR added 2026-09-18: the local OpenSSH client's own "not using a
+            # post-quantum key exchange" advisory banner is written before the password prompt and
+            # was observed live to desync sshpass's naive prompt-pattern matching (three
+            # ssh_askpass fallback attempts, then a real "Permission denied" against a password that
+            # is in fact correct) — silencing client-side advisory/warning banners avoids the
+            # desync without changing auth behaviour.
+            "-o", "LogLevel=ERROR",
+        ]
+        if self._port:
+            cmd += ["-p", self._port]
+        cmd += [
             f"{self._username}@{self.host}",
             remote_command,
         ]
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=self._timeout + 5)
-        if result.returncode != 0:
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=self._timeout + 5)
+        except subprocess.TimeoutExpired as exc:
+            # SECRET-EXPOSURE INCIDENT (2026-09-18, live R195P test): subprocess.TimeoutExpired's
+            # default __str__/repr embeds the FULL argv it was given, including the `sshpass -p
+            # <password>` pair above — an uncaught instance of this exception prints the real
+            # device password to whatever captures the traceback (a terminal transcript, a log
+            # file). Never let this exception surface with its default message; re-raise sanitized,
+            # same discipline as the REDACT_KEY_PATTERN rule elsewhere in this project after two
+            # prior incidents of this same class (E107 and the 2026-09-17 ePMP incident).
+            raise RuntimeError(f"SSH command timed out after {exc.timeout}s: {remote_command!r}") from None
+        if result.returncode != 0 and not allow_nonzero:
             raise RuntimeError(f"SSH command failed (exit {result.returncode}): {remote_command!r} -> {result.stderr.strip()}")
         return result.stdout
 
@@ -162,6 +242,61 @@ class CambiumR195PAdapter:
                     return token.lower()
         return None
 
+    def get_config(self) -> dict:
+        """Config snapshot for backup/diff — see the module docstring's 2026-09-18 note for why this was deliberately unbuilt until now
+        and what changed. Source: `cat /etc/config/* 2>&1` over the same SSH path every other getter here uses (BusyBox has no `uci`
+        binary confirmed on this platform — see 03_asset-register-conventions.md — so this reads the UCI-style config files directly
+        rather than shelling a config tool that may not exist). Parses the raw UCI text into a nested dict and REDACTS every
+        credential-shaped option via REDACT_KEY_PATTERN before returning — callers must never call `_run("cat /etc/config/*")` directly
+        and print/log/persist the result themselves, same rule as every other family's get_config()."""
+        raw = self._run("cat /etc/config/* 2>&1", allow_nonzero=True)
+        return redact(self._parse_uci_text(raw))
+
+    @staticmethod
+    def _parse_uci_text(text: str) -> dict:
+        """Best-effort parse of BusyBox/OpenWrt-style UCI config text into a nested dict keyed by `"<type>.<name>"` per `config` stanza,
+        each holding its `option`/`list` key-value pairs. Never confirmed live before this method (no prior session ran the underlying
+        dump), so this tolerates any line shape gracefully rather than assuming one: an unrecognized line (a different config-file
+        syntax entirely, or `cat`'s own "No such file" stderr text mixed into the same 2>&1 stream) is kept verbatim under a synthetic
+        `_unparsed` key instead of being silently dropped, so redact() still gets a chance to scrub anything credential-shaped in it and
+        a caller can see the raw text was there rather than getting a falsely-empty result."""
+        sections: dict = {}
+        current: dict | None = None
+        for line in text.splitlines():
+            stripped = line.strip()
+            if not stripped:
+                continue
+
+            config_match = re.match(r"^config\s+(\S+)(?:\s+'([^']*)'|\s+\"([^\"]*)\"|\s+(\S+))?", stripped)
+            if config_match:
+                kind = config_match.group(1)
+                name = config_match.group(2) or config_match.group(3) or config_match.group(4) or f"section{len(sections)}"
+                current = {}
+                sections[f"{kind}.{name}"] = current
+                continue
+
+            option_match = re.match(r"^(option|list)\s+(\S+)\s+(?:'([^']*)'|\"([^\"]*)\"|(\S+))", stripped)
+            if option_match and current is not None:
+                key = option_match.group(2)
+                value = option_match.group(3)
+                if value is None:
+                    value = option_match.group(4)
+                if value is None:
+                    value = option_match.group(5)
+                if option_match.group(1) == "list":
+                    existing = current.get(key)
+                    if not isinstance(existing, list):
+                        existing = [] if existing is None else [existing]
+                    existing.append(value)
+                    current[key] = existing
+                else:
+                    current[key] = value
+                continue
+
+            sections.setdefault("_unparsed", [])
+            sections["_unparsed"].append(stripped)
+        return sections
+
 
 def _cmd_getters(adapter: CambiumR195PAdapter) -> int:
     adapter.login()
@@ -177,6 +312,14 @@ def _cmd_getters(adapter: CambiumR195PAdapter) -> int:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument(
+        "--include-config",
+        action="store_true",
+        help="also fetch and print the redacted /etc/config/* snapshot (get_config) alongside facts/interfaces",
+    )
+    args = parser.parse_args()
+
     host = os.environ.get("CAMBIUM_HOST")
     username = os.environ.get("CAMBIUM_USER")
     password = os.environ.get("CAMBIUM_PASS")
@@ -185,6 +328,20 @@ def main() -> int:
         return 2
 
     adapter = CambiumR195PAdapter(host, username, password)
+
+    if args.include_config:
+        adapter.login()
+        try:
+            result = {
+                "facts": adapter.get_facts(),
+                "interfaces": adapter.get_interfaces(),
+                "config": adapter.get_config(),
+            }
+            print(json.dumps(result, indent=2))
+        finally:
+            adapter.logout()
+        return 0
+
     return _cmd_getters(adapter)
 
 

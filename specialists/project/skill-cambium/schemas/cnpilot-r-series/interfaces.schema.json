@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/cnpilot-r-series/interfaces.schema.json",
+  "title": "Cambium cnpilot-r-series \u2014 interfaces",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "cnpilot-r-series",
+    "endpoint": "interfaces",
+    "layer": "adapter-normalized",
+    "observations": 9,
+    "models": [
+      "R195P"
+    ],
+    "firmware": [
+      "4.7.3-R21",
+      "4.7.5-R2",
+      "4.8.1-R4"
+    ],
+    "sites": [
+      "bidyadanga",
+      "burringurrah",
+      "horn-island",
+      "jigalong",
+      "kalumburu",
+      "mornington",
+      "mowanjum",
+      "tjuntjuntjara",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "object",
+  "x-observed-count": 0,
+  "x-evidence": {
+    "observations_with_records": 9,
+    "observations_empty": 0,
+    "empty_at": [],
+    "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+  },
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "ipv4_addresses": {
+        "type": "array",
+        "items": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "x-observed-count": 36,
+          "x-type-varies": true
+        },
+        "x-observed-count": 320
+      },
+      "mac_address": {
+        "type": "string",
+        "x-identifying": true,
+        "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+        "x-observed-count": 167
+      },
+      "is_up": {
+        "type": "boolean",
+        "x-candidate-values": [
+          false
+        ],
+        "x-observed-count": 153
+      }
+    },
+    "x-observed-count": 320
+  },
+  "x-map-keyed-by": "interface name, e.g. eth2.17, wan1.500 \u2014 varies per site",
+  "x-keys-observed": [
+    "apcli0",
+    "apclii0",
+    "br0",
+    "eth2",
+    "eth2.1",
+    "eth2.17",
+    "eth2.2",
+    "eth2.3",
+    "eth2.4",
+    "eth2.500",
+    "eth2.501",
+    "eth2.550",
+    "imq0",
+    "imq1",
+    "imq10",
+    "imq11",
+    "imq12",
+    "imq13",
+    "imq14",
+    "imq15",
+    "imq2",
+    "imq3",
+    "imq4",
+    "imq5",
+    "imq6",
+    "imq7",
+    "imq8",
+    "imq9",
+    "lo",
+    "ra0",
+    "rai0",
+    "rai1",
+    "wan1",
+    "wan1.500",
+    "wan3",
+    "wan3.501",
+    "wds0",
+    "wds1",
+    "wds2",
+    "wds3"
+  ]
+}

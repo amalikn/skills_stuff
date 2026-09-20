@@ -1,0 +1,316 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/enterprise-wifi/platform-info.schema.json",
+  "title": "Cambium enterprise-wifi \u2014 platform-info",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "enterprise-wifi",
+    "endpoint": "platform-info",
+    "layer": "raw-endpoint",
+    "observations": 36,
+    "models": [
+      "E500",
+      "XV2"
+    ],
+    "firmware": [
+      "4.2.2-r5",
+      "4.2.2.1-r3",
+      "4.2.3-r2",
+      "4.2.3.1-r17",
+      "4.2.3.1-r9",
+      "6.6.0.2-r5",
+      "6.6.0.3-r9",
+      "6.6.2.1-r5"
+    ],
+    "sites": [
+      "amata",
+      "ampilatwatja",
+      "arawerr",
+      "arreyonga",
+      "aurukun",
+      "bidyadanga",
+      "bungardi",
+      "burawa",
+      "burringurrah",
+      "darlngunaya",
+      "doomadgee",
+      "galiwinku",
+      "gan-gan",
+      "hope-vale",
+      "horn-island",
+      "indulkana",
+      "jigalong",
+      "junjuwa",
+      "kaltjiti-fergon",
+      "kalumburu",
+      "koonibba",
+      "kowanyama",
+      "kurnangki",
+      "loanbun",
+      "mimili",
+      "mindi-rardi",
+      "mornington",
+      "mowanjum",
+      "mungkarta",
+      "pipalyatjara",
+      "pormparaaw",
+      "pukatja",
+      "tjuntjuntjara",
+      "wandawuy",
+      "warakurna",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "object",
+  "properties": {
+    "hostname": {
+      "type": "string",
+      "x-identifying": true,
+      "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+      "x-observed-count": 36
+    },
+    "max_bss_per_radio": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "max_clients": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "max_ethernet_ports": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "max_num_scan_radios": {
+      "type": "integer",
+      "x-observed-count": 28
+    },
+    "max_radios": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "max_wlans": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "model": {
+      "type": "string",
+      "x-candidate-values": [
+        "XV2-2T0",
+        "cnPilot E500"
+      ],
+      "x-observed-count": 36
+    },
+    "r1_default_unicast_ratelist": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "r1_max_width": {
+      "type": "integer",
+      "x-observed-count": 36
+    },
+    "r2_default_unicast_ratelist": {
+      "type": "string",
+      "x-candidate-values": [
+        "6b 9 12b 18 24b 36 48 54"
+      ],
+      "x-observed-count": 36
+    },
+    "sbs_mode_support": {
+      "type": "boolean",
+      "x-candidate-values": [
+        false
+      ],
+      "x-observed-count": 28
+    },
+    "sku": {
+      "type": "integer",
+      "x-observed-count": 28
+    },
+    "type": {
+      "type": "string",
+      "x-candidate-values": [
+        "Gambit",
+        "Jaguar"
+      ],
+      "x-observed-count": 36
+    },
+    "wifi_cert_test_mode": {
+      "type": "boolean",
+      "x-candidate-values": [
+        false
+      ],
+      "x-observed-count": 28
+    },
+    "is_6ghz_supported": {
+      "type": "integer",
+      "x-observed-count": 1
+    }
+  },
+  "required": [
+    "hostname",
+    "max_bss_per_radio",
+    "max_clients",
+    "max_ethernet_ports",
+    "max_radios",
+    "max_wlans",
+    "model",
+    "r1_default_unicast_ratelist",
+    "r1_max_width",
+    "r2_default_unicast_ratelist",
+    "type"
+  ],
+  "x-observed-count": 0,
+  "x-optional": {
+    "is_6ghz_supported": {
+      "observed_on": 1,
+      "of": 36,
+      "seen_at": [
+        "junjuwa/XV2"
+      ]
+    },
+    "max_num_scan_radios": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "sbs_mode_support": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "sku": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    },
+    "wifi_cert_test_mode": {
+      "observed_on": 28,
+      "of": 36,
+      "seen_at": [
+        "amata/XV2",
+        "ampilatwatja/XV2",
+        "arawerr/XV2",
+        "arreyonga/XV2",
+        "bidyadanga/XV2",
+        "bungardi/XV2",
+        "burawa/XV2",
+        "burringurrah/XV2",
+        "darlngunaya/XV2",
+        "doomadgee/XV2",
+        "galiwinku/XV2",
+        "gan-gan/XV2",
+        "hope-vale/XV2",
+        "horn-island/XV2",
+        "junjuwa/XV2",
+        "kaltjiti-fergon/XV2",
+        "kowanyama/XV2",
+        "kurnangki/XV2",
+        "loanbun/XV2",
+        "mimili/XV2",
+        "mindi-rardi/XV2",
+        "mornington/XV2",
+        "mungkarta/XV2",
+        "pipalyatjara/XV2",
+        "pormparaaw/XV2",
+        "pukatja/XV2",
+        "wandawuy/XV2",
+        "wujal-wujal/XV2"
+      ]
+    }
+  },
+  "x-evidence": {
+    "observations_with_records": 36,
+    "observations_empty": 0,
+    "empty_at": [],
+    "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/epmp-sm/facts.schema.json",
+  "title": "Cambium epmp-sm \u2014 facts",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "epmp-sm",
+    "endpoint": "facts",
+    "layer": "adapter-normalized",
+    "observations": 36,
+    "models": [
+      "Force 300-16",
+      "Force 300-25"
+    ],
+    "firmware": [
+      "4.6.1",
+      "4.7.0.1"
+    ],
+    "sites": [
+      "amata",
+      "ampilatwatja",
+      "arawerr",
+      "arreyonga",
+      "aurukun",
+      "bidyadanga",
+      "bungardi",
+      "burawa",
+      "burringurrah",
+      "darlngunaya",
+      "doomadgee",
+      "galiwinku",
+      "gan-gan",
+      "hope-vale",
+      "horn-island",
+      "indulkana",
+      "jigalong",
+      "junjuwa",
+      "kaltjiti-fergon",
+      "kalumburu",
+      "koonibba",
+      "kowanyama",
+      "kurnangki",
+      "loanbun",
+      "mimili",
+      "mindi-rardi",
+      "mornington",
+      "mowanjum",
+      "mungkarta",
+      "pipalyatjara",
+      "pormparaaw",
+      "pukatja",
+      "tjuntjuntjara",
+      "wandawuy",
+      "warakurna",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "object",
+  "properties": {
+    "cnmaestro_status": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "hostname": {
+      "type": "string",
+      "x-identifying": true,
+      "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+      "x-observed-count": 36
+    },
+    "mac_address": {
+      "type": "string",
+      "x-identifying": true,
+      "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+      "x-observed-count": 36
+    },
+    "os_version": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "serial_number": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "uptime": {
+      "type": "string",
+      "x-observed-count": 36
+    },
+    "vendor": {
+      "type": "string",
+      "x-identifying": true,
+      "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+      "x-observed-count": 36
+    }
+  },
+  "required": [
+    "cnmaestro_status",
+    "hostname",
+    "mac_address",
+    "os_version",
+    "serial_number",
+    "uptime",
+    "vendor"
+  ],
+  "x-observed-count": 0,
+  "x-optional": {},
+  "x-evidence": {
+    "observations_with_records": 36,
+    "observations_empty": 0,
+    "empty_at": [],
+    "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+  }
+}

@@ -1,0 +1,387 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/enterprise-wifi/wlan-summary.schema.json",
+  "title": "Cambium enterprise-wifi \u2014 wlan-summary",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "enterprise-wifi",
+    "endpoint": "wlan-summary",
+    "layer": "raw-endpoint",
+    "observations": 36,
+    "models": [
+      "E500",
+      "XV2"
+    ],
+    "firmware": [
+      "4.2.2-r5",
+      "4.2.2.1-r3",
+      "4.2.3-r2",
+      "4.2.3.1-r17",
+      "4.2.3.1-r9",
+      "6.6.0.2-r5",
+      "6.6.0.3-r9",
+      "6.6.2.1-r5"
+    ],
+    "sites": [
+      "amata",
+      "ampilatwatja",
+      "arawerr",
+      "arreyonga",
+      "aurukun",
+      "bidyadanga",
+      "bungardi",
+      "burawa",
+      "burringurrah",
+      "darlngunaya",
+      "doomadgee",
+      "galiwinku",
+      "gan-gan",
+      "hope-vale",
+      "horn-island",
+      "indulkana",
+      "jigalong",
+      "junjuwa",
+      "kaltjiti-fergon",
+      "kalumburu",
+      "koonibba",
+      "kowanyama",
+      "kurnangki",
+      "loanbun",
+      "mimili",
+      "mindi-rardi",
+      "mornington",
+      "mowanjum",
+      "mungkarta",
+      "pipalyatjara",
+      "pormparaaw",
+      "pukatja",
+      "tjuntjuntjara",
+      "wandawuy",
+      "warakurna",
+      "wujal-wujal"
+    ],
+    "generated_utc": "2026-09-20T07:43:13Z"
+  },
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "band": {
+        "type": "string",
+        "x-observed-count": 98
+      },
+      "guest_access": {
+        "type": "string",
+        "x-candidate-values": [
+          "disabled"
+        ],
+        "x-observed-count": 98
+      },
+      "interface": {
+        "type": "string",
+        "x-candidate-values": [
+          "wlan0",
+          "wlan1",
+          "wlan2"
+        ],
+        "x-observed-count": 98
+      },
+      "mac": {
+        "type": "string",
+        "x-identifying": true,
+        "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+        "x-observed-count": 98
+      },
+      "num_clients": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "rx_avg_kbps": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "rx_bps": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "rx_bytes": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "rx_max_kbps": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "rx_min_kbps": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "rx_pkts": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "rx_pps": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "security": {
+        "type": "string",
+        "x-candidate-values": [
+          "open",
+          "wpa2-psk"
+        ],
+        "x-observed-count": 98
+      },
+      "ssid": {
+        "type": "string",
+        "x-identifying": true,
+        "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+        "x-observed-count": 98
+      },
+      "tunnel_mode": {
+        "type": "string",
+        "x-candidate-values": [
+          "OFF",
+          "disable"
+        ],
+        "x-observed-count": 98
+      },
+      "tx_avg_kbps": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "tx_bps": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "tx_bytes": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "tx_max_kbps": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "tx_min_kbps": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "tx_pkts": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "tx_pps": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "vlan": {
+        "type": "integer",
+        "x-observed-count": 98
+      },
+      "2.4_wlan_state": {
+        "type": "string",
+        "x-candidate-values": [
+          "OFF",
+          "ON"
+        ],
+        "x-observed-count": 19
+      },
+      "5_wlan_state": {
+        "type": "string",
+        "x-candidate-values": [
+          "OFF",
+          "ON"
+        ],
+        "x-observed-count": 19
+      },
+      "monitor_host": {
+        "type": "string",
+        "x-candidate-values": [
+          ""
+        ],
+        "x-observed-count": 19
+      },
+      "monitor_host_down": {
+        "type": "boolean",
+        "x-candidate-values": [
+          false
+        ],
+        "x-observed-count": 19
+      },
+      "monitor_host_missed": {
+        "type": "integer",
+        "x-observed-count": 19
+      },
+      "s_vlan": {
+        "type": "string",
+        "x-candidate-values": [
+          "NA"
+        ],
+        "x-observed-count": 19
+      },
+      "vlan_encap_type": {
+        "type": "string",
+        "x-candidate-values": [
+          "disable"
+        ],
+        "x-observed-count": 19
+      },
+      "wlan_num": {
+        "type": "string",
+        "x-candidate-values": [
+          "1",
+          "2",
+          "3"
+        ],
+        "x-observed-count": 19
+      }
+    },
+    "required": [
+      "band",
+      "guest_access",
+      "interface",
+      "mac",
+      "num_clients",
+      "rx_avg_kbps",
+      "rx_bps",
+      "rx_bytes",
+      "rx_max_kbps",
+      "rx_min_kbps",
+      "rx_pkts",
+      "rx_pps",
+      "security",
+      "ssid",
+      "tunnel_mode",
+      "tx_avg_kbps",
+      "tx_bps",
+      "tx_bytes",
+      "tx_max_kbps",
+      "tx_min_kbps",
+      "tx_pkts",
+      "tx_pps",
+      "vlan"
+    ],
+    "x-observed-count": 0,
+    "x-optional": {
+      "2.4_wlan_state": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "5_wlan_state": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "monitor_host": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "monitor_host_down": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "monitor_host_missed": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "s_vlan": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "vlan_encap_type": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      },
+      "wlan_num": {
+        "observed_on": 8,
+        "of": 36,
+        "seen_at": [
+          "aurukun/E500",
+          "indulkana/E500",
+          "jigalong/E500",
+          "kalumburu/E500",
+          "koonibba/E500",
+          "mowanjum/E500",
+          "tjuntjuntjara/E500",
+          "warakurna/E500"
+        ]
+      }
+    },
+    "x-evidence": {
+      "observations_with_records": 36,
+      "observations_empty": 0,
+      "empty_at": [],
+      "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+    }
+  },
+  "x-observed-count": 0
+}

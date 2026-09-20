@@ -39,7 +39,9 @@ Login mechanics (REST `POST /api/login` cookie/XSRF flow, `tsh` tunnel form, SSH
 | `get_interfaces`             | `GET /api/interface-summary`,     | `show interface brief`,                       | Per-port link state, speed/duplex, RX/TX counters — confirmed live    |
 |                              | `GET /api/ethports-config`        | `show config system interfaces`               | in `device-summary`'s `port_stats`/`port_status`. **Real bug found:** |
 |                              |                                   |                                               | `port_stats.link` is unreliable (reported DOWN for a physically-up    |
-|                              |                                   |                                               | `ETH1`); `port_status` is the authoritative field for link state.     |
+|                              |                                   |                                               | `ETH1`); `port_status` is authoritative for link state **on XV2      |
+|                              |                                   |                                               | only** — E-series returns neither field, see the model-split note    |
+|                              |                                   |                                               | below.                                                               |
 | `get_radios` / RF state      | `GET /api/radio-summary`,         | `show wireless radios`,                       | Channel, power, Auto-RF state. Complements, does not replace,         |
 |                              | `GET /api/radio-rf-summary`,      | `show wireless radios rfstatistics`,          | LibreNMS/SNMP RF telemetry — SNMP config is **unsupported** on this   |
 |                              | `GET /api/radio-config`           | `show auto-rf channel-info`                   | family, so this is the only config-read path for radios. Confirmed    |
@@ -80,12 +82,70 @@ reachable that way, but SNMP is lower-friction when only read-only community acc
 firmware branches. `scripts/snmp_resolve_unknowns.py`'s `FAMILY_OID_MAP` is deliberately scoped to exactly what has been verified; extend it (and this note) only after a hands-on test, not by
 inference.
 
+#### Model split in `device-summary` — `port_status` does not exist on E-series (2026-09-20)
+
+The schema sweep found 14 of `device-summary`'s 45 fields splitting by model. An **E500 returns neither `port_stats` nor `port_status`**, along with `bootloader_version`, `channels`, `country`,
+`kernel_version`, `max_ethernet_ports`, `max_num_scan_radios`, `max_radios`, `model`, `radio_sbs_mode`, `rca_enabled` and `reboot_count`. It returns `ap_info`, which XV2 does not.
+
+Consequence for adapter code: reading `port_status` unconditionally works on XV2 and silently returns nothing on E-series — the same class of bug as the `port_stats.link` unreliability noted above,
+but caused by absence rather than by a wrong value. Check the field exists before branching on it, and consult the generated contract in [schemas/enterprise-wifi](../schemas/enterprise-wifi) rather
+than assuming parity across the family.
+
+### SNMP (cnPilotMIB) — Live Client and Radio Telemetry, Confirmed Live 2026-09-20
+
+The same `cnPilotMIB` tree that carries identity data (previous section) also carries per-client and per-radio telemetry, walked live on 2026-09-20 against hope-vale XV2 units on firmware
+`6.6.0.3-r9`. Evidence: `unified-network-controller` report `t1-t2-local-data-availability-test-20260920_1434.md`; runner `scripts/t1_t2_local_data_probe.sh` in that project.
+
+| OID | Object | Contents confirmed live |
+| --- | --- | --- |
+| `.1.3.6.1.4.1.17713.22.1.1.1.14` | `cambiumAPTotalClients` | Scalar total associated clients |
+| `.1.3.6.1.4.1.17713.22.1.2.1` | `cambiumRadioEntry` | Per radio: client count `.5`, channel `.6`, width `.7`, TX power `.8`, noise floor `.16`, interference `.17`, airtime `total/tx/rx/busy` `.18` |
+| `.1.3.6.1.4.1.17713.22.1.3` | `cambiumClientTable` | Per client, 16 columns: MAC `.2`, IP `.3`, name `.4`, SSID `.5`, vendor `.6`, hwmode `.7`, radio index `.8`, WLAN `.9`, VLAN `.10`, SNR `.11`, TX rate `.12`, packet and byte counters `.13`–`.16` |
+
+**Gotcha — an empty client table walks as `noSuchObject`, not as an empty table.** On an AP with zero associated clients, `snmpwalk` of `cambiumClientTable` returns "No Such Object available on this
+agent at this OID", which is indistinguishable from an unimplemented subtree unless you also read `cambiumAPTotalClients`. A collector must treat that response as "zero clients", not as a MIB
+mismatch or a device fault. This cost a wrong first reading on 2026-09-20 — the table was assumed unimplemented on Wi-Fi 6 firmware until the site was swept for an AP that actually had clients.
+
+**Client MACs are randomized.** Observed client MACs carry the locally-administered bit (`06-…`, `DE-…`, `76-…`). MAC is not a stable per-client identifier on this estate. See `skill-smc`'s content
+filtering reference for the same finding on the SMC side.
+
+There is **no per-client RSSI** in `cnPilotMIB` — only SNR (`cambiumClientEntry.11`). Downlink RSSI per client is not available over SNMP on this family.
+
+### REST `client-summary` Is the Real Wi-Fi Client Contract, Not the MIB — Confirmed Live 2026-09-20
+
+For per-client Wi-Fi data the device's REST API strictly dominates SNMP, on both current and older firmware. Walked and queried live on 2026-09-20 against XV2 `6.6.0.3-r9` (hope-vale) and cnPilot
+E500 `4.2.3.1-r9` (Tjuntjuntjara).
+
+| Aspect | SNMP `cambiumClientTable` | REST `GET /api/client-summary` |
+| --- | --- | --- |
+| Fields per client | 16 | 95 on XV2, 44 on E500 |
+| SNR | Yes | Yes |
+| RSSI | **Not in `cnPilotMIB` at all** | Yes (`rssi`, dBm) |
+| Association timestamp | **Absent** | `assoc_time`, epoch seconds — a session start, per client, with no RADIUS |
+| Empty state | `noSuchObject` (ambiguous) | `[]` (unambiguous) |
+
+**No split between firmware generations.** Every load-bearing field is present on both: `snr`, `rssi`, `assoc_time`, `tx_bytes`, `rx_bytes`, `ssid`, `band`, `mode`, `vlan`, `authorized`,
+`data_rate`. XV2's extra 52 fields are Wi-Fi 6 detail. One adapter and one field contract cover E500 through XV2.
+
+**Credential note:** the E500 authenticates with the standard `<secret:keepassxc:cambium-devices/enterprise-wifi>` entry. The `enterprise-wifi-legacy` entry returns **403** on it — do not assume the
+"legacy" entry belongs to legacy hardware. `GET /api/wlan-config` returns **404** on E500 firmware where it 500s on XV2; `wlan-summary` covers both.
+
+**Field-level schema captures** (types plus example values, end-user identifiers redacted, infrastructure MACs kept) live in `cambium-swap/captures/device-queries/`:
+`wifi-xv2-hope-vale-telemetry-schema-20260920_1530.json`, `wifi-e500-tjuntjuntjara-telemetry-schema-20260920_1531.json` and
+`epmp-3000l-hope-vale-snmp-sta-table-schema-20260920_1434.json`. Generated by `unified-network-controller`'s `scripts/capture_telemetry_schema.py`. R195P and cnWave are not covered yet — different
+auth flows, each needs its own live run. The `events` endpoint is not JSON and is excluded.
+
 ### Enterprise Wi-Fi E-series (`E500`, `E430`) — Same Adapter, Confirmed Live 2026-09-17
 
 Older cnPilot E-series hardware, but the same Falcon-family REST API and CLI as XV2 above — no separate adapter needed. Confirmed live against real units: `E500` (`TJN_E500_AP4_IP3_40`, Tjuntjuntjara,
 `10.255.3.40`, internal codename `Gambit`, firmware `4.2.3.1-r9`) and `E430H` (`Mowanjum_E430_AP13_IP3_130`, Mowanjum, `10.255.3.130`, internal codename `Sage`, firmware `4.2.3.1-r17` — the `H` in the
 device's own `show version` output, "Dual Band Wall Plate Integrated", resolves E31's H-vs-W lifecycle ambiguity for this specific unit). Both `POST /api/login` + `GET /api/platform-info` and `show
 version` over SSH worked identically to XV2's methods above — only tested `get_facts`, the rest of the table above is expected to apply but not yet individually re-confirmed on this hardware.
+
+**`get_config()` (and the rest of `_cmd_getters()`) re-verified live 2026-09-18 (cambium-swap evidence E134)** against the same Hope Vale Tower 1 AP as the original 2026-09-17 test
+(`HOP_XV2_AP1_IP3_1`, `10.255.3.1`, serial `WLYB0501N05R`), via a `tsh` local port-forward through `hope-vale-smc01`. Output unchanged in shape from the original test; 17 credential-shaped `config`
+fields redacted, `wlans`/`clients` telemetry fields (which are not passed through `redact()` by design — they are narrow field-mapped summaries, not the raw API response) inspected and confirmed to
+carry no real secret values, only mode names/VLANs/counters/BSSIDs.
 
 ## Config Backup — the SNMP Gap This Fills
 
@@ -114,6 +174,11 @@ A fourth Hope Vale unit, Tower 2 (`10.255.3.2`), was attempted during the same p
 
 `scripts/cambium_epmp_adapter.py` implements this. ePMP AP (`ePMP 3000L`) and ePMP SM (`Force 300-16`/`Force 300-25`) share one firmware/UI stack, confirmed against one Hope Vale unit of each
 (`HOP_F25_AP5_IP4_5` / `10.255.4.5`, and `HOP_3000L_T1_Omni0_20` / `10.255.0.20`).
+
+**SM adapter re-verified fresh-live 2026-09-18** (superseding the earlier caveat that SM coverage was an offline replay only): the Hope Vale SM's own 5-session RW cap made a second live session there
+unsafe to spend, so this run targeted a different real Force 300-25 SM instead — Doomadgee `DMG_F25_AP10_IP3_101` (`10.255.3.101`). `_cmd_getters()` (facts/interfaces/wireless_link/clients, no
+`get_config`, one login/logout) ran clean end to end: serial `EBAE00B6JPM9` and MAC `00:04:56:4A:F1:D5` matched `device-inventory.csv` exactly, `wireless_link` returned a real uplink to AP MAC
+`58:C1:7A:79:41:3E` at 5845 MHz. Confirms the adapter's SM code path generalises beyond the single Hope Vale unit it was originally built against, not just that one device's quirks.
 
 ### Access
 
@@ -178,6 +243,28 @@ master) was first seen in `cambium-swap`'s Kalumburu reconciliation and confirme
 credential failed on this unit; only `epmp-ap-legacy` worked** — device-family-matrix.csv's "a minority of field units... still answer to the legacy default" note had never actually been hit before
 this.
 
+**`get_config()` re-verified live 2026-09-18 (cambium-swap evidence E135)**, this time via the newly combined single-login `--include-config` path (see the R195P section below for why that change was
+made), against Doomadgee `DMG_F25_AP10_IP3_101` (`10.255.3.101`) — a third real unit, after Hope Vale (2026-09-17 original) and the first Doomadgee re-verification (E132). 45 credential-shaped fields
+redacted (`snmpReadWriteCommunity`, `snmpReadOnlyCommunity`, `snmpTrapCommunity`, `wirelessRadiusPassword` and the rest of the RADIUS VSA table, `networkWanPPPoEPassword`, `cambiumTR069Password`/
+`cambiumTR069ACSPassword`, `vmsagentPassword`, among others); `facts.serial_number` (`EBAE00B6JPM9`) and `mac_address` (`00:04:56:4A:F1:D5`) matched `device-inventory.csv` and E132's own facts
+exactly. Zero unredacted credential-shaped fields found on inspection.
+
+### SNMP (CAMBIUM-PMP80211-MIB) — Per-SM Link Telemetry, Confirmed Live 2026-09-20
+
+ePMP uses the `pmpMibTree` arm of the Cambium enterprise OID (`cambium 21`, `.1.3.6.1.4.1.17713.21`) — not the `cnPilotMIB` arm (`cambium 22`) used by Enterprise Wi-Fi, and not the `WHISP-*` MIBs,
+which are the PMP450/Canopy tree (`enterprises 161.19`). Walked live 2026-09-20 against `HOP_3000L_T1_Omni0_20` (`10.255.0.20`, ePMP 3000L, firmware `4.7.0.1`) with 10 SMs registered.
+
+| OID | Object | Contents confirmed live |
+| --- | --- | --- |
+| `.1.3.6.1.4.1.17713.21.1.2.10` | `cambiumAPNumberOfConnectedSTA` | Registered SM count |
+| `.1.3.6.1.4.1.17713.21.1.2.30` | `cambiumAPConnectedSTATable` | Per SM: MAC `.1`, AID `.2`, channel `.3`, UL/DL RSSI `.4`/`.5`, UL/DL SNR `.6`/`.7`, UL/DL MCS `.8`/`.9`, IP `.10`, TX capacity `.19`, TX quality `.20`, session time `.27`, DL rate `.28`, distance in metres `.29` |
+| `.1.3.6.1.4.1.17713.21.1.2.3` / `.18` | `cambiumSTADLRSSI` / `cambiumSTADLSNR` | SM-side scalars — return `noSuchObject` on an AP, as expected |
+
+**The live agent exposes more columns than the MIB mirror documents.** `CAMBIUM-PMP80211-MIB` (in `cambium-swap`'s `artifacts/mibs/librenms/`) defines 29 columns for
+`cambiumAPConnectedSTAEntry`; the live walk returned columns through `.43`, with `.43` carrying the SM's firmware string. Map adapter fields against live output, not the mirror alone.
+
+**ePMP reports session time per SM directly** (`.27`, format `0001:22:51:32`), so ePMP link sessions do not need poll-based reconstruction the way Wi-Fi client sessions do.
+
 ## cnPilot R195P — Addressing Resolved via cnMaestro Cloud Export
 
 First attempted 2026-09-17 with live ARP alone (E110/E112 below) — inconclusive on the true address, though it correctly proved the `EXT10XX → 10.255.10.XX` derivation rule
@@ -207,9 +294,45 @@ tolerate this BusyBox's non-standard output — a line with no address to report
 gets wrong). Verified live 2026-09-17 against two real Burringurrah units (`BUR-R195P-1047`, `BUR-R195P-1055`) — confirmed the WAN interface name is **not** consistent across units (`wan1` on one,
 `eth2.500` on the other), so `get_facts()`'s `wan_mac_address` is best-effort only; `get_interfaces()`'s full dump is the reliable source.
 
-No `get_config()` — deliberately not implemented. This family's SNMP Get/Set community is configured fleet-wide (confirmed via the Ansible R195P provisioning template, encrypted there but real) and
-this project already has two secret-exposure incidents from unscoped config dumps on other families (see [05_known-issues.md](05_known-issues.md) Security Incidents). Add it only with
-REDACT_KEY_PATTERN applied and a real need, never as a blind `cat /etc/config` dump.
+**`get_config()` implemented 2026-09-18** under explicit operator authorization (the "real need" this section's prior text asked for — see `CHANGELOG.md`'s `20260918_1557` entry for the full context).
+Source: `cat /etc/config/* 2>&1` over the same SSH path as every other getter (no `uci` binary confirmed present on this BusyBox/Buildroot platform). The raw UCI-style text is parsed into a nested
+dict (`_parse_uci_text()`) and every `option`/`list` value is redacted via `REDACT_KEY_PATTERN`/`redact()` — copied verbatim from the other three adapters — before returning, keyed by option name
+regardless of whether the value looks like ciphertext (this family's fleet-wide SNMP community is an encrypted blob in its own config, per the Ansible R195P provisioning template, but redacted
+unconditionally anyway, same rule as the other three families after their two prior secret-exposure incidents — see [05_known-issues.md](05_known-issues.md) Security Incidents). Opt-in only via
+`--include-config`, never part of the default `_cmd_getters()` output.
+
+**Live-verified 2026-09-18 (cambium-swap evidence E137) — mechanism confirmed end to end, but the `/etc/config/*` source assumption is WRONG for this hardware.** Ran live against both real
+Burringurrah units (`BUR-R195P-1047`, `10.255.11.47`; `BUR-R195P-1055`, `10.255.11.55`) through a `tsh` local port-forward via `burringurrah-smc01`. Real finding: **this platform has no `/etc/config/`
+directory at all** — `cat /etc/config/* 2>&1` returns only `cat: can't open '/etc/config/*': No such file or directory`, correctly captured under `_unparsed` and passed through `redact()` cleanly (no
+secret exposure — there was nothing there to expose). A live `ls /` walk found the real config surface instead: `/etc/cambium/` (includes a 122-byte `keystore` file — name alone strongly suggests a
+real secret store, untested further), `/etc/provision/provision.conf` (877 bytes) plus `ssl_ca_cert`/`ssl_client_cert`/`ssl_client_key` stub files, `/etc/snmpd/snmpd.conf` (267 bytes — almost
+certainly holds the SNMP community strings), `/etc/dnsmasq.conf` (23 bytes), and a much larger `/etc_ro/` tree (`CAMBIUM_default`, `CAMBIUM_normal_deny_param`, `hw_device_config_file`,
+`TRANS_PRAM.conf`, `Wireless/`, `tr069/`, etc.) that looks like a param-file scheme, not UCI. This confirms the module docstring's own standing warning — "R195P is a different, older cnPilot Home
+Router product line under the hood... built by a Flyingvoice/Actiontec-style OEM platform, not Cambium's own Falcon stack" — applies to config storage too, not just the shell/SSH access path. The
+`_parse_uci_text()` parser itself is correctly implemented for UCI-style text (confirmed by its own offline unit test); it has simply never been given real UCI text to parse, because this device
+doesn't produce any. **Open item, not yet resolved**: identify the real config source(s) among the files above and rebuild `get_config()`'s source command and parser around them — do not assume any of
+those file contents are plaintext-safe to read/redact without care; treat `/etc/cambium/keystore` and `/etc/snmpd/snmpd.conf` in particular as likely-secret-bearing until characterized.
+
+Three real code bugs surfaced and fixed by this first live run, all still governed by this family's own `REDACT_KEY_PATTERN`/`redact()` discipline:
+
+1. `CambiumR195PAdapter.__init__`/`_run()` only ever built a bare `user@host` SSH target — `CAMBIUM_HOST=host:port` (the exact form the other 3 HTTPS adapters in this directory already accept, and the
+   form a local Teleport port-forward naturally produces, e.g. `localhost:20104`) made `ssh` try to resolve the literal string `"host:port"` as one hostname and fail. Now parses a trailing `:<port>`
+   and passes `-p <port>` to `ssh` instead.
+2. **New secret-exposure incident, different root cause from E107/the ePMP incident**: an uncaught `subprocess.TimeoutExpired` on the first live attempt (nested-tunnel SSH handshake legitimately took
+   longer than the old 8s `DEFAULT_SSH_TIMEOUT`) printed the full `sshpass -p <password> ssh ...` argv — **the real device password** — to this session's own stderr/transcript via Python's default
+   exception formatting. Caught immediately (before it reached any persisted file beyond a since-deleted `/tmp` scratch file), the temp file was deleted at once, and `_run()` now catches
+   `TimeoutExpired` explicitly and re-raises a sanitized `RuntimeError` with no argv embedded — `DEFAULT_SSH_TIMEOUT` also raised 8s→20s to match the nested-tunnel round trip actually observed live.
+   Operator informed same session; no rotation authorized (see `cambium-swap` SCRATCHPAD.md), but the code path that leaked it is now closed.
+3. `get_config()`'s own `cat /etc/config/* 2>&1` merges BusyBox `cat`'s stderr into stdout by design (so a missing file becomes parseable `_unparsed` text instead of silently vanishing — see
+   `_parse_uci_text()`'s own docstring), but `_run()`'s blanket "raise on any non-zero exit" discarded that merged stdout before `get_config()` ever saw it, defeating the whole point of the `2>&1`.
+   `_run()` gained an `allow_nonzero` parameter, set `True` only by `get_config()`'s own call — every other getter keeps the original strict behaviour.
+4. `cambium_epmp_adapter.py`'s `--include-config` used to call `get_config()` alone in its own login/logout pair, separate from `_cmd_getters()`'s own — two full sessions for one combined request. It
+   now runs `facts`/`interfaces`/`wireless_link`/`clients`/`config` under one login, matching `cambium_r195p_adapter.py`'s existing `--include-config` shape — this family has a real 5-session RW cap
+   (see the ePMP section above), so halving session cost on this path matters.
+
+A separate, low-severity observation from the same session: this device's dropbear sshd appeared to throttle/refuse new connections for roughly a minute after several rapid SSH attempts in quick
+succession (multiple `Connection refused`/`Permission denied` results against a password confirmed correct moments earlier and again moments later) — not investigated further; treat rapid repeated
+connection attempts against a live R195P unit as something to avoid, not just something to retry through.
 
 <details> <summary>Original inconclusive live-ARP attempt (E110/E112, superseded above)</summary>
 
@@ -233,19 +356,42 @@ JS bundle (`main.<hash>.js`) and confirmed fully live the same day.
 **Auth:** `POST /local/userLogin` with JSON body `{"username": "...", "password": "..."}` returns `{"success":true,"message":"<JWT>"}`. The JWT (issuer `cambium.com`, carries a `roles` claim —
 `tg_all_write` for the admin account) is sent as `Authorization: Bearer <JWT>` on every subsequent call. No cookies involved, unlike XV2's flow.
 
-| Adapter method (target) | Endpoint                          | Notes                                                                                                                                  |
-| ----------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `get_facts`             | `POST /local/getDeviceInfo`       | Confirmed live 2026-09-17 — name, MAC, serial, model, `swVer`/`fwVersion`, uptime, IPv4, `l2bridge` tunnel count, last reboot reason.  |
-| `get_e2e_info`          | `POST /local/getE2eInfo`          | Confirmed live — `{"enabled":true,"available":true}` for this onboard-E2E device.                                                      |
-| `get_status`            | `POST /local/getStatusInfo`       | Confirmed live — `onboardStatus`, `e2eCtrlUrl` (the controller's own IPv6/tcp address).                                                |
-| `get_capability`        | `POST /local/getSystemCapability` | Confirmed live — `mode` (`KERNEL`), `build`, `safeboot`, VLAN-config support flag.                                                     |
-| `get_links` / `get_gps` | `POST /local/getLinksCount`,      | Confirmed live — both returned real (empty, for this node's link count) responses, not errors.                                         |
-|                         |   `POST /local/getGpsBrief`       |                                                                                                                                        |
-| `get_topology`          | `POST /api/getTopology`           | Confirmed live — full node/link topology, site names, MAC addresses, node status codes. Different base path (`/api/`, not `/local/`)   |
-|                         |                                   |   but same bearer token.                                                                                                               |
-| `get_ctrl_status`       | `POST /api/getCtrlStatusDump`     | Confirmed live — per-node status including the underlying open-source Terragraph release string (`RELEASE_M60_20-...`) — cnWave is     |
-|                         |                                   |   built on Meta's open-source Terragraph platform.                                                                                     |
+**`get_config()` re-verified live 2026-09-18 (cambium-swap evidence E136)** against the same Doomadgee V5000 POP node used for the E133 stat-endpoint work (`DMG_T12_V5000_DN_IP4_100`, `10.255.4.100`),
+via a `tsh` local port-forward through `doomadgee-smc01`. `facts` matched exactly (serial `VYZF00D10H12`, MAC `00:04:56:88:bb:25`, firmware `10.11.0.98`); 21 credential-shaped `config` fields
+redacted; zero unredacted secret-shaped fields found anywhere in the output on inspection, including the `radio_stats`/`network_stats`/`key_performance_index`/`cn_agent_status` fields E133 added.
 
-Not yet exercised: `getNetworkOverridesConfig`, `getControllerConfig`, `getTopologyMeta` (read-only, likely safe, just not called this session), `getCnAgentConfig`/`getCnAgentStatus`,
-`getKeyPerformanceIndex`, `getNetworkStats`, `getRadioStats`, `minionConfigGet`. **Never call** the write-shaped endpoints found in the same bundle without explicit operator authorization:
-`cambiumConfigSet`, `cambiumConfigCommit`, `rebootNode`, `userUpdate`, `userLogout` (untested only because it's a needless write-shaped call, not because it's risky).
+| Adapter method (target)     | Endpoint                                | Notes                                                                                                                        |
+| --------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `get_facts`                 | `POST /local/getDeviceInfo`             | Confirmed live 2026-09-17 — name, MAC, serial, model, `swVer`/`fwVersion`, uptime, IPv4, `l2bridge` tunnel count, last       |
+|                             |                                         |   reboot reason.                                                                                                             |
+| `get_e2e_info`              | `POST /local/getE2eInfo`                | Confirmed live — `{"enabled":true,"available":true}` for this onboard-E2E device.                                            |
+| `get_status`                | `POST /local/getStatusInfo`             | Confirmed live — `onboardStatus`, `e2eCtrlUrl` (the controller's own IPv6/tcp address).                                      |
+| `get_capability`            | `POST /local/getSystemCapability`       | Confirmed live — `mode` (`KERNEL`), `build`, `safeboot`, VLAN-config support flag.                                           |
+| `get_links` / `get_gps`     | `POST /local/getLinksCount`,            | Confirmed live — both returned real (empty, for this node's link count) responses, not errors.                               |
+|                             |   `POST /local/getGpsBrief`             |                                                                                                                              |
+| `get_topology`              | `POST /api/getTopology`                 | Confirmed live — full node/link topology, site names, MAC addresses, node status codes. Different base path (`/api/`, not    |
+|                             |                                         |   `/local/`) but same bearer token.                                                                                          |
+| `get_ctrl_status`           | `POST /api/getCtrlStatusDump`           | Confirmed live — per-node status including the underlying open-source Terragraph release string (`RELEASE_M60_20-...`) —     |
+|                             |                                         |   cnWave is built on Meta's open-source Terragraph platform.                                                                 |
+| `get_radio_stats`           | `POST /local/getRadioStats`             | Confirmed live 2026-09-18 against a real V5000 POP node (Doomadgee `DMG_T12_V5000_DN_IP4_100`, `10.255.4.100`). Body         |
+|                             |                                         |   `{"macs": [<node_mac>]}` — per-radio RF/TDD stats (sync temps, tx/rx byte+packet rates, TDD slot ratio). See the "4 stat   |
+|                             |                                         |   endpoints" note below — this and the next 3 rows were previously undocumented, not previously wrapped.                     |
+| `get_network_stats`         | `POST /local/getNetworkStats`           | Confirmed live 2026-09-18. Body `{"macs": [<node_mac>], "ifaces": [<names>]}` (`ifaces` non-empty, e.g. `["nic1"]`) —        |
+|                             |                                         |   per-interface Ethernet counters (rx/tx packets, bytes, errors, drops).                                                     |
+| `get_key_performance_index` | `POST /local/getKeyPerformanceIndex`    | Confirmed live 2026-09-18. Body `{"mac": <node_mac>}` (singular, not a list) — node-level KPI summary (totalSectors,         |
+|                             |                                         |   totalLinks, uptime, tx/rx byte rate) plus a per-sector link-count map.                                                     |
+| `get_cn_agent_status`       | `POST /local/getCnAgentStatus`          | Confirmed live 2026-09-18. Body `{}` — genuinely takes no params; the connection status (code/status/message/ts) of this     |
+|                             |                                         |   node's CN-agent to cnMaestro.                                                                                              |
+
+### The 4 stat endpoints were a path bug, not a missing param (resolved 2026-09-18)
+
+`getRadioStats`/`getNetworkStats`/`getKeyPerformanceIndex`/`getCnAgentStatus` were flagged 2026-09-17 as 400ing on an empty `{}` POST to `/api/<name>`, with the params assumed undiscovered. The real
+cause: these four live under `/local/`, not `/api/` like `getTopology`/`getCtrlStatusDump` — confirmed by reading the served Angular JS bundle's own `http.post(...)` call sites (same
+reverse-engineering technique as every other endpoint in this file), then verified live against a real V5000 POP node (`cambium-swap` evidence, `captures/device-queries/cnwave-stat-endpoints-\
+doomadgee-live-20260918_1555.json`). All 4 param shapes are in the table rows above. `cambium_cnwave_adapter.py`'s `_cmd_getters()` now calls all four using `get_facts()`'s own `mac_address` as the
+node MAC — passing a `wlan_mac_addrs` radio MAC instead (from `get_topology()`) returns an empty/nulled-out result with HTTP 200, not an error, so that mismatch fails silently rather than raising;
+keep using the node MAC.
+
+Not yet exercised: `getNetworkOverridesConfig`, `getControllerConfig`, `getTopologyMeta` (read-only, likely safe, just not called this session). **Never call** the write-shaped endpoints found in the
+same bundle without explicit operator authorization: `cambiumConfigSet`, `cambiumConfigCommit`, `rebootNode`, `userUpdate`, `userLogout` (untested only because it's a needless write-shaped call, not
+because it's risky).

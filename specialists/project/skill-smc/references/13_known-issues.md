@@ -6,6 +6,7 @@
 - [Coverage Gaps (partial knowledge)](#coverage-gaps-partial-knowledge)
 - [Skill Staleness Risks](#skill-staleness-risks)
 - [Fleet-Wide Architecture Risks (identified, not yet remediated)](#fleet-wide-architecture-risks-identified-not-yet-remediated)
+- [Jump-Host Tooling Differs by Flavour — `snmpget` Absent on `rcp` Boxes (confirmed 2026-09-20)](#jump-host-tooling-differs-by-flavour--snmpget-absent-on-rcp-boxes-confirmed-2026-09-20)
 - [Known Operational Bugs (rcp fleet — confirmed 2026-06-30)](#known-operational-bugs-rcp-fleet--confirmed-2026-06-30)
 - [Known Operational Bugs (NBN Accelerate cluster — full fleet sweep, 2026-08-03)](#known-operational-bugs-nbn-accelerate-cluster--full-fleet-sweep-2026-08-03)
 - [Known Site Issues (as of 2026-06-30)](#known-site-issues-as-of-2026-06-30)
@@ -180,6 +181,22 @@ assuming `cw`/`apn`/`rct`/`wh` are ungated by design.
 |                                  |   known link flakiness. See `SKILL.md` "Key Prometheus Alerts Reference" — that table lists                    |                                                  |
 |                                  |   `NodeStarlinkInterfacecheckPacketLoss` but has no `role="internet"` row; do not read its absence there as    |                                                  |
 |                                  |   evidence the coverage exists elsewhere.                                                                      |                                                  |
+
+## Jump-Host Tooling Differs by Flavour — `snmpget` Absent on `rcp` Boxes (confirmed 2026-09-20)
+
+`net-snmp` client tools are **not installed on `rcp`-flavour SMC boxes**. `snmpget` and `snmpwalk` run fine on `nbn_accelerate` boxes (`hope-vale-smc01`) and are missing on `tjuntjuntjara-smc01` and
+`mowanjum-smc01`.
+
+**Why it matters beyond the missing package:** a device sweep that shells out to `snmpget` from the SMC box and swallows stderr will report every device at those sites as unreachable. That happened
+on 2026-09-20 — 20 Cambium APs across two sites were briefly recorded as down when the devices were healthy: ping clean, HTTPS 200, REST API answering normally. The failure was `command not found`
+on the jump host.
+
+**Before concluding a site is unreachable from an SMC box**, prove the jump host has the tool (`command -v snmpget`) and prove the device is up by a second, independent path (`ping`, or a `curl`
+HTTPS probe). Do not let a sweep's own fallback string stand as evidence of a device state.
+
+**Workaround without installing anything:** reach the device's REST API through a Teleport port-forward (`tsh ssh --proxy=<proxy> -L <local>:<device-ip>:443 root@<node>`) and query it directly from
+the workstation. Note this does **not** substitute for SNMP itself — SNMP is UDP and a Teleport `-L` forward carries TCP only, so an SNMP-specific test cannot be run this way. These boxes run
+overlayroot, so anything installed to work around this is lost on reboot unless the lower dir is remounted read-write first.
 
 ## Known Operational Bugs (rcp fleet — confirmed 2026-06-30)
 

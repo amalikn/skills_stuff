@@ -4,6 +4,7 @@
 
 - [Knowledge Gaps (by design — require execution layer)](#knowledge-gaps-by-design--require-execution-layer)
 - [Coverage Gaps (partial knowledge)](#coverage-gaps-partial-knowledge)
+- [Response-Shape Divergence Across the Fleet (sweep 2026-09-20)](#response-shape-divergence-across-the-fleet-sweep-2026-09-20)
 - [Security Incidents](#security-incidents)
 - [Pack Staleness Risks](#pack-staleness-risks)
 
@@ -42,6 +43,60 @@
 |   Burringurrah family       |                          |   assumption that OUI `bc:a9:93` was XV2-exclusive at Burringurrah — R195P shares that OUI block, so `.11.x` is a mixed XV2+R195P cluster,  |
 |                             |                          |   not tellable apart by OUI alone. `device-inventory.csv` itself not yet reconciled against the export — pending operator decision on scope |
 |                             |                          |   (51 old rows vs 53-120 real devices per family)                                                                                           |
+## Response-Shape Divergence Across the Fleet (sweep 2026-09-20)
+
+Derived from 111 live observations across all 36 sites — one representative device per family per site. Full per-endpoint breakdown in [../schemas/DIVERGENCE.md](../schemas/DIVERGENCE.md); the
+contract itself is in [../schemas](../schemas).
+
+**Enterprise Wi-Fi is far less uniform than a single-site test suggests.** In `client-summary` only **43 of 98 fields are universal; 54 split by model**. `radio-rf-summary` is 7 universal against 9
+model-split, `radio-summary` 28 against 19, `device-summary` 31 against 16. An adapter written against an XV2 alone depends on fields that an E500 does not return, and fails silently rather than
+loudly because the field is simply absent from the JSON.
+
+**`ip6_ll` splits by model, and encodes the client MAC.** It is an `array` on XV2 (10 observations), a `string` on E500 (6), and absent where the client has no link-local (17). It is also EUI-64
+derived: the observed `fe80::6885:b9ff:feac:bb89` resolves exactly to client MAC `6A-85-B9-AC-BB-89`, so **it carries the same identifying information as the MAC field** and must be redacted on the
+same footing. Normalise to a list at the adapter boundary — wrapping the E500 string and mapping absent to empty is lossless, whereas normalising to a string would truncate any XV2 client holding
+more than one address.
+
+**the R-series `interfaces` getter is not contractable as it stands, and that is an adapter bug rather than device divergence.** Its "site-specific fields" are interface *names* used as object keys —
+`eth2.17`, `eth2.550`, `wan1.500`, `wan1`, `rai1` — so each site's VLAN configuration shows up as schema fields. A response keyed by site-variable names has no stable shape by construction. It should
+return a list of interface objects carrying the name as a value. Until it does, its schema describes one site's VLAN plan, not the family.
+
+**Shapes still unknown after a full sweep**, because nothing anywhere returned a record: the ePMP SM `clients` getter (empty on all 31 observations — an SM has no clients, so this may be correct by design) and
+the cnWave `links_count` getter (empty on all 4). the cnWave `gps` getter returned `null` fleet-wide. the ePMP AP `wireless_link` getter is null-or-object, which is contract rather than a gap.
+
+**Models the single-site baseline never saw**, now in the contract: cnWave **V1000** and **V3000** alongside V5000, and ePMP **Force 300-16** alongside Force 300-25 and 3000L.
+
+### Two sites authenticate only with the `-legacy` credential (2026-09-20)
+
+**kalumburu and mornington run the older local-admin password.** Confirmed by hand on a kalumburu Enterprise Wi-Fi unit: the primary `<secret:keepassxc:cambium-devices/enterprise-wifi>` entry returns
+`Invalid username or password`, while `<secret:keepassxc:cambium-devices/enterprise-wifi-legacy>` returns `{"success":true}` on the same device. The same holds for ePMP AP and SM at kalumburu with
+their `-legacy` entries, and for mornington's R-series.
+
+This affects 132 devices at kalumburu alone and spans three independent families and two different vendor login paths, so it is a site-level rotation gap rather than a per-family quirk. **Any tool
+that assumes one current password per family will report these sites as unreachable rather than as a credential failure** — which is exactly what the first sweep did. The fleet sweep now tries each
+family's primary entry and then its `-legacy` fallback.
+
+### Reachability — 121 of 122 site/family pairs contracted
+
+Every pair was attempted. A first pass left 12 gaps; 7 were recovered by restoring the original timeouts (a mid-run retune to 20s forward / 75s adapter / two attempts was too tight), and 4 more by the
+`-legacy` credential fallback above. One gap survives:
+
+| Site | Family | Devices | Cause |
+| --- | --- | --- | --- |
+| hope-vale | cnWave 60 GHz | 7 | TLS handshake EOF on four devices, at full timeout, with both credentials; all units also failed ping |
+
+That one reads as genuinely down hardware rather than an access problem.
+
+### Two defects this sweep found in its own tooling
+
+Both produced confident, wrong output rather than an error, which is why they are recorded here:
+
+1. **A delimiter-parsing bug silently dropped the first endpoint of every Wi-Fi observation.** Slicing the response header on the same `###` separator used by the endpoint blocks consumed the first
+   block's delimiter. `client-summary` was first in the list, so **two complete fleet sweeps produced client-bearing data for exactly one site** while every other endpoint parsed cleanly. The counts
+   were right, the AP selection was right, and the client list was empty — a failure that looks exactly like "no clients connected".
+2. **The device credential was passed as a positional argument to `tsh ssh`**, putting the admin password in the process table on this workstation and on every SMC box the sweep touched, where any
+   `ps` reveals it. Fixed by feeding credentials on stdin. The two sweeps that ran before the fix did expose it that way; treat the Enterprise Wi-Fi vault entry accordingly.
+
 ## Security Incidents
 
 - **2026-09-17 — `snmp_read_community`/`snmp_write_community` briefly exposed in an agent transcript.** While exploring `/api/system-config` to design `get_config()`, an ad hoc redaction regex
