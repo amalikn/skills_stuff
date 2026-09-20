@@ -143,6 +143,10 @@ Two rounds of recovery closed 11 of the 12 gaps a first pass left:
 One gap remains: **hope-vale cnWave 60 GHz**, 7 devices, TLS handshake EOF on four devices at full timeout with both credentials. All three units also failed ping earlier, so this reads as genuinely
 down hardware rather than an access problem.
 
+**Operator decision 2026-09-20: accepted, not pursued.** The units are not being chased for this exercise. The contract is not harmed — cnWave is already covered by four observations across three
+models (V1000, V3000, V5000) from other sites, so hope-vale would add a fourth site rather than a missing shape. Re-run the sweep for that one site if the hardware comes back; nothing else is
+blocked on it.
+
 ### The `-legacy` credential finding
 
 Worth separating from the sweep, because it is an estate fact rather than a tooling one. Two sites authenticate only with the older password, across independent families and vendors' own login
@@ -166,10 +170,16 @@ than one address. The observations in this tree predate that change, so the cont
 It is also **EUI-64 derived, so it encodes the client's MAC**: the observed `fe80::6885:b9ff:feac:bb89` resolves exactly to client MAC `6A-85-B9-AC-BB-89`. It carries the same identifying
 information as the MAC field and is redacted on the same footing.
 
-**The REST client endpoint fails on busy APs.** The device truncates `client-summary` at exactly 60,000 bytes while still returning HTTP 200, so the JSON ends mid-record and will not parse —
-confirmed on an AP with roughly 60 clients, and no pagination parameter is honoured. A busy AP therefore yields *nothing*, not partial data. This qualifies the "REST dominates SNMP" reading below:
-**it dominates on field richness and fails exactly where client detail matters most.** SNMP has no equivalent single-response cap, but that has not been demonstrated against an AP large enough to
-cross the threshold, because the only SMC boxes carrying `snmpget` currently front APs with around ten clients.
+**The REST client endpoint fails on busy APs, and SNMP is what survives.** The device truncates `client-summary` at exactly 60,000 bytes while still returning HTTP 200, so the JSON ends mid-record
+and will not parse — confirmed on an AP with roughly 60 clients, and no pagination parameter is honoured. A busy AP therefore yields *nothing*, not partial data.
+
+**Tested head to head, 2026-09-20.** On the same AP at the same time, REST returned unparseable truncated JSON while an SNMP walk of `cambiumClientTable` returned **63 complete client rows from 1008
+varbinds** against a reported count of 64. A walk is many small PDUs, so it has no equivalent single-response cap. (This became testable only once `snmpget` was installed on that site's SMC box —
+before that, the boxes carrying the binary all fronted APs of about ten clients.)
+
+**Neither path alone is sufficient, and the split is awkward.** SNMP scales past the cap but offers 16 columns; REST offers 95 fields including `rssi` and `assoc_time`, neither of which exists in the
+MIB at all. So the fields lost on a busy AP are exactly the ones SNMP cannot replace: above roughly 60 clients you can have client detail *without* per-client RSSI or session start. That is a
+constraint on the client/session model, not merely a collector preference — decide deliberately whether the busiest APs are allowed a thinner client record than the rest.
 
 Shapes still unknown because nothing anywhere returned a record: the ePMP SM `clients` getter (empty on all 36 observations — an SM has no clients, so this is probably correct by design) and the
 cnWave `links_count` getter. The cnWave `gps` getter is `null` fleet-wide. The ePMP AP `wireless_link` getter is null-or-object, which is contract rather than a gap.

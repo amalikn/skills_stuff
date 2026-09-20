@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260920_1951](#20260920_1951)
 - [20260920_1856](#20260920_1856)
 - [20260920_1758](#20260920_1758)
 - [20260920_1745](#20260920_1745)
@@ -46,6 +47,29 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260920_1951
+
+### SNMP tested head to head against the 60KB cap — it is the proven fallback now
+
+An earlier entry recorded that REST truncates `client-summary` at 60,000 bytes on busy APs and noted SNMP had **no equivalent cap in principle but had not been demonstrated**, because every SMC box
+carrying `snmpget` fronted APs of about ten clients. Installing the binary fleet-wide on `rcp`/`nbn_accelerate` made the test possible.
+
+On the same AP at the same time: REST returned unparseable truncated JSON, while a walk of `cambiumClientTable` returned **63 complete client rows from 1008 varbinds** against a reported count of 64.
+A walk is many small PDUs, so there is no single-response limit to hit. The "untested fallback" wording is withdrawn.
+
+### The split is real, and it costs something
+
+Neither path alone is sufficient. SNMP scales past the cap and carries 16 columns; REST carries 95 fields including `rssi` and `assoc_time`, **neither of which exists in the MIB at all**. So the
+fields lost on a busy AP are precisely the ones SNMP cannot replace — above roughly 60 clients you can have client detail without per-client RSSI or session start.
+
+That is a constraint on the client/session model rather than a collector preference: whether the busiest APs may carry a thinner client record than the rest is a decision to take deliberately, not
+something to discover in production.
+
+### Also checked and rejected
+
+The device's SSH CLI (`show wireless clients`) would be a third path, but `sshpass` is not installed on the SMC boxes, so it needs another dependency to reach somewhere SNMP already goes. Recovering
+complete records from the truncated JSON is possible but silently lossy — you never learn how many records fell past the cut.
 
 ## 20260920_1856
 

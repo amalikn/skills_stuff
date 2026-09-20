@@ -105,8 +105,11 @@ Consequences for anything built on this endpoint:
 - HTTP 200 means a naive collector records a parse error rather than a capacity problem, and an alert on "device returning bad JSON" will point at the wrong cause.
 
 This qualifies the claim in the section below that REST dominates SNMP for Wi-Fi client detail: **it dominates on field richness and fails on the busiest APs**, which are exactly the ones an operator
-most wants client detail for. SNMP has no equivalent single-response cap because a walk is many small PDUs, but that has not been demonstrated against an AP large enough to cross this threshold —
-the only SMC boxes with `snmpget` installed currently front APs with around ten clients. Treat SNMP as the untested fallback, not the proven one.
+most wants client detail for.
+
+**SNMP is the proven fallback, tested head to head 2026-09-20.** On the same AP at the same time, REST returned unparseable truncated JSON while a walk of `cambiumClientTable` returned **63 complete
+client rows from 1008 varbinds** against a reported count of 64 — a walk is many small PDUs and has no equivalent cap. Note what the fallback costs: SNMP carries 16 columns and has no per-client
+RSSI or association timestamp, so above roughly 60 clients the record is thinner in exactly the fields REST was preferred for.
 
 #### `ip6_ll` is normalised to a list in this pack's adapter (2026-09-20)
 
