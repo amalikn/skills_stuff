@@ -230,10 +230,36 @@ class CambiumXV2Adapter:
             })
         return by_ssid
 
+    # `ip6_ll` is the one field whose JSON *type* differs by model, so it is normalised here rather
+    # than left for every consumer to special-case. Fleet sweep 2026-09-20: array on XV2 (10 of 32
+    # record-bearing observations), string on E500 (6), absent where the client has no link-local
+    # address (17). A list is the lossless target — wrapping the E500 string and mapping absent to
+    # empty keeps every value, whereas normalising to a string would silently truncate any XV2
+    # client holding more than one address.
+    #
+    # Treat the result as identifying data. An IPv6 link-local address is EUI-64 derived, so it
+    # encodes the client MAC: observed `fe80::6885:b9ff:feac:bb89` resolves exactly to MAC
+    # `6A-85-B9-AC-BB-89`. Redact it on the same footing as `mac`, not as ordinary telemetry.
+    IPV6_LL_FIELD = "ip6_ll"
+
     def get_clients(self) -> list:
         """Currently-associated wireless stations. Empty list is a real, valid state (observed live 2026-09-17 — no clients connected at
-        query time), not a parsing failure."""
-        return self._request("GET", "/api/client-summary") or []
+        query time), not a parsing failure.
+
+        `ip6_ll` is normalised to a list on every record, including records where the device omitted it — see the note above the method
+        for why a list is the lossless direction and why the value is identifying."""
+        clients = self._request("GET", "/api/client-summary") or []
+        for client in clients:
+            if not isinstance(client, dict):
+                continue
+            value = client.get(self.IPV6_LL_FIELD)
+            if isinstance(value, list):
+                client[self.IPV6_LL_FIELD] = [v for v in value if v]
+            elif value:
+                client[self.IPV6_LL_FIELD] = [value]
+            else:
+                client[self.IPV6_LL_FIELD] = []
+        return clients
 
     def get_config(self) -> dict:
         """Config snapshot for backup/diff — the read path this family needs since SNMP config is unsupported (evidence E34). REDACTS

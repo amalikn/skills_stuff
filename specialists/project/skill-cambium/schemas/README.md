@@ -159,10 +159,17 @@ The single-site baseline would have shipped a contract wrong in both directions.
 Full breakdown in [DIVERGENCE.md](DIVERGENCE.md); the run-by-run history is in [SWEEP-LOG.md](SWEEP-LOG.md). The headline: **in `client-summary` only 43 of 98 fields are universal — 54 split by
 model.** An adapter written against an XV2 alone would depend on fields more than half of which an E500 does not return. `radio-rf-summary` is worse in proportion: 7 universal against 9 model-split.
 
-**`ip6_ll` returns a different JSON type by model** — an `array` on XV2 (10 observations), a `string` on E500 (6), absent where the client has no link-local (17). It is also **EUI-64 derived, so it
-encodes the client's MAC**: the observed `fe80::6885:b9ff:feac:bb89` resolves exactly to the client MAC `6A-85-B9-AC-BB-89`. It carries the same identifying information as the MAC field and is
-redacted on the same footing. Normalise it to a list at the adapter boundary — wrapping the E500 string and mapping absent to empty is lossless, while the reverse direction would truncate XV2 clients
-holding more than one address.
+**`ip6_ll` returned a different JSON type by model** — an `array` on XV2 (10 observations), a `string` on E500 (6), absent where the client has no link-local (17). **Resolved 2026-09-20: the adapter
+now normalises it to a list on every record**, including records where the device omits the key. A list is the lossless direction; normalising to a string would truncate any XV2 client holding more
+than one address. The observations in this tree predate that change, so the contract still records both shapes as evidence of why it was needed.
+
+It is also **EUI-64 derived, so it encodes the client's MAC**: the observed `fe80::6885:b9ff:feac:bb89` resolves exactly to client MAC `6A-85-B9-AC-BB-89`. It carries the same identifying
+information as the MAC field and is redacted on the same footing.
+
+**The REST client endpoint fails on busy APs.** The device truncates `client-summary` at exactly 60,000 bytes while still returning HTTP 200, so the JSON ends mid-record and will not parse —
+confirmed on an AP with roughly 60 clients, and no pagination parameter is honoured. A busy AP therefore yields *nothing*, not partial data. This qualifies the "REST dominates SNMP" reading below:
+**it dominates on field richness and fails exactly where client detail matters most.** SNMP has no equivalent single-response cap, but that has not been demonstrated against an AP large enough to
+cross the threshold, because the only SMC boxes carrying `snmpget` currently front APs with around ten clients.
 
 Shapes still unknown because nothing anywhere returned a record: the ePMP SM `clients` getter (empty on all 36 observations — an SM has no clients, so this is probably correct by design) and the
 cnWave `links_count` getter. The cnWave `gps` getter is `null` fleet-wide. The ePMP AP `wireless_link` getter is null-or-object, which is contract rather than a gap.

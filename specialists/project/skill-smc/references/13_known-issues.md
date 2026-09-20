@@ -6,7 +6,7 @@
 - [Coverage Gaps (partial knowledge)](#coverage-gaps-partial-knowledge)
 - [Skill Staleness Risks](#skill-staleness-risks)
 - [Fleet-Wide Architecture Risks (identified, not yet remediated)](#fleet-wide-architecture-risks-identified-not-yet-remediated)
-- [Jump-Host Tooling Differs by Flavour — `snmpget` Absent on `rcp` Boxes (confirmed 2026-09-20)](#jump-host-tooling-differs-by-flavour--snmpget-absent-on-rcp-boxes-confirmed-2026-09-20)
+- [Jump-Host Tooling Varies Per Box — `snmpget` Absent on Most SMC Boxes (confirmed 2026-09-20)](#jump-host-tooling-varies-per-box--snmpget-absent-on-most-smc-boxes-confirmed-2026-09-20)
 - [Known Operational Bugs (rcp fleet — confirmed 2026-06-30)](#known-operational-bugs-rcp-fleet--confirmed-2026-06-30)
 - [Known Operational Bugs (NBN Accelerate cluster — full fleet sweep, 2026-08-03)](#known-operational-bugs-nbn-accelerate-cluster--full-fleet-sweep-2026-08-03)
 - [Known Site Issues (as of 2026-06-30)](#known-site-issues-as-of-2026-06-30)
@@ -182,10 +182,21 @@ assuming `cw`/`apn`/`rct`/`wh` are ungated by design.
 |                                  |   `NodeStarlinkInterfacecheckPacketLoss` but has no `role="internet"` row; do not read its absence there as    |                                                  |
 |                                  |   evidence the coverage exists elsewhere.                                                                      |                                                  |
 
-## Jump-Host Tooling Differs by Flavour — `snmpget` Absent on `rcp` Boxes (confirmed 2026-09-20)
+## Jump-Host Tooling Varies Per Box — `snmpget` Absent on Most SMC Boxes (confirmed 2026-09-20)
 
-`net-snmp` client tools are **not installed on `rcp`-flavour SMC boxes**. `snmpget` and `snmpwalk` run fine on `nbn_accelerate` boxes (`hope-vale-smc01`) and are missing on `tjuntjuntjara-smc01` and
-`mowanjum-smc01`.
+`net-snmp` client tools are **missing on most SMC boxes, and their presence does not follow the inventory flavour**. Sampled 2026-09-20:
+
+| Box | Flavour | `snmpget` |
+| --- | --- | --- |
+| `hope-vale-smc01` | nbn_accelerate | present |
+| `burringurrah-smc01` | rcp | present |
+| `wandawuy-smc01` | nbn_accelerate | **missing** |
+| `amata-smc01` | nbn_accelerate | **missing** |
+| `doomadgee-smc01` | nbn_accelerate | **missing** |
+| `tjuntjuntjara-smc01` | rcp | **missing** |
+
+Two of six sampled boxes have it, one from each flavour. An earlier version of this note said the split followed the `rcp`/`nbn_accelerate` boundary — that was drawn from three boxes and is wrong.
+**Treat `snmpget` as per-box and probe for it; do not infer it from the flavour.**
 
 **Why it matters beyond the missing package:** a device sweep that shells out to `snmpget` from the SMC box and swallows stderr will report every device at those sites as unreachable. That happened
 on 2026-09-20 — 20 Cambium APs across two sites were briefly recorded as down when the devices were healthy: ping clean, HTTPS 200, REST API answering normally. The failure was `command not found`

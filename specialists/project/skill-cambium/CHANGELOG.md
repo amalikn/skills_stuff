@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260920_1758](#20260920_1758)
 - [20260920_1745](#20260920_1745)
 - [20260920_1652](#20260920_1652)
 - [20260920_1556](#20260920_1556)
@@ -44,6 +45,34 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260920_1758
+
+### Changed — `ip6_ll` normalised to a list in `scripts/cambium_xv2_adapter.py`
+
+`get_clients()` now returns `ip6_ll` as a list on every record, including records where the device omits the key. The field's JSON type differs by model — array on XV2 (10 of 32 record-bearing fleet
+observations), string on E500 (6), absent where the client has no link-local (17) — and a list is the lossless target, since normalising to a string would truncate any XV2 client holding more than
+one address. The E500 shares this adapter, so one change covers both models.
+
+Verified against the six shapes the fleet returned (array, array containing empties, string, null, empty string, empty array), plus a record missing the key and non-dict entries, and live against an
+XV2. The value is identifying data — an IPv6 link-local is EUI-64 derived and encodes the client MAC, `fe80::6885:b9ff:feac:bb89` resolving exactly to `6A-85-B9-AC-BB-89` — so it is redacted on the
+same footing as `mac`.
+
+### Found — `client-summary` is truncated at 60,000 bytes on busy APs
+
+Verifying the normalisation against a 60-client AP surfaced a device limit, not a tooling one. **The device cuts the response at exactly 60,000 bytes and still returns HTTP 200**, so the body ends
+mid-record and will not parse. Repeated identically with `?limit=20`, `?limit=10&offset=0` and `?count=10` — no pagination parameter is honoured.
+
+A busy AP therefore yields **nothing**, not partial data, and the 200 status makes it look like a malformed device rather than a capacity limit. This qualifies the earlier finding that REST dominates
+SNMP for Wi-Fi client detail: **it dominates on field richness and fails on the busiest APs**, which are the ones client detail matters most for. SNMP has no equivalent single-response cap, but that
+is untested against an AP large enough to cross the threshold — the only SMC boxes carrying `snmpget` currently front APs with about ten clients. The sweep's single `bad-json` finding is now
+explained.
+
+### Corrected — `snmpget` availability is per box, not per flavour
+
+An earlier entry recorded `net-snmp` as absent on `rcp`-flavour SMC boxes and present on `nbn_accelerate`. Sampling six boxes disproves it: `hope-vale-smc01` (nbn_accelerate) and
+`burringurrah-smc01` (rcp) have it; `wandawuy-smc01`, `amata-smc01`, `doomadgee-smc01` (all nbn_accelerate) and `tjuntjuntjara-smc01` (rcp) do not. Two of six, one from each flavour. The original
+claim was drawn from three boxes that happened to line up. Corrected in `skill-smc`'s known-issues reference: probe for the binary, never infer it from the flavour.
 
 ## 20260920_1745
 

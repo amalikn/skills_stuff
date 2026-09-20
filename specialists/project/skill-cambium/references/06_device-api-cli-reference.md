@@ -91,6 +91,32 @@ Consequence for adapter code: reading `port_status` unconditionally works on XV2
 but caused by absence rather than by a wrong value. Check the field exists before branching on it, and consult the generated contract in [schemas/enterprise-wifi](../schemas/enterprise-wifi) rather
 than assuming parity across the family.
 
+#### `client-summary` is truncated at 60,000 bytes on busy APs (2026-09-20)
+
+**The device cuts the response at exactly 60,000 bytes and still returns HTTP 200**, leaving JSON that ends mid-record and will not parse. Confirmed live on `wandawuy` `10.255.3.10` with roughly 60
+associated clients: `size_download=60000`, `HTTP=200`, `json.JSONDecodeError: Unterminated string starting at char 59998`. Repeated identically with `?limit=20`, `?limit=10&offset=0` and `?count=10`
+— **no pagination parameter is honoured**, so there is no way to page a large client list out of this endpoint.
+
+Consequences for anything built on this endpoint:
+
+- A busy AP yields **nothing**, not partial data. The failure is all-or-nothing and looks like a malformed device rather than a capacity limit.
+- The limit is on response *bytes*, not client count, so the threshold moves with how much per-client data the firmware emits. Roughly 60 clients on the observed firmware, but do not treat that as a
+  fixed number.
+- HTTP 200 means a naive collector records a parse error rather than a capacity problem, and an alert on "device returning bad JSON" will point at the wrong cause.
+
+This qualifies the claim in the section below that REST dominates SNMP for Wi-Fi client detail: **it dominates on field richness and fails on the busiest APs**, which are exactly the ones an operator
+most wants client detail for. SNMP has no equivalent single-response cap because a walk is many small PDUs, but that has not been demonstrated against an AP large enough to cross this threshold —
+the only SMC boxes with `snmpget` installed currently front APs with around ten clients. Treat SNMP as the untested fallback, not the proven one.
+
+#### `ip6_ll` is normalised to a list in this pack's adapter (2026-09-20)
+
+The field's JSON type differs by model: an `array` on XV2 (10 of 32 record-bearing fleet observations), a `string` on E500 (6), absent where the client has no link-local address (17).
+`scripts/cambium_xv2_adapter.py`'s `get_clients()` now returns it as a list on every record, including records where the device omitted the key. A list is the lossless direction — wrapping the E500
+string and mapping absent to empty keeps every value, whereas normalising to a string would truncate any XV2 client holding more than one address.
+
+**Treat the value as identifying data.** An IPv6 link-local address is EUI-64 derived, so it encodes the client MAC: the observed `fe80::6885:b9ff:feac:bb89` resolves exactly to MAC
+`6A-85-B9-AC-BB-89`. Redact it on the same footing as `mac`, never as ordinary telemetry.
+
 ### SNMP (cnPilotMIB) — Live Client and Radio Telemetry, Confirmed Live 2026-09-20
 
 The same `cnPilotMIB` tree that carries identity data (previous section) also carries per-client and per-radio telemetry, walked live on 2026-09-20 against hope-vale XV2 units on firmware

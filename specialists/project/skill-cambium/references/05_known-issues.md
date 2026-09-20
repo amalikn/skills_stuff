@@ -52,10 +52,14 @@ contract itself is in [../schemas](../schemas).
 model-split, `radio-summary` 28 against 19, `device-summary` 31 against 16. An adapter written against an XV2 alone depends on fields that an E500 does not return, and fails silently rather than
 loudly because the field is simply absent from the JSON.
 
+**`client-summary` is truncated at 60,000 bytes on busy APs, with HTTP 200.** Confirmed on an AP carrying roughly 60 clients: the body stops mid-record, no pagination parameter is honoured, and the
+result will not parse. A busy AP yields nothing rather than partial data, and the 200 status makes it look like a malformed device rather than a capacity limit. Full detail in
+`references/06_device-api-cli-reference.md`. This qualifies the REST-over-SNMP finding below — REST wins on field richness and fails on the largest APs.
+
 **`ip6_ll` splits by model, and encodes the client MAC.** It is an `array` on XV2 (10 observations), a `string` on E500 (6), and absent where the client has no link-local (17). It is also EUI-64
 derived: the observed `fe80::6885:b9ff:feac:bb89` resolves exactly to client MAC `6A-85-B9-AC-BB-89`, so **it carries the same identifying information as the MAC field** and must be redacted on the
-same footing. Normalise to a list at the adapter boundary — wrapping the E500 string and mapping absent to empty is lossless, whereas normalising to a string would truncate any XV2 client holding
-more than one address.
+same footing. **Resolved 2026-09-20:** the adapter normalises it to a list on every record, including records where the device omits the key. Wrapping the E500 string and mapping absent to empty is lossless,
+whereas normalising to a string would truncate any XV2 client holding more than one address.
 
 **the R-series `interfaces` getter is not contractable as it stands, and that is an adapter bug rather than device divergence.** Its "site-specific fields" are interface *names* used as object keys —
 `eth2.17`, `eth2.550`, `wan1.500`, `wan1`, `rai1` — so each site's VLAN configuration shows up as schema fields. A response keyed by site-variable names has no stable shape by construction. It should
