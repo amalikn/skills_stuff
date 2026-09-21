@@ -7,6 +7,14 @@ Summary: Behavioural revisions to skill-walk-before-run between versions.
 
 # Changelog
 
+## Unreleased — pending revision note, 2026-09-21
+
+No behaviour change; `SKILL.md` and the version are untouched. On operator request, a detailed note on a gap the v0.1 gate cannot see is parked in [`BRIEF.md`](BRIEF.md) under "Parked for v0.2":
+**breadth before depth**. Work widened across five device families, then toward a 3,100-device fleet, before one type was proven end to end. Success was measured at the transport layer (HTTP 200)
+rather than the outcome the operator sees. Every step had real reality contact, so signals 1–4 stayed quiet. The note carries the incident timeline, why v0.1 reads it as GREEN or AMBER, and five
+candidate changes to judge at the next revision: a width-before-depth signal, outcome-layer reality contact, a batch ladder (one unit, then a small batch per type, then a site, then the fleet), Step 0
+wording for this case, and a required definition of done.
+
 ## v0.1.2 — 2026-09-17
 
 Incident-driven, not a design round — a project-side script bypassed this skill and wrote straight into `ledger.jsonl` (wrong location, no schema validation, no mirror/SCRATCHPAD write-back). See
