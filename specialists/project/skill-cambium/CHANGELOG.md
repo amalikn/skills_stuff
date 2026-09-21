@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260921_2015](#20260921_2015)
 - [20260921_1541](#20260921_1541)
 - [20260921_1237](#20260921_1237)
 - [20260921_1015](#20260921_1015)
@@ -51,6 +52,14 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260921_2015
+
+Added "Monitoring Counter and Resource Surfaces — Probed Live 2026-09-21" to
+[references/06_device-api-cli-reference.md](references/06_device-api-cli-reference.md), under this pack's write-back contract: live read-only probes from
+`unified-network-controller` found the ePMP `device_props` kbit counters and `sysCPUUsage`, R195P's `/proc` counters, load and memory (plain `cat` only, pipes
+exit 127), cnWave `getNetworkStats` reading 0 on a POP node with the KPI and radio endpoints giving rates rather than counters, and the fleet-wide absence of
+Wi-Fi mesh that makes client `wds: false` a measurement. No script changed.
 
 ## 20260921_1541
 

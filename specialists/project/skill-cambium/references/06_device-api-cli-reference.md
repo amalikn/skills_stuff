@@ -11,6 +11,7 @@
 - [ePMP AP / ePMP SM — Adapter Data Points](#epmp-ap--epmp-sm--adapter-data-points)
 - [cnPilot R195P — Addressing Resolved via cnMaestro Cloud Export](#cnpilot-r195p--addressing-resolved-via-cnmaestro-cloud-export)
 - [cnWave 60GHz — REST API, Not the SSH TUI, Is the Real Adapter Path](#cnwave-60ghz--rest-api-not-the-ssh-tui-is-the-real-adapter-path)
+- [Monitoring Counter and Resource Surfaces — Probed Live 2026-09-21](#monitoring-counter-and-resource-surfaces--probed-live-2026-09-21)
 
 ---
 
@@ -516,3 +517,24 @@ keep using the node MAC.
 Not yet exercised: `getNetworkOverridesConfig`, `getControllerConfig`, `getTopologyMeta` (read-only, likely safe, just not called this session). **Never call** the write-shaped endpoints found in the
 same bundle without explicit operator authorization: `cambiumConfigSet`, `cambiumConfigCommit`, `rebootNode`, `userUpdate`, `userLogout` (untested only because it's a needless write-shaped call, not
 because it's risky).
+
+## Monitoring Counter and Resource Surfaces — Probed Live 2026-09-21
+
+Read-only probes run from `unified-network-controller` to find which fields can feed a monitoring platform's traffic, CPU and memory metrics (OpenWISP turns only
+interface byte/error counters, wireless clients and `resources` into metrics). The getters above did not read any of these. Nothing here is wired into an adapter
+yet; the consuming project records that state in its CHANGELOG entry `20260921_2008`.
+
+- **ePMP AP and SM** (`MOW_3000L_E_IP_0-20` 3000L AP, `MOW_F300-16SM_1002_IP_2_2` Force 300-16 SM, mowanjum). `get_raw_param("status")["device_props"]` carries
+  cumulative `rxEtherLanKbitCount`/`txEtherLanKbitCount`, `rxEtherLanErrorPacketCount`/`txEtherLanErrorPacketCount`, `dlWLanKbitCount`/`ulWLanKbitCount`,
+  `dlWLanErrorDroppedPacketCount`/`ulWLanErrorDroppedPacketCount`, and `sysCPUUsage` (percent, e.g. `12.7`). Same keys on AP and SM. Counters are in **kbit**;
+  whether one kbit is 1000 or 1024 bits is `UNVERIFIED` (a rate comparison against a known transfer would settle it). No memory figure found.
+- **R195P** (`MOW-R195P-1002`). The BusyBox shell serves standard `/proc`: `/proc/net/dev` (per-interface byte, packet, error and drop counters),
+  `/proc/loadavg`, `/proc/meminfo` (`MemTotal`, `MemFree`, `Buffers`, `Shmem` in kB) and `/proc/cpuinfo` (4 `processor` entries on MT7621). **Read each file
+  with a plain `cat`:** a piped command (`cat ... | head`) exited 127 on this shell, and `which` does not exist.
+- **cnWave** (`GAL_T2_V5000N_IP4_120`, V5000 POP, galiwinku). `get_network_stats(mac, ["nic1"])` answers `success: true` but every counter, including `speed`,
+  read **0** with `link: 1` on this node. The fleet schema (`schemas/cnwave-60ghz/network_stats.schema.json`) likewise recorded only `message`/`success` at all 5
+  observed nodes, so its `message` payload was never characterised. `get_key_performance_index` and `get_radio_stats` return byte and packet **rates**
+  (`tx_byte_rate`, `rx_packet_rate`), not cumulative counters. Whether `nic1` is the wrong interface name for this role is open.
+- **Enterprise Wi-Fi mesh state.** `mesh_type` is `none` and `mesh_clients` is empty on every enterprise Wi-Fi device across all 36 sites
+  (`schemas/_observations/enterprise-wifi/`), so no associated client on this estate is a WDS peer. `unified-network-controller` relies on this to send client
+  `wds: false`; re-check if mesh is ever enabled.
