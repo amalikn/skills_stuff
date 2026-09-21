@@ -192,6 +192,9 @@ oui_reference:
       host_count: 10
     notes: >-
       A THIRD XV2 OUI block — same caution as fc:11:65 above, this family has no single reliable OUI fleet-wide.
+      Also live at hope-vale 2026-09-21: HOP_XV22_AP35_IP3_35 (XV2-22H, serial W4ZA0JPZ3PJ1, fw 6.6.0.3-r9) at 10.255.3.35 with
+      MAC B4:A2:5C:EB:C0:DC, identity read from the device's own REST device-summary (cambium-swap E140). The site count
+      above is the cnMaestro export's and was not re-derived.
   "bc:e6:7c":
     family: enterprise-wifi-xv2
     verified:
