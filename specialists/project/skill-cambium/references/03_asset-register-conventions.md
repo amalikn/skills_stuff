@@ -30,6 +30,11 @@ The naming *idea* is shared but each site applies it with its own drift:
 - **Subnet-octet-to-role mapping differs per site — see the table below, not a register or a name.** The register (and the `device-inventory.csv` rows derived from it) can be flat-out wrong about
   which octet a family actually lives on; only a live ARP table + MAC-OUI cross-check is trustworthy. Don't assume an octet means the same thing at a new site without checking.
 
+- **The management address is the one inside `10.255.0.0/18`, whatever the device calls it** (operator, 2026-09-21: "10.255/18 or 19, always"). A device may report it as `device_ip`, as a VLAN500
+  interface address, as `ipv4_address`, or among several addresses on a bridge; pick the address in that range, never an address inferred from the device's name. Seen live 2026-09-21 on
+  `HOP_XV2_AP1_IP3_1` (hope-vale): `device_ip` 10.255.3.1, mask 255.255.224.0 (a `/19` inside the `/18`), gateway 10.255.0.1, `vlan_id` 500, the VLAN500 interface carrying the same address and every
+  other interface `0.0.0.0`. `unified-network-controller` applies this rule in `adapters/estate.py` (`select_management_ip`).
+
 ### Per-Site IP Addressing Reality
 
 What octet a device family actually answers on, per site — **register/derivation claim** vs **live-confirmed reality** where checked. Consult this before trusting a `management_ip` at a site you

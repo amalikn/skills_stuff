@@ -259,7 +259,7 @@ Not discarded. Each has a named trigger; revisit only after the three-project tr
 - **Breadth before depth: widening across types or the whole fleet before one type is proven end to end** — *Parked 2026-09-21 on explicit operator request, source: a real incident in
   `unified-network-controller`, not a design round.* The operator asked for this to be recorded in detail so the skill can be updated later. `SKILL.md` is deliberately unchanged by this note.
 
-  **What happened (2026-09-21, one evening).** The work was wiring a vendor adapter layer into a monitoring platform (OpenWISP) for five Cambium device families. In order:
+**What happened (2026-09-21, one evening).** The work was wiring a vendor adapter layer into a monitoring platform (OpenWISP) for five Cambium device families. In order:
   1. One device per family, all five families, pushed live. Declared "all pushed successfully" because the push API answered HTTP 200.
   2. The batch script was scaled straight to a per-family cap of 10 across four families (32 devices), reported as "20 pushed, 12 errors".
   3. The script was then generalised to any site, ready for the whole fleet (about 3,100 devices, 36 sites).
@@ -269,34 +269,39 @@ Not discarded. Each has a named trigger; revisit only after the three-project tr
   5. Each fix exposed a new layer, and the session kept widening: live probes of three more families' counters, script features, governance. The operator stopped it ("it's going out of hand") and
      redirected: pick one device type, take it through every layer until it is healthy in the dashboard and stays healthy, then start the next.
 
-  **Why the v0.1 gate would not have caught it.** Every step had real reality contact: real devices, real authenticated API calls, real pushes. Signal 1 (no real-world contact) does not fire. Signal 4
-  (core stubbed while periphery expands) does not fire either, because nothing was a stub. Signal 3 needs session history. The load-bearing assumption was never "can we reach a device" but "**does one
-  device of one type reach the outcome the operator cares about**", and the evidence being collected was at the transport layer (accepted), not the outcome layer (stored, then healthy). By v0.1's
-  definitions this reads GREEN, or at most AMBER, while the work sprawled.
+**Why the v0.1 gate would not have caught it.** Every step had real reality contact: real devices, real authenticated API calls, real pushes. Signal 1 (no real-world contact) does not fire. Signal 4
+(core stubbed while periphery expands) does not fire either, because nothing was a stub. Signal 3 needs session history. The load-bearing assumption was never "can we reach a device" but "**does one
+device of one type reach the outcome the operator cares about**", and the evidence being collected was at the transport layer (accepted), not the outcome layer (stored, then healthy). By v0.1's
+definitions this reads GREEN, or at most AMBER, while the work sprawled.
 
-  **The pattern, stated so it can be tested for.**
+**The pattern, stated so it can be tested for.**
   - **Width before depth:** work extends across N sibling types (device families, platforms, sites, customers) before any one type has passed an end-to-end acceptance test.
   - **Batch size jumps:** one unit goes straight to a large batch, a whole site or the fleet, with no small verified batch per type in between.
   - **Success measured at the wrong layer:** an intermediate signal (HTTP 200, "accepted", "no exception", a record created) is reported as success, when the outcome the operator will look at (metrics
     stored, dashboard healthy, device stays healthy unattended) was never read back.
   - **Fix-and-widen loop:** each discovered defect is fixed, and the fix is immediately applied across all types, instead of first closing the one type the defect was found on.
 
-  **Candidate changes for the next revision (to be judged then, not adopted now).**
+**Candidate changes for the next revision (to be judged then, not adopted now).**
   1. **A fifth RED signal, "width before depth":** the proposed work covers more than one sibling type, site or batch tier while no single type has passed an operator-visible, end-to-end definition of
      done. RED even when every individual step has real contact.
   2. **Reality contact must be at the outcome layer.** Extend "does not count" with: a transport-level success (status code, "accepted", queued, created) when the system processes asynchronously or
      has a later stage the operator actually sees. Contact counts only once the outcome is read back from where the operator will read it.
   3. **Batch ladder as the gate's default cheapest test for fleet or multi-type work:** one unit of one type to the full definition of done; then a small batch of that type (3–5 units); then one site;
-     then the fleet. Each rung is verified at the outcome layer before the next. Other types start only after the first type completes the ladder, and they reuse the shared layers it built.
+     then the fleet. Each rung is verified at the outcome layer before the next. Other types start only after the first type completes the ladder, and they reuse the shared layers it built. **Operator
+     refinement, 2026-09-21 — the "1 + 4 canary" and where agent work stops.** For one device type, the agent's end-to-end work is exactly one device through every layer, then four more of the same
+     type to surface variations: five in total, and that concludes the type. The purpose of the four is to exercise every check the later batch will hit (creation, adoption of an existing record, a
+     second model, an unreachable device, cleanup), so the whole-fleet batch can then run from the script without errors. **The fleet batch is not agent work in that session**: the operator runs it
+     later, from the script. Reason given: running batches in an agent session wastes costly agent tokens and time. Candidate rule for the next revision: when the gate sees a batch beyond the canary
+     proposed inside an agent session, the cheapest next action is "stop at the canary and hand the batch to the script", not "run it".
   4. **Step 0 wording for this case:** "one unit of one type reaches the operator-visible outcome, end to end" is itself a load-bearing assumption, and it sits *above* per-step connectivity
      assumptions in blast radius.
   5. **Definition of done before starting:** when the gate returns GREEN or AMBER for multi-type or fleet work, the output should still require a one-line, operator-visible definition of done. The
      incident's missing piece was never a test of reachability, it was the absence of any stated end state.
 
-  **Revisit:** at the next revision round. This is one real case; `references/calibration-cases.md` is still parked until the third, but this case should be entered first when it lands. Note the
-  tension with this brief's own "Self-evolution" item: that item bans the skill changing itself from ledger evidence. This is an operator-directed note, not a ledger-driven change, and it changes
-  nothing at runtime until a revision is deliberately made. Evidence lives in the incident project: `unified-network-controller` CHANGELOG entries `20260921_1953` and `20260921_2008`, its options
-  register's D3 inherited constraints (IC1–IC6), and the plan the operator redirected to, `docs/enterprise-wifi-end-to-end-plan-20260921_2011.md`.
+**Revisit:** at the next revision round. This is one real case; `references/calibration-cases.md` is still parked until the third, but this case should be entered first when it lands. Note the tension
+with this brief's own "Self-evolution" item: that item bans the skill changing itself from ledger evidence. This is an operator-directed note, not a ledger-driven change, and it changes nothing at
+runtime until a revision is deliberately made. Evidence lives in the incident project: `unified-network-controller` CHANGELOG entries `20260921_1953` and `20260921_2008`, its options register's D3
+inherited constraints (IC1–IC6), and the plan the operator redirected to, `docs/enterprise-wifi-end-to-end-plan-20260921_2011.md`.
 
 The target architecture is not in dispute: `SKILL.md` as executable contract, `references/` as semantics, `evals/` as proof, `schemas/` as state format, `skills-data/` as state. Only the sequencing
 is. Each piece lands when something actually presses on it, and retrofitting is cheap here precisely because nothing points at those directories yet.

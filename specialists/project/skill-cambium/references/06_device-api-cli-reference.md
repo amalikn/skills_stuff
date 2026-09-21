@@ -12,6 +12,7 @@
 - [cnPilot R195P — Addressing Resolved via cnMaestro Cloud Export](#cnpilot-r195p--addressing-resolved-via-cnmaestro-cloud-export)
 - [cnWave 60GHz — REST API, Not the SSH TUI, Is the Real Adapter Path](#cnwave-60ghz--rest-api-not-the-ssh-tui-is-the-real-adapter-path)
 - [Monitoring Counter and Resource Surfaces — Probed Live 2026-09-21](#monitoring-counter-and-resource-surfaces--probed-live-2026-09-21)
+- [Enterprise Wi-Fi Facts From the unified-network-controller Canary — 2026-09-21](#enterprise-wi-fi-facts-from-the-unified-network-controller-canary--2026-09-21)
 
 ---
 
@@ -538,3 +539,16 @@ yet; the consuming project records that state in its CHANGELOG entry `20260921_2
 - **Enterprise Wi-Fi mesh state.** `mesh_type` is `none` and `mesh_clients` is empty on every enterprise Wi-Fi device across all 36 sites
   (`schemas/_observations/enterprise-wifi/`), so no associated client on this estate is a WDS peer. `unified-network-controller` relies on this to send client
   `wds: false`; re-check if mesh is ever enabled.
+
+## Enterprise Wi-Fi Facts From the unified-network-controller Canary — 2026-09-21
+
+Found while taking enterprise Wi-Fi end to end into OpenWISP (mowanjum E500 and E430, hope-vale XV2), all read live and read-only:
+
+- **`device_mac` arrives as `BC-E6-7C-EB-72-D6`:** dashes, upper case. Normalise before comparing with a colon-separated store.
+- **`platform-info.model` is the marketing name:** `cnPilot E500` and `cnPilot E430H`, not the bare model code in the asset register.
+- **No REST endpoint reports a CPU core count.** `device-summary.cpu` is a utilisation percentage. SSH to the CLI (`show system`, `show version`) failed from
+  a non-interactive `sshpass` session through a Teleport forward (exit 255) even with port 22 open on the XV2, so the CLI's CPU details remain unread.
+- **The management address is `device_ip`, also carried by the VLAN500 interface;** every other interface reports `0.0.0.0` (see
+  [03_asset-register-conventions.md](03_asset-register-conventions.md) for the 10.255.0.0/18 rule).
+- **An AP that is powered off answers nothing through its forward:** the TLS handshake ends in `UNEXPECTED_EOF`, which a caller should report as unreachable,
+  not as a protocol fault. Nine of fourteen mowanjum APs were in that state at 23:30 AEST on 2026-09-21.
