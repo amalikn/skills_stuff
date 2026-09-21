@@ -7,6 +7,11 @@ Summary: Behavioural revisions to skill-walk-before-run between versions.
 
 # Changelog
 
+## Unreleased — canary becomes 1 + 5 across sites and clusters, 2026-09-22
+
+No behaviour change. The parked canary note in [`BRIEF.md`](BRIEF.md) records the operator's change from 1 + 4 to 1 + 5. That means six devices, two from each of three separate sites, with the sites
+spanning both Teleport clusters when the device type exists behind both. All six must be online.
+
 ## Unreleased — canary refinement, 2026-09-22
 
 No behaviour change. The parked "1 + 4 canary" note in [`BRIEF.md`](BRIEF.md) gains the operator's refinement: all five devices must be online and complete. Dry-run candidates first, replace an

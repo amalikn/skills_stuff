@@ -294,7 +294,10 @@ definitions this reads GREEN, or at most AMBER, while the work sprawled.
      later, from the script. Reason given: running batches in an agent session wastes costly agent tokens and time. Candidate rule for the next revision: when the gate sees a batch beyond the canary
      proposed inside an agent session, the cheapest next action is "stop at the canary and hand the batch to the script", not "run it". **Operator refinement, 2026-09-22 — the five must be online and
      complete.** Dry-run the candidates first. A chosen device that turns out to be offline is replaced by an online one of the same type; it still shows the unreachable path, but it does not count
-     toward the five. Retry a single failed handshake before calling a device offline: in the hope-vale XV2 canary a healthy unit threw one transient TLS EOF, then answered.
+     toward the five. Retry a single failed handshake before calling a device offline: in the hope-vale XV2 canary a healthy unit threw one transient TLS EOF, then answered. **Operator change,
+     2026-09-22 — 1 + 5, spread across sites and clusters (supersedes 1 + 4).** Six devices: one end to end, then five more, two from each of three separate sites. The three sites span both Teleport
+     clusters when the type exists behind both; a type behind one cluster only takes all three from it. All six must be online. Reason: two canaries that each sat at one site behind one cluster left
+     site-specific and cluster-specific variation untested until the fleet batch.
   4. **Step 0 wording for this case:** "one unit of one type reaches the operator-visible outcome, end to end" is itself a load-bearing assumption, and it sits *above* per-step connectivity
      assumptions in blast radius.
   5. **Definition of done before starting:** when the gate returns GREEN or AMBER for multi-type or fleet work, the output should still require a one-line, operator-visible definition of done. The
