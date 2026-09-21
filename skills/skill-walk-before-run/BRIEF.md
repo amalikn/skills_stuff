@@ -292,7 +292,9 @@ definitions this reads GREEN, or at most AMBER, while the work sprawled.
      type to surface variations: five in total, and that concludes the type. The purpose of the four is to exercise every check the later batch will hit (creation, adoption of an existing record, a
      second model, an unreachable device, cleanup), so the whole-fleet batch can then run from the script without errors. **The fleet batch is not agent work in that session**: the operator runs it
      later, from the script. Reason given: running batches in an agent session wastes costly agent tokens and time. Candidate rule for the next revision: when the gate sees a batch beyond the canary
-     proposed inside an agent session, the cheapest next action is "stop at the canary and hand the batch to the script", not "run it".
+     proposed inside an agent session, the cheapest next action is "stop at the canary and hand the batch to the script", not "run it". **Operator refinement, 2026-09-22 — the five must be online and
+     complete.** Dry-run the candidates first. A chosen device that turns out to be offline is replaced by an online one of the same type; it still shows the unreachable path, but it does not count
+     toward the five. Retry a single failed handshake before calling a device offline: in the hope-vale XV2 canary a healthy unit threw one transient TLS EOF, then answered.
   4. **Step 0 wording for this case:** "one unit of one type reaches the operator-visible outcome, end to end" is itself a load-bearing assumption, and it sits *above* per-step connectivity
      assumptions in blast radius.
   5. **Definition of done before starting:** when the gate returns GREEN or AMBER for multi-type or fleet work, the output should still require a one-line, operator-visible definition of done. The

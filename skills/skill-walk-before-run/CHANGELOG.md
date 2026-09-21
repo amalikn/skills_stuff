@@ -7,6 +7,12 @@ Summary: Behavioural revisions to skill-walk-before-run between versions.
 
 # Changelog
 
+## Unreleased — canary refinement, 2026-09-22
+
+No behaviour change. The parked "1 + 4 canary" note in [`BRIEF.md`](BRIEF.md) gains the operator's refinement: all five devices must be online and complete. Dry-run candidates first, replace an
+offline pick with an online one of the same type (it does not count toward the five), and retry one failed handshake before calling a device offline. Source: the unified-network-controller hope-vale
+XV2 canary.
+
 ## Unreleased — pending revision note, 2026-09-21
 
 No behaviour change; `SKILL.md` and the version are untouched. On operator request, a detailed note on a gap the v0.1 gate cannot see is parked in [`BRIEF.md`](BRIEF.md) under "Parked for v0.2":
