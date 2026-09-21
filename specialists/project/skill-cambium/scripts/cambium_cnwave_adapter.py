@@ -187,6 +187,30 @@ class CambiumCnWaveAdapter:
         ifaces=["nic1"]. `ifaces` must be non-empty — an empty list 400s."""
         return self._request("/local/getNetworkStats", {"macs": [node_mac], "ifaces": ifaces})
 
+    #: Ethernet ports read for monitoring. On HRN_T1_V5000_DN_IP4_10 (2026-09-22) nic2 carried the traffic and nic1 read 0: the
+    #: "counters read 0" finding of 2026-09-21 was the wrong port, not a missing counter. nic0/terra*/lo return empty lists.
+    MONITOR_IFACES = ("nic1", "nic2", "nic3")
+
+    def get_snapshot(self) -> dict:
+        """facts, e2e_info, topology (only where this node runs the E2E controller) and per-port counters, for monitoring (added
+        2026-09-22). getNetworkStats returns its data as a JSON string inside `message`; this parses it into `counters.net_dev`,
+        keyed by port, cumulative rx/tx bytes, packets, errors and drops."""
+        facts = self.get_facts()
+        e2e = self.get_e2e_info()
+        result = {"facts": facts, "e2e_info": e2e}
+        if isinstance(e2e, dict) and e2e.get("enabled"):
+            result["topology"] = self.get_topology()
+        net_dev = {}
+        stats = self.get_network_stats(facts.get("mac_address"), list(self.MONITOR_IFACES)) if facts.get("mac_address") else {}
+        message = stats.get("message") if isinstance(stats, dict) else None
+        rows = json.loads(message) if isinstance(message, str) and message.strip().startswith("[") else []
+        for row in rows:
+            if isinstance(row, dict) and row.get("iface"):
+                net_dev[row["iface"]] = {k: row.get(k) for k in ("rx_bytes", "tx_bytes", "rx_packets", "tx_packets", "rx_errors",
+                                                                 "tx_errors", "rx_dropped", "tx_dropped")}
+        result["counters"] = {"net_dev": net_dev}
+        return result
+
     def get_key_performance_index(self, node_mac: str) -> dict:
         """Node-level KPI summary (totalSectors, totalLinks, uptime, tx/rx byte rate) plus a per-sector link-count map. Confirmed live
         2026-09-18. Takes a single `mac` (node MAC, not a list) — a radio MAC returns nulled-out placeholder values with HTTP 200."""

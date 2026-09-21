@@ -7,11 +7,12 @@
     "family": "cnpilot-r-series",
     "endpoint": "facts",
     "layer": "adapter-normalized",
-    "observations": 9,
+    "observations": 11,
     "models": [
       "R195P"
     ],
     "firmware": [
+      "2.6.36",
       "4.7.3-R21",
       "4.7.5-R2",
       "4.8.1-R4"
@@ -27,7 +28,7 @@
       "tjuntjuntjara",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T23:37:48Z"
   },
   "type": "object",
   "properties": {
@@ -35,18 +36,18 @@
       "type": "string",
       "x-identifying": true,
       "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-      "x-observed-count": 9
+      "x-observed-count": 11
     },
     "kernel_version": {
       "type": "string",
-      "x-observed-count": 9
+      "x-observed-count": 11
     },
     "lan_mac_address": {
       "type": [
         "null",
         "string"
       ],
-      "x-observed-count": 9,
+      "x-observed-count": 11,
       "x-type-varies": true,
       "x-nullable": true
     },
@@ -55,31 +56,31 @@
       "x-candidate-values": [
         "R195P"
       ],
-      "x-observed-count": 9
+      "x-observed-count": 11
     },
     "raw_uname": {
       "type": "string",
-      "x-observed-count": 9
+      "x-observed-count": 11
     },
     "soc": {
       "type": "string",
       "x-candidate-values": [
         "MT7621"
       ],
-      "x-observed-count": 9
+      "x-observed-count": 11
     },
     "vendor": {
       "type": "string",
       "x-identifying": true,
       "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-      "x-observed-count": 9
+      "x-observed-count": 11
     },
     "wan_mac_address": {
       "type": [
         "null",
         "string"
       ],
-      "x-observed-count": 9,
+      "x-observed-count": 11,
       "x-type-varies": true,
       "x-nullable": true
     }
@@ -97,7 +98,7 @@
   "x-observed-count": 0,
   "x-optional": {},
   "x-evidence": {
-    "observations_with_records": 9,
+    "observations_with_records": 11,
     "observations_empty": 0,
     "empty_at": [],
     "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

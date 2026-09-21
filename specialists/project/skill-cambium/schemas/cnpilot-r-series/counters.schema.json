@@ -1,0 +1,1381 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/cnpilot-r-series/counters.schema.json",
+  "title": "Cambium cnpilot-r-series \u2014 counters",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "cnpilot-r-series",
+    "endpoint": "counters",
+    "layer": "raw-endpoint",
+    "observations": 2,
+    "models": [
+      "R195P"
+    ],
+    "firmware": [
+      "2.6.36"
+    ],
+    "sites": [
+      "mowanjum"
+    ],
+    "generated_utc": "2026-09-21T23:37:48Z"
+  },
+  "type": "object",
+  "properties": {
+    "cpu_percent": {
+      "type": "number",
+      "x-observed-count": 2
+    },
+    "cpus": {
+      "type": "integer",
+      "x-observed-count": 2
+    },
+    "load": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "x-observed-count": 6
+      },
+      "x-observed-count": 2
+    },
+    "memory": {
+      "type": "object",
+      "properties": {
+        "Buffers": {
+          "type": "integer",
+          "x-observed-count": 2
+        },
+        "MemFree": {
+          "type": "integer",
+          "x-observed-count": 2
+        },
+        "MemTotal": {
+          "type": "integer",
+          "x-observed-count": 2
+        },
+        "Shmem": {
+          "type": "integer",
+          "x-observed-count": 2
+        }
+      },
+      "x-observed-count": 2
+    },
+    "net_dev": {
+      "type": "object",
+      "properties": {
+        "apcli0": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "apclii0": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "br0": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "eth2": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "eth2.1": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "eth2.2": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "eth2.3": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "eth2.500": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "eth2.501": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq0": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq1": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq10": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq11": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq12": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq13": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq14": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq15": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq2": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq3": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq4": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq5": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq6": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq7": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq8": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "imq9": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "lo": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "ra0": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "rai0": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "wan3": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "wan3.501": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "wds0": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "wds1": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "wds2": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        },
+        "wds3": {
+          "type": "object",
+          "properties": {
+            "rx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "rx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_bytes": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_dropped": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_errors": {
+              "type": "integer",
+              "x-observed-count": 2
+            },
+            "tx_packets": {
+              "type": "integer",
+              "x-observed-count": 2
+            }
+          },
+          "x-observed-count": 2
+        }
+      },
+      "x-observed-count": 2
+    },
+    "uptime_s": {
+      "type": "integer",
+      "x-observed-count": 2
+    }
+  },
+  "required": [
+    "cpu_percent",
+    "cpus",
+    "load",
+    "memory",
+    "net_dev",
+    "uptime_s"
+  ],
+  "x-observed-count": 0,
+  "x-optional": {},
+  "x-evidence": {
+    "observations_with_records": 2,
+    "observations_empty": 0,
+    "empty_at": [],
+    "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+  }
+}

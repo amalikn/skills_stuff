@@ -4,7 +4,7 @@ Category: device-reference
 Status: current
 Authority: primary — derived from the fleet sweep observations in schemas/_observations/
 Scope: Where devices of the same family disagree about their own response shape
-Last reviewed: 2026-09-20
+Last reviewed: 2026-09-22
 Summary: Per-endpoint breakdown of which response fields are universal across the fleet and which split by model, firmware or site, generated from the sweep rather than asserted.
 ---
 
@@ -24,9 +24,18 @@ A field listed under **universal** was present on every device that returned a r
 
 ## cnpilot-r-series
 
+### cnpilot-r-series — `counters`
+
+Observed on **2** device(s) with a record. Models: R195P.
+
+- **Universal fields:** 6
+- **Model-specific fields:** 0
+- **Site-specific fields:** 0
+- **Type conflicts:** 0
+
 ### cnpilot-r-series — `facts`
 
-Observed on **9** device(s) with a record. Models: R195P.
+Observed on **11** device(s) with a record. Models: R195P.
 
 - **Universal fields:** 8
 - **Model-specific fields:** 0
@@ -35,7 +44,7 @@ Observed on **9** device(s) with a record. Models: R195P.
 
 ### cnpilot-r-series — `interfaces`
 
-Observed on **9** device(s) with a record. Models: R195P.
+Observed on **11** device(s) with a record. Models: R195P.
 
 - **Universal fields:** 34
 - **Model-specific fields:** 0
@@ -82,6 +91,15 @@ Observed on **5** device(s) with a record. Models: V1000, V3000, V5000.
 - **Site-specific fields:** 0
 - **Type conflicts:** 0
 
+### cnwave-60ghz — `counters`
+
+Observed on **2** device(s) with a record. Models: V3000, V5000.
+
+- **Universal fields:** 1
+- **Model-specific fields:** 0
+- **Site-specific fields:** 0
+- **Type conflicts:** 0
+
 ### cnwave-60ghz — `ctrl_status_dump`
 
 Observed on **5** device(s) with a record. Models: V1000, V3000, V5000.
@@ -93,7 +111,7 @@ Observed on **5** device(s) with a record. Models: V1000, V3000, V5000.
 
 ### cnwave-60ghz — `e2e_info`
 
-Observed on **5** device(s) with a record. Models: V1000, V3000, V5000.
+Observed on **7** device(s) with a record. Models: V1000, V3000, V5000.
 
 - **Universal fields:** 2
 - **Model-specific fields:** 0
@@ -102,7 +120,7 @@ Observed on **5** device(s) with a record. Models: V1000, V3000, V5000.
 
 ### cnwave-60ghz — `facts`
 
-Observed on **5** device(s) with a record. Models: V1000, V3000, V5000.
+Observed on **7** device(s) with a record. Models: V1000, V3000, V5000.
 
 - **Universal fields:** 10
 - **Model-specific fields:** 0
@@ -159,7 +177,7 @@ Observed on **5** device(s) with a record. Models: V1000, V3000, V5000.
 
 ### cnwave-60ghz — `topology`
 
-Observed on **5** device(s) with a record. Models: V1000, V3000, V5000.
+Observed on **6** device(s) with a record. Models: V1000, V3000, V5000.
 
 - **Universal fields:** 5
 - **Model-specific fields:** 0
@@ -170,7 +188,7 @@ Observed on **5** device(s) with a record. Models: V1000, V3000, V5000.
 
 ### enterprise-wifi — `client-summary`
 
-Observed on **33** device(s) with a record, empty on **2**. Models: E500, XV2.
+Observed on **33** device(s) with a record, empty on **4**. Models: E500, XV2.
 
 - **Universal fields:** 43
 - **Model-specific fields:** 54
@@ -248,44 +266,116 @@ Fields that vary by site rather than by model — same hardware, different respo
 
 ### enterprise-wifi — `device-summary`
 
-Observed on **36** device(s) with a record. Models: E500, XV2.
+Observed on **38** device(s) with a record. Models: E430H, E500, XV2, XV2-2T0.
 
 - **Universal fields:** 31
-- **Model-specific fields:** 16
+- **Model-specific fields:** 24
 - **Site-specific fields:** 0
 - **Type conflicts:** 0
 
 | Field | Present on | Absent on |
 | --- | --- | --- |
-| `ap_info` | E500 | XV2 |
-| `bootloader_version` | XV2 | E500 |
-| `channels` | XV2 | E500 |
-| `channels_distribution` | XV2 | E500 |
-| `country` | XV2 | E500 |
-| `kernel_version` | XV2 | E500 |
-| `max_ethernet_ports` | XV2 | E500 |
-| `max_num_scan_radios` | XV2 | E500 |
-| `max_radios` | XV2 | E500 |
-| `model` | XV2 | E500 |
-| `placement` | XV2 | E500 |
-| `port_stats` | XV2 | E500 |
-| `port_status` | XV2 | E500 |
-| `radio_sbs_mode` | XV2 | E500 |
-| `rca_enabled` | XV2 | E500 |
-| `reboot_count` | XV2 | E500 |
+| `ap_info` | E430H, E500 | XV2, XV2-2T0 |
+| `bootloader_version` | XV2, XV2-2T0 | E430H, E500 |
+| `channels` | XV2, XV2-2T0 | E430H, E500 |
+| `channels_distribution` | XV2, XV2-2T0 | E430H, E500 |
+| `connected_ip` | XV2-2T0 | E430H, E500, XV2 |
+| `country` | XV2, XV2-2T0 | E430H, E500 |
+| `device_ipv6` | XV2-2T0 | E430H, E500, XV2 |
+| `fcc_id` | XV2-2T0 | E430H, E500, XV2 |
+| `kernel_version` | XV2, XV2-2T0 | E430H, E500 |
+| `link_duplex2` | E430H | E500, XV2, XV2-2T0 |
+| `link_duplex3` | E430H | E500, XV2, XV2-2T0 |
+| `link_speed2` | E430H | E500, XV2, XV2-2T0 |
+| `link_speed3` | E430H | E500, XV2, XV2-2T0 |
+| `max_ethernet_ports` | XV2, XV2-2T0 | E430H, E500 |
+| `max_num_scan_radios` | XV2, XV2-2T0 | E430H, E500 |
+| `max_radios` | XV2, XV2-2T0 | E430H, E500 |
+| `model` | XV2, XV2-2T0 | E430H, E500 |
+| `placement` | XV2, XV2-2T0 | E430H, E500 |
+| `port_stats` | XV2, XV2-2T0 | E430H, E500 |
+| `port_status` | XV2, XV2-2T0 | E430H, E500 |
+| `radio_sbs_mode` | XV2, XV2-2T0 | E430H, E500 |
+| `rca_enabled` | XV2, XV2-2T0 | E430H, E500 |
+| `reboot_count` | XV2, XV2-2T0 | E430H, E500 |
+| `reg_info` | XV2-2T0 | E430H, E500, XV2 |
 
 ### enterprise-wifi — `ethports-config`
 
-Observed on **36** device(s) with a record. Models: E500, XV2.
+Observed on **38** device(s) with a record. Models: E430H, E500, XV2, XV2-2T0.
 
 - **Universal fields:** 91
-- **Model-specific fields:** 0
+- **Model-specific fields:** 92
 - **Site-specific fields:** 0
 - **Type conflicts:** 0
 
+| Field | Present on | Absent on |
+| --- | --- | --- |
+| `eth3_acl_policy` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_called_sta_id` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_called_sta_id_custom` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_dynamic_auth` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_mac_auth` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_mac_auth_delimiter` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_mac_auth_fallback` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_mac_auth_uppercase` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_nas_id` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_nas_id_custom` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_nas_ip` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_nas_ip_custom` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_1_host` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_1_port` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_1_secret` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_2_host` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_2_port` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_2_secret` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_3_host` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_3_port` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_3_secret` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_attempts` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_interim_interval` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_mode` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_acct_timeout` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_1_host` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_1_port` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_1_secret` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_2_host` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_2_port` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_2_secret` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_3_host` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_3_port` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_3_secret` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_attempts` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_auth_timeout` | E430H | E500, XV2, XV2-2T0 |
+| `eth3_rad_mode` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_acl_policy` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_called_sta_id` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_called_sta_id_custom` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_dynamic_auth` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_mac_auth` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_mac_auth_delimiter` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_mac_auth_fallback` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_mac_auth_uppercase` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_nas_id` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_nas_id_custom` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_nas_ip` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_nas_ip_custom` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_1_host` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_1_port` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_1_secret` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_2_host` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_2_port` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_2_secret` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_3_host` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_3_port` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_3_secret` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_attempts` | E430H | E500, XV2, XV2-2T0 |
+| `eth4_rad_acct_interim_interval` | E430H | E500, XV2, XV2-2T0 |
+| … 32 more | | |
+
 ### enterprise-wifi — `interface-summary`
 
-Observed on **36** device(s) with a record. Models: E500, XV2.
+Observed on **38** device(s) with a record. Models: E430H, E500, XV2, XV2-2T0.
 
 - **Universal fields:** 22
 - **Model-specific fields:** 5
@@ -294,15 +384,15 @@ Observed on **36** device(s) with a record. Models: E500, XV2.
 
 | Field | Present on | Absent on |
 | --- | --- | --- |
-| `duplex` | XV2 | E500 |
-| `link` | XV2 | E500 |
-| `rx_compressed` | XV2 | E500 |
-| `speed` | XV2 | E500 |
-| `tx_compressed` | XV2 | E500 |
+| `duplex` | XV2, XV2-2T0 | E430H, E500 |
+| `link` | XV2, XV2-2T0 | E430H, E500 |
+| `rx_compressed` | XV2, XV2-2T0 | E430H, E500 |
+| `speed` | XV2, XV2-2T0 | E430H, E500 |
+| `tx_compressed` | XV2, XV2-2T0 | E430H, E500 |
 
 ### enterprise-wifi — `ip_route-summary`
 
-Observed on **36** device(s) with a record. Models: E500, XV2.
+Observed on **38** device(s) with a record. Models: E430H, E500, XV2, XV2-2T0.
 
 - **Universal fields:** 8
 - **Model-specific fields:** 0
@@ -311,7 +401,7 @@ Observed on **36** device(s) with a record. Models: E500, XV2.
 
 ### enterprise-wifi — `platform-info`
 
-Observed on **36** device(s) with a record. Models: E500, XV2.
+Observed on **38** device(s) with a record. Models: E430H, E500, XV2, XV2-2T0.
 
 - **Universal fields:** 11
 - **Model-specific fields:** 5
@@ -320,15 +410,15 @@ Observed on **36** device(s) with a record. Models: E500, XV2.
 
 | Field | Present on | Absent on |
 | --- | --- | --- |
-| `is_6ghz_supported` | XV2 | E500 |
-| `max_num_scan_radios` | XV2 | E500 |
-| `sbs_mode_support` | XV2 | E500 |
-| `sku` | XV2 | E500 |
-| `wifi_cert_test_mode` | XV2 | E500 |
+| `is_6ghz_supported` | XV2, XV2-2T0 | E430H, E500 |
+| `max_num_scan_radios` | XV2, XV2-2T0 | E430H, E500 |
+| `sbs_mode_support` | XV2, XV2-2T0 | E430H, E500 |
+| `sku` | XV2, XV2-2T0 | E430H, E500 |
+| `wifi_cert_test_mode` | XV2, XV2-2T0 | E430H, E500 |
 
 ### enterprise-wifi — `radio-rf-summary`
 
-Observed on **35** device(s) with a record. Models: E500, XV2.
+Observed on **37** device(s) with a record. Models: E430H, E500, XV2, XV2-2T0.
 
 - **Universal fields:** 7
 - **Model-specific fields:** 9
@@ -337,90 +427,113 @@ Observed on **35** device(s) with a record. Models: E500, XV2.
 
 | Field | Present on | Absent on |
 | --- | --- | --- |
-| `band` | E500 | XV2 |
-| `chan_thp` | XV2 | E500 |
-| `cu` | E500 | XV2 |
-| `cur_thp` | E500 | XV2 |
-| `nav` | E500 | XV2 |
-| `non_wifi_cu` | XV2 | E500 |
-| `tot_rx_cu` | XV2 | E500 |
-| `total_if` | XV2 | E500 |
-| `u_cu` | XV2 | E500 |
+| `band` | E430H, E500 | XV2, XV2-2T0 |
+| `chan_thp` | XV2, XV2-2T0 | E430H, E500 |
+| `cu` | E430H, E500 | XV2, XV2-2T0 |
+| `cur_thp` | E500 | E430H, XV2, XV2-2T0 |
+| `nav` | E430H, E500 | XV2, XV2-2T0 |
+| `non_wifi_cu` | XV2, XV2-2T0 | E430H, E500 |
+| `tot_rx_cu` | XV2, XV2-2T0 | E430H, E500 |
+| `total_if` | XV2, XV2-2T0 | E430H, E500 |
+| `u_cu` | XV2, XV2-2T0 | E430H, E500 |
 
 ### enterprise-wifi — `radio-summary`
 
-Observed on **36** device(s) with a record. Models: E500, XV2.
+Observed on **38** device(s) with a record. Models: E430H, E500, XV2, XV2-2T0.
 
 - **Universal fields:** 28
-- **Model-specific fields:** 19
+- **Model-specific fields:** 21
 - **Site-specific fields:** 0
 - **Type conflicts:** 0
 
 | Field | Present on | Absent on |
 | --- | --- | --- |
-| `cchannel` | XV2 | E500 |
-| `channel-selection` | XV2 | E500 |
-| `channel_bonds` | XV2 | E500 |
-| `channel_mode` | XV2 | E500 |
-| `device` | XV2 | E500 |
-| `dfs_status` | E500 | XV2 |
-| `exclude_list` | XV2 | E500 |
-| `management-rate` | XV2 | E500 |
-| `min-unicast-rate` | XV2 | E500 |
-| `multicast_rate` | E500 | XV2 |
-| `multicast_to_unicast` | XV2 | E500 |
-| `multicast_to_unicast_mode` | XV2 | E500 |
-| `non-unicast-rate` | XV2 | E500 |
-| `per` | XV2 | E500 |
-| `radio_config_state` | XV2 | E500 |
-| `rx_threshold` | XV2 | E500 |
-| `unicast_rates` | E500 | XV2 |
-| `wifi_capabilities` | XV2 | E500 |
-| `wifi_mode` | XV2 | E500 |
+| `cchannel` | XV2, XV2-2T0 | E430H, E500 |
+| `channel-selection` | XV2, XV2-2T0 | E430H, E500 |
+| `channel_bonds` | XV2, XV2-2T0 | E430H, E500 |
+| `channel_mode` | XV2, XV2-2T0 | E430H, E500 |
+| `device` | XV2, XV2-2T0 | E430H, E500 |
+| `dfs_status` | E430H, E500 | XV2, XV2-2T0 |
+| `exclude_list` | XV2, XV2-2T0 | E430H, E500 |
+| `management-rate` | XV2, XV2-2T0 | E430H, E500 |
+| `min-unicast-rate` | XV2, XV2-2T0 | E430H, E500 |
+| `multicast_rate` | E430H, E500 | XV2, XV2-2T0 |
+| `multicast_to_unicast` | XV2, XV2-2T0 | E430H, E500 |
+| `multicast_to_unicast_mode` | XV2, XV2-2T0 | E430H, E500 |
+| `non-unicast-rate` | XV2, XV2-2T0 | E430H, E500 |
+| `per` | XV2, XV2-2T0 | E430H, E500 |
+| `radio_config_state` | XV2, XV2-2T0 | E430H, E500 |
+| `rx_threshold` | XV2, XV2-2T0 | E430H, E500 |
+| `stream` | XV2-2T0 | E430H, E500, XV2 |
+| `tx_bytes_unicast` | XV2-2T0 | E430H, E500, XV2 |
+| `unicast_rates` | E430H, E500 | XV2, XV2-2T0 |
+| `wifi_capabilities` | XV2, XV2-2T0 | E430H, E500 |
+| `wifi_mode` | XV2, XV2-2T0 | E430H, E500 |
 
 ### enterprise-wifi — `wlan-summary`
 
-Observed on **36** device(s) with a record. Models: E500, XV2.
+Observed on **38** device(s) with a record. Models: E430H, E500, XV2, XV2-2T0.
 
 - **Universal fields:** 23
-- **Model-specific fields:** 8
+- **Model-specific fields:** 9
 - **Site-specific fields:** 0
 - **Type conflicts:** 0
 
 | Field | Present on | Absent on |
 | --- | --- | --- |
-| `2.4_wlan_state` | E500 | XV2 |
-| `5_wlan_state` | E500 | XV2 |
-| `monitor_host` | E500 | XV2 |
-| `monitor_host_down` | E500 | XV2 |
-| `monitor_host_missed` | E500 | XV2 |
-| `s_vlan` | E500 | XV2 |
-| `vlan_encap_type` | E500 | XV2 |
-| `wlan_num` | E500 | XV2 |
+| `2.4_wlan_state` | E430H, E500 | XV2, XV2-2T0 |
+| `5_wlan_state` | E430H, E500 | XV2, XV2-2T0 |
+| `monitor_host` | E430H, E500 | XV2, XV2-2T0 |
+| `monitor_host_down` | E430H, E500 | XV2, XV2-2T0 |
+| `monitor_host_missed` | E430H, E500 | XV2, XV2-2T0 |
+| `s_vlan` | E430H, E500 | XV2, XV2-2T0 |
+| `tx_bytes_unicast` | XV2-2T0 | E430H, E500, XV2 |
+| `vlan_encap_type` | E430H, E500 | XV2, XV2-2T0 |
+| `wlan_num` | E430H, E500 | XV2, XV2-2T0 |
 
 ## epmp-ap
 
 ### epmp-ap — `clients`
 
-Observed on **35** device(s) with a record, empty on **1**. Models: Force 300-16, Force 300-25, ePMP 3000L.
+Observed on **38** device(s) with a record, empty on **1**. Models: ?, Force 300-16, Force 300-25, ePMP 3000L.
 
 - **Universal fields:** 11
 - **Model-specific fields:** 0
 - **Site-specific fields:** 0
 - **Type conflicts:** 0
 
+### epmp-ap — `counters`
+
+Observed on **3** device(s) with a record. Models: ?.
+
+- **Universal fields:** 9
+- **Model-specific fields:** 0
+- **Site-specific fields:** 0
+- **Type conflicts:** 1
+
+**Type conflicts** — the same field returns different JSON types across the fleet. Each one is a portability hazard for any code that indexes it:
+
+| Field | Types observed |
+| --- | --- |
+| `sysCPUUsage` | integer, number |
+
 ### epmp-ap — `facts`
 
-Observed on **36** device(s) with a record. Models: Force 300-16, Force 300-25, ePMP 3000L.
+Observed on **39** device(s) with a record. Models: ?, Force 300-16, Force 300-25, ePMP 3000L.
 
 - **Universal fields:** 7
-- **Model-specific fields:** 0
+- **Model-specific fields:** 2
 - **Site-specific fields:** 0
 - **Type conflicts:** 0
 
+| Field | Present on | Absent on |
+| --- | --- | --- |
+| `ipv4_address` | ? | Force 300-16, Force 300-25, ePMP 3000L |
+| `lan_mac_address` | ? | Force 300-16, Force 300-25, ePMP 3000L |
+
 ### epmp-ap — `interfaces`
 
-Observed on **36** device(s) with a record. Models: Force 300-16, Force 300-25, ePMP 3000L.
+Observed on **39** device(s) with a record. Models: ?, Force 300-16, Force 300-25, ePMP 3000L.
 
 - **Universal fields:** 2
 - **Model-specific fields:** 0
@@ -429,7 +542,7 @@ Observed on **36** device(s) with a record. Models: Force 300-16, Force 300-25, 
 
 ### epmp-ap — `wireless_link`
 
-Observed on **0** device(s) with a record, empty on **36**. Models: n/a.
+Observed on **0** device(s) with a record, empty on **39**. Models: n/a.
 
 **No device anywhere returned a record for this endpoint.** The contract cannot describe its shape. Empty at: amata, ampilatwatja, arawerr, arreyonga, aurukun, bidyadanga, bungardi, burawa, burringurrah, darlngunaya, doomadgee, galiwinku, gan-gan, hope-vale, horn-island, indulkana, jigalong, junjuwa, kaltjiti-fergon, kalumburu, koonibba, kowanyama, kurnangki, loanbun, mimili, mindi-rardi, mornington, mowanjum, mungkarta, pipalyatjara, pormparaaw, pukatja, tjuntjuntjara, wandawuy, warakurna, wujal-wujal.
 
@@ -437,22 +550,36 @@ Observed on **0** device(s) with a record, empty on **36**. Models: n/a.
 
 ### epmp-sm — `clients`
 
-Observed on **0** device(s) with a record, empty on **36**. Models: n/a.
+Observed on **0** device(s) with a record, empty on **39**. Models: n/a.
 
 **No device anywhere returned a record for this endpoint.** The contract cannot describe its shape. Empty at: amata, ampilatwatja, arawerr, arreyonga, aurukun, bidyadanga, bungardi, burawa, burringurrah, darlngunaya, doomadgee, galiwinku, gan-gan, hope-vale, horn-island, indulkana, jigalong, junjuwa, kaltjiti-fergon, kalumburu, koonibba, kowanyama, kurnangki, loanbun, mimili, mindi-rardi, mornington, mowanjum, mungkarta, pipalyatjara, pormparaaw, pukatja, tjuntjuntjara, wandawuy, warakurna, wujal-wujal.
 
-### epmp-sm — `facts`
+### epmp-sm — `counters`
 
-Observed on **36** device(s) with a record. Models: Force 300-16, Force 300-25.
+Observed on **3** device(s) with a record. Models: ?.
 
-- **Universal fields:** 7
+- **Universal fields:** 9
 - **Model-specific fields:** 0
 - **Site-specific fields:** 0
 - **Type conflicts:** 0
 
+### epmp-sm — `facts`
+
+Observed on **39** device(s) with a record. Models: ?, Force 300-16, Force 300-25.
+
+- **Universal fields:** 7
+- **Model-specific fields:** 2
+- **Site-specific fields:** 0
+- **Type conflicts:** 0
+
+| Field | Present on | Absent on |
+| --- | --- | --- |
+| `ipv4_address` | ? | Force 300-16, Force 300-25 |
+| `lan_mac_address` | ? | Force 300-16, Force 300-25 |
+
 ### epmp-sm — `interfaces`
 
-Observed on **36** device(s) with a record. Models: Force 300-16, Force 300-25.
+Observed on **39** device(s) with a record. Models: ?, Force 300-16, Force 300-25.
 
 - **Universal fields:** 2
 - **Model-specific fields:** 0
@@ -461,7 +588,7 @@ Observed on **36** device(s) with a record. Models: Force 300-16, Force 300-25.
 
 ### epmp-sm — `wireless_link`
 
-Observed on **36** device(s) with a record. Models: Force 300-16, Force 300-25.
+Observed on **39** device(s) with a record. Models: ?, Force 300-16, Force 300-25.
 
 - **Universal fields:** 5
 - **Model-specific fields:** 0

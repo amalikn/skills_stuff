@@ -45,6 +45,7 @@ import json
 import os
 import re
 import subprocess
+import time
 import sys
 
 REDACT_KEY_PATTERN = re.compile(
@@ -146,6 +147,11 @@ class CambiumR195PAdapter:
         ]
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=self._timeout + 5)
+            # sshpass sometimes misses the password prompt and ssh falls back to ssh_askpass, which does not exist here (exit
+            # 255). Seen on three R195P units in three scheduled runs, never the same unit twice (2026-09-22), so one retry.
+            if result.returncode == 255 and "ssh_askpass" in result.stderr:
+                time.sleep(2)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=self._timeout + 5)
         except subprocess.TimeoutExpired as exc:
             # SECRET-EXPOSURE INCIDENT (2026-09-18, live R195P test): subprocess.TimeoutExpired's
             # default __str__/repr embeds the FULL argv it was given, including the `sshpass -p
@@ -323,7 +329,12 @@ class CambiumR195PAdapter:
                                           "rx_dropped": int(fields[3]), "tx_bytes": int(fields[8]), "tx_packets": int(fields[9]),
                                           "tx_errors": int(fields[10]), "tx_dropped": int(fields[11])}
         counters["net_dev"] = net_dev
-        return {"facts": facts, "interfaces": self._parse_ip_addr(sections["ipaddr"]), "counters": counters}
+        interfaces = self._parse_ip_addr(sections["ipaddr"])
+        # The facts standard requires wan_mac_address. The WAN port's name varies by unit (wan1 on older units, wan3 at mowanjum,
+        # 2026-09-22), so take the first `wan*` port without a VLAN suffix rather than asking `ifconfig` for one fixed name.
+        facts["wan_mac_address"] = next((v.get("mac_address") for n, v in sorted(interfaces.items())
+                                         if n.startswith("wan") and "." not in n and v.get("mac_address")), None)
+        return {"facts": facts, "interfaces": interfaces, "counters": counters}
 
     def _try_get_mac(self, remote_command: str) -> str | None:
         """Runs remote_command (expected to be an `ifconfig <name>` invocation) and extracts a MAC address from its output, returning

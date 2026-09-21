@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260922_0941](#20260922_0941)
 - [20260922_0754](#20260922_0754)
 - [20260922_0020](#20260922_0020)
 - [20260921_2015](#20260921_2015)
@@ -54,6 +55,24 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260922_0941
+
+From the unified-network-controller ePMP and cnWave canaries (18 devices), all read live:
+
+- `scripts/cambium_epmp_adapter.py` gains `get_snapshot()`: one `act=status` read builds facts, interfaces, wireless_link,
+  clients and `counters` (LAN and wireless kbit and error counters, `sysCPUUsage`); each getter had re-read it. `get_facts()`
+  adds `ipv4_address` (`cambiumEffectiveDeviceIPAddress`) and `lan_mac_address`; the LAN MAC is the one the asset register and
+  Nautobot hold, and `mac_address` stays the wireless MAC (LAN + 1).
+- `scripts/cambium_cnwave_adapter.py` gains `get_snapshot()`: facts, e2e_info, topology (E2E controller nodes only) and
+  per-port `counters.net_dev` from one `getNetworkStats` call over `nic1`-`nic3`. The 2026-09-21 "counters read 0" was the
+  unused `nic1`; `nic2` carries the traffic (HRN_T1_V5000_DN_IP4_10). No cnWave CPU or memory source found.
+- `scripts/cambium_r195p_adapter.py`: `get_snapshot()` restores the required `wan_mac_address` (first `wan*` port without a
+  VLAN suffix; the name varies by unit), and `_run()` retries once when sshpass misses the prompt (`ssh_askpass`, exit 255).
+- Standards re-merged for epmp-ap, epmp-sm, cnpilot-r-series and cnwave-60ghz; each gains a counters schema (for example `schemas/epmp-ap/counters.schema.json`).
+  `schemas/DIVERGENCE.md` regenerated (134 observations, 5 families). R195P `interfaces` stays divergent because it is keyed
+  by interface name, which `schema_tool` models as fields: recorded in references/05_known-issues.md. Tjuntjuntjara R195Ps
+  add VLANs `eth2.4` and `eth2.550` (the community's PTAC requirement, operator).
 
 ## 20260922_0754
 

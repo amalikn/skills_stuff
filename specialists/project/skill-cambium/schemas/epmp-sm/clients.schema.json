@@ -54,7 +54,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T23:37:48Z"
   },
   "type": "array",
   "items": {
@@ -65,7 +65,7 @@
     "x-optional": {},
     "x-evidence": {
       "observations_with_records": 0,
-      "observations_empty": 36,
+      "observations_empty": 39,
       "empty_at": [
         "amata",
         "ampilatwatja",
@@ -94,6 +94,9 @@
         "mimili",
         "mindi-rardi",
         "mornington",
+        "mornington",
+        "mowanjum",
+        "mowanjum",
         "mowanjum",
         "mungkarta",
         "pipalyatjara",

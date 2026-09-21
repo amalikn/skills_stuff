@@ -54,7 +54,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T23:37:48Z"
   },
   "type": [
     "null",
@@ -68,7 +68,7 @@
   "x-optional": {},
   "x-evidence": {
     "observations_with_records": 0,
-    "observations_empty": 36,
+    "observations_empty": 39,
     "empty_at": [
       "amata",
       "ampilatwatja",
@@ -84,6 +84,7 @@
       "galiwinku",
       "gan-gan",
       "hope-vale",
+      "hope-vale",
       "horn-island",
       "indulkana",
       "jigalong",
@@ -97,6 +98,8 @@
       "mimili",
       "mindi-rardi",
       "mornington",
+      "mowanjum",
+      "mowanjum",
       "mowanjum",
       "mungkarta",
       "pipalyatjara",

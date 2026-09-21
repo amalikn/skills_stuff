@@ -17,6 +17,7 @@
 | `hardware_revision` for all 17 catalogued models              | Requires a real cnMaestro export or device session | Pending — `cambium-swap` walk-before-run gate flagged this as unverified |
 | Which specific serials are on the legacy (`-legacy`) password | Registers don't record credential state per device | Try primary vault entry, fall back to `-legacy` per device               |
 | XV2 hardware variant (2T0 vs 22H) at Burringurrah             | That register has no `Model` column for XV2 rows   | Left as bare `XV2` in `device-inventory.csv` — don't guess the variant   |
+| R195P `interfaces` schema keyed by interface name              | Names differ per unit; `schema_tool` models the map as fields | Every live check lists the names as unknown fields (2026-09-22); fix is map support in `schema_tool` |
 
 ## Coverage Gaps (partial knowledge)
 

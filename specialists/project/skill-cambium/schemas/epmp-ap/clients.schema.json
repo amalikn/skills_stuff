@@ -7,7 +7,7 @@
     "family": "epmp-ap",
     "endpoint": "clients",
     "layer": "adapter-normalized",
-    "observations": 35,
+    "observations": 38,
     "models": [
       "Force 300-16",
       "Force 300-25",
@@ -54,7 +54,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T23:37:48Z"
   },
   "type": "array",
   "items": {
@@ -62,51 +62,51 @@
     "properties": {
       "distance_m": {
         "type": "integer",
-        "x-observed-count": 249
+        "x-observed-count": 277
       },
       "downlink_rssi": {
         "type": "integer",
-        "x-observed-count": 249
+        "x-observed-count": 277
       },
       "downlink_snr": {
         "type": "integer",
-        "x-observed-count": 249
+        "x-observed-count": 277
       },
       "hostname": {
         "type": "string",
         "x-identifying": true,
         "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-        "x-observed-count": 249
+        "x-observed-count": 277
       },
       "ip_address": {
         "type": "string",
-        "x-observed-count": 249
+        "x-observed-count": 277
       },
       "mac_address": {
         "type": "string",
         "x-identifying": true,
         "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-        "x-observed-count": 249
+        "x-observed-count": 277
       },
       "model_name": {
         "type": "string",
-        "x-observed-count": 249
+        "x-observed-count": 277
       },
       "session_time": {
         "type": "string",
-        "x-observed-count": 249
+        "x-observed-count": 277
       },
       "software_version": {
         "type": "string",
-        "x-observed-count": 249
+        "x-observed-count": 277
       },
       "uplink_rssi": {
         "type": "integer",
-        "x-observed-count": 249
+        "x-observed-count": 277
       },
       "uplink_snr": {
         "type": "integer",
-        "x-observed-count": 249
+        "x-observed-count": 277
       }
     },
     "required": [
@@ -125,7 +125,7 @@
     "x-observed-count": 0,
     "x-optional": {},
     "x-evidence": {
-      "observations_with_records": 35,
+      "observations_with_records": 38,
       "observations_empty": 1,
       "empty_at": [
         "indulkana"

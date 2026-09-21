@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cambium/epmp-ap/counters.schema.json",
+  "title": "Cambium epmp-ap \u2014 counters",
+  "description": "Derived from live observation, not from vendor documentation. Fields listed in `required` were present on every device observed; `x-optional` names the rest with how often they appeared. No end-user identifying values are recorded.",
+  "x-cambium": {
+    "family": "epmp-ap",
+    "endpoint": "counters",
+    "layer": "raw-endpoint",
+    "observations": 3,
+    "models": [],
+    "firmware": [
+      "4.7.0.1"
+    ],
+    "sites": [
+      "hope-vale",
+      "mowanjum"
+    ],
+    "generated_utc": "2026-09-21T23:37:48Z"
+  },
+  "type": "object",
+  "properties": {
+    "dlWLanErrorDroppedPacketCount": {
+      "type": "integer",
+      "x-observed-count": 3
+    },
+    "dlWLanKbitCount": {
+      "type": "integer",
+      "x-observed-count": 3
+    },
+    "rxEtherLanErrorPacketCount": {
+      "type": "integer",
+      "x-observed-count": 3
+    },
+    "rxEtherLanKbitCount": {
+      "type": "integer",
+      "x-observed-count": 3
+    },
+    "sysCPUUsage": {
+      "type": [
+        "integer",
+        "number"
+      ],
+      "x-observed-count": 3,
+      "x-type-varies": true
+    },
+    "txEtherLanErrorPacketCount": {
+      "type": "integer",
+      "x-observed-count": 3
+    },
+    "txEtherLanKbitCount": {
+      "type": "integer",
+      "x-observed-count": 3
+    },
+    "ulWLanErrorDroppedPacketCount": {
+      "type": "integer",
+      "x-observed-count": 3
+    },
+    "ulWLanKbitCount": {
+      "type": "integer",
+      "x-observed-count": 3
+    }
+  },
+  "required": [
+    "dlWLanErrorDroppedPacketCount",
+    "dlWLanKbitCount",
+    "rxEtherLanErrorPacketCount",
+    "rxEtherLanKbitCount",
+    "sysCPUUsage",
+    "txEtherLanErrorPacketCount",
+    "txEtherLanKbitCount",
+    "ulWLanErrorDroppedPacketCount",
+    "ulWLanKbitCount"
+  ],
+  "x-observed-count": 0,
+  "x-optional": {},
+  "x-evidence": {
+    "observations_with_records": 3,
+    "observations_empty": 0,
+    "empty_at": [],
+    "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
+  }
+}

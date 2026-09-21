@@ -1,0 +1,447 @@
+{
+  "x-observation": {
+    "captured_utc": "2026-09-21T23:36:39Z",
+    "family": "cnwave-60ghz",
+    "model": "V5000",
+    "firmware": "10.11.0.98",
+    "site": "horn-island",
+    "layer": "raw-endpoint",
+    "driver": "stdin",
+    "strict_pii": true
+  },
+  "endpoints": {
+    "facts": {
+      "type": "object",
+      "properties": {
+        "firmware_version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "hostname": {
+          "type": "string",
+          "x-identifying": true,
+          "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+          "x-observed-count": 1
+        },
+        "ipv4_address": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "mac_address": {
+          "type": "string",
+          "x-identifying": true,
+          "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+          "x-observed-count": 1
+        },
+        "model": {
+          "type": "string",
+          "x-candidate-values": [
+            "V5000"
+          ],
+          "x-observed-count": 1
+        },
+        "os_version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "role": {
+          "type": "string",
+          "x-candidate-values": [
+            "POP"
+          ],
+          "x-observed-count": 1
+        },
+        "serial_number": {
+          "type": "string",
+          "x-candidate-values": [
+            "VYZF0044FVM5"
+          ],
+          "x-observed-count": 1
+        },
+        "uptime_seconds": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "vendor": {
+          "type": "string",
+          "x-identifying": true,
+          "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "firmware_version",
+        "hostname",
+        "ipv4_address",
+        "mac_address",
+        "model",
+        "os_version",
+        "role",
+        "serial_number",
+        "uptime_seconds",
+        "vendor"
+      ],
+      "x-records-observed": 1
+    },
+    "e2e_info": {
+      "type": "object",
+      "properties": {
+        "available": {
+          "type": "boolean",
+          "x-candidate-values": [
+            true
+          ],
+          "x-observed-count": 1
+        },
+        "enabled": {
+          "type": "boolean",
+          "x-candidate-values": [
+            true
+          ],
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "available",
+        "enabled"
+      ],
+      "x-records-observed": 1
+    },
+    "topology": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "type": "object",
+          "properties": {},
+          "x-observed-count": 1
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "a_node_mac": {
+                "type": "string",
+                "x-observed-count": 4
+              },
+              "a_node_name": {
+                "type": "string",
+                "x-candidate-values": [
+                  "HRN_T1_V5000_DN_IP4_10"
+                ],
+                "x-observed-count": 4
+              },
+              "is_alive": {
+                "type": "boolean",
+                "x-candidate-values": [
+                  true
+                ],
+                "x-observed-count": 4
+              },
+              "link_type": {
+                "type": "integer",
+                "x-observed-count": 4
+              },
+              "linkup_attempts": {
+                "type": "integer",
+                "x-observed-count": 4
+              },
+              "name": {
+                "type": "string",
+                "x-identifying": true,
+                "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+                "x-observed-count": 4
+              },
+              "z_node_mac": {
+                "type": "string",
+                "x-observed-count": 4
+              },
+              "z_node_name": {
+                "type": "string",
+                "x-candidate-values": [
+                  "HRN_T2_V3000_CN_IP4_11",
+                  "HRN_T3_V3000_CN_IP4_12",
+                  "HRN_T4_V3000_CN_IP4_13",
+                  "HRN_T5_V3000_CN_IP4_14"
+                ],
+                "x-observed-count": 4
+              }
+            },
+            "x-observed-count": 4
+          },
+          "x-observed-count": 1
+        },
+        "name": {
+          "type": "string",
+          "x-identifying": true,
+          "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+          "x-observed-count": 1
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ant_azimuth": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "ant_elevation": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "hw_model": {
+                "type": "string",
+                "x-candidate-values": [
+                  "V3000",
+                  "V5000"
+                ],
+                "x-observed-count": 5
+              },
+              "is_primary": {
+                "type": "boolean",
+                "x-candidate-values": [
+                  true
+                ],
+                "x-observed-count": 5
+              },
+              "mac_addr": {
+                "type": "string",
+                "x-observed-count": 5
+              },
+              "name": {
+                "type": "string",
+                "x-identifying": true,
+                "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+                "x-observed-count": 5
+              },
+              "node_type": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "pop_node": {
+                "type": "boolean",
+                "x-candidate-values": [
+                  false,
+                  true
+                ],
+                "x-observed-count": 5
+              },
+              "prefix": {
+                "type": "string",
+                "x-candidate-values": [
+                  "fd00:ceed:88ba:9f00::/64",
+                  "fd00:ceed:88ba:9f01::/64",
+                  "fd00:ceed:88ba:9f02::/64",
+                  "fd00:ceed:88ba:9f03::/64",
+                  "fd00:ceed:88ba:9f04::/64"
+                ],
+                "x-observed-count": 5
+              },
+              "site_name": {
+                "type": "string",
+                "x-candidate-values": [
+                  "TOWER-1",
+                  "TOWER-2",
+                  "TOWER-3",
+                  "TOWER-4",
+                  "TOWER-5"
+                ],
+                "x-observed-count": 5
+              },
+              "status": {
+                "type": "integer",
+                "x-observed-count": 5
+              },
+              "wlan_mac_addrs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "x-observed-count": 6
+                },
+                "x-observed-count": 5
+              }
+            },
+            "x-observed-count": 5
+          },
+          "x-observed-count": 1
+        },
+        "sites": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "location": {
+                "type": "object",
+                "properties": {
+                  "accuracy": {
+                    "type": "number",
+                    "x-observed-count": 5
+                  },
+                  "altitude": {
+                    "type": "number",
+                    "x-observed-count": 5
+                  },
+                  "latitude": {
+                    "type": "number",
+                    "x-observed-count": 5
+                  },
+                  "longitude": {
+                    "type": "number",
+                    "x-observed-count": 5
+                  }
+                },
+                "x-observed-count": 5
+              },
+              "name": {
+                "type": "string",
+                "x-identifying": true,
+                "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+                "x-observed-count": 5
+              }
+            },
+            "x-observed-count": 5
+          },
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "config",
+        "links",
+        "name",
+        "nodes",
+        "sites"
+      ],
+      "x-records-observed": 1
+    },
+    "counters": {
+      "type": "object",
+      "properties": {
+        "net_dev": {
+          "type": "object",
+          "properties": {
+            "nic1": {
+              "type": "object",
+              "properties": {
+                "rx_bytes": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "rx_dropped": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "rx_errors": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "rx_packets": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_bytes": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_dropped": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_errors": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_packets": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nic2": {
+              "type": "object",
+              "properties": {
+                "rx_bytes": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "rx_dropped": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "rx_errors": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "rx_packets": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_bytes": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_dropped": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_errors": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_packets": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            },
+            "nic3": {
+              "type": "object",
+              "properties": {
+                "rx_bytes": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "rx_dropped": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "rx_errors": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "rx_packets": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_bytes": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_dropped": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_errors": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                },
+                "tx_packets": {
+                  "type": "integer",
+                  "x-observed-count": 1
+                }
+              },
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "net_dev"
+      ],
+      "x-records-observed": 1
+    }
+  }
+}

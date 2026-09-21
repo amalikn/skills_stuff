@@ -7,7 +7,7 @@
     "family": "epmp-ap",
     "endpoint": "interfaces",
     "layer": "adapter-normalized",
-    "observations": 36,
+    "observations": 39,
     "models": [
       "Force 300-16",
       "Force 300-25",
@@ -54,7 +54,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T23:37:48Z"
   },
   "type": "object",
   "properties": {
@@ -66,27 +66,27 @@
           "x-candidate-values": [
             true
           ],
-          "x-observed-count": 36
+          "x-observed-count": 39
         },
         "is_up": {
           "type": "boolean",
           "x-candidate-values": [
             true
           ],
-          "x-observed-count": 36
+          "x-observed-count": 39
         },
         "mac_address": {
           "type": "string",
           "x-identifying": true,
           "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-          "x-observed-count": 36
+          "x-observed-count": 39
         },
         "speed_mbps": {
           "type": "integer",
-          "x-observed-count": 36
+          "x-observed-count": 39
         }
       },
-      "x-observed-count": 36
+      "x-observed-count": 39
     },
     "LAN2": {
       "type": "object",
@@ -96,21 +96,21 @@
           "x-candidate-values": [
             false
           ],
-          "x-observed-count": 36
+          "x-observed-count": 39
         },
         "is_up": {
           "type": "boolean",
           "x-candidate-values": [
             false
           ],
-          "x-observed-count": 36
+          "x-observed-count": 39
         },
         "speed_mbps": {
           "type": "integer",
-          "x-observed-count": 36
+          "x-observed-count": 39
         }
       },
-      "x-observed-count": 36
+      "x-observed-count": 39
     }
   },
   "required": [
@@ -120,7 +120,7 @@
   "x-observed-count": 0,
   "x-optional": {},
   "x-evidence": {
-    "observations_with_records": 36,
+    "observations_with_records": 39,
     "observations_empty": 0,
     "empty_at": [],
     "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

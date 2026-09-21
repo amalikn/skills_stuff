@@ -125,9 +125,38 @@ class CambiumEPMPAdapter:
             raise RuntimeError("login() first")
         return self._post(f"/cgi-bin/luci/;stok={self._stok}/admin/get_param", {"act": act})
 
+    def _status_props(self) -> dict:
+        """`act=status` device_props: the snapshot's single read while get_snapshot() runs, otherwise a fresh read."""
+        cached = getattr(self, "_status_cache", None)
+        return cached if cached is not None else self.get_raw_param("status").get("device_props", {})
+
+    #: Counters in `device_props` that feed monitoring (probed live 2026-09-21, AP and SM alike). Traffic is in kbit;
+    #: whether 1 kbit is 1000 or 1024 bits is UNVERIFIED (references/06, "Monitoring Counter and Resource Surfaces").
+    COUNTER_KEYS = ("rxEtherLanKbitCount", "txEtherLanKbitCount", "rxEtherLanErrorPacketCount", "txEtherLanErrorPacketCount",
+                    "dlWLanKbitCount", "ulWLanKbitCount", "dlWLanErrorDroppedPacketCount", "ulWLanErrorDroppedPacketCount", "sysCPUUsage")
+
+    def get_snapshot(self) -> dict:
+        """facts, interfaces, wireless_link, clients and counters from ONE `act=status` read (added 2026-09-22 for monitoring).
+
+        Each getter used to fetch `act=status` again, so a monitoring read cost four identical requests over the site link.
+        This reads it once and builds every getter's output from the same payload. `status` holds no credential-shaped keys
+        (see get_raw_param), so `counters` is safe to return.
+        """
+        self._status_cache = self.get_raw_param("status").get("device_props", {})
+        try:
+            return {
+                "facts": self.get_facts(),
+                "interfaces": self.get_interfaces(),
+                "wireless_link": self.get_wireless_link(),
+                "clients": self.get_clients(),
+                "counters": {k: self._status_cache.get(k) for k in self.COUNTER_KEYS},
+            }
+        finally:
+            self._status_cache = None
+
     def get_facts(self) -> dict:
         """NAPALM-style get_facts: device identity, firmware, uptime, cnMaestro connection state."""
-        props = self.get_raw_param("status").get("device_props", {})
+        props = self._status_props()
         return {
             "vendor": "Cambium Networks",
             "hostname": props.get("cambiumEffectiveDeviceName"),
@@ -135,13 +164,17 @@ class CambiumEPMPAdapter:
             "os_version": props.get("cambiumCurrentuImageVersion"),
             "uptime": props.get("cambiumSystemUptime"),
             "mac_address": props.get("cambiumWirelessMACAddress") or props.get("cambiumLANMACAddress"),
+            # Added 2026-09-22: the management address and the LAN MAC. The LAN MAC is the one the asset register, cnMaestro
+            # and Nautobot hold (checked on a 3000L AP and a Force 300 SM at mowanjum); `mac_address` above is the wireless MAC.
+            "ipv4_address": props.get("cambiumEffectiveDeviceIPAddress"),
+            "lan_mac_address": props.get("cambiumLANMACAddress"),
             "cnmaestro_status": props.get("cambiumCnsServConsStat"),
         }
 
     def get_interfaces(self) -> dict:
         """LAN (Ethernet) port state. ePMP has one LAN port (two on some AP models, LAN2 fields exist but read 0/unused on the units
         tested)."""
-        props = self.get_raw_param("status").get("device_props", {})
+        props = self._status_props()
         return {
             "LAN": {
                 "is_up": bool(props.get("cambiumLANStatus")),
@@ -163,7 +196,7 @@ class CambiumEPMPAdapter:
         Real bug found and fixed live 2026-09-17: `cambiumSTADLRSSI` exists (=0) on an AP too, so its mere presence isn't a valid SM-vs-AP
         discriminator — an AP was returning a bogus zeroed-out link dict instead of None. `cambiumConnectedAPMACAddress` is the real
         signal: a SM reports a real MAC; an AP reports the literal string "Not Associated"."""
-        props = self.get_raw_param("status").get("device_props", {})
+        props = self._status_props()
         connected_ap_mac = props.get("cambiumConnectedAPMACAddress")
         if not connected_ap_mac or connected_ap_mac == "Not Associated":
             return None
@@ -178,7 +211,7 @@ class CambiumEPMPAdapter:
     def get_clients(self) -> list:
         """AP-side only: every currently-associated SM, with per-station RF telemetry. Empty list on an SM (which has no stations of its
         own)."""
-        props = self.get_raw_param("status").get("device_props", {})
+        props = self._status_props()
         table = props.get("cambiumAPConnectedSTATable")
         if not table:
             return []
