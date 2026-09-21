@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260921_1237](#20260921_1237)
 - [20260921_1015](#20260921_1015)
 - [20260920_2339](#20260920_2339)
 - [20260920_1951](#20260920_1951)
@@ -49,6 +50,15 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260921_1237
+
+### Direct device SSH from the operator Mac via `ProxyJump`; one XV2 variant resolved (v0.6.5 -> v0.6.6)
+
+`references/02_device-access-and-vault.md` gains a section on reaching a device with OpenSSH `ProxyJump` through its SMC box instead of the nested `tsh ssh` + `sshpass` form, so the device
+credential is never materialised in a shell on the box. Verified with `<secret:keepassxc:cambium-devices/enterprise-wifi>` against `GAL_XV2_AP32_IP3_32` (`10.255.3.32`, Galiwinku): `show version`
+identified the unit as XV2-2T0, serial `WLZE1F5BWMB9`, firmware `6.6.0.3-r9` — resolving the variant `device-inventory.csv` records as unconfirmed, for this unit only. The Teleport and SSH-config
+side lives in `skill-smc`; not duplicated here.
 
 ## 20260921_1015
 

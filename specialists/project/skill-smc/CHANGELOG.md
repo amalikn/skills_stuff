@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)](#20260921_1237--plain-openssh-proxyjump-to-devices-behind-an-smc-box-verified-nbn_accelerate-sshconfig-block-per-site-device-host-keys-v0148---v0149)
 - [20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)](#20260920_2342--path-checking-widened-past-five-files-20-split-filenames-joined-ansible-wifi-declared-as-a-sibling-root-v0147---v0148)
 - [20260920_1846 — `snmpget` installed across rcp/nbn_accelerate; two fleet assumptions disproved (v0.1.46 -> v0.1.47)](#20260920_1846--snmpget-installed-across-rcpnbn_accelerate-two-fleet-assumptions-disproved-v0146---v0147)
 - [20260918_1700 — teleport-tunnel.sh port convention for concurrent dispatch (v0.1.45 -> v0.1.46)](#20260918_1700--teleport-tunnelsh-port-convention-for-concurrent-dispatch-v0145---v0146)
@@ -61,6 +62,19 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)
+
+`references/01_overview.md` "Remote Access" gains a verified path from the operator Mac straight to a device behind an SMC box: OpenSSH `ProxyJump`, with `tsh proxy ssh` as the first hop's
+`ProxyCommand` and an ordinary `-W` channel through the box. Nothing is installed on the box and the device credential stays on the Mac. Verified 2026-09-21 against `galiwinku-smc01` →
+`GAL_XV2_AP32_IP3_32` (`10.255.3.32`).
+
+- `~/.tsh/known_hosts` trusts the host CA only for `*.teleport.<domain>`; a bare node name as `HostName` fails host-key verification. `HostKeyAlias` to the FQDN form, or using the FQDN, fixes it.
+- An `nbn_accelerate` wildcard block (`*.teleport.communitywifi.net.au`, `--proxy=` only) now sits in the operator's `~/.ssh/config` beside the `tsh config`-generated APN one, verified live.
+- Device host keys collide across sites because management subnets overlap: key them per site (`HostKeyAlias=<site>-<ip>` or a per-site `UserKnownHostsFile`).
+- Device password via `sshpass -e` from an env var, never `-p` (argv exposure).
+
+Consumer: `unified-network-controller` `docs/device-access-via-proxyjump-and-tbot-20260921_1232.md`, which also records the tbot (production) form and its open checks.
 
 ## 20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)
 

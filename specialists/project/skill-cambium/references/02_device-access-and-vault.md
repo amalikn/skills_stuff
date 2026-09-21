@@ -8,6 +8,7 @@
 - [`kp` Wrapper Gotchas](#kp-wrapper-gotchas)
 - [Reference Convention](#reference-convention)
 - [Confirmed Live Network Path to a Site (Hope Vale, 2026-09-17)](#confirmed-live-network-path-to-a-site-hope-vale-2026-09-17)
+- [Direct Device SSH from the Operator Mac via `ProxyJump` (2026-09-21)](#direct-device-ssh-from-the-operator-mac-via-proxyjump-2026-09-21)
 - [cnMaestro REST API v2 Access (2026-09-18)](#cnmaestro-rest-api-v2-access-2026-09-18)
 
 ---
@@ -106,6 +107,13 @@ fields). The REST API's `/api/device-summary` alone returned a much larger struc
 gateway/DNS/VLAN), radio channel list, station count, and — notably — the device's live cnMaestro connection state and target hostname. The web UI/API is the richer, more complete management surface;
 SSH's `show` commands look like a narrower read-only convenience layer on the same underlying state. Not yet explored: the SSH CLI's full command set beyond `show version` — untested whether deeper
 `show` subcommands reach API parity.
+
+## Direct Device SSH from the Operator Mac via `ProxyJump` (2026-09-21)
+
+An alternative to the nested `tsh ssh` + `sshpass` form above: OpenSSH `ProxyJump` through the SMC box, so the device credential stays on the Mac and is never materialised in a shell on the box.
+Verified live against `GAL_XV2_AP32_IP3_32` (`10.255.3.32`, Galiwinku) with `<secret:keepassxc:cambium-devices/enterprise-wifi>`: `show version` identified the unit as **XV2-2T0**, serial
+`WLZE1F5BWMB9`, firmware `6.6.0.3-r9` — resolving the XV2-2T0 vs XV2-22H variant that `device-inventory.csv` records as unconfirmed for this unit only. The Teleport/SSH-config side (stanza,
+`HostKeyAlias` gotcha) lives in `skill-smc` `references/01_overview.md` "Remote Access"; do not duplicate it here.
 
 ## cnMaestro REST API v2 Access (2026-09-18)
 

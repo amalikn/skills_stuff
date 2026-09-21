@@ -48,6 +48,37 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
   "Unable to connect to ssh proxy" and shell-quoting errors); with `--proxy` named explicitly it connected reliably first try. Verified live 2026-09-17: `tsh ssh --proxy teleport.communitywifi.net.au
   -L 10000:10.255.3.1:443 root@hope-vale-smc01` tunnelled a real device's HTTPS web UI to `localhost:10000` (HTTP 200). Device port convention (see `skill-cambium` for the device side): `443` for
   current Cambium web UIs, `80` for older ones (operator-stated: ePMP 1000 uses HTTP not HTTPS).
+- **Plain-OpenSSH `ProxyJump` to a device behind an SMC box — verified live 2026-09-21 12:21.** `ssh`, `scp`, `-L` and Ansible can all reach a device directly from the operator Mac, with the SMC box
+  as jump host and no software added to the box. Hop 1 uses `tsh proxy ssh` as `ProxyCommand`; hop 2 is an ordinary OpenSSH `-W` channel through the box, which needs the `permit-port-forwarding` role
+  extension (present on both clusters). Verified against `galiwinku-smc01` (`nbn_accelerate`) → `GAL_XV2_AP32_IP3_32` (`10.255.3.32`, dropbear), `show version` returned cleanly. Working stanza:
+
+  ```sshconfig
+  Host gal-smc
+      HostName galiwinku-smc01
+      HostKeyAlias galiwinku-smc01.teleport.communitywifi.net.au
+      User root
+      Port 3022
+      ProxyCommand /usr/local/bin/tsh proxy ssh --proxy=teleport.communitywifi.net.au %r@%h:%p
+      UserKnownHostsFile ~/.tsh/known_hosts
+      IdentityFile ~/.tsh/keys/teleport.communitywifi.net.au/<user>
+      CertificateFile ~/.tsh/keys/teleport.communitywifi.net.au/<user>-ssh/teleport.communitywifi.net.au-cert.pub
+      IdentitiesOnly yes
+  Host gal-xv2-32
+      HostName 10.255.3.32
+      User admin
+      ProxyJump gal-smc
+  ```
+
+  - `~/.tsh/known_hosts` trusts the host CA only for `*.teleport.<domain>`; with a bare node name as `HostName` the hop fails `Host key verification failed` — `HostKeyAlias` to the FQDN form fixes it
+    without changing what tsh routes to.
+  - A `Host *.teleport.communitywifi.net.au !teleport.communitywifi.net.au` wildcard block (mirroring the `tsh config`-generated APN one, but `--proxy=` only) was added to the operator's
+    `~/.ssh/config` 2026-09-21 and verified live: `ssh -J root@galiwinku-smc01.teleport.communitywifi.net.au admin@10.255.3.32 'show version'` works with no per-site stanza. With the FQDN as host
+    name, `HostKeyAlias` is not needed.
+  - **Device host keys collide across sites.** Site management subnets overlap, so `10.255.3.32` at one site and at another are different devices with different keys; a shared `~/.ssh/known_hosts`
+    will raise `REMOTE HOST IDENTIFICATION HAS CHANGED` on the second site. Key per site instead, e.g. `-o HostKeyAlias=<site>-<device-ip>` or a per-site `UserKnownHostsFile`. Never answer the
+    mismatch by deleting the old key blindly.
+  - The device password never touches the SMC box: feed it with `SSHPASS="$(kp show -s -a Password ...)" sshpass -e` (env var, not `-p`, which exposes it in argv).
+  - One unexplained first-attempt failure (`Connection closed`, askpass exec error) preceded two clean runs.
 - **`--cluster=` is NOT a substitute for `--proxy=` on `teleport.communitywifi.net.au`, for ANY command — not just `-L` tunnels — and getting this wrong produces an error that convincingly fakes a
   real outage (incident 2026-09-18).** Two independent agent sessions in `cambium-swap` ran `tsh ls --cluster=teleport.communitywifi.net.au` / `tsh ssh --cluster=teleport.communitywifi.net.au
   root@hope-vale-smc01` and got `ERROR: connection error: desc = "transport: authentication handshake failed: EOF"` on every attempt, while `tsh status` showed a fully valid cached session (hours
