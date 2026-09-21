@@ -39,6 +39,7 @@ Vault: `~/Library/CloudStorage/OneDrive-Personal/A/APN_keepassDB.kdbx`, group `c
 | `cambium-devices/nbn-snmp-ro`         | SNMPv2c read-only community, `nbn_accelerate`-flavour sites                                                                                                  |
 | `cambium-devices/nbn-snmp-rw`         | SNMPv2c read-write community, `nbn_accelerate`-flavour sites — untested                                                                                      |
 | `cambium-devices/nbn-cnmaestro-api`   | cnMaestro REST API v2 OAuth2 client (URL/UserName = client_id, Password = client_secret) for the `cw-cnmaestro01`/`nbn_accelerate` controller — see "cnMaestro |
+| `cambium-devices/apn-cnmaestro01 web login` | Web UI login for the new on-prem `apn-cnmaestro01.apn.au` (no API — no cnMaestro X after 2026-10-01; automation is web scraping). Added by the operator 2026-09-21 |
 |                                       |   REST API v2 Access" below                                                                                                                                  |
 
 Every entry's username is `admin`. Don't create a fresh sub-group per family — put the family/variant name directly in the entry title under the flat `cambium-devices/` group.
@@ -116,6 +117,12 @@ Verified live against `GAL_XV2_AP32_IP3_32` (`10.255.3.32`, Galiwinku) with `<se
 `HostKeyAlias` gotcha) lives in `skill-smc` `references/01_overview.md` "Remote Access"; do not duplicate it here.
 
 ## cnMaestro REST API v2 Access (2026-09-18)
+
+**API lifetime across the estate (USER_STATED, operator, 2026-09-21) — read before building on this API.** The API below depends on the cnMaestro **X** edition. cw-cnmaestro01
+and lt-cnmaestro are X today but will not be for much longer; cnMaestro Cloud has no API and is being retired; the new on-prem `apn-cnmaestro01.apn.au` (AWS, deployed to
+migrate devices off Cloud) has no API because X is not available after 2026-10-01. Treat controller-side automation as web scraping in the medium term; device-local
+REST/SNMP (see `06_device-api-cli-reference.md`) does not depend on any cnMaestro edition. apn-cnmaestro01's web login is `<secret:keepassxc:cambium-devices/apn-cnmaestro01 web login>`.
+The per-instance record is cambium-swap `inventory/cnmaestro-instances.yaml`.
 
 Confirmed live against the `cw-cnmaestro01` on-prem controller for the `nbn_accelerate` fleet — host resolves publicly to `13.237.46.180` (reachable directly, no Teleport tunnel needed for the API
 itself), instance version `3.0.0-r34` (operator-confirmed), though the API v2 shape matches the archived `cnmaestro-onprem-6.0.0` user guide exactly.

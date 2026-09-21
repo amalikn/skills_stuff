@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260921_1541](#20260921_1541)
 - [20260921_1237](#20260921_1237)
 - [20260921_1015](#20260921_1015)
 - [20260920_2339](#20260920_2339)
@@ -50,6 +51,14 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260921_1541
+
+### cnMaestro API lifetime across the estate recorded (v0.6.6 -> v0.6.7)
+
+`references/02_device-access-and-vault.md` "cnMaestro REST API v2 Access" now opens with the operator's 2026-09-21 statement: the API depends on cnMaestro X; cw-cnmaestro01
+and lt-cnmaestro lose X soon, Cloud has no API and is being retired, and the new on-prem apn-cnmaestro01 has none. Controller-side automation must plan for web scraping;
+device-local REST/SNMP is unaffected. Found while unified-network-controller modelled each cnMaestro as a Nautobot Controller.
 
 ## 20260921_1237
 
