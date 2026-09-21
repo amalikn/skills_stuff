@@ -415,6 +415,11 @@ First attempted 2026-09-17 with live ARP alone (E110/E112 below) — inconclusiv
 
 ### Adapter — SSH Only, No REST API Confirmed
 
+**Monitoring path, 2026-09-22: `get_snapshot()`.** One SSH session returns `facts`, `interfaces` and `counters` (uptime, load average, core count, memory in bytes, `/proc/net/dev` per interface). Use
+it for any recurring read: the per-getter path below costs about seven logins, and this dropbear throttles rapid logins. `;` chaining works on this shell; pipes do not. Live on six units (mowanjum,
+horn-island, mornington). Observed there: 16 `imq*` QoS pseudo-interfaces per unit (not traffic), management address on `eth2.500` (for example `10.255.1.2/22`), and a load average of 9.75 on 4 cores
+on `MOW-R195P-1002` while `/proc/stat` showed the CPU 2.1 % busy: use the snapshot's `cpu_percent` (two `/proc/stat` samples), never the load average, as the CPU measure.
+
 Unlike XV2, the Enterprise Wi-Fi E-series, and cnWave, this family has no confirmed REST/HTTPS API — `device-family-matrix.csv` lists "Yes (web UI)" for R195P, but that is `USER_STATED` from vendor
 docs only; no agent session has ever logged into its web UI. The only confirmed-live path is a plain SSH login dropping into a real BusyBox/Buildroot shell (MT7621 MIPS SoC) — not a vendor
 "show"-style CLI. `scripts/cambium_r195p_adapter.py` implements `get_facts()` (`uname -a`, `/proc/cpuinfo`, LAN/WAN MAC via `ifconfig`) and `get_interfaces()` (`ip -o addr show`, regex-parsed to

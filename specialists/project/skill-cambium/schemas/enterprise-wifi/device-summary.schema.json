@@ -7,11 +7,12 @@
     "family": "enterprise-wifi",
     "endpoint": "device-summary",
     "layer": "raw-endpoint",
-    "observations": 37,
+    "observations": 38,
     "models": [
       "E430H",
       "E500",
-      "XV2"
+      "XV2",
+      "XV2-2T0"
     ],
     "firmware": [
       "4.2.2-r5",
@@ -21,7 +22,8 @@
       "4.2.3.1-r9",
       "6.6.0.2-r5",
       "6.6.0.3-r9",
-      "6.6.2.1-r5"
+      "6.6.2.1-r5",
+      "7.1.1-r5"
     ],
     "sites": [
       "amata",
@@ -61,7 +63,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-21T14:18:43Z"
+    "generated_utc": "2026-09-21T21:40:21Z"
   },
   "type": "object",
   "properties": {
@@ -72,27 +74,27 @@
         "ACTIV8ME",
         "cnmaestro_on_premises"
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "backup_version": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "bootloader_version": {
       "type": "string",
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "channels": {
       "type": "array",
       "items": {
         "type": "integer",
-        "x-observed-count": 712
+        "x-observed-count": 744
       },
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "cns_status": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "country": {
       "type": "string",
@@ -100,7 +102,7 @@
         " Australia",
         " Azerbaijan"
       ],
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "country_code": {
       "type": "string",
@@ -109,81 +111,81 @@
         "AZ",
         "OT"
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "cpu": {
       "type": "integer",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "da_version": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "def_gw_dynamic": {
       "type": "boolean",
       "x-candidate-values": [
         false
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "default_gw": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "device_ip": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "device_location": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "device_mac": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "device_mask": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "dns_ip_dynamic": {
       "type": "boolean",
       "x-candidate-values": [
         false
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "dns_server_1": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "dns_server_2": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "hostname": {
       "type": "string",
       "x-identifying": true,
       "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "hw_sku": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "ip_mode": {
       "type": "string",
       "x-candidate-values": [
         "static"
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "kernel_version": {
       "type": "string",
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "link_duplex0": {
       "type": "string",
@@ -191,7 +193,7 @@
         "-",
         "FULL"
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "link_duplex1": {
       "type": "string",
@@ -199,7 +201,7 @@
         "-",
         "FULL"
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "link_speed0": {
       "type": "string",
@@ -209,7 +211,7 @@
         "100M",
         "2500M"
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "link_speed1": {
       "type": "string",
@@ -218,23 +220,23 @@
         "1000M",
         "100M"
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "max_ethernet_ports": {
       "type": "integer",
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "max_num_scan_radios": {
       "type": "integer",
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "max_radios": {
       "type": "integer",
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "memory": {
       "type": "integer",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "mesh_clients": {
       "type": "array",
@@ -242,21 +244,21 @@
         "type": "null",
         "x-observed-count": 0
       },
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "mesh_type": {
       "type": "string",
       "x-candidate-values": [
         "none"
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "model": {
       "type": "string",
       "x-candidate-values": [
         "XV2-2T0"
       ],
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "port_stats": {
       "type": "array",
@@ -265,7 +267,7 @@
         "properties": {
           "address": {
             "type": "string",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "device": {
             "type": "string",
@@ -276,121 +278,121 @@
               "VLAN500",
               "VLAN501"
             ],
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "duplex": {
             "type": "string",
             "x-candidate-values": [
               "N/A"
             ],
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "link": {
             "type": "string",
             "x-candidate-values": [
               "DOWN"
             ],
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "rx_avg_kbps": {
             "type": "integer",
-            "x-observed-count": 84
+            "x-observed-count": 87
           },
           "rx_bytes": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "rx_compressed": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "rx_drops": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "rx_errs": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "rx_fifo": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "rx_frame": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "rx_max_kbps": {
             "type": "integer",
-            "x-observed-count": 84
+            "x-observed-count": 87
           },
           "rx_min_kbps": {
             "type": "integer",
-            "x-observed-count": 84
+            "x-observed-count": 87
           },
           "rx_multi": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "rx_packets": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "speed": {
             "type": "string",
             "x-candidate-values": [
               "N/A"
             ],
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "tx_avg_kbps": {
             "type": "integer",
-            "x-observed-count": 84
+            "x-observed-count": 87
           },
           "tx_bytes": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "tx_carrier": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "tx_colls": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "tx_compressed": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "tx_drops": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "tx_errs": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "tx_fifo": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           },
           "tx_max_kbps": {
             "type": "integer",
-            "x-observed-count": 84
+            "x-observed-count": 87
           },
           "tx_min_kbps": {
             "type": "integer",
-            "x-observed-count": 84
+            "x-observed-count": 87
           },
           "tx_packets": {
             "type": "integer",
-            "x-observed-count": 140
+            "x-observed-count": 145
           }
         },
-        "x-observed-count": 140
+        "x-observed-count": 145
       },
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "port_status": {
       "type": "array",
@@ -403,21 +405,21 @@
               "ETH1",
               "ETH2"
             ],
-            "x-observed-count": 56
+            "x-observed-count": 58
           },
           "duplex": {
             "type": "integer",
-            "x-observed-count": 56
+            "x-observed-count": 58
           },
           "link": {
             "type": "integer",
-            "x-observed-count": 56
+            "x-observed-count": 58
           },
           "mac": {
             "type": "string",
             "x-identifying": true,
             "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-            "x-observed-count": 56
+            "x-observed-count": 58
           },
           "speed": {
             "type": "string",
@@ -427,57 +429,64 @@
               "2500M",
               "N/A"
             ],
-            "x-observed-count": 56
+            "x-observed-count": 58
+          },
+          "mgmt": {
+            "type": "boolean",
+            "x-candidate-values": [
+              false
+            ],
+            "x-observed-count": 2
           }
         },
-        "x-observed-count": 56
+        "x-observed-count": 58
       },
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "radio_sbs_mode": {
       "type": "boolean",
       "x-candidate-values": [
         false
       ],
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "rca_enabled": {
       "type": "boolean",
       "x-candidate-values": [
         true
       ],
-      "x-observed-count": 28
+      "x-observed-count": 29
     },
     "reboot_count": {
       "type": "integer",
-      "x-observed-count": 27
+      "x-observed-count": 28
     },
     "reg_domain": {
       "type": "string",
       "x-candidate-values": [
         "ROW"
       ],
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "serial_number": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "sta_count": {
       "type": "integer",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "uptime": {
       "type": "integer",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "version": {
       "type": "string",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "vlan_id": {
       "type": "integer",
-      "x-observed-count": 37
+      "x-observed-count": 38
     },
     "ap_info": {
       "type": "object",
@@ -508,12 +517,37 @@
       "x-candidate-values": [
         true
       ],
+      "x-observed-count": 2
+    },
+    "connected_ip": {
+      "type": "string",
+      "x-observed-count": 1
+    },
+    "device_ipv6": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "fcc_id": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
       "x-observed-count": 1
     },
     "placement": {
       "type": "string",
       "x-candidate-values": [
         "outdoor"
+      ],
+      "x-observed-count": 2
+    },
+    "reg_info": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
       ],
       "x-observed-count": 1
     },
@@ -583,7 +617,7 @@
   "x-optional": {
     "ap_info": {
       "observed_on": 9,
-      "of": 37,
+      "of": 38,
       "seen_at": [
         "aurukun/E500",
         "indulkana/E500",
@@ -597,8 +631,8 @@
       ]
     },
     "bootloader_version": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -614,6 +648,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -631,8 +666,8 @@
       ]
     },
     "channels": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -648,6 +683,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -665,15 +701,23 @@
       ]
     },
     "channels_distribution": {
-      "observed_on": 1,
-      "of": 37,
+      "observed_on": 2,
+      "of": 38,
       "seen_at": [
+        "horn-island/XV2-2T0",
         "junjuwa/XV2"
       ]
     },
+    "connected_ip": {
+      "observed_on": 1,
+      "of": 38,
+      "seen_at": [
+        "horn-island/XV2-2T0"
+      ]
+    },
     "country": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -689,6 +733,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -705,9 +750,23 @@
         "wujal-wujal/XV2"
       ]
     },
+    "device_ipv6": {
+      "observed_on": 1,
+      "of": 38,
+      "seen_at": [
+        "horn-island/XV2-2T0"
+      ]
+    },
+    "fcc_id": {
+      "observed_on": 1,
+      "of": 38,
+      "seen_at": [
+        "horn-island/XV2-2T0"
+      ]
+    },
     "kernel_version": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -723,6 +782,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -741,35 +801,35 @@
     },
     "link_duplex2": {
       "observed_on": 1,
-      "of": 37,
+      "of": 38,
       "seen_at": [
         "mowanjum/E430H"
       ]
     },
     "link_duplex3": {
       "observed_on": 1,
-      "of": 37,
+      "of": 38,
       "seen_at": [
         "mowanjum/E430H"
       ]
     },
     "link_speed2": {
       "observed_on": 1,
-      "of": 37,
+      "of": 38,
       "seen_at": [
         "mowanjum/E430H"
       ]
     },
     "link_speed3": {
       "observed_on": 1,
-      "of": 37,
+      "of": 38,
       "seen_at": [
         "mowanjum/E430H"
       ]
     },
     "max_ethernet_ports": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -785,6 +845,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -802,8 +863,8 @@
       ]
     },
     "max_num_scan_radios": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -819,6 +880,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -836,8 +898,8 @@
       ]
     },
     "max_radios": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -853,6 +915,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -870,8 +933,8 @@
       ]
     },
     "model": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -887,6 +950,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -904,15 +968,16 @@
       ]
     },
     "placement": {
-      "observed_on": 1,
-      "of": 37,
+      "observed_on": 2,
+      "of": 38,
       "seen_at": [
+        "horn-island/XV2-2T0",
         "junjuwa/XV2"
       ]
     },
     "port_stats": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -928,6 +993,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -945,8 +1011,8 @@
       ]
     },
     "port_status": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -962,6 +1028,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -979,8 +1046,8 @@
       ]
     },
     "radio_sbs_mode": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -996,6 +1063,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -1013,8 +1081,8 @@
       ]
     },
     "rca_enabled": {
-      "observed_on": 28,
-      "of": 37,
+      "observed_on": 29,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -1030,6 +1098,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "junjuwa/XV2",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
@@ -1047,8 +1116,8 @@
       ]
     },
     "reboot_count": {
-      "observed_on": 27,
-      "of": 37,
+      "observed_on": 28,
+      "of": 38,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -1064,6 +1133,7 @@
         "gan-gan/XV2",
         "hope-vale/XV2",
         "horn-island/XV2",
+        "horn-island/XV2-2T0",
         "kaltjiti-fergon/XV2",
         "kowanyama/XV2",
         "kurnangki/XV2",
@@ -1078,10 +1148,17 @@
         "wandawuy/XV2",
         "wujal-wujal/XV2"
       ]
+    },
+    "reg_info": {
+      "observed_on": 1,
+      "of": 38,
+      "seen_at": [
+        "horn-island/XV2-2T0"
+      ]
     }
   },
   "x-evidence": {
-    "observations_with_records": 37,
+    "observations_with_records": 38,
     "observations_empty": 0,
     "empty_at": [],
     "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

@@ -155,6 +155,11 @@ class CambiumR195PAdapter:
             # same discipline as the REDACT_KEY_PATTERN rule elsewhere in this project after two
             # prior incidents of this same class (E107 and the 2026-09-17 ePMP incident).
             raise RuntimeError(f"SSH command timed out after {exc.timeout}s: {remote_command!r}") from None
+        # 255 is ssh's own failure (connect, auth, dropped session), never the remote command's: raise it even when the
+        # caller tolerates a non-zero remote exit, or get_snapshot() would report an unreachable unit as a parsing fault
+        # (HOR-R195P-1002, 2026-09-22: "sections missing" from an empty read).
+        if result.returncode == 255:
+            raise RuntimeError(f"SSH connection failed (exit 255): {result.stderr.strip()[:160]}")
         if result.returncode != 0 and not allow_nonzero:
             raise RuntimeError(f"SSH command failed (exit {result.returncode}): {remote_command!r} -> {result.stderr.strip()}")
         return result.stdout
@@ -207,7 +212,11 @@ class CambiumR195PAdapter:
         `<FLAGS>`, `link/ether <mac>`), interleaved with real `... inet <addr> ...` lines for the same interface — confirmed live
         2026-09-17 (a naive parser that assumed one consistent line shape per interface produced duplicate `<name>` and `<name>:` keys
         for the same real interface). Regex-matched instead of split-by-field-position to tolerate that."""
-        output = self._run("ip -o addr show 2>&1")
+        return self._parse_ip_addr(self._run("ip -o addr show 2>&1"))
+
+    @staticmethod
+    def _parse_ip_addr(output: str) -> dict:
+        """Parser for this BusyBox's `ip -o addr show`, shared by get_interfaces() and get_snapshot()."""
         interfaces: dict[str, dict] = {}
         for line in output.splitlines():
             header = re.match(r"^\d+:\s+([^\s:@]+)", line)
@@ -216,7 +225,9 @@ class CambiumR195PAdapter:
             name = header.group(1)
             entry = interfaces.setdefault(name, {"ipv4_addresses": []})
 
-            flags = re.search(r"<([A-Z,]+)>", line)
+            # `_` matters: an interface that is up carries LOWER_UP, and without it this pattern never matched an up interface,
+            # so is_up was only ever set on down ones (found 2026-09-22, MOW-R195P-1002, via the monitoring snapshot).
+            flags = re.search(r"<([A-Z_,]+)>", line)
             if flags:
                 entry["is_up"] = "UP" in flags.group(1).split(",")
 
@@ -228,6 +239,91 @@ class CambiumR195PAdapter:
             if addr:
                 entry["ipv4_addresses"].append(addr.group(1))
         return interfaces
+
+    #: Section markers for get_snapshot(). `echo` is a shell builtin, so it needs no binary this BusyBox might lack.
+    _SNAPSHOT_SECTIONS = ("uname", "cpuinfo", "uptime", "loadavg", "meminfo", "netdev", "ipaddr", "br0", "stat1", "stat2")
+    #: Seconds between the two /proc/stat samples that give CPU utilisation.
+    CPU_SAMPLE_S = 2
+
+    def get_snapshot(self) -> dict:
+        """Identity, interfaces and monitoring counters from ONE SSH session (added 2026-09-22 for monitoring).
+
+        Every other getter here is its own SSH session; a monitoring read through them costs about seven logins, and this
+        dropbear throttles rapid repeated logins (see references/06). So one `;`-chained command reads everything, with an
+        `echo` marker before each section. No pipes: a piped command exited 127 on this shell (the `head` it used is
+        absent). Each file is its own `cat` so one missing file cannot hide the rest. Returns `facts` and `interfaces` in
+        the same shape as get_facts()/get_interfaces(), plus `counters`:
+          - `uptime_s`: first field of /proc/uptime;
+          - `cpu_percent`: CPU utilisation from two /proc/stat samples CPU_SAMPLE_S apart (the CPU measure to use);
+          - `load`: the 1, 5 and 15 minute load averages of /proc/loadavg (kept for reference; not a CPU measure here);
+          - `cpus`: `processor` entries in /proc/cpuinfo (a real core count, which the enterprise Wi-Fi REST API lacks);
+          - `memory`: MemTotal, MemFree, Buffers and Shmem from /proc/meminfo, converted from kB to bytes;
+          - `net_dev`: per-interface rx/tx bytes, packets, errors and drops from /proc/net/dev.
+        """
+        parts = [f"echo ==={name}===; " + cmd for name, cmd in zip(self._SNAPSHOT_SECTIONS, (
+            "uname -a", "cat /proc/cpuinfo", "cat /proc/uptime", "cat /proc/loadavg", "cat /proc/meminfo", "cat /proc/net/dev",
+            "ip -o addr show 2>&1", "ifconfig br0 2>/dev/null", f"cat /proc/stat; sleep {self.CPU_SAMPLE_S}", "cat /proc/stat"))]
+        text = self._run("; ".join(parts), allow_nonzero=True)
+        sections: dict[str, str] = {}
+        current = None
+        for line in text.splitlines():
+            marker = re.fullmatch(r"===(\w+)===", line.strip())
+            if marker:
+                current = marker.group(1)
+                sections[current] = ""
+            elif current:
+                sections[current] += line + "\n"
+        missing = [name for name in self._SNAPSHOT_SECTIONS if name not in sections]
+        if missing:
+            raise RuntimeError(f"snapshot incomplete, sections missing: {missing}")
+
+        uname = sections["uname"].strip()
+        uname_parts = uname.split()
+        soc = next((line.split(":", 1)[-1].strip() for line in sections["cpuinfo"].splitlines() if "system type" in line.lower()), None)
+        facts = {
+            "vendor": "Cambium Networks",
+            "model": "R195P",
+            "hostname": uname_parts[1] if len(uname_parts) > 1 else None,
+            "kernel_version": uname_parts[2] if len(uname_parts) > 2 else None,
+            "soc": soc,
+            "lan_mac_address": self._extract_mac(sections["br0"]) if sections["br0"].strip() else None,
+            "raw_uname": uname,
+        }
+        counters: dict = {"cpus": sum(1 for line in sections["cpuinfo"].splitlines() if re.match(r"processor\s*:", line))}
+        uptime = sections["uptime"].split()
+        counters["uptime_s"] = int(float(uptime[0])) if uptime else None
+        # CPU utilisation from two /proc/stat samples, not the load average: on MOW-R195P-1002 (2026-09-22) the load average read
+        # 9.75 on 4 cores while the CPU was 2.1 % busy, with one process running and none blocked. Idle = idle + iowait.
+        def cpu_times(text: str) -> list[int] | None:
+            line = next((line for line in text.splitlines() if line.startswith("cpu ")), None)
+            return [int(x) for x in line.split()[1:]] if line else None
+        first, second = cpu_times(sections["stat1"]), cpu_times(sections["stat2"])
+        counters["cpu_percent"] = None
+        if first and second:
+            delta = [b - a for a, b in zip(first, second)]
+            total = sum(delta)
+            idle = delta[3] + (delta[4] if len(delta) > 4 else 0)
+            counters["cpu_percent"] = round(100.0 * (total - idle) / total, 1) if total > 0 else None
+        load = sections["loadavg"].split()
+        counters["load"] = [float(x) for x in load[:3]] if len(load) >= 3 else None
+        memory = {}
+        for line in sections["meminfo"].splitlines():
+            m = re.match(r"(MemTotal|MemFree|Buffers|Shmem):\s+(\d+)\s*kB", line)
+            if m:
+                memory[m.group(1)] = int(m.group(2)) * 1024
+        counters["memory"] = memory or None
+        net_dev = {}
+        for line in sections["netdev"].splitlines():
+            if ":" not in line or "|" in line:
+                continue
+            name, _, rest = line.partition(":")
+            fields = rest.split()
+            if len(fields) >= 16 and all(f.isdigit() for f in fields[:16]):
+                net_dev[name.strip()] = {"rx_bytes": int(fields[0]), "rx_packets": int(fields[1]), "rx_errors": int(fields[2]),
+                                          "rx_dropped": int(fields[3]), "tx_bytes": int(fields[8]), "tx_packets": int(fields[9]),
+                                          "tx_errors": int(fields[10]), "tx_dropped": int(fields[11])}
+        counters["net_dev"] = net_dev
+        return {"facts": facts, "interfaces": self._parse_ip_addr(sections["ipaddr"]), "counters": counters}
 
     def _try_get_mac(self, remote_command: str) -> str | None:
         """Runs remote_command (expected to be an `ifconfig <name>` invocation) and extracts a MAC address from its output, returning

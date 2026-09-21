@@ -7,11 +7,12 @@
     "family": "enterprise-wifi",
     "endpoint": "interface-summary",
     "layer": "raw-endpoint",
-    "observations": 37,
+    "observations": 38,
     "models": [
       "E430H",
       "E500",
-      "XV2"
+      "XV2",
+      "XV2-2T0"
     ],
     "firmware": [
       "4.2.2-r5",
@@ -21,7 +22,8 @@
       "4.2.3.1-r9",
       "6.6.0.2-r5",
       "6.6.0.3-r9",
-      "6.6.2.1-r5"
+      "6.6.2.1-r5",
+      "7.1.1-r5"
     ],
     "sites": [
       "amata",
@@ -61,7 +63,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-21T14:18:43Z"
+    "generated_utc": "2026-09-21T21:40:21Z"
   },
   "type": "array",
   "items": {
@@ -69,7 +71,7 @@
     "properties": {
       "address": {
         "type": "string",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "device": {
         "type": "string",
@@ -82,116 +84,116 @@
           "VLAN500",
           "VLAN501"
         ],
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "duplex": {
         "type": "string",
         "x-candidate-values": [
           "N/A"
         ],
-        "x-observed-count": 140
+        "x-observed-count": 145
       },
       "link": {
         "type": "string",
         "x-candidate-values": [
           "DOWN"
         ],
-        "x-observed-count": 140
+        "x-observed-count": 145
       },
       "rx_avg_kbps": {
         "type": "integer",
-        "x-observed-count": 105
+        "x-observed-count": 108
       },
       "rx_bytes": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "rx_compressed": {
         "type": "integer",
-        "x-observed-count": 140
+        "x-observed-count": 145
       },
       "rx_drops": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "rx_errs": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "rx_fifo": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "rx_frame": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "rx_max_kbps": {
         "type": "integer",
-        "x-observed-count": 105
+        "x-observed-count": 108
       },
       "rx_min_kbps": {
         "type": "integer",
-        "x-observed-count": 105
+        "x-observed-count": 108
       },
       "rx_multi": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "rx_packets": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "speed": {
         "type": "string",
         "x-candidate-values": [
           "N/A"
         ],
-        "x-observed-count": 140
+        "x-observed-count": 145
       },
       "tx_avg_kbps": {
         "type": "integer",
-        "x-observed-count": 105
+        "x-observed-count": 108
       },
       "tx_bytes": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "tx_carrier": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "tx_colls": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "tx_compressed": {
         "type": "integer",
-        "x-observed-count": 140
+        "x-observed-count": 145
       },
       "tx_drops": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "tx_errs": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "tx_fifo": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       },
       "tx_max_kbps": {
         "type": "integer",
-        "x-observed-count": 105
+        "x-observed-count": 108
       },
       "tx_min_kbps": {
         "type": "integer",
-        "x-observed-count": 105
+        "x-observed-count": 108
       },
       "tx_packets": {
         "type": "integer",
-        "x-observed-count": 170
+        "x-observed-count": 175
       }
     },
     "required": [
@@ -221,8 +223,8 @@
     "x-observed-count": 0,
     "x-optional": {
       "duplex": {
-        "observed_on": 28,
-        "of": 37,
+        "observed_on": 29,
+        "of": 38,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -238,6 +240,7 @@
           "gan-gan/XV2",
           "hope-vale/XV2",
           "horn-island/XV2",
+          "horn-island/XV2-2T0",
           "junjuwa/XV2",
           "kaltjiti-fergon/XV2",
           "kowanyama/XV2",
@@ -255,8 +258,8 @@
         ]
       },
       "link": {
-        "observed_on": 28,
-        "of": 37,
+        "observed_on": 29,
+        "of": 38,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -272,6 +275,7 @@
           "gan-gan/XV2",
           "hope-vale/XV2",
           "horn-island/XV2",
+          "horn-island/XV2-2T0",
           "junjuwa/XV2",
           "kaltjiti-fergon/XV2",
           "kowanyama/XV2",
@@ -289,8 +293,8 @@
         ]
       },
       "rx_compressed": {
-        "observed_on": 28,
-        "of": 37,
+        "observed_on": 29,
+        "of": 38,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -306,6 +310,7 @@
           "gan-gan/XV2",
           "hope-vale/XV2",
           "horn-island/XV2",
+          "horn-island/XV2-2T0",
           "junjuwa/XV2",
           "kaltjiti-fergon/XV2",
           "kowanyama/XV2",
@@ -323,8 +328,8 @@
         ]
       },
       "speed": {
-        "observed_on": 28,
-        "of": 37,
+        "observed_on": 29,
+        "of": 38,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -340,6 +345,7 @@
           "gan-gan/XV2",
           "hope-vale/XV2",
           "horn-island/XV2",
+          "horn-island/XV2-2T0",
           "junjuwa/XV2",
           "kaltjiti-fergon/XV2",
           "kowanyama/XV2",
@@ -357,8 +363,8 @@
         ]
       },
       "tx_compressed": {
-        "observed_on": 28,
-        "of": 37,
+        "observed_on": 29,
+        "of": 38,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -374,6 +380,7 @@
           "gan-gan/XV2",
           "hope-vale/XV2",
           "horn-island/XV2",
+          "horn-island/XV2-2T0",
           "junjuwa/XV2",
           "kaltjiti-fergon/XV2",
           "kowanyama/XV2",
@@ -392,7 +399,7 @@
       }
     },
     "x-evidence": {
-      "observations_with_records": 37,
+      "observations_with_records": 38,
       "observations_empty": 0,
       "empty_at": [],
       "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

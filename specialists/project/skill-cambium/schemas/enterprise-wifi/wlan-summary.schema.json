@@ -7,11 +7,12 @@
     "family": "enterprise-wifi",
     "endpoint": "wlan-summary",
     "layer": "raw-endpoint",
-    "observations": 37,
+    "observations": 38,
     "models": [
       "E430H",
       "E500",
-      "XV2"
+      "XV2",
+      "XV2-2T0"
     ],
     "firmware": [
       "4.2.2-r5",
@@ -21,7 +22,8 @@
       "4.2.3.1-r9",
       "6.6.0.2-r5",
       "6.6.0.3-r9",
-      "6.6.2.1-r5"
+      "6.6.2.1-r5",
+      "7.1.1-r5"
     ],
     "sites": [
       "amata",
@@ -61,7 +63,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-21T14:18:43Z"
+    "generated_utc": "2026-09-21T21:40:21Z"
   },
   "type": "array",
   "items": {
@@ -69,14 +71,14 @@
     "properties": {
       "band": {
         "type": "string",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "guest_access": {
         "type": "string",
         "x-candidate-values": [
           "disabled"
         ],
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "interface": {
         "type": "string",
@@ -85,45 +87,45 @@
           "wlan1",
           "wlan2"
         ],
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "mac": {
         "type": "string",
         "x-identifying": true,
         "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "num_clients": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "rx_avg_kbps": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "rx_bps": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "rx_bytes": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "rx_max_kbps": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "rx_min_kbps": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "rx_pkts": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "rx_pps": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "security": {
         "type": "string",
@@ -131,13 +133,13 @@
           "open",
           "wpa2-psk"
         ],
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "ssid": {
         "type": "string",
         "x-identifying": true,
         "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "tunnel_mode": {
         "type": "string",
@@ -145,39 +147,39 @@
           "OFF",
           "disable"
         ],
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "tx_avg_kbps": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "tx_bps": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "tx_bytes": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "tx_max_kbps": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "tx_min_kbps": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "tx_pkts": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "tx_pps": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "vlan": {
         "type": "integer",
-        "x-observed-count": 99
+        "x-observed-count": 101
       },
       "2.4_wlan_state": {
         "type": "string",
@@ -235,6 +237,10 @@
           "3"
         ],
         "x-observed-count": 20
+      },
+      "tx_bytes_unicast": {
+        "type": "integer",
+        "x-observed-count": 2
       }
     },
     "required": [
@@ -266,7 +272,7 @@
     "x-optional": {
       "2.4_wlan_state": {
         "observed_on": 9,
-        "of": 37,
+        "of": 38,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -281,7 +287,7 @@
       },
       "5_wlan_state": {
         "observed_on": 9,
-        "of": 37,
+        "of": 38,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -296,7 +302,7 @@
       },
       "monitor_host": {
         "observed_on": 9,
-        "of": 37,
+        "of": 38,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -311,7 +317,7 @@
       },
       "monitor_host_down": {
         "observed_on": 9,
-        "of": 37,
+        "of": 38,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -326,7 +332,7 @@
       },
       "monitor_host_missed": {
         "observed_on": 9,
-        "of": 37,
+        "of": 38,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -341,7 +347,7 @@
       },
       "s_vlan": {
         "observed_on": 9,
-        "of": 37,
+        "of": 38,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -354,9 +360,16 @@
           "warakurna/E500"
         ]
       },
+      "tx_bytes_unicast": {
+        "observed_on": 1,
+        "of": 38,
+        "seen_at": [
+          "horn-island/XV2-2T0"
+        ]
+      },
       "vlan_encap_type": {
         "observed_on": 9,
-        "of": 37,
+        "of": 38,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -371,7 +384,7 @@
       },
       "wlan_num": {
         "observed_on": 9,
-        "of": 37,
+        "of": 38,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -386,7 +399,7 @@
       }
     },
     "x-evidence": {
-      "observations_with_records": 37,
+      "observations_with_records": 38,
       "observations_empty": 0,
       "empty_at": [],
       "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

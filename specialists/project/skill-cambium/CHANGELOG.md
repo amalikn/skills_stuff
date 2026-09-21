@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260922_0754](#20260922_0754)
 - [20260922_0020](#20260922_0020)
 - [20260921_2015](#20260921_2015)
 - [20260921_1541](#20260921_1541)
@@ -53,6 +54,27 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260922_0754
+
+From the unified-network-controller 1 + 5 canaries (E-series, XV2, R195P; 18 devices at 7 sites), all read live:
+
+- `scripts/cambium_r195p_adapter.py` gains `get_snapshot()`: identity, interfaces and monitoring counters in ONE SSH session
+  (`;`-chained, `echo` section markers, no pipes): `/proc/uptime`, `/proc/loadavg`, the `processor` count from `/proc/cpuinfo`
+  (4 on MT7621), `/proc/meminfo` in bytes, and `/proc/net/dev` per interface. The getter path costs about seven SSH logins,
+  which this dropbear throttles. Verified on six units at mowanjum, horn-island and mornington.
+- Parser fix in `_parse_ip_addr()` (was inline in `get_interfaces()`): the flag pattern lacked `_`, so any flag list with
+  `LOWER_UP` never matched and `is_up` was only ever set on down interfaces. Now `<([A-Z_,]+)>`.
+- Enterprise Wi-Fi standard re-merged with `schemas/_observations/enterprise-wifi/horn-island-XV2-2T0-7.1.1-20260922.json`,
+  the first XV2 on firmware 7.1.1-r5. It adds `connected_ip`, `device_ipv6`, `fcc_id` and `reg_info` (device-summary),
+  `stream` and `tx_bytes_unicast` (radio-summary) and `tx_bytes_unicast` (wlan-summary), all optional. No required field
+  changed. E-series firmware 4.2.3-r2 and 4.2.3.1-r9 also checked conformant.
+- `_run()` raises on ssh exit 255 (connect, auth or dropped session) even with `allow_nonzero`; before, a failed session
+  reached `get_snapshot()` as empty output and read as "sections missing" (HOR-R195P-1002).
+- `get_snapshot()` also returns `cpu_percent`: utilisation from two `/proc/stat` samples `CPU_SAMPLE_S` (2 s) apart, idle =
+  idle + iowait. The load average is no CPU measure on this router: 9.75 on 4 cores while 2.1 % busy (MOW-R195P-1002).
+- R195P MACs seen live: `br0`, `eth2.500` (management, 10.255.0.0/18) and `wan3` each have their own. The management
+  interface's MAC equals the MAC the asset register and Nautobot hold.
 
 ## 20260922_0020
 

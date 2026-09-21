@@ -7,11 +7,12 @@
     "family": "enterprise-wifi",
     "endpoint": "radio-rf-summary",
     "layer": "raw-endpoint",
-    "observations": 36,
+    "observations": 37,
     "models": [
       "E430H",
       "E500",
-      "XV2"
+      "XV2",
+      "XV2-2T0"
     ],
     "firmware": [
       "4.2.2-r5",
@@ -21,7 +22,8 @@
       "4.2.3.1-r9",
       "6.6.0.2-r5",
       "6.6.0.3-r9",
-      "6.6.2.1-r5"
+      "6.6.2.1-r5",
+      "7.1.1-r5"
     ],
     "sites": [
       "amata",
@@ -60,7 +62,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-21T14:18:43Z"
+    "generated_utc": "2026-09-21T21:40:21Z"
   },
   "type": "array",
   "items": {
@@ -72,22 +74,22 @@
           "0",
           "24"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "chan_if": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "chan_thp": {
         "type": "string",
         "x-candidate-values": [
           "NA"
         ],
-        "x-observed-count": 54
+        "x-observed-count": 56
       },
       "nf": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "non_wifi_cu": {
         "type": "string",
@@ -98,31 +100,31 @@
           "4",
           "7"
         ],
-        "x-observed-count": 54
+        "x-observed-count": 56
       },
       "per": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "rx_cu": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "tot_rx_cu": {
         "type": "string",
-        "x-observed-count": 54
+        "x-observed-count": 56
       },
       "total_cu": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "tx_cu": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "u_cu": {
         "type": "string",
-        "x-observed-count": 54
+        "x-observed-count": 56
       },
       "band": {
         "type": "string",
@@ -149,10 +151,12 @@
       "total_if": {
         "type": "string",
         "x-candidate-values": [
+          "0",
           "1",
+          "39",
           "5"
         ],
-        "x-observed-count": 2
+        "x-observed-count": 4
       }
     },
     "required": [
@@ -168,7 +172,7 @@
     "x-optional": {
       "band": {
         "observed_on": 9,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -182,8 +186,8 @@
         ]
       },
       "chan_thp": {
-        "observed_on": 27,
-        "of": 36,
+        "observed_on": 28,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -198,6 +202,7 @@
           "gan-gan/XV2",
           "hope-vale/XV2",
           "horn-island/XV2",
+          "horn-island/XV2-2T0",
           "junjuwa/XV2",
           "kaltjiti-fergon/XV2",
           "kowanyama/XV2",
@@ -216,7 +221,7 @@
       },
       "cu": {
         "observed_on": 9,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -231,7 +236,7 @@
       },
       "cur_thp": {
         "observed_on": 8,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -245,7 +250,7 @@
       },
       "nav": {
         "observed_on": 9,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
@@ -259,8 +264,8 @@
         ]
       },
       "non_wifi_cu": {
-        "observed_on": 27,
-        "of": 36,
+        "observed_on": 28,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -275,6 +280,7 @@
           "gan-gan/XV2",
           "hope-vale/XV2",
           "horn-island/XV2",
+          "horn-island/XV2-2T0",
           "junjuwa/XV2",
           "kaltjiti-fergon/XV2",
           "kowanyama/XV2",
@@ -292,8 +298,8 @@
         ]
       },
       "tot_rx_cu": {
-        "observed_on": 27,
-        "of": 36,
+        "observed_on": 28,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -308,6 +314,7 @@
           "gan-gan/XV2",
           "hope-vale/XV2",
           "horn-island/XV2",
+          "horn-island/XV2-2T0",
           "junjuwa/XV2",
           "kaltjiti-fergon/XV2",
           "kowanyama/XV2",
@@ -325,15 +332,16 @@
         ]
       },
       "total_if": {
-        "observed_on": 1,
-        "of": 36,
+        "observed_on": 2,
+        "of": 37,
         "seen_at": [
+          "horn-island/XV2-2T0",
           "junjuwa/XV2"
         ]
       },
       "u_cu": {
-        "observed_on": 27,
-        "of": 36,
+        "observed_on": 28,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -348,6 +356,7 @@
           "gan-gan/XV2",
           "hope-vale/XV2",
           "horn-island/XV2",
+          "horn-island/XV2-2T0",
           "junjuwa/XV2",
           "kaltjiti-fergon/XV2",
           "kowanyama/XV2",
@@ -366,7 +375,7 @@
       }
     },
     "x-evidence": {
-      "observations_with_records": 36,
+      "observations_with_records": 37,
       "observations_empty": 0,
       "empty_at": [],
       "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."
