@@ -40,6 +40,7 @@ Vault: `~/Library/CloudStorage/OneDrive-Personal/A/APN_keepassDB.kdbx`, group `c
 | `cambium-devices/nbn-snmp-rw`         | SNMPv2c read-write community, `nbn_accelerate`-flavour sites — untested                                                                                      |
 | `cambium-devices/nbn-cnmaestro-api`   | cnMaestro REST API v2 OAuth2 client (URL/UserName = client_id, Password = client_secret) for the `cw-cnmaestro01`/`nbn_accelerate` controller — see "cnMaestro |
 | `cambium-devices/apn-cnmaestro01 web login` | Web UI login for the new on-prem `apn-cnmaestro01.apn.au` (no API — no cnMaestro X after 2026-10-01; automation is web scraping). Added by the operator 2026-09-21 |
+| `cambium-devices/lt-cnmaestro` | Web UI login for the on-prem `lt-cnmaestro.apn.au` (7 low-touch rcp sites; cnMaestro X today, ending soon). Moved into this group by the operator 2026-09-21 |
 |                                       |   REST API v2 Access" below                                                                                                                                  |
 
 Every entry's username is `admin`. Don't create a fresh sub-group per family — put the family/variant name directly in the entry title under the flat `cambium-devices/` group.
