@@ -51,7 +51,8 @@ ansible-wifi `big_push` branch (36 commits by Daniel Gravolin, last 2026-08-25, 
 automatic location IDs and lot numbers. Verified live, read-only, the same day: `umoona-smc01` runs a 4,509-line copy byte-identical to `big_push` commit `40c283b6`, with `redis-server` active;
 `pandanus-park-smc01` runs a 4,509-line copy that matches no commit on any branch, i.e. it was deployed from uncommitted changes. So the Redis-dependent service is the `smc_ltp` low-touch script as
 the fleet actually runs it, and `master` is behind the fleet. `big_push` also routes cnMaestro calls through the internal Wi-Fi
-dashboard (`wifi.prod.apn-services.com.au`) — the NOC's own dashboard, which also serves as the API proxy between SMCs and cnMaestro (operator, 2026-09-21), and `big_push` will be merged into `master`
+dashboard (`wifi.prod.apn-services.com.au`) — the NOC's own dashboard (there are two, one for APN and one for CW), which also serves as the API proxy between SMCs and cnMaestro (operator, 2026-09-21),
+and `big_push` will be merged into `master`
 later (operator, same day) — handles replacement
 devices, and sends WhatsApp installer and Teams NOC alerts. Recorded by the unified-network-controller architecture brief (point 3), which pins `big_push` as the low-touch source until it is merged.
 
