@@ -58,15 +58,16 @@ result will not parse. A busy AP yields nothing rather than partial data, and th
 
 **`ip6_ll` splits by model, and encodes the client MAC.** It is an `array` on XV2 (10 observations), a `string` on E500 (6), and absent where the client has no link-local (17). It is also EUI-64
 derived: the observed `fe80::6885:b9ff:feac:bb89` resolves exactly to client MAC `6A-85-B9-AC-BB-89`, so **it carries the same identifying information as the MAC field** and must be redacted on the
-same footing. **Resolved 2026-09-20:** the adapter normalises it to a list on every record, including records where the device omits the key. Wrapping the E500 string and mapping absent to empty is lossless,
-whereas normalising to a string would truncate any XV2 client holding more than one address.
+same footing. **Resolved 2026-09-20:** the adapter normalises it to a list on every record, including records where the device omits the key. Wrapping the E500 string and mapping absent to empty is
+lossless, whereas normalising to a string would truncate any XV2 client holding more than one address.
 
 **the R-series `interfaces` getter is not contractable as it stands, and that is an adapter bug rather than device divergence.** Its "site-specific fields" are interface *names* used as object keys —
 `eth2.17`, `eth2.550`, `wan1.500`, `wan1`, `rai1` — so each site's VLAN configuration shows up as schema fields. A response keyed by site-variable names has no stable shape by construction. It should
 return a list of interface objects carrying the name as a value. Until it does, its schema describes one site's VLAN plan, not the family.
 
-**Shapes still unknown after a full sweep**, because nothing anywhere returned a record: the ePMP SM `clients` getter (empty on all 31 observations — an SM has no clients, so this may be correct by design) and
-the cnWave `links_count` getter (empty on all 4). the cnWave `gps` getter returned `null` fleet-wide. the ePMP AP `wireless_link` getter is null-or-object, which is contract rather than a gap.
+**Shapes still unknown after a full sweep**, because nothing anywhere returned a record: the ePMP SM `clients` getter (empty on all 31 observations — an SM has no clients, so this may be correct by
+design) and the cnWave `links_count` getter (empty on all 4). the cnWave `gps` getter returned `null` fleet-wide. the ePMP AP `wireless_link` getter is null-or-object, which is contract rather than a
+gap.
 
 **Models the single-site baseline never saw**, now in the contract: cnWave **V1000** and **V3000** alongside V5000, and ePMP **Force 300-16** alongside Force 300-25 and 3000L.
 
@@ -85,9 +86,9 @@ family's primary entry and then its `-legacy` fallback.
 Every pair was attempted. A first pass left 12 gaps; 7 were recovered by restoring the original timeouts (a mid-run retune to 20s forward / 75s adapter / two attempts was too tight), and 4 more by the
 `-legacy` credential fallback above. One gap survives:
 
-| Site | Family | Devices | Cause |
-| --- | --- | --- | --- |
-| hope-vale | cnWave 60 GHz | 7 | TLS handshake EOF on four devices, at full timeout, with both credentials; all units also failed ping |
+| Site      | Family        | Devices | Cause                                                                                                 |
+| --------- | ------------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| hope-vale | cnWave 60 GHz | 7       | TLS handshake EOF on four devices, at full timeout, with both credentials; all units also failed ping |
 
 That one reads as genuinely down hardware rather than an access problem.
 
@@ -119,6 +120,13 @@ Both produced confident, wrong output rather than an error, which is why they ar
   **before** any ePMP adapter is written, not just inside one once it exists — the mistake happened at the ad hoc investigation stage, the same stage the first incident happened at. Fix: `just
   scan-fields <path>` (`scripts/scan-config-fields.py`) now exists specifically so there's a safe default to reach for instead of an ad hoc inline check — run it on any captured JSON before ever
   looking at it by hand, in this pack or any consuming project.
+
+- **2026-09-21 — `cambium_r195p_adapter.py` refused a second site's units with "REMOTE HOST IDENTIFICATION HAS CHANGED" after a first site's IPs were already in `~/.ssh/known_hosts`.** Caught batch-
+  pushing mowanjum's R195P fleet into wc-local's OpenWISP (unified-network-controller) after having already reached devices at other sites earlier the same session. `StrictHostKeyChecking=no` alone
+  does **not** cover this: it only auto-accepts a host key never seen before, and still refuses on a *changed* one. This project's site management subnets genuinely overlap (`01_overview.md` "Device
+  host keys collide across sites"), so the same IP really is a different real device with a different host key at another site — a legitimate case, not an attack. Fix: added `-o
+  UserKnownHostsFile=/dev/null` alongside `StrictHostKeyChecking=no` in `_run()`'s `cmd` list, so no host key is ever persisted or compared across sites in the first place. Any future adapter script
+  that shells out to `ssh` against this fleet should carry both options together, not `StrictHostKeyChecking=no` alone.
 
 ## Pack Staleness Risks
 

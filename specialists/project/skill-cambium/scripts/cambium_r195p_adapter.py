@@ -121,6 +121,14 @@ class CambiumR195PAdapter:
             "sshpass", "-p", self._password,
             "ssh",
             "-o", "StrictHostKeyChecking=no",
+            # UserKnownHostsFile=/dev/null, not just StrictHostKeyChecking=no: this project's site management
+            # subnets overlap (skill-smc references/01_overview.md "Device host keys collide across sites"), so
+            # the SAME IP is a genuinely DIFFERENT real device at another site with a different host key.
+            # StrictHostKeyChecking=no alone still refuses on a CHANGED key ("REMOTE HOST IDENTIFICATION HAS
+            # CHANGED") -- it only auto-accepts a host never seen before. Never persisting a key at all is the
+            # correct behaviour here, not a security downgrade: caught live 2026-09-21 batch-pushing a second
+            # site's R195P units after a first site's IPs were already cached.
+            "-o", "UserKnownHostsFile=/dev/null",
             "-o", f"ConnectTimeout={self._timeout}",
             # LogLevel=ERROR added 2026-09-18: the local OpenSSH client's own "not using a
             # post-quantum key exchange" advisory banner is written before the password prompt and
