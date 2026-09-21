@@ -79,6 +79,9 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
     mismatch by deleting the old key blindly.
   - The device password never touches the SMC box: feed it with `SSHPASS="$(kp show -s -a Password ...)" sshpass -e` (env var, not `-p`, which exposes it in argv).
   - One unexplained first-attempt failure (`Connection closed`, askpass exec error) preceded two clean runs.
+  - **At a multi-SMC site, any box is a valid jump host for the whole site** (`USER_STATED`, operator, 2026-09-21). The boxes share one management address space as a VRRP-style redundant set
+    (aurukun: three boxes); if one fails, traffic moves to the others through the switching layer and the wireless network. A fixed `ProxyJump` does not fail over by itself — pick another
+    box by hand, or use a `ProxyCommand` that tries each in turn (untested). Device host keys stay keyed by site, not by box, because the device is the same whichever box you enter through.
 - **`--cluster=` is NOT a substitute for `--proxy=` on `teleport.communitywifi.net.au`, for ANY command — not just `-L` tunnels — and getting this wrong produces an error that convincingly fakes a
   real outage (incident 2026-09-18).** Two independent agent sessions in `cambium-swap` ran `tsh ls --cluster=teleport.communitywifi.net.au` / `tsh ssh --cluster=teleport.communitywifi.net.au
   root@hope-vale-smc01` and got `ERROR: connection error: desc = "transport: authentication handshake failed: EOF"` on every attempt, while `tsh status` showed a fully valid cached session (hours

@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)](#20260921_1310--multi-smc-sites-any-box-reaches-the-whole-management-address-space-jump-host-and-host-key-consequences-v0149---v0150)
 - [20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)](#20260921_1237--plain-openssh-proxyjump-to-devices-behind-an-smc-box-verified-nbn_accelerate-sshconfig-block-per-site-device-host-keys-v0148---v0149)
 - [20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)](#20260920_2342--path-checking-widened-past-five-files-20-split-filenames-joined-ansible-wifi-declared-as-a-sibling-root-v0147---v0148)
 - [20260920_1846 — `snmpget` installed across rcp/nbn_accelerate; two fleet assumptions disproved (v0.1.46 -> v0.1.47)](#20260920_1846--snmpget-installed-across-rcpnbn_accelerate-two-fleet-assumptions-disproved-v0146---v0147)
@@ -62,6 +63,12 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)
+
+`references/01_overview.md` "Remote Access": at a multi-SMC site the boxes share one management address space as a VRRP-style set, and failover runs through the switching layer and the wireless
+network, so any box is a valid jump host for every device at the site (operator-stated, 2026-09-21, aurukun as the example). A fixed `ProxyJump` does not fail over on its own; device host
+keys stay keyed by site. Consumer: `unified-network-controller`'s options register, D3.6 sketch — one site agent and one Nautobot Namespace per site, not per box.
 
 ## 20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)
 
