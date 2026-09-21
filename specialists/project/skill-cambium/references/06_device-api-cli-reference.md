@@ -9,6 +9,10 @@
 - [Write Operations — Exist, Not Documented Here](#write-operations--exist-not-documented-here)
 - [Evidence and Version Scope](#evidence-and-version-scope)
 - [ePMP AP / ePMP SM — Adapter Data Points](#epmp-ap--epmp-sm--adapter-data-points)
+- [cnWave 60 GHz — SNMP Exists, on Its Own Arm, and Is Enabled Per Device](#cnwave-60-ghz--snmp-exists-on-its-own-arm-and-is-enabled-per-device)
+- [Cross-Programme SNMP Comparison — Same Family, Both Teleport Targets](#cross-programme-snmp-comparison--same-family-both-teleport-targets)
+- [Per-Device SNMP Enablement Survey — the actionable list](#per-device-snmp-enablement-survey--the-actionable-list)
+- [SNMP Mechanics That Have Each Cost a Wrong Reading](#snmp-mechanics-that-have-each-cost-a-wrong-reading)
 - [cnPilot R195P — Addressing Resolved via cnMaestro Cloud Export](#cnpilot-r195p--addressing-resolved-via-cnmaestro-cloud-export)
 - [cnWave 60GHz — REST API, Not the SSH TUI, Is the Real Adapter Path](#cnwave-60ghz--rest-api-not-the-ssh-tui-is-the-real-adapter-path)
 - [Monitoring Counter and Resource Surfaces — Probed Live 2026-09-21](#monitoring-counter-and-resource-surfaces--probed-live-2026-09-21)
@@ -96,8 +100,8 @@ than assuming parity across the family.
 #### `client-summary` is truncated at 60,000 bytes on busy APs (2026-09-20)
 
 **The device cuts the response at exactly 60,000 bytes and still returns HTTP 200**, leaving JSON that ends mid-record and will not parse. Confirmed live on `wandawuy` `10.255.3.10` with roughly 60
-associated clients: `size_download=60000`, `HTTP=200`, `json.JSONDecodeError: Unterminated string starting at char 59998`. Repeated identically with `?limit=20`, `?limit=10&offset=0` and `?count=10`
-— **no pagination parameter is honoured**, so there is no way to page a large client list out of this endpoint.
+associated clients: `size_download=60000`, `HTTP=200`, `json.JSONDecodeError: Unterminated string starting at char 59998`. Repeated identically with `?limit=20`, `?limit=10&offset=0` and `?count=10` —
+**no pagination parameter is honoured**, so there is no way to page a large client list out of this endpoint.
 
 Consequences for anything built on this endpoint:
 
@@ -110,8 +114,8 @@ This qualifies the claim in the section below that REST dominates SNMP for Wi-Fi
 most wants client detail for.
 
 **SNMP is the proven fallback, tested head to head 2026-09-20.** On the same AP at the same time, REST returned unparseable truncated JSON while a walk of `cambiumClientTable` returned **63 complete
-client rows from 1008 varbinds** against a reported count of 64 — a walk is many small PDUs and has no equivalent cap. Note what the fallback costs: SNMP carries 16 columns and has no per-client
-RSSI or association timestamp, so above roughly 60 clients the record is thinner in exactly the fields REST was preferred for.
+client rows from 1008 varbinds** against a reported count of 64 — a walk is many small PDUs and has no equivalent cap. Note what the fallback costs: SNMP carries 16 columns and has no per-client RSSI
+or association timestamp, so above roughly 60 clients the record is thinner in exactly the fields REST was preferred for.
 
 #### `ip6_ll` is normalised to a list in this pack's adapter (2026-09-20)
 
@@ -134,8 +138,8 @@ The same `cnPilotMIB` tree that carries identity data (previous section) also ca
 | `.1.3.6.1.4.1.17713.22.1.3` | `cambiumClientTable` | Per client, 16 columns: MAC `.2`, IP `.3`, name `.4`, SSID `.5`, vendor `.6`, hwmode `.7`, radio index `.8`, WLAN `.9`, VLAN `.10`, SNR `.11`, TX rate `.12`, packet and byte counters `.13`–`.16` |
 
 **Gotcha — an empty client table walks as `noSuchObject`, not as an empty table.** On an AP with zero associated clients, `snmpwalk` of `cambiumClientTable` returns "No Such Object available on this
-agent at this OID", which is indistinguishable from an unimplemented subtree unless you also read `cambiumAPTotalClients`. A collector must treat that response as "zero clients", not as a MIB
-mismatch or a device fault. This cost a wrong first reading on 2026-09-20 — the table was assumed unimplemented on Wi-Fi 6 firmware until the site was swept for an AP that actually had clients.
+agent at this OID", which is indistinguishable from an unimplemented subtree unless you also read `cambiumAPTotalClients`. A collector must treat that response as "zero clients", not as a MIB mismatch
+or a device fault. This cost a wrong first reading on 2026-09-20 — the table was assumed unimplemented on Wi-Fi 6 firmware until the site was swept for an AP that actually had clients.
 
 **Client MACs are randomized.** Observed client MACs carry the locally-administered bit (`06-…`, `DE-…`, `76-…`). MAC is not a stable per-client identifier on this estate. See `skill-smc`'s content
 filtering reference for the same finding on the SMC side.
@@ -144,8 +148,8 @@ There is **no per-client RSSI** in `cnPilotMIB` — only SNR (`cambiumClientEntr
 
 ### REST `client-summary` Is the Real Wi-Fi Client Contract, Not the MIB — Confirmed Live 2026-09-20
 
-For per-client Wi-Fi data the device's REST API strictly dominates SNMP, on both current and older firmware. Walked and queried live on 2026-09-20 against XV2 `6.6.0.3-r9` (hope-vale) and cnPilot
-E500 `4.2.3.1-r9` (Tjuntjuntjara).
+For per-client Wi-Fi data the device's REST API strictly dominates SNMP, on both current and older firmware. Walked and queried live on 2026-09-20 against XV2 `6.6.0.3-r9` (hope-vale) and cnPilot E500
+`4.2.3.1-r9` (Tjuntjuntjara).
 
 | Aspect | SNMP `cambiumClientTable` | REST `GET /api/client-summary` |
 | --- | --- | --- |
@@ -155,16 +159,16 @@ E500 `4.2.3.1-r9` (Tjuntjuntjara).
 | Association timestamp | **Absent** | `assoc_time`, epoch seconds — a session start, per client, with no RADIUS |
 | Empty state | `noSuchObject` (ambiguous) | `[]` (unambiguous) |
 
-**No split between firmware generations.** Every load-bearing field is present on both: `snr`, `rssi`, `assoc_time`, `tx_bytes`, `rx_bytes`, `ssid`, `band`, `mode`, `vlan`, `authorized`,
-`data_rate`. XV2's extra 52 fields are Wi-Fi 6 detail. One adapter and one field contract cover E500 through XV2.
+**No split between firmware generations.** Every load-bearing field is present on both: `snr`, `rssi`, `assoc_time`, `tx_bytes`, `rx_bytes`, `ssid`, `band`, `mode`, `vlan`, `authorized`, `data_rate`.
+XV2's extra 52 fields are Wi-Fi 6 detail. One adapter and one field contract cover E500 through XV2.
 
 **Credential note:** the E500 authenticates with the standard `<secret:keepassxc:cambium-devices/enterprise-wifi>` entry. The `enterprise-wifi-legacy` entry returns **403** on it — do not assume the
 "legacy" entry belongs to legacy hardware. `GET /api/wlan-config` returns **404** on E500 firmware where it 500s on XV2; `wlan-summary` covers both.
 
 **Field-level schema captures** (types plus example values, end-user identifiers redacted, infrastructure MACs kept) live in `cambium-swap/captures/device-queries/`:
-`wifi-xv2-hope-vale-telemetry-schema-20260920_1530.json`, `wifi-e500-tjuntjuntjara-telemetry-schema-20260920_1531.json` and
-`epmp-3000l-hope-vale-snmp-sta-table-schema-20260920_1434.json`. Generated by `unified-network-controller`'s `scripts/capture_telemetry_schema.py`. R195P and cnWave are not covered yet — different
-auth flows, each needs its own live run. The `events` endpoint is not JSON and is excluded.
+`wifi-xv2-hope-vale-telemetry-schema-20260920_1530.json`, `wifi-e500-tjuntjuntjara-telemetry-schema-20260920_1531.json` and `epmp-3000l-hope-vale-snmp-sta-table-schema-20260920_1434.json`. Generated
+by `unified-network-controller`'s `scripts/capture_telemetry_schema.py`. R195P and cnWave are not covered yet — different auth flows, each needs its own live run. The `events` endpoint is not JSON and
+is excluded.
 
 ### Enterprise Wi-Fi E-series (`E500`, `E430`) — Same Adapter, Confirmed Live 2026-09-17
 
@@ -291,8 +295,8 @@ which are the PMP450/Canopy tree (`enterprises 161.19`). Walked live 2026-09-20 
 | `.1.3.6.1.4.1.17713.21.1.2.30` | `cambiumAPConnectedSTATable` | Per SM: MAC `.1`, AID `.2`, channel `.3`, UL/DL RSSI `.4`/`.5`, UL/DL SNR `.6`/`.7`, UL/DL MCS `.8`/`.9`, IP `.10`, TX capacity `.19`, TX quality `.20`, session time `.27`, DL rate `.28`, distance in metres `.29` |
 | `.1.3.6.1.4.1.17713.21.1.2.3` / `.18` | `cambiumSTADLRSSI` / `cambiumSTADLSNR` | SM-side scalars — return `noSuchObject` on an AP, as expected |
 
-**The live agent exposes more columns than the MIB mirror documents.** `CAMBIUM-PMP80211-MIB` (in `cambium-swap`'s `artifacts/mibs/librenms/`) defines 29 columns for
-`cambiumAPConnectedSTAEntry`; the live walk returned columns through `.43`, with `.43` carrying the SM's firmware string. Map adapter fields against live output, not the mirror alone.
+**The live agent exposes more columns than the MIB mirror documents.** `CAMBIUM-PMP80211-MIB` (in `cambium-swap`'s `artifacts/mibs/librenms/`) defines 29 columns for `cambiumAPConnectedSTAEntry`; the
+live walk returned columns through `.43`, with `.43` carrying the SM's firmware string. Map adapter fields against live output, not the mirror alone.
 
 **ePMP reports session time per SM directly** (`.27`, format `0001:22:51:32`), so ePMP link sessions do not need poll-based reconstruction the way Wi-Fi client sessions do.
 
@@ -331,10 +335,10 @@ Every `rcp` non-responder was pingable. **A cnWave SNMP timeout means "not enabl
 1. **A single site cannot settle a family-wide question.** A first pass at hope-vale timed out on every cnWave and very nearly became "cnWave has no SNMP". Those units were simply down — no ICMP and
    no TCP on 443, 80 or 22 — while a control XV2 on the same hop answered normally. Sampling `rcp` sites reversed the conclusion.
 2. **The address gap was closed by ARP, and it changed the answer.** `nbn_accelerate` holds 93 of the fleet's 117 cnWave, and five of its six cnWave sites carried no `management_ip` in
-   `inventory/device-inventory.csv` at all. Addresses were derived 2026-09-21 by ping-sweeping `10.255.4.0/24` from each site's SMC box and joining `ip neigh` against the inventory's MAC column —
-   40 cnWave resolved, against 12 recoverable from the stale 2026-09-18 ARP captures. **Two sites still yield nothing: `aurukun` and `hope-vale` return zero ARP entries for that subnet**, so the
-   cnWave network is not reachable from their SMC boxes at all. That is a routing or VLAN question, not an SNMP one.
-   Those addresses belong in the inventory. Until they are there, the derivation must be repeated: ping-sweep the cnWave subnet from the site SMC box, then join `ip neigh` on the inventory MAC column. The raw sweeps from this run are local evidence only and are not committed.
+   `inventory/device-inventory.csv` at all. Addresses were derived 2026-09-21 by ping-sweeping `10.255.4.0/24` from each site's SMC box and joining `ip neigh` against the inventory's MAC column — 40
+   cnWave resolved, against 12 recoverable from the stale 2026-09-18 ARP captures. **Two sites still yield nothing: `aurukun` and `hope-vale` return zero ARP entries for that subnet**, so the cnWave
+   network is not reachable from their SMC boxes at all. That is a routing or VLAN question, not an SNMP one. Those addresses belong in the inventory. Until they are there, the derivation must be
+   repeated: ping-sweep the cnWave subnet from the site SMC box, then join `ip neigh` on the inventory MAC column. The raw sweeps from this run are local evidence only and are not committed.
 
 ## Cross-Programme SNMP Comparison — Same Family, Both Teleport Targets
 
@@ -354,8 +358,9 @@ that a given device has SNMP switched on. Reachability and enablement are per-de
 
 Full per-device results: [snmp-enablement-survey-20260921.csv](snmp-enablement-survey-20260921.csv). 27 devices probed 2026-09-21 across five sites and three families.
 
-**13 devices are pingable but silent on SNMP v2c — all of them `rcp`.** Every reachable `nbn_accelerate` device answered. Those are the actionable rows — a live device that does not answer is either missing an SNMP config or answering only to a community other than the
-one tried. The CSV records `community_tried` per row precisely so that question can be settled without re-deriving which credential was used where:
+**13 devices are pingable but silent on SNMP v2c — all of them `rcp`.** Every reachable `nbn_accelerate` device answered. Those are the actionable rows — a live device that does not answer is either
+missing an SNMP config or answering only to a community other than the one tried. The CSV records `community_tried` per row precisely so that question can be settled without re-deriving which
+credential was used where:
 
 | Programme | Community tried | Sites |
 | --- | --- | --- |
@@ -370,8 +375,8 @@ one tried. The CSV records `community_tried` per row precisely so that question 
 | `UP` | `TIMEOUT` | **Actionable.** Device healthy; SNMP not enabled, or a different community. Worth retrying with the other programme's community and with any site-local one |
 | `DOWN` | `TIMEOUT` | **Carries no information about SNMP.** The device is unreachable. Do not count these as evidence either way — this is exactly the trap hope-vale set |
 
-Three of the 13 silent units at mornington were confirmed healthy beyond ping (`10.255.4.111` answers on both tcp/443 and tcp/22), so for those the SNMP silence is definitely configuration rather
-than device state.
+Three of the 13 silent units at mornington were confirmed healthy beyond ping (`10.255.4.111` answers on both tcp/443 and tcp/22), so for those the SNMP silence is definitely configuration rather than
+device state.
 
 **Not yet probed:** the remaining five hope-vale cnWave, and the 86 `nbn_accelerate` cnWave at aurukun, doomadgee, galiwinku, kowanyama and pukatja that carry no `management_ip` in the inventory.
 
@@ -521,24 +526,23 @@ because it's risky).
 
 ## Monitoring Counter and Resource Surfaces — Probed Live 2026-09-21
 
-Read-only probes run from `unified-network-controller` to find which fields can feed a monitoring platform's traffic, CPU and memory metrics (OpenWISP turns only
-interface byte/error counters, wireless clients and `resources` into metrics). The getters above did not read any of these. Nothing here is wired into an adapter
-yet; the consuming project records that state in its CHANGELOG entry `20260921_2008`.
+Read-only probes run from `unified-network-controller` to find which fields can feed a monitoring platform's traffic, CPU and memory metrics (OpenWISP turns only interface byte/error counters,
+wireless clients and `resources` into metrics). The getters above did not read any of these. Nothing here is wired into an adapter yet; the consuming project records that state in its CHANGELOG entry
+`20260921_2008`.
 
-- **ePMP AP and SM** (`MOW_3000L_E_IP_0-20` 3000L AP, `MOW_F300-16SM_1002_IP_2_2` Force 300-16 SM, mowanjum). `get_raw_param("status")["device_props"]` carries
-  cumulative `rxEtherLanKbitCount`/`txEtherLanKbitCount`, `rxEtherLanErrorPacketCount`/`txEtherLanErrorPacketCount`, `dlWLanKbitCount`/`ulWLanKbitCount`,
-  `dlWLanErrorDroppedPacketCount`/`ulWLanErrorDroppedPacketCount`, and `sysCPUUsage` (percent, e.g. `12.7`). Same keys on AP and SM. Counters are in **kbit**;
-  whether one kbit is 1000 or 1024 bits is `UNVERIFIED` (a rate comparison against a known transfer would settle it). No memory figure found.
-- **R195P** (`MOW-R195P-1002`). The BusyBox shell serves standard `/proc`: `/proc/net/dev` (per-interface byte, packet, error and drop counters),
-  `/proc/loadavg`, `/proc/meminfo` (`MemTotal`, `MemFree`, `Buffers`, `Shmem` in kB) and `/proc/cpuinfo` (4 `processor` entries on MT7621). **Read each file
-  with a plain `cat`:** a piped command (`cat ... | head`) exited 127 on this shell, and `which` does not exist.
-- **cnWave** (`GAL_T2_V5000N_IP4_120`, V5000 POP, galiwinku). `get_network_stats(mac, ["nic1"])` answers `success: true` but every counter, including `speed`,
-  read **0** with `link: 1` on this node. The fleet schema (`schemas/cnwave-60ghz/network_stats.schema.json`) likewise recorded only `message`/`success` at all 5
-  observed nodes, so its `message` payload was never characterised. `get_key_performance_index` and `get_radio_stats` return byte and packet **rates**
-  (`tx_byte_rate`, `rx_packet_rate`), not cumulative counters. Whether `nic1` is the wrong interface name for this role is open.
-- **Enterprise Wi-Fi mesh state.** `mesh_type` is `none` and `mesh_clients` is empty on every enterprise Wi-Fi device across all 36 sites
-  (`schemas/_observations/enterprise-wifi/`), so no associated client on this estate is a WDS peer. `unified-network-controller` relies on this to send client
-  `wds: false`; re-check if mesh is ever enabled.
+- **ePMP AP and SM** (`MOW_3000L_E_IP_0-20` 3000L AP, `MOW_F300-16SM_1002_IP_2_2` Force 300-16 SM, mowanjum). `get_raw_param("status")["device_props"]` carries cumulative
+  `rxEtherLanKbitCount`/`txEtherLanKbitCount`, `rxEtherLanErrorPacketCount`/`txEtherLanErrorPacketCount`, `dlWLanKbitCount`/`ulWLanKbitCount`,
+  `dlWLanErrorDroppedPacketCount`/`ulWLanErrorDroppedPacketCount`, and `sysCPUUsage` (percent, e.g. `12.7`). Same keys on AP and SM. Counters are in **kbit**; whether one kbit is 1000 or 1024 bits is
+  `UNVERIFIED` (a rate comparison against a known transfer would settle it). No memory figure found.
+- **R195P** (`MOW-R195P-1002`). The BusyBox shell serves standard `/proc`: `/proc/net/dev` (per-interface byte, packet, error and drop counters), `/proc/loadavg`, `/proc/meminfo` (`MemTotal`,
+  `MemFree`, `Buffers`, `Shmem` in kB) and `/proc/cpuinfo` (4 `processor` entries on MT7621). **Read each file with a plain `cat`:** a piped command (`cat ... | head`) exited 127 on this shell, and
+  `which` does not exist.
+- **cnWave** (`GAL_T2_V5000N_IP4_120`, V5000 POP, galiwinku). `get_network_stats(mac, ["nic1"])` answers `success: true` but every counter, including `speed`, read **0** with `link: 1` on this node.
+  The fleet schema (`schemas/cnwave-60ghz/network_stats.schema.json`) likewise recorded only `message`/`success` at all 5 observed nodes, so its `message` payload was never characterised.
+  `get_key_performance_index` and `get_radio_stats` return byte and packet **rates** (`tx_byte_rate`, `rx_packet_rate`), not cumulative counters. Whether `nic1` is the wrong interface name for this
+  role is open.
+- **Enterprise Wi-Fi mesh state.** `mesh_type` is `none` and `mesh_clients` is empty on every enterprise Wi-Fi device across all 36 sites (`schemas/_observations/enterprise-wifi/`), so no associated
+  client on this estate is a WDS peer. `unified-network-controller` relies on this to send client `wds: false`; re-check if mesh is ever enabled.
 
 ## Enterprise Wi-Fi Facts From the unified-network-controller Canary — 2026-09-21
 
@@ -546,9 +550,13 @@ Found while taking enterprise Wi-Fi end to end into OpenWISP (mowanjum E500 and 
 
 - **`device_mac` arrives as `BC-E6-7C-EB-72-D6`:** dashes, upper case. Normalise before comparing with a colon-separated store.
 - **`platform-info.model` is the marketing name:** `cnPilot E500` and `cnPilot E430H`, not the bare model code in the asset register.
-- **No REST endpoint reports a CPU core count.** `device-summary.cpu` is a utilisation percentage. SSH to the CLI (`show system`, `show version`) failed from
-  a non-interactive `sshpass` session through a Teleport forward (exit 255) even with port 22 open on the XV2, so the CLI's CPU details remain unread.
-- **The management address is `device_ip`, also carried by the VLAN500 interface;** every other interface reports `0.0.0.0` (see
-  [03_asset-register-conventions.md](03_asset-register-conventions.md) for the 10.255.0.0/18 rule).
-- **An AP that is powered off answers nothing through its forward:** the TLS handshake ends in `UNEXPECTED_EOF`, which a caller should report as unreachable,
-  not as a protocol fault. Nine of fourteen mowanjum APs were in that state at 23:30 AEST on 2026-09-21.
+- **No REST endpoint reports a CPU core count.** `device-summary.cpu` is a utilisation percentage. SSH to the CLI (`show system`, `show version`) failed from a non-interactive `sshpass` session
+  through a Teleport forward (exit 255) even with port 22 open on the XV2, so the CLI's CPU details remain unread.
+- **The management address is `device_ip`, also carried by the VLAN500 interface;** every other interface reports `0.0.0.0` (see [03_asset-register-conventions.md](03_asset-register-conventions.md)
+  for the 10.255.0.0/18 rule).
+- **An AP that is powered off answers nothing through its forward:** the TLS handshake ends in `UNEXPECTED_EOF`, which a caller should report as unreachable, not as a protocol fault. Nine of fourteen
+  mowanjum APs were in that state at 23:30 AEST on 2026-09-21.
+- **The XV2 interface list varies, so metric counts vary** (hope-vale, 2026-09-22, firmware `6.6.0.3-r9`). `interface-summary` lists `PORT-CHANNEL1`, `VLAN500`, `ETH1`, `ETH2`, plus `ETH3` on the
+  XV2-22H only (the XV2-2T0 has two Ethernet ports), plus `VLAN501` on four of five units. `HOP_XV2_AP26_IP3_26` listed no `VLAN501`, although its `HopeVale_WiFi` WLAN is on VLAN 501 like the others.
+  It is not the client count at read time: AP27 and AP35 had no clients and still listed it. The cause is **unverified**; a restart about 7 hours earlier on AP26 is one lead. Callers must iterate the
+  interfaces a device reports, never assume a fixed set.
