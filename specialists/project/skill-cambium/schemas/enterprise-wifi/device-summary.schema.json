@@ -7,8 +7,9 @@
     "family": "enterprise-wifi",
     "endpoint": "device-summary",
     "layer": "raw-endpoint",
-    "observations": 36,
+    "observations": 37,
     "models": [
+      "E430H",
       "E500",
       "XV2"
     ],
@@ -60,7 +61,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T14:18:43Z"
   },
   "type": "object",
   "properties": {
@@ -71,11 +72,11 @@
         "ACTIV8ME",
         "cnmaestro_on_premises"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "backup_version": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "bootloader_version": {
       "type": "string",
@@ -91,7 +92,7 @@
     },
     "cns_status": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "country": {
       "type": "string",
@@ -108,77 +109,77 @@
         "AZ",
         "OT"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "cpu": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "da_version": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "def_gw_dynamic": {
       "type": "boolean",
       "x-candidate-values": [
         false
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "default_gw": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "device_ip": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "device_location": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "device_mac": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "device_mask": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "dns_ip_dynamic": {
       "type": "boolean",
       "x-candidate-values": [
         false
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "dns_server_1": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "dns_server_2": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "hostname": {
       "type": "string",
       "x-identifying": true,
       "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "hw_sku": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "ip_mode": {
       "type": "string",
       "x-candidate-values": [
         "static"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "kernel_version": {
       "type": "string",
@@ -190,7 +191,7 @@
         "-",
         "FULL"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "link_duplex1": {
       "type": "string",
@@ -198,7 +199,7 @@
         "-",
         "FULL"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "link_speed0": {
       "type": "string",
@@ -208,7 +209,7 @@
         "100M",
         "2500M"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "link_speed1": {
       "type": "string",
@@ -217,7 +218,7 @@
         "1000M",
         "100M"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "max_ethernet_ports": {
       "type": "integer",
@@ -233,7 +234,7 @@
     },
     "memory": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "mesh_clients": {
       "type": "array",
@@ -241,14 +242,14 @@
         "type": "null",
         "x-observed-count": 0
       },
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "mesh_type": {
       "type": "string",
       "x-candidate-values": [
         "none"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "model": {
       "type": "string",
@@ -456,51 +457,51 @@
       "x-candidate-values": [
         "ROW"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "serial_number": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "sta_count": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "uptime": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "version": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "vlan_id": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "ap_info": {
       "type": "object",
       "properties": {
         "master": {
           "type": "string",
-          "x-observed-count": 8
+          "x-observed-count": 9
         },
         "mode": {
           "type": "string",
           "x-candidate-values": [
             "member"
           ],
-          "x-observed-count": 8
+          "x-observed-count": 9
         },
         "status": {
           "type": "string",
           "x-candidate-values": [
             "Searching for Master-AP"
           ],
-          "x-observed-count": 8
+          "x-observed-count": 9
         }
       },
-      "x-observed-count": 8
+      "x-observed-count": 9
     },
     "channels_distribution": {
       "type": "boolean",
@@ -513,6 +514,34 @@
       "type": "string",
       "x-candidate-values": [
         "outdoor"
+      ],
+      "x-observed-count": 1
+    },
+    "link_duplex2": {
+      "type": "string",
+      "x-candidate-values": [
+        "-"
+      ],
+      "x-observed-count": 1
+    },
+    "link_duplex3": {
+      "type": "string",
+      "x-candidate-values": [
+        "-"
+      ],
+      "x-observed-count": 1
+    },
+    "link_speed2": {
+      "type": "string",
+      "x-candidate-values": [
+        "-"
+      ],
+      "x-observed-count": 1
+    },
+    "link_speed3": {
+      "type": "string",
+      "x-candidate-values": [
+        "-"
       ],
       "x-observed-count": 1
     }
@@ -553,14 +582,15 @@
   "x-observed-count": 0,
   "x-optional": {
     "ap_info": {
-      "observed_on": 8,
-      "of": 36,
+      "observed_on": 9,
+      "of": 37,
       "seen_at": [
         "aurukun/E500",
         "indulkana/E500",
         "jigalong/E500",
         "kalumburu/E500",
         "koonibba/E500",
+        "mowanjum/E430H",
         "mowanjum/E500",
         "tjuntjuntjara/E500",
         "warakurna/E500"
@@ -568,7 +598,7 @@
     },
     "bootloader_version": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -602,7 +632,7 @@
     },
     "channels": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -636,14 +666,14 @@
     },
     "channels_distribution": {
       "observed_on": 1,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "junjuwa/XV2"
       ]
     },
     "country": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -677,7 +707,7 @@
     },
     "kernel_version": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -709,9 +739,37 @@
         "wujal-wujal/XV2"
       ]
     },
+    "link_duplex2": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "link_duplex3": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "link_speed2": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "link_speed3": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
     "max_ethernet_ports": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -745,7 +803,7 @@
     },
     "max_num_scan_radios": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -779,7 +837,7 @@
     },
     "max_radios": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -813,7 +871,7 @@
     },
     "model": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -847,14 +905,14 @@
     },
     "placement": {
       "observed_on": 1,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "junjuwa/XV2"
       ]
     },
     "port_stats": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -888,7 +946,7 @@
     },
     "port_status": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -922,7 +980,7 @@
     },
     "radio_sbs_mode": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -956,7 +1014,7 @@
     },
     "rca_enabled": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -990,7 +1048,7 @@
     },
     "reboot_count": {
       "observed_on": 27,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -1023,7 +1081,7 @@
     }
   },
   "x-evidence": {
-    "observations_with_records": 36,
+    "observations_with_records": 37,
     "observations_empty": 0,
     "empty_at": [],
     "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

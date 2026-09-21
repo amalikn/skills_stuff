@@ -9,6 +9,7 @@
     "layer": "raw-endpoint",
     "observations": 33,
     "models": [
+      "E430H",
       "E500",
       "XV2"
     ],
@@ -59,7 +60,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T14:18:43Z"
   },
   "type": "array",
   "items": {
@@ -2335,9 +2336,10 @@
     },
     "x-evidence": {
       "observations_with_records": 33,
-      "observations_empty": 2,
+      "observations_empty": 3,
       "empty_at": [
         "burringurrah",
+        "mowanjum",
         "tjuntjuntjara"
       ],
       "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

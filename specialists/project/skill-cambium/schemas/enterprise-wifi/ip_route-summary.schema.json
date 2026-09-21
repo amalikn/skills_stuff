@@ -7,8 +7,9 @@
     "family": "enterprise-wifi",
     "endpoint": "ip_route-summary",
     "layer": "raw-endpoint",
-    "observations": 36,
+    "observations": 37,
     "models": [
+      "E430H",
       "E500",
       "XV2"
     ],
@@ -60,7 +61,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T14:18:43Z"
   },
   "type": "array",
   "items": {
@@ -71,7 +72,7 @@
         "x-candidate-values": [
           "VLAN500"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "flags": {
         "type": "string",
@@ -79,40 +80,40 @@
           "U",
           "UG"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "gateway": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "ip_addr": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "mask": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "metric": {
         "type": "string",
         "x-candidate-values": [
           "0"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "refs": {
         "type": "string",
         "x-candidate-values": [
           "0"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "use": {
         "type": "string",
         "x-candidate-values": [
           "0"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       }
     },
     "required": [
@@ -128,7 +129,7 @@
     "x-observed-count": 0,
     "x-optional": {},
     "x-evidence": {
-      "observations_with_records": 36,
+      "observations_with_records": 37,
       "observations_empty": 0,
       "empty_at": [],
       "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

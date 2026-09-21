@@ -1,0 +1,2488 @@
+{
+  "x-observation": {
+    "captured_utc": "2026-09-21T14:16:14Z",
+    "family": "enterprise-wifi",
+    "model": "E430H",
+    "firmware": "4.2.3.1-r17",
+    "site": "mowanjum",
+    "layer": "raw-endpoint",
+    "driver": "stdin",
+    "strict_pii": true
+  },
+  "endpoints": {
+    "device-summary": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "ACTIV8ME"
+          ],
+          "x-observed-count": 1
+        },
+        "ap_info": {
+          "type": "object",
+          "properties": {
+            "master": {
+              "type": "string",
+              "x-observed-count": 1
+            },
+            "mode": {
+              "type": "string",
+              "x-candidate-values": [
+                "member"
+              ],
+              "x-observed-count": 1
+            },
+            "status": {
+              "type": "string",
+              "x-candidate-values": [
+                "Searching for Master-AP"
+              ],
+              "x-observed-count": 1
+            }
+          },
+          "x-observed-count": 1
+        },
+        "backup_version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "cns_status": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "country_code": {
+          "type": "string",
+          "x-candidate-values": [
+            "AU"
+          ],
+          "x-observed-count": 1
+        },
+        "cpu": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "da_version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "def_gw_dynamic": {
+          "type": "boolean",
+          "x-candidate-values": [
+            false
+          ],
+          "x-observed-count": 1
+        },
+        "default_gw": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "device_ip": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "device_location": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "device_mac": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "device_mask": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "dns_ip_dynamic": {
+          "type": "boolean",
+          "x-candidate-values": [
+            false
+          ],
+          "x-observed-count": 1
+        },
+        "dns_server_1": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "dns_server_2": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "hostname": {
+          "type": "string",
+          "x-identifying": true,
+          "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+          "x-observed-count": 1
+        },
+        "hw_sku": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "ip_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "static"
+          ],
+          "x-observed-count": 1
+        },
+        "link_duplex0": {
+          "type": "string",
+          "x-candidate-values": [
+            "FULL"
+          ],
+          "x-observed-count": 1
+        },
+        "link_duplex1": {
+          "type": "string",
+          "x-candidate-values": [
+            "-"
+          ],
+          "x-observed-count": 1
+        },
+        "link_duplex2": {
+          "type": "string",
+          "x-candidate-values": [
+            "-"
+          ],
+          "x-observed-count": 1
+        },
+        "link_duplex3": {
+          "type": "string",
+          "x-candidate-values": [
+            "-"
+          ],
+          "x-observed-count": 1
+        },
+        "link_speed0": {
+          "type": "string",
+          "x-candidate-values": [
+            "1000M"
+          ],
+          "x-observed-count": 1
+        },
+        "link_speed1": {
+          "type": "string",
+          "x-candidate-values": [
+            "-"
+          ],
+          "x-observed-count": 1
+        },
+        "link_speed2": {
+          "type": "string",
+          "x-candidate-values": [
+            "-"
+          ],
+          "x-observed-count": 1
+        },
+        "link_speed3": {
+          "type": "string",
+          "x-candidate-values": [
+            "-"
+          ],
+          "x-observed-count": 1
+        },
+        "memory": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "mesh_clients": {
+          "type": "array",
+          "items": {
+            "type": "null",
+            "x-observed-count": 0
+          },
+          "x-observed-count": 1
+        },
+        "mesh_type": {
+          "type": "string",
+          "x-candidate-values": [
+            "none"
+          ],
+          "x-observed-count": 1
+        },
+        "reg_domain": {
+          "type": "string",
+          "x-candidate-values": [
+            "ROW"
+          ],
+          "x-observed-count": 1
+        },
+        "serial_number": {
+          "type": "string",
+          "x-candidate-values": [
+            "W5VJ00MVV5KF"
+          ],
+          "x-observed-count": 1
+        },
+        "sta_count": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "uptime": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "version": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "vlan_id": {
+          "type": "integer",
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "account_id",
+        "ap_info",
+        "backup_version",
+        "cns_status",
+        "country_code",
+        "cpu",
+        "da_version",
+        "def_gw_dynamic",
+        "default_gw",
+        "device_ip",
+        "device_location",
+        "device_mac",
+        "device_mask",
+        "dns_ip_dynamic",
+        "dns_server_1",
+        "dns_server_2",
+        "hostname",
+        "hw_sku",
+        "ip_mode",
+        "link_duplex0",
+        "link_duplex1",
+        "link_duplex2",
+        "link_duplex3",
+        "link_speed0",
+        "link_speed1",
+        "link_speed2",
+        "link_speed3",
+        "memory",
+        "mesh_clients",
+        "mesh_type",
+        "reg_domain",
+        "serial_number",
+        "sta_count",
+        "uptime",
+        "version",
+        "vlan_id"
+      ],
+      "x-records-observed": 1
+    },
+    "platform-info": {
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "type": "string",
+          "x-identifying": true,
+          "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+          "x-observed-count": 1
+        },
+        "max_bss_per_radio": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_clients": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_ethernet_ports": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_radios": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "max_wlans": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "model": {
+          "type": "string",
+          "x-candidate-values": [
+            "cnPilot E430H"
+          ],
+          "x-observed-count": 1
+        },
+        "r1_default_unicast_ratelist": {
+          "type": "string",
+          "x-observed-count": 1
+        },
+        "r1_max_width": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "r2_default_unicast_ratelist": {
+          "type": "string",
+          "x-candidate-values": [
+            "6b 9 12b 18 24b 36 48 54"
+          ],
+          "x-observed-count": 1
+        },
+        "type": {
+          "type": "string",
+          "x-candidate-values": [
+            "Sage"
+          ],
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "hostname",
+        "max_bss_per_radio",
+        "max_clients",
+        "max_ethernet_ports",
+        "max_radios",
+        "max_wlans",
+        "model",
+        "r1_default_unicast_ratelist",
+        "r1_max_width",
+        "r2_default_unicast_ratelist",
+        "type"
+      ],
+      "x-records-observed": 1
+    },
+    "radio-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "atf": {
+            "type": "string",
+            "x-candidate-values": [
+              "ON"
+            ],
+            "x-observed-count": 2
+          },
+          "band": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "channel": {
+            "type": "string",
+            "x-candidate-values": [
+              "44",
+              "6"
+            ],
+            "x-observed-count": 2
+          },
+          "channel-width": {
+            "type": "string",
+            "x-candidate-values": [
+              "20",
+              "40"
+            ],
+            "x-observed-count": 2
+          },
+          "dfs_detected_count": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "dfs_status": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "mac": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 2
+          },
+          "mesh": {
+            "type": "string",
+            "x-candidate-values": [
+              "OFF"
+            ],
+            "x-observed-count": 2
+          },
+          "multicast_rate": {
+            "type": "string",
+            "x-candidate-values": [
+              "11",
+              "6"
+            ],
+            "x-observed-count": 2
+          },
+          "num_clients": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "num_wlans": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "power": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "quality": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "radio_state": {
+            "type": "string",
+            "x-candidate-values": [
+              "ON"
+            ],
+            "x-observed-count": 2
+          },
+          "rx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_bps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_bytes": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_pkts": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "rx_pps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_bps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_bytes": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_pkts": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "tx_pps": {
+            "type": "integer",
+            "x-observed-count": 2
+          },
+          "uiquality": {
+            "type": "string",
+            "x-candidate-values": [
+              "excellent"
+            ],
+            "x-observed-count": 2
+          },
+          "unicast_rates": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "utilization": {
+            "type": "integer",
+            "x-observed-count": 2
+          }
+        },
+        "required": [
+          "atf",
+          "band",
+          "channel",
+          "channel-width",
+          "mac",
+          "mesh",
+          "multicast_rate",
+          "num_clients",
+          "num_wlans",
+          "power",
+          "quality",
+          "radio_state",
+          "rx_avg_kbps",
+          "rx_bps",
+          "rx_bytes",
+          "rx_max_kbps",
+          "rx_min_kbps",
+          "rx_pkts",
+          "rx_pps",
+          "tx_avg_kbps",
+          "tx_bps",
+          "tx_bytes",
+          "tx_max_kbps",
+          "tx_min_kbps",
+          "tx_pkts",
+          "tx_pps",
+          "uiquality",
+          "unicast_rates",
+          "utilization"
+        ]
+      },
+      "x-records-observed": 2
+    },
+    "radio-rf-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "band": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "busy_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "chan_if": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "0",
+              "2"
+            ],
+            "x-observed-count": 2
+          },
+          "nav": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "nf": {
+            "type": "string",
+            "x-candidate-values": [
+              "-102",
+              "-94"
+            ],
+            "x-observed-count": 2
+          },
+          "per": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "rx_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "total_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "-1",
+              "2"
+            ],
+            "x-observed-count": 2
+          },
+          "tx_cu": {
+            "type": "string",
+            "x-candidate-values": [
+              "0",
+              "2"
+            ],
+            "x-observed-count": 2
+          }
+        },
+        "required": [
+          "band",
+          "busy_cu",
+          "chan_if",
+          "cu",
+          "nav",
+          "nf",
+          "per",
+          "rx_cu",
+          "total_cu",
+          "tx_cu"
+        ]
+      },
+      "x-records-observed": 2
+    },
+    "wlan-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "2.4_wlan_state": {
+            "type": "string",
+            "x-candidate-values": [
+              "ON"
+            ],
+            "x-observed-count": 1
+          },
+          "5_wlan_state": {
+            "type": "string",
+            "x-candidate-values": [
+              "ON"
+            ],
+            "x-observed-count": 1
+          },
+          "band": {
+            "type": "string",
+            "x-candidate-values": [
+              "both"
+            ],
+            "x-observed-count": 1
+          },
+          "guest_access": {
+            "type": "string",
+            "x-candidate-values": [
+              "disabled"
+            ],
+            "x-observed-count": 1
+          },
+          "interface": {
+            "type": "string",
+            "x-candidate-values": [
+              "wlan0"
+            ],
+            "x-observed-count": 1
+          },
+          "mac": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 1
+          },
+          "monitor_host": {
+            "type": "string",
+            "x-candidate-values": [
+              ""
+            ],
+            "x-observed-count": 1
+          },
+          "monitor_host_down": {
+            "type": "boolean",
+            "x-candidate-values": [
+              false
+            ],
+            "x-observed-count": 1
+          },
+          "monitor_host_missed": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "num_clients": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_bps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_bytes": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_pkts": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "rx_pps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "s_vlan": {
+            "type": "string",
+            "x-candidate-values": [
+              "NA"
+            ],
+            "x-observed-count": 1
+          },
+          "security": {
+            "type": "string",
+            "x-candidate-values": [
+              "open"
+            ],
+            "x-observed-count": 1
+          },
+          "ssid": {
+            "type": "string",
+            "x-identifying": true,
+            "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
+            "x-observed-count": 1
+          },
+          "tunnel_mode": {
+            "type": "string",
+            "x-candidate-values": [
+              "disable"
+            ],
+            "x-observed-count": 1
+          },
+          "tx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_bps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_bytes": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_pkts": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "tx_pps": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "vlan": {
+            "type": "integer",
+            "x-observed-count": 1
+          },
+          "vlan_encap_type": {
+            "type": "string",
+            "x-candidate-values": [
+              "disable"
+            ],
+            "x-observed-count": 1
+          },
+          "wlan_num": {
+            "type": "string",
+            "x-candidate-values": [
+              "1"
+            ],
+            "x-observed-count": 1
+          }
+        },
+        "required": [
+          "2.4_wlan_state",
+          "5_wlan_state",
+          "band",
+          "guest_access",
+          "interface",
+          "mac",
+          "monitor_host",
+          "monitor_host_down",
+          "monitor_host_missed",
+          "num_clients",
+          "rx_avg_kbps",
+          "rx_bps",
+          "rx_bytes",
+          "rx_max_kbps",
+          "rx_min_kbps",
+          "rx_pkts",
+          "rx_pps",
+          "s_vlan",
+          "security",
+          "ssid",
+          "tunnel_mode",
+          "tx_avg_kbps",
+          "tx_bps",
+          "tx_bytes",
+          "tx_max_kbps",
+          "tx_min_kbps",
+          "tx_pkts",
+          "tx_pps",
+          "vlan",
+          "vlan_encap_type",
+          "wlan_num"
+        ]
+      },
+      "x-records-observed": 1
+    },
+    "client-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "x-records-observed": 0
+    },
+    "interface-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "x-observed-count": 6
+          },
+          "device": {
+            "type": "string",
+            "x-candidate-values": [
+              "ETH1",
+              "ETH2",
+              "ETH3",
+              "ETH4",
+              "PORT-CHANNEL1",
+              "VLAN500"
+            ],
+            "x-observed-count": 6
+          },
+          "rx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "rx_bytes": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "rx_drops": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "rx_errs": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "rx_fifo": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "rx_frame": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "rx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "rx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "rx_multi": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "rx_packets": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "tx_avg_kbps": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "tx_bytes": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "tx_carrier": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "tx_colls": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "tx_drops": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "tx_errs": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "tx_fifo": {
+            "type": "integer",
+            "x-observed-count": 6
+          },
+          "tx_max_kbps": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "tx_min_kbps": {
+            "type": "integer",
+            "x-observed-count": 5
+          },
+          "tx_packets": {
+            "type": "integer",
+            "x-observed-count": 6
+          }
+        },
+        "required": [
+          "address",
+          "device",
+          "rx_bytes",
+          "rx_drops",
+          "rx_errs",
+          "rx_fifo",
+          "rx_frame",
+          "rx_multi",
+          "rx_packets",
+          "tx_bytes",
+          "tx_carrier",
+          "tx_colls",
+          "tx_drops",
+          "tx_errs",
+          "tx_fifo",
+          "tx_packets"
+        ]
+      },
+      "x-records-observed": 6
+    },
+    "ethports-config": {
+      "type": "object",
+      "properties": {
+        "eth1_acl_policy": {
+          "type": "string",
+          "x-candidate-values": [
+            "radius"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_called_sta_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-MAC"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_called_sta_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_dynamic_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_mac_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_mac_auth_delimiter": {
+          "type": "string",
+          "x-candidate-values": [
+            ":"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_mac_auth_fallback": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_mac_auth_uppercase": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_nas_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-HOSTNAME"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_nas_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_nas_ip": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-IP"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_nas_ip_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_interim_interval": {
+          "type": "string",
+          "x-candidate-values": [
+            "1800"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "none"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_acct_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_auth_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth1_rad_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "load-balance"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_acl_policy": {
+          "type": "string",
+          "x-candidate-values": [
+            "radius"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_called_sta_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-MAC"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_called_sta_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_dynamic_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_mac_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_mac_auth_delimiter": {
+          "type": "string",
+          "x-candidate-values": [
+            ":"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_mac_auth_fallback": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_mac_auth_uppercase": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_nas_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-HOSTNAME"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_nas_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_nas_ip": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-IP"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_nas_ip_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_interim_interval": {
+          "type": "string",
+          "x-candidate-values": [
+            "1800"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "none"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_acct_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_auth_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth2_rad_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "load-balance"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_acl_policy": {
+          "type": "string",
+          "x-candidate-values": [
+            "radius"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_called_sta_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-MAC"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_called_sta_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_dynamic_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_mac_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_mac_auth_delimiter": {
+          "type": "string",
+          "x-candidate-values": [
+            ":"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_mac_auth_fallback": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_mac_auth_uppercase": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_nas_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-HOSTNAME"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_nas_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_nas_ip": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-IP"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_nas_ip_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_interim_interval": {
+          "type": "string",
+          "x-candidate-values": [
+            "1800"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "none"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_acct_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_auth_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth3_rad_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "load-balance"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_acl_policy": {
+          "type": "string",
+          "x-candidate-values": [
+            "radius"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_called_sta_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-MAC"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_called_sta_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_dynamic_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_mac_auth": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_mac_auth_delimiter": {
+          "type": "string",
+          "x-candidate-values": [
+            ":"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_mac_auth_fallback": {
+          "type": "string",
+          "x-candidate-values": [
+            "true"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_mac_auth_uppercase": {
+          "type": "string",
+          "x-candidate-values": [
+            "false"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_nas_id": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-HOSTNAME"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_nas_id_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_nas_ip": {
+          "type": "string",
+          "x-candidate-values": [
+            "AP-IP"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_nas_ip_custom": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1813"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_interim_interval": {
+          "type": "string",
+          "x-candidate-values": [
+            "1800"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "none"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_acct_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_1_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_1_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_1_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_2_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_2_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_2_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_3_host": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_3_port": {
+          "type": "string",
+          "x-candidate-values": [
+            "1812"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_3_secret": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_attempts": {
+          "type": "string",
+          "x-candidate-values": [
+            "1"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_auth_timeout": {
+          "type": "string",
+          "x-candidate-values": [
+            "3"
+          ],
+          "x-observed-count": 1
+        },
+        "eth4_rad_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "load-balance"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_access_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth1_allowed_vlan": {
+          "type": "string",
+          "x-candidate-values": [
+            "500,501"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_channelgroup": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "trunk"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_native_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth1_phy_duplex": {
+          "type": "string",
+          "x-candidate-values": [
+            "full"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_phy_speed": {
+          "type": "string",
+          "x-candidate-values": [
+            "auto"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth1_tag_native": {
+          "type": "string",
+          "x-candidate-values": [
+            "enable"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_access_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth2_allowed_vlan": {
+          "type": "string",
+          "x-candidate-values": [
+            "500,501"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_channelgroup": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "trunk"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_native_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth2_phy_duplex": {
+          "type": "string",
+          "x-candidate-values": [
+            "full"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_phy_speed": {
+          "type": "string",
+          "x-candidate-values": [
+            "auto"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_tag_native": {
+          "type": "string",
+          "x-candidate-values": [
+            "enable"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth2_tunnel_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth3_access_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth3_allowed_vlan": {
+          "type": "string",
+          "x-candidate-values": [
+            "500,501"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth3_channelgroup": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth3_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "trunk"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth3_native_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth3_phy_duplex": {
+          "type": "string",
+          "x-candidate-values": [
+            "full"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth3_phy_speed": {
+          "type": "string",
+          "x-candidate-values": [
+            "auto"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth3_tag_native": {
+          "type": "string",
+          "x-candidate-values": [
+            "enable"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth3_tunnel_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth4_access_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth4_allowed_vlan": {
+          "type": "string",
+          "x-candidate-values": [
+            "500,501"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth4_channelgroup": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth4_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            "trunk"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth4_native_vlan": {
+          "type": "integer",
+          "x-observed-count": 1
+        },
+        "interface_eth4_phy_duplex": {
+          "type": "string",
+          "x-candidate-values": [
+            "full"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth4_phy_speed": {
+          "type": "string",
+          "x-candidate-values": [
+            "auto"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth4_tag_native": {
+          "type": "string",
+          "x-candidate-values": [
+            "enable"
+          ],
+          "x-observed-count": 1
+        },
+        "interface_eth4_tunnel_mode": {
+          "type": "string",
+          "x-candidate-values": [
+            ""
+          ],
+          "x-observed-count": 1
+        }
+      },
+      "required": [
+        "eth1_acl_policy",
+        "eth1_called_sta_id",
+        "eth1_called_sta_id_custom",
+        "eth1_dynamic_auth",
+        "eth1_mac_auth",
+        "eth1_mac_auth_delimiter",
+        "eth1_mac_auth_fallback",
+        "eth1_mac_auth_uppercase",
+        "eth1_nas_id",
+        "eth1_nas_id_custom",
+        "eth1_nas_ip",
+        "eth1_nas_ip_custom",
+        "eth1_rad_acct_1_host",
+        "eth1_rad_acct_1_port",
+        "eth1_rad_acct_1_secret",
+        "eth1_rad_acct_2_host",
+        "eth1_rad_acct_2_port",
+        "eth1_rad_acct_2_secret",
+        "eth1_rad_acct_3_host",
+        "eth1_rad_acct_3_port",
+        "eth1_rad_acct_3_secret",
+        "eth1_rad_acct_attempts",
+        "eth1_rad_acct_interim_interval",
+        "eth1_rad_acct_mode",
+        "eth1_rad_acct_timeout",
+        "eth1_rad_auth_1_host",
+        "eth1_rad_auth_1_port",
+        "eth1_rad_auth_1_secret",
+        "eth1_rad_auth_2_host",
+        "eth1_rad_auth_2_port",
+        "eth1_rad_auth_2_secret",
+        "eth1_rad_auth_3_host",
+        "eth1_rad_auth_3_port",
+        "eth1_rad_auth_3_secret",
+        "eth1_rad_auth_attempts",
+        "eth1_rad_auth_timeout",
+        "eth1_rad_mode",
+        "eth2_acl_policy",
+        "eth2_called_sta_id",
+        "eth2_called_sta_id_custom",
+        "eth2_dynamic_auth",
+        "eth2_mac_auth",
+        "eth2_mac_auth_delimiter",
+        "eth2_mac_auth_fallback",
+        "eth2_mac_auth_uppercase",
+        "eth2_nas_id",
+        "eth2_nas_id_custom",
+        "eth2_nas_ip",
+        "eth2_nas_ip_custom",
+        "eth2_rad_acct_1_host",
+        "eth2_rad_acct_1_port",
+        "eth2_rad_acct_1_secret",
+        "eth2_rad_acct_2_host",
+        "eth2_rad_acct_2_port",
+        "eth2_rad_acct_2_secret",
+        "eth2_rad_acct_3_host",
+        "eth2_rad_acct_3_port",
+        "eth2_rad_acct_3_secret",
+        "eth2_rad_acct_attempts",
+        "eth2_rad_acct_interim_interval",
+        "eth2_rad_acct_mode",
+        "eth2_rad_acct_timeout",
+        "eth2_rad_auth_1_host",
+        "eth2_rad_auth_1_port",
+        "eth2_rad_auth_1_secret",
+        "eth2_rad_auth_2_host",
+        "eth2_rad_auth_2_port",
+        "eth2_rad_auth_2_secret",
+        "eth2_rad_auth_3_host",
+        "eth2_rad_auth_3_port",
+        "eth2_rad_auth_3_secret",
+        "eth2_rad_auth_attempts",
+        "eth2_rad_auth_timeout",
+        "eth2_rad_mode",
+        "eth3_acl_policy",
+        "eth3_called_sta_id",
+        "eth3_called_sta_id_custom",
+        "eth3_dynamic_auth",
+        "eth3_mac_auth",
+        "eth3_mac_auth_delimiter",
+        "eth3_mac_auth_fallback",
+        "eth3_mac_auth_uppercase",
+        "eth3_nas_id",
+        "eth3_nas_id_custom",
+        "eth3_nas_ip",
+        "eth3_nas_ip_custom",
+        "eth3_rad_acct_1_host",
+        "eth3_rad_acct_1_port",
+        "eth3_rad_acct_1_secret",
+        "eth3_rad_acct_2_host",
+        "eth3_rad_acct_2_port",
+        "eth3_rad_acct_2_secret",
+        "eth3_rad_acct_3_host",
+        "eth3_rad_acct_3_port",
+        "eth3_rad_acct_3_secret",
+        "eth3_rad_acct_attempts",
+        "eth3_rad_acct_interim_interval",
+        "eth3_rad_acct_mode",
+        "eth3_rad_acct_timeout",
+        "eth3_rad_auth_1_host",
+        "eth3_rad_auth_1_port",
+        "eth3_rad_auth_1_secret",
+        "eth3_rad_auth_2_host",
+        "eth3_rad_auth_2_port",
+        "eth3_rad_auth_2_secret",
+        "eth3_rad_auth_3_host",
+        "eth3_rad_auth_3_port",
+        "eth3_rad_auth_3_secret",
+        "eth3_rad_auth_attempts",
+        "eth3_rad_auth_timeout",
+        "eth3_rad_mode",
+        "eth4_acl_policy",
+        "eth4_called_sta_id",
+        "eth4_called_sta_id_custom",
+        "eth4_dynamic_auth",
+        "eth4_mac_auth",
+        "eth4_mac_auth_delimiter",
+        "eth4_mac_auth_fallback",
+        "eth4_mac_auth_uppercase",
+        "eth4_nas_id",
+        "eth4_nas_id_custom",
+        "eth4_nas_ip",
+        "eth4_nas_ip_custom",
+        "eth4_rad_acct_1_host",
+        "eth4_rad_acct_1_port",
+        "eth4_rad_acct_1_secret",
+        "eth4_rad_acct_2_host",
+        "eth4_rad_acct_2_port",
+        "eth4_rad_acct_2_secret",
+        "eth4_rad_acct_3_host",
+        "eth4_rad_acct_3_port",
+        "eth4_rad_acct_3_secret",
+        "eth4_rad_acct_attempts",
+        "eth4_rad_acct_interim_interval",
+        "eth4_rad_acct_mode",
+        "eth4_rad_acct_timeout",
+        "eth4_rad_auth_1_host",
+        "eth4_rad_auth_1_port",
+        "eth4_rad_auth_1_secret",
+        "eth4_rad_auth_2_host",
+        "eth4_rad_auth_2_port",
+        "eth4_rad_auth_2_secret",
+        "eth4_rad_auth_3_host",
+        "eth4_rad_auth_3_port",
+        "eth4_rad_auth_3_secret",
+        "eth4_rad_auth_attempts",
+        "eth4_rad_auth_timeout",
+        "eth4_rad_mode",
+        "interface_eth1_access_vlan",
+        "interface_eth1_allowed_vlan",
+        "interface_eth1_channelgroup",
+        "interface_eth1_mode",
+        "interface_eth1_native_vlan",
+        "interface_eth1_phy_duplex",
+        "interface_eth1_phy_speed",
+        "interface_eth1_tag_native",
+        "interface_eth2_access_vlan",
+        "interface_eth2_allowed_vlan",
+        "interface_eth2_channelgroup",
+        "interface_eth2_mode",
+        "interface_eth2_native_vlan",
+        "interface_eth2_phy_duplex",
+        "interface_eth2_phy_speed",
+        "interface_eth2_tag_native",
+        "interface_eth2_tunnel_mode",
+        "interface_eth3_access_vlan",
+        "interface_eth3_allowed_vlan",
+        "interface_eth3_channelgroup",
+        "interface_eth3_mode",
+        "interface_eth3_native_vlan",
+        "interface_eth3_phy_duplex",
+        "interface_eth3_phy_speed",
+        "interface_eth3_tag_native",
+        "interface_eth3_tunnel_mode",
+        "interface_eth4_access_vlan",
+        "interface_eth4_allowed_vlan",
+        "interface_eth4_channelgroup",
+        "interface_eth4_mode",
+        "interface_eth4_native_vlan",
+        "interface_eth4_phy_duplex",
+        "interface_eth4_phy_speed",
+        "interface_eth4_tag_native",
+        "interface_eth4_tunnel_mode"
+      ],
+      "x-records-observed": 1
+    },
+    "ip_route-summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "devname": {
+            "type": "string",
+            "x-candidate-values": [
+              "VLAN500"
+            ],
+            "x-observed-count": 2
+          },
+          "flags": {
+            "type": "string",
+            "x-candidate-values": [
+              "U",
+              "UG"
+            ],
+            "x-observed-count": 2
+          },
+          "gateway": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "ip_addr": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "mask": {
+            "type": "string",
+            "x-observed-count": 2
+          },
+          "metric": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "refs": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          },
+          "use": {
+            "type": "string",
+            "x-candidate-values": [
+              "0"
+            ],
+            "x-observed-count": 2
+          }
+        },
+        "required": [
+          "devname",
+          "flags",
+          "gateway",
+          "ip_addr",
+          "mask",
+          "metric",
+          "refs",
+          "use"
+        ]
+      },
+      "x-records-observed": 2
+    }
+  }
+}

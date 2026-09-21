@@ -7,8 +7,9 @@
     "family": "enterprise-wifi",
     "endpoint": "radio-summary",
     "layer": "raw-endpoint",
-    "observations": 36,
+    "observations": 37,
     "models": [
+      "E430H",
       "E500",
       "XV2"
     ],
@@ -60,7 +61,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T14:18:43Z"
   },
   "type": "array",
   "items": {
@@ -72,11 +73,11 @@
           "OFF",
           "ON"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "band": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "cchannel": {
         "type": "string",
@@ -84,7 +85,7 @@
       },
       "channel": {
         "type": "string",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "channel-selection": {
         "type": "string",
@@ -100,7 +101,7 @@
           "20",
           "40"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "channel_bonds": {
         "type": "string",
@@ -119,7 +120,7 @@
       },
       "dfs_detected_count": {
         "type": "integer",
-        "x-observed-count": 64
+        "x-observed-count": 65
       },
       "exclude_list": {
         "type": "string",
@@ -132,7 +133,7 @@
         "type": "string",
         "x-identifying": true,
         "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "management-rate": {
         "type": "string",
@@ -146,7 +147,7 @@
         "x-candidate-values": [
           "OFF"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "min-unicast-rate": {
         "type": "string",
@@ -180,11 +181,11 @@
       },
       "num_clients": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "num_wlans": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "per": {
         "type": "integer",
@@ -192,11 +193,11 @@
       },
       "power": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "quality": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "radio_config_state": {
         "type": "string",
@@ -210,35 +211,35 @@
         "x-candidate-values": [
           "ON"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "rx_avg_kbps": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "rx_bps": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "rx_bytes": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "rx_max_kbps": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "rx_min_kbps": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "rx_pkts": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "rx_pps": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "rx_threshold": {
         "type": "integer",
@@ -246,31 +247,31 @@
       },
       "tx_avg_kbps": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "tx_bps": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "tx_bytes": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "tx_max_kbps": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "tx_min_kbps": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "tx_pkts": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "tx_pps": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "uiquality": {
         "type": "string",
@@ -279,11 +280,11 @@
           "excellent",
           "poor"
         ],
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "utilization": {
         "type": "integer",
-        "x-observed-count": 72
+        "x-observed-count": 74
       },
       "wifi_capabilities": {
         "type": "string",
@@ -299,7 +300,7 @@
       },
       "dfs_status": {
         "type": "integer",
-        "x-observed-count": 8
+        "x-observed-count": 9
       },
       "multicast_rate": {
         "type": "string",
@@ -307,11 +308,11 @@
           "11",
           "6"
         ],
-        "x-observed-count": 16
+        "x-observed-count": 18
       },
       "unicast_rates": {
         "type": "string",
-        "x-observed-count": 16
+        "x-observed-count": 18
       }
     },
     "required": [
@@ -348,7 +349,7 @@
     "x-optional": {
       "cchannel": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -382,7 +383,7 @@
       },
       "channel-selection": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -416,7 +417,7 @@
       },
       "channel_bonds": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -450,7 +451,7 @@
       },
       "channel_mode": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -484,7 +485,7 @@
       },
       "device": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -517,14 +518,15 @@
         ]
       },
       "dfs_status": {
-        "observed_on": 8,
-        "of": 36,
+        "observed_on": 9,
+        "of": 37,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
           "jigalong/E500",
           "kalumburu/E500",
           "koonibba/E500",
+          "mowanjum/E430H",
           "mowanjum/E500",
           "tjuntjuntjara/E500",
           "warakurna/E500"
@@ -532,7 +534,7 @@
       },
       "exclude_list": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -566,7 +568,7 @@
       },
       "management-rate": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -600,7 +602,7 @@
       },
       "min-unicast-rate": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -633,14 +635,15 @@
         ]
       },
       "multicast_rate": {
-        "observed_on": 8,
-        "of": 36,
+        "observed_on": 9,
+        "of": 37,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
           "jigalong/E500",
           "kalumburu/E500",
           "koonibba/E500",
+          "mowanjum/E430H",
           "mowanjum/E500",
           "tjuntjuntjara/E500",
           "warakurna/E500"
@@ -648,7 +651,7 @@
       },
       "multicast_to_unicast": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -682,7 +685,7 @@
       },
       "multicast_to_unicast_mode": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -716,7 +719,7 @@
       },
       "non-unicast-rate": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -750,7 +753,7 @@
       },
       "per": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -784,7 +787,7 @@
       },
       "radio_config_state": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -818,7 +821,7 @@
       },
       "rx_threshold": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -851,14 +854,15 @@
         ]
       },
       "unicast_rates": {
-        "observed_on": 8,
-        "of": 36,
+        "observed_on": 9,
+        "of": 37,
         "seen_at": [
           "aurukun/E500",
           "indulkana/E500",
           "jigalong/E500",
           "kalumburu/E500",
           "koonibba/E500",
+          "mowanjum/E430H",
           "mowanjum/E500",
           "tjuntjuntjara/E500",
           "warakurna/E500"
@@ -866,7 +870,7 @@
       },
       "wifi_capabilities": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -900,7 +904,7 @@
       },
       "wifi_mode": {
         "observed_on": 28,
-        "of": 36,
+        "of": 37,
         "seen_at": [
           "amata/XV2",
           "ampilatwatja/XV2",
@@ -934,7 +938,7 @@
       }
     },
     "x-evidence": {
-      "observations_with_records": 36,
+      "observations_with_records": 37,
       "observations_empty": 0,
       "empty_at": [],
       "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

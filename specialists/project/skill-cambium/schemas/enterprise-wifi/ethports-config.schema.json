@@ -7,8 +7,9 @@
     "family": "enterprise-wifi",
     "endpoint": "ethports-config",
     "layer": "raw-endpoint",
-    "observations": 36,
+    "observations": 37,
     "models": [
+      "E430H",
       "E500",
       "XV2"
     ],
@@ -60,7 +61,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T14:18:43Z"
   },
   "type": "object",
   "properties": {
@@ -69,522 +70,522 @@
       "x-candidate-values": [
         "radius"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_called_sta_id": {
       "type": "string",
       "x-candidate-values": [
         "AP-MAC"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_called_sta_id_custom": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_dynamic_auth": {
       "type": "string",
       "x-candidate-values": [
         "true"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_mac_auth": {
       "type": "string",
       "x-candidate-values": [
         "false"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_mac_auth_delimiter": {
       "type": "string",
       "x-candidate-values": [
         ":"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_mac_auth_fallback": {
       "type": "string",
       "x-candidate-values": [
         "true"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_mac_auth_uppercase": {
       "type": "string",
       "x-candidate-values": [
         "false"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_nas_id": {
       "type": "string",
       "x-candidate-values": [
         "AP-HOSTNAME"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_nas_id_custom": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_nas_ip": {
       "type": "string",
       "x-candidate-values": [
         "AP-IP"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_nas_ip_custom": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_1_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_1_port": {
       "type": "string",
       "x-candidate-values": [
         "1813"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_1_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_2_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_2_port": {
       "type": "string",
       "x-candidate-values": [
         "1813"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_2_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_3_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_3_port": {
       "type": "string",
       "x-candidate-values": [
         "1813"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_3_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_attempts": {
       "type": "string",
       "x-candidate-values": [
         "1"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_interim_interval": {
       "type": "string",
       "x-candidate-values": [
         "1800"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_mode": {
       "type": "string",
       "x-candidate-values": [
         "none"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_acct_timeout": {
       "type": "string",
       "x-candidate-values": [
         "3"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_1_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_1_port": {
       "type": "string",
       "x-candidate-values": [
         "1812"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_1_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_2_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_2_port": {
       "type": "string",
       "x-candidate-values": [
         "1812"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_2_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_3_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_3_port": {
       "type": "string",
       "x-candidate-values": [
         "1812"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_3_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_attempts": {
       "type": "string",
       "x-candidate-values": [
         "1"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_auth_timeout": {
       "type": "string",
       "x-candidate-values": [
         "3"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth1_rad_mode": {
       "type": "string",
       "x-candidate-values": [
         "load-balance"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_acl_policy": {
       "type": "string",
       "x-candidate-values": [
         "radius"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_called_sta_id": {
       "type": "string",
       "x-candidate-values": [
         "AP-MAC"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_called_sta_id_custom": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_dynamic_auth": {
       "type": "string",
       "x-candidate-values": [
         "true"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_mac_auth": {
       "type": "string",
       "x-candidate-values": [
         "false"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_mac_auth_delimiter": {
       "type": "string",
       "x-candidate-values": [
         ":"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_mac_auth_fallback": {
       "type": "string",
       "x-candidate-values": [
         "true"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_mac_auth_uppercase": {
       "type": "string",
       "x-candidate-values": [
         "false"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_nas_id": {
       "type": "string",
       "x-candidate-values": [
         "AP-HOSTNAME"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_nas_id_custom": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_nas_ip": {
       "type": "string",
       "x-candidate-values": [
         "AP-IP"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_nas_ip_custom": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_1_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_1_port": {
       "type": "string",
       "x-candidate-values": [
         "1813"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_1_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_2_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_2_port": {
       "type": "string",
       "x-candidate-values": [
         "1813"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_2_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_3_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_3_port": {
       "type": "string",
       "x-candidate-values": [
         "1813"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_3_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_attempts": {
       "type": "string",
       "x-candidate-values": [
         "1"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_interim_interval": {
       "type": "string",
       "x-candidate-values": [
         "1800"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_mode": {
       "type": "string",
       "x-candidate-values": [
         "none"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_acct_timeout": {
       "type": "string",
       "x-candidate-values": [
         "3"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_1_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_1_port": {
       "type": "string",
       "x-candidate-values": [
         "1812"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_1_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_2_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_2_port": {
       "type": "string",
       "x-candidate-values": [
         "1812"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_2_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_3_host": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_3_port": {
       "type": "string",
       "x-candidate-values": [
         "1812"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_3_secret": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_attempts": {
       "type": "string",
       "x-candidate-values": [
         "1"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_auth_timeout": {
       "type": "string",
       "x-candidate-values": [
         "3"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "eth2_rad_mode": {
       "type": "string",
       "x-candidate-values": [
         "load-balance"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth1_access_vlan": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth1_allowed_vlan": {
       "type": "string",
@@ -594,39 +595,39 @@
         "500,501,503",
         "500,501,551"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth1_channelgroup": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth1_mode": {
       "type": "string",
       "x-candidate-values": [
         "trunk"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth1_native_vlan": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth1_phy_duplex": {
       "type": "string",
       "x-candidate-values": [
         "full"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth1_phy_speed": {
       "type": "string",
       "x-candidate-values": [
         "auto"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth1_tag_native": {
       "type": "string",
@@ -634,11 +635,11 @@
         "disable",
         "enable"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth2_access_vlan": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth2_allowed_vlan": {
       "type": "string",
@@ -648,39 +649,39 @@
         "500,501,503",
         "500,501,551"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth2_channelgroup": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth2_mode": {
       "type": "string",
       "x-candidate-values": [
         "trunk"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth2_native_vlan": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth2_phy_duplex": {
       "type": "string",
       "x-candidate-values": [
         "full"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth2_phy_speed": {
       "type": "string",
       "x-candidate-values": [
         "auto"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth2_tag_native": {
       "type": "string",
@@ -688,14 +689,646 @@
         "disable",
         "enable"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "interface_eth2_tunnel_mode": {
       "type": "string",
       "x-candidate-values": [
         ""
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
+    },
+    "eth3_acl_policy": {
+      "type": "string",
+      "x-candidate-values": [
+        "radius"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_called_sta_id": {
+      "type": "string",
+      "x-candidate-values": [
+        "AP-MAC"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_called_sta_id_custom": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_dynamic_auth": {
+      "type": "string",
+      "x-candidate-values": [
+        "true"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_mac_auth": {
+      "type": "string",
+      "x-candidate-values": [
+        "false"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_mac_auth_delimiter": {
+      "type": "string",
+      "x-candidate-values": [
+        ":"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_mac_auth_fallback": {
+      "type": "string",
+      "x-candidate-values": [
+        "true"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_mac_auth_uppercase": {
+      "type": "string",
+      "x-candidate-values": [
+        "false"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_nas_id": {
+      "type": "string",
+      "x-candidate-values": [
+        "AP-HOSTNAME"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_nas_id_custom": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_nas_ip": {
+      "type": "string",
+      "x-candidate-values": [
+        "AP-IP"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_nas_ip_custom": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_1_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_1_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1813"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_1_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_2_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_2_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1813"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_2_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_3_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_3_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1813"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_3_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_attempts": {
+      "type": "string",
+      "x-candidate-values": [
+        "1"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_interim_interval": {
+      "type": "string",
+      "x-candidate-values": [
+        "1800"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_mode": {
+      "type": "string",
+      "x-candidate-values": [
+        "none"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_acct_timeout": {
+      "type": "string",
+      "x-candidate-values": [
+        "3"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_1_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_1_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1812"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_1_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_2_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_2_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1812"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_2_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_3_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_3_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1812"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_3_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_attempts": {
+      "type": "string",
+      "x-candidate-values": [
+        "1"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_auth_timeout": {
+      "type": "string",
+      "x-candidate-values": [
+        "3"
+      ],
+      "x-observed-count": 1
+    },
+    "eth3_rad_mode": {
+      "type": "string",
+      "x-candidate-values": [
+        "load-balance"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_acl_policy": {
+      "type": "string",
+      "x-candidate-values": [
+        "radius"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_called_sta_id": {
+      "type": "string",
+      "x-candidate-values": [
+        "AP-MAC"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_called_sta_id_custom": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_dynamic_auth": {
+      "type": "string",
+      "x-candidate-values": [
+        "true"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_mac_auth": {
+      "type": "string",
+      "x-candidate-values": [
+        "false"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_mac_auth_delimiter": {
+      "type": "string",
+      "x-candidate-values": [
+        ":"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_mac_auth_fallback": {
+      "type": "string",
+      "x-candidate-values": [
+        "true"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_mac_auth_uppercase": {
+      "type": "string",
+      "x-candidate-values": [
+        "false"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_nas_id": {
+      "type": "string",
+      "x-candidate-values": [
+        "AP-HOSTNAME"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_nas_id_custom": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_nas_ip": {
+      "type": "string",
+      "x-candidate-values": [
+        "AP-IP"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_nas_ip_custom": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_1_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_1_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1813"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_1_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_2_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_2_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1813"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_2_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_3_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_3_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1813"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_3_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_attempts": {
+      "type": "string",
+      "x-candidate-values": [
+        "1"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_interim_interval": {
+      "type": "string",
+      "x-candidate-values": [
+        "1800"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_mode": {
+      "type": "string",
+      "x-candidate-values": [
+        "none"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_acct_timeout": {
+      "type": "string",
+      "x-candidate-values": [
+        "3"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_1_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_1_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1812"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_1_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_2_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_2_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1812"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_2_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_3_host": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_3_port": {
+      "type": "string",
+      "x-candidate-values": [
+        "1812"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_3_secret": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_attempts": {
+      "type": "string",
+      "x-candidate-values": [
+        "1"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_auth_timeout": {
+      "type": "string",
+      "x-candidate-values": [
+        "3"
+      ],
+      "x-observed-count": 1
+    },
+    "eth4_rad_mode": {
+      "type": "string",
+      "x-candidate-values": [
+        "load-balance"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth3_access_vlan": {
+      "type": "integer",
+      "x-observed-count": 1
+    },
+    "interface_eth3_allowed_vlan": {
+      "type": "string",
+      "x-candidate-values": [
+        "500,501"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth3_channelgroup": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth3_mode": {
+      "type": "string",
+      "x-candidate-values": [
+        "trunk"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth3_native_vlan": {
+      "type": "integer",
+      "x-observed-count": 1
+    },
+    "interface_eth3_phy_duplex": {
+      "type": "string",
+      "x-candidate-values": [
+        "full"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth3_phy_speed": {
+      "type": "string",
+      "x-candidate-values": [
+        "auto"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth3_tag_native": {
+      "type": "string",
+      "x-candidate-values": [
+        "enable"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth3_tunnel_mode": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth4_access_vlan": {
+      "type": "integer",
+      "x-observed-count": 1
+    },
+    "interface_eth4_allowed_vlan": {
+      "type": "string",
+      "x-candidate-values": [
+        "500,501"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth4_channelgroup": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth4_mode": {
+      "type": "string",
+      "x-candidate-values": [
+        "trunk"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth4_native_vlan": {
+      "type": "integer",
+      "x-observed-count": 1
+    },
+    "interface_eth4_phy_duplex": {
+      "type": "string",
+      "x-candidate-values": [
+        "full"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth4_phy_speed": {
+      "type": "string",
+      "x-candidate-values": [
+        "auto"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth4_tag_native": {
+      "type": "string",
+      "x-candidate-values": [
+        "enable"
+      ],
+      "x-observed-count": 1
+    },
+    "interface_eth4_tunnel_mode": {
+      "type": "string",
+      "x-candidate-values": [
+        ""
+      ],
+      "x-observed-count": 1
     }
   },
   "required": [
@@ -792,9 +1425,654 @@
     "interface_eth2_tunnel_mode"
   ],
   "x-observed-count": 0,
-  "x-optional": {},
+  "x-optional": {
+    "eth3_acl_policy": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_called_sta_id": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_called_sta_id_custom": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_dynamic_auth": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_mac_auth": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_mac_auth_delimiter": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_mac_auth_fallback": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_mac_auth_uppercase": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_nas_id": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_nas_id_custom": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_nas_ip": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_nas_ip_custom": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_1_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_1_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_1_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_2_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_2_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_2_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_3_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_3_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_3_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_attempts": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_interim_interval": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_mode": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_acct_timeout": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_1_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_1_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_1_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_2_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_2_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_2_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_3_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_3_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_3_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_attempts": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_auth_timeout": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth3_rad_mode": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_acl_policy": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_called_sta_id": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_called_sta_id_custom": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_dynamic_auth": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_mac_auth": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_mac_auth_delimiter": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_mac_auth_fallback": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_mac_auth_uppercase": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_nas_id": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_nas_id_custom": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_nas_ip": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_nas_ip_custom": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_1_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_1_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_1_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_2_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_2_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_2_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_3_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_3_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_3_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_attempts": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_interim_interval": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_mode": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_acct_timeout": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_1_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_1_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_1_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_2_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_2_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_2_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_3_host": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_3_port": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_3_secret": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_attempts": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_auth_timeout": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "eth4_rad_mode": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth3_access_vlan": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth3_allowed_vlan": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth3_channelgroup": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth3_mode": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth3_native_vlan": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth3_phy_duplex": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth3_phy_speed": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth3_tag_native": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth3_tunnel_mode": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth4_access_vlan": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth4_allowed_vlan": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth4_channelgroup": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth4_mode": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth4_native_vlan": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth4_phy_duplex": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth4_phy_speed": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth4_tag_native": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    },
+    "interface_eth4_tunnel_mode": {
+      "observed_on": 1,
+      "of": 37,
+      "seen_at": [
+        "mowanjum/E430H"
+      ]
+    }
+  },
   "x-evidence": {
-    "observations_with_records": 36,
+    "observations_with_records": 37,
     "observations_empty": 0,
     "empty_at": [],
     "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

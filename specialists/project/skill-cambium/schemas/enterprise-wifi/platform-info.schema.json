@@ -7,8 +7,9 @@
     "family": "enterprise-wifi",
     "endpoint": "platform-info",
     "layer": "raw-endpoint",
-    "observations": 36,
+    "observations": 37,
     "models": [
+      "E430H",
       "E500",
       "XV2"
     ],
@@ -60,7 +61,7 @@
       "warakurna",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-20T07:43:13Z"
+    "generated_utc": "2026-09-21T14:18:43Z"
   },
   "type": "object",
   "properties": {
@@ -68,19 +69,19 @@
       "type": "string",
       "x-identifying": true,
       "x-note": "End-user identifying \u2014 values are never recorded in this contract.",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "max_bss_per_radio": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "max_clients": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "max_ethernet_ports": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "max_num_scan_radios": {
       "type": "integer",
@@ -88,34 +89,35 @@
     },
     "max_radios": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "max_wlans": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "model": {
       "type": "string",
       "x-candidate-values": [
         "XV2-2T0",
+        "cnPilot E430H",
         "cnPilot E500"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "r1_default_unicast_ratelist": {
       "type": "string",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "r1_max_width": {
       "type": "integer",
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "r2_default_unicast_ratelist": {
       "type": "string",
       "x-candidate-values": [
         "6b 9 12b 18 24b 36 48 54"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "sbs_mode_support": {
       "type": "boolean",
@@ -132,9 +134,10 @@
       "type": "string",
       "x-candidate-values": [
         "Gambit",
-        "Jaguar"
+        "Jaguar",
+        "Sage"
       ],
-      "x-observed-count": 36
+      "x-observed-count": 37
     },
     "wifi_cert_test_mode": {
       "type": "boolean",
@@ -165,14 +168,14 @@
   "x-optional": {
     "is_6ghz_supported": {
       "observed_on": 1,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "junjuwa/XV2"
       ]
     },
     "max_num_scan_radios": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -206,7 +209,7 @@
     },
     "sbs_mode_support": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -240,7 +243,7 @@
     },
     "sku": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -274,7 +277,7 @@
     },
     "wifi_cert_test_mode": {
       "observed_on": 28,
-      "of": 36,
+      "of": 37,
       "seen_at": [
         "amata/XV2",
         "ampilatwatja/XV2",
@@ -308,7 +311,7 @@
     }
   },
   "x-evidence": {
-    "observations_with_records": 36,
+    "observations_with_records": 37,
     "observations_empty": 0,
     "empty_at": [],
     "note": "`required` rests only on observations that returned a record. Endpoints empty at capture time contribute nothing either way."

@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260922_0020](#20260922_0020)
 - [20260921_2015](#20260921_2015)
 - [20260921_1541](#20260921_1541)
 - [20260921_1237](#20260921_1237)
@@ -52,6 +53,14 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260922_0020
+
+Enterprise Wi-Fi standard re-merged with `schema_tool merge` after a new observation, `schemas/_observations/enterprise-wifi/mowanjum-E430H-20260922.json` — the
+first E430 in the set (model reports as `cnPilot E430H`, firmware 4.2.3.1-r17). It adds `link_duplex2`, `link_duplex3`, `link_speed2` and `link_speed3` to `device-summary` and
+the `eth3_*`, `eth4_*`, `interface_eth3_*` and `interface_eth4_*` families to `ethports-config`, now optional and attributed to E430H at mowanjum. Four mowanjum E500s checked conformant against
+the standard before the merge. Also recorded: `redact()`'s key pattern matches `authorized`, so observations must be taken from unredacted payloads (the
+schema tool records no values). Source: unified-network-controller's enterprise Wi-Fi canary, cambium-swap evidence E141.
 
 ## 20260921_2015
 
