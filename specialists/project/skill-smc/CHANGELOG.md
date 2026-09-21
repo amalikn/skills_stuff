@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)](#20260921_2242--low-touch-provisioning-the-redis-backed-script-is-the-fleets-version-from-ansible-wifis-big_push-branch-not-master-v0150---v0151)
 - [20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)](#20260921_1310--multi-smc-sites-any-box-reaches-the-whole-management-address-space-jump-host-and-host-key-consequences-v0149---v0150)
 - [20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)](#20260921_1237--plain-openssh-proxyjump-to-devices-behind-an-smc-box-verified-nbn_accelerate-sshconfig-block-per-site-device-host-keys-v0148---v0149)
 - [20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)](#20260920_2342--path-checking-widened-past-five-files-20-split-filenames-joined-ansible-wifi-declared-as-a-sibling-root-v0147---v0148)
@@ -63,6 +64,13 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)
+
+`references/04_dependency-tree.md` resolves its open "naming collision" item: the Redis-dependent `cnmaestro-provisioning` service and the `smc_ltp` low-touch
+script are one mechanism at two versions. `master` holds the older 3,222-line script with no Redis; the unmerged `big_push` branch (Daniel Gravolin, 36
+commits) holds the 4,514-line Redis version. Checked live, read-only: `umoona-smc01` runs `big_push` commit `40c283b6`; `pandanus-park-smc01` runs a copy
+matching no commit (deployed from uncommitted changes). Consumer: `unified-network-controller`'s architecture brief, point 3.
 
 ## 20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)
 
