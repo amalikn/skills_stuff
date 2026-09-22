@@ -1,0 +1,99 @@
+# Verified SNMP OIDs per device type — the machine-readable registry (operator, 2026-09-22: "maintain a list of verified snmp
+# oid for each device type").
+#
+# Rule: an OID enters a device type ONLY after a live exchange against a unit of that exact type (model), recorded with date,
+# unit, site, firmware and method. Never by inference from a sibling model or a MIB mirror: cnPilotMIB matching XV2-22H is not
+# proof for XV2-2T0, E500 or E430 (06_device-api-cli-reference.md). `access: rw` means a SET was made and read back on that
+# type; `ro` means read only (a SET was never tried, not that it is refused). Prose, provenance and gotchas stay in
+# 06_device-api-cli-reference.md; this file is the list tools read. Consumers: unified-network-controller
+# `adapters/cambium/snmp.py` (reads), `wc-local/scripts/snmp_write_check.py` (write canary). Update it in the same session as
+# any new live SNMP result, per this pack's Standing Write-Back Contract.
+#
+# Communities (vault): cambium-devices/apn-snmp-ro|rw (teleport.apn.au sites), nbn-snmp-ro|rw (teleport.communitywifi.net.au).
+# apn-snmp-rw and nbn-snmp-rw both first proven 2026-09-22 (ePMP 3000L sysLocation, below).
+# Table OIDs are ENTRY OIDs: a row reads <entry>.<column>.<index>. Scalars answer at instance .0.
+
+schema_version: 1
+updated: "2026-09-22"
+
+mib2_system: &mib2_system
+  # Standard MIB-II system group. Listed per type only where verified on that type.
+  sysDescr: ".1.3.6.1.2.1.1.1.0"
+  sysUpTime: ".1.3.6.1.2.1.1.3.0"
+  sysContact: ".1.3.6.1.2.1.1.4.0"
+  sysName: ".1.3.6.1.2.1.1.5.0"
+  sysLocation: ".1.3.6.1.2.1.1.6.0"
+
+device_types:
+  epmp-3000l:
+    family: epmp-ap
+    models: [ePMP 3000L]
+    arm: ".1.3.6.1.4.1.17713.21 (pmpMibTree, CAMBIUM-PMP80211-MIB)"
+    oids:
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "holds the device name, not a model string",
+         verified: {date: "2026-09-22", unit: MOR_T1_3000L_W_IP0_10, site: mornington, method: get}}
+      - {oid: ".1.3.6.1.2.1.1.3.0", name: sysUpTime, access: ro,
+         verified: {date: "2026-09-22", unit: MOR_T1_3000L_W_IP0_10, site: mornington, method: get}}
+      - {oid: ".1.3.6.1.2.1.1.4.0", name: sysContact, access: ro, note: "reads 'undefined'; not written (operator)",
+         verified: {date: "2026-09-22", unit: MOR_T1_3000L_W_IP0_10, site: mornington, method: get}}
+      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, access: ro, note: "holds the device name",
+         verified: {date: "2026-09-22", unit: MOR_T1_3000L_W_IP0_10, site: mornington, method: get}}
+      - {oid: ".1.3.6.1.2.1.1.6.0", name: sysLocation, access: rw,
+         note: "SET, read back, restored on 6 units, 3 sites, both clusters (apn-snmp-rw and nbn-snmp-rw); sysName/sysDescr unaffected, no reboot. Test-and-revert only (operator: change nothing yet)",
+         verified: {date: "2026-09-22", unit: "MOR_T1_3000L_W_IP0_10, MOR_T1_3000L_S_IP0_11, HRN_3000L_T1_Omni0_10, HRN_3000l_T1_SW0_11, HOP_3000L_T1_SecE0_21, HOP_3000L_T1_SecW0_22", site: "mornington, horn-island, hope-vale", method: set+get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.1.2.10.0", name: cambiumAPNumberOfConnectedSTA, access: ro,
+         verified: {date: "2026-09-20", unit: HOP_3000L_T1_Omni0_20, site: hope-vale, firmware: 4.7.0.1, method: walk}}
+      - oid: ".1.3.6.1.4.1.17713.21.1.2.30.1"
+        name: cambiumAPConnectedSTAEntry
+        access: ro
+        columns: {1: mac, 2: aid, 3: channel, 4: ul_rssi, 5: dl_rssi, 6: ul_snr, 7: dl_snr, 8: ul_mcs, 9: dl_mcs, 10: ip,
+                  19: tx_capacity, 20: tx_quality, 27: session_time, 28: dl_rate_mbps, 29: distance_m,
+                  38: sm_model (undocumented in MIB), 43: sm_firmware (undocumented in MIB)}
+        note: "live agent returns columns through .43; the MIB mirror documents 29"
+        verified: {date: "2026-09-20", unit: HOP_3000L_T1_Omni0_20, site: hope-vale, firmware: 4.7.0.1, method: walk}
+    not_answering: [{unit: MOW_3000L_E_IP_0-20, site: mowanjum, date: "2026-09-22", note: "timeout on apn-snmp-ro: SNMP off or another community"}]
+
+  xv2-22h:
+    family: enterprise-wifi
+    models: [XV2-22H]
+    arm: ".1.3.6.1.4.1.17713.22 (cnPilotMIB)"
+    oids:
+      - oid: ".1.3.6.1.4.1.17713.22.1.1.1"
+        name: cambiumAccessPointEntry
+        access: ro
+        columns: {1: mac, 2: name, 3: ip, 4: serial, 5: model, 6: cpu, 7: memory, 8: sw_version, 9: uptime, 10: hardware_type,
+                  11: regulatory, 12: cnmaestro_status, 13: cnmaestro_account, 14: client_count, 15: upgrade_status}
+        verified: {date: "2026-09-18", unit: "HOP_XV2_AP26/27/28/29", site: hope-vale, firmware: 6.6.0.3-r9, method: walk}
+      - {oid: ".1.3.6.1.4.1.17713.22.1.1.1.14", name: cambiumAPTotalClients, access: ro,
+         verified: {date: "2026-09-20", unit: hope-vale XV2, site: hope-vale, firmware: 6.6.0.3-r9, method: walk}}
+      - oid: ".1.3.6.1.4.1.17713.22.1.2.1"
+        name: cambiumRadioEntry
+        access: ro
+        columns: {5: client_count, 6: channel, 7: width, 8: tx_power, 16: noise_floor, 17: interference, 18: airtime}
+        verified: {date: "2026-09-20", unit: hope-vale XV2, site: hope-vale, firmware: 6.6.0.3-r9, method: walk}
+      - oid: ".1.3.6.1.4.1.17713.22.1.3"
+        name: cambiumClientTable
+        access: ro
+        columns: {2: mac, 3: ip, 4: name, 5: ssid, 6: vendor, 7: hwmode, 8: radio_index, 9: wlan, 10: vlan, 11: snr, 12: tx_rate,
+                  13: counter, 14: counter, 15: counter, 16: counter}
+        note: "an empty table walks as noSuchObject"
+        verified: {date: "2026-09-20", unit: hope-vale XV2, site: hope-vale, firmware: 6.6.0.3-r9, method: walk}
+    unverified_siblings: [XV2-2T0, E500, E430H]   # same arm expected; not proven on these models
+
+  cnwave-v5000:
+    family: cnwave-60ghz
+    models: [V5000]
+    arm: ".1.3.6.1.4.1.17713.60 (cnWave)"
+    oids:
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "e.g. 'Cambium cnWave V5000 Distribution Node, Version 1.4'",
+         verified: {date: "2026-09-21", unit: MOR_T3_V5000_IP4_40, site: mornington, firmware: "1.4", method: get}}
+      - oid: ".1.3.6.1.4.1.17713.60.1.1.1"
+        name: cnwave link entry
+        access: ro
+        columns: {2: interface, 3: local_mac, 4: peer_mac, 7: signal_dbm}
+        note: ".5 and .6 undocumented, deliberately unread; enabled per device (programme split)"
+        verified: {date: "2026-09-21", unit: MOR_T3_V5000_IP4_40, site: mornington, firmware: "1.4", method: walk}
+    unverified_siblings: [V3000, V2000, V1000]   # the 2026-09-21 survey read these by sysDescr only
+
+  # No verified SNMP surface yet (live walk not done): cnpilot-r195p (snmpd present, one sysDescr GET, E122 — too thin to list),
+  # epmp-force300 (SM; SM-side scalars .17713.21.1.2.3/.18 exist on the SM, not walked here), e500, e430h, xv2-2t0.

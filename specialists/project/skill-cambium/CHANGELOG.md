@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260922_1957](#20260922_1957)
 - [20260922_0941](#20260922_0941)
 - [20260922_0754](#20260922_0754)
 - [20260922_0020](#20260922_0020)
@@ -55,6 +56,16 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260922_1957
+
+v0.6.7 -> v0.6.8. `scripts/cambium_r195p_adapter.py`: sshpass exit 5 (wrong password) now raises `SSH login failed: password rejected (sshpass exit 5)` whatever `allow_nonzero` says; before,
+`get_snapshot()` swallowed it and reported `snapshot incomplete, sections missing`. Verified live on `MOW-R195P-1003` with a wrong and then the real password. `references/02_device-access-and-vault.md`:
+new table of each family's response to a wrong password, read live the same day. Enterprise Wi-Fi answers HTTP 403 "Invalid username or password", which unified-network-controller's legacy-retry
+check did not match.
+
+Also: new `references/snmp-oid-registry.yaml`, the verified SNMP OIDs per device type (operator, 2026-09-22), linked from `06_device-api-cli-reference.md` and the references index.
+Both read-write SNMP communities are proven by a test-and-revert sysLocation SET on six ePMP 3000L units at three sites, both clusters. The vault table no longer calls them untested.
 
 ## 20260922_0941
 

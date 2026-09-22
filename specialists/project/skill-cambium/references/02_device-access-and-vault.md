@@ -35,9 +35,9 @@ Vault: `~/Library/CloudStorage/OneDrive-Personal/A/APN_keepassDB.kdbx`, group `c
 | `cambium-devices/cnpilot-r-series`    | R195P                                                                                                                                                        |
 | `cambium-devices/cnwave-60ghz`        | V5000, V3000, V2000, V1000                                                                                                                                   |
 | `cambium-devices/apn-snmp-ro`         | SNMPv2c read-only community, `rcp`-flavour sites (2026-09-17)                                                                                                |
-| `cambium-devices/apn-snmp-rw`         | SNMPv2c read-write community, `rcp`-flavour sites — untested                                                                                                 |
+| `cambium-devices/apn-snmp-rw`         | SNMPv2c read-write community, `rcp`-flavour sites — SET proven 2026-09-22 (ePMP 3000L)                                                                     |
 | `cambium-devices/nbn-snmp-ro`         | SNMPv2c read-only community, `nbn_accelerate`-flavour sites                                                                                                  |
-| `cambium-devices/nbn-snmp-rw`         | SNMPv2c read-write community, `nbn_accelerate`-flavour sites — untested                                                                                      |
+| `cambium-devices/nbn-snmp-rw`         | SNMPv2c read-write community, `nbn_accelerate`-flavour sites — SET proven 2026-09-22 (ePMP 3000L)                                                          |
 | `cambium-devices/nbn-cnmaestro-api`   | cnMaestro REST API v2 OAuth2 client (URL/UserName = client_id, Password = client_secret) for the `cw-cnmaestro01`/`nbn_accelerate` controller — see "cnMaestro |
 | `cambium-devices/apn-cnmaestro01 web login` | Web UI login for the new on-prem `apn-cnmaestro01.apn.au` (no API — no cnMaestro X after 2026-10-01; automation is web scraping). Added by the operator 2026-09-21 |
 | `cambium-devices/lt-cnmaestro` | Web UI login for the on-prem `lt-cnmaestro.apn.au` (7 low-touch rcp sites; cnMaestro X today, ending soon). Moved into this group by the operator 2026-09-21 |
@@ -49,6 +49,23 @@ Every entry's username is `admin`. Don't create a fresh sub-group per family —
 
 A minority of individual Enterprise Wi-Fi (XV2) and ePMP SM (Force 300) field units were never re-credentialed from the old factory default to the standard password. There's no way (as of 2026-09-17)
 to tell which specific serials from the asset registers or family matrix alone — try the family's primary vault entry first, fall back to the matching `-legacy` entry per device if it fails.
+
+### What a rejected password looks like, per family (verified live 2026-09-22)
+
+Read with a deliberately wrong password through each adapter (one attempt per unit, dry run). A tool deciding "credential rejected, try `-legacy`" must match every one of these, because they
+share no common word:
+
+| Family                     | Unit tested                 | Response to a wrong password                                                      |
+| -------------------------- | --------------------------- | --------------------------------------------------------------------------------- |
+| Enterprise Wi-Fi (E500)    | `Mowanjum_E500_AP1_IP3_10`  | `POST /api/login` HTTP **403** `{"success":false, "message":"Invalid username or password"}` |
+| Enterprise Wi-Fi (XV2)     | `HRN_XV2_AP1_IP3_10`        | same as E500                                                                      |
+| ePMP AP and SM             | `MOW_3000L_E_IP_0-20`, `MOW_F300-16SM_1003_IP_2_3` | HTTP 200, `{'msg': 'auth_failed', 'success': 0}`                      |
+| cnWave 60 GHz              | `HRN_T1_V5000_DN_IP4_10`    | HTTP 200, `{'success': False, 'message': 'User Authentication failed '}`          |
+| cnPilot R195P (SSH)        | `MOW-R195P-1003`            | sshpass 1.10 exit **5** ("Invalid/incorrect password"), stderr `Permission denied, please try again.` |
+
+Enterprise Wi-Fi's 403 surfaces as `HTTP 403` from `_request()`, before `login()` checks `success`, so matching only "login failed" misses it. That is how unified-network-controller's collector
+skipped the `-legacy` retry for every E500/XV2 until 2026-09-22 (the kalumburu case in `05_known-issues.md`). For R195P, `get_snapshot()` tolerates non-zero exits, so before 2026-09-22 a wrong password
+came back as `snapshot incomplete, sections missing`. `cambium_r195p_adapter.py` now raises `SSH login failed: password rejected (sshpass exit 5)`.
 
 ## `kp` Wrapper Gotchas
 

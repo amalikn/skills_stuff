@@ -72,6 +72,8 @@ Login mechanics (REST `POST /api/login` cookie/XSRF flow, `tsh` tunnel form, SSH
 | Network health (routes/ARP)  | `GET /api/ip_route-summary`       | `show ip route`,                              | Lower priority — mostly redundant with LibreNMS, kept for CLI-only    |
 |                              |                                   | `show arp`, `show ip neighbour`               | troubleshooting parity. Documented only, not yet queried live.        |
 
+**Verified OIDs per device type, machine-readable: [snmp-oid-registry.yaml](snmp-oid-registry.yaml)** (read/write access, unit, date, method). The sections below keep the provenance and gotchas.
+
 ### SNMP (cnPilotMIB) — Read-Only Identity Data, Confirmed Live 2026-09-18
 
 The gap noted in `cambium-swap`'s pass-08 research (no dedicated XV2/Wi-Fi 6 MIB in any public mirror) turned out not to block a real walk: the 2015-vintage `cnPilotMIB` mirror

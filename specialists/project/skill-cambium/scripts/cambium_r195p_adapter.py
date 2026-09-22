@@ -166,6 +166,11 @@ class CambiumR195PAdapter:
         # (HOR-R195P-1002, 2026-09-22: "sections missing" from an empty read).
         if result.returncode == 255:
             raise RuntimeError(f"SSH connection failed (exit 255): {result.stderr.strip()[:160]}")
+        # sshpass 1.10 exits 5 for "Invalid/incorrect password" (its man page; verified live 2026-09-22 on MOW-R195P-1003, stderr
+        # "Permission denied, please try again."). Raised whatever allow_nonzero says: get_snapshot() tolerates non-zero exits, so
+        # a rejected password used to come back as an empty read and surface as "snapshot incomplete, sections missing".
+        if result.returncode == 5 and cmd[0] == "sshpass":
+            raise RuntimeError(f"SSH login failed: password rejected (sshpass exit 5): {result.stderr.strip()[:120]}")
         if result.returncode != 0 and not allow_nonzero:
             raise RuntimeError(f"SSH command failed (exit {result.returncode}): {remote_command!r} -> {result.stderr.strip()}")
         return result.stdout

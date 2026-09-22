@@ -30,7 +30,7 @@
   "source_bias": "stable-operational",
   "created_at": "2026-09-17T00:00:00Z",
   "updated_at": "20260921_1015",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "dependencies": [],
   "known_constraints": [
     "No plaintext secrets in this pack or its consuming projects \u2014 device credentials are KeePassXC vault references only (<secret:keepassxc:cambium-devices/<entry>>), never values",

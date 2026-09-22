@@ -13,9 +13,10 @@ not duplicated here.
 5. `05_known-issues.md` — coverage gaps, unverified assumptions, staleness risks.
 6. `06_device-api-cli-reference.md` — device REST API / SSH CLI data points per adapter method, config-backup source, write-ops boundary.
 
-Plus one machine-readable companion, not counted among the numbered files:
+Plus machine-readable companions, not counted among the numbered files:
 
 - `site-addressing.yaml` — per-site/family IP addressing trust state and MAC-OUI lookup, companion to `03_asset-register-conventions.md`'s narrative.
+- `snmp-oid-registry.yaml` — verified SNMP OIDs per device type (read or write, unit, date, method), companion to `06_device-api-cli-reference.md`.
 
 ## Canonical governance linkage
 
