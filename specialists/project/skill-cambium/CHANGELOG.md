@@ -64,7 +64,7 @@ v0.6.7 -> v0.6.8. `scripts/cambium_r195p_adapter.py`: sshpass exit 5 (wrong pass
 new table of each family's response to a wrong password, read live the same day. Enterprise Wi-Fi answers HTTP 403 "Invalid username or password", which unified-network-controller's legacy-retry
 check did not match.
 
-Also: new `references/snmp-oid-registry.yaml`, the verified SNMP OIDs per device type (operator, 2026-09-22), linked from `06_device-api-cli-reference.md` and the references index.
+Also: new `references/snmp-oid-registry.yaml`, the verified SNMP OIDs per device type (operator, 2026-09-22), linked from `references/06_device-api-cli-reference.md` and the references index.
 Both read-write SNMP communities are proven by a test-and-revert sysLocation SET on six ePMP 3000L units at three sites, both clusters. The vault table no longer calls them untested.
 
 ## 20260922_0941
