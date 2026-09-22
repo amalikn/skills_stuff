@@ -56,8 +56,7 @@ An SMC box is an **x86 PC** or **ARM64 Raspberry Pi** running **Ubuntu 20.04+ (2
 {{inventory_hostname}}.teleport.<project>.au` — the domain splits by **project** (APN, nbn_accelerate), not by flavor; each project has multiple flavors nested under it (see `01_overview.md` "Remote
 Access").
 
-**Critical — Overlayroot:** All SMC boxes run overlayroot. Writes go to tmpfs (`/media/root-rw/overlay`) and are **lost on reboot**. Ansible changes only persist if the lower dir (`/media/root-ro`) is
-remounted read-write first. Always check overlayroot status before assuming a change persisted.
+**Critical — Overlayroot (RPi and WH boxes only; operator, 2026-09-22):** overlayroot runs on the Raspberry Pi and WH boxes (`rct`, `wh`, and `nbn_wh` once rolled out), not on x86. On those, writes go to tmpfs (`/media/root-rw/overlay`) and are **lost on reboot**; Ansible changes only persist if the lower dir (`/media/root-ro`) is remounted read-write first, so check overlayroot status before assuming a change persisted. x86 boxes (e.g. `rcp`, `nbn_accelerate`) have a plain ext4 root, where an `apt install` persists, and keep volatile data on tmpfs mounts instead. Which paths are tmpfs varies by box: `/tmp` is tmpfs on mowanjum-smc01 but ext4 on hope-vale-smc01; `/run` is tmpfs everywhere (see `references/07_hardware-overlay.md`).
 
 ## Related Workspaces
 

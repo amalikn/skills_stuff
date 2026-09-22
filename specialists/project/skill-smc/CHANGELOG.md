@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)](#20260922_1750--overlayroot-is-rpi-and-wh-only-x86-tmpfs-paths-differ-per-box-fping-on-three-x86-smcs-v0151---v0152)
 - [20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)](#20260921_2242--low-touch-provisioning-the-redis-backed-script-is-the-fleets-version-from-ansible-wifis-big_push-branch-not-master-v0150---v0151)
 - [20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)](#20260921_1310--multi-smc-sites-any-box-reaches-the-whole-management-address-space-jump-host-and-host-key-consequences-v0149---v0150)
 - [20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)](#20260921_1237--plain-openssh-proxyjump-to-devices-behind-an-smc-box-verified-nbn_accelerate-sshconfig-block-per-site-device-host-keys-v0148---v0149)
@@ -64,6 +65,12 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)
+
+SKILL.md said "All SMC boxes run overlayroot". Wrong, per the operator (2026-09-22): only RPi and WH boxes do. It now says so, matching what `references/07_hardware-overlay.md` already recorded per flavour.
+`07_hardware-overlay.md` gains an x86 section: plain ext4 root (an apt install persists), and the tmpfs mounts, which differ per box. `/tmp` is tmpfs on mowanjum-smc01 but ext4 on hope-vale-smc01, so use
+`/run`. fping 5.1 was installed by apt on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability pre-check. No ansible-wifi role installs it yet.
 
 ## 20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)
 

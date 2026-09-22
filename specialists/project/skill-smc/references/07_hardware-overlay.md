@@ -411,6 +411,26 @@ Mechanics that are easy to get wrong, all of them learned the hard way:
 
 The scan is `-xdev`, so it is forward-compatible with the structural fix: anything later moved onto its own filesystem drops out of scope automatically and correctly.
 
+### x86 boxes: no overlayroot; which paths are tmpfs (verified 2026-09-22)
+
+Operator, 2026-09-22: only RPi and WH boxes run overlayroot. x86 SMCs have a plain LVM/ext4 root (`overlayroot=""` in `/etc/overlayroot.conf`), so an `apt install` survives a reboot there.
+Scratch data that must not touch disk goes on a tmpfs mount, and those mounts differ box to box:
+
+| Box (x86)          | `/`  | `/tmp` | `/run` | `/dev/shm` |
+| ------------------ | ---- | ------ | ------ | ---------- |
+| mowanjum-smc01     | ext4 | tmpfs  | tmpfs  | tmpfs      |
+| hope-vale-smc01    | ext4 | ext4   | tmpfs  | tmpfs      |
+| horn-island-smc01  | ext4 | —      | tmpfs  | —          |
+
+`—` = not checked.
+
+Use `/run` (systemd's tmpfs) for throwaway files and check it with `stat -f -c %T /run` first. mowanjum-smc01 also mounts tmpfs on `/run/url_capture`, `/var/lib/fluent-bit/pos`,
+`/var/lib/node_exporter/textfile_collector`, `/var/lib/prometheus` and `/var/log/smc-groups` (the last from `/etc/tmpfiles.d/smc-log-groups.conf`).
+
+**fping** (2026-09-22): not in any ansible-wifi role. Installed by hand with apt (5.1-1, jammy) on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability
+pre-check (`wc-local/scripts/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That script falls back to `ping`,
+and a fleet install belongs in an ansible-wifi role.
+
 ### Checking Overlayroot Status
 
 ```bash
