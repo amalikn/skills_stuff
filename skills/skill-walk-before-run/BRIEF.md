@@ -306,7 +306,7 @@ definitions this reads GREEN, or at most AMBER, while the work sprawled.
 **Revisit:** at the next revision round. This is one real case; `references/calibration-cases.md` is still parked until the third, but this case should be entered first when it lands. Note the tension
 with this brief's own "Self-evolution" item: that item bans the skill changing itself from ledger evidence. This is an operator-directed note, not a ledger-driven change, and it changes nothing at
 runtime until a revision is deliberately made. Evidence lives in the incident project: `unified-network-controller` CHANGELOG entries `20260921_1953` and `20260921_2008`, its options register's D3
-inherited constraints (IC1–IC6), and the plan the operator redirected to, `docs/enterprise-wifi-end-to-end-plan-20260921_2011.md`.
+inherited constraints (IC1–IC6), and the plan the operator redirected to, `docs/trackers/enterprise-wifi-end-to-end-plan-20260921_2011.md`.
 
 The target architecture is not in dispute: `SKILL.md` as executable contract, `references/` as semantics, `evals/` as proof, `schemas/` as state format, `skills-data/` as state. Only the sequencing
 is. Each piece lands when something actually presses on it, and retrofitting is cheap here precisely because nothing points at those directories yet.

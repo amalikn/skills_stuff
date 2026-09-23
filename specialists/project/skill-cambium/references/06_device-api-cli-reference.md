@@ -562,7 +562,10 @@ Found while taking enterprise Wi-Fi end to end into OpenWISP (mowanjum E500 and 
 - **The management address is `device_ip`, also carried by the VLAN500 interface;** every other interface reports `0.0.0.0` (see [03_asset-register-conventions.md](03_asset-register-conventions.md)
   for the 10.255.0.0/18 rule).
 - **An AP that is powered off answers nothing through its forward:** the TLS handshake ends in `UNEXPECTED_EOF`, which a caller should report as unreachable, not as a protocol fault. Nine of fourteen
-  mowanjum APs were in that state at 23:30 AEST on 2026-09-21.
+  mowanjum APs were in that state at 23:30 AEST on 2026-09-21. **`UNEXPECTED_EOF` alone does not prove the device is off** (2026-09-23): ePMP 3000L `Tower3_Omni 4_IP_0_30` at kalumburu, firmware
+  `4.7.0.1`, answered ping from the SMC and ended every HTTPS read in `UNEXPECTED_EOF` twice, while SNMP through the same SMC read it normally: 21 SMs, MCS 17-18, TX quality 100. Same model and
+  firmware as three neighbours that read fine, so its HTTPS service had failed with the radio up. Tell the two apart with a second protocol before reporting: no ping and no SNMP is unreachable; ping
+  and SNMP with a dead HTTPS is a management-plane fault on a live radio. The unified-network-controller collector reports this case as `pingable`.
 - **The XV2 interface list varies, so metric counts vary** (hope-vale, 2026-09-22, firmware `6.6.0.3-r9`). `interface-summary` lists `PORT-CHANNEL1`, `VLAN500`, `ETH1`, `ETH2`, plus `ETH3` on the
   XV2-22H only (the XV2-2T0 has two Ethernet ports), plus `VLAN501` on four of five units. `HOP_XV2_AP26_IP3_26` listed no `VLAN501`, although its `HopeVale_WiFi` WLAN is on VLAN 501 like the others.
   It is not the client count at read time: AP27 and AP35 had no clients and still listed it. The cause is **unverified**; a restart about 7 hours earlier on AP26 is one lead. Callers must iterate the

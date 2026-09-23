@@ -6,8 +6,8 @@
 - [tmpfs relocations need `tmpfiles.d`, not just a `file:` task (2026-07-28)](#tmpfs-relocations-need-tmpfilesd-not-just-a-file-task-2026-07-28)
 - [Reclaiming state that a role's own tooling can't see (`smc_system` journal reclaim, 2026-07-28)](#reclaiming-state-that-a-roles-own-tooling-cant-see-smc_system-journal-reclaim-2026-07-28)
 - [Narrowing tags: ask what the tag EXCLUDES (2026-07-28)](#narrowing-tags-ask-what-the-tag-excludes-2026-07-28)
-- [`smc_network` VRF template requires netplan ≥ 0.106 — the whole fleet runs 0.104 (2026-08-25)](#smc_network-vrf-template-requires-netplan-0106-the-whole-fleet-runs-0104-2026-08-25)
-- [`smc_rsyslog`'s squid stop fails on squid's own drain window — fixed 2026-08-26](#smc_rsyslogs-squid-stop-fails-on-squids-own-drain-window-fixed-2026-08-26)
+- [`smc_network` VRF template requires netplan ≥ 0.106 — the whole fleet runs 0.104 (2026-08-25)](#smc_network-vrf-template-requires-netplan--0106--the-whole-fleet-runs-0104-2026-08-25)
+- [`smc_rsyslog`'s squid stop fails on squid's own drain window — fixed 2026-08-26](#smc_rsyslogs-squid-stop-fails-on-squids-own-drain-window--fixed-2026-08-26)
 - [Guarded pre-split syslog reclaim in `smc_rsyslog` (added 2026-08-26)](#guarded-pre-split-syslog-reclaim-in-smc_rsyslog-added-2026-08-26)
 - [Code notes: where the long explanation goes, and what it can and cannot survive (2026-08-27)](#code-notes-where-the-long-explanation-goes-and-what-it-can-and-cannot-survive-2026-08-27)
 - [`smc_squid`'s blocklist refresh: how it actually works, and the transport nobody checked (2026-09-01)](#smc_squids-blocklist-refresh-how-it-actually-works-and-the-transport-nobody-checked-2026-09-01)
@@ -178,6 +178,15 @@ other host gets — see `02_service-map.md` for the full DNS-resolver comparison
 
 **`smc_dhcpd` LTP-specific fix.** `roles/smc_dhcpd/tasks/ubuntu.yml` has an apparmor-profile-removal + service-user block gated `when: "'smc_ltp' in group_names"` — runs `isc-dhcp-server` as root
 instead of the default `dhcpd` user on LTP hosts, unrelated to the DNS or CNMaestro purposes above.
+
+**How the provisioning script is driven and decides (read from `origin/big_push`, 2026-09-23).** `roles/smc_dhcpd/templates/dhcpd.conf.j2` line 169 runs it on every lease commit as
+`execute("/usr/bin/python3", "/usr/local/lib/cnmaestro-provisioning/cnmaestro-provisioning.py", clhw, clip, clvci, clrid)`: the device MAC, leased IP, DHCP Vendor Class Identifier and DHCP Option 82
+Remote ID. The script daemonises and holds a per-MAC lock under `/var/local/cnmaestro-provisioning/`. Family comes from the Vendor Class Identifier (`Cambium-cnPilot R…` home CPE, `Cambium-WiFi-AP`
+enterprise AP, `Cambium` ePMP). Before acting it requires the device to be claimed and online in cnMaestro, its upstream device (from Option 82) fully onboarded, and for ePMP the technician's Sidekick
+step done. A device in `WAITING_FOR_APPROVAL` is a replacement when a replaced MAC is recorded (cnMaestro description first, else on the device), otherwise new: new devices are pre-provisioned and
+approved in cnMaestro with a location ID from a Redis counter and the model's template; replacements require the old unit onboarded, offline and in the same managed account and network. Outcomes go to
+Teams and WhatsApp. Every gate and action is a cnMaestro call, so the method stops without cnMaestro. unified-network-controller documents a Nautobot-first equivalent in its
+`docs/inventory/inventory-rebuild-without-cnmaestro-20260923_1830.md`.
 
 **Open question — the acronym.** "LTP" is not expanded anywhere in the codebase (no comment, no README, no commit message found). Functional purpose is well-evidenced from code; the literal meaning of
 the letters is not — do not guess/state one as fact without an operator confirmation.
@@ -514,8 +523,8 @@ tmpfs the *only* published fstype, dropping the real root-disk `/` metrics. Remo
 
 Why this is cleanly scoped (verified live on mornington, `findmnt -t tmpfs` = 9 mounts): the **existing** `--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|run)($|/)` already drops
 `/dev/shm` and every `/run/*` tmpfs, so removing the fs-type exclusion surfaces **exactly** the four `/tmp`/`/var/...` mounts and nothing noisy (no `/dev/shm`, no `/run/*`, no PrivateTmp — those
-aren't separate mounts in the host namespace). systemd note: **do not** add `#` comment lines inside the `\`-continued `ExecStart` block — systemd does not support comments mid-continuation and it  <!-- path:example -->
-breaks unit parsing (keep the rationale in this doc instead).
+aren't separate mounts in the host namespace). systemd note: **do not** add `#` comment lines inside the `\`-continued `ExecStart` block — systemd does not support comments mid-continuation and it
+<!-- path:example --> breaks unit parsing (keep the rationale in this doc instead).
 
 Deploy: `smc_prometheus.yml --tags node_exporter` (copies the unit, restarts node_exporter — brief scrape gap only). Verified 2026-07-23 across 15/16 nodes (new-looma offline at the time): all four
 mounts publish `node_filesystem_size_bytes{fstype="tmpfs"}` in central Prometheus; fbpos %-used reads 6–9%, matching live `findmnt`. Alert query: `100*(1 -

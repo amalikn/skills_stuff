@@ -26,7 +26,7 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 - [x] Operator decision 1 — **closed 20260923_1350**: installed by symlink into `~/.claude`, `~/.codex` and `~/.hermes`, all three resolving to this canonical path. Verified end to end through
       the `~/.claude` link: template validated, an observation appended, a report rendered with the second eval correctly deriving `not_evaluated`.
 - [x] Operator decision 2 — **closed 20260923_1352**: `unified-network-controller` writes the first real suite. Evidenced, not assumed: its
-      `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/evaluation-framework-implementation-20260923_0819.md`
+      `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/evaluation/evaluation-framework-implementation-20260923_0819.md`
       already defines 14 axes with a measure, named oracle, evidence altitude and tier each, and the shipped
       `examples/network-controller/` suite was modelled on it. No other candidate project has an evaluation framework at all.
 - [ ] **First-suite blocker (found 20260923_1352) — the gate is now on the controller, not on this package.** `unified-network-controller` has neither `tests/` nor `evals/`, no inventory

@@ -96,7 +96,7 @@ keys stay keyed by site. Consumer: `unified-network-controller`'s options regist
 - Device host keys collide across sites because management subnets overlap: key them per site (`HostKeyAlias=<site>-<ip>` or a per-site `UserKnownHostsFile`).
 - Device password via `sshpass -e` from an env var, never `-p` (argv exposure).
 
-Consumer: `unified-network-controller` `docs/device-access-via-proxyjump-and-tbot-20260921_1232.md`, which also records the tbot (production) form and its open checks.
+Consumer: `unified-network-controller` `docs/inventory/device-access-via-proxyjump-and-tbot-20260921_1232.md`, which also records the tbot (production) form and its open checks.
 
 ## 20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)
 
