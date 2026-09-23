@@ -122,6 +122,8 @@ device_types:
     models: [E500]
     arm: ".1.3.6.1.4.1.17713.22 (cnPilotMIB)"
     oids:
+      - {oid: ".1.3.6.1.2.1.1.6.0", name: sysLocation, access: ro, note: "SET REFUSED with the read-write community (rc 2, 'Failed object') on 5 of 5 warakurna E500 and 3 of 3 hope-vale XV2-22H: Enterprise Wi-Fi SNMP is read-only, matching the adapter's 'SNMP config unsupported' (E34). tjuntjuntjara E500s do not answer the read-only community at all (SNMP off per device, not per programme: kalumburu's E500s answer)",
+         verified: {date: "2026-09-23", unit: T1_E500_IP3_10_Warakurna, site: warakurna, method: set-refused}}
       - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "reads 'Cambium cnPilot E500 Access Point'",
          verified: {date: "2026-09-23", unit: Tower4_E500_AP2_IP3_20, site: kalumburu, firmware: "4.2.2.1-r3", method: get, also: "Tower7_E500_AP5_IP3_50 on 4.2.3.1-r9"}}
       - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, access: ro, note: "reads .1.3.6.1.4.1.17713.22.3.5 on all four answering units",
