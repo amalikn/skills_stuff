@@ -333,6 +333,7 @@ promotion_rules:
     - promote
     required_authorization: true
     index: .archcore/index.guide.md
+    write_back_log: write-back.jsonl
     extract_heuristics_source: patterns/archcore-routing.md
     exclusion:
     - CHANGELOG.md (history only)

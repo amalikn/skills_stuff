@@ -89,6 +89,32 @@ The package-specific drift handling, update rules and answer-contract addition r
 rather than colliding with them, and a future upgrade cannot reach them. Re-verified after the re-upgrade: `just check` 189 passed, `just nav-validate` 0 warnings and 0 failures, `just lint-md` 0
 errors, `just validate-all` green, and a second consecutive `just nav-upgrade` left `AI_NAVIGATION.md` byte-identical.
 
+## 0.1.4 — 2026-09-23
+
+### Added
+
+- **`write-back.jsonl` and `scripts/record_writeback.py`** — an append-only routing record for findings returned by consuming projects, with `scripts/check_governance.py` asserting it.
+
+  **It records where a finding went, not the finding.** That boundary is the whole design. A log you can write to and feel finished with would legitimise recording knowledge instead of incorporating
+  it — which is precisely the failure that motivated it, committed by this package on its own first write-back: the 0.1.3 session shipped a validator fix and a regression fixture, and left the method
+  knowledge behind them (the enclosing-document shape) in a memory backend, reaching nobody who clones this repo.
+
+  The load-bearing field is `incorporated_in`. `scripts/record_writeback.py` refuses a destination that does not exist, so a row cannot claim the knowledge landed before it did; `just check` then
+  fails if a recorded destination later stops existing, because a write-time check cannot see a file renamed afterwards and a stale row reads as a closed loop, which is worse than no row. A finding
+  with nowhere to go yet is recorded `--open`, which is reported on every run and never fails the build — an honest outstanding loop is a state, not an error. All three behaviours were proven by
+  deliberate breakage.
+
+  Backfilled with the three findings `unified-network-controller` produced on 2026-09-23. The package previously had no record at all of which project taught it what.
+
+- `schemas/write-back-entry.schema.json` — the record contract.
+
+### Changed
+
+- `references/02_defining-evals.md` gains **The enclosing document**: `schema_version` is the string `"0.1"`, `suite` is a mapping with `id` and `title`, `layers` is declared once and referenced
+  inline. Every shipped example had this right and no prose said so, which is what made the 0.1.3 crash reachable. This is the leaked finding, now incorporated.
+- The `SKILL.md` write-back contract gains step 6 (record the routing), and the `AGENTS.md` closeout self-check now names an artifact instead of asking three yes/no questions that can be answered
+  honestly while a finding still goes nowhere.
+
 ## 0.1.3 — 2026-09-23
 
 ### Fixed

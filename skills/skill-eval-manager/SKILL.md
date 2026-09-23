@@ -5,7 +5,7 @@ description: >-
   evidence layers, populations, validity, and falsifiability. Use for system-evaluation discipline and results history; do not use for ordinary unit
   testing, debugging, CI setup, or LLM/prompt evaluation.
 metadata:
-  version: 0.1.3
+  version: 0.1.4
   aliases:
     - eval-manager
     - evaluation-suite
@@ -50,6 +50,8 @@ session, regardless of whether the calling project governance says to. Invoking 
 3. If a validator gap was found, add the rule **and demonstrate a deliberate failure case**, per the quality gate below.
 4. Bump the version across `SKILL.md`, `README.md`, and `CHANGELOG.md` in one pass, and append a `CHANGELOG.md` entry.
 5. **Read the file back** after writing. A session note, a `SCRATCHPAD.md` claim, or a file timestamp is not proof the content is present — only reading the body counts.
+6. **Record where it went**: `python3 scripts/record_writeback.py --source-project <project> --kind <kind> --finding <one sentence> --incorporated-in <paths>`. The record names the destination, not
+   the knowledge — the knowledge belongs in the file. If there is no destination yet, use `--open` and let it show as an outstanding loop rather than closing it in your head.
 
 A project's own governance may restate this obligation with local detail. That is reinforcement, not the source of the rule.
 

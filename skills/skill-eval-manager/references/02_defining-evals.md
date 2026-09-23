@@ -3,6 +3,7 @@
 ## Contents
 
 - [Minimum contract](#minimum-contract)
+- [The enclosing document](#the-enclosing-document)
 - [A well-formed example](#a-well-formed-example)
 - [Common failures](#common-failures)
 - [Layer design](#layer-design)
@@ -11,6 +12,27 @@
 
 Every eval needs an id, one-sentence claim, population definition and denominator source, slices, independent oracle, claim and evidence layers, executor reference, tier/runner, validity policy, and
 falsifiability evidence. `executor.ref` points at work that already exists; it is not code for this package to run.
+
+## The enclosing document
+
+The suite file wraps the evals in four keys, and two of them are easy to get wrong because every shipped example has them right and no prose said so:
+
+- `schema_version` is the **string** `"0.1"`, not the integer `1`.
+- `suite` is a **mapping** with `id` and `title`, not a bare title string.
+- `layers` declares the ranked vocabulary once, as a list of `{id, rank, description}`.
+- `evals` is the list; each eval references a layer inline as `{id, rank}` in `observation_layer` and `evidence.layer`.
+
+```yaml
+schema_version: "0.1"
+suite: {id: payments-acceptance, title: Payments acceptance suite}
+layers:
+  - {id: transport, rank: 10, description: HTTP acknowledgement}
+  - {id: rendered, rank: 30, description: operator-visible state}
+evals: [...]
+```
+
+A bare-string `suite` is reported as `suite.id and suite.title are required`. Before v0.1.3 the same file raised `AttributeError` instead whenever `--history` was passed, because history is validated
+in the same pass; that is fixed, but the shape is still the one to get right first.
 
 ## A well-formed example
 

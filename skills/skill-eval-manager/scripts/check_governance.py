@@ -31,6 +31,7 @@ Checks:
 from __future__ import annotations
 
 import csv
+import json
 import re
 import sys
 from pathlib import Path
@@ -175,7 +176,7 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
     # already been fixed. Registered so the next bump must touch all three, and so a fourth file cannot start stating a
     # version nobody maintains.
     "package-version": {
-        "pattern": r"\b0\.1\.3\b",
+        "pattern": r"\b0\.1\.4\b",
         "surfaces": ("SKILL.md", "README.md", "CHANGELOG.md"),
         "owner": "CHANGELOG.md",
     },
@@ -468,6 +469,64 @@ def check_archcore_contract() -> None:
             fail("archcore", f"{rel} declares `type: {keys.get('type')}` but its filename says `{parts[-2]}`")
 
 
+def check_write_back_log() -> None:
+    """Every write-back row routes somewhere that still exists, and open loops stay visible.
+
+    Cites the standing write-back contract in SKILL.md and the cross-project trigger in AGENTS.md. `record_writeback.py`
+    already refuses a destination that does not exist, but that is a check at WRITE time only: a path can be renamed or
+    deleted afterwards, and the row would then assert that knowledge lives somewhere it does not. That is worse than no
+    row, because it reads as a closed loop.
+
+    The `open` rows are deliberately NOT failures. A finding with no destination yet is an honest state and the reason
+    the status exists at all; it is reported so it cannot be forgotten, which is the one thing a routing record can do
+    that prose cannot.
+    """
+    log = ROOT / "write-back.jsonl"
+    if not log.exists():
+        return
+
+    required = {"entry_id", "recorded_at", "source_project", "kind", "finding", "status", "incorporated_in"}
+    outstanding: list[str] = []
+
+    for number, line in enumerate(log.read_text(encoding="utf-8").splitlines(), start=1):
+        if not line.strip():
+            continue
+        counted()
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError as error:
+            fail("write-back", f"write-back.jsonl:{number} is not valid JSON ({error})")
+            continue
+
+        counted()
+        if missing := required - set(row):
+            fail("write-back", f"write-back.jsonl:{number} is missing {', '.join(sorted(missing))}")
+            continue
+
+        status, targets = row.get("status"), row.get("incorporated_in") or []
+        counted()
+        if status not in ("incorporated", "open"):
+            fail("write-back", f"write-back.jsonl:{number} has status `{status}`; allowed: incorporated, open")
+
+        counted()
+        if status == "incorporated" and not targets:
+            fail("write-back", f"write-back.jsonl:{number} claims incorporated but names no destination")
+        if status == "open":
+            if targets:
+                fail("write-back", f"write-back.jsonl:{number} is open but names a destination; it is one or the other")
+            outstanding.append(f"{row.get('source_project')}: {str(row.get('finding'))[:70]}")
+
+        for target in targets:
+            counted()
+            if not (ROOT / target).exists():
+                fail("write-back", f"write-back.jsonl:{number} routes to `{target}` which no longer exists")
+
+    if outstanding:
+        print(f"NOTE — {len(outstanding)} write-back finding(s) not yet incorporated:")
+        for item in outstanding:
+            print(f"    · {item}")
+
+
 # --------------------------------------------------------------------------------------------------------------- TIER 3
 # Project-specific invariants. Each check states, in its docstring, the project rule it enforces and where that rule
 # lives. A check whose justification cannot be found is a check the next agent deletes.
@@ -600,6 +659,7 @@ CHECKS = (
     check_task_recipes,
     check_interpreter_pinning,
     check_archcore_contract,
+    check_write_back_log,
     check_derived_freshness,
     check_constant_sync,
     check_append_only_grain,

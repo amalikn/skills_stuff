@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/skill-eval-manager/write-back-entry.schema.json",
+  "title": "Append-only write-back routing record",
+  "description": "One finding returned by a consuming project. This record says WHERE the knowledge was incorporated; it is deliberately not a place to store the knowledge itself. A row whose incorporated_in is empty is an open loop, and is meant to be visible as one.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["entry_id", "recorded_at", "source_project", "kind", "finding", "status", "incorporated_in"],
+  "properties": {
+    "entry_id": {"type": "string", "minLength": 1},
+    "recorded_at": {"type": "string", "minLength": 1},
+    "source_project": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The consuming project that found it. The package has no other record of provenance."
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["validator_gap", "method_knowledge", "schema_shape", "closed_set_pressure", "recordkeeping"]
+    },
+    "finding": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One sentence naming what was learned. A pointer, not the content: the content belongs in the file named by incorporated_in."
+    },
+    "status": {"type": "string", "enum": ["incorporated", "open"]},
+    "incorporated_in": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "description": "Repo-relative paths that now carry the knowledge. Empty only when status is open."
+    },
+    "commit": {"type": ["string", "null"]},
+    "supersedes": {"type": ["string", "null"]},
+    "notes": {"type": ["string", "null"]}
+  }
+}

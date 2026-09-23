@@ -298,6 +298,7 @@ This repo is a **skill package**, not a consuming project. It has no `.archcore/
 | Why is the package shaped this way? | [BRIEF.md](BRIEF.md), then the design record named in its header |
 | What did verification actually prove? | [evidence/validation-transcript-20260923_1148.md](evidence/validation-transcript-20260923_1148.md), [CHANGELOG.md](CHANGELOG.md) |
 | Is a script safe to run? | [scripts/README.md](scripts/README.md), then `just --list` |
+| What have consuming projects taught this package, and did it land? | [write-back.jsonl](write-back.jsonl), then the files its `incorporated_in` names. `just check` reports any row not yet incorporated |
 
 ### Boundaries that are not negotiable here
 

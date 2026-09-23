@@ -6,6 +6,7 @@
 - [validate_suite.py](#validate_suitepy)
 - [record_result.py](#record_resultpy)
 - [render_report.py](#render_reportpy)
+- [record_writeback.py](#record_writebackpy)
 - [eval_common.py](#eval_commonpy)
 - [check_governance.py](#check_governancepy)
 - [Running these scripts](#running-these-scripts)
@@ -30,6 +31,17 @@ JSONL line unless `--dry-run`. Safety: append-only; it never overwrites or execu
 
 Purpose: project the latest observation per declared eval/slice into a Markdown scorecard. Inputs: suite, history, output, and optional render time. Output: overwritten derived report. Safety: writes
 only the selected report path; it never changes source history. Idempotency: yes for unchanged inputs and `--now`.
+
+## record_writeback.py
+
+Purpose: append one routing record to `write-back.jsonl`, naming a finding returned by a consuming project and the
+file(s) that now carry it. Inputs: `--source-project`, `--kind`, `--finding`, and either `--incorporated-in <paths>` or
+`--open`; optional `--commit`, `--supersedes`, `--notes`, `--recorded-at`, `--dry-run`. Output: one appended JSONL line.
+
+**It records where knowledge went, not the knowledge.** Every `--incorporated-in` path must already exist, so a row
+cannot claim a destination before the content is in it; `--open` records an honest outstanding loop instead. Safety:
+append-only, never rewrites a line. Idempotency: no — each run appends a new row with a new `entry_id`; supersede a
+mistaken row rather than editing it.
 
 ## eval_common.py
 
@@ -64,6 +76,7 @@ just check        # governance coherence assertions
 | `validate_suite.py` | `safe` (read-only) | yes |
 | `record_result.py` | `modifies-files` (append-only; never overwrites, never executes an eval) | no, by design — each call is a distinct historical record |
 | `render_report.py` | `modifies-files` (overwrites only the selected report path) | yes for unchanged inputs and `--now` |
+| `record_writeback.py` | `modifies-files` (appends one line to `write-back.jsonl`) | no — each run appends a new row |
 | `eval_common.py` | `safe` (library module) | not applicable |
 | `check_governance.py` | `safe` (read-only) | yes |
 
