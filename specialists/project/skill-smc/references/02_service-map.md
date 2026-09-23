@@ -260,3 +260,16 @@ pending vs. offline is distinguished by whether the watchdog series has ever exi
 | mosquitto | MQTT broker | `mosquitto` | `/etc/mosquitto/` | IoT device telemetry |
 
 ---
+
+## snmpd on the SMC (canary, 2026-09-24)
+
+Until 2026-09-24 no SMC ran an SNMP agent: `snmpd` was absent everywhere, only the net-snmp client tools and `/etc/snmp/snmp.conf` (unified-network-controller's collector runs its
+`snmpget`/`snmpbulkwalk` against radios from the box). Operator, 2026-09-24: the SMCs become Nautobot Devices (x86 only) and the controller reads them over SNMP too. Canary on
+mornington-smc01, kalumburu-smc01 (apn) and hope-vale-smc01 (nbn): `apt-get install snmpd` (net-snmp 5.9, jammy), `/etc/snmp/snmpd.conf` rewritten (the distribution file kept as
+`snmpd.conf.dist`, mode 600): `agentaddress udp:<bridge_500 address>:161,udp:127.0.0.1:161`, `rocommunity <cluster read-only community> 10.255.0.0/19`, the same for 127.0.0.1,
+`sysLocation <site>`, `sysContact noc`. The community is the cluster's existing read-only one from the vault (`cambium-devices/apn-snmp-ro` / `nbn-snmp-ro`), never a new secret.
+Verified: `snmpget sysName` answers the box's hostname from its own management address on all three. Still a hand install, not an ansible-wifi role; a reimaged box loses it, and
+the fleet rollout belongs in the role with the community from the vault. **Pitfall recorded:** feeding the community as the first stdin line to `ssh host sh -s` executes it as a
+command and echoes it in stderr; carry it inside the script body (a quoted here-doc) instead. That mistake printed both read-only communities into one agent session's transcript on
+2026-09-24 01:20; rotation of the two RO communities is recommended.
+
