@@ -7,7 +7,7 @@
 - [Response-Shape Divergence Across the Fleet (sweep 2026-09-20)](#response-shape-divergence-across-the-fleet-sweep-2026-09-20)
 - [Security Incidents](#security-incidents)
 - [Pack Staleness Risks](#pack-staleness-risks)
-- [LLDP on Cambium devices — not checked (operator note, 2026-09-23)](#lldp-on-cambium-devices--not-checked-operator-note-2026-09-23)
+- [LLDP on Cambium devices — checked 2026-09-23, partly answered](#lldp-on-cambium-devices--checked-2026-09-23-partly-answered)
 
 ---
 
@@ -139,6 +139,11 @@ Both produced confident, wrong output rather than an error, which is why they ar
   and in `manifest.json known_constraints` (e.g. `hardware_revision`), not as a blanket pack-wide caveat.
 - `manifest.json`'s `stable_facts` will drift from `cambium-swap`'s live inventory files over time — the manifest is a snapshot, `cambium-swap/inventory/*.csv` is the live source.
 
-## LLDP on Cambium devices — not checked (operator note, 2026-09-23)
+## LLDP on Cambium devices — checked 2026-09-23, partly answered
 
-Whether any Cambium family announces itself over LLDP or exposes its neighbours' announcements (`lldpRemTable`, `.1.0.8802.1.1.2.1.4`, over SNMP; or a REST equivalent) is `UNVERIFIED` on every family. Raised during unified-network-controller's Kalumburu discovery test as a possible sweep-free topology source (switch port per device). To test per family: an `snmpwalk` of `.1.0.8802.1.1.2` from the site's SMC with the read-only community, and a search of each family's REST/CLI surface for an LLDP toggle. Record the answer here and in the OID registry.
+Operator note, 2026-09-23: is LLDP available on any Cambium family? Checked the same evening from kalumburu-smc01 (unified-network-controller):
+
+- **ePMP (3000L AP, Force 300 SM and master) and E500: LLDP-MIB is not exposed over SNMP.** `snmpbulkwalk .1.0.8802.1.1.2` and `.1.0.8802` answer `No Such Object` on all four units; the R195P returns `Error in packet` for the same walk. `VERIFIED_PRIMARY`.
+- **ePMP transmits LLDP.** Every one of six ePMP `config_regular` backups (3000L APs and Force 300 SMs) holds `networkLLDP: "1"`, `networkLLDPMode: "1"`, `lldp_user_enabled: "1"`. Which neighbour table a unit keeps, if any, is not in `device_props` seen so far — `UNVERIFIED`; nothing to read over REST was found.
+- **The SMC cannot see them across the switch.** LLDP frames are link-local (`01:80:c2:00:00:0e`) and are not bridged, so a 70 s `tcpdump ether proto 0x88cc` on `bridge_500` at kalumburu captured nothing; the SMC has no `lldpd`. The consumer of ePMP LLDP is the switch port the radio hangs off (the switching-refresh project's ground), not the SMC.
+- Enterprise Wi-Fi (XV2/E-series) and cnWave transmit-side support: `UNVERIFIED` (no config key looked for yet).
