@@ -22,6 +22,11 @@ Agent working memory for skills_stuff. Use for: draft plans, terminal output, in
 
 **Phase:** Active maintenance — skill authoring and governance updates. <!-- KEEP -->
 
+2026-09-18 update: Main repo committed/pushed (adcbea4, then ef63e6d) covering skill-smc, skill-ai-it, and skill-walk-before-run changes, plus four new upstream-clone gitlinks (diagram-design,
+graphify/graphify-github, skill-anydoc/anydoc-github, swarms/swarms-github) added the same headless-gitlink way as the pre-existing caveman-repo/stop-slop/strategy-os/superpowers entries (no
+`.gitmodules` registration). Established a standing rule: check `git remote -v` for actual ownership before ever pushing into a nested embedded repo — 4 of the 6 candidates were third-party upstream
+mirrors (cathrynlavery, safishamsi, firecrawl, am-will) and one more (BellaBe/strategy-os) also isn't the operator's, so only `superpowers` (operator's own fork) was committed+pushed. <!-- KEEP -->
+
 2026-09-01 update: Agent Stack is live at `/Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack` with 52 capabilities / 37 packages, an on-demand Orchestrator, and 123 verified global
 symlinks (15 Claude personas plus 36 skills each for Claude, Codex, and compatible `.agents` clients). `skill-slurp-chat` and `skill-project-coherence` are deliberately not part of Agent Stack; their
 pre-existing standalone installs remain separate. <!-- KEEP -->
@@ -58,6 +63,10 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 - [ ] Verify skill-anydoc against the untested formats: `.pptx`, `.ppt`, `.epub`, `.rtf`, legacy `.doc`, ODF. <!-- KEEP -->
 - [ ] Broader `~/.codex/skills` vs `~/.agents/skills` authority decision (from strategy-os governance session)
 - [ ] sync-script rollback hardening (from strategy-os governance session)
+- [ ] Orphaned local edits inside upstream clones (2026-09-18, deliberately left unpushed — see Recent decisions): `diagram-design/skills/diagram-design/SKILL.md`,
+  `skills/skill-anydoc/anydoc-github/skills/convert-documents-to-markdown/SKILL.md`, and 8 `SKILL.md` files inside `strategy-os` (`gap-computing-ledger`, `gap-enforcing-decisions`,
+  `gap-running-destruction`, `stg-analyzing-competition`, `stg-designing-channels`, `stg-designing-gtm`, `stg-extracting-insights`, `stg-scoring-problems`). If the edits are wanted, move the substance
+  into skills_stuff's own canonical folders rather than pushing to the third-party origins. Also clean up stray `.DS_Store` files under `diagram-design/`.
 
 ---
 
@@ -88,6 +97,13 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 
 ## Recent decisions
 
+- 2026-09-18 — Established rule: before committing/pushing into any nested embedded git repo, check `git remote -v` for actual ownership. Audited 6 gitlinked dirs; 4 are third-party upstream mirrors
+  (`diagram-design`→cathrynlavery, `graphify/graphify-github`→safishamsi, `skill-anydoc/anydoc-github`→firecrawl, `swarms/swarms-github`→am-will) and `strategy-os`→BellaBe is also not the operator's
+  (already 1 commit ahead of its origin) — all five left untouched on operator instruction. Only `superpowers` (`amalikn/superpowers.git`, operator's own fork) was committed (0b28fd3) and pushed; the
+  parent repo's gitlink pointer for `superpowers` was then bumped and pushed too (ef63e6d).
+- 2026-09-18 — Repo git-hygiene finding: `.gitmodules` registers only `skill-mx02-migration`, but `caveman-repo`, `stop-slop`, `strategy-os`, and `superpowers` are also tracked as headless `160000`
+  gitlinks with no `.gitmodules` entry (pre-existing). `git submodule status` errors on this (`no submodule mapping found ... 'caveman-repo'`) — expected given the missing mapping, not a bug to fix
+  reflexively. A `-dirty` suffix on a gitlink in `git status`/`diff` is just a display artifact when the nested repo's working tree is dirty at the same commit SHA — nothing to stage from that alone.
 - 2026-09-01 — Agent Stack remains at 52 capabilities / 37 packages; the operator explicitly excluded `skill-slurp-chat` and `skill-project-coherence` after a brief addition/revert. Orchestrator is
   the normal single entry point and selects specialists internally. <!-- KEEP -->
 - 2026-08-10 — Skill installs are symlinks, never copies (operator instruction). Directory symlink is the default and matches the ~60 existing linked installs; file symlink (`SKILL.md` only) is the
@@ -122,6 +138,13 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 ---
 
 ## Session history (summaries — full detail in memory-keeper)
+
+### 2026-09-18 — Repo commit/push + embedded-repo ownership audit <!-- KEEP -->
+- Committed/pushed skill-smc, skill-ai-it, and skill-walk-before-run changes (adcbea4), including four new upstream-clone gitlinks (diagram-design, graphify, skill-anydoc/anydoc-github, swarms).
+- Asked before pushing further: audited `git remote -v` for all 6 gitlinked dirs, found 5 are third-party (not the operator's) and left them untouched; committed+pushed only `superpowers` (operator's
+  own fork, 0b28fd3), then bumped and pushed its gitlink pointer in the parent repo (ef63e6d).
+- Evidence basis: memory-keeper `skills_stuff.git.skill-smc-ai-it-wbr-commit-20260918`, `skills_stuff.git-hygiene.embedded-repo-ownership-decision-20260918`,
+  `skills_stuff.git.superpowers-fork-push-20260918`, `skills_stuff.git-hygiene.gitlink-convention-and-broken-submodule-mapping-20260918`.
 
 ### 2026-09-01 — Agent Stack global installer and Orchestrator <!-- KEEP -->
 - Added the English Orchestrator persona/skill and safe symlink-only global installation workflow; verified 123 managed links across Claude, Codex, and compatible `.agents` clients. <!-- KEEP -->
@@ -206,17 +229,21 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 ## Next actions
 
 - Decide whether to convert the Tier 1 copy-installed skills to symlinks (9 skills, canonical source exists for each) <!-- KEEP -->
-- Optionally commit `skills/skill-anydoc/` — currently untracked; decide whether `anydoc-github/` becomes a submodule or is excluded <!-- KEEP -->
 - Restart Codex and Hermes so they pick up the `skill-anydoc` name (Claude Code already re-registered it live) <!-- KEEP -->
 - First real test of skill-project-wiki-rag-bridge: run `prompts/06-post-index-retrieval-validation.md` against Vocus project + `rag__wiki_nbn` collection (already indexed)
 - Respond to any follow-up on skill-commtracker, helper scripts, or skill-slurp-chat behavior
 - Resolve `~/.codex/skills` vs `~/.agents/skills` authority question when prioritized
 - Monitor auto-memory: verify new session writes land in `/Volumes/Data/_ai/claude-auto-memory/` (not per-project dirs)
+- Decide whether the orphaned local edits inside `diagram-design`, `skill-anydoc/anydoc-github`, and `strategy-os` (see Open items, 2026-09-18) should be ported into skills_stuff's own canonical
+  folders
 
 ---
 
 ## Memory pointers (navigation only — content is above)
 
+- memory-keeper channel `skills-stuff` / keys (2026-09-18): `skills_stuff.git.skill-smc-ai-it-wbr-commit-20260918`, `skills_stuff.git-hygiene.embedded-repo-ownership-decision-20260918`,
+  `skills_stuff.git.superpowers-fork-push-20260918`, `skills_stuff.git-hygiene.gitlink-convention-and-broken-submodule-mapping-20260918`, `skills_stuff.task.third-party-clone-edits-orphaned-20260918`
+- MK checkpoint: `slurp-20260918-git-hygiene-commits` (ID: 0ae71541) — PC checkpoint same name (ID: bdaf8f76-b6c7-4350-a554-4b1cc8e6cb4c)
 - `wbr`-channel and trial-project-ledger pointers moved to `skills/skill-walk-before-run/SCRATCHPAD.md` § Memory pointers (2026-09-16).
 - memory-keeper channel `agent-stack`: `agent-stack.global-install`, `agent-stack.scope-decision`; checkpoint `slurp-20260901-agent-stack` (ID: `8ddf5b1c`). <!-- KEEP -->
 - mcp-project-context project `skills_stuff`, channel `agent-stack`: checkpoint `slurp-20260901-agent-stack` (ID: `d0385431-ef7b-4306-ad9a-59ff4543d75f`). <!-- KEEP -->
