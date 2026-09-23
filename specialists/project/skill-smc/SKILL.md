@@ -197,6 +197,7 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - `references/13_known-issues.md` — coverage gaps, live-validation limits, and staleness risks.
 - `references/14_pin-activation-diagnosis.md` — pin validity (mangle) vs pin issuance (Apache access log): two independent mechanisms, marks-≠-activations pitfalls, and the 2026-09-11 fleet case
   study.
+- `references/snmp-oid-registry.yaml` — verified SNMP OIDs on the SMC box itself (net-snmp agent; canary 2026-09-24), the list unified-network-controller's `smc_collect.py` reads.
 - `references/15_cambium-asset-registers.md` — pointer only: the ansible-wifi `site_name` join point for a Cambium asset register. Full asset-register naming-convention/extraction knowledge now lives
   in `skill-cambium` — see Related Skills below.
 - `scripts/` — reusable read-only diagnostic tooling for WAN-routing/topology-drift investigations (evidence capture, the "hook covers netplan" drift analyser, and a topology_vars-vs-live-hardware

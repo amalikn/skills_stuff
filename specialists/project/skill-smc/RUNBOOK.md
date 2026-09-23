@@ -51,6 +51,7 @@ practical.
 | Local Vagrant lab bring-up and known virtualization issues                                                                                          | `references/11_vagrant-lab.md`                 |
 | Family-friendly VLAN 501 access, filtering stack, MAC randomization, CAKE                                                                           | `references/12_content-filtering.md`           |
 | Coverage gaps, live-validation limits, stale assumptions                                                                                            | `references/13_known-issues.md`                |
+| Verified SNMP OIDs on the SMC box itself (net-snmp agent, canary 2026-09-24), the machine-readable list the controller reads                         | `references/snmp-oid-registry.yaml`          |
 | Pin validity (mangle) vs pin issuance (Apache access log) — two mechanisms, marks-≠-activations pitfalls, fleet case study                          | `references/14_pin-activation-diagnosis.md`    |
 | Reusable read-only scripts: WAN-routing/topology-drift investigation tooling (evidence capture, drift analyser, topology/hardware cross-check),     | `scripts/README.md`                            |
 |   plus ansible-lint pre-push/CI gate scripts, fleet hardware/service-health + portal-FQDN-status audit, and pin-activation diagnosis                |                                                |

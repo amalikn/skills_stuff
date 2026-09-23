@@ -1,0 +1,60 @@
+# Verified SNMP OIDs on the SMC box itself — the machine-readable registry for the SMC, the counterpart of skill-cambium's
+# references/snmp-oid-registry.yaml for the radios (operator, 2026-09-24: "have you maintained a list of OIDs for the SMC as well?").
+#
+# Rule, as in skill-cambium: an OID enters a box type ONLY after a live exchange against a unit of that type, recorded with date,
+# unit, OS and method. `access: ro` means read only here; no SET has been tried on an SMC (the agent is configured read-only).
+# Consumers: unified-network-controller `wc-local/scripts/smc_collect.py` (reads from the box against 127.0.0.1). Update it in the
+# same session as any new live SNMP result on an SMC, per this pack's Standing Write-Back Contract.
+#
+# Agent: net-snmp `snmpd` 5.9 (jammy), installed by hand on the canaries 2026-09-24 (02_service-map.md "snmpd on the SMC"); bound to
+# the bridge_500 address and 127.0.0.1, read-only, the cluster's existing community (cambium-devices/apn-snmp-ro | nbn-snmp-ro). The
+# rest of the fleet has no agent until the ansible-wifi role carries it.
+
+schema_version: 1
+updated: "2026-09-24"
+
+box_types:
+  boxer-6641:
+    models: [BOXER-6641]
+    os: "Ubuntu 22.04, kernel 5.15"
+    verified_on: [{unit: mornington-smc01, cluster: apn}, {unit: hope-vale-smc01, cluster: nbn}]
+    oids: &smc_oids
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "'Linux <hostname> <kernel> #… x86_64'",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
+      - {oid: ".1.3.6.1.2.1.1.3.0", name: sysUpTime, access: ro, note: "timeticks; smc_collect divides by 100 for NetJSON general.uptime",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
+      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, access: ro, note: "the box hostname, e.g. mornington-smc01; drift against the Nautobot name is reported, never written",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
+      - {oid: ".1.3.6.1.2.1.1.6.0", name: sysLocation, access: ro, note: "set to the site name in snmpd.conf by the canary install",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
+      - oid: ".1.3.6.1.2.1.31.1.1.1.1"
+        name: ifName
+        access: ro
+        note: "IF-MIB ifXTable; rows for lo, the physical ports (eno1, enp1s0…), the bridges bridge_500/501/502, VLAN sub-interfaces and docker/veth. smc_collect keeps enp* and bridge_* only (12-13 rows)"
+        verified: {date: "2026-09-24", unit: mornington-smc01, method: walk}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.6", name: ifHCInOctets, access: ro, note: "64-bit; per ifName row",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: walk}}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.10", name: ifHCOutOctets, access: ro, note: "64-bit; per ifName row",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: walk}}
+      - {oid: ".1.3.6.1.4.1.2021.10.1.3", name: laLoad, access: ro, note: "UCD-SNMP load averages .1/.2/.3 as strings ('0.28')",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: walk}}
+      - {oid: ".1.3.6.1.4.1.2021.4.5.0", name: memTotalReal, access: ro, note: "kB; NetJSON memory.total = x1024",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
+      - {oid: ".1.3.6.1.4.1.2021.4.6.0", name: memAvailReal, access: ro, note: "kB; used as NetJSON memory.free",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
+      - {oid: ".1.3.6.1.4.1.2021.4.14.0", name: memBuffer, access: ro, note: "kB",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
+      - {oid: ".1.3.6.1.4.1.2021.4.15.0", name: memCached, access: ro, note: "kB",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
+      - {oid: ".1.3.6.1.2.1.25.3.3.1.2", name: hrProcessorLoad, access: ro, note: "HOST-RESOURCES; one row per core, the row count is NetJSON resources.cpus",
+         verified: {date: "2026-09-24", unit: mornington-smc01, method: walk}}
+  boxer-6404:
+    models: [BOXER-6404]
+    os: "Ubuntu 22.04, kernel 5.15"
+    verified_on: [{unit: kalumburu-smc01, cluster: apn}]
+    oids: *smc_oids   # the same net-snmp agent answers the same set; verified on kalumburu-smc01 the same day
+
+not_yet_read:
+  - ".1.3.6.1.2.1.2.2.1.6 ifPhysAddress — would let the collector confirm the identity anchor (lowest burned-in port MAC) over SNMP; read over SSH at seed time today"
+  - "UCD dskTable .1.3.6.1.4.1.2021.9 — disk usage, relevant to the overlayroot/log-fill alerts in 05_troubleshooting.md; needs `disk` lines in snmpd.conf"
+  - "HOST-RESOURCES hrSWRunTable — service presence; snmpd config decision first"
