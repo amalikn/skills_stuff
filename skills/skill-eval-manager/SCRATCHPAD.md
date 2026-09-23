@@ -109,4 +109,8 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
   `skills_stuff.task.skill-eval-manager-open-decisions-20260923`, plus the `skills_stuff.skill-ai-it.*` entries covering the upgrader defect that touched this package.
 - mcp-project-context project ID: `b8c5525e-3e2f-4fb5-bf87-e5751f3ad49c` (`skills_stuff`); this package has no project of its own.
 - Checkpoints: `slurp-20260923-skill-ai-it-template-drift` in both backends (project-context id `4c8a9164-7b60-4072-8390-5d7e91f5ae01`).
+- memory-keeper channel `skill-eval-manager`, session `98449180-a728-4e94-b246-8a56b23478e9`, from the 20260923_1337 persist. Keys: `archcore-promote-ratify-20260923`,
+  `archcore-filename-shape`, `archcore-cli-checks-filename-only`, `lint-md-gate-could-not-fail`, `write-back-contract-pattern`, `agents-md-untracked-in-skills-stuff`,
+  `commit-state-20260923`. Matching notes under the same channel in project-context.
+- Checkpoint `archcore-promote-ratify-20260923` in both backends (memory-keeper `810dfe26`, project-context `019d14d7-f5cc-477c-9635-6b45e1ab3f04`).
 - claude-mem: not seeded for this project
