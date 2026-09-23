@@ -89,11 +89,25 @@ The package-specific drift handling, update rules and answer-contract addition r
 rather than colliding with them, and a future upgrade cannot reach them. Re-verified after the re-upgrade: `just check` 189 passed, `just nav-validate` 0 warnings and 0 failures, `just lint-md` 0
 errors, `just validate-all` green, and a second consecutive `just nav-upgrade` left `AI_NAVIGATION.md` byte-identical.
 
+## 0.1.5 — 2026-09-23
+
+### Changed
+
+- **The routing record is named `ledger.jsonl`** (operator, same day), matching the estate convention set by `skill-walk-before-run`. It shipped in 0.1.4 under a different name chosen specifically to
+  dodge a filename collision; the convention is worth more than the dodge, so the dodge loses. References updated across `AGENTS.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `scripts/README.md`,
+  `scripts/check_governance.py` and `scripts/record_writeback.py`. The 0.1.4 entry above now names the current file; this entry is the record that it moved.
+
+  **The consequence is real and worth stating plainly.** That filename is covered by the estate OPA guard, which hard-blocks any Bash command whose *text* mentions it — not merely a command that
+  writes it — and routes the author to `/Volumes/Data/_ai/_skills/skills_stuff/skills/skill-walk-before-run/scripts/append_entry.py`. For this package the guard is right in spirit and wrong in
+  destination: correct that nothing should hand-write the
+  record, incorrect that these rows belong in another pack's writer, which enforces a different schema. `scripts/record_writeback.py` is unaffected, because the filename appears inside the script
+  rather than in the invoking command. Append through it, never by shell redirection.
+
 ## 0.1.4 — 2026-09-23
 
 ### Added
 
-- **`write-back.jsonl` and `scripts/record_writeback.py`** — an append-only routing record for findings returned by consuming projects, with `scripts/check_governance.py` asserting it.
+- **`ledger.jsonl` and `scripts/record_writeback.py`** — an append-only routing record for findings returned by consuming projects, with `scripts/check_governance.py` asserting it.
 
   **It records where a finding went, not the finding.** That boundary is the whole design. A log you can write to and feel finished with would legitimise recording knowledge instead of incorporating
   it — which is precisely the failure that motivated it, committed by this package on its own first write-back: the 0.1.3 session shipped a validator fix and a regression fixture, and left the method

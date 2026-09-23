@@ -34,7 +34,7 @@ only the selected report path; it never changes source history. Idempotency: yes
 
 ## record_writeback.py
 
-Purpose: append one routing record to `write-back.jsonl`, naming a finding returned by a consuming project and the
+Purpose: append one routing record to `ledger.jsonl`, naming a finding returned by a consuming project and the
 file(s) that now carry it. Inputs: `--source-project`, `--kind`, `--finding`, and either `--incorporated-in <paths>` or
 `--open`; optional `--commit`, `--supersedes`, `--notes`, `--recorded-at`, `--dry-run`. Output: one appended JSONL line.
 
@@ -76,7 +76,7 @@ just check        # governance coherence assertions
 | `validate_suite.py` | `safe` (read-only) | yes |
 | `record_result.py` | `modifies-files` (append-only; never overwrites, never executes an eval) | no, by design — each call is a distinct historical record |
 | `render_report.py` | `modifies-files` (overwrites only the selected report path) | yes for unchanged inputs and `--now` |
-| `record_writeback.py` | `modifies-files` (appends one line to `write-back.jsonl`) | no — each run appends a new row |
+| `record_writeback.py` | `modifies-files` (appends one line to `ledger.jsonl`) | no — each run appends a new row |
 | `eval_common.py` | `safe` (library module) | not applicable |
 | `check_governance.py` | `safe` (read-only) | yes |
 

@@ -83,7 +83,7 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 
 - Asked where consuming-project feedback is incorporated. Checking rather than quoting the contract showed `references/` — its **first** named destination — had never been touched: zero
   commits, and both schema facts absent from it. The 0.1.3 write-back shipped the executable half (fix + regression fixture) and left the method knowledge in a memory backend.
-- Closed that leak in [references/02_defining-evals.md](references/02_defining-evals.md) (*The enclosing document*), then shipped v0.1.4: `write-back.jsonl`,
+- Closed that leak in [references/02_defining-evals.md](references/02_defining-evals.md) (*The enclosing document*), then shipped v0.1.4: `ledger.jsonl`,
   [scripts/record_writeback.py](scripts/record_writeback.py), [schemas/write-back-entry.schema.json](schemas/write-back-entry.schema.json) and `check_write_back_log`.
 - The log records **where** a finding went, never the finding — a log you can write to and feel finished with would legitimise the very failure it exists to catch. `incorporated_in` is
   defended at write time (destination must exist) and at check time (it must still exist). `open` rows are reported, never fail the build. Checks 353 to 378.

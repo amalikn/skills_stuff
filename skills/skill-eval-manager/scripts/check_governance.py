@@ -176,7 +176,7 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
     # already been fixed. Registered so the next bump must touch all three, and so a fourth file cannot start stating a
     # version nobody maintains.
     "package-version": {
-        "pattern": r"\b0\.1\.4\b",
+        "pattern": r"\b0\.1\.5\b",
         "surfaces": ("SKILL.md", "README.md", "CHANGELOG.md"),
         "owner": "CHANGELOG.md",
     },
@@ -481,7 +481,7 @@ def check_write_back_log() -> None:
     the status exists at all; it is reported so it cannot be forgotten, which is the one thing a routing record can do
     that prose cannot.
     """
-    log = ROOT / "write-back.jsonl"
+    log = ROOT / "ledger.jsonl"
     if not log.exists():
         return
 
@@ -495,31 +495,31 @@ def check_write_back_log() -> None:
         try:
             row = json.loads(line)
         except json.JSONDecodeError as error:
-            fail("write-back", f"write-back.jsonl:{number} is not valid JSON ({error})")
+            fail("write-back", f"ledger.jsonl:{number} is not valid JSON ({error})")
             continue
 
         counted()
         if missing := required - set(row):
-            fail("write-back", f"write-back.jsonl:{number} is missing {', '.join(sorted(missing))}")
+            fail("write-back", f"ledger.jsonl:{number} is missing {', '.join(sorted(missing))}")
             continue
 
         status, targets = row.get("status"), row.get("incorporated_in") or []
         counted()
         if status not in ("incorporated", "open"):
-            fail("write-back", f"write-back.jsonl:{number} has status `{status}`; allowed: incorporated, open")
+            fail("write-back", f"ledger.jsonl:{number} has status `{status}`; allowed: incorporated, open")
 
         counted()
         if status == "incorporated" and not targets:
-            fail("write-back", f"write-back.jsonl:{number} claims incorporated but names no destination")
+            fail("write-back", f"ledger.jsonl:{number} claims incorporated but names no destination")
         if status == "open":
             if targets:
-                fail("write-back", f"write-back.jsonl:{number} is open but names a destination; it is one or the other")
+                fail("write-back", f"ledger.jsonl:{number} is open but names a destination; it is one or the other")
             outstanding.append(f"{row.get('source_project')}: {str(row.get('finding'))[:70]}")
 
         for target in targets:
             counted()
             if not (ROOT / target).exists():
-                fail("write-back", f"write-back.jsonl:{number} routes to `{target}` which no longer exists")
+                fail("write-back", f"ledger.jsonl:{number} routes to `{target}` which no longer exists")
 
     if outstanding:
         print(f"NOTE — {len(outstanding)} write-back finding(s) not yet incorporated:")
