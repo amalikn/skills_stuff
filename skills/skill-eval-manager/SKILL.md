@@ -5,7 +5,7 @@ description: >-
   evidence layers, populations, validity, and falsifiability. Use for system-evaluation discipline and results history; do not use for ordinary unit
   testing, debugging, CI setup, or LLM/prompt evaluation.
 metadata:
-  version: 0.1.2
+  version: 0.1.3
   aliases:
     - eval-manager
     - evaluation-suite

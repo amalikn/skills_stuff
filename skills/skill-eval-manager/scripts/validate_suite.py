@@ -166,7 +166,11 @@ def validate_suite(suite: Any) -> list[str]:
 def validate_history(records: list[dict[str, Any]], suite: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     definitions, layers = eval_index(suite), layer_index(suite)
-    suite_id = suite.get("suite", {}).get("id")
+    # `suite["suite"]` is only a mapping once validate_suite() has accepted the document. A malformed suite block
+    # reaches here too, because history is validated in the same pass, so resolve the id defensively: the structural
+    # error is already reported by validate_suite() and the operator needs to read it, not a traceback.
+    suite_meta = suite.get("suite")
+    suite_id = suite_meta.get("id") if isinstance(suite_meta, dict) else None
     for record in records:
         location = f"history:{record.get('_line', '?')}"
         record_type = record.get("record_type")

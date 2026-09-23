@@ -89,6 +89,29 @@ The package-specific drift handling, update rules and answer-contract addition r
 rather than colliding with them, and a future upgrade cannot reach them. Re-verified after the re-upgrade: `just check` 189 passed, `just nav-validate` 0 warnings and 0 failures, `just lint-md` 0
 errors, `just validate-all` green, and a second consecutive `just nav-upgrade` left `AI_NAVIGATION.md` byte-identical.
 
+## 0.1.3 — 2026-09-23
+
+### Fixed
+
+- **`scripts/validate_suite.py` raised `AttributeError` instead of reporting a malformed `suite` block, whenever `--history` was also given.** `validate_history()` resolved the suite id with
+  `suite.get("suite", {}).get("id")`, which assumes `suite["suite"]` is a mapping. History is validated in the same pass as the document, so a suite whose `suite` block is a bare string reached that
+  line and crashed. Without `--history` the same file produced the correct two errors, so the defect was invisible to anyone validating a suite on its own. The id is now resolved defensively and the
+  operator reads the structural error that `validate_suite()` already reports.
+
+  **Found on first real use**, writing the `unified-network-controller` A6 coverage suite — the first suite this package has validated outside its own examples. This is exactly the return the standing
+  write-back contract in `SKILL.md` exists to collect.
+
+### Changed
+
+- **`just validate-negatives` asserted only that a fixture exits non-zero.** A traceback also exits non-zero, so a crashing fixture was indistinguishable from a cleanly rejected one, and the
+  regression above would have passed the gate that exists to catch it. The loop now requires a non-zero exit, an `INVALID:` line, and the absence of `Traceback`. Proven by reverting the fix and
+  watching the fixture be caught as a crash.
+- Fixtures may now carry a `<name>.history.jsonl` sibling, which the loop passes with `--history`, so rejection paths that only run during history validation are covered at all.
+
+### Added
+
+- `examples/validation-failures/malformed-suite-block.yaml` and its paired empty history, cataloged in that folder's README.
+
 ## 0.1.2 — 2026-09-23
 
 ### Added

@@ -139,10 +139,18 @@ validate-examples: _require-venv
 # Confirm each negative fixture still FAILS validation (safe, read-only)
 validate-negatives: _require-venv
     @for s in examples/validation-failures/*.yaml; do \
-      if {{py}} scripts/validate_suite.py --suite "$s" >/dev/null 2>&1; then \
+      h="${s%.yaml}.history.jsonl"; \
+      if [ -f "$h" ]; then args="--suite $s --history $h"; else args="--suite $s"; fi; \
+      out=$({{py}} scripts/validate_suite.py $args 2>&1); \
+      if [ $? -eq 0 ]; then \
         echo "FAIL: $s passed validation but is a negative fixture" >&2; exit 1; \
+      elif printf '%s' "$out" | grep -q 'Traceback'; then \
+        echo "FAIL: $s crashed instead of being rejected cleanly" >&2; \
+        printf '%s\n' "$out" >&2; exit 1; \
+      elif ! printf '%s' "$out" | grep -q 'INVALID:'; then \
+        echo "FAIL: $s exited non-zero without reporting INVALID" >&2; exit 1; \
       else \
-        echo "ok (rejected): $s"; \
+        echo "ok (rejected cleanly): $s"; \
       fi; \
     done
 

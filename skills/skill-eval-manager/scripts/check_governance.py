@@ -175,7 +175,7 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
     # already been fixed. Registered so the next bump must touch all three, and so a fourth file cannot start stating a
     # version nobody maintains.
     "package-version": {
-        "pattern": r"\b0\.1\.2\b",
+        "pattern": r"\b0\.1\.3\b",
         "surfaces": ("SKILL.md", "README.md", "CHANGELOG.md"),
         "owner": "CHANGELOG.md",
     },

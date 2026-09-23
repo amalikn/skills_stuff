@@ -23,15 +23,24 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 
 ## Open items
 
-- [ ] Operator decision 1: install to `~/.claude`, `~/.codex` and `~/.hermes` by symlink now, or run unlinked against one real project first. Design record recommends installing now.
-- [ ] Operator decision 2: which project writes the first real suite. Design record recommends the network controller, whose framework already exists.
+- [x] Operator decision 1 — **closed 20260923_1350**: installed by symlink into `~/.claude`, `~/.codex` and `~/.hermes`, all three resolving to this canonical path. Verified end to end through
+      the `~/.claude` link: template validated, an observation appended, a report rendered with the second eval correctly deriving `not_evaluated`.
+- [x] Operator decision 2 — **closed 20260923_1352**: `unified-network-controller` writes the first real suite. Evidenced, not assumed: its
+      `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/evaluation-framework-implementation-20260923_0819.md`
+      already defines 14 axes with a measure, named oracle, evidence altitude and tier each, and the shipped
+      `examples/network-controller/` suite was modelled on it. No other candidate project has an evaluation framework at all.
+- [ ] **First-suite blocker (found 20260923_1352) — the gate is now on the controller, not on this package.** `unified-network-controller` has neither `tests/` nor `evals/`, no inventory
+      CSV to serve as an independent denominator, and its own plan states that nothing from P3 onward starts until its open decisions 1, 3 and 4 are answered. Its decision 1 (tree split)
+      fixes where a suite file lives and its decision 6 fixes the first scorecard's scope, so writing a suite before both are answered produces an artifact in the wrong tree at the wrong
+      scope. Ask the operator; do not guess.
 - [ ] Operator decision 3: where a consuming project's `history.jsonl` lives. Design record recommends in-repo and committed, because the diff is the audit trail.
 - [ ] Operator decision 4: whether a `blocked` verdict satisfies a gate. Design record recommends never, so an unrunnable check does not read as a passing one.
 - [ ] Operator decision 5: wire `scripts/validate_suite.py` into a skills-level check so the shipped examples cannot rot. **Partly actioned 20260923_1222** — `just validate-all` now does this
       locally; a
       skills_stuff-wide check is still unwired.
 - [ ] Operator decision 6: v0.2 basis hashing — wait for the first project that asks "did this change since we measured it?", then record the question in `BRIEF.md`.
-- [ ] Package is untracked in git. Decide whether it is committed to `skills_stuff` before or after the first real suite.
+- [x] Package git state — **closed 20260923_1345**: committed as `fed0f74` (package), `293c42b` (skill-ai-it), `7e77d12` (memory pointers) and pushed to <https://github.com/amalikn/skills_stuff>. Decided
+      before the first real suite, so the first consuming project pins a published version rather than a moving local tree.
 
 ---
 
@@ -67,6 +76,15 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 
 ## Session history (summaries — full detail belongs in memory-keeper once a channel exists)
 
+### 2026-09-23 — first real suite, and the first write-back it produced
+
+- `unified-network-controller` wrote the first suite outside this package: one eval, `A6.coverage.epmp-ap`, in its `tests/` tree. Denominator 119 active ePMP AP from the Cambium asset
+  register, which is maintained upstream of the controller and not written by the collector. Counterexample fixture built because the controller's fault-injection catalogue has no A6 entry.
+- **The write-back contract paid for itself on day one.** Validating that suite crashed `scripts/validate_suite.py` with `AttributeError` instead of reporting a malformed `suite` block,
+  whenever `--history` was also passed. Fixed, fixture added, and the package version bumped — see the top of [CHANGELOG.md](CHANGELOG.md).
+- A second gap behind it: `just validate-negatives` asserted only a non-zero exit, so a crash was indistinguishable from a clean rejection — the gate meant to catch that regression would
+  have passed it. It now requires a non-zero exit, an `INVALID:` line, and no `Traceback`. Proven by reverting the fix.
+
 ### 2026-09-23 — Archcore promotion
 
 - Ratified all eleven documents to `status: accepted` at 13:31 on operator authorisation; ADR body `## Status` lines updated to match the frontmatter.
@@ -97,6 +115,10 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 ## Next actions
 
 - Run `just validate-all` and `just check` after any change to a script, schema, example or governance surface.
+- Take a first A6 measurement for `unified-network-controller` and record it. The suite and procedure exist; its
+  `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/tests/report.md` reads `not_evaluated` until
+  someone runs the counts.
+- Propose the A6 counterexample as **F13** in the controller's fault-injection catalogue when that plan document is next revised.
 - ~~Review the eleven `status: proposed` documents~~ — **done 20260923_1331**: all eleven ratified to `status: accepted` and now outrank `AGENTS.md`/`SKILL.md` in the source priority.
 - Resolve operator decisions 1 and 2 — nothing else about this package is blocked, but neither is it in use until one of them is answered.
 - Once a real suite exists, record the session in memory-keeper and register the project in mcp-project-context so this file stops being the only record.
