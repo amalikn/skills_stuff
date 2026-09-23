@@ -43,9 +43,14 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 | Skill                           | Path                                    | Purpose                                                               |
 | ------------------------------- | --------------------------------------- | --------------------------------------------------------------------- |
 | `skill-project-wiki-rag-bridge` | `skills/skill-project-wiki-rag-bridge/` | Controlled project/wiki/rag-tools bridge with multi-project isolation |
+| `skill-eval-manager`            | `skills/skill-eval-manager/`            | Evaluation-suite discipline: claims, oracles, verdicts, derived reports |
 
 `skill-project-wiki-rag-bridge` governs how project repos connect to the shared wiki and rag-tools. It does not own wiki content, project content, Qdrant data, or embeddings. Depends on external
 `rag-tools`.
+
+`skill-eval-manager` defines, validates, records and reports evaluation suites over operational systems. It deliberately does not execute an eval — observations come from the consuming project's
+tools or an operator. Project entry: [skills/skill-eval-manager/README.md](skills/skill-eval-manager/README.md). AI navigation:
+[skills/skill-eval-manager/AI_NAVIGATION.md](skills/skill-eval-manager/AI_NAVIGATION.md).
 
 ## Governance
 - Repo-local guidance: [AGENTS.md](/Volumes/Data/_ai/_skills/skills_stuff/AGENTS.md)

@@ -1,0 +1,36 @@
+{
+  "schema_version": "0.1",
+  "suite": {"id": "starter-evaluation-suite", "title": "Starter operational evaluation suite", "source_status": "USER_STATED"},
+  "layers": [
+    {"id": "transport", "rank": 10, "description": "request accepted or command exited"},
+    {"id": "stored", "rank": 20, "description": "independent record exists"},
+    {"id": "rendered", "rank": 30, "description": "operator-facing outcome is visible"},
+    {"id": "durable", "rank": 40, "description": "outcome survives its required interval"}
+  ],
+  "evals": [
+    {
+      "id": "example.durable-state",
+      "claim": "Every in-scope record remains visible after the scheduled collection interval.",
+      "population": {"definition": "The records listed by the independent inventory snapshot.", "denominator_source": "data/inventory-snapshot.csv", "slices": [{"id": "all", "denominator": 4, "label": "all inventory records"}]},
+      "oracle": {"description": "Read the operator-facing state from a service independent of the collector.", "path": "operator procedure docs/verify-visible-state.md", "independent": true, "routes_through_evaluated_path": false},
+      "observation_layer": {"id": "durable", "rank": 40},
+      "evidence": {"ref": "docs/verify-visible-state.md", "layer": {"id": "durable", "rank": 40}},
+      "executor": {"type": "manual", "ref": "docs/verify-visible-state.md"},
+      "tier": {"id": "live", "runner": "operator"},
+      "validity": {"max_age": "7d", "invalidate_on": ["implementation_change", "config_change", "oracle_change", "population_change"]},
+      "falsifiability": {"method": "fixture", "ref": "tests/fixtures/missing-visible-record.json", "verified_at": "2026-09-23"}
+    },
+    {
+      "id": "example.contract-shape",
+      "claim": "The recorded fixture parses into the required stored fields.",
+      "population": {"definition": "All fixture records in the versioned contract corpus.", "denominator_source": "tests/fixtures/manifest.json", "slices": [{"id": "all", "denominator": 3, "label": "fixture corpus"}]},
+      "oracle": {"description": "Schema validator reads the fixture corpus directly, not the application parser.", "path": "tests/contract/schema-check.py", "independent": true, "routes_through_evaluated_path": false},
+      "observation_layer": {"id": "stored", "rank": 20},
+      "evidence": {"ref": "tests/contract/schema-check.py", "layer": {"id": "stored", "rank": 20}},
+      "executor": {"type": "command", "ref": "tests/contract/schema-check.py", "args": ["--fixtures", "tests/fixtures"]},
+      "tier": {"id": "offline", "runner": "agent"},
+      "validity": {"max_age": "30d", "invalidate_on": ["implementation_change", "schema_change", "population_change"]},
+      "falsifiability": {"method": "mutation", "ref": "tests/contract/test_schema_check.py::test_missing_field_fails", "verified_at": "2026-09-23"}
+    }
+  ]
+}

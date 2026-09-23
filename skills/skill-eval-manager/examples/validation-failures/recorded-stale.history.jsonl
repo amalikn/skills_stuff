@@ -1,0 +1,1 @@
+{"record_type":"observation","observation_id":"invalid-recorded-stale","recorded_at":"2026-09-23T00:00:00Z","suite_id":"starter-evaluation-suite","eval_id":"example.durable-state","population_slice_id":"all","observed_at":"2026-09-23T00:00:00Z","verdict":"stale","evidence":{"ref":"broken","layer":{"id":"durable","rank":40}}}

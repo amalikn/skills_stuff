@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/skill-eval-manager/eval-definition.schema.json",
+  "title": "Evaluation suite definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "suite", "layers", "evals"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "suite": {"$ref": "#/$defs/suite"},
+    "layers": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/layer"}},
+    "evals": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/eval"}}
+  },
+  "$defs": {
+    "suite": {"type": "object", "additionalProperties": false, "required": ["id", "title"], "properties": {"id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"}, "title": {"type": "string", "minLength": 1}, "source_status": {"enum": ["VERIFIED_PRIMARY", "VERIFIED_SECONDARY", "UNVERIFIED", "USER_STATED"]}}},
+    "layer": {"type": "object", "additionalProperties": false, "required": ["id", "rank"], "properties": {"id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "rank": {"type": "integer", "minimum": 0}, "description": {"type": "string"}}},
+    "eval": {"type": "object", "additionalProperties": false, "required": ["id", "claim", "population", "oracle", "observation_layer", "evidence", "executor", "tier", "validity", "falsifiability"], "properties": {"id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"}, "claim": {"type": "string", "minLength": 1}, "population": {"$ref": "#/$defs/population"}, "oracle": {"$ref": "#/$defs/oracle"}, "observation_layer": {"$ref": "#/$defs/layer"}, "evidence": {"$ref": "#/$defs/evidence"}, "executor": {"$ref": "#/$defs/executor"}, "tier": {"$ref": "#/$defs/tier"}, "validity": {"$ref": "#/$defs/validity"}, "falsifiability": {"$ref": "falsifiability.schema.json"}}},
+    "population": {"type": "object", "additionalProperties": false, "required": ["definition", "denominator_source", "slices"], "properties": {"definition": {"type": "string", "minLength": 1}, "denominator_source": {"type": "string", "minLength": 1}, "slices": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/slice"}}}},
+    "slice": {"type": "object", "additionalProperties": false, "required": ["id", "denominator"], "properties": {"id": {"type": "string", "minLength": 1}, "denominator": {"type": "integer", "minimum": 1}, "label": {"type": "string"}}},
+    "oracle": {"type": "object", "additionalProperties": false, "required": ["description", "path", "independent", "routes_through_evaluated_path"], "properties": {"description": {"type": "string", "minLength": 1}, "path": {"type": "string", "minLength": 1}, "independent": {"const": true}, "routes_through_evaluated_path": {"const": false}}},
+    "evidence": {"type": "object", "additionalProperties": false, "required": ["ref", "layer"], "properties": {"ref": {"type": "string", "minLength": 1}, "layer": {"$ref": "#/$defs/layer"}}},
+    "executor": {"type": "object", "additionalProperties": false, "required": ["type", "ref"], "properties": {"type": {"enum": ["command", "manual", "query", "external"]}, "ref": {"type": "string", "minLength": 1}, "args": {"type": "array", "items": {"type": "string"}}}},
+    "tier": {"type": "object", "additionalProperties": false, "required": ["id", "runner"], "properties": {"id": {"type": "string", "minLength": 1}, "runner": {"type": "string", "minLength": 1}}},
+    "validity": {"type": "object", "additionalProperties": false, "required": ["max_age", "invalidate_on"], "properties": {"max_age": {"type": "string", "pattern": "^[1-9][0-9]*[dhm]$"}, "invalidate_on": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}, "basis": {"type": "object", "additionalProperties": false, "properties": {"implementation_ref": {"type": "string"}, "config_hash": {"type": "string"}, "oracle_version": {"type": "string"}}}}}
+  }
+}

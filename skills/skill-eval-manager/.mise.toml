@@ -1,0 +1,15 @@
+# Runtime pins for skill-eval-manager.
+#
+# This file owns the version pin. Do NOT add a .python-version alongside it — two files stating the
+# version is two places for it to drift.
+#
+# The justfile addresses the interpreter by absolute path ({{py}}), NOT via `mise exec -- python`,
+# so a missing venv fails loudly instead of degrading silently to the host interpreter. No `[tasks]`
+# are defined here deliberately: a mise task would be a second resolution path beside the justfile.
+#
+# Venv location (rebuildable, never in this repo):
+#   /Volumes/Data/_ai/_skills/skills-working-cache/skills/skill-eval-manager/.venv
+
+[tools]
+python = "3.14.5"
+node = "26.2.0"

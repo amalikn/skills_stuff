@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/skill-eval-manager/falsifiability.schema.json",
+  "title": "Falsifiability evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["method", "ref", "verified_at"],
+  "properties": {
+    "method": {"enum": ["injected_fault", "fixture", "mutation", "counterexample", "historical_failure", "analytical_proof"]},
+    "ref": {"type": "string", "minLength": 1},
+    "verified_at": {"type": "string", "format": "date"},
+    "notes": {"type": "string"}
+  }
+}

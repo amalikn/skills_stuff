@@ -1,0 +1,8 @@
+# Generated AI-context support. Always rebuildable, never canonical truth.
+graphify-out/
+.ai-context/
+repomix-output.md
+
+# Python
+__pycache__/
+*.pyc

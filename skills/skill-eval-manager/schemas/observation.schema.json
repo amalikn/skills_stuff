@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/skill-eval-manager/observation.schema.json",
+  "title": "Append-only evaluation observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "observation_id", "recorded_at", "suite_id", "eval_id", "population_slice_id", "observed_at", "verdict", "evidence"],
+  "properties": {
+    "record_type": {"const": "observation"},
+    "observation_id": {"type": "string", "minLength": 1},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "suite_id": {"type": "string", "minLength": 1},
+    "eval_id": {"type": "string", "minLength": 1},
+    "population_slice_id": {"type": "string", "minLength": 1},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "measured_value": {},
+    "verdict": {"enum": ["pass", "fail", "inconclusive", "error", "blocked"]},
+    "evidence": {"type": "object", "additionalProperties": false, "required": ["ref", "layer"], "properties": {"ref": {"type": "string", "minLength": 1}, "layer": {"type": "object", "additionalProperties": false, "required": ["id", "rank"], "properties": {"id": {"type": "string"}, "rank": {"type": "integer", "minimum": 0}}}}},
+    "supersedes": {"type": "string", "minLength": 1},
+    "notes": {"type": "string"}
+  }
+}

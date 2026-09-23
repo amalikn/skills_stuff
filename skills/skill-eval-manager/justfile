@@ -1,0 +1,155 @@
+# just task catalog for this project.
+# Purpose:
+# - expose safe, documented project tasks to humans and AI agents
+# - avoid agents running arbitrary scripts without context
+# - keep runnable entrypoints simple and readable
+#
+# List tasks:
+#   just --list
+#
+# Run task:
+#   just <task>
+#
+# Safety:
+# - Prefer safe/read-only tasks by default.
+# - Mark destructive tasks clearly and require review.
+# - Keep detailed inputs/outputs/safety notes in scripts/README.md.
+#
+# RUNTIME PINNING — do not replace {{py}} / {{nd}} with bare `python3` or `node`.
+# A bare interpreter resolves to whatever the host has on PATH, which is NOT what .mise.toml pins. That works until the
+# host changes underneath it and then fails in a way that reads like a code bug. Recipes go through the variables below
+# so no recipe depends on the ambient interpreter, and `just runtimes` makes the resolved versions visible.
+#
+# `mise exec -- python` IS NOT THE FIX, and this is the part that gets missed. Where .mise.toml sets `_.python.venv`,
+# `mise exec -- python` does land on the venv — so it tests clean and reads as pinned. But the dependency is IMPLICIT:
+# nothing at the call site says which interpreter is meant, and if the activation ever stops applying (the env block is
+# edited, the venv is missing, the recipe is copied into a project without that config) it degrades SILENTLY to the host
+# interpreter instead of failing. Address the interpreter by PATH via {{py}}, and depend on _require-venv, so a missing
+# venv is a loud error with a fix attached rather than a wrong-interpreter run that looks fine.
+#
+# Node has no venv layer, so `mise exec -- node` is genuinely the explicit form for it — the distinction above applies
+# wherever a venv sits between mise and the interpreter, which in practice means Python.
+#
+# The venv lives in the WORKING-CACHE PEER, never in this repo — a repo carries source, not rebuildable runtime.
+# Path mapping (see the global runtime-isolation policy):
+#   project_stuff/<group>/<project>  ->  project-working-cache/<group>/<project>
+#   mcp_stuff/<project>              ->  mcp-working-cache/<project>
+#   skills_stuff/<project>           ->  skills-working-cache/<project>
+#   tools_stuff/<project>            ->  tools-working-cache/<project>
+#
+# `uv run` is deliberately NOT the primary path: it resolves its own interpreter independently of mise, which is the
+# same class of drift this pinning removes. Use it only where a recipe needs throwaway third-party packages.
+
+set dotenv-load := false
+
+# Working-cache peer for this project (skills_stuff/skills/<project> -> skills-working-cache/skills/<project>).
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skills/skill-eval-manager"
+py := wc + "/.venv/bin/python"
+nd := "mise exec -- node"
+
+# Build the working-cache venv from the mise-pinned runtimes. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @test -f requirements.txt && {{py}} -m pip install --quiet --upgrade pip -r requirements.txt || true
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Fail early and legibly rather than falling back to the host interpreter
+_require-venv:
+    @test -x "{{py}}" || { echo "venv missing at {{py}} — run: just bootstrap" >&2; exit 1; }
+
+# Report which runtimes the recipes will actually use
+runtimes:
+    @printf 'python  '; {{py}} -c "import sys; print(sys.version.split()[0], sys.executable)" 2>/dev/null || echo "MISSING — run: just bootstrap"
+    @printf 'node    '; {{nd}} --version 2>/dev/null || echo "MISSING — pin node in .mise.toml"
+
+# List available tasks and show script inventory when present
+inventory:
+    @just --list
+    @test -f scripts/README.md && sed -n '1,220p' scripts/README.md || true
+
+# Audit script/task inventory for obvious drift
+audit-scripts:
+    @echo "== just recipes =="
+    @just --list || true
+    @echo
+    @echo "== script files =="
+    @find scripts -maxdepth 2 -type f 2>/dev/null | sort || true
+    @echo
+    @echo "== uncataloged script candidates =="
+    @if [ -d scripts ] && [ -f scripts/README.md ]; then \
+      find scripts -maxdepth 2 -type f | sort | while read -r f; do \
+        grep -Fq "$f" scripts/README.md || echo "$f"; \
+      done; \
+    fi
+
+# Must exit 0 before durable work is called complete. Fix the project when it fails, never the check.
+# Governance coherence checks — assert this project's governance claims against reality
+check: _require-venv
+    @{{py}} scripts/check_governance.py
+
+# Run safe local preflight checks
+preflight: runtimes audit-scripts check lint-md
+
+# Lint Markdown files when markdownlint-cli2 is available
+lint-md:
+    @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
+    @markdownlint-cli2 '**/*.md'
+
+# The navigation-control scripts live in the skill package, NOT in this project. Override on the
+# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav-validate
+skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
+
+# Upgrade navigation control layer (dry-run preview)
+nav-upgrade-dry-run: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
+
+# Upgrade navigation control layer (apply changes) — review the dry-run first
+nav-upgrade: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
+
+# Validate navigation control layer
+nav-validate: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
+
+# Check only expected files changed after upgrade (requires a git repo)
+nav-check-diff: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
+
+# --- Project tasks: skill-eval-manager -----------------------------------------------------------
+# These exercise the shipped package against its own fixtures. All are read-only.
+
+# Validate the copyable suite template (safe, read-only)
+validate-template: _require-venv
+    @{{py}} scripts/validate_suite.py --suite templates/evals.yaml
+
+# Validate every shipped example suite against its history (safe, read-only)
+validate-examples: _require-venv
+    @for s in examples/*/evals.yaml; do \
+      d=$(dirname "$s"); \
+      echo "== $d"; \
+      if [ -f "$d/history.jsonl" ]; then \
+        {{py}} scripts/validate_suite.py --suite "$s" --history "$d/history.jsonl" || exit 1; \
+      else \
+        {{py}} scripts/validate_suite.py --suite "$s" || exit 1; \
+      fi; \
+    done
+
+# Confirm each negative fixture still FAILS validation (safe, read-only)
+validate-negatives: _require-venv
+    @for s in examples/validation-failures/*.yaml; do \
+      if {{py}} scripts/validate_suite.py --suite "$s" >/dev/null 2>&1; then \
+        echo "FAIL: $s passed validation but is a negative fixture" >&2; exit 1; \
+      else \
+        echo "ok (rejected): $s"; \
+      fi; \
+    done
+
+# All package self-checks: template, examples, negative fixtures
+validate-all: validate-template validate-examples validate-negatives
+
+# Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
+# package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
+nav-selftest: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"

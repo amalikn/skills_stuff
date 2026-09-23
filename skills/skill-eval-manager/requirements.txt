@@ -1,0 +1,10 @@
+# Local development venv for skill-eval-manager.
+#
+# The shipped scripts (validate_suite.py, record_result.py, render_report.py) are stdlib-only and
+# have NO required third-party dependency — that is a package guarantee stated in README.md, and
+# scripts/check_governance.py must stay stdlib-only so the governance gate can never fail for
+# environment reasons.
+#
+# PyYAML is listed here only so this venv can also validate suites written in ordinary YAML. The
+# shipped template and examples are JSON-formatted YAML and validate without it.
+PyYAML>=6.0.2
