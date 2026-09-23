@@ -31,7 +31,7 @@ rather than silently falling back to the host interpreter. The one sanctioned ex
 
 **Do not invoke these scripts with a bare `python3`.** It resolves to whatever the host has on `PATH`, which works until the host changes and then fails in a way that reads like a code bug.
 
-<!-- BEGIN MANAGED: skill-ai-it:scripts --> <!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->
+<!-- BEGIN MANAGED: skill-ai-it:scripts --> <!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
 
 ## Execution Policy
 

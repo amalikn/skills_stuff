@@ -14,6 +14,7 @@
 - [Context compaction recovery](#context-compaction-recovery)
 - [Drift/coherence audit](#driftcoherence-audit)
 - [Deterministic navigation-control automation](#deterministic-navigation-control-automation)
+
 `skill-ai-it` is a reusable governance/navigation skill. It analyzes a target folder, infers what project context exists, and creates or refreshes repeat-safe guidance files without making the target
 project depend on this skill package at runtime.
 
@@ -253,4 +254,3 @@ Also see:
 - Always use `--dry-run` first. `.proposed` files written when YAML merging is risky.
 - Scripts do not create `.archcore/`, `.ai-context/`, or `graphify-out/`.
 - Generated outputs remain support-only. No automatic promotion.
-

@@ -97,6 +97,7 @@ This skill must be safe to run many times on the same project.
 6. Treat `CHANGELOG.md` as the durable project history/governance-change ledger; append entries rather than rewriting historical entries.
 7. If the `archcore` CLI is available and `.archcore/` is missing, initialize it with `archcore init` during `bootstrap`, `navigation-add`, or `refresh`; after initialization, treat `.archcore/` as
    structured durable truth.
+
 8. Propose Archcore content changes rather than directly editing Archcore files unless the user explicitly authorizes the content change. `archcore init` itself is allowed when the CLI is available.
 9. Run Graphify and Repomix when their CLIs are available; treat their outputs (`graphify-out/`, `.ai-context/`, `repomix-output.md`) as disposable support, not canonical truth.
 10. On conflict, stop and report the conflict instead of merging assumptions silently.
@@ -108,7 +109,7 @@ When adding repeat-refreshable content into existing files, wrap it with comment
 
 ```markdown
 <!-- BEGIN MANAGED: skill-ai-it:<section-name> -->
-<!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->
+<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
 ...managed content...
 <!-- END MANAGED: skill-ai-it:<section-name> -->
 ```
@@ -123,6 +124,7 @@ domain-routing table — reporting only `replaced-old-block`, which reads like a
 1. **Provenance.** A block this skill wrote carries a `skill-ai-it-version:` line. A block **without** one was either never written by the skill or has been hand-edited since, so the upgrader
    **refuses to replace it**, writes the generic block to `<file>.proposed-<section>-block`, and flags the run for manual review. Note the original bug was worse than "replaces managed blocks": the
    old-style-marker branch is tested **first** and matches preferentially, so legacy markers were the *most* exposed, not the least.
+
 2. **Explicit opt-out.** A project that has deliberately taken ownership declares it inside the block:
 
    ```markdown
@@ -139,6 +141,7 @@ next *real* failure goes unnoticed with it. "Expected failures" is not a stable 
 
 **Both constants are restated in both scripts on purpose** (`MANUAL_TOKEN`, `VERSION_MARKER`). Drift between them would let the upgrader skip a block the validator still fails, which is the worst of
 both.
+
 - The version line must be the first comment inside the managed block.
 - On repeat runs, replace only content inside the matching managed block.
 - If a block is absent, append it under the most relevant existing heading.
@@ -161,10 +164,22 @@ skill-ai-it/
 ├── context-map.yaml
 ├── CHANGELOG.md
 ├── ARCHITECTURE.md
+├── justfile
+├── .mise.toml
+├── .markdownlint-cli2.jsonc
+├── scripts/
+│   ├── upgrade_navigation_control_layer.py
+│   ├── validate_navigation_control_layer.py
+│   ├── check_expected_diff.py
+│   ├── check_governance.py
+│   ├── selftest_blocks.py
+│   └── README.md
 ├── templates/
 │   ├── AI_NAVIGATION.md
 │   ├── context-map.yaml
+│   ├── update_rules.yaml
 │   ├── repomix.config.json
+│   ├── justfile
 │   ├── AGENTS-navigation-block.md
 │   ├── AGENTS-governance-checks-block.md
 │   ├── scripts-README.md
@@ -176,6 +191,7 @@ skill-ai-it/
     ├── memory-bank-structure.md
     ├── drift-audit.md
     ├── governance-checks.md
+    ├── navigation-control-automation.md
     └── script-task-audit-checklist.md
 ```
 
@@ -193,28 +209,29 @@ skill-ai-it/
 
 1. List the target folder's contents 3 levels deep (files and subdirectories), excluding heavy/generated folders such as `.git`, `node_modules`, `.venv`, `dist`, `build`, `__pycache__`, `.ai-context`,
    and `graphify-out` unless the user asks to inspect them.
+
 2. Classify what you find:
 
-| Signal                                                                                                       | Inference                                                                             |
-| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
-| `.py`, `.ts`, `.js`, `.go`, `.rb`, `.rs`, `.java` files                                                      | Code project                                                                          |
-| `docker-compose.yml`, `Dockerfile`, `Makefile`, `*.tf`                                                       | Infrastructure / ops                                                                  |
-| `*.eml`, `communications/` folder                                                                            | Communications tracking                                                               |
-| `*.md` files only, no code                                                                                   | Docs / knowledge base                                                                 |
-| Mix of the above                                                                                             | Mixed project                                                                         |
-| `AI_NAVIGATION.md`, `context-map.yaml`                                                                       | AI navigation module already present                                                  |
-| `.archcore/`                                                                                                 | Structured durable project truth present                                              |
-| `archcore` CLI available and `.archcore/` missing                                                            | Initialize `.archcore/` with `archcore init` in bootstrap/navigation-add/refresh mode |
-| `justfile`, `Justfile`                                                                                       | just task catalog present — preferred lightweight runnable task catalog               |
-| `scripts/`, `Makefile`, `Taskfile.yml`, `justfile`, `package.json` scripts, or common automation files       | Script/task inventory useful; create or refresh `scripts/README.md`                   |
-| `memory-bank/`                                                                                               | Memory Bank-style project memory present                                              |
-| `graphify-out/`, `.ai-context/`                                                                              | Generated AI context/navigation artifacts present                                     |
-| `repomix.config.json`                                                                                        | Deterministic context-pack config present                                             |
-| `.markdownlint-cli2.jsonc`, `.markdownlint.json(c)`, `.markdownlint.yaml`, or a `markdownlint-cli2` key      | Markdown lint config already owned by the project — do not create/overwrite           |
-|   in `package.json`                                                                                          |                                                                                       |
-| `README.md` exists                                                                                           | Read it first before generating                                                       |
-| `CHANGELOG.md` exists                                                                                        | Read recent entries to understand project evolution and governance changes            |
-| `AGENTS.md` exists                                                                                           | Update, do not overwrite                                                              |
+   | Signal                                                                                                       | Inference                                                                             |
+   | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+   | `.py`, `.ts`, `.js`, `.go`, `.rb`, `.rs`, `.java` files                                                      | Code project                                                                          |
+   | `docker-compose.yml`, `Dockerfile`, `Makefile`, `*.tf`                                                       | Infrastructure / ops                                                                  |
+   | `*.eml`, `communications/` folder                                                                            | Communications tracking                                                               |
+   | `*.md` files only, no code                                                                                   | Docs / knowledge base                                                                 |
+   | Mix of the above                                                                                             | Mixed project                                                                         |
+   | `AI_NAVIGATION.md`, `context-map.yaml`                                                                       | AI navigation module already present                                                  |
+   | `.archcore/`                                                                                                 | Structured durable project truth present                                              |
+   | `archcore` CLI available and `.archcore/` missing                                                            | Initialize `.archcore/` with `archcore init` in bootstrap/navigation-add/refresh mode |
+   | `justfile`, `Justfile`                                                                                       | just task catalog present — preferred lightweight runnable task catalog               |
+   | `scripts/`, `Makefile`, `Taskfile.yml`, `justfile`, `package.json` scripts, or common automation files       | Script/task inventory useful; create or refresh `scripts/README.md`                   |
+   | `memory-bank/`                                                                                               | Memory Bank-style project memory present                                              |
+   | `graphify-out/`, `.ai-context/`                                                                              | Generated AI context/navigation artifacts present                                     |
+   | `repomix.config.json`                                                                                        | Deterministic context-pack config present                                             |
+   | `.markdownlint-cli2.jsonc`, `.markdownlint.json(c)`, `.markdownlint.yaml`, or a `markdownlint-cli2` key      | Markdown lint config already owned by the project — do not create/overwrite           |
+   |   in `package.json`                                                                                          |                                                                                       |
+   | `README.md` exists                                                                                           | Read it first before generating                                                       |
+   | `CHANGELOG.md` exists                                                                                        | Read recent entries to understand project evolution and governance changes            |
+   | `AGENTS.md` exists                                                                                           | Update, do not overwrite                                                              |
 
 3. Check the **parent folder** for:
    - `AGENTS.md` — read it to inherit conventions, routing patterns, internal domain
@@ -240,11 +257,13 @@ Read the **3–5 most informative files** in the target folder. Priority order:
 9. Most recently modified `.md` file (captures active work context)
 
 Read parent AGENTS.md to extract:
+
 - `@` import chain (for AGENTS.md inheritance)
 - Internal domain (e.g. `apn.net.au`)
 - Naming conventions, routing rules
 
 Read parent `AI_NAVIGATION.md` / `context-map.yaml` if present to extract:
+
 - Authority order
 - Existing routing categories
 - Archcore, memory-bank, Graphify, and Repomix conventions
@@ -252,6 +271,7 @@ Read parent `AI_NAVIGATION.md` / `context-map.yaml` if present to extract:
 - Drift/conflict handling rules
 
 Read parent `CHANGELOG.md` if present to extract:
+
 - Recent governance or routing changes
 - Recent template/pattern changes
 - Migration notes that affect repeat-run safety
@@ -271,7 +291,7 @@ From inventory + content reads, determine:
 | Project name          | Folder name, formatted (e.g. `aurukun-fni` → "Aurukun FNI")                                                                                                                  |
 | Purpose               | From README, code comments, config descriptions, or folder name semantics                                                                                                    |
 | Technology stack      | From file extensions, package manifests, imports                                                                                                                             |
-| Participants | From git log (`git log --format="%an" | sort -u`), email headers in EML files, or existing docs |
+| Participants          | From git log (`git log --format="%an" \| sort -u`), email headers in EML files, or existing docs |
 | Internal domain       | From parent AGENTS.md; default `apn.net.au` for APN projects                                                                                                                 |
 | Subfolder roles       | From subfolder names and their contents                                                                                                                                      |
 | Project type          | Code / docs / ops / comms / mixed (drives conditional file creation)                                                                                                         |
@@ -331,12 +351,14 @@ From inventory + content reads, determine:
 Apply these rules to every markdown file created or updated by this skill. Authority:
 [`/Volumes/Data/_ai/governance/categories/markdown-guide.md`](/Volumes/Data/_ai/governance/categories/markdown-guide.md).
 
-**Naming**
+#### Naming
+
 - Time-bound files: `<slug>-YYYYMMDD_hhmm.md` (e.g. `design-notes-20260522_1400.md`).
 - Stable entrypoints (`README.md`, `AGENTS.md`, `CLAUDE.md`, `SCRATCHPAD.md`, `.agents/*.md`) keep their exact names — do not rename them.
 - Metadata timestamp fields (`Last reviewed`, `Last updated`, etc.) use `YYYYMMDD_hhmm` format.
 
-**Table of contents**
+#### Table of contents
+
 - Any file that exceeds 100 lines **must** have a TOC.
 - Generate the TOC automatically when creating or first extending a file past 100 lines.
 - Place the TOC immediately after the document's main `#` heading (after any frontmatter, before the first section).
@@ -344,12 +366,14 @@ Apply these rules to every markdown file created or updated by this skill. Autho
 - TOC anchors follow GitHub-flavored markdown: lowercase, spaces → hyphens, special characters stripped.
 - When editing any long file that already has a TOC, update the TOC in the same pass — reflect any added or removed section headings before finishing.
 
-**Links and references**
+#### Links and references
+
 - In `README.md`, `readme.md`, and similar index files, references to other markdown files must be written as markdown links, not plain paths or filenames.
 - Metadata fields (`Source of truth`, `Synced from`, `Synced to`) that name a specific file must render that file as a markdown link.
 - Keep generic filename patterns and placeholders as code literals (e.g. `` `<slug>-YYYYMMDD_hhmm.md` ``) unless they refer to a single concrete existing document.
 
-**Quality pass**
+#### Quality pass
+
 - After writing or editing a markdown file, fix malformed list structure, awkward rendering, and stale headings in the same pass.
 - Treat `README.md` as a navigation and inventory surface: lead with folder index and governance pointers, not prose.
 
@@ -393,6 +417,7 @@ Two reasons, and the second is the one that bites:
 
 1. **A queue that outlives its proposals becomes a stale second index.** Once the documents exist, a file listing them under a name that says "candidates" is a governance surface misdescribing its own
    contents — and a later session reading it cannot tell a pending proposal from a completed one.
+
 2. **It lives at the repo root, which `bootstrap` and `refresh` both rewrite.** Anything durable recorded there is destroyed by the next skill invocation with no trace. Observed 2026-08-25: a
    post-promotion ledger was written into it and would have been silently erased on the next refresh.
 
@@ -456,11 +481,14 @@ Audit reference: `patterns/script-task-audit-checklist.md`.
 
 - `bootstrap`: if the target has scripts, tasks, or automation files, create or update `scripts/README.md`. If no canonical task runner exists but scripts/automation are present, prefer creating
   `justfile` from `templates/justfile` as the lightweight task catalog. Do not create empty task scaffolding when no scripts/tasks exist.
+
 - `navigation-add`: add navigation pointers to the existing canonical runner first. If a `justfile` exists, route agents to `just --list` then `scripts/README.md`.
 - `refresh`: create `scripts/README.md` from `templates/scripts-README.md` if scripts or tasks exist and the file is missing. If the file exists, update managed inventory blocks only. Do not overwrite
   manually written script descriptions. If drift exists between the task runner and `scripts/README.md`, report or propose updates.
+
 - `audit`: report scripts missing from `scripts/README.md`, tasks missing descriptions, cataloged scripts that no longer exist, raw scripts not represented in `scripts/README.md`, and potentially
   unsafe scripts without safety notes.
+
 - `promote`: promote only stable, durable operational procedures to Archcore. Do not promote every script automatically.
 
 #### Task safety labels
@@ -504,12 +532,15 @@ Node has no venv layer, so `mise exec -- node` **is** the explicit form for it. 
 
 1. **`.mise.toml` in the project**, pinning every runtime the recipes use. Pin **Node as well as Python** when any recipe shells out to a JS tool — pinning only Python leaves `mise exec -- node`
    falling through to the host, which looks pinned and is not.
+
 2. **Interpreter variables at the top of the `justfile`**, and every recipe going through them:
+
    ```just
    wc := "<the working-cache peer for this project>"
    py := wc + "/.venv/bin/python"
    nd := "mise exec -- node"
    ```
+
 3. **A `_require-venv` guard that every Python recipe depends on**, so a missing venv fails with a rebuild instruction instead of silently falling back to the host — which is the same defect wearing a
    different hat.
 
@@ -593,7 +624,8 @@ preflight: runtimes audit-scripts check
 
 # Lint Markdown files when markdownlint-cli2 is available
 lint-md:
-    @command -v markdownlint-cli2 >/dev/null && markdownlint-cli2 '**/*.md' || echo 'markdownlint-cli2 not installed; skipped'
+    @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
+    @markdownlint-cli2 '**/*.md'
 ```
 
 Add project-specific tasks by inspecting `scripts/` and adapting to the discovered pipeline.
@@ -622,6 +654,7 @@ Two discipline rules on Tier 3, both load-bearing:
 
 - **Every Tier 3 check cites the project rule it enforces**, in its docstring or failure message. A check whose justification cannot be located is a check the next agent deletes when it becomes
   inconvenient.
+
 - **Never invent an invariant the project has not stated.** Manufacturing governance the operator never agreed to is worse than leaving a gap. Report the candidate invariant as a proposal instead.
 
 #### Self-policing coverage — how it stays fine-tuned
@@ -639,11 +672,13 @@ Generate both directions.
 
 - `bootstrap`: create from template with Tier 1 only, tuned to whatever catalogs and surfaces exist. Typically 10–40 assertions. Wire it into the task runner (`just check`) and add the AGENTS.md
   managed block. Do not generate Tier 2/3 scaffolding for structure the project does not yet have.
+
 - `navigation-add`: create if governance surfaces exist and no checker does; otherwise add the AGENTS.md block and the runner recipe only.
 - `refresh`: **this is the adoption path for projects that predate the capability.** If no checker exists, create one from the template exactly as `bootstrap` would, tuned to the invariants the
   project has accumulated since it was set up — which is usually a richer set than it had at bootstrap, so expect more than the bootstrap baseline. Wire it into the task runner and add the AGENTS.md
   managed block in the same pass. If a checker already exists, extend its registries to cover artifacts added since the last run — new catalogs, new generated outputs, new constant surfaces. **Never
   narrow an existing check to make a run green.**
+
 - `audit`: run the checker, report failures verbatim, and separately report *coverage gaps* — artifact classes present in the project that no check covers. The second list is the more valuable output.
 - `promote`: promote a stable invariant to a rule/spec document when the operator asks, then cite that document from the check.
 
@@ -653,6 +688,7 @@ Generate both directions.
 - A new check must be **able to fail** — prove it by breaking the project deliberately and watching it go red.
 - **Text matching does not verify behavior.** Grepping for a threshold's characters does not prove the logic implements it; a script's output can state a rule its code no longer applies. Where a check
   must verify behavior, execute the behavior and assert on the result.
+
 - **Do not enforce history.** Counts recorded as past facts are evidence, not live claims — exempt them by marker rather than editing the record to satisfy a linter.
 
 ---
@@ -722,7 +758,7 @@ Summary: <One-line summary of what this policy governs.>
 - Keep [README.md](README.md) current when adding subfolders or significant documents.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->
+<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
 
 ## AI navigation and context preflight
 
@@ -1001,7 +1037,7 @@ Purpose: this file is the project context entrypoint for AI agents. It tells age
 This file is a router, not the full knowledge store.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->
+<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
 
 ## Mandatory read order
 
@@ -1667,6 +1703,7 @@ See the `#### scripts/context-preflight.sh` section above under Conditionally-cr
 After creating/updating files in the target folder:
 
 1. **Parent README.md** — if it has a `## Folder index` section, add an entry:
+
    ```markdown
    - [<folder>/](<folder>/)
      <One-line role description.>
@@ -1675,6 +1712,7 @@ After creating/updating files in the target folder:
    ```
 
 2. **Parent AGENTS.md** — if it has a `Child-project routing rules` section, add:
+
    ```markdown
    - Use [<folder>/](<path>) for <inferred purpose>.
    ```
@@ -1704,6 +1742,7 @@ After creating/updating files in the target folder:
 - Task recipes never call a bare `python3` / `node` — pin runtimes in `.mise.toml`, route recipes through `{{py}}` / `{{nd}}`, and keep the venv in the working-cache peer, never in the repo
 - Nor an *implicit* `mise exec -- python`: address the venv interpreter by path via `{{py}}` and guard it with `_require-venv`, so a missing venv fails loudly instead of degrading to the host
   interpreter. Give `.mise.toml` tasks the absolute venv path for the same reason
+
 - Generate `just bootstrap` and `just runtimes` alongside any pinned-runtime justfile; without `runtimes` the pinning cannot be verified quickly
 - For risky changes to existing YAML/JSON, write `.proposed` files rather than overwriting
 
@@ -1719,9 +1758,11 @@ After creating/updating files in the target folder:
 - [ ] If `.archcore/` exists after `bootstrap`, `navigation-add`, or `refresh`, `ARCHCORE_PROMOTION_CANDIDATES.md` exists in the target root or the final report explicitly explains why it was not
   created/updated. After `promote` the opposite holds: the candidates file must be **gone**, its *never promote* reasoning carried into `.archcore/index.guide.md`, and no governance surface still
   routing to it
+
 - [ ] `ARCHCORE_PROMOTION_CANDIDATES.md` was read back or section-checked before final response when it was created or updated
 - [ ] No `.archcore/adr/`, `.archcore/rules/`, `.archcore/specs/`, `.archcore/guides/`, or `.archcore/plans/` content files were written unless mode is `promote` or the operator explicitly authorized
   promotion
+
 - [ ] CHANGELOG.md created or appended for meaningful governance/navigation changes
 - [ ] Conditional files created only when the detection condition was met — state the reason
 - [ ] No placeholder text (`<...>`) left in generated files
@@ -1731,11 +1772,14 @@ After creating/updating files in the target folder:
 - [ ] Script/task safety labels are present for cataloged entries; uncataloged scripts are treated as `unknown`
 - [ ] **No generated recipe calls a bare `python3`, `node`, `npx`, or `ruby`** — grep the justfile to confirm. Every runtime the recipes use is pinned in `.mise.toml` (Node as well as Python where a
   recipe shells out to a JS tool), the venv is in the working-cache peer rather than the repo, `_require-venv` guards the Python recipes, and `just runtimes` was **executed** and its output reported
+
 - [ ] **No recipe reaches Python through an implicit `mise exec -- python`** — grep for it. Every Python recipe addresses `{{py}}` by path, and `mise run` tasks in `.mise.toml` carry the absolute venv
   path too, so the justfile and the mise tasks cannot resolve differently. Verify by confirming `just runtimes` reports the working-cache venv, not a host or mise-shim path
+
 - [ ] No `.python-version` was created alongside `.mise.toml` — one file owns the pin
 - [ ] Third-party imports the tooling needs are declared in `requirements.txt` and installed by `bootstrap`; the project's own governance checker remains stdlib-only. Prove it by running the checker
   and the navigation validator **from the pinned venv**, not from the host interpreter
+
 - [ ] `scripts/check_governance.py` exists, was **executed**, and its exit status is reported — never claim it passes without running it
 - [ ] The checker covers every catalog the project maintains in **both** directions (nothing cataloged is missing; nothing present is uncataloged)
 - [ ] Every Tier 3 check cites the project rule it enforces, and no invariant was invented that the project has not stated
@@ -1748,6 +1792,7 @@ After creating/updating files in the target folder:
 - [ ] If `repomix.config.json` exists and `.archcore/` exists, `.archcore/**/*.md` is included; `ARCHCORE_PROMOTION_CANDIDATES.md` is included only while it exists (pre-promote)
 - [ ] After `promote`: `.archcore/index.guide.md` (with `title`/`status`/`tags` frontmatter — not `.archcore/README.md`, which `archcore status` rejects) indexes every document written, the orphan
   check points at it rather than at the candidates file, and the candidates filename is registered in `CONDITIONAL_PATHS` so historical mentions do not fail path resolution
+
 - [ ] `archcore status` was run after `promote` and reports the new documents cleanly (no "unrecognized file" issues)
 - [ ] If a repo-local `scripts/context-preflight.sh` was explicitly requested, it is executable or the user was told to run `chmod +x scripts/context-preflight.sh`
 - [ ] Existing YAML/JSON files were not destructively regenerated during refresh mode
@@ -1807,6 +1852,9 @@ TARGET=/path/to/target/project
 
 **Recommended order:**
 
+0. `python3 "$SKILL_DIR/scripts/selftest_blocks.py"` — only when a template under `templates/` or a builder has been edited since the last run. It asserts the emitted blocks still carry every
+   required section, so a truncated template is caught here rather than in a target project's diff
+
 1. `python3 "$SKILL_DIR/scripts/upgrade_navigation_control_layer.py" --project-root "$TARGET" --dry-run` — preview changes
 2. Review proposed changes
 3. `python3 "$SKILL_DIR/scripts/upgrade_navigation_control_layer.py" --project-root "$TARGET"` — apply changes
@@ -1815,13 +1863,22 @@ TARGET=/path/to/target/project
 6. **Governance checker** — validate reports whether `scripts/check_governance.py` exists and is wired. If absent, create it now from `templates/check_governance.py` per the *Governance coherence
    checker* section; if present, extend its registries. This step is judgement, not mechanics: the universal checks are copied, but the Tier 3 invariants must be read out of the target's own stated
    rules. Run it and report its exit status
+
 7. Regenerate `.ai-context/governance-pack.md` if the target has one — it embeds copies of the managed blocks and will otherwise keep serving the pre-upgrade version to agents
 8. Agent fixes only for remaining validation failures
 
 **Key rules:**
 
 - Scripts are the **primary mechanism** for existing-project upgrade.
-- Markdown patterns in `patterns/` are **policy/explanation**, not the primary execution path.
+- **The managed blocks are generated by reading the templates.** `templates/AI_NAVIGATION.md`, `templates/AGENTS-navigation-block.md` and `templates/scripts-README.md` are the single source of truth
+  for block content; the upgrader holds no inlined copy and stops rather than falling back when a template is unreadable. Edit the template, never the builder. Until 2026-09-23 the navigation block
+  was inlined and had drifted nine sections behind its template, so an upgrade after a bootstrap silently removed task routing, drift handling, update rules and the answer contract while reporting
+  `replaced-managed-block`.
+
+- Markdown patterns in `patterns/` are **policy/explanation**, not the primary execution path. The sequence itself, its version-stamp semantics and its failure modes are written up in
+  [`patterns/navigation-control-automation.md`](patterns/navigation-control-automation.md); read it when a run reports something other than a clean apply.
+
+- `templates/update_rules.yaml` holds the companion-file update rules the upgrader merges into a target's `context-map.yaml`. Edit it there, not in the merge code.
 - Agents should not manually infer schema migrations when the upgrade script can do it.
 - Always use `--dry-run` on first pass. Commit or review before applying.
 - If YAML merging is too risky, the script writes `.proposed` files. Do not overwrite the live file.
@@ -1835,6 +1892,7 @@ Available scripts:
 | `scripts/upgrade_navigation_control_layer.py`  | Idempotent managed-block upgrade, marker fix, context-map key addition |
 | `scripts/validate_navigation_control_layer.py` | Coherence validation with pass/warn/fail output                        |
 | `scripts/check_expected_diff.py`               | Git-diff check against expected governance file changes                |
+| `scripts/selftest_blocks.py`                   | Self-test of the managed-block builders against the required-section floor |
 
 Available just targets (only where the project's `justfile` came from `templates/justfile`, which defines a `skill_dir` variable pointing at the skill package — a project whose justfile predates that
 variable, or was hand-written, will not have these recipes at all; use the absolute-path form above):
@@ -1843,6 +1901,7 @@ variable, or was hand-written, will not have these recipes at all; use the absol
 - `just nav-upgrade`
 - `just nav-validate`
 - `just nav-check-diff`
+- `just nav-selftest` — the skill package's own block self-test
 - `just check` — the project's own governance checker, once it has one
 
 Override the skill location per invocation with `just skill_dir=/path/to/skill-ai-it nav-validate`.

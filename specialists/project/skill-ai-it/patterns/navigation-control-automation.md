@@ -84,7 +84,7 @@ that is present but unwired is still flagged.
 it is the mechanism that tells already-upgraded projects to re-run the upgrade: their managed blocks carry the previous stamp and `validate` reports "missing current version stamp". That report is the
 intended signal, not a defect in the project. Remediation is one `just nav-upgrade` per project.
 
-Current stamp: `2026-08-11-governance-checks-layer-v1` (previous: `2026-05-29-ai-navigation-control-layer-v1`). Projects still on the previous stamp lack the emitted governance-checks guidance.
+Current stamp: `2026-09-23-template-sourced-blocks-v1` (previous: `2026-08-11-governance-checks-layer-v1`). Projects still on the previous stamp lack the emitted governance-checks guidance.
 
 ## Relationship to patterns/drift-audit.md
 
@@ -92,6 +92,7 @@ Current stamp: `2026-08-11-governance-checks-layer-v1` (previous: `2026-05-29-ai
 implement a subset of those checks deterministically, while the pattern document explains the full manual audit procedure.
 
 Run order:
+
 1. `scripts/validate_navigation_control_layer.py` (deterministic check)
 2. `patterns/drift-audit.md` manual checkpoints (if deeper inspection needed)
 

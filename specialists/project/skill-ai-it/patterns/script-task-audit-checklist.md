@@ -6,8 +6,9 @@ Before auditing script/task content, verify the governance block layer is intact
 
 - [ ] No duplicate `<!-- BEGIN MANAGED: skill-ai-it:<section-name> -->` blocks for the same section in the same file.
 - [ ] Active managed blocks use the current format: `<!-- BEGIN MANAGED: skill-ai-it:<section-name> -->`.
-- [ ] Version stamp exists in managed blocks where expected: `<!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->`.
-- [ ] Old-style markers (`<!-- BEGIN skill-ai-it:... -->` without `MANAGED:`) should only exist as **legacy detection targets** in audit patterns, not as active blocks. Flag any found in operational files.
+- [ ] Version stamp exists in managed blocks where expected: `<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->`.
+- [ ] Old-style markers (`<!-- BEGIN skill-ai-it:... -->` without `MANAGED:`) should only exist as **legacy detection targets** in audit patterns, not as active blocks. Flag any found in operational
+  files.
 - [ ] Managed blocks are matched: every `BEGIN MANAGED:` has a corresponding `END MANAGED:`.
 
 ## 1. Discovery
@@ -73,7 +74,8 @@ Before auditing script/task content, verify the governance block layer is intact
 - [ ] `repomix.config.json` includes task catalog files.
 - [ ] Generated outputs like `.ai-context/` and `graphify-out/` are treated as generated support only, not canonical truth.
 - [ ] Archcore is used only for durable operational procedures, not every script.
-- [ ] Task-runner-first execution policy: prefer documented task runners (`justfile`, `Makefile`, `Taskfile.yml`, `package.json`) before raw scripts. Treat uncataloged executable scripts as `unknown` safety until reviewed.
+- [ ] Task-runner-first execution policy: prefer documented task runners (`justfile`, `Makefile`, `Taskfile.yml`, `package.json`) before raw scripts. Treat uncataloged executable scripts as `unknown`
+  safety until reviewed.
 
 ## 7. Companion-File Update Rules
 
@@ -99,8 +101,10 @@ When validating script/task governance, verify these fields in `context-map.yaml
 
 ## 9. Drift Audit Handoff
 
-- **script-task-audit-checklist.md** (this file) = detailed script inventory audit. Validates catalog entries, safety labels, inputs/outputs, idempotency markers, and companion-file updates for scripts and tasks.
-- **patterns/drift-audit.md** = broader governance coherence audit. Validates managed block integrity, authority hierarchy, companion-update completeness across all governance files, generated-output policy, and .archcore/ promotion gates.
+- **script-task-audit-checklist.md** (this file) = detailed script inventory audit. Validates catalog entries, safety labels, inputs/outputs, idempotency markers, and companion-file updates for
+  scripts and tasks.
+- **patterns/drift-audit.md** = broader governance coherence audit. Validates managed block integrity, authority hierarchy, companion-update completeness across all governance files, generated-output
+  policy, and .archcore/ promotion gates.
 
 Both should be run for complete navigation/control-layer validation. Run this checklist first for script-specific issues, then run `patterns/drift-audit.md` for cross-file governance consistency.
 
@@ -132,7 +136,7 @@ grep -rn "BEGIN skill-ai-it:" . --include="*.md" 2>/dev/null | grep -v "docs/arc
 
 # Version string presence
 echo "=== Version stamp ==="
-grep -rn "skill-ai-it-version: 2026-08-11-governance-checks-layer-v1" . --include="*.md" --include="*.yaml" 2>/dev/null || echo "(check expected files)"
+grep -rn "skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1" . --include="*.md" --include="*.yaml" 2>/dev/null || echo "(check expected files)"
 
 # Task runner discovery
 echo "=== Task runners ==="

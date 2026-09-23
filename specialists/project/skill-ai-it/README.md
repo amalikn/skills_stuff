@@ -14,6 +14,7 @@
 - [Tool stack](#tool-stack)
 - [Usage intent](#usage-intent)
 - [Deterministic navigation-control automation](#deterministic-navigation-control-automation)
+
 Reusable AI governance and navigation bootstrap skill for project folders.
 
 ## Purpose
@@ -82,6 +83,7 @@ Label recovered entries: `Context recovered via skill-ai-it context-recovery pro
 ## Drift/coherence audit
 
 Use `patterns/drift-audit.md` for comprehensive drift detection. The drift audit validates:
+
 - Managed block integrity (no duplicates, no version mismatch)
 - Authority hierarchy consistency
 - Companion-file update completeness
@@ -164,6 +166,7 @@ established using the lightest appropriate tool for the project.
   - Best for: accepted decisions, project rules, design contracts, operating guides, and approved implementation plans that should survive context resets and agent handoffs.
   - In `skill-ai-it`: initialized under `.archcore/` during bootstrap, navigation-add, or refresh. After init, emits `ARCHCORE_PROMOTION_CANDIDATES.md` with durable content candidates extracted from
     governance markdown. Content is written into `.archcore/` only via `promote` mode.
+
   - Source-of-truth status: canonical when initialized. `archcore init` is allowed setup; content changes inside `.archcore/` still require explicit authorization.
 
 - Graphify
@@ -171,6 +174,7 @@ established using the lightest appropriate tool for the project.
   - Best for: discovery, impact analysis, navigation, and helping agents avoid missing related files in mixed code/docs projects.
   - In `skill-ai-it`: actively runs `graphify update .` on every bootstrap, navigation-add, and refresh run. Initializes `graphify-out/` if missing; refreshes the graph if present. Required for full
     skill operation.
+
   - Source-of-truth status: generated support only. Useful for navigation and discovery, but not authoritative by itself.
 
 - Repomix
@@ -184,6 +188,7 @@ established using the lightest appropriate tool for the project.
   - Best for: replacing ambiguous raw script execution with cataloged commands such as `just --list` and `just <task>`.
   - In `skill-ai-it`: `justfile` is the preferred lightweight task catalog for new projects. Existing projects keep their canonical runner (Taskfile.yml, Makefile, package.json scripts).
     `scripts/README.md` explains tasks for humans and agents.
+
   - Source-of-truth status: the existing canonical runner is authoritative when present. Raw scripts remain unknown safety until cataloged or inspected.
 
 The intended authority order is:
@@ -234,4 +239,3 @@ For existing-project refresh, use deterministic Python scripts that perform idem
 - `.proposed` files are written when YAML merging is too risky.
 - Scripts do not create `.archcore/`, `.ai-context/`, or `graphify-out/`.
 - Generated outputs remain support-only. No automatic promotion.
-

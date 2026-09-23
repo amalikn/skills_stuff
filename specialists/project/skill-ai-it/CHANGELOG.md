@@ -2,6 +2,9 @@
 
 ## Contents
 
+- [20260923_1320 — fix: the generated `lint-md` recipe could not fail](#20260923_1320--fix-the-generated-lint-md-recipe-could-not-fail)
+- [20260923_1300 — feat: the package now governs itself, and its own scripts/README.md had been eaten by its own upgrader](#20260923_1300--feat-the-package-now-governs-itself-and-its-own-scriptsreadmemd-had-been-eaten-by-its-own-upgrader)
+- [20260923_1246 — fix: the upgrader's inlined navigation block had drifted nine sections behind its template](#20260923_1246--fix-the-upgraders-inlined-navigation-block-had-drifted-nine-sections-behind-its-template)
 - [20260918_1357 — fix: promote instructions named `.archcore/README.md`, which `archcore status` rejects](#20260918_1357--fix-promote-instructions-named-archcorereadmemd-which-archcore-status-rejects)
 - [20260918_1340 — fix: three coherence gaps surfaced by bootstrapping `unified-network-controller`](#20260918_1340--fix-three-coherence-gaps-surfaced-by-bootstrapping-unified-network-controller)
 - [20260918_1320 — feat: `.markdownlint-cli2.jsonc` promoted from `cambium-swap` to a skill standard](#20260918_1320--feat-markdownlint-cli2jsonc-promoted-from-cambium-swap-to-a-skill-standard)
@@ -42,6 +45,116 @@
 
 ---
 
+## 20260923_1320 — fix: the generated `lint-md` recipe could not fail
+
+Found while running `skill-ai-it promote` against `skill-eval-manager`: `just lint-md` printed `markdownlint-cli2 not installed; skipped` and **exited 0 on real lint violations**, with markdownlint
+installed and reporting errors on screen.
+
+The recipe was one shell line:
+
+```just
+@command -v markdownlint-cli2 >/dev/null && markdownlint-cli2 '**/*.md' || echo 'markdownlint-cli2 not installed; skipped'
+```
+
+The `||` binds to the whole `&&` chain, not to the `command -v` test. So a **non-zero exit from markdownlint itself** — which is what "this project has lint errors" means — fell through to the `echo`,
+which succeeded, so the recipe succeeded. The message named the one cause that was not happening. This is the failure mode this package warns about in its own words: a check that cannot fail is
+indistinguishable from one that passes, and this one additionally *told you* it had been skipped.
+
+Split the availability test from the run, so only a genuinely missing binary skips:
+
+```just
+@command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
+@markdownlint-cli2 '**/*.md'
+```
+
+Fixed in three places, because the defect was in the source and in both copies: [templates/justfile](templates/justfile) (what every bootstrapped project receives), this package's own
+[justfile](justfile), and the embedded fallback in [SKILL.md](SKILL.md) used when the template is unreachable. Verified by introducing a deliberate `MD025` violation and confirming exit 1, then
+removing it and confirming exit 0. The repaired gate immediately caught two real violations in `skill-eval-manager` that the old one had been swallowing.
+
+**Projects bootstrapped before this date carry the broken recipe.** Their `just lint-md` has been reporting success regardless of lint state. Re-run the navigation upgrade, or patch the recipe by
+hand, and expect the first honest run to surface accumulated violations.
+
+## 20260923_1300 — feat: the package now governs itself, and its own scripts/README.md had been eaten by its own upgrader
+
+This package installs a governance checker into every project it touches and had none of its own. It does now: `scripts/check_governance.py`, **129 assertions**, wired to `just check`, with the
+AGENTS.md governance-checks block naming the real command.
+
+**It found a live data loss on its first run — caused by this package, in this package.** `scripts/README.md` had shrunk from 4638 to 1969 bytes during the self-upgrade earlier the same day, because
+its Task Inventory, Exit Codes, Coupled Constants and Safety Labels sections sat INSIDE the `skill-ai-it:scripts` managed markers. SKILL.md has documented since 2026-09-18 that only Execution Policy,
+Preferred Execution Order and Maintenance Rules belong there, and that nesting anything else means the next upgrade discards it while reporting `replaced-managed-block`. The package was not following
+its own rule. All four sections were recovered from a pre-upgrade copy and placed below the END marker, where they survive.
+
+Three further gaps the checker surfaced, each fixed rather than exempted:
+
+- `patterns/navigation-control-automation.md` — the document explaining the upgrade sequence — was named nowhere in SKILL.md prose. The pattern a reader needs most when a run misbehaves was
+  unreachable from the entry point. Now linked, alongside `templates/update_rules.yaml`, which had the same problem.
+- SKILL.md's package layout tree was stale: no `scripts/`, no `justfile`, no `.mise.toml`, and four shipped files missing.
+- A `|` inside a code span in the Phase 3 table split a row into three cells, so the Participants row's third column was being dropped by every renderer.
+
+**New in the package:** `justfile` (with `skill_dir := justfile_directory()`, so the nav recipes point at itself), `.mise.toml` pinning Python 3.14.5 and Node 26.2.0, `requirements.txt`,
+`.markdownlint-cli2.jsonc`, and a venv in the working-cache peer. Pinning immediately exposed an undeclared dependency: `validate_navigation_control_layer.py` needs PyYAML, which the host interpreter
+had been supplying invisibly, and `just nav-validate` failed on the import the moment the venv became the resolver. Now declared. The other four scripts stay standard-library only, the governance
+checker most of all — a check that cannot run is indistinguishable from a check that passes.
+
+**Checker scoping, stated rather than quietly applied.** `SURFACES` covers only `README.md`, `AGENTS.md`, `AI_NAVIGATION.md` and `scripts/README.md`. SKILL.md, CHANGELOG.md, SCRATCHPAD.md,
+ARCHITECTURE.md and ROADMAP.md are excluded because this package is a specification for OTHER projects: their path references are mostly meant to resolve somewhere else, and checking them here
+produced 84 failures containing no defect. A stricter variant — flag any backticked bare basename matching a file nested here — was measured at 203 hits and rejected: `AI_NAVIGATION.md` in a sentence
+about a target project is indistinguishable from `templates/AI_NAVIGATION.md` here. Both decisions are written into the file beside the registries, with the numbers.
+
+**New check, `check_template_catalog()`**, because `CATALOGS` is keyed by index file and SKILL.md was already the index for `patterns/`: every file in `templates/` must be named in SKILL.md prose, not
+only in the fenced layout tree. A name in a tree is an inventory line, not an explanation.
+
+**Markdown lint wired and the debt cleared.** 245 findings across 26 files → 0 across 20. 185 of them were in `docs/`, which holds time-bound one-shot records named `<slug>-YYYYMMDD_hhmm.md`;
+reflowing those would edit the record, so `docs/**` is exempted with that reason in the config, and the inverse rule is stated too — a maintained document must not live in `docs/`. By that rule,
+`AUDIT-ai-navigation-control-layer.md` (dated 2026-05-29, complete, referenced by nothing) moved from the root to `docs/archive/`. The remaining 60 in live surfaces were fixed, not ignored.
+
+Verified: both new checks were made to fail on purpose — an orphan file dropped into `templates/` produced `templates/__orphan_probe.md is shipped but SKILL.md never names it outside the layout tree`,
+and drifting the validator's `VERSION` produced `scripts/validate_navigation_control_layer.py is registered but no longer states it`. Final state: `just check` 129 passed, `just nav-selftest` 20
+passed, `just nav-validate` 0 warnings and 0 failures, `just lint-md` 0 errors.
+
+## 20260923_1246 — fix: the upgrader's inlined navigation block had drifted nine sections behind its template
+
+<!-- skill-ai-it-upgrade: 2026-09-23-template-sourced-blocks-v1 -->
+
+**Version bump — `2026-08-11-governance-checks-layer-v1` → `2026-09-23-template-sourced-blocks-v1`.**
+
+`build_navigation_block()` held an inlined copy of the managed block. `templates/AI_NAVIGATION.md` held another. They had diverged: the template carried `## Contents`, `## Task routing` with its four
+subsections, `### Documentation updates`, `## Drift handling`, `## Update rules` and `## Agent answer contract`; the inlined copy carried none of them, and carried `## Companion consistency`, which
+the template lacked. Neither was a superset.
+
+The consequence is the part worth recording. Bootstrapping a project from the template and then running the sanctioned upgrade against it **deleted 105 lines** of routing from its `AI_NAVIGATION.md`,
+and reported `replaced-managed-block` — which reads like a successful migration. Found on 2026-09-23 while bootstrapping `skills/skill-eval-manager`, where the loss was visible only because the
+before/after line counts were compared by hand. It had been shipping since 2026-08-11.
+
+It went unnoticed because the pattern looked maintained: `AGENTS-navigation-block.md` differed from its builder only by the wrap hook's line folding, and `scripts-README.md` matched its builder
+exactly. Two of three in parity makes the third look like an oversight rather than a systemic flaw.
+
+**Fix: the templates are the single source of truth.** All three builders now read their template and slice the content between the managed markers. There is no inlined copy left to drift, and a
+missing or marker-less template raises `SystemExit` with a repair instruction rather than falling back to a copy — a silent fallback would reintroduce the second source of truth this change removes.
+The version marker in a template is not authoritative; `VERSION` in the upgrader is, and is stamped on emission.
+
+Three smaller corrections came with it:
+
+- `templates/AI_NAVIGATION.md` is now the superset: `## Governance coherence checks` promoted from `###` to `##` with the fuller wording that states the ignore-list consequence, and
+  `## Companion consistency` added from the inlined copy.
+
+- `## Contents` moved **outside** the managed markers. A table of contents indexes the whole file including project-authored sections below the END marker, so it cannot live in a region the upgrader
+  regenerates.
+
+- Emitted blocks are whitespace-normalized. Stripping a folded version marker left a trailing space and a blank run, which a target project's markdown lint then reported against a block it is not
+  allowed to hand-edit.
+
+**New: `scripts/selftest_blocks.py`** — 20 assertions over the three builders: canonical markers, current `VERSION` stamp, no trailing whitespace or blank runs, and every section in
+`REQUIRED_NAV_SECTIONS` present in the emitted navigation block. That floor is stated in the self-test independently of any template on purpose: comparing the emitted block against the template it is
+generated from would be tautological, and a check that cannot fail is indistinguishable from one that passes. Verified by truncating the template and observing
+`required sections absent from emitted block: ['## Drift handling', '## Update rules']`, then restoring it.
+
+Verification: self-test 20/20; upgrade re-applied to `skills/skill-eval-manager` — headings 17 → 26, no project-authored section lost, byte-identical on an immediate re-run; that project's
+`just check` 188 passed, `just nav-validate` 0 warnings 0 failures, `markdownlint-cli2` 0 errors. Applied to this package itself: headings 16 → 19, validation 0 failures.
+
+Known gap, not fixed here: this package still has no `scripts/check_governance.py` of its own, so it does not hold itself to the capability it installs elsewhere. Its own validator reports this as a
+warning.
+
 ## 20260918_1357 — fix: promote instructions named `.archcore/README.md`, which `archcore status` rejects
 
 ### Fixed
@@ -53,6 +166,7 @@
   the format `cambium-swap`'s own `.archcore/index.guide.md` already used (independently worked around the same bug during its own promote pass on 2026-09-14). Added an explicit "not
   `.archcore/README.md`" callout and a post-`promote` `archcore status` verification step to the completion checklist so the fix stays visible instead of silently reverting the next time someone edits
   that section from memory.
+
 - Historical `CHANGELOG.md` entries describing the old (broken) behavior were left as-is — they are a record of what `promote` did at the time, not a live instruction.
 
 ### Notes
@@ -69,10 +183,12 @@
   `templates/check_governance.py`, so every other project generated from the template — including `unified-network-controller` moments after this one — hit the same false failure on its own
   `bootstrap` recipe. Ported the registry and recipe-tracking into the canonical template. Also added `node` to the bare-interpreter regex: the check's own docstring already claimed to flag a bare
   `node`, but the pattern never included it.
+
 - **Two lines inside `upgrade_navigation_control_layer.py`'s generated `AGENTS.md` navigation block exceeded the 200-column wrap rule this skill enforces on every file it writes** (208 and 281
   characters) — content the deterministic script writes via `python3`, bypassing the editor-side wrap-on-save hook that would normally catch this. Wrapped both at natural clause boundaries in the
   script's own template string, and mirrored the fix into `SKILL.md`'s embedded fallback block (same template-precedence rule as the `repomix.config.json` fix in `20260914_1345`: the two must not
   diverge).
+
 - **`templates/scripts-README.md` nested the entire file body inside the `skill-ai-it:scripts` managed block**, but `upgrade_navigation_control_layer.py`'s `build_scripts_block()` only ever
   regenerates the small "Execution Policy" / "Preferred Execution Order" / "Maintenance Rules" portion. Every other section the template shipped — Runtimes, Task Inventory, Raw Script Inventory,
   Safety Labels, Notes — sat inside the markers anyway, so the first `nav-upgrade` a bootstrapped project ever ran **silently discarded all of it**, reporting `replaced-managed-block`, which reads
@@ -84,6 +200,7 @@
 
 - None of these three fixes were retroactively applied to every project this skill has already bootstrapped — each carries its own copies of these files as project-owned content after bootstrap, same
   precedent as `20260914_1345`. Apply via `refresh` mode (or by re-running `nav-upgrade` plus a manual `scripts/README.md` restructure) per project.
+
 - `unified-network-controller`'s own copies of `check_governance.py` and `scripts/README.md` were fixed directly in the same session — see that project's own `CHANGELOG.md`.
 
 ## 20260918_1320 — feat: `.markdownlint-cli2.jsonc` promoted from `cambium-swap` to a skill standard
@@ -94,14 +211,17 @@
   `config` block copied as-is (it already matches `/Volumes/Data/_ai/governance/categories/markdown-guide.md`'s wrap rule verbatim), the `ignores` list reduced to generated/support surfaces common
   across this skill's own vocabulary, with project-specific entries (immutable baseline docs, archived research passes) left as a commented example for the bootstrapping agent to fill in rather than
   copied over wholesale.
+
 - New "Always-created files" entry in `SKILL.md` (`#### .markdownlint-cli2.jsonc`) — create in `bootstrap`/`navigation-add`/`refresh` unless the project already owns a markdown lint config; on
   refresh, merge in newly-relevant shared ignores but never touch project-specific entries or a file this skill didn't write.
+
 - Mode table, Phase 1 inventory signal table, Skill Package Layout listing, and the completion checklist all updated to reference the new file.
 
 ### Notes
 
 - Not retroactively applied to every project this skill has already bootstrapped — each project's own governance file set is project-owned after creation, same precedent as the `repomix.config.json`
   schema fix in `20260914_1345`. Apply via `refresh` mode per project.
+
 - Triggered mid-bootstrap of `apn/unified-network-controller`, which received the new file directly in the same session (see that project's own `CHANGELOG.md`).
 
 ## 20260914_1345 — fix: templates/repomix.config.json's ignore key had the wrong schema
@@ -112,8 +232,10 @@
   this template got a working `include` list and a **no-op `ignore`** list. Found via `skill-project-coherence` on a governed project (`apn/cambium-swap`) after a file move stopped matching an
   `ignore` entry that, on investigation, had never actually excluded anything — verified empirically: `repomix --config` with the flat-array form left the excluded files in the pack; converting to
   `{"customPatterns": [...]}` and re-running removed them (file count and token count both dropped, confirming the fix rather than assuming it from the shape alone).
+
 - Fixed in both `templates/repomix.config.json` (the file this skill copies into a bootstrapped project) and the embedded fallback block in `SKILL.md` (used when the templates file is unreachable) —
   the two must not diverge, per this skill's own template-precedence rule.
+
 - **Not fixed retroactively in every project this skill has already bootstrapped.** Each carries its own `repomix.config.json` as a project-owned file after bootstrap, not a live pointer back here;
   propagating this fix to existing projects is a `refresh`-mode or manual task for whichever agent next touches each one, not something this changelog entry can reach for them.
 
@@ -128,18 +250,22 @@
 
 - **Two check families promoted upstream from a governed project, taking the template from five families to seven.** Both were authored in one project's checker on 2026-08-28 after the defect they
   catch had already been paid for once, and both are generic — nothing about either is specific to the project that found them.
+
   - **Family 6, table grain (`check_append_only_grain`).** An append-only table records a re-measurement by ADDING a row, which preserves the earlier measurement and is the right design. It is also
     useless on its own: without a column that ORDERS the passes, nothing can compute which row is current, and every aggregate over the table double-counts whatever was re-measured. Found with twelve
     rows standing for eight entities, the supersession recorded only in a prose note. Two assertions — every row stamps its pass, and no pass records the same entity twice. Registered per project in
     `APPEND_ONLY_TABLES` as `path -> (entity column, pass column)`.
+
   - **Family 7, evidence provenance (`check_evidence_provenance`).** The existence of a capture FILE is not evidence; it proves somebody wrote something down. Found backing a `VERIFIED` cost row whose
     only recorded fetch had returned HTTP 403 — invisible precisely because the file existed and read plausibly. Requires a `Canonical URL`, `Retrieved` and `HTTP status` header on every markdown
     capture under `EVIDENCE_DIR`. Pairs with a **corrections registry**, not an ignore-list: a capture predating the rule is accepted only while it names the later capture supplying its provenance AND
     that capture is on disk, so where captures are immutable the only way to clear an entry is to take the correcting capture. Removing an entry whose correction does not exist turns the check red —
     the registry cannot be emptied by deletion, only by doing the work.
+
 - Both registries ship commented-out and contribute **zero assertions** when unset, so a project that has neither artifact reads honestly as "not covered yet" rather than as a pass.
 - Added a `table_rows()` harness helper (stdlib `csv`, absent file returns an empty list) and updated `patterns/governance-checks.md`, the inference table, the maintenance-trigger table, `SKILL.md`
   and `templates/AGENTS-governance-checks-block.md` to describe seven families rather than five.
+
 - Verified against the originating project: the ported checks reproduce its result exactly (81 assertions, zero failures) and both fail when the registry is deliberately mis-registered.
 
 ## 20260825_2150
@@ -148,16 +274,22 @@
 
 - **Four defects ported into `templates/check_governance.py`.** They were found by using a generated checker rather than reading it, fixed in one project's copy, and would otherwise have been
   inherited by every project bootstrapped from the template:
+
   - **Path resolution ignored the referencing file's directory.** References resolved only against the repo root, so every correct relative link written inside a subfolder README false-failed —
     `scripts/README.md` naming `../AGENTS.md` or `check_governance.py` both reported as missing. Now resolves against the referencing file first, then the root.
+
   - **The recipe regex rejected variadic `just` recipes.** `^([a-zA-Z][\w-]*)\s*(?:[a-zA-Z_].*)?:(?!=)` cannot match `query *ARGS:` — the optional parameter group requires `[a-zA-Z_]` and meets `*` —
     so real recipes were reported as undefined. Widened to `[*+a-zA-Z_]`.
+
   - **Self-exclusion compared a repo-relative path against a bare filename.** `rel == Path(__file__).name` never matched, so the checker scanned its own `CONSTANT_SURFACES` pattern definitions and
     flagged every registered constant as an unregistered restatement. Now compares against a module-level `SELF`.
+
   - **Illustrative filenames were read as real references.** A naming-convention table's Example column failed path resolution. Added `EXAMPLE_MARKER` (`path:example`), per line and visible in the
     document, following the template's own `count:asat` precedent.
+
 - Added a `CONDITIONAL_PATHS` registry (commented, tune per project) for artefacts a governance surface references *conditionally* — the generic navigation block names `Taskfile.yml`, `package.json`,
   `graphify-out/*`, `.ai-context/*` and `memory-bank/*`, none of which exist in every project. Registered with a per-entry reason rather than silently ignore-listed, so the exemption stays reviewable.
+
 - Verified against a scratch fixture exercising all four: clean at baseline, and each still fails when deliberately broken.
 
 ### Changed
@@ -165,9 +297,11 @@
 - **`promote` now deletes `ARCHCORE_PROMOTION_CANDIDATES.md` and writes `.archcore/README.md` as the durable index.** The candidates file is a proposal queue that exists between the run surfacing
   candidates and the run promoting them. Keeping it afterwards produces a stale second index under a name that misdescribes its contents — and it lives at the repo root, which `bootstrap` and
   `refresh` both rewrite, so anything durable recorded there is destroyed by the next skill invocation without trace. Observed 2026-08-25 on a real project.
+
 - The *never promote* reasoning is carried out of the candidates file into `.archcore/README.md` before deletion. Without it, the next scan re-proposes the same rejected candidates every refresh.
 - The orphan check points at `.archcore/README.md`; the candidates filename is registered in `CONDITIONAL_PATHS` so historical mentions in `CHANGELOG.md` do not fail path resolution once the file is
   gone. History is not a live claim.
+
 - Quality checklist and `patterns/archcore-routing.md` updated to match.
 
 ## 20260825_2030
@@ -177,8 +311,10 @@
 - **Generated justfiles called bare `python3`, so every project bootstrapped from this skill silently used the host interpreter rather than its own `.mise.toml` pin.** Found 2026-08-25 in a project
   that pinned Python 3.14 and Node 26 while its recipes ran Homebrew's 3.14.7 and Node 26.7.0. The defect is dangerous precisely because it works: it passes every check on the machine it was written
   on and fails later, inside a script, looking like a code bug.
+
 - `templates/justfile` now declares `wc` / `py` / `nd` interpreter variables, routes every recipe through them, and ships `bootstrap`, `runtimes` and a `_require-venv` guard. The embedded fallback
   justfile in `SKILL.md` carried the same defect and was fixed with it.
+
 - `templates/scripts-README.md` gained a Runtimes section, so a project's script catalog states what its recipes actually use.
 - `bootstrap` now installs `requirements.txt` when one exists. Pinning the interpreter without declaring packages relocates the hidden host dependency rather than removing it: the moment the affected
   project switched off the host interpreter, `just nav-validate` failed on a PyYAML that Homebrew's Python had been supplying invisibly all session, and which nothing had ever declared.
@@ -187,8 +323,10 @@
 
 - `SKILL.md` — **Runtime isolation** section under *Script and task inventory*: the three artefacts that must be generated together, the working-cache peer path mapping for each source root, why `uv
   run` is not the primary path (it resolves its own interpreter independently of mise), and why no `.python-version` accompanies `.mise.toml`.
+
 - Quality checklist gained a blocking item: no generated recipe may call a bare interpreter, and `just runtimes` must be **executed** and its output reported — the same "prove it can fail" discipline
   the governance checker already carries.
+
 - Phase 3 inference table gained a *Runtime requirements* row, so the interpreters a project invokes are inferred rather than assumed.
 
 ### Notes
@@ -252,11 +390,14 @@ new capability in `SKILL.md` did nothing for any project upgraded by that script
 class `patterns/generator-and-derived-artifact-tracing` exists for, and a phrase-grep could not have found it: there was no stale string, only a missing one.
 
 **Per-script findings (Tier 1):**
+
 - `upgrade_navigation_control_layer.py` — emitted AI_NAVIGATION block gained a `## Governance coherence checks` section and a `scripts/check_governance.py` context-file row; emitted AGENTS block
   gained item 14; companion table gained the checker as a companion of "New script added" plus a new "New artifact class" row
+
 - `validate_navigation_control_layer.py` — new `validate_governance_checker()` reports present / wired into a runner / referenced from `AGENTS.md`. Deliberately `warn`, never `fail`: the checker is a
   capability projects adopt at refresh, not a precondition of the control layer, and failing on it would mark every project bootstrapped before the capability existed as broken. A checker that is
   present but unwired *is* flagged
+
 - `check_expected_diff.py` — `scripts/check_governance.py` added to `DEFAULT_EXPECTED` so a project gaining one during an upgrade does not read as an UNEXPECTED change
 
 **Version bump — `2026-05-29-ai-navigation-control-layer-v1` → `2026-08-11-governance-checks-layer-v1`.** The emitted block content changed, so the stamp had to. Leaving two different block contents
@@ -292,19 +433,25 @@ in **both** directions: a catalog naming a file that vanished, and a file that e
 a new file turns the build red until it is registered, so extending the checker becomes a blocking condition rather than a good intention.
 
 **Files added:**
+
 - `patterns/governance-checks.md` — doctrine: the harness contract, the three-tier model, the five check families (count-claim, link/path resolution, contract conformance, derived-artifact staleness,
   duplicated-fact sync), coverage self-policing, the artifact-to-check inference table, maintenance triggers, sizing guidance, and anti-patterns
+
 - `templates/check_governance.py` — stdlib-only checker template. CONFIG registries the agent tunes per project; Tier 1 universal checks implemented generically; Tier 2/3 regions marked. Verified
   against a synthetic project: 5 failures across 5 families, then clean green with no false positives
+
 - `templates/AGENTS-governance-checks-block.md` — managed AGENTS block carrying the maintenance-trigger table and the four non-negotiables, so the obligation lives where the working agent reads it
 
 **Files updated:**
+
 - `SKILL.md` — package layout; Phase 3 gains a "Coherence invariants" inference row; Phase 4 file-policy table gains a `scripts/check_governance.py` row; new `### Governance coherence checker` section
   (tiers, self-policing, mode behavior, non-negotiables); embedded justfile fallback gains a `check` recipe; AGENTS.md template references the new managed block; six items added to the quality
   checklist, including that the checker must be **executed** and its exit status reported
+
 - `templates/justfile` — `check` recipe added; `preflight` now depends on it
 - `README.md`, `ARCHITECTURE.md`, `AI_NAVIGATION.md`, `context-map.yaml` — new template/pattern files registered; ARCHITECTURE distinguishes this layer from `patterns/drift-audit.md` (a checklist the
   agent runs) as a gate the project runs
+
 - `CHANGELOG.md` — this entry
 
 **Deliberately not done:** no checker was generated into any existing project by this change. Rollout is per project via `/skill-ai-it refresh`, starting from Tier 1 only.
@@ -314,6 +461,7 @@ a new file turns the build red until it is registered, so extending the checker 
 Post-watchman coherence sweep triggered by `/project coherence`.
 
 **Files updated:**
+
 - `SCRATCHPAD.md` — current state updated to reflect watchman integration; May 29 session history added
 - `AI_NAVIGATION.md` — removed duplicate `templates/justfile` row; added `patterns/navigation-control-automation.md` and `templates/update_rules.yaml` to context map table
 - `README.md` — package layout updated to include `.watchmanconfig`, `governance/watchman-events/`, `patterns/navigation-control-automation.md`, `templates/update_rules.yaml`
@@ -329,10 +477,12 @@ Post-watchman coherence sweep triggered by `/project coherence`.
 Added Watchman filesystem event monitoring support to the skill-ai-it package.
 
 **Files added:**
+
 - `.watchmanconfig` — settle 100ms, ignores `.git`, `graphify-out`, `.ai-context`
 - `governance/watchman-events/.gitkeep` — event log directory for historical context recovery
 
 **Files updated:**
+
 - `context-map.yaml` — added `governance/watchman-events` to `authority_order`; added `historical_context_recovery` routing section
 - `AGENTS.md` — added "Historical context recovery" section with 4-step evidence source priority
 - `AI_NAVIGATION.md` — added `governance/watchman-events/` and `.watchmanconfig` to context map table; added "Historical context recovery" section with watchman query command
@@ -418,6 +568,7 @@ Authority: [`/Volumes/Data/_ai/governance/categories/markdown-guide.md`](/Volume
 - **`templates/mise.toml`** — deleted. Skill no longer ships or generates mise files.
 - All mise references removed from: `SKILL.md`, `README.md`, `ARCHITECTURE.md`, `AGENTS.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `templates/AI_NAVIGATION.md`, `templates/context-map.yaml`,
   `templates/AGENTS-navigation-block.md`, `templates/scripts-README.md`, `templates/context-preflight.sh`, `templates/repomix.config.json`, `patterns/script-task-audit-checklist.md`.
+
 - mise initialization section removed from `SKILL.md`.
 - mise step [5/6] removed from `templates/context-preflight.sh`; steps renumbered to [1/5]–[5/5].
 - mise from Phase 1 inventory table, Phase 4 file creation table, detection order, mode behaviors.
@@ -435,9 +586,11 @@ does not generate, detect, or route through mise in any form.
 
 - **`templates/justfile`** — new file added to templates/. Lightweight task catalog with `inventory`, `audit-scripts`, `preflight`, and `lint-md` recipes. Used when no existing task runner is present
   and the project does not require mise's env/version features.
+
 - **`templates/mise.toml`** — demoted to optional env/tool-version template. Added header comments making role explicit: "prefer justfile → scripts/README.md → mise.toml".
 - **`templates/scripts-README.md`** — execution policy rewritten. Preferred order: existing canonical runner → `just` → `scripts/README.md` → other runners → raw scripts. Task inventory examples
   changed to `just inventory` / `just audit-scripts`.
+
 - **`templates/AGENTS-navigation-block.md`** — rule 9 updated: justfile first in inspect order, `just` preferred, mise only when project uses mise, mise not default task runner.
 - **`templates/repomix.config.json`** — added `"Justfile"` (capital J) to include list alongside `"justfile"`.
 - **`templates/AI_NAVIGATION.md`** — Script and Task Navigation section rewritten: justfile first in 8-item read order, just-preferred execution guidance.
@@ -447,10 +600,13 @@ does not generate, detect, or route through mise in any form.
 - **`SKILL.md`** — Phase 1 inventory table: added `justfile`/`Justfile` row, updated `mise.toml` row description. Phase 4 file creation table: added `justfile` row (bootstrap only), updated
   `mise.toml` row to "create only when explicitly requested or tool/env management clearly needed". Detection order rewritten (8 items, justfile first). Bootstrap mode: prefer justfile for new
   catalogs, mise only when explicitly needed. Navigation-add mode: route to existing runner first. Refresh mode: respect existing runner, don't silently convert.
+
 - **`README.md`** — Key rules: mise-first wording replaced with just-preferred. Package layout: added `templates/justfile`. Tool stack section: "mise tasks" entry replaced with "just / task runners"
   entry plus separate "mise (env/version management)" entry. Authority order updated.
+
 - **`ARCHITECTURE.md`** — Flow diagram: script/task inventory layer updated. Source-of-truth direction diagram updated. Script and Task Inventory Layer section rewritten: justfile as preferred,
   existing runner priority, mise as env/version tool, agent preference order documented.
+
 - **`AGENTS.md`** (package-level) — task catalog inspect order updated: justfile first. just-preferred and mise-optional rules added.
 
 ### Why
@@ -476,6 +632,7 @@ it.
 
 - `templates/AGENTS-navigation-block.md`: added rule 12 — "When adding, modifying, or removing scripts or tasks, update `scripts/README.md` to reflect the change — purpose, inputs, outputs, safety
   label, and idempotency."
+
 - `SKILL.md` embedded AGENTS.md fallback: same rule 12 added.
 
 ### Why
@@ -495,6 +652,7 @@ before running; rule 12 covers writing after changing.
 - `SKILL.md` file creation table: `Refresh` column for `scripts/README.md` changed from "update managed inventory blocks only" to "create from template if scripts/tasks exist and file missing; update
   managed blocks if exists". Previously, refresh mode would only update an existing file, never creating it — leaving a gap where script navigation rules pointed to a file that the refresh would not
   create.
+
 - `SKILL.md` Script/task inventory mode behavior: `refresh` entry updated to match the file creation table fix.
 
 ### Why
@@ -509,6 +667,7 @@ created.
 
 - `README.md`: added TOC (118 lines, governance compliance); updated tool stack from "three optional" to "four project-context tools"; updated Graphify and Repomix bullet descriptions to reflect
   active invocation.
+
 - `ARCHITECTURE.md`: added TOC (134 lines, governance compliance).
 - `SCRATCHPAD.md`: updated current state, open items, recent decisions, and session history to reflect all changes from this session.
 - All coherence checks verified: SKILL.md three-section Phase 4, active tool invocation policy, preflight mise step, CHANGELOG TOC completeness, `.gitignore` hygiene, required files and terms present.
@@ -524,6 +683,7 @@ created.
 
 - `ARCHITECTURE.md` Graphify section: updated from passive description to active required tool — `graphify update .` is invoked on every `bootstrap`, `navigation-add`, and `refresh` run; Graphify is
   now listed as required for full skill operation.
+
 - `ARCHITECTURE.md` Repomix section: updated to reflect active invocation — runs `repomix --config repomix.config.json` on every active-mode run; creates config from template if missing.
 - `ARCHITECTURE.md` flow diagram: renamed "Generated support layer" to "Active context generation (CLIs invoked when available)" showing `graphify update .` and `repomix --config` as explicit CLI
   steps; added `mise install + mise tasks` to the Script/task inventory layer.
@@ -539,6 +699,7 @@ created.
 - `SKILL.md` Repeat-Safety Contract rule 9: updated to state that Graphify and Repomix are actively run when their CLIs are available; outputs remain disposable support, not canonical truth.
 - `SKILL.md` file creation table: added `Graphify / graphify-out/` row (`run if CLI available` for bootstrap/navigation-add/refresh); updated `repomix.config.json` row (`initialize if CLI available`);
   updated `mise.toml` row (`initialize if CLI available and no task runner canonical`).
+
 - `SKILL.md`: added `### Graphify initialization and refresh` section — run `graphify update .` on every active-mode run; initializes if `graphify-out/` missing.
 - `SKILL.md`: added `### Repomix initialization and refresh` section — create config from template if missing, run on every active-mode run.
 - `SKILL.md`: added `### mise initialization` section — create `mise.toml` from template during bootstrap if CLI available and no task runner canonical.
@@ -557,6 +718,7 @@ created.
 - `SKILL.md` Phase 4: split `### Always-created files` into three clear sections: `### Always-created files` (README.md, AGENTS.md, CLAUDE.md, SCRATCHPAD.md, CHANGELOG.md), `### Conditionally-created
   files` (ARCHITECTURE.md, CONVENTIONS.md, ROADMAP.md, AI_NAVIGATION.md, context-map.yaml, repomix.config.json, .graphifyignore, memory-bank/, scripts/README.md, mise.toml), `### Optional/generated
   support files` (summary table of explicit-request-only and generated artifacts).
+
 - `SKILL.md` Phase 4: added inline stubs for ARCHITECTURE.md, CONVENTIONS.md, ROADMAP.md, scripts/README.md, and mise.toml/.mise/tasks/ under Conditionally-created files.
 - `README.md`: added `SCRATCHPAD.md` to package layout tree.
 - `AI_NAVIGATION.md`: added `SCRATCHPAD.md` row (Low authority) to context map table.
@@ -712,27 +874,35 @@ created.
 
 - **Context compaction recovery** — step-by-step procedure added to SKILL.md, AI_NAVIGATION.md (package and template), README.md, and ARCHITECTURE.md. Agents now have explicit instructions for
   rebuilding context after compaction.
+
 - **context-map.yaml schema fields** — `audit_checks`, `promotion_rules`, and `context_recovery` added to both package and template context-map.yaml. Covers governance file presence, version
   consistency, companion update completeness, generated-output policy, task-runner consistency, stale reference detection, archcore promotion gates, and post-compaction recovery.
+
 - **Drift audit expansion** — `patterns/drift-audit.md` rewritten from 11 shallow checkpoints to 13 comprehensive sections covering: governance file presence, managed block integrity, version
   consistency, navigation map completeness, authority consistency, companion update verification, generated-output policy enforcement, archcore promotion gate verification, context compaction
   recovery, script/task consistency, stale reference detection, repeat-run safety, and AI_NAVIGATION.md vs context-map.yaml cross-reference.
+
 - **Four-capabilities documentation** — README.md and ARCHITECTURE.md now document the four first-class capabilities: AI navigation map, file relationship/dependency logic, agent coherence/compliance
   checks, and structured machine-readable context.
+
 - **Existing-project upgrade behavior** — detection matrix documented in README.md and ARCHITECTURE.md: file missing, exists with current/older/no managed block, user-authored content, conflicting
   manual content, older schema.
+
 - **scripts/README.md freshness check** — added step 5 to `templates/context-preflight.sh`.
 
 ### Changed
 
 - **Managed block standard** — all managed blocks updated from `<!-- BEGIN skill-ait:navigation -->` to `<!-- BEGIN MANAGED: skill-ai-it:<section-name> -->` with version stamping. Format: `<!--
   skill-ai-it-version: 2026-05-29-ai-navigation-control-layer-v1 -->`. Files updated: SKILL.md, AGENTS.md, AI_NAVIGATION.md, templates/AI_NAVIGATION.md, templates/AGENTS-navigation-block.md.
+
 - **AGENTS.md navigation block** — expanded from 7 to 11 instructions including: inspect companion-file rules before edits, do not treat Graphify/Repomix output as canonical truth, run audit/check
   commands before completion, update CHANGELOG.md for all governance/navigation changes, preserve user-authored content outside managed sections. Same expansion applied to
   templates/AGENTS-navigation-block.md (from 12 to 15 rules).
+
 - **SKILL.md workflow** — added "Workflow: Applying This Skill to a Project" section with explicit 12-step process covering: read existing files, detect versions, detect customizations, read
   context-map.yaml, check companion rules, generate updates in memory, apply managed blocks, create .proposed files, regenerate outputs only when stale, run validation, append CHANGELOG.md, report
   result. Generated outputs explicitly labeled as support-only.
+
 - **templates/context-preflight.sh** — fixed numbering bug: `[5/5]` → `[6/6]` with added step 5 for context pack freshness check.
 - **context-map.yaml (package)** — fixed duplicate `templates/justfile` entry in `generated_templates.read`.
 
@@ -766,12 +936,16 @@ created.
 
 - `scripts/upgrade_navigation_control_layer.py` — deterministic, idempotent upgrade script for navigation/control-layer files. Upgrades old managed block markers, adds version stamps, adds missing
   context-map.yaml keys (audit_checks, promotion_rules, context_recovery, update_rules). Supports --dry-run, --report-json, and .proposed fallback for risky YAML merges.
+
 - `scripts/validate_navigation_control_layer.py` — deterministic validation script. Checks governance file presence, managed block integrity, version consistency, YAML validity, required schema keys,
   generated-output policy, context compaction recovery, script/task governance, companion consistency, and stale claim detection.
+
 - `scripts/check_expected_diff.py` — git-diff check that only expected governance files (AGENTS.md, AI_NAVIGATION.md, CHANGELOG.md, context-map.yaml, scripts/README.md) changed after an upgrade.
   Detects accidental modifications to source files.
+
 - `templates/update_rules.yaml` — default companion-file update rules template (governance_navigation section with AGENTS.md, AI_NAVIGATION.md, context-map.yaml, scripts/README.md, new_script_added
   relationships).
+
 - `patterns/navigation-control-automation.md` — explains why automation exists, when to run each script, how to interpret exit codes, how to handle .proposed files, and how this complements
   patterns/drift-audit.md and patterns/script-task-audit-checklist.md.
 
@@ -798,6 +972,7 @@ created.
 - **`upgrade_navigation_control_layer.py` no longer overwrites project-authored managed blocks.** It replaced any block whose markers matched, unconditionally — correct only while the block still
   contains what this skill put there, which stops being true the moment a project authors real content inside one. Found on a real project: a dry run would have stripped **222 lines** from
   `AI_NAVIGATION.md` (every supersession chain, every gate reference, the entire domain-routing table) and dropped three load-bearing rules from `AGENTS.md`, reporting only `replaced-old-block`.
+
 - **Old-style markers were the MOST exposed, not the least.** `insert_or_replace_block()` tests `old_begin` first and matches it preferentially, so a project that had kept legacy markers — believing,
   as one did, that this protected it — was in fact first in line to be overwritten.
 
@@ -806,6 +981,7 @@ created.
 - **Provenance guard** — a block lacking a `skill-ai-it-version:` marker is never replaced. The generic block goes to `<file>.proposed-<section>-block` and the run is flagged for manual review.
 - **`<!-- skill-ai-it:manual reason="..." -->` opt-out token**, honoured by the upgrader (never replaces, and never *inserts* an absent section) and by the validator (reports a pass rather than a
   missing-block/old-marker failure). Without it an intentionally-diverged project is permanently red, and a validator that always fails is one nobody reads.
+
 - **`--force`** to override both guards, discarding current block contents. For use only after reading the `.proposed` file.
 
 ### Notes

@@ -42,8 +42,8 @@
 
 set dotenv-load := false
 
-# Replace {{WORKING_CACHE}} with this project's working-cache peer when generating from this template.
-wc := "{{WORKING_CACHE}}"
+# Working-cache peer for this package (skills_stuff/specialists/project/<pkg> -> skills-working-cache/specialists/project/<pkg>).
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/specialists/project/skill-ai-it"
 py := wc + "/.venv/bin/python"
 nd := "mise exec -- node"
 
@@ -99,7 +99,7 @@ lint-md:
 
 # The navigation-control scripts live in the skill package, NOT in this project. Override on the
 # command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav-validate
-skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
+skill_dir := justfile_directory()
 
 # Upgrade navigation control layer (dry-run preview)
 nav-upgrade-dry-run: _require-venv

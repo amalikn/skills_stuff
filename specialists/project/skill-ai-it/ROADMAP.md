@@ -35,11 +35,14 @@ Report-first approach for Archcore: `bootstrap` and `refresh` emit `ARCHCORE_PRO
   nothing that can drift. Retained here only to explain why the step disappeared. Former text: copy updated `SKILL.md` (and other changed files) to `~/.claude/skills/skill-ai-it/` after each
   meaningful package change. Operational step; not part of canonical package authoring. **The durable fix is to symlink the install back to canonical** — `~/.agents/skills/skill-ai-it` already is one;
   `~/.claude/skills/skill-ai-it` is still a copy and has silently fallen behind twice.
+
 - **Governance checker rollout** — adopt `scripts/check_governance.py` across existing projects via `refresh`. Each adoption is a Tier 3 authoring exercise, not a copy: the universal checks come from
   the template, but the invariants worth enforcing are project-specific and must be read out of that project's own stated rules.
+
 - **Re-upgrade projects on the previous version stamp** — `me/llm-m2max`, `apn/vocus-profitability`, `apn/opticomm-profitability`.
 - **`promote` mode implementation** — flesh out the promote mode workflow: read `ARCHCORE_PROMOTION_CANDIDATES.md`, resolve each candidate, write `.archcore/` files with provenance headers and
   `status: proposed`.
+
 - **`ARCHCORE_PROMOTION_CANDIDATES.md` template** — add a template file under `templates/` so the format is governed and consistent across projects.
 
 ### Medium-term

@@ -17,7 +17,7 @@ import sys
 
 # Must stay identical to the VERSION constant in upgrade_navigation_control_layer.py. A project whose managed block carries an older stamp is reported as missing the current version stamp, which is
 # the intended signal to re-run the upgrade — not a defect in the project.
-VERSION = "2026-08-11-governance-checks-layer-v1"
+VERSION = "2026-09-23-template-sourced-blocks-v1"
 MANAGED_VERSION_LINE = f"<!-- skill-ai-it-version: {VERSION} -->"
 
 # Explicit project opt-out, honoured by upgrade_navigation_control_layer.py too. Kept identical in

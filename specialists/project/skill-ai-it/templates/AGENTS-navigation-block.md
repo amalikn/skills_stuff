@@ -1,4 +1,4 @@
-<!-- BEGIN MANAGED: skill-ai-it:navigation --> <!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->
+<!-- BEGIN MANAGED: skill-ai-it:navigation --> <!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
 
 ## AI navigation and context preflight
 

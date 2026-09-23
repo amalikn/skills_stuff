@@ -1,0 +1,16 @@
+# Runtime pins for the skill-ai-it package itself.
+#
+# This file owns the version pin. No .python-version alongside it — two files stating the version is
+# two places for it to drift. No [tasks] either: a mise task would be a second resolution path
+# beside the justfile, which addresses the venv interpreter by absolute path via {{py}}.
+#
+# Every script this package ships is standard-library only, on purpose: the upgrader, the validator,
+# the diff check, the self-test and the governance checker must never fail for environment reasons.
+# The venv exists so the recipes resolve a pinned interpreter, not because anything here needs wheels.
+#
+# Venv (rebuildable, never in this repo):
+#   /Volumes/Data/_ai/_skills/skills-working-cache/specialists/project/skill-ai-it/.venv
+
+[tools]
+python = "3.14.5"
+node = "26.2.0"

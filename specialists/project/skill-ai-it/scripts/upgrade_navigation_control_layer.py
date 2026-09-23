@@ -20,7 +20,7 @@ from datetime import date
 
 # Bumping this stamps re-emitted managed blocks and makes validate_navigation_control_layer.py flag projects still carrying the previous block content. Keep it identical to the VERSION constant
 # in validate_navigation_control_layer.py — the two are a deliberate restatement, and drift between them silently disables the staleness signal.
-VERSION = "2026-08-11-governance-checks-layer-v1"
+VERSION = "2026-09-23-template-sourced-blocks-v1"
 
 # Managed block constants
 BEGIN_OLD = "<!-- BEGIN skill-ai-it:navigation -->"
@@ -288,220 +288,88 @@ def merge_governance_update_rules(data: dict) -> bool:
 # Upgrade helpers
 # ---------------------------------------------------------------------------
 
+TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates")
+
+NAVIGATION_TEMPLATE = os.path.join(TEMPLATES_DIR, "AI_NAVIGATION.md")
+AGENTS_BLOCK_TEMPLATE = os.path.join(TEMPLATES_DIR, "AGENTS-navigation-block.md")
+SCRIPTS_TEMPLATE = os.path.join(TEMPLATES_DIR, "scripts-README.md")
+
+
+def _read_template(path: str) -> str:
+    """Read a template file, or fail loudly.
+
+    There is deliberately NO embedded fallback copy of any block. An embedded copy is a second source
+    of truth, and a second source of truth drifts silently: on 2026-09-23 this script's inlined
+    navigation block had fallen nine sections behind `templates/AI_NAVIGATION.md`, so a project
+    bootstrapped from the template and then upgraded by this script LOST task routing, drift
+    handling, update rules and the answer contract — reported only as `replaced-managed-block`,
+    which reads like a successful migration. A missing template is a broken install; say so and stop.
+    """
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            return handle.read()
+    except OSError as exc:
+        raise SystemExit(
+            f"skill-ai-it: cannot read required template {path}: {exc}\n"
+            "The managed blocks are generated FROM the templates in this skill package. "
+            "Restore the package's templates/ directory before running the upgrade."
+        )
+
+
+def _extract_block(text: str, begin: str, end: str, source: str) -> str:
+    """Return the body BETWEEN a template's managed markers, markers excluded."""
+    start = text.find(begin)
+    stop = text.find(end, start + 1) if start != -1 else -1
+    if start == -1 or stop == -1:
+        raise SystemExit(
+            f"skill-ai-it: template {source} is missing its managed markers "
+            f"({begin} ... {end}). The template is the source of truth for this block; repair it."
+        )
+    body = text[start + len(begin):stop]
+    # The template's own version marker is not authoritative — VERSION in this script is. Drop any
+    # marker comment the template carries (the wrap hook may have folded it onto the BEGIN line).
+    body = re.sub(r"<!--\s*skill-ai-it-version:[^>]*-->", "", body)
+    # Stripping a folded version marker leaves a trailing space and a blank run behind it, which the
+    # target project's markdown lint then reports against a block it is not allowed to hand-edit.
+    body = "\n".join(line.rstrip() for line in body.split("\n"))
+    body = re.sub(r"\n{3,}", "\n\n", body)
+    return body.strip("\n")
+
+
+def _managed(body: str, begin: str, end: str) -> str:
+    """Wrap a block body in canonical markers with the current VERSION."""
+    return f"{begin}\n<!-- skill-ai-it-version: {VERSION} -->\n\n{body}\n\n{end}"
+
+
 def build_navigation_block():
-    """Build the managed AI_NAVIGATION.md navigation block content."""
-    return f"""\
-<!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: {VERSION} -->
-
-## Mandatory read order
-
-Before answering, planning, editing, or creating files in this project, read in this order:
-
-1. `AGENTS.md`
-2. `AI_NAVIGATION.md`
-3. `context-map.yaml`
-4. `CHANGELOG.md`
-5. Relevant `.archcore/` documents, if present
-6. Relevant `memory-bank/` files, if present
-7. Relevant project docs/code based on the task
-
-If available, also consult:
-
-- `graphify-out/GRAPH_REPORT.md`
-- `.ai-context/governance-pack.md`
-
-## Source priority
-
-When sources conflict, use this priority:
-
-1. `.archcore/` accepted ADRs, rules, specs, guides, and plans
-2. `AGENTS.md` / `CLAUDE.md`
-3. `AI_NAVIGATION.md`
-4. `context-map.yaml`
-5. `CHANGELOG.md`
-6. `ARCHITECTURE.md` / `architecture.md`
-7. `ROADMAP.md` / `roadmap.md`
-8. `memory-bank/activeContext.md`
-9. `memory-bank/progress.md`
-10. `SCRATCHPAD.md` / `scratchpad.md`
-11. old notes, drafts, archived files
-
-`SCRATCHPAD.md` is temporary unless promoted into Archcore, roadmap, memory-bank, or explicitly marked `KEEP`.
-
-## Project context files
-
-| File / Path | Role | Authority |
-|---|---|---|
-| `AGENTS.md` | Universal agent instruction file | High |
-| `CLAUDE.md` | Claude-specific bootstrap file | High |
-| `AI_NAVIGATION.md` | Human-readable AI routing file | High |
-| `context-map.yaml` | Machine-readable routing map | High |
-| `CHANGELOG.md` | Durable project/governance change history | Medium-high |
-| `.archcore/adr/` | Architecture decisions | Highest |
-| `.archcore/rules/` | Durable project/agent rules | Highest |
-| `.archcore/specs/` | Technical/design contracts | Highest |
-| `.archcore/guides/` | Operational guides | High |
-| `.archcore/plans/` | Approved implementation plans | High |
-| `ARCHITECTURE.md` / `architecture.md` | Human-readable architecture overview | Medium-high |
-| `ROADMAP.md` / `roadmap.md` | Human-readable roadmap | Medium-high |
-| `memory-bank/activeContext.md` | Current working context | Medium |
-| `memory-bank/progress.md` | Progress and current state | Medium |
-| `memory-bank/decisionLog.md` | Decision notes before promotion | Medium |
-| `SCRATCHPAD.md` / `scratchpad.md` | Temporary notes | Low |
-| `scripts/check_governance.py` | Executable governance coherence checks — turns this project's claims into assertions | High |
-| `docs/` | Supporting documentation | Depends on file |
-| `graphify-out/` | Generated navigation graph | Generated support |
-| `.ai-context/governance-pack.md` | Generated deterministic context pack | Generated support |
-
-## Script and Task Navigation
-
-For script, task, or automation questions, read in this order:
-
-1. Existing canonical task runner if documented
-2. `justfile`
-3. `scripts/README.md`
-4. `Taskfile.yml`
-5. `Makefile`
-6. `package.json`
-7. Raw scripts under `scripts/` after inspection
-
-Prefer `just --list` and `just <task>` when a `justfile` exists.
-
-Do not run uncataloged scripts blindly. Treat uncataloged scripts as `unknown safety` until inspected.
-
-If the catalog is stale, propose an update to `scripts/README.md` or the relevant task runner.
-
-If a task is marked `destructive`, `review-required`, or `unknown`, stop and request review before execution.
-
-## Governance coherence checks
-
-If `scripts/check_governance.py` exists, run it before claiming any durable change is complete, and after any change that adds, moves, renames, or retires a file. It turns this project's governance
-claims into assertions and exits non-zero on failure.
-
-When it fails, fix the project — not the check. Broadening an ignore-list or exempting the failing file converts a real finding into a permanent blind spot.
-
-The check count is a coverage signal, not a score, and is expected to rise as the project acquires structure. Adding a new class of artifact, a generated output, or a constant restated across files
-requires extending the checker's registries in the same pass.
-
-## Companion consistency
-
-When changing governance files, update these companion files together:
-
-| File | Companion files |
-|---|---|
-| `AGENTS.md` | `AI_NAVIGATION.md`, `context-map.yaml`, `scripts/README.md` |
-| `AI_NAVIGATION.md` | `context-map.yaml` |
-| `context-map.yaml` | `AI_NAVIGATION.md` |
-| `scripts/README.md` | `AGENTS.md`, `context-map.yaml` |
-| New script added | `scripts/README.md`, `AGENTS.md`, `justfile`, `scripts/check_governance.py` |
-| New artifact class, generated output, or restated constant | `scripts/check_governance.py` registries |
-
-## Generated context
-
-Generated context files (`.ai-context/`, `graphify-out/`) are support-only if present.
-Do not treat them as canonical truth.
-
-Analysis outputs under `docs/reports/` are analysis records, not replacements for source references, source CSVs, database tables, or governed navigation files.
-
-## Context compaction recovery
-
-After context compaction, rebuild agent context in this order:
-
-1. **Read `AI_NAVIGATION.md`** first — this file is the navigation map.
-2. **Load `.archcore/`** — durable project truth (ADRs, rules, specs, guides, plans).
-3. **Regenerate `graphify-out/`**: `graphify update .`
-4. **Regenerate `.ai-context/`**: `repomix --config repomix.config.json`
-5. **Verify `SCRATCHPAD.md`** — if empty, populate from memory-keeper / mcp-project-context.
-6. **Verify `CHANGELOG.md`** is current.
-7. **Verify `AI_NAVIGATION.md` and `context-map.yaml` companion consistency.**
-
-Label recovered entries: `Context recovered via skill-ai-it context-recovery procedure`.
-
-## Audit procedure
-
-To verify project context coherence, run these checks:
-
-1. Confirm `AGENTS.md` points to `AI_NAVIGATION.md`.
-2. Confirm `AI_NAVIGATION.md` points to `context-map.yaml`.
-3. Confirm `CHANGELOG.md` exists and recent governance/navigation changes are recorded.
-4. Confirm `context-map.yaml` has routing for architecture, planning, governance, implementation, documentation, and scripts.
-5. Confirm `.archcore/` is either present and routed, or absent and treated as optional.
-6. Confirm generated context paths (`graphify-out/`, `.ai-context/`) are excluded from source-of-truth decisions.
-7. Confirm `SCRATCHPAD.md` is marked transient.
-8. Confirm repeat-run managed blocks exist where needed.
-9. Confirm companion files in `update_rules` were updated when source files changed.
-10. Confirm drift/conflict policy says stop-and-report.
-
-<!-- END MANAGED: skill-ai-it:navigation -->"""
+    """Build the managed AI_NAVIGATION.md block from templates/AI_NAVIGATION.md."""
+    body = _extract_block(
+        _read_template(NAVIGATION_TEMPLATE), BEGIN_MANAGED, END_MANAGED, "AI_NAVIGATION.md"
+    )
+    return _managed(body, BEGIN_MANAGED, END_MANAGED)
 
 
 def build_agents_block():
-    """Build managed AGENTS.md navigation block."""
-    return f"""\
-<!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: {VERSION} -->
+    """Build the managed AGENTS.md navigation block from templates/AGENTS-navigation-block.md.
 
-## AI navigation and context preflight
-
-Before answering, planning, editing, or creating files in this project:
-
-1. Read [AI_NAVIGATION.md](AI_NAVIGATION.md).
-2. Read [context-map.yaml](context-map.yaml).
-3. Read recent entries in [CHANGELOG.md](CHANGELOG.md).
-4. Load relevant `.archcore/` context if present.
-5. Load relevant `memory-bank/` files if present.
-6. Consult generated context when available:
-   - `graphify-out/GRAPH_REPORT.md`
-   - `.ai-context/governance-pack.md`
-7. Before making durable changes, inspect companion-file rules in `context-map.yaml update_rules`. Update all companion files when changing source files.
-8. If sources conflict, stop and report the conflict instead of guessing.
-9. Do not treat `SCRATCHPAD.md` as durable truth unless content is marked `KEEP` or promoted into `.archcore/`, ROADMAP, or memory-bank.
-10. Do not treat Graphify (`graphify-out/`) or Repomix (`.ai-context/`) output as canonical truth. These are generated support artifacts only, always rebuildable.
-11. Before running scripts or automation, inspect `justfile`, `scripts/README.md`, `Taskfile.yml`, `Makefile`, and `package.json` when present.
-    Prefer `just --list` and `just <task>` when a `justfile` exists.
-12. Treat uncataloged scripts as `unknown` safety until inspected.
-13. When adding, modifying, or removing scripts or tasks, update `scripts/README.md` to reflect the change — purpose, inputs, outputs, safety label, and idempotency.
-14. If `scripts/check_governance.py` exists, run it before claiming any durable change is complete. When it fails, fix the project, not the check.
-    Adding a new artifact class, generated output, or a constant restated across files requires extending its registries in the same pass.
-15. After making changes, update `CHANGELOG.md` for all durable governance/navigation changes.
-16. Preserve user-authored content outside managed sections. Do not rewrite custom project notes.
-
-<!-- END MANAGED: skill-ai-it:navigation -->"""
+    That template IS the block — markers included — so it is read whole rather than sliced.
+    """
+    text = _read_template(AGENTS_BLOCK_TEMPLATE)
+    body = _extract_block(text, BEGIN_MANAGED, END_MANAGED, "AGENTS-navigation-block.md")
+    return _managed(body, BEGIN_MANAGED, END_MANAGED)
 
 
 def build_scripts_block():
-    """Build managed scripts/README.md block."""
-    return f"""\
-<!-- BEGIN MANAGED: skill-ai-it:scripts -->
-<!-- skill-ai-it-version: {VERSION} -->
+    """Build the managed scripts/README.md block from templates/scripts-README.md.
 
-## Execution Policy
-
-- Prefer the existing canonical task runner for this project.
-- Prefer `just <task>` when a `justfile` is present.
-- Do not run scripts marked `destructive`, `review-required`, or `unknown` without review.
-- Do not assume arbitrary files under `scripts/` are safe.
-- If a script is missing from this inventory, inspect it before use and update or propose an inventory entry.
-- Secrets must not be documented here as values. Document only secret names and where they are expected to come from.
-
-## Preferred Execution Order
-
-1. Existing canonical task runner (whichever is established for this project)
-2. `just --list` / `just <task>`
-3. `scripts/README.md`
-4. Other task runners: `Taskfile.yml`, `Makefile`, `package.json`
-5. Raw scripts under `scripts/` after inspection
-
-## Maintenance Rules
-
-- Keep this file aligned with: `justfile`, `Taskfile.yml`, `Makefile`, `package.json`, actual files under `scripts/`
-- Prefer managed block updates for generated sections.
-- Preserve manually written notes unless explicitly replacing them.
-- When removing a script, remove or mark its inventory entry stale.
-- When adding a script, document purpose, inputs, outputs, safety, idempotency, and when to use it.
-
-<!-- END MANAGED: skill-ai-it:scripts -->"""
+    Only Execution Policy / Preferred Execution Order / Maintenance Rules live inside the markers.
+    Runtimes, inventories, safety labels and notes sit OUTSIDE them in the template, because this
+    function regenerates everything between the markers and would otherwise discard them.
+    """
+    body = _extract_block(
+        _read_template(SCRIPTS_TEMPLATE), BEGIN_SCRIPTS_MANAGED, END_SCRIPTS_MANAGED, "scripts-README.md"
+    )
+    return _managed(body, BEGIN_SCRIPTS_MANAGED, END_SCRIPTS_MANAGED)
 
 
 def get_context_map_keys():

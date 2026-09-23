@@ -5,7 +5,9 @@ after work.
 
 This file is a router, not the full knowledge store.
 
-<!-- BEGIN MANAGED: skill-ai-it:navigation --> <!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->
+<!-- This Contents block sits OUTSIDE the managed markers on purpose: it indexes the whole file,
+     including any project-authored sections below the END marker, and the upgrader regenerates
+     everything between the markers. Keep it updated when sections are added either side. -->
 
 ## Contents
 
@@ -13,7 +15,14 @@ This file is a router, not the full knowledge store.
 - [Source priority](#source-priority)
 - [Project context files](#project-context-files)
 - [Task routing](#task-routing)
+  - [Architecture/design questions](#architecturedesign-questions)
+  - [Planning/status questions](#planningstatus-questions)
+  - [Agent/governance questions](#agentgovernance-questions)
+  - [Implementation/code questions](#implementationcode-questions)
 - [Script and Task Navigation](#script-and-task-navigation)
+  - [Documentation updates](#documentation-updates)
+- [Governance coherence checks](#governance-coherence-checks)
+- [Companion consistency](#companion-consistency)
 - [Drift handling](#drift-handling)
 - [Update rules](#update-rules)
 - [Generated context](#generated-context)
@@ -21,7 +30,7 @@ This file is a router, not the full knowledge store.
 - [Audit procedure](#audit-procedure)
 - [Agent answer contract](#agent-answer-contract)
 
----
+<!-- BEGIN MANAGED: skill-ai-it:navigation --> <!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
 
 ## Mandatory read order
 
@@ -153,14 +162,6 @@ If the catalog is stale, propose an update to `scripts/README.md` or the relevan
 
 If a task is marked `destructive`, `review-required`, or `unknown`, stop and request review before execution.
 
-### Governance coherence checks
-
-If `scripts/check_governance.py` exists, run it before claiming any durable change is complete, and after any change that adds, moves, renames, or retires a file. It turns this project's governance
-claims into assertions and exits non-zero on failure.
-
-When it fails, fix the project — not the check. The check count is a coverage signal, not a score, and is expected to rise as the project acquires structure: a new artifact class, generated output, or
-constant restated across files needs the checker's registries extended in the same pass.
-
 ### Documentation updates
 
 Before updating docs, check:
@@ -174,6 +175,29 @@ Before updating docs, check:
 7. `docs/`
 
 After updates, ensure related files are not left inconsistent.
+
+## Governance coherence checks
+
+If `scripts/check_governance.py` exists, run it before claiming any durable change is complete, and after any change that adds, moves, renames, or retires a file. It turns this project's governance
+claims into assertions and exits non-zero on failure.
+
+When it fails, fix the project — not the check. Broadening an ignore-list or exempting the failing file converts a real finding into a permanent blind spot.
+
+The check count is a coverage signal, not a score, and is expected to rise as the project acquires structure. Adding a new class of artifact, a generated output, or a constant restated across files
+requires extending the checker's registries in the same pass.
+
+## Companion consistency
+
+When changing governance files, update these companion files together:
+
+| File | Companion files |
+|---|---|
+| `AGENTS.md` | `AI_NAVIGATION.md`, `context-map.yaml`, `scripts/README.md` |
+| `AI_NAVIGATION.md` | `context-map.yaml` |
+| `context-map.yaml` | `AI_NAVIGATION.md` |
+| `scripts/README.md` | `AGENTS.md`, `context-map.yaml` |
+| New script added | `scripts/README.md`, `AGENTS.md`, `justfile`, `scripts/check_governance.py` |
+| New artifact class, generated output, or restated constant | `scripts/check_governance.py` registries |
 
 ## Drift handling
 
