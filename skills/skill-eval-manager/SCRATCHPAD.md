@@ -135,4 +135,10 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
   `archcore-filename-shape`, `archcore-cli-checks-filename-only`, `lint-md-gate-could-not-fail`, `write-back-contract-pattern`, `agents-md-untracked-in-skills-stuff`,
   `commit-state-20260923`. Matching notes under the same channel in project-context.
 - Checkpoint `archcore-promote-ratify-20260923` in both backends (memory-keeper `810dfe26`, project-context `019d14d7-f5cc-477c-9635-6b45e1ab3f04`).
+- **Slurp 20260923_1411** (this session's second persist, Zone B from the 13:40 boundary): 13 new memory-keeper keys plus 2 updated in place, and 6 matching project-context notes, all on
+  channel `skill-eval-manager`. New keys: `install-and-push-20260923`, `markdownlint-config-absence-measures-wrong-standard`, `skill-invocation-and-arguments`, `eval-suite-schema-gotchas`,
+  `first-real-suite-unc-a6`, `a6-denominator-derivation`, `unc-no-a6-falsifiability-entry`, `validator-crash-malformed-suite-block`, `negatives-gate-could-not-detect-crash`,
+  `write-back-contract-first-return`, `unc-concurrent-session-uncommitted`, `unc-skill-path-rule`, `open-tasks-20260923-1411`. Updated in place: `commit-state-20260923` (now pushed),
+  `lint-md-gate-could-not-fail` (remediation complete).
+- Checkpoint `slurp-20260923-first-real-suite-and-writeback` in both backends (memory-keeper `45fe682e`, project-context `8e98da89-8c81-4275-b1a4-b38cb8f53dd2`).
 - claude-mem: not seeded for this project
