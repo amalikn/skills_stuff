@@ -59,6 +59,9 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 
 ## Recent decisions
 
+- 2026-09-23 — <!-- KEEP --> Ledger `ts` is machine-local time with its offset, as `skill-walk-before-run` writes it. A fixed `+10:00` was tried first and replaced on
+  operator instruction. Accepted cost: rows either side of a DST change carry different offsets, so sort `ts` parsed, never as text.
+
 - 2026-09-23 — A routing log for consuming-project feedback records **where** knowledge was incorporated, never the knowledge. The obvious design — a place to write findings down — would
   have legitimised recording instead of incorporating, which was the failure being fixed.
 
@@ -78,6 +81,13 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 ---
 
 ## Session history (summaries — full detail belongs in memory-keeper once a channel exists)
+
+### 2026-09-23 — ledger columns aligned with walk-before-run
+
+- <!-- KEEP --> `ledger.jsonl` now leads `ts`, `source_project`, with `entry_id` right-most; `recorded_at` renamed `ts` across schema, checker and writer. The old order came from
+  `sort_keys=True`. Four rows rewritten once on operator instruction; committed with the pending 0.1.6 falsifiability write-back as `2523a29`.
+- The migration was not blocked by the OPA ledger guard, although a later SCRATCHPAD edit whose command text named the ledger was. The guard's exact trigger for the
+  pathlib rewrite is unconfirmed; recorded as `opa-guard-write-text-gap`, not fixed — the policy lives in `tools_stuff`.
 
 ### 2026-09-23 — rename to the estate convention, and the guard it attracted
 
@@ -175,3 +185,7 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
   `open-tasks-20260923-1628`. Updated: `write-back-routing-log-design` (filename changed), `commit-state-20260923` (two repos now).
 - Checkpoint `slurp-20260923-ledger-rename-and-opa-guard` in both backends (memory-keeper `c47c2374`, project-context `d95a262f-c7fa-4883-af8e-286d23247db8`).
 - claude-mem: not seeded for this project
+- **Slurp 20260923_1650** (Zone B from the 16:29 boundary): 6 new memory-keeper keys plus 1 updated, 2 project-context notes, channel `skill-eval-manager`. New:
+  `ledger-columns-ts-first-v017`, `ledger-ts-machine-local-decision`, `opa-guard-write-text-gap`, `falsifiability-binding-limit-v016`, `version-bump-four-surfaces`,
+  `open-tasks-20260923-1650`. Updated: `commit-state-20260923`.
+- Checkpoint `slurp-20260923-ledger-ts-columns` in both backends (memory-keeper `ab3757b3`, project-context `edc4845e-faf3-4cc7-a619-ea0004c2c4bf`).
