@@ -79,6 +79,17 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 
 ## Session history (summaries — full detail belongs in memory-keeper once a channel exists)
 
+### 2026-09-23 — rename to the estate convention, and the guard it attracted
+
+- Operator renamed the routing record to `ledger.jsonl` to match `skill-walk-before-run` (v0.1.5). Asked whether to undo it once the OPA consequence surfaced; recommended keeping it, and
+  that held: the guard blocks hand-edits of an append-only file, which is the discipline this package demands and could not enforce itself. Git recorded a pure rename, so rows are unchanged.
+- The real defect was the policy's routing message, so it was fixed there — <https://github.com/amalikn/tools_stuff> `3096a59`. A second writer added to the exemption, and **both** block reasons (the
+  Write/Edit
+  one sits separately and was missed on the first pass) stopped sending authors to the other pack's writer, which enforces a different schema.
+- Two things corrected in this pack because the rename inverted them: the `scripts/record_writeback.py` docstring and the 0.1.4 changelog paragraph both *argued for* the old name.
+- Caught my own unfailable test: the exemption test stayed green after the exemption was removed, because its command never named a ledger file so the guard could not fire. Fixed; the canary
+  now goes red. Testing an exemption means first proving the guarded condition was reachable.
+
 ### 2026-09-23 — the write-back that half-landed, and the routing log it produced
 
 - Asked where consuming-project feedback is incorporated. Checking rather than quoting the contract showed `references/` — its **first** named destination — had never been touched: zero
@@ -159,4 +170,8 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 - Checkpoint `slurp-20260923-write-back-routing-log` in both backends (memory-keeper `71028bef`, project-context `b7fd2785-b309-4819-92b5-b63c190fddba`).
 - Session closeout: memory-keeper `session.closeout.20260923.eval-manager-writeback`, with a matching project-context note. Covers the whole 2026-09-23 arc — promotion through to the
   routing log — in one place, including the open issues and next actions.
+- **Slurp 20260923_1628** (Zone B from the 14:28 boundary): 7 new memory-keeper keys plus 2 updated in place, and 3 project-context notes. New: `ledger-rename-bought-enforcement`,
+  `opa-ledger-guard-exact-semantics`, `opa-guard-second-writer-fix`, `unfailable-test-caught-by-canary`, `opa-repo-uncommitted-work`, `auto-mode-classifier-denied-opa-verification`,
+  `open-tasks-20260923-1628`. Updated: `write-back-routing-log-design` (filename changed), `commit-state-20260923` (two repos now).
+- Checkpoint `slurp-20260923-ledger-rename-and-opa-guard` in both backends (memory-keeper `c47c2374`, project-context `d95a262f-c7fa-4883-af8e-286d23247db8`).
 - claude-mem: not seeded for this project
