@@ -59,6 +59,9 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 
 ## Recent decisions
 
+- 2026-09-23 — A routing log for consuming-project feedback records **where** knowledge was incorporated, never the knowledge. The obvious design — a place to write findings down — would
+  have legitimised recording instead of incorporating, which was the failure being fixed.
+
 - 2026-09-23 — Package-specific drift handling, update rules and answer-contract additions live as `###` subsections of *Package-specific routing*, below the managed END marker, so they extend the
   generic sections rather than colliding with them and survive future upgrades.
 - 2026-09-23 — Verdict reasons split: `expired: older than <max_age>` and `invalidated: <trigger> (<reference>)` are reported separately, and both when both apply. Merging them hid two different
@@ -75,6 +78,15 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 ---
 
 ## Session history (summaries — full detail belongs in memory-keeper once a channel exists)
+
+### 2026-09-23 — the write-back that half-landed, and the routing log it produced
+
+- Asked where consuming-project feedback is incorporated. Checking rather than quoting the contract showed `references/` — its **first** named destination — had never been touched: zero
+  commits, and both schema facts absent from it. The 0.1.3 write-back shipped the executable half (fix + regression fixture) and left the method knowledge in a memory backend.
+- Closed that leak in [references/02_defining-evals.md](references/02_defining-evals.md) (*The enclosing document*), then shipped v0.1.4: `write-back.jsonl`,
+  [scripts/record_writeback.py](scripts/record_writeback.py), [schemas/write-back-entry.schema.json](schemas/write-back-entry.schema.json) and `check_write_back_log`.
+- The log records **where** a finding went, never the finding — a log you can write to and feel finished with would legitimise the very failure it exists to catch. `incorporated_in` is
+  defended at write time (destination must exist) and at check time (it must still exist). `open` rows are reported, never fail the build. Checks 353 to 378.
 
 ### 2026-09-23 — first real suite, and the first write-back it produced
 
@@ -141,4 +153,10 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
   `write-back-contract-first-return`, `unc-concurrent-session-uncommitted`, `unc-skill-path-rule`, `open-tasks-20260923-1411`. Updated in place: `commit-state-20260923` (now pushed),
   `lint-md-gate-could-not-fail` (remediation complete).
 - Checkpoint `slurp-20260923-first-real-suite-and-writeback` in both backends (memory-keeper `45fe682e`, project-context `8e98da89-8c81-4275-b1a4-b38cb8f53dd2`).
+- **Slurp 20260923_1426** (Zone B from the 14:13 boundary): 5 new memory-keeper keys plus 3 updated in place, and 3 project-context notes, channel `skill-eval-manager`. New:
+  `write-back-routing-log-design`, `opa-guard-matches-command-text`, `references-destination-has-no-gate`, `wrong-claude-mem-observation-writeback`, `open-tasks-20260923-1426`.
+  Updated: `write-back-contract-first-return` (it half-landed), `eval-suite-schema-gotchas` (now in the package, not memory-only), `commit-state-20260923`.
+- Checkpoint `slurp-20260923-write-back-routing-log` in both backends (memory-keeper `71028bef`, project-context `b7fd2785-b309-4819-92b5-b63c190fddba`).
+- Session closeout: memory-keeper `session.closeout.20260923.eval-manager-writeback`, with a matching project-context note. Covers the whole 2026-09-23 arc — promotion through to the
+  routing log — in one place, including the open issues and next actions.
 - claude-mem: not seeded for this project
