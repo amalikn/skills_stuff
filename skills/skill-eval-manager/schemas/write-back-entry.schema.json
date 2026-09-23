@@ -5,10 +5,9 @@
   "description": "One finding returned by a consuming project. This record says WHERE the knowledge was incorporated; it is deliberately not a place to store the knowledge itself. A row whose incorporated_in is empty is an open loop, and is meant to be visible as one.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["entry_id", "recorded_at", "source_project", "kind", "finding", "status", "incorporated_in"],
+  "required": ["ts", "source_project", "kind", "finding", "status", "incorporated_in", "entry_id"],
   "properties": {
-    "entry_id": {"type": "string", "minLength": 1},
-    "recorded_at": {"type": "string", "minLength": 1},
+    "ts": {"type": "string", "minLength": 1},
     "source_project": {
       "type": "string",
       "minLength": 1,
@@ -31,6 +30,7 @@
     },
     "commit": {"type": ["string", "null"]},
     "supersedes": {"type": ["string", "null"]},
-    "notes": {"type": ["string", "null"]}
+    "notes": {"type": ["string", "null"]},
+    "entry_id": {"type": "string", "minLength": 1}
   }
 }

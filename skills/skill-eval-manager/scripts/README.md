@@ -36,7 +36,7 @@ only the selected report path; it never changes source history. Idempotency: yes
 
 Purpose: append one routing record to `ledger.jsonl`, naming a finding returned by a consuming project and the
 file(s) that now carry it. Inputs: `--source-project`, `--kind`, `--finding`, and either `--incorporated-in <paths>` or
-`--open`; optional `--commit`, `--supersedes`, `--notes`, `--recorded-at`, `--dry-run`. Output: one appended JSONL line.
+`--open`; optional `--commit`, `--supersedes`, `--notes`, `--ts`, `--dry-run`. Output: one appended JSONL line.
 
 **It records where knowledge went, not the knowledge.** Every `--incorporated-in` path must already exist, so a row
 cannot claim a destination before the content is in it; `--open` records an honest outstanding loop instead. Safety:

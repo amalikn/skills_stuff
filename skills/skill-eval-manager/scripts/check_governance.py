@@ -176,7 +176,7 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
     # already been fixed. Registered so the next bump must touch all three, and so a fourth file cannot start stating a
     # version nobody maintains.
     "package-version": {
-        "pattern": r"\b0\.1\.5\b",
+        "pattern": r"\b0\.1\.7\b",
         "surfaces": ("SKILL.md", "README.md", "CHANGELOG.md"),
         "owner": "CHANGELOG.md",
     },
@@ -485,7 +485,7 @@ def check_write_back_log() -> None:
     if not log.exists():
         return
 
-    required = {"entry_id", "recorded_at", "source_project", "kind", "finding", "status", "incorporated_in"}
+    required = {"ts", "source_project", "kind", "finding", "status", "incorporated_in", "entry_id"}
     outstanding: list[str] = []
 
     for number, line in enumerate(log.read_text(encoding="utf-8").splitlines(), start=1):

@@ -1,5 +1,34 @@
 # Changelog
 
+## 20260923_1646 — Ledger columns ordered like the walk-before-run ledger (0.1.7)
+
+`ledger.jsonl` rows now read `ts`, `source_project`, then the finding fields, with `entry_id` right-most — the same
+lead columns as the `skill-walk-before-run` ledger, so the two estate ledgers scan alike. `recorded_at` is renamed
+`ts` in [schemas/write-back-entry.schema.json](schemas/write-back-entry.schema.json), the `check_write_back_log`
+required set, and [scripts/record_writeback.py](scripts/record_writeback.py), whose flag is now `--ts` and which no
+longer sorts keys, since sorting is what put `commit` first. The four existing rows were rewritten once for the rename
+and reorder on operator instruction. `ts` defaults to machine-local time with its offset (as walk-before-run does) instead of UTC `Z`, and the existing
+rows were converted to it — the same instants, restated. Observation and invalidation records in `history.jsonl` keep
+`recorded_at`, which the renderers read.
+
+## 20260923_1642 — Falsifiability evidence proves the measure, not the binding (0.1.6)
+
+Written back from `unified-network-controller`, whose first recorded observation exposed a limit none of the six
+methods states on its own: a well-made `counterexample` fixture proved the arithmetic of a coverage eval — including
+the subtle case where an out-of-population device that still reports inflates the numerator to a false full pass —
+while the live numerator was bound to the wrong source, twice. A health-status row's timestamp was read as the time
+of the last stored metric, and an identifier column holding UUID text was looked up with UUID objects, reporting zero
+coverage against several hundred stored metrics. Neither was reachable from a CSV-fed fixture.
+
+[references/04_falsifiability.md](references/04_falsifiability.md) gains **What it does not establish**: when the
+fixture is fed from static data its evidence covers the computation and not the source binding, and that limit
+belongs in the referenced artifact rather than being left for the reader to assume away. A first observation
+therefore deserves a sanity check against an independent known quantity before it is recorded — neither the
+validator nor the falsifiability evidence can supply one.
+
+No closed set changed: `counterexample` remains the correct method here, so this is a prose limit on what all six
+establish, not a seventh method and not an `.archcore/` rule change.
+
 ## 20260923_1331 — Archcore documents ratified to accepted
 
 All eleven documents promoted at 20260923_1311 moved from `status: proposed` to `status: accepted` on operator authorisation. The four ADRs restate their status in the body under `## Status`; those

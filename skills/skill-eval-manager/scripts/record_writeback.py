@@ -25,7 +25,7 @@ import argparse
 import json
 import sys
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,7 +43,7 @@ def main() -> int:
     parser.add_argument("--commit", default=None)
     parser.add_argument("--supersedes", default=None)
     parser.add_argument("--notes", default=None)
-    parser.add_argument("--recorded-at", default=None, help="ISO-8601; defaults to now (UTC)")
+    parser.add_argument("--ts", default=None, help="ISO-8601; defaults to now (machine local offset)")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -63,9 +63,9 @@ def main() -> int:
             print(f"ERROR: {error}", file=sys.stderr)
         return 1
 
+    # Key order is the column order: `ts` then project first (matching the skill-walk-before-run ledger), `entry_id` last.
     record = {
-        "entry_id": str(uuid.uuid4()),
-        "recorded_at": args.recorded_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "ts": args.ts or datetime.now().astimezone().isoformat(timespec="seconds"),
         "source_project": args.source_project,
         "kind": args.kind,
         "finding": args.finding,
@@ -74,6 +74,7 @@ def main() -> int:
         "commit": args.commit,
         "supersedes": args.supersedes,
         "notes": args.notes,
+        "entry_id": str(uuid.uuid4()),
     }
 
     if args.dry_run:
@@ -81,7 +82,7 @@ def main() -> int:
         return 0
 
     with LOG.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(record, sort_keys=True) + "\n")
+        handle.write(json.dumps(record) + "\n")
     print(f"APPENDED: entry={record['entry_id']} status={record['status']} source={record['source_project']}")
     return 0
 
