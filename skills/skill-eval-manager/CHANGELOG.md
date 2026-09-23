@@ -1,5 +1,24 @@
 # Changelog
 
+## 20260923_1720 — Own-package lessons are promoted, not logged (0.1.8)
+
+[SKILL.md](SKILL.md) (the standing write-back contract) and [AGENTS.md](AGENTS.md) gain a rule for lessons this package learns about itself: they are written in the same session into the file
+that would have prevented them, never into the ledger — which stays reserved for consuming-project findings — and never left in memory,
+which nothing obliges anyone to read. A lesson owned by another repository gets a tracked item there instead.
+
+Applied at once to the two lessons from the 0.1.7 session that were sitting in memory only:
+
+- `AGENTS.md` is excluded from git in `skills_stuff`, so a rule stated only there never leaves this machine; `SKILL.md` is the tracked copy.
+- The version lives in **four** places, not three (`SKILL.md` step 4 and the `AGENTS.md` working rule both said
+  three): the `package-version` pattern in `scripts/check_governance.py` is the fourth, and a
+  bump that misses it fails with a message that does not name it. The working rule now says so, and forbids stating the live version anywhere else.
+- `ts` in [schemas/write-back-entry.schema.json](schemas/write-back-entry.schema.json) now describes itself: machine-local time with its
+  offset, so rows across a DST change must be ordered by parsed instant, never by string.
+
+The third lesson — the OPA ledger guard's substring matching lets a pathlib rewrite, a `>` truncate and an `mv` through, exempts any command
+that merely names a writer, and blocks prose that mentions the ledger — was confirmed with `opa eval` and belongs to `tools_stuff`; it is
+tracked there, not here.
+
 ## 20260923_1646 — Ledger columns ordered like the walk-before-run ledger (0.1.7)
 
 `ledger.jsonl` rows now read `ts`, `source_project`, then the finding fields, with `entry_id` right-most — the same

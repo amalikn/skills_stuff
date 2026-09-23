@@ -5,7 +5,7 @@ description: >-
   evidence layers, populations, validity, and falsifiability. Use for system-evaluation discipline and results history; do not use for ordinary unit
   testing, debugging, CI setup, or LLM/prompt evaluation.
 metadata:
-  version: 0.1.7
+  version: 0.1.8
   aliases:
     - eval-manager
     - evaluation-suite
@@ -48,18 +48,22 @@ session, regardless of whether the calling project governance says to. Invoking 
 2. If the finding changes a **closed set** — the five verdicts, the six falsifiability methods, the required contract elements — it is a change to the matching `.archcore/` rule or spec, not a prose
    note. Update the document and add or amend its row in [.archcore/index.guide.md](.archcore/index.guide.md).
 3. If a validator gap was found, add the rule **and demonstrate a deliberate failure case**, per the quality gate below.
-4. Bump the version across `SKILL.md`, `README.md`, and `CHANGELOG.md` in one pass, and append a `CHANGELOG.md` entry.
+4. Bump the version across `SKILL.md`, `README.md`, `CHANGELOG.md`, and the `package-version` pattern in `scripts/check_governance.py` in one pass, and append a `CHANGELOG.md` entry.
 5. **Read the file back** after writing. A session note, a `SCRATCHPAD.md` claim, or a file timestamp is not proof the content is present — only reading the body counts.
 6. **Record where it went**: `python3 scripts/record_writeback.py --source-project <project> --kind <kind> --finding <one sentence> --incorporated-in <paths>`. The record names the destination, not
    the knowledge — the knowledge belongs in the file. If there is no destination yet, use `--open` and let it show as an outstanding loop rather than closing it in your head.
+
+**Lessons about this package itself** — a tooling quirk, a surface a version bump missed, a gate that misfired — are not method and are not recorded with step 6. Write each one, in the same session,
+into the file that would have prevented it: a working rule, a `references/` file, a script docstring, or a schema `description`. Never leave one only in a memory backend or a session note; nothing
+obliges the next agent to read those. A lesson that belongs to another repository gets a tracked item in that repository before the session closes.
 
 A project's own governance may restate this obligation with local detail. That is reinforcement, not the source of the rule.
 
 ## Workflow
 
 1. Read [the overview](references/01_overview.md), then the reference matching the task.
-2. Define the suite in the consuming project's suite file, copied from `templates/evals.yaml`: claim, population and denominator source, independent oracle,
-   ranked claim/evidence layers, executor reference, tier, validity, and falsifiability evidence.
+2. Define the suite in the consuming project's suite file, copied from `templates/evals.yaml`: claim, population and denominator source, independent oracle, ranked claim/evidence layers, executor
+   reference, tier, validity, and falsifiability evidence.
 3. Run `scripts/validate_suite.py --suite <evals.yaml>` before any observation is trusted.
 4. Let the project executor or operator perform the work. Record its result using `scripts/record_result.py`; never put observations in the suite or append to a scorecard.
 5. Record declared change invalidations when they occur. Do not compute basis hashes in v0.1.

@@ -7,7 +7,11 @@
   "additionalProperties": false,
   "required": ["ts", "source_project", "kind", "finding", "status", "incorporated_in", "entry_id"],
   "properties": {
-    "ts": {"type": "string", "minLength": 1},
+    "ts": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ISO-8601 in the writer machine's local time with its offset (e.g. +10:00), as the skill-walk-before-run ledger writes it. Rows either side of a DST change carry different offsets, so order rows by the parsed instant, never by comparing the strings."
+    },
     "source_project": {
       "type": "string",
       "minLength": 1,

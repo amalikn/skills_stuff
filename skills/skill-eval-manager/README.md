@@ -17,7 +17,7 @@ observed. It does not run checks.
 The package contains no non-OSI-licensed runtime dependency. The scripts use Python's standard library for JSON and JSONL. They also accept ordinary YAML when `PyYAML` is installed; JSON-formatted
 documents with a `.yaml` extension remain valid YAML and work without it.
 
-Last reviewed: 2026-09-23 AEST. Version: 0.1.7.
+Last reviewed: 2026-09-23 AEST. Version: 0.1.8.
 
 ## Package map
 
