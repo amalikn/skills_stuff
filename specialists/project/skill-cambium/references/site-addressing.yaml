@@ -58,6 +58,8 @@ updated: "2026-09-23"
 # Cambium's full IEEE OUI allocation (standards-oui.ieee.org/oui/oui.csv, read 2026-09-23): nine blocks. The seven below are confirmed in this
 # fleet; 90:14:AF and 90:6D:62 are Cambium's too but no register row or ARP table here has ever shown them. A discovery sweep must treat all nine
 # as Cambium candidates; only the seven under oui_reference carry a family hint.
+# R195P and Enterprise Wi-Fi share OUIs BC:A9:93 and BC:E6:7C (kalumburu sweep 2026-09-23: 56 R195P on both); the family is decided by SNMP sysDescr
+# or the adapter that reads the unit, never by the OUI alone.
 ieee_allocation:
   source: https://standards-oui.ieee.org/oui/oui.csv
   read: "2026-09-23"

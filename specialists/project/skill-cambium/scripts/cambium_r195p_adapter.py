@@ -370,7 +370,37 @@ class CambiumR195PAdapter:
         credential-shaped option via REDACT_KEY_PATTERN before returning — callers must never call `_run("cat /etc/config/*")` directly
         and print/log/persist the result themselves, same rule as every other family's get_config()."""
         raw = self._run("cat /etc/config/* 2>&1", allow_nonzero=True)
-        return redact(self._parse_uci_text(raw))
+        parsed = self._parse_uci_text(raw)
+        if set(parsed) - {"_unparsed"}:
+            return redact(parsed)
+        # 4.7.3-R21 units (tjuntjuntjara, 2026-09-24) have no /etc/config at all: their live settings sit in the MediaTek nvram
+        # (zone 2860, read per key with `nvram_get 2860 <key>`; the key list is /var/param_default's), plus the wireless profiles
+        # /etc/Wireless/RT2860/RT2860_{2G,5G,dbdc}.dat. Same redaction, same nested shape. No pipes on this shell, `;` works.
+        return redact(self._read_nvram_config())
+
+    NVRAM_BATCH = 100  # keys per SSH session: 60 and 100 both took ~11 s on a 4.7.3-R21 unit; 200 got the session closed
+
+    def _read_nvram_config(self) -> dict:
+        """{"nvram": {key: value}, "rt2860_2g": {...}, "rt2860_5g": {...}, "rt2860_dbdc": {...}}, unredacted (callers redact)."""
+        defaults = self._run("cat /var/param_default 2>&1", allow_nonzero=True)
+        keys = [line.split("=", 1)[0].strip() for line in defaults.splitlines() if "=" in line and not line.startswith("#")]
+        values: dict = {}
+        for start in range(0, len(keys), self.NVRAM_BATCH):
+            batch = keys[start : start + self.NVRAM_BATCH]
+            out = self._run("; ".join(f'echo "@@{k}"; nvram_get 2860 {k}' for k in batch), allow_nonzero=True)
+            current = None
+            for line in out.splitlines():
+                if line.startswith("@@"):
+                    current = line[2:]
+                    values[current] = ""
+                elif current is not None:
+                    values[current] = f"{values[current]}\n{line}" if values[current] else line
+        result = {"nvram": values}
+        for name in ("2G", "5G", "dbdc"):
+            text = self._run(f"cat /etc/Wireless/RT2860/RT2860_{name}.dat 2>&1", allow_nonzero=True)
+            result[f"rt2860_{name.lower()}"] = {l.split("=", 1)[0].strip(): l.split("=", 1)[1].strip() for l in text.splitlines()
+                                                 if "=" in l and not l.startswith("#")}
+        return result
 
     @staticmethod
     def _parse_uci_text(text: str) -> dict:
