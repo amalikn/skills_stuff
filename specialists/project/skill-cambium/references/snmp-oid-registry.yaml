@@ -14,7 +14,7 @@
 # Table OIDs are ENTRY OIDs: a row reads <entry>.<column>.<index>. Scalars answer at instance .0.
 
 schema_version: 1
-updated: "2026-09-22"
+updated: "2026-09-23"
 
 mib2_system: &mib2_system
   # Standard MIB-II system group. Listed per type only where verified on that type.
@@ -38,6 +38,8 @@ device_types:
          verified: {date: "2026-09-22", unit: MOR_T1_3000L_W_IP0_10, site: mornington, method: get}}
       - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, access: ro, note: "holds the device name",
          verified: {date: "2026-09-22", unit: MOR_T1_3000L_W_IP0_10, site: mornington, method: get}}
+      - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, access: ro, note: "reads .1.3.6.1.4.1.17713.21.9.44 on two units and .21.9.43 on one, all registered as ePMP 3000L: two hardware variants under one register model",
+         verified: {date: "2026-09-23", unit: "Tower1_Omni 1_IP_0_10", site: kalumburu, firmware: "4.7.0.1", method: get}}
       - {oid: ".1.3.6.1.2.1.1.6.0", name: sysLocation, access: rw,
          note: "SET, read back, restored on 6 units, 3 sites, both clusters (apn-snmp-rw and nbn-snmp-rw); sysName/sysDescr unaffected, no reboot. Test-and-revert only (operator: change nothing yet)",
          verified: {date: "2026-09-22", unit: "MOR_T1_3000L_W_IP0_10, MOR_T1_3000L_S_IP0_11, HRN_3000L_T1_Omni0_10, HRN_3000l_T1_SW0_11, HOP_3000L_T1_SecE0_21, HOP_3000L_T1_SecW0_22", site: "mornington, horn-island, hope-vale", method: set+get}}
@@ -97,3 +99,40 @@ device_types:
 
   # No verified SNMP surface yet (live walk not done): cnpilot-r195p (snmpd present, one sysDescr GET, E122 — too thin to list),
   # epmp-force300 (SM; SM-side scalars .17713.21.1.2.3/.18 exist on the SM, not walked here), e500, e430h, xv2-2t0.
+
+  # Added 2026-09-23 from unified-network-controller's Kalumburu discovery test (wc-local/scripts/discover_site.py): one snmpget of the
+  # MIB-II identity triple per Cambium candidate from kalumburu-smc01 with apn-snmp-ro. Model-level sysObjectID is what a sweep
+  # identifies a unit by before any login. Read-only: no SET was tried on these types.
+  force-300-16:
+    family: epmp-sm  # also runs as an ePMP AP / ePTP master (cambiumDeviceMode 1, cambiumSubModeType 5), same OID
+    models: [Force 300-16]
+    arm: ".1.3.6.1.4.1.17713.21 (pmpMibTree, CAMBIUM-PMP80211-MIB)"
+    oids:
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "holds the device name, not a model string",
+         verified: {date: "2026-09-23", unit: "Tower1_Force 300_IP_0_12_slave", site: kalumburu, firmware: "4.6.1", method: get, also: "56 units on 4.7.0.1 and 5 masters"}}
+      - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, access: ro, note: "reads .1.3.6.1.4.1.17713.21.9.39 on all 62 units, SM and master alike",
+         verified: {date: "2026-09-23", unit: "Tower1_Force 300_IP_0_11_master", site: kalumburu, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, access: ro, note: "holds the device name",
+         verified: {date: "2026-09-23", unit: "Tower1_Force 300_IP_0_11_master", site: kalumburu, firmware: "4.7.0.1", method: get}}
+  e500:
+    family: enterprise-wifi
+    models: [E500]
+    arm: ".1.3.6.1.4.1.17713.22 (cnPilotMIB)"
+    oids:
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "reads 'Cambium cnPilot E500 Access Point'",
+         verified: {date: "2026-09-23", unit: Tower4_E500_AP2_IP3_20, site: kalumburu, firmware: "4.2.2.1-r3", method: get, also: "Tower7_E500_AP5_IP3_50 on 4.2.3.1-r9"}}
+      - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, access: ro, note: "reads .1.3.6.1.4.1.17713.22.3.5 on all four answering units",
+         verified: {date: "2026-09-23", unit: Tower4_E500_AP2_IP3_20, site: kalumburu, firmware: "4.2.2.1-r3", method: get}}
+      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, access: ro,
+         verified: {date: "2026-09-23", unit: Tower4_E500_AP2_IP3_20, site: kalumburu, firmware: "4.2.2.1-r3", method: get}}
+  cnpilot-r195p:
+    family: cnpilot-r-series
+    arm: "none: sysObjectID is the bare enterprises root .1.3.6.1.4.1, so the family must come from sysDescr"
+    models: [R195P]
+    oids:
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "reads 'cnPilot R195P <running firmware>' (4.7-R9, 4.7.2-R10, 4.7.3-R21 seen): the only SNMP model and firmware signal on this type",
+         verified: {date: "2026-09-23", unit: cnPilot-R195P-1103, site: kalumburu, firmware: "4.7-R9", method: get, also: "38 units answered; register current_firmware disagreed with sysDescr on 21 of them"}}
+      - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, access: ro, note: "reads .1.3.6.1.4.1 (bare enterprises root); carries no model",
+         verified: {date: "2026-09-23", unit: cnPilot-R195P-1103, site: kalumburu, firmware: "4.7-R9", method: get}}
+      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, access: ro, note: "holds the device name",
+         verified: {date: "2026-09-23", unit: cnPilot-R195P-1103, site: kalumburu, firmware: "4.7-R9", method: get}}

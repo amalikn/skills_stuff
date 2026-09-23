@@ -7,6 +7,7 @@
 - [Response-Shape Divergence Across the Fleet (sweep 2026-09-20)](#response-shape-divergence-across-the-fleet-sweep-2026-09-20)
 - [Security Incidents](#security-incidents)
 - [Pack Staleness Risks](#pack-staleness-risks)
+- [LLDP on Cambium devices — not checked (operator note, 2026-09-23)](#lldp-on-cambium-devices--not-checked-operator-note-2026-09-23)
 
 ---
 
@@ -137,3 +138,7 @@ Both produced confident, wrong output rather than an error, which is why they ar
   state (`01_overview.md`'s discipline) rather than assuming either "everything confirmed" or "everything unconfirmed". Genuinely still-`USER_STATED`/unconfirmed items are tracked individually above
   and in `manifest.json known_constraints` (e.g. `hardware_revision`), not as a blanket pack-wide caveat.
 - `manifest.json`'s `stable_facts` will drift from `cambium-swap`'s live inventory files over time — the manifest is a snapshot, `cambium-swap/inventory/*.csv` is the live source.
+
+## LLDP on Cambium devices — not checked (operator note, 2026-09-23)
+
+Whether any Cambium family announces itself over LLDP or exposes its neighbours' announcements (`lldpRemTable`, `.1.0.8802.1.1.2.1.4`, over SNMP; or a REST equivalent) is `UNVERIFIED` on every family. Raised during unified-network-controller's Kalumburu discovery test as a possible sweep-free topology source (switch port per device). To test per family: an `snmpwalk` of `.1.0.8802.1.1.2` from the site's SMC with the read-only community, and a search of each family's REST/CLI surface for an LLDP toggle. Record the answer here and in the OID registry.

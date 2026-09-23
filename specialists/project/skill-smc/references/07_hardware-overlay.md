@@ -431,6 +431,8 @@ Use `/run` (systemd's tmpfs) for throwaway files and check it with `stat -f -c %
 pre-check (`wc-local/scripts/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That script falls back to `ping`,
 and a fleet install belongs in an ansible-wifi role.
 
+**fping fleet install (2026-09-23, operator: "install fping where needed").** A survey of all 36 `<site>-smc01` nodes in Nautobot found fping on only those three; `apt-get install -y fping` (5.1-1, jammy) then ran on the other 32 reachable boxes plus aurukun-smc02 and aurukun-smc03, all x86 22.04 with an ext4 root except bungardi and darlngunaya (aarch64, no overlay mounted, so the install persists there too). mungkarta-smc01 was unreachable and still lacks it. **bungardi and darlngunaya are `nbn_wh` sites and the operator's rule is not to touch `nbn_wh`**; the install there predated the instruction and was removed the same evening (`apt-get remove --purge fping`, 21:27) on the operator's call; both boxes are back as found. The one-shot survey pitfall: an `ssh host sh -c 'cmd'` with the command passed as separate ssh arguments is re-joined on the box, so `command -v` tested nothing and reported yes everywhere; pass the whole remote command as one string. Still not in any ansible-wifi role, so a reimaged box loses it: the durable fix is a package entry in the base role.
+
 ### Checking Overlayroot Status
 
 ```bash

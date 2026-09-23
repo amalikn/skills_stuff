@@ -22,6 +22,9 @@ device_role, topology_role, wlan_profile, ap_group, configuration_template, clou
 spare_mapping, export_date`
 
 Key columns to get right:
+- `mac_address` for an **ePMP AP** is the unit's **LAN MAC** (`device_props.cambiumLANMACAddress`, the adapter's `lan_mac_address`), not its wireless MAC. VERIFIED_PRIMARY 2026-09-23:
+  the device-reported LAN MAC equalled the register's `mac_address` on six ePMP 3000L APs at hope-vale, mornington and horn-island (unified-network-controller identity canary), and the
+  register's `serial_msn` and `current_firmware` matched `cambiumEPMPMSN` and `cambiumCurrentuImageVersion` on all six. Other families' MAC column semantics are not established by this.
 
 - `site` — ansible-wifi `site_name` slug (`hope-vale`, `burringurrah`), not a display name. See `03_asset-register-conventions.md`.
 - `smc_flavour` — `nbn_accelerate` or `rcp`, matching the asset-register source directory / ansible-wifi inventory flavour.

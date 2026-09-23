@@ -35,6 +35,11 @@ The naming *idea* is shared but each site applies it with its own drift:
   `HOP_XV2_AP1_IP3_1` (hope-vale): `device_ip` 10.255.3.1, mask 255.255.224.0 (a `/19` inside the `/18`), gateway 10.255.0.1, `vlan_id` 500, the VLAN500 interface carrying the same address and every
   other interface `0.0.0.0`. `unified-network-controller` applies this rule in `adapters/estate.py` (`select_management_ip`).
 
+- **Which MAC the register's `mac_address` holds for an ePMP unit also drifts per site** (`VERIFIED_PRIMARY` 2026-09-23, unified-network-controller identity canary and Kalumburu discovery
+  test). At hope-vale, mornington and horn-island the register MAC equals the unit's LAN MAC (`cambiumLANMACAddress`, what the SMC's ARP table shows for the management address) on all
+  six 3000L APs checked. At kalumburu it is the radio MAC instead: on every one of 66 ePMP rows matched by address, the ARP MAC is exactly the register MAC plus one (LAN = radio + 1 on
+  Force 300-16 and ePMP 3000L). So a MAC join between register and ARP must try both the value and value + 1, and an ePMP register MAC is evidence of the unit, not of which port.
+
 ### Per-Site IP Addressing Reality
 
 What octet a device family actually answers on, per site — **register/derivation claim** vs **live-confirmed reality** where checked. Consult this before trusting a `management_ip` at a site you
