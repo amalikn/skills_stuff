@@ -59,6 +59,10 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 
 ## Recent decisions
 
+- 2026-09-23 — <!-- KEEP --> Lessons this package learns about itself are written into the file that would have prevented them, in the same session — not the
+  routing ledger, not memory only. Chosen over logging them as `open` ledger rows, which would dilute a record that works because its rows are few and come from outside.
+  Stated in the `SKILL.md` write-back contract; `AGENTS.md` repeats it but is excluded from git here.
+
 - 2026-09-23 — <!-- KEEP --> Ledger `ts` is machine-local time with its offset, as `skill-walk-before-run` writes it. A fixed `+10:00` was tried first and replaced on
   operator instruction. Accepted cost: rows either side of a DST change carry different offsets, so sort `ts` parsed, never as text.
 
@@ -82,12 +86,19 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 
 ## Session history (summaries — full detail belongs in memory-keeper once a channel exists)
 
+### 2026-09-23 — own-package lessons promoted, not logged
+
+- <!-- KEEP --> Asked how lessons reach the skill: only ledger rows are forced into view (`just check`); memory is read by nobody. Adopted a rule instead, then applied it to
+  the two memory-only lessons (version in four places; `ts` ordering caveat) and moved the OPA finding to `tools_stuff` as M8. Committed `a06caa8`, not pushed.
+- Found `AGENTS.md` git-excluded in `skills_stuff`, so the rule's tracked home is `SKILL.md`; `SKILL.md` step 4 also still said three version surfaces.
+
 ### 2026-09-23 — ledger columns aligned with walk-before-run
 
 - <!-- KEEP --> `ledger.jsonl` now leads `ts`, `source_project`, with `entry_id` right-most; `recorded_at` renamed `ts` across schema, checker and writer. The old order came from
   `sort_keys=True`. Four rows rewritten once on operator instruction; committed with the pending 0.1.6 falsifiability write-back as `2523a29`.
-- The migration was not blocked by the OPA ledger guard, although a later SCRATCHPAD edit whose command text named the ledger was. The guard's exact trigger for the
-  pathlib rewrite is unconfirmed; recorded as `opa-guard-write-text-gap`, not fixed — the policy lives in `tools_stuff`.
+- The migration was not blocked by the OPA ledger guard, although a later SCRATCHPAD edit whose command text named the ledger was. Confirmed at 17:20 with `opa eval`:
+  the guard is substring matching, so a pathlib rewrite, a `>` truncate and an `mv` pass, naming a writer exempts a command, and prose quoting a marker is blocked.
+  Tracked as M8 in the `tools_stuff` OPA roadmap, not fixed.
 
 ### 2026-09-23 — rename to the estate convention, and the guard it attracted
 
@@ -189,3 +200,6 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
   `ledger-columns-ts-first-v017`, `ledger-ts-machine-local-decision`, `opa-guard-write-text-gap`, `falsifiability-binding-limit-v016`, `version-bump-four-surfaces`,
   `open-tasks-20260923-1650`. Updated: `commit-state-20260923`.
 - Checkpoint `slurp-20260923-ledger-ts-columns` in both backends (memory-keeper `ab3757b3`, project-context `edc4845e-faf3-4cc7-a619-ea0004c2c4bf`).
+- **Slurp 20260923_1724**: memory-keeper `own-lessons-promote-rule-v018` (new), `opa-guard-write-text-gap` (now confirmed), `open-tasks-20260923-1724` (supersedes 1650),
+  `commit-state-20260923` (updated); 3 project-context notes. Checkpoint `slurp-20260923-own-lessons-rule` in both backends (memory-keeper `e4fac15b`, project-context
+  `036df869-4a79-42ea-803d-f3c9bcc912b7`).
