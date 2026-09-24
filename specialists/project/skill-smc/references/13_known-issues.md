@@ -19,6 +19,7 @@
 - [2026-08-18 — plaintext secrets in `group_vars`, and a copied Graylog config that shared them](#2026-08-18--plaintext-secrets-in-group_vars-and-a-copied-graylog-config-that-shared-them)
 - [2026-09-08 — upstream keepalived VIP config bug: `lb_algo rr` silently ignores the lweb03 drain intent (`202.171.100.138`)](#2026-09-08--upstream-keepalived-vip-config-bug-lb_algo-rr-silently-ignores-the-lweb03-drain-intent-202171100138)
 - [2026-09-11 — portal-FQDN regression: two separate incidents, one still live on 2 sites](#2026-09-11--portal-fqdn-regression-two-separate-incidents-one-still-live-on-2-sites)
+- [2026-09-24 — neighbour table: `gc_thresh1` is 1 and the hard cap 1024; proposed standard (PROPOSAL, not applied)](#2026-09-24--neighbour-table-gc_thresh1-is-1-and-the-hard-cap-1024-proposed-standard-proposal-not-applied)
 
 ---
 
@@ -890,3 +891,28 @@ ran) inside the bad window keeps serving the broken redirect indefinitely afterw
 **Process lesson:** the `nbn_wh` fix landing inside an unrelated commit (headline: blocklist-feed transport, not portal FQDN) is exactly the kind of change where a targeted write-back audit misses
 things — `git show --stat` on every commit that touches a shared vars file, not just commits whose headline names the file, should be part of any future sweep for this class of regression.
 
+## 2026-09-24 — neighbour table: `gc_thresh1` is 1 and the hard cap 1024; proposed standard (PROPOSAL, not applied)
+
+**Found** (read-only, kalumburu-smc01 and mornington-smc01, kernel 5.15.0-84; hope-vale-smc01 was offline in Teleport and is unchecked):
+
+| Box | `gc_thresh1/2/3` | Neighbour entries | `bridge_500` (mgmt) | `bridge_501` (clients) | Overflow messages, 30 days |
+| --- | --- | --- | --- | --- | --- |
+| kalumburu-smc01 | 1 / 512 / 1024 | 171 | 123 | 42 | 0 |
+| mornington-smc01 | 1 / 512 / 1024 | 757 | 501 | 246 | 0 |
+
+The upstream kernel default for `gc_thresh1` is 128 (`net/ipv4/arp.c` and `Documentation/networking/ip-sysctl.rst` at v5.15, VERIFIED_PRIMARY). Nothing in `sysctl.conf`, `/etc/sysctl.d`,
+`/usr/lib/sysctl.d`, `/run/sysctl.d`, `/etc`, `/usr/local`, `/opt` or ansible-wifi sets it, so the source of the 1 is UNVERIFIED: a runtime setter or an Ubuntu kernel difference. Consequences: any unused
+entry may be purged once `gc_stale_time` (60 s) passes, which is why quiet devices such as the TP-Link switches drop out of ARP (`16_tplink-site-switches.md`); and mornington already sits above
+`gc_thresh2`, at 74 % of the 1024 hard cap. At the cap the kernel cannot resolve new neighbours and customer traffic fails. Whole-subnet sweeps (unified-network-controller's reachability pre-check and
+`discover_site.py`, `tplink-switch.sh --discover`) cover the management /19, up to 8,190 addresses, on top of a client /18 of up to 16,382.
+
+**Proposed standard** (operator asked for a recommendation only, 2026-09-24; nothing changed):
+
+| Setting | Proposed | Reason |
+| --- | --- | --- |
+| `net.ipv4.neigh.default.gc_thresh1` | 1024 | Nothing is purged below this: covers the largest management network seen (about 500 at mornington) plus normal client load. Stale entries are harmless, NUD re-validates before use |
+| `net.ipv4.neigh.default.gc_thresh2` | 4096 | Aggressive purging (entries older than 5 s) starts only during sweeps or client surges |
+| `net.ipv4.neigh.default.gc_thresh3` | 16384 | Hard cap above a full management sweep plus a busy client bridge; about 16k entries is a few MB, fine on x86 and RPi |
+
+Same values for `net.ipv6.neigh.default.*` where IPv6 runs on the bridges; `gc_stale_time` 60 and `base_reachable_time_ms` 30000 unchanged. Before rollout: find what sets `gc_thresh1` to 1 so an
+ansible-managed `/etc/sysctl.d/` file is not overridden, then canary on mornington-smc01, the busiest box.

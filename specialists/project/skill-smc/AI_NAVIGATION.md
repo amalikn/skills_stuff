@@ -63,6 +63,7 @@ When sources conflict:
 | Coverage gaps, staleness risk, unvalidated assumptions                                                               | `references/13_known-issues.md`             |
 | Pin validity (mangle) vs pin issuance (Apache access log) diagnosis, marks-≠-activations pitfalls                    | `references/14_pin-activation-diagnosis.md` |
 | Cambium asset-register — ansible-wifi site_name join point (full content moved to skill-cambium)                     | `references/15_cambium-asset-registers.md`  |
+| TP-Link site switches: access, SSH quirks, enable cases, discovery, config capture                                   | `references/16_tplink-site-switches.md`     |
 | SMC box definition, inventory flavors, Teleport access pattern, APN vs NBN Accelerate cluster differences            | `references/01_overview.md`                 |
 
 ## Project context files
@@ -93,6 +94,7 @@ When sources conflict:
 | `references/13_known-issues.md`                    | Known gaps and staleness                                                | Content     |
 | `references/14_pin-activation-diagnosis.md`        | Pin validity vs pin issuance diagnosis, fleet case study                | Content     |
 | `references/15_cambium-asset-registers.md`         | Pointer only — full content in skill-cambium; site_name join point here | Content     |
+| `references/16_tplink-site-switches.md`            | TP-Link switches behind the SMC; `tplink-switch.sh`                     | Content     |
 | `exports/claude_code/project/skill-smc/adapter.md` | Claude Code source→install mapping                                      | Adapter     |
 | `exports/claude_code/project/skill-smc/install.md` | Claude Code installation steps                                          | Adapter     |
 | `CHANGELOG.md`                                     | Pack version history and governance changes                             | Medium-high |

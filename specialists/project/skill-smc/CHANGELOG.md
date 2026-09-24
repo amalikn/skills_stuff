@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260924_1205 — TP-Link site switches reached behind the SMC; `tplink-switch.sh` access, discovery and redacted config capture (v0.1.52 -> v0.1.53)](#20260924_1205--tp-link-site-switches-reached-behind-the-smc-tplink-switchsh-access-discovery-and-redacted-config-capture-v0152---v0153)
 - [20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)](#20260922_1750--overlayroot-is-rpi-and-wh-only-x86-tmpfs-paths-differ-per-box-fping-on-three-x86-smcs-v0151---v0152)
 - [20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)](#20260921_2242--low-touch-provisioning-the-redis-backed-script-is-the-fleets-version-from-ansible-wifis-big_push-branch-not-master-v0150---v0151)
 - [20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)](#20260921_1310--multi-smc-sites-any-box-reaches-the-whole-management-address-space-jump-host-and-host-key-consequences-v0149---v0150)
@@ -65,6 +66,16 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260924_1205 — TP-Link site switches reached behind the SMC; `tplink-switch.sh` access, discovery and redacted config capture (v0.1.52 -> v0.1.53)
+
+Both kalumburu switches (10.255.0.2 Switch1, 10.255.0.3 Switch 2, SG2428P firmware 5.30.1) logged into with KeePass `/Network/tplink switch` from kalumburu-smc01. New
+`references/16_tplink-site-switches.md`: the per-site candidates from unified-network-controller's sweeps, the credential, the SSH quirks (`HostKeyAlgorithms=+ssh-rsa`, `MACs=hmac-sha2-256`, no
+exec channel, CR for Enter, swallowed first keystroke, client-first banner), the three `enable` cases, why discovery cannot use ARP (`gc_thresh1` is 1 on the SMCs, not the kernel's 128), and the rule never to sweep `bridge_501`. New
+`scripts/tplink-switch.sh` with `tplink_cli_driver.py`: read-only commands, `--discover`, `--shell` and `--backup` (redacted running-config, leak-checked against the known passwords). Telnet is
+refused on both switches. The login password was once typed into Switch1's CLI after an `enable` that needed none; the driver now sends a password only when a prompt asks for one. RUNBOOK routing,
+SKILL.md references and `scripts/README.md` updated. `13_known-issues.md` gains a neighbour-table finding and a proposed `gc_thresh1/2/3` standard of
+1024/4096/16384 (proposal only; the SMCs run 1/512/1024 and mornington holds 757 entries).
 
 ## 20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)
 

@@ -53,6 +53,8 @@ practical.
 | Coverage gaps, live-validation limits, stale assumptions                                                                                            | `references/13_known-issues.md`                |
 | Verified SNMP OIDs on the SMC box itself (net-snmp agent, canary 2026-09-24), the machine-readable list the controller reads                         | `references/snmp-oid-registry.yaml`          |
 | Pin validity (mangle) vs pin issuance (Apache access log) — two mechanisms, marks-≠-activations pitfalls, fleet case study                          | `references/14_pin-activation-diagnosis.md`    |
+| TP-Link site switches: where they are, KeePass entry, SSH quirks (ssh-rsa host key, MAC, pty, CR), enable with/without password,                    | `references/16_tplink-site-switches.md`        |
+|   discovery (fping, not ARP: gc_thresh1), redacted config capture; `scripts/tplink-switch.sh`                                                       |                                                |
 | Reusable read-only scripts: WAN-routing/topology-drift investigation tooling (evidence capture, drift analyser, topology/hardware cross-check),     | `scripts/README.md`                            |
 |   plus ansible-lint pre-push/CI gate scripts, fleet hardware/service-health + portal-FQDN-status audit, and pin-activation diagnosis                |                                                |
 | Cambium asset-register naming grammar, per-site drift, `rcp`-vs-`nbn_accelerate` R195P rule, R195P IP-derivation formula, extraction gotchas        | `references/15_cambium-asset-registers.md`     |

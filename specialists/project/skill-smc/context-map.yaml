@@ -107,6 +107,12 @@ routing:
       register. Full naming-convention/extraction knowledge lives in skill-cambium.
     read:
     - references/15_cambium-asset-registers.md
+  tplink_site_switches:
+    description: TP-Link site switches behind the SMC -- KeePass entry, SSH quirks, enable
+      with and without a password, fping discovery (not ARP), redacted config capture.
+    read:
+    - references/16_tplink-site-switches.md
+    - scripts/tplink-switch.sh
   smcbox_basics:
     description: SMC box definition, inventory flavors, Teleport access pattern, satellite
       constraints, APN vs NBN Accelerate cluster structural comparison.

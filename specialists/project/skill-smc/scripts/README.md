@@ -445,6 +445,31 @@ fixed `local_port` so tunnels never collide and a stale leftover on a shared por
 | `teleport-tunnel.sh` | `tsh` (Teleport session), ansible-wifi                  | `external-network`,             | Opens a real tunnel to a live device; never writes anything, never                |
 |                      |   inventories (read-only)                               |   `requires-credentials`        |   touches ansible-wifi                                                            |
 
+### `tplink-switch.sh` and `tplink_cli_driver.py`
+
+Reach a TP-Link site switch (SG2428P and kin) through the site's SMC box, written 2026-09-24 at kalumburu. The wrapper resolves site -> SMC host -> Teleport cluster exactly as `teleport-tunnel.sh`
+does, reads the password from KeePass (`/Network/tplink switch`, override `TPLINK_KP_ENTRY`; separate enable password `TPLINK_KP_ENABLE_ENTRY`), and streams the password lines plus the driver to
+the SMC over stdin, so no secret reaches a command line or transcript. The driver runs on the SMC and drives the switch CLI through a pty, handling every quirk in
+`../references/16_tplink-site-switches.md` (legacy host-key and MAC algorithms, no exec channel, CR for Enter, the swallowed first keystroke, `enable` with or without a password, paging).
+
+```bash
+./tplink-switch.sh kalumburu --discover                                  # live TPSSH hosts on the management subnet
+./tplink-switch.sh kalumburu 10.255.0.2                                  # show system-info
+./tplink-switch.sh kalumburu 10.255.0.3 "show interface status" "show vlan brief"
+./tplink-switch.sh kalumburu 10.255.0.2 --backup <unc>/captures/tplink-switch-configs   # redacted running-config
+./tplink-switch.sh kalumburu 10.255.0.2 --shell                          # interactive; password on the clipboard
+```
+
+Read-only by default: only `show`, `ping` and `tracert` are sent unless `--write` is given, which needs operator approval. One password attempt per run. Driver exit codes: 3 auth failed, 4
+connect/timeout, 5 no prompt, 6 enable failed. Requires an active `tsh login` for the site's cluster and `kp` on PATH.
+
+| Script                  | Touches                                                 | Safety                          | Notes                                                                             |
+| ----------------------- | ------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
+| `tplink-switch.sh`      | `tsh`, KeePass (`kp`), ansible-wifi inventories         | `external-network`,             | Logs into production switches; read-only unless `--write`. `--backup` writes      |
+|                         |   (read-only), live switches                            |   `requires-credentials`        |   redacted configs to the given directory; `--discover` pings bridge_500 only     |
+| `tplink_cli_driver.py`  | Runs on the SMC; SSH to one switch                      | `external-network`,             | Never run directly from the workstation; fed by `tplink-switch.sh`                |
+|                         |                                                         |   `requires-credentials`        |                                                                                   |
+
 ## Usage
 
 ```bash
