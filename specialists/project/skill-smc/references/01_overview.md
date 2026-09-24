@@ -39,6 +39,9 @@ All remote access routes through **Teleport** via a persistent `autossh` reverse
 
 All 7 inventory flavors are covered by this split. The operator runs `tsh login` manually against whichever cluster matches the project/site being worked on before any `tsh ssh` session — do not
 hardcode a single domain in tooling or scripts; use this table to pick the right one instead.
+- **Teleport server hosting region: AWS `ap-southeast-2` (Sydney)** — `REPO`, read 2026-09-24 from `roles/teleport_core/ec2-bootstrap.sh` and `roles/teleport_letsencrypt/tasks/main.yml` (both set
+  `region = ap-southeast-2`). Only Teleport is confirmed; the central Prometheus, Graylog and Eclipse hosting regions are not recorded in the repo. Relevant wherever a customer contract restricts data
+  location (first raised by the NTG26-0134 tender, which limits personal information to the NT and customer data to Australia).
 - Direct SSH to port 22 is not reachable externally
 - **SSH only** — Teleport DB/Kubernetes/app access features not in use
 - **Access is exclusively `tsh ssh root@<hostname>` (Teleport CLI) — there is no SSH-wrapping MCP in use and no plain-`ssh` path to an SMC.** A `ssh root@<hostname>.teleport.<domain>` form only works
@@ -79,9 +82,9 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
     mismatch by deleting the old key blindly.
   - The device password never touches the SMC box: feed it with `SSHPASS="$(kp show -s -a Password ...)" sshpass -e` (env var, not `-p`, which exposes it in argv).
   - One unexplained first-attempt failure (`Connection closed`, askpass exec error) preceded two clean runs.
-  - **At a multi-SMC site, any box is a valid jump host for the whole site** (`USER_STATED`, operator, 2026-09-21). The boxes share one management address space as a VRRP-style redundant set
-    (aurukun: three boxes); if one fails, traffic moves to the others through the switching layer and the wireless network. A fixed `ProxyJump` does not fail over by itself — pick another
-    box by hand, or use a `ProxyCommand` that tries each in turn (untested). Device host keys stay keyed by site, not by box, because the device is the same whichever box you enter through.
+  - **At a multi-SMC site, any box is a valid jump host for the whole site** (`USER_STATED`, operator, 2026-09-21). The boxes share one management address space as a VRRP-style redundant set (aurukun:
+    three boxes); if one fails, traffic moves to the others through the switching layer and the wireless network. A fixed `ProxyJump` does not fail over by itself — pick another box by hand, or use a
+    `ProxyCommand` that tries each in turn (untested). Device host keys stay keyed by site, not by box, because the device is the same whichever box you enter through.
 - **`--cluster=` is NOT a substitute for `--proxy=` on `teleport.communitywifi.net.au`, for ANY command — not just `-L` tunnels — and getting this wrong produces an error that convincingly fakes a
   real outage (incident 2026-09-18).** Two independent agent sessions in `cambium-swap` ran `tsh ls --cluster=teleport.communitywifi.net.au` / `tsh ssh --cluster=teleport.communitywifi.net.au
   root@hope-vale-smc01` and got `ERROR: connection error: desc = "transport: authentication handshake failed: EOF"` on every attempt, while `tsh status` showed a fully valid cached session (hours

@@ -6,6 +6,7 @@
 - [Device Families in APN's Fleet](#device-families-in-apns-fleet)
 - [EoL / EoS Snapshot](#eol--eos-snapshot)
 - [Evidence-State Discipline](#evidence-state-discipline)
+- [Wireless Security Posture Across the Fleet](#wireless-security-posture-across-the-fleet)
 - [Where the Live Data Lives](#where-the-live-data-lives)
 
 ---
@@ -34,6 +35,20 @@ Five families, 17 models catalogued as of 2026-09-17 (source: `cambium-swap/inve
 Full detail and dates: `cambium-swap/inventory/device-family-matrix.csv` `eol_status` column. Headline: ePMP 1000 (all variants) and several E-series/Force-180 SKUs are already past End of Support;
 XV2/ePMP-3000-family/Force-300/cnWave models are current or have years of support runway.
 
+### Vendor status after the administration (read 2026-09-24, `VERIFIED-DOC`)
+
+Source: Cambium company statement "Sep 23 2026 Update" (`https://www.cambiumnetworks.com/wp-content/uploads/Cambium-Networks-Company-Statement-Sep-23-2026-Update.pdf`; copy in
+`apn/ntg/evidence/archived-docs/research/cambium/`).
+
+- Cambium Networks Limited (UK entity) has been in administration since 14 Sep 2026 (RSM UK). The 16 Sep statement says production of Wi-Fi APs, NSE devices, and cnMatrix switches has stopped.
+- **22 Sep 2026: sold to Airspan** — PMP 450, PTP 670 / 450i / 700, 28 and 60 GHz cnWave, cnReach, and cnMaestro/LINKPlanner/cnHeat *as they relate to those products*.
+- **Not in the Airspan sale:** ePMP / Force, Enterprise Wi-Fi (XV2, E-series), and cnMatrix switches. The administrators are seeking buyers for the remaining units.
+- **cnMaestro Cloud support extended "through at least October 2026"**, covering the whole enterprise portfolio. This supersedes the earlier "at least through 1 October" wording (cambium-swap evidence
+  E131). The stated aim is a buyer for cnMaestro or a path to on-premises.
+
+Consequence for APN's own fleet: cnWave backhaul now has a named buyer; ePMP/Force and the Enterprise Wi-Fi APs do not. Treat new XV2/E-series or cnMatrix purchases as spares-only until a buyer is
+announced. `cambium-swap` owns the continuity analysis and should log this statement as new evidence.
+
 ## Evidence-State Discipline
 
 Borrowed from `cambium-swap`'s own convention — apply it in this pack too. Tag any non-trivial claim:
@@ -53,13 +68,13 @@ site asset registers, not `VERIFIED-OBSERVED`. See `05_known-issues.md`.
 
 Derived from the 2026-09-20 36-site sweep — 98 service records and 207 client records across the enterprise Wi-Fi family — and confirmed as intent by the operator on 2026-09-21.
 
-| Field | Every value observed fleet-wide |
-| --- | --- |
-| `security` (service) | `open`, `wpa2-psk` |
-| `key_management` (client) | `NONE`, `PSK` |
-| `encryption` (client) | *(empty)*, `WPA2` |
-| `cipher` (client) | *(empty)*, `CCMP` |
-| `mode` (client) | `bgn`, `ac`, `axa` |
+| Field                     | Every value observed fleet-wide |
+| ------------------------- | ------------------------------- |
+| `security` (service)      | `open`, `wpa2-psk`              |
+| `key_management` (client) | `NONE`, `PSK`                   |
+| `encryption` (client)     | *(empty)*, `WPA2`               |
+| `cipher` (client)         | *(empty)*, `CCMP`               |
+| `mode` (client)           | `bgn`, `ac`, `axa`              |
 
 **The open SSIDs are deliberate.** This is public community Wi-Fi and open is the operator's intent, not a misconfiguration or a drift finding. Do not raise it as a defect, and do not "fix" it in a
 template or a config push.
