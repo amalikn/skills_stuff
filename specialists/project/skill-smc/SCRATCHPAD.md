@@ -42,6 +42,11 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 
 ## Current state
 
+**2026-09-24 (12:25) `KEEP` — v0.1.54: TP-Link site switches and the SMC neighbour table.** New `references/16_tplink-site-switches.md` and `scripts/tplink-switch.sh` +
+`tplink_cli_driver.py` (kalumburu switches reached; read-only default, fping discovery on `bridge_500` only, redacted `--backup`). `13_known-issues.md` records `gc_thresh` 1/512/1024 on the SMCs
+and mornington's 2,230 `table_fulls`, with a 16384/4096/1024 proposal (not applied). Commits `d5566c2`, `8db6d56` not pushed. Two pre-existing governance failures remain (SKILL.md
+`smc_collect.py` path, `08_ansible-authoring.md:526` split path).
+
 **Phase:** Stable — v0.1.34. skill-ai-it refresh completed 2026-09-08 (CHANGELOG 20260908_1955): `scripts/check_governance.py` adopted for the first time and now gates on this pack's own stated
 reference-routing and version-discipline rules; `AI_NAVIGATION.md` declared project-managed to protect its 13-file routing table from generic overwrite; `AGENTS.md` navigation block upgraded.
 `validate_navigation_control_layer.py` reports a clean PASS. Prior: Backdoor SSH Access documented 2026-09-08 (CHANGELOG 20260908_1330): new section in `03_communication-flows.md`, plus a terminology
@@ -75,6 +80,9 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 ---
 
 ## Open items
+
+- [ ] **2026-09-24 `KEEP`:** push `d5566c2` + `8db6d56`; fleet read-only `table_fulls` survey (offered); find the `gc_thresh1` = 1 setter; live-test the enable-password, already-privileged,
+  `--shell` and `--write` paths of `tplink-switch.sh` when a suitable switch appears; fix the two pre-existing governance failures.
 
 - [ ] Install v0.1.15 to `~/.claude/skills/skill-smc/` — run steps in `exports/claude_code/project/skill-smc/install.md` (now also copies `scripts/` and documents tsh-ssh-only access)
 - [x] ~~Investigate root cause of the `clamav-freshclam` CDN-block~~ — resolved 2026-08-03: **ClamAV 0.103.x reached end-of-life for database updates on 2025-09-14; the CDN now hard-blocks any 0.103.x
@@ -245,6 +253,9 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 ---
 
 ## Session history (summaries)
+
+- **2026-09-24 (10:44–12:25) — TP-Link switches + neighbour table** (from unified-network-controller). Switch access worked out and scripted; neighbour-table overflow found on mornington;
+  gc_thresh1 attribution corrected in v0.1.54. Detail: memory-keeper channel `unc`, keys `unc.tplink-*`, `unc.neighbour-table.20260924`. `KEEP`
 
 ### 2026-09-17 — Other OS alternatives assessed for Raspberry Pi SMCs (v0.1.42 -> v0.1.43)
 
@@ -480,6 +491,9 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 ---
 
 ## Memory pointers (navigation only)
+
+- 2026-09-24 12:25: memory-keeper `unc` keys `unc.tplink-switch-access.20260924`, `unc.tplink-tooling.20260924`, `unc.neighbour-table.20260924`, `unc.errors.20260924-tplink`; project-context
+  `0bf38158` note; checkpoint `slurp-20260924-tplink-switches-neigh-table` (`98c3a99e`). `KEEP`
 
 - memory-keeper channel: `skill-smc` / keys added 2026-09-08 (skill-ai-it refresh slurp): `skill-smc.decision.skill-ai-it-refresh-mode-correction-20260908`,
   `skill-smc.decision.ai-navigation-declared-manual-20260908`, `skill-smc.note.check-governance-adopted-and-tuning-20260908`, `skill-smc.progress.v0134-refresh-20260908`,
