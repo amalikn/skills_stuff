@@ -73,9 +73,9 @@ The driver also answers an in-CLI `User:`/`Username:` prompt, in case a firmware
 
 ## Discovery: why ARP is not enough
 
-The SMC's ARP table cannot be used as the host list. `net.ipv4.neigh.default.gc_thresh1` is **1** on the SMCs checked (kalumburu, mornington;
-kernel 5.15, upstream default 128, and no sysctl file, `/etc`, `/usr/local`, `/opt` or ansible-wifi setting found to explain it), so the garbage collector may purge any unused
-entry once `gc_stale_time` (60 s) passes; the switches rarely talk to the SMC and vanish between runs. `--discover` therefore runs `fping -a` over the management subnet only (routes on `bridge_500` or in `10.255.x`) and probes each
+The SMC's ARP table cannot be used as the host list. Once a table holds more than `gc_thresh1` entries, the kernel purges any entry unused for
+`gc_stale_time` (60 s); the SMCs hold 169-795 entries, above both their `gc_thresh1` of 1 and the kernel default of 128, and the switches rarely talk to the SMC, so they vanish between runs
+(`13_known-issues.md`, neighbour table 2026-09-24). `--discover` therefore runs `fping -a` over the management subnet only (routes on `bridge_500` or in `10.255.x`) and probes each
 live host's SSH banner for `TPSSH` (about 30 s at kalumburu's /19).
 
 **Never sweep the client bridges.** A first version swept every connected `10.x` route, which included `bridge_501`, a /18 of public Wi-Fi clients: it pinged customer devices, took 4.5 minutes, and

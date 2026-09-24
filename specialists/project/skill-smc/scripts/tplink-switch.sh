@@ -82,8 +82,8 @@ probe() {
 }
 export -f probe
 # Management subnet only (bridge_500 / 10.255.x). Never sweep the client bridges: bridge_501 is a /18 of
-# public Wi-Fi clients. ARP alone is not a usable host list: gc_thresh1 is 1 on the SMCs, so idle switches
-# are purged after gc_stale_time (60 s). fping -a gives the live hosts.
+# public Wi-Fi clients. ARP alone is not a usable host list: the tables sit above gc_thresh1, so entries
+# unused for gc_stale_time (60 s) are purged and idle switches vanish. fping -a gives the live hosts.
 MGMT=$(ip -4 route show scope link | awk '$3 == "bridge_500" || $1 ~ /^10\.255\./ {print $1}' | sort -u)
 if command -v fping >/dev/null; then
   for net in $MGMT; do fping -a -q -r 0 -t 300 -i 2 -g "$net" 2>/dev/null; done

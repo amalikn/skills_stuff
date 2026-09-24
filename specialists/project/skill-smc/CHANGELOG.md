@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260924_1222 — Neighbour table: mornington has refused 2,230 allocations at the 1024 cap; `gc_thresh1` = 1 corrected as not the cause of ARP loss (v0.1.53 -> v0.1.54)](#20260924_1222--neighbour-table-mornington-has-refused-2230-allocations-at-the-1024-cap-gc_thresh1--1-corrected-as-not-the-cause-of-arp-loss-v0153---v0154)
 - [20260924_1205 — TP-Link site switches reached behind the SMC; `tplink-switch.sh` access, discovery and redacted config capture (v0.1.52 -> v0.1.53)](#20260924_1205--tp-link-site-switches-reached-behind-the-smc-tplink-switchsh-access-discovery-and-redacted-config-capture-v0152---v0153)
 - [20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)](#20260922_1750--overlayroot-is-rpi-and-wh-only-x86-tmpfs-paths-differ-per-box-fping-on-three-x86-smcs-v0151---v0152)
 - [20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)](#20260921_2242--low-touch-provisioning-the-redis-backed-script-is-the-fleets-version-from-ansible-wifis-big_push-branch-not-master-v0150---v0151)
@@ -66,6 +67,13 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260924_1222 — Neighbour table: mornington has refused 2,230 allocations at the 1024 cap; `gc_thresh1` = 1 corrected as not the cause of ARP loss (v0.1.53 -> v0.1.54)
+
+`ip -s ntable show name arp_cache` (read-only): mornington-smc01, 48 weeks up at 795 entries, shows `forced_gc_runs` 5,666,597 and `table_fulls` 2,230, so it has hit the 1024 hard cap and dropped
+packets; kalumburu-smc01 shows 145 and 0. `13_known-issues.md`'s neighbour-table section now carries the counters, what each threshold does to customer traffic, monitoring and the SMC, why whole-subnet
+sweeps make it worse, and the proposal reordered (`gc_thresh3` is the fix, `gc_thresh1` a nice-to-have) with a fleet `table_fulls` survey as the first rollout step. Correction to v0.1.53: the
+`gc_thresh1` of 1 is not why quiet devices leave ARP; both tables exceed the kernel default of 128 too. `16_tplink-site-switches.md` and `scripts/tplink-switch.sh` say so now.
 
 ## 20260924_1205 — TP-Link site switches reached behind the SMC; `tplink-switch.sh` access, discovery and redacted config capture (v0.1.52 -> v0.1.53)
 

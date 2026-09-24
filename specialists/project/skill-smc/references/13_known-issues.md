@@ -19,7 +19,7 @@
 - [2026-08-18 — plaintext secrets in `group_vars`, and a copied Graylog config that shared them](#2026-08-18--plaintext-secrets-in-group_vars-and-a-copied-graylog-config-that-shared-them)
 - [2026-09-08 — upstream keepalived VIP config bug: `lb_algo rr` silently ignores the lweb03 drain intent (`202.171.100.138`)](#2026-09-08--upstream-keepalived-vip-config-bug-lb_algo-rr-silently-ignores-the-lweb03-drain-intent-202171100138)
 - [2026-09-11 — portal-FQDN regression: two separate incidents, one still live on 2 sites](#2026-09-11--portal-fqdn-regression-two-separate-incidents-one-still-live-on-2-sites)
-- [2026-09-24 — neighbour table: `gc_thresh1` is 1 and the hard cap 1024; proposed standard (PROPOSAL, not applied)](#2026-09-24--neighbour-table-gc_thresh1-is-1-and-the-hard-cap-1024-proposed-standard-proposal-not-applied)
+- [2026-09-24 — neighbour table: mornington hits the 1024 hard cap (2,230 table-fulls); proposed `gc_thresh` standard (PROPOSAL, not applied)](#2026-09-24--neighbour-table-mornington-hits-the-1024-hard-cap-2230-table-fulls-proposed-gc_thresh-standard-proposal-not-applied)
 
 ---
 
@@ -891,28 +891,43 @@ ran) inside the bad window keeps serving the broken redirect indefinitely afterw
 **Process lesson:** the `nbn_wh` fix landing inside an unrelated commit (headline: blocklist-feed transport, not portal FQDN) is exactly the kind of change where a targeted write-back audit misses
 things — `git show --stat` on every commit that touches a shared vars file, not just commits whose headline names the file, should be part of any future sweep for this class of regression.
 
-## 2026-09-24 — neighbour table: `gc_thresh1` is 1 and the hard cap 1024; proposed standard (PROPOSAL, not applied)
+## 2026-09-24 — neighbour table: mornington hits the 1024 hard cap (2,230 table-fulls); proposed `gc_thresh` standard (PROPOSAL, not applied)
 
-**Found** (read-only, kalumburu-smc01 and mornington-smc01, kernel 5.15.0-84; hope-vale-smc01 was offline in Teleport and is unchecked):
+**Found** (read-only, 2026-09-24, kernel 5.15.0-84; hope-vale-smc01 was offline in Teleport and is unchecked). Counters are cumulative since boot, from `ip -s ntable show name arp_cache`:
 
-| Box | `gc_thresh1/2/3` | Neighbour entries | `bridge_500` (mgmt) | `bridge_501` (clients) | Overflow messages, 30 days |
-| --- | --- | --- | --- | --- | --- |
-| kalumburu-smc01 | 1 / 512 / 1024 | 171 | 123 | 42 | 0 |
-| mornington-smc01 | 1 / 512 / 1024 | 757 | 501 | 246 | 0 |
+| Box | Uptime | `gc_thresh1/2/3` | Entries | `bridge_500` / `bridge_501` | `forced_gc_runs` | `table_fulls` | `res_failed` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| kalumburu-smc01 | 9 weeks | 1 / 512 / 1024 | 169-171 | 123 / 42 | 145 | 0 | 2.9 M |
+| mornington-smc01 | 48 weeks | 1 / 512 / 1024 | 757-795 | 501 / 246 | 5,666,597 | **2,230** | 50 M |
 
-The upstream kernel default for `gc_thresh1` is 128 (`net/ipv4/arp.c` and `Documentation/networking/ip-sysctl.rst` at v5.15, VERIFIED_PRIMARY). Nothing in `sysctl.conf`, `/etc/sysctl.d`,
-`/usr/lib/sysctl.d`, `/run/sysctl.d`, `/etc`, `/usr/local`, `/opt` or ansible-wifi sets it, so the source of the 1 is UNVERIFIED: a runtime setter or an Ubuntu kernel difference. Consequences: any unused
-entry may be purged once `gc_stale_time` (60 s) passes, which is why quiet devices such as the TP-Link switches drop out of ARP (`16_tplink-site-switches.md`); and mornington already sits above
-`gc_thresh2`, at 74 % of the 1024 hard cap. At the cap the kernel cannot resolve new neighbours and customer traffic fails. Whole-subnet sweeps (unified-network-controller's reachability pre-check and
-`discover_site.py`, `tplink-switch.sh --discover`) cover the management /19, up to 8,190 addresses, on top of a client /18 of up to 16,382.
+`table_fulls` counts allocations the kernel refused because a forced collection could not bring the table under `gc_thresh3`: each is a packet to a neighbour with no entry that was dropped. When
+mornington's 2,230 happened is unknown; `journalctl -k` for the last 30 days holds no `neighbor table overflow!` line on either box, so they are older or the journal keeps less.
+
+**What each threshold does here** (kernel semantics from `Documentation/networking/ip-sysctl.rst` v5.15, VERIFIED_PRIMARY):
+
+- `gc_thresh1` (minimum kept; SMCs run **1**, kernel default 128, `net/ipv4/arp.c`): below it nothing is purged; above it the periodic collector removes entries unused for `gc_stale_time` (60 s).
+  Both boxes hold far more than 128 entries, so the default would behave the same: the 1 is **not** why quiet devices such as the TP-Link switches leave ARP (`16_tplink-site-switches.md`). It
+  only matters on a small site under 128 entries, where an idle device costs one extra ARP broadcast and a few milliseconds on its next first packet. Nothing is dropped. The source of the 1 is
+  UNVERIFIED: no `sysctl.conf`, `/etc/sysctl.d`, `/usr/lib/sysctl.d`, `/run/sysctl.d`, `/etc`, `/usr/local`, `/opt` or ansible-wifi setting found.
+- `gc_thresh2` (512): above it every new entry may force a collection that evicts anything not refreshed in the last 5 s. Mornington lives here (a forced run about every 7 s on average over 48 weeks):
+  busy flows keep their entries, idle devices are re-resolved more often, and each re-resolution is a broadcast, over the air on `bridge_501`. CPU and memory cost on the SMC is negligible (392 bytes
+  an entry).
+- `gc_thresh3` (1024, hard cap): when a forced collection cannot free room, the new entry is refused and the packet dropped. Customer effect: return traffic to a client whose entry has lapsed fails
+  (stalled sessions, portal and login retries). Monitoring effect: SNMP and ping from the SMC to an AP, SM or switch fail, so healthy devices read as down (false alarms, wrong `unreachable` labels in
+  the collector). WAN `/30` gateways are low risk: a busy gateway entry is refreshed constantly.
+
+**Sweeps make it worse.** A whole-subnet sweep of the management /19 (unified-network-controller's reachability pre-check and `discover_site.py`, `tplink-switch.sh --discover`), up to 8,190
+addresses, creates thousands of unresolved entries in seconds. On a box already near 800 that crosses 1024: the sweep can starve customer traffic and report live hosts as dead. Never sweep the
+client /18 on `bridge_501`.
 
 **Proposed standard** (operator asked for a recommendation only, 2026-09-24; nothing changed):
 
 | Setting | Proposed | Reason |
 | --- | --- | --- |
-| `net.ipv4.neigh.default.gc_thresh1` | 1024 | Nothing is purged below this: covers the largest management network seen (about 500 at mornington) plus normal client load. Stale entries are harmless, NUD re-validates before use |
-| `net.ipv4.neigh.default.gc_thresh2` | 4096 | Aggressive purging (entries older than 5 s) starts only during sweeps or client surges |
-| `net.ipv4.neigh.default.gc_thresh3` | 16384 | Hard cap above a full management sweep plus a busy client bridge; about 16k entries is a few MB, fine on x86 and RPi |
+| `net.ipv4.neigh.default.gc_thresh3` | 16384 | The fix for the drops: hard cap above a full management sweep plus a busy client bridge; about 16k entries is about 6 MB |
+| `net.ipv4.neigh.default.gc_thresh2` | 4096 | Forced collection only during sweeps or client surges, not all day as on mornington now |
+| `net.ipv4.neigh.default.gc_thresh1` | 1024 | Nice to have: management devices stay cached instead of being evicted after 60 s idle; stale entries are harmless, NUD re-validates before use |
 
-Same values for `net.ipv6.neigh.default.*` where IPv6 runs on the bridges; `gc_stale_time` 60 and `base_reachable_time_ms` 30000 unchanged. Before rollout: find what sets `gc_thresh1` to 1 so an
-ansible-managed `/etc/sysctl.d/` file is not overridden, then canary on mornington-smc01, the busiest box.
+Same values for `net.ipv6.neigh.default.*` where IPv6 runs on the bridges; `gc_stale_time` 60 and `base_reachable_time_ms` 30000 unchanged. Before rollout: a read-only `table_fulls` survey across the
+fleet to find the other overflowing sites; find what sets `gc_thresh1` to 1 so an ansible-managed `/etc/sysctl.d/` file is not overridden; canary on mornington-smc01 and watch `table_fulls` stop
+growing.
