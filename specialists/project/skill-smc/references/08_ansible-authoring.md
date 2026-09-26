@@ -13,6 +13,7 @@
 - [`smc_squid`'s blocklist refresh: how it actually works, and the transport nobody checked (2026-09-01)](#smc_squids-blocklist-refresh-how-it-actually-works-and-the-transport-nobody-checked-2026-09-01)
 - [Two silent-failure gotchas found in `smc_system`/`smc_update_kernel` (2026-09-01/03)](#two-silent-failure-gotchas-found-in-smc_systemsmc_update_kernel-2026-09-0103)
 - [`smc_dhcpd` on branch `unc-virtual-smc-malik-rcp01`: debounced restart hook and a start limit (2026-09-27)](#smc_dhcpd-on-branch-unc-virtual-smc-malik-rcp01-debounced-restart-hook-and-a-start-limit-2026-09-27)
+- [What a low-touch SMC keeps per device, and where it comes from (read 2026-09-27, branch `unc-virtual-smc-malik-rcp01`)](#what-a-low-touch-smc-keeps-per-device-and-where-it-comes-from-read-2026-09-27-branch-unc-virtual-smc-malik-rcp01)
 
 - Operational learning capture
 - Task key order (`when:` last, `tags:` after it) — and why ansible-lint disagrees
@@ -1842,3 +1843,27 @@ and a simultaneous three-bridge bounce each cost 1 restart with the unit active 
 the two tasks alone on the stage box needs the topology variables by hand (`-e @` a JSON of `topology_dhcp_scopes` and `topology_interfaces` from `inventories/rcp/topology_vars/.malik.yml`), because a
 play outside the repo does not get the vars plugin's injection; and a full `smc_dhcpd` run there would regenerate `dhcpd.conf` without the Step 4 device-seen `execute()` line until Q10's template
 variable lands in `dhcpd.conf.j2`. Failure mode and proof: `06_failure-modes.md`, "A full `netplan apply` leaves isc-dhcp-server in systemd's start limit".
+
+## What a low-touch SMC keeps per device, and where it comes from (read 2026-09-27, branch `unc-virtual-smc-malik-rcp01`)
+
+The per-device records an `rcp` low-touch box holds are projections of two sources, the extension arithmetic and cnMaestro's device variables; none is hand-kept on the box.
+
+- **`/usr/local/share/<SITE>-extensions.csv`** (`roles/smc_generate_extensions`, template `extensions.csv.j2`): columns `extension,password,mgmt_ip,public_ip[,did]`, generated from
+  `extension_start`/`extension_count` (and `did_range`): `mgmt_ip = 10.255.<ext//1000 + 10>.<ext % 1000>`, `public_ip = 10.0.<same>.<same>`, `password = x<ext>x`, extension numbers rolling over at 200
+  per thousand block. A premises unit's management and public addresses follow from its extension number alone.
+- **`/var/lib/tftpboot/<extension>.cfg`** (`roles/smc_router_provisioning`): one flat nvram `key=value` file per extension from `r195_template.cfg.j2` (`r195_tjuntjun_template.cfg.j2` for `TJUN`), fed
+  by `item.extension/mgmt_ip/public_ip/password` plus site vars (`HostName=<SITE>-R195P-<ext>`, `mwan_ipaddr`, SIP account and password, `SNMPTrapCommunity`, TR-069 ACS credentials in clear). The
+  directory is emptied and regenerated on every run and served by `tftpd-hpa`. How a unit learns its file name is `UNVERIFIED`: nothing in `smc_dhcpd` sets option 66.
+- **No DHCP reservations.** `/etc/dhcp/dhcpd.conf` carries no `host`/`fixed-address` entries; a device's static `mgmt_ip` is pushed by cnMaestro as a template variable at onboarding.
+- **DNS A records for devices** live in `/etc/bind/db.cambium-rpz`, rebuilt by `cnmaestro-provisioning.py` `_update_dns()` (lines 2407 to 2431 on `big_push`): copy `db.rpz.template`, append `<name> IN
+  A <mgmt_ip>` and `<name>-public IN A <public_ip>` for every MAC in the cnMaestro snapshot plus the device being provisioned, move into place, `systemctl reload named`. The zone is therefore a
+  projection of cnMaestro's `name`, `mgmt_ip` and `public_ip` variables and stops being maintained without cnMaestro. `named` forwards everything else to 8.8.8.8 and 8.8.4.4 (`named.conf.options`);
+  `bridge_501` clients are handed the gateway address as DNS, which is this `named`; management and provisioning scopes hand out 8.8.8.8 directly where their topology `name_servers` say so (operator,
+  2026-09-27).
+- **Redis**: the script's counter for cnMaestro location IDs; per-MAC locks under `/var/local/cnmaestro-provisioning/`; `dhcpd.leases` persists the hook's `clhw/clip/clvci/clrid`.
+- **`/etc/hosts`**: only the Teleport FQDN (`smc_dns_mgmt`).
+
+For a source of truth outside cnMaestro (unified-network-controller): the address is the Nautobot `IPAddress` (management as `primary_ip4`, public on the WAN interface, both in the site Namespace),
+the A-record name is `IPAddress.dns_name`, the extension and DID are Device fields, secrets stay in OpenBao; `extensions.csv`, the TFTP files and `db.cambium-rpz` then become renders. Recorded there
+as a proposal, not a decision.
+

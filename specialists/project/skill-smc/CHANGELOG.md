@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_0322 — what a low-touch SMC keeps per device: extensions CSV, TFTP configs, the cnMaestro-fed RPZ zone, no DHCP reservations (v0.1.63 -> v0.1.64)](#20260927_0322--what-a-low-touch-smc-keeps-per-device-extensions-csv-tftp-configs-the-cnmaestro-fed-rpz-zone-no-dhcp-reservations-v0163---v0164)
 - [20260927_0308 — smc_dhcpd: debounced hook and StartLimit adopted on the rehearsal branch; the vars-plugin and dhcpd.conf.j2 cautions recorded (v0.1.62 -> v0.1.63)](#20260927_0308--smc_dhcpd-debounced-hook-and-startlimit-adopted-on-the-rehearsal-branch-the-vars-plugin-and-dhcpdconfj2-cautions-recorded-v0162---v0163)
 - [20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator) (v0.1.61 -> v0.1.62)](#20260927_0258--apn-cnmaestro01-hostname-corrected-to-apn-cnmaestro01apnau-operator-v0161---v0162)
 - [20260927_0252 — dhcpd start-limit: both fixes proved on the virtual SMC; the issue is filed in local-knowledge-ansible (v0.1.60 -> v0.1.61)](#20260927_0252--dhcpd-start-limit-both-fixes-proved-on-the-virtual-smc-the-issue-is-filed-in-local-knowledge-ansible-v0160---v0161)
@@ -76,6 +77,13 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260927_0322 — what a low-touch SMC keeps per device: extensions CSV, TFTP configs, the cnMaestro-fed RPZ zone, no DHCP reservations (v0.1.63 -> v0.1.64)
+
+`references/08_ansible-authoring.md`: new section answering "what does the SMC maintain for low-touch device provisioning" from the roles on the rehearsal branch: the extension arithmetic behind
+`<SITE>-extensions.csv` (`mgmt_ip`/`public_ip` from the extension number), the per-extension R195P files on TFTP, the absence of DHCP reservations (static `mgmt_ip` comes from cnMaestro template
+variables), and `db.cambium-rpz` rebuilt by the provisioning script's `_update_dns()` from cnMaestro's `name`/`mgmt_ip`/`public_ip` variables. Operator correction folded in: 8.8.8.8/8.8.4.4 are the
+box's forwarders; user clients get the gateway as DNS. Asked by the operator for the Nautobot SSOT design; the mapping is recorded as a proposal in unified-network-controller.
 
 ## 20260927_0308 — smc_dhcpd: debounced hook and StartLimit adopted on the rehearsal branch; the vars-plugin and dhcpd.conf.j2 cautions recorded (v0.1.62 -> v0.1.63)
 
