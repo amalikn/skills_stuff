@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_0252 — dhcpd start-limit: both fixes proved on the virtual SMC; the issue is filed in local-knowledge-ansible (v0.1.60 -> v0.1.61)](#20260927_0252--dhcpd-start-limit-both-fixes-proved-on-the-virtual-smc-the-issue-is-filed-in-local-knowledge-ansible-v0160---v0161)
 - [20260927_0230 — netplan apply vs the dhcpd restart hook: isc-dhcp-server start-limit-hit recorded, reload surface named (v0.1.59 -> v0.1.60)](#20260927_0230--netplan-apply-vs-the-dhcpd-restart-hook-isc-dhcp-server-start-limit-hit-recorded-reload-surface-named-v0159---v0160)
 - [20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)](#20260926_2121--orbstack-virtual-smc-malik-rcp01-container-style-host-adaptations-recorded-working-cache-venvs-absent-v0158---v0159)
 - [20260926_1815 — Low-touch hook verified live on umoona-smc01; leases persist the hook variables; all devices on apn-cnmaestro01 (v0.1.57 -> v0.1.58)](#20260926_1815--low-touch-hook-verified-live-on-umoona-smc01-leases-persist-the-hook-variables-all-devices-on-apn-cnmaestro01-v0157---v0158)
@@ -73,6 +74,13 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260927_0252 — dhcpd start-limit: both fixes proved on the virtual SMC; the issue is filed in local-knowledge-ansible (v0.1.60 -> v0.1.61)
+
+`references/06_failure-modes.md`: the 2026-09-27 section now carries the proof — on `malik-rcp01` a `StartLimitIntervalSec=60`/`StartLimitBurst=20` drop-in kept `isc-dhcp-server` active through a full
+`netplan apply` (6 restarts) and a three-bridge bounce (3 restarts); a debounced hook (`systemd-run --on-active=5`, re-armed per event) did the same with 1 restart each. The issue with the hook's
+source, the unit file and the options lives in local-knowledge-ansible issues/rcp-fleet/rcp-dhcpd-start-limit-on-link-flap-20260927_0238.md (commit `8a43a95`, proof section added the same night). No
+playbook changed; physical hardware still `UNVERIFIED`.
 
 ## 20260927_0230 — netplan apply vs the dhcpd restart hook: isc-dhcp-server start-limit-hit recorded, reload surface named (v0.1.59 -> v0.1.60)
 

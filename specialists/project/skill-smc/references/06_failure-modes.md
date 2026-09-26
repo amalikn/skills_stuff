@@ -437,4 +437,8 @@ is not a rollback (unified-network-controller `wc-local/scripts/smc_intent.py`, 
 
 Same hook, same risk anywhere many links become routable together: a reboot with many VLANs, an `ansible-playbook` run whose `networkctl reload` touches many links at once, a cable event on the trunk
 port. Worth checking on a production box after any of those: `systemctl is-active isc-dhcp-server`. The hook's own guard (`systemctl status` before `restart`) does not stop the storm; a
-`StartLimitIntervalSec`/`StartLimitBurst` override on the unit, or a debounce in the hook, would. `UNVERIFIED` on a physical SMC: the count of links that flap under a real reload there.
+`StartLimitIntervalSec`/`StartLimitBurst` override on the unit, or a debounce in the hook, would. **Proved on the virtual SMC 2026-09-27 02:48 to 02:51:** a drop-in with `StartLimitIntervalSec=60` and
+`StartLimitBurst=20` kept the unit active through a full `netplan apply` (6 restarts) and a simultaneous bounce of the three bridges (3 restarts); a debounced hook (`systemd-run --on-active=5 --unit
+unc-dhcpd-debounce --collect systemctl restart isc-dhcp-server`, re-armed per event) kept it active with 1 restart in each case. The drop-in survives the storm, the debounce removes it; both together
+cover a handler restart landing inside a burst. Recorded, with the box restored, in local-knowledge-ansible issues/rcp-fleet/rcp-dhcpd-start-limit-on-link-flap-20260927_0238.md. `UNVERIFIED` on a
+physical SMC: the count of links that flap under a real reload there.
