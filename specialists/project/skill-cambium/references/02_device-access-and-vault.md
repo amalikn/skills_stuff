@@ -52,8 +52,8 @@ to tell which specific serials from the asset registers or family matrix alone �
 
 ### What a rejected password looks like, per family (verified live 2026-09-22)
 
-Read with a deliberately wrong password through each adapter (one attempt per unit, dry run). A tool deciding "credential rejected, try `-legacy`" must match every one of these, because they
-share no common word:
+Read with a deliberately wrong password through each adapter (one attempt per unit, dry run). A tool deciding "credential rejected, try `-legacy`" must match every one of these, because they share no
+common word:
 
 | Family                     | Unit tested                 | Response to a wrong password                                                      |
 | -------------------------- | --------------------------- | --------------------------------------------------------------------------------- |
@@ -64,8 +64,8 @@ share no common word:
 | cnPilot R195P (SSH)        | `MOW-R195P-1003`            | sshpass 1.10 exit **5** ("Invalid/incorrect password"), stderr `Permission denied, please try again.` |
 
 Enterprise Wi-Fi's 403 surfaces as `HTTP 403` from `_request()`, before `login()` checks `success`, so matching only "login failed" misses it. That is how unified-network-controller's collector
-skipped the `-legacy` retry for every E500/XV2 until 2026-09-22 (the kalumburu case in `05_known-issues.md`). For R195P, `get_snapshot()` tolerates non-zero exits, so before 2026-09-22 a wrong password
-came back as `snapshot incomplete, sections missing`. `cambium_r195p_adapter.py` now raises `SSH login failed: password rejected (sshpass exit 5)`.
+skipped the `-legacy` retry for every E500/XV2 until 2026-09-22 (the kalumburu case in `05_known-issues.md`). For R195P, `get_snapshot()` tolerates non-zero exits, so before 2026-09-22 a wrong
+password came back as `snapshot incomplete, sections missing`. `cambium_r195p_adapter.py` now raises `SSH login failed: password rejected (sshpass exit 5)`.
 
 ## `kp` Wrapper Gotchas
 
@@ -136,16 +136,15 @@ Verified live against `GAL_XV2_AP32_IP3_32` (`10.255.3.32`, Galiwinku) with `<se
 
 ## cnMaestro REST API v2 Access (2026-09-18)
 
-**API lifetime across the estate (USER_STATED, operator, 2026-09-21) — read before building on this API.** The API below depends on the cnMaestro **X** edition. cw-cnmaestro01
-and lt-cnmaestro are X today but will not be for much longer; cnMaestro Cloud has no API and is being retired; the new on-prem `apn-cnmaestro01.apn.au` (AWS, deployed to
-migrate devices off Cloud) has no API because X is not available after 2026-10-01. Treat controller-side automation as web scraping in the medium term; device-local
-REST/SNMP (see `06_device-api-cli-reference.md`) does not depend on any cnMaestro edition. apn-cnmaestro01's web login is `<secret:keepassxc:cambium-devices/apn-cnmaestro01 web login>`.
-The per-instance record is cambium-swap `inventory/cnmaestro-instances.yaml`.
+**API lifetime across the estate (USER_STATED, operator, 2026-09-21) — read before building on this API.** The API below depends on the cnMaestro **X** edition. cw-cnmaestro01 and lt-cnmaestro are X
+today but will not be for much longer; cnMaestro Cloud has no API and is being retired; the new on-prem `apn-cnmaestro01.apn.au` (AWS, deployed to migrate devices off Cloud) has no API because X is
+not available after 2026-10-01. Treat controller-side automation as web scraping in the medium term; device-local REST/SNMP (see `06_device-api-cli-reference.md`) does not depend on any cnMaestro
+edition. apn-cnmaestro01's web login is `<secret:keepassxc:cambium-devices/apn-cnmaestro01 web login>`. The per-instance record is cambium-swap `inventory/cnmaestro-instances.yaml`.
 
-**Estate as of 2026-09-26 (`USER_STATED`, operator):** every apn and nbn device is now managed by on-prem `apn-cnmaestro01` (the Cloud migration is done for both programs). The
-hostname the operator gave for it, `apn-cnmaestro01.apn.net.au`, did not resolve in public DNS when checked the same day, so automation keeps the URL it had until the name is verified.
-The low-touch `rcp` sites still serve Option 43 `https://3.105.84.178` (lt-cnmaestro) to Cambium DHCP clients, unchanged for every family while the controller's device-seen path runs
-beside the cnMaestro one (operator decision Q9, 2026-09-26; see `01_overview.md` "DHCP Vendor Class").
+**Estate as of 2026-09-26 (`USER_STATED`, operator):** every apn and nbn device is now managed by on-prem `apn-cnmaestro01` (the Cloud migration is done for both programs). Its hostname is
+`apn-cnmaestro01.apn.au` (operator, corrected 2026-09-27 from a `.apn.net.au` transcription; resolves to 52.64.230.196, `VERIFIED_PRIMARY` by `dig` that day). The low-touch `rcp` sites still serve
+Option 43 `https://3.105.84.178` (lt-cnmaestro) to Cambium DHCP clients, unchanged for every family while the controller's device-seen path runs beside the cnMaestro one (operator decision Q9,
+2026-09-26; see `01_overview.md` "DHCP Vendor Class").
 
 Confirmed live against the `cw-cnmaestro01` on-prem controller for the `nbn_accelerate` fleet — host resolves publicly to `13.237.46.180` (reachable directly, no Teleport tunnel needed for the API
 itself), instance version `3.0.0-r34` (operator-confirmed), though the API v2 shape matches the archived `cnmaestro-onprem-6.0.0` user guide exactly.

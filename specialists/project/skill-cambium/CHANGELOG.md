@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator); it resolves (v0.6.11 -> v0.6.12)](#20260927_0258--apn-cnmaestro01-hostname-corrected-to-apn-cnmaestro01apnau-operator-it-resolves-v0611---v0612)
 - [20260926_2320 — monitoring counter surface: the "not wired yet" sentence corrected (wired 2026-09-22, guarded 2026-09-26)](#20260926_2320--monitoring-counter-surface-the-not-wired-yet-sentence-corrected-wired-2026-09-22-guarded-2026-09-26)
 - [20260926_2126 — DHCP vendor class (Option 60) per family recorded: what the low-touch hook can and cannot tell from a lease](#20260926_2126--dhcp-vendor-class-option-60-per-family-recorded-what-the-low-touch-hook-can-and-cannot-tell-from-a-lease)
 - [20260924_1552 — R-series interfaces contracted by role; the `interfaces` check stops failing on every live unit](#20260924_1552--r-series-interfaces-contracted-by-role-the-interfaces-check-stops-failing-on-every-live-unit)
@@ -59,6 +60,12 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator); it resolves (v0.6.11 -> v0.6.12)
+
+`references/02_device-access-and-vault.md`: the on-prem cnMaestro's hostname was recorded on 2026-09-26 as `apn-cnmaestro01.apn.net.au` and marked as not resolving. The operator corrected it on
+2026-09-27: `apn-cnmaestro01.apn.au`, which resolves (52.64.230.196 that day). `USER_STATED` hostname, `VERIFIED_PRIMARY` resolution by `dig`. unified-network-controller's catalog already carried the
+`.apn.au` URL; its description note is corrected the same night.
 
 ## 20260926_2320 — monitoring counter surface: the "not wired yet" sentence corrected (wired 2026-09-22, guarded 2026-09-26)
 
@@ -211,13 +218,15 @@ Ported from `unified-network-controller`'s staleness audit of the same evening (
 defects there.
 
 **`SURFACES` was a hand-list of seven files.** `PLAN-xv2-adapter-live-test.md` and anything added later sat outside every path check. It is now derived from the tree — root `*.md` plus
-`scripts/README.md`. `references/**` stays excluded, and the reason is stated in the code rather than left as an omission: those files use slash notation for KeePassXC vault groups
-(the KeePassXC entry cambium-devices/epmp-ap), CIDR blocks and sibling-repo paths, and a path check over them reports about fifty non-defects, which is a check nobody reads. Bringing them in needs a token <!--
+`scripts/README.md`. `references/**` stays excluded, and the reason is stated in the code rather than left as an omission: those files use slash notation for KeePassXC vault groups (the KeePassXC
+entry cambium-devices/epmp-ap), CIDR blocks and sibling-repo paths, and a path check over them reports about fifty non-defects, which is a check nobody reads. Bringing them in needs a token <!--
 path:example --> discriminator, not a longer exemption list.
 
-**Three references pointed at a path that no longer exists anywhere.** `PLAN-xv2-adapter-live-test.md` cited `cambium-swap`'s [option-3-architecture.md](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/controller-option3/option-3-architecture.md) (moved there from cambium-swap's docs/migration/controller-option3/ on the 2026-09-18 split) and <!--
-path:example --> `cambium-vendor-adapter-data-points.md`. Those files moved to `unified-network-controller/docs/controller-option3/` in the 2026-09-18 split, so both the root and the path changed and
-every citation <!-- path:example --> here silently sent the reader nowhere. Repointed.
+**Three references pointed at a path that no longer exists anywhere.** `PLAN-xv2-adapter-live-test.md` cited `cambium-swap`'s
+[option-3-architecture.md](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/controller-option3/option-3-architecture.md) (moved there from cambium-swap's
+docs/migration/controller-option3/ on the 2026-09-18 split) and <!-- path:example --> `cambium-vendor-adapter-data-points.md`. Those files moved to
+`unified-network-controller/docs/controller-option3/` in the 2026-09-18 split, so both the root and the path changed and every citation <!-- path:example --> here silently sent the reader nowhere.
+Repointed.
 
 **`SIBLING_ROOTS` added.** A reference into `cambium-swap`, `unified-network-controller` or `skill-smc` now resolves against a declared root, which makes it *verified* rather than merely unchecked —
 if a sibling renames the target, this package's routing into it fails loudly. An absent root prints SKIPPED, never passed. Bare basenames are deliberately NOT resolved this way, so

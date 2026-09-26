@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator) (v0.1.61 -> v0.1.62)](#20260927_0258--apn-cnmaestro01-hostname-corrected-to-apn-cnmaestro01apnau-operator-v0161---v0162)
 - [20260927_0252 — dhcpd start-limit: both fixes proved on the virtual SMC; the issue is filed in local-knowledge-ansible (v0.1.60 -> v0.1.61)](#20260927_0252--dhcpd-start-limit-both-fixes-proved-on-the-virtual-smc-the-issue-is-filed-in-local-knowledge-ansible-v0160---v0161)
 - [20260927_0230 — netplan apply vs the dhcpd restart hook: isc-dhcp-server start-limit-hit recorded, reload surface named (v0.1.59 -> v0.1.60)](#20260927_0230--netplan-apply-vs-the-dhcpd-restart-hook-isc-dhcp-server-start-limit-hit-recorded-reload-surface-named-v0159---v0160)
 - [20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)](#20260926_2121--orbstack-virtual-smc-malik-rcp01-container-style-host-adaptations-recorded-working-cache-venvs-absent-v0158---v0159)
@@ -74,6 +75,11 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator) (v0.1.61 -> v0.1.62)
+
+`references/08_ansible-authoring.md`: the on-prem cnMaestro hostname read `apn-cnmaestro01.apn.net.au` (2026-09-26 write-back); the operator corrected it to `apn-cnmaestro01.apn.au` on 2026-09-27, and
+it resolves (52.64.230.196). One-word fix; `USER_STATED`.
 
 ## 20260927_0252 — dhcpd start-limit: both fixes proved on the virtual SMC; the issue is filed in local-knowledge-ansible (v0.1.60 -> v0.1.61)
 

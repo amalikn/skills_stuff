@@ -194,21 +194,21 @@ the letters is not — do not guess/state one as fact without an operator confir
 ---
 
 **Verified on umoona-smc01, read-only, 2026-09-26 (unified-network-controller supplement Step 4 baseline).** The `on commit` block in the live `/etc/dhcp/dhcpd.conf` is byte-for-byte the
-`dhcpd.conf.j2` block on `master`, and `git diff master origin/big_push -- roles/smc_dhcpd/templates/dhcpd.conf.j2` is empty: the hook did not change between the branches, only the script did
-(the box runs the 4,509-line `big_push` build, `redis-server` active; `big_push` also adds `python3-redis`, `redis-server` and a WiFi Dashboard access-key call to the role). The provisioning
-shared-network is `192.168.11.0/24` (ranges .3-.99 and .101-.254, 20-second leases for Cambium vendor classes); Option 43 still serves `https://3.105.84.178` (lt-cnmaestro). `dhcpd.leases`
-persists the hook's `set` variables per lease (`clhw`, `clip`, `clvci`, plus `vendor-class-identifier`): 1,338 lease blocks, 811 with a vendor class, so the leases file is itself a durable record of
-every device the hook saw. `/var/local/cnmaestro-provisioning/` holds one `log.<MAC>` per device (19, dated the April 2026 install) and the account lock `umoona.default.lock`. Aurukun's
-`aurukun-smc02` and `aurukun-smc03` are registered Teleport nodes (nbn cluster) but not Nautobot Devices. Operator, 2026-09-26 (USER_STATED): every apn and nbn device is now managed by on-prem
-`apn-cnmaestro01` (Teleport node `apn-cnmaestro01`, env=prod site=aws); the given hostname `apn-cnmaestro01.apn.net.au` did not resolve in public DNS that day. Capture:
-unified-network-controller `captures/dhcp-hook-umoona-smc01-20260926_1722.txt`.
+`dhcpd.conf.j2` block on `master`, and `git diff master origin/big_push -- roles/smc_dhcpd/templates/dhcpd.conf.j2` is empty: the hook did not change between the branches, only the script did (the box
+runs the 4,509-line `big_push` build, `redis-server` active; `big_push` also adds `python3-redis`, `redis-server` and a WiFi Dashboard access-key call to the role). The provisioning shared-network is
+`192.168.11.0/24` (ranges .3-.99 and .101-.254, 20-second leases for Cambium vendor classes); Option 43 still serves `https://3.105.84.178` (lt-cnmaestro). `dhcpd.leases` persists the hook's `set`
+variables per lease (`clhw`, `clip`, `clvci`, plus `vendor-class-identifier`): 1,338 lease blocks, 811 with a vendor class, so the leases file is itself a durable record of every device the hook saw.
+`/var/local/cnmaestro-provisioning/` holds one `log.<MAC>` per device (19, dated the April 2026 install) and the account lock `umoona.default.lock`. Aurukun's `aurukun-smc02` and `aurukun-smc03` are
+registered Teleport nodes (nbn cluster) but not Nautobot Devices. Operator, 2026-09-26 (USER_STATED): every apn and nbn device is now managed by on-prem `apn-cnmaestro01` (Teleport node
+`apn-cnmaestro01`, env=prod site=aws); its hostname is `apn-cnmaestro01.apn.au` (operator, corrected 2026-09-27; resolves to 52.64.230.196). Capture: unified-network-controller
+`captures/dhcp-hook-umoona-smc01-20260926_1722.txt`.
 
 **The controller's proposed second line on the same hook (unified-network-controller supplement Step 4, 2026-09-26; not applied to any production box).** One added
-`execute("/usr/local/lib/unc-device-seen/hook", clhw, clip, clvci, clrid);` after the cnMaestro line, gated by a template variable (`unc_device_seen_enabled`) and installed by a new role;
-Option 43 unchanged (operator decision Q9). The hook spools one JSON event per plug-in under `/var/local/unc-device-seen/` and the controller pulls it over the SSH path it already has.
-Rehearsed on the stage box `malik-rcp01` (an OrbStack machine placed in a stage-only `[malik_smc_ltp]` group so this block renders; `11_vagrant-lab.md` §12.6): on the real dhcpd 4.4.1
-both `execute()` lines ran, the pull over SSH created Staged records, and a 30-minute WAN cut with the device still leasing yielded exactly one event (2026-09-26 21:36 to 22:09). Design,
-evidence and the rollback: `unified-network-controller/docs/onboarding/device-seen-events-step4-20260926_1838.md`.
+`execute("/usr/local/lib/unc-device-seen/hook", clhw, clip, clvci, clrid);` after the cnMaestro line, gated by a template variable (`unc_device_seen_enabled`) and installed by a new role; Option 43
+unchanged (operator decision Q9). The hook spools one JSON event per plug-in under `/var/local/unc-device-seen/` and the controller pulls it over the SSH path it already has. Rehearsed on the stage
+box `malik-rcp01` (an OrbStack machine placed in a stage-only `[malik_smc_ltp]` group so this block renders; `11_vagrant-lab.md` §12.6): on the real dhcpd 4.4.1 both `execute()` lines ran, the pull
+over SSH created Staged records, and a 30-minute WAN cut with the device still leasing yielded exactly one event (2026-09-26 21:36 to 22:09). Design, evidence and the rollback:
+`unified-network-controller/docs/onboarding/device-seen-events-step4-20260926_1838.md`.
 
 ### "Low Touch" Onboarding Method and Site Deployment History (operator-confirmed 2026-08-03)
 
@@ -539,9 +539,9 @@ node_exporter's filesystem collector **excludes tmpfs by default in this fleet**
 tmpfs the *only* published fstype, dropping the real root-disk `/` metrics. Removing it from the exclude is the correct "include tmpfs" mechanism.
 
 Why this is cleanly scoped (verified live on mornington, `findmnt -t tmpfs` = 9 mounts): the **existing** `--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|run)($|/)` already drops
-`/dev/shm` and every `/run/*` tmpfs, so removing the fs-type exclusion surfaces **exactly** the four `/tmp`/`/var/...` mounts and nothing noisy (no `/dev/shm`, no `/run/*`, no PrivateTmp — those
-<!-- path:example --> aren't separate mounts in the host namespace). systemd note: **do not** add `#` comment lines inside the `\`-continued `ExecStart` block — systemd does not support comments mid-continuation and it
-breaks unit parsing (keep the rationale in this doc instead).
+`/dev/shm` and every `/run/*` tmpfs, so removing the fs-type exclusion surfaces **exactly** the four `/tmp`/`/var/...` mounts and nothing noisy (no `/dev/shm`, no `/run/*`, no PrivateTmp — those <!--
+path:example --> aren't separate mounts in the host namespace). systemd note: **do not** add `#` comment lines inside the `\`-continued `ExecStart` block — systemd does not support comments
+mid-continuation and it breaks unit parsing (keep the rationale in this doc instead).
 
 Deploy: `smc_prometheus.yml --tags node_exporter` (copies the unit, restarts node_exporter — brief scrape gap only). Verified 2026-07-23 across 15/16 nodes (new-looma offline at the time): all four
 mounts publish `node_filesystem_size_bytes{fstype="tmpfs"}` in central Prometheus; fbpos %-used reads 6–9%, matching live `findmnt`. Alert query: `100*(1 -
