@@ -12,6 +12,8 @@
 - [Code notes: where the long explanation goes, and what it can and cannot survive (2026-08-27)](#code-notes-where-the-long-explanation-goes-and-what-it-can-and-cannot-survive-2026-08-27)
 - [`smc_squid`'s blocklist refresh: how it actually works, and the transport nobody checked (2026-09-01)](#smc_squids-blocklist-refresh-how-it-actually-works-and-the-transport-nobody-checked-2026-09-01)
 - [Two silent-failure gotchas found in `smc_system`/`smc_update_kernel` (2026-09-01/03)](#two-silent-failure-gotchas-found-in-smc_systemsmc_update_kernel-2026-09-0103)
+- [`smc_dhcpd` on branch `unc-virtual-smc-malik-rcp01`: debounced restart hook and a start limit (2026-09-27)](#smc_dhcpd-on-branch-unc-virtual-smc-malik-rcp01-debounced-restart-hook-and-a-start-limit-2026-09-27)
+
 - Operational learning capture
 - Task key order (`when:` last, `tags:` after it) — and why ansible-lint disagrees
 - Code notes: RULE-006 split, note provenance, and what survives a branch switch
@@ -1831,3 +1833,12 @@ undefined, which Ansible treats as truthy-failed, so the task is marked failed r
 `roles/smc_update_kernel`: fifteen consecutive successful reboots were each disbelieved and reissued. **Fix: delete the `failed_when` wrapper entirely and rely on `reboot`'s own built-in
 success/timeout detection** — match the working pattern already used by the `smc_rise_common` handler's `reboot` task (same module, same options, no `failed_when`). General lesson: never write
 `failed_when` against a field a plugin doesn't populate — check the module's actual return-value docs, not the convention used by `command`/`shell` tasks.
+
+## `smc_dhcpd` on branch `unc-virtual-smc-malik-rcp01`: debounced restart hook and a start limit (2026-09-27)
+
+The role's `templates/00-isc-dhcp-server-restart.sh` re-arms one transient unit (`systemd-run --on-active=5 --unit isc-dhcp-server-debounce --collect systemctl restart isc-dhcp-server`) instead of
+restarting dhcpd on every routable event, and `files/isc-dhcp-server.service` carries `StartLimitIntervalSec=60` and `StartLimitBurst=20`. Proved on the stage box `malik-rcp01`: a full `netplan apply`
+and a simultaneous three-bridge bounce each cost 1 restart with the unit active (as shipped: `failed`, `start-limit-hit`). On the branch only, not on `master`; the operator decides the push. Applying
+the two tasks alone on the stage box needs the topology variables by hand (`-e @` a JSON of `topology_dhcp_scopes` and `topology_interfaces` from `inventories/rcp/topology_vars/.malik.yml`), because a
+play outside the repo does not get the vars plugin's injection; and a full `smc_dhcpd` run there would regenerate `dhcpd.conf` without the Step 4 device-seen `execute()` line until Q10's template
+variable lands in `dhcpd.conf.j2`. Failure mode and proof: `06_failure-modes.md`, "A full `netplan apply` leaves isc-dhcp-server in systemd's start limit".

@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_0308 — smc_dhcpd: debounced hook and StartLimit adopted on the rehearsal branch; the vars-plugin and dhcpd.conf.j2 cautions recorded (v0.1.62 -> v0.1.63)](#20260927_0308--smc_dhcpd-debounced-hook-and-startlimit-adopted-on-the-rehearsal-branch-the-vars-plugin-and-dhcpdconfj2-cautions-recorded-v0162---v0163)
 - [20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator) (v0.1.61 -> v0.1.62)](#20260927_0258--apn-cnmaestro01-hostname-corrected-to-apn-cnmaestro01apnau-operator-v0161---v0162)
 - [20260927_0252 — dhcpd start-limit: both fixes proved on the virtual SMC; the issue is filed in local-knowledge-ansible (v0.1.60 -> v0.1.61)](#20260927_0252--dhcpd-start-limit-both-fixes-proved-on-the-virtual-smc-the-issue-is-filed-in-local-knowledge-ansible-v0160---v0161)
 - [20260927_0230 — netplan apply vs the dhcpd restart hook: isc-dhcp-server start-limit-hit recorded, reload surface named (v0.1.59 -> v0.1.60)](#20260927_0230--netplan-apply-vs-the-dhcpd-restart-hook-isc-dhcp-server-start-limit-hit-recorded-reload-surface-named-v0159---v0160)
@@ -75,6 +76,13 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260927_0308 — smc_dhcpd: debounced hook and StartLimit adopted on the rehearsal branch; the vars-plugin and dhcpd.conf.j2 cautions recorded (v0.1.62 -> v0.1.63)
+
+`references/08_ansible-authoring.md`: new section on the `smc_dhcpd` change committed on ansible-wifi branch `unc-virtual-smc-malik-rcp01` (operator's yes, 2026-09-27): the dispatcher hook debounced
+through one re-armed transient unit, `StartLimitIntervalSec=60`/`StartLimitBurst=20` in the role's unit file; 1 restart under a full apply and a bridge bounce on the stage box. Two cautions learnt
+applying it: a play outside the repo gets no topology variables from the vars plugin (pass them with `-e @`), and a full `smc_dhcpd` run on the stage box would drop the Step 4 device-seen `execute()`
+line from `dhcpd.conf` until Q10's template variable exists in `dhcpd.conf.j2`.
 
 ## 20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator) (v0.1.61 -> v0.1.62)
 
