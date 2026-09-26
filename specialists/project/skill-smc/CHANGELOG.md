@@ -2,8 +2,9 @@
 
 ## Contents
 
-- [20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)](#20260926_2121-orbstack-virtual-smc-malik-rcp01-container-style-host-adaptations-recorded-working-cache-venvs-absent-v0158--v0159)
-- [20260926_1815 — Low-touch hook verified live on umoona-smc01; leases persist the hook variables; all devices on apn-cnmaestro01 (v0.1.57 -> v0.1.58)](#202609261815-low-touch-hook-verified-live-on-umoona-smc01-leases-persist-the-hook-variables-all-devices-on-apn-cnmaestro01-v0157---v0158)
+- [20260927_0230 — netplan apply vs the dhcpd restart hook: isc-dhcp-server start-limit-hit recorded, reload surface named (v0.1.59 -> v0.1.60)](#20260927_0230--netplan-apply-vs-the-dhcpd-restart-hook-isc-dhcp-server-start-limit-hit-recorded-reload-surface-named-v0159---v0160)
+- [20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)](#20260926_2121--orbstack-virtual-smc-malik-rcp01-container-style-host-adaptations-recorded-working-cache-venvs-absent-v0158---v0159)
+- [20260926_1815 — Low-touch hook verified live on umoona-smc01; leases persist the hook variables; all devices on apn-cnmaestro01 (v0.1.57 -> v0.1.58)](#20260926_1815--low-touch-hook-verified-live-on-umoona-smc01-leases-persist-the-hook-variables-all-devices-on-apn-cnmaestro01-v0157---v0158)
 - [20260924_1957 — SMC physical port order and usual cabling recorded (v0.1.56 -> v0.1.57)](#20260924_1957--smc-physical-port-order-and-usual-cabling-recorded-v0156---v0157)
 - [20260924_1945 — x86 VLAN interface layout recorded with its Nautobot mirror; `ip -j` read confirmed (v0.1.55 -> v0.1.56)](#20260924_1945--x86-vlan-interface-layout-recorded-with-its-nautobot-mirror-ip--j-read-confirmed-v0155---v0156)
 - [20260924_1522 — `ifPhysAddress` verified on all three snmpd canaries; the identity anchor is now confirmed over SNMP every collector cycle (v0.1.54 -> v0.1.55)](#20260924_1522--ifphysaddress-verified-on-all-three-snmpd-canaries-the-identity-anchor-is-now-confirmed-over-snmp-every-collector-cycle-v0154---v0155)
@@ -73,30 +74,37 @@
 
 ---
 
+## 20260927_0230 — netplan apply vs the dhcpd restart hook: isc-dhcp-server start-limit-hit recorded, reload surface named (v0.1.59 -> v0.1.60)
+
+`references/06_failure-modes.md`: new section on the `smc_dhcpd` role's networkd-dispatcher `routable.d` hook restarting `isc-dhcp-server` for every link that becomes routable, so a full `netplan
+apply` (twelve links bouncing at once on `malik-rcp01`) drives the unit into systemd's `start-limit-hit` even on an unchanged config; the reload surface the role's own handler uses (`netplan generate`
+then `networkctl reload`) touches only changed links, and a reset-failed plus restart of the bridge-bound services belongs after any apply or rollback. Found 2026-09-27 during
+unified-network-controller's Step 7 rehearsal (its `wc-local/scripts/smc_intent.py`), on the virtual SMC only; the physical-box link count under a real reload is marked `UNVERIFIED`. No change to any
+playbook.
+
 ## 20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)
 
 From the unified-network-controller supplement Step 4 rehearsal (2026-09-26 evening).
 
-- `references/11_vagrant-lab.md` §12.6 (new): the stage host `malik-rcp01` is an OrbStack amd64 Ubuntu 22.04 machine (`lxc`), not a Vagrant VM. Every real-box assumption
-  `smc_bases.yml` made false there and its one adaptation, all behind the stage host var `smc_bases_container: true`: no bootloader (GRUB block skipped), the management NIC is also
-  the WAN (`use-routes: true`), networkd's DUID moved the DHCP lease (`dhcp-identifier: mac`), `/etc/cloud` absent (already ignored), and the `on commit` block only for `smc_ltp`
-  (stage-only `[malik_smc_ltp]` group; never `smc_ltp.yml` against it, a logging stand-in replaces the cnMaestro script). Also: `setsid` is not on macOS; `ntp`'s postinst takes a
-  minute in the container; package retries hide a failure for an hour.
-- `SKILL.md` Runtime Environments: both working-cache venvs the section named are absent on this Mac (verified); Homebrew `ansible-playbook` core 2.21.4, `ansible-lint` and
-  `yamllint` are what run ansible-wifi until a venv is created.
-- `references/06_failure-modes.md` (new subsection) and `references/01_overview.md`: an expired `tsh` certificate makes every device look failed (94 of 156 critical on 2026-09-25,
-  17,309 `cert has expired` lines, no alarm); `aurukun-smc01` refusing SSH on 2026-09-22/23 read as a site failure while smc02 and smc03 were fine. Check `tsh status` per cluster first;
-  the multi-SMC fallback recorded as `USER_STATED` on 2026-09-21 is now implemented in the controller's pushes.
-- `references/08_ansible-authoring.md`: the controller's proposed second `execute()` line on the low-touch hook (gated, Option 43 unchanged per Q9), where the spool lives, and the
-  stage rehearsal pointer.
+- `references/11_vagrant-lab.md` §12.6 (new): the stage host `malik-rcp01` is an OrbStack amd64 Ubuntu 22.04 machine (`lxc`), not a Vagrant VM. Every real-box assumption `smc_bases.yml` made false
+  there and its one adaptation, all behind the stage host var `smc_bases_container: true`: no bootloader (GRUB block skipped), the management NIC is also the WAN (`use-routes: true`), networkd's DUID
+  moved the DHCP lease (`dhcp-identifier: mac`), `/etc/cloud` absent (already ignored), and the `on commit` block only for `smc_ltp` (stage-only `[malik_smc_ltp]` group; never `smc_ltp.yml` against
+  it, a logging stand-in replaces the cnMaestro script). Also: `setsid` is not on macOS; `ntp`'s postinst takes a minute in the container; package retries hide a failure for an hour.
+- `SKILL.md` Runtime Environments: both working-cache venvs the section named are absent on this Mac (verified); Homebrew `ansible-playbook` core 2.21.4, `ansible-lint` and `yamllint` are what run
+  ansible-wifi until a venv is created.
+- `references/06_failure-modes.md` (new subsection) and `references/01_overview.md`: an expired `tsh` certificate makes every device look failed (94 of 156 critical on 2026-09-25, 17,309 `cert has
+  expired` lines, no alarm); `aurukun-smc01` refusing SSH on 2026-09-22/23 read as a site failure while smc02 and smc03 were fine. Check `tsh status` per cluster first; the multi-SMC fallback recorded
+  as `USER_STATED` on 2026-09-21 is now implemented in the controller's pushes.
+- `references/08_ansible-authoring.md`: the controller's proposed second `execute()` line on the low-touch hook (gated, Option 43 unchanged per Q9), where the spool lives, and the stage rehearsal
+  pointer.
 
 ## 20260926_1815 — Low-touch hook verified live on umoona-smc01; leases persist the hook variables; all devices on apn-cnmaestro01 (v0.1.57 -> v0.1.58)
 
 `references/08_ansible-authoring.md`: read-only verification on umoona-smc01 for the unified-network-controller's Step 4 baseline. The live `on commit` block equals the `master` template and
 `big_push` does not change it (only the script: the box runs the 4,509-line build with redis-server active); provisioning shared-network `192.168.11.0/24`, 20-second Cambium leases, Option 43 still
-`https://3.105.84.178`; `dhcpd.leases` persists `clhw`, `clip`, `clvci` per lease (811 Cambium blocks of 1,338); one `log.<MAC>` per device under `/var/local/cnmaestro-provisioning/`. Aurukun's
-smc02 and smc03 are Teleport nodes but not Nautobot Devices. Operator statement, 2026-09-26: every apn and nbn device is managed by on-prem `apn-cnmaestro01` (Teleport node present; the stated
-hostname `apn-cnmaestro01.apn.net.au` did not resolve publicly). Capture kept in unified-network-controller `captures/`.
+`https://3.105.84.178`; `dhcpd.leases` persists `clhw`, `clip`, `clvci` per lease (811 Cambium blocks of 1,338); one `log.<MAC>` per device under `/var/local/cnmaestro-provisioning/`. Aurukun's smc02
+and smc03 are Teleport nodes but not Nautobot Devices. Operator statement, 2026-09-26: every apn and nbn device is managed by on-prem `apn-cnmaestro01` (Teleport node present; the stated hostname
+`apn-cnmaestro01.apn.net.au` did not resolve publicly). Capture kept in unified-network-controller `captures/`.
 
 ## 20260924_1957 — SMC physical port order and usual cabling recorded (v0.1.56 -> v0.1.57)
 
@@ -115,8 +123,9 @@ from and applies, with rollback; the box read is the retrofit.
 `references/snmp-oid-registry.yaml`: `.1.3.6.1.2.1.2.2.1.6` ifPhysAddress moves from `not_yet_read` to the verified set, walked on kalumburu-smc01, mornington-smc01 (apn) and hope-vale-smc01 (nbn).
 The physical `enp*` ports report their burned-in MACs, equal to what Nautobot holds; the lowest (the identity anchor) is `enp1s0` on all three. Consumer: unified-network-controller
 `wc-local/scripts/smc_collect.py`, now run by the 20-minute collector cycle, which reports anchor drift and never writes it. Also recorded: `sysUpTime` is the snmpd agent's uptime, not the host's (0
-days on all three, snmpd installed today), so the SMC uptime OpenWISP shows is agent uptime; `hrSystemUptime` is added to `not_yet_read`. Two governance failures that predated this entry are fixed: `SKILL.md` now names the consumer by its full path under the
-`apn-projects` sibling root, and the example marker in `references/08_ansible-authoring.md` is back on the line it exempts (a rewrap had moved it down one).
+days on all three, snmpd installed today), so the SMC uptime OpenWISP shows is agent uptime; `hrSystemUptime` is added to `not_yet_read`. Two governance failures that predated this entry are fixed:
+`SKILL.md` now names the consumer by its full path under the `apn-projects` sibling root, and the example marker in `references/08_ansible-authoring.md` is back on the line it exempts (a rewrap had
+moved it down one).
 
 ## 20260924_1222 — Neighbour table: mornington has refused 2,230 allocations at the 1024 cap; `gc_thresh1` = 1 corrected as not the cause of ARP loss (v0.1.53 -> v0.1.54)
 

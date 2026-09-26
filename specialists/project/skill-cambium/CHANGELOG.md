@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260926_2320 — monitoring counter surface: the "not wired yet" sentence corrected (wired 2026-09-22, guarded 2026-09-26)](#20260926_2320--monitoring-counter-surface-the-not-wired-yet-sentence-corrected-wired-2026-09-22-guarded-2026-09-26)
 - [20260926_2126 — DHCP vendor class (Option 60) per family recorded: what the low-touch hook can and cannot tell from a lease](#20260926_2126--dhcp-vendor-class-option-60-per-family-recorded-what-the-low-touch-hook-can-and-cannot-tell-from-a-lease)
 - [20260924_1552 — R-series interfaces contracted by role; the `interfaces` check stops failing on every live unit](#20260924_1552--r-series-interfaces-contracted-by-role-the-interfaces-check-stops-failing-on-every-live-unit)
 - [20260922_1957](#20260922_1957)
@@ -59,15 +60,22 @@
 
 ---
 
+## 20260926_2320 — monitoring counter surface: the "not wired yet" sentence corrected (wired 2026-09-22, guarded 2026-09-26)
+
+v0.6.10 -> v0.6.11. `references/06_device-api-cli-reference.md`, "Monitoring Counter and Resource Surfaces": the closing sentence still said nothing was wired into an adapter, citing the consuming
+project's probe entry `20260921_2008`. unified-network-controller wired the ePMP `device_props` kbit counters and `sysCPUUsage`, the R195P `/proc` reads and the cnWave `getNetworkStats` counters into
+its adapters on 2026-09-22 (its CHANGELOG `20260922_0941`; canaries 6 of 6 stored per family) and on 2026-09-26 added a contract test that fails any adapter change that stops producing a metric.
+Sentence replaced; the kbit 1000-vs-1024 `UNVERIFIED` note stands. Found by that project's autonomous queue pass on 2026-09-26, not by a device read: no device fact changed.
+
 ## 20260926_2126 — DHCP vendor class (Option 60) per family recorded: what the low-touch hook can and cannot tell from a lease
 
-v0.6.9 -> v0.6.10. Written back from unified-network-controller supplement Step 4 (device-seen events on the SMC's DHCP hook), 2026-09-26. `references/01_overview.md` gains
-"DHCP Vendor Class (Option 60) per Family": the strings a factory-default unit sends (`Cambium-cnPilot R195P`, `Cambium-WiFi-AP`, `Cambium`), which family each maps to, whether the model
-is named (only the R-series names it; Enterprise Wi-Fi and ePMP are `UNKNOWN` types until read), how the SMC answers (Option 43 cnMaestro URL, 20-second lease) and what the hook receives.
-Source: umoona-smc01's dhcpd files read-only and the cnMaestro script's dispatch; exercised in the controller's dhcp-lab with the SMC's dhcpd version. cnWave is not on the hook.
-Also from today's controller work: `references/02_device-access-and-vault.md` records that every apn and nbn device is now on on-prem `apn-cnmaestro01` (operator, 2026-09-26; its
-`.apn.net.au` hostname did not resolve publicly) and Q9 (Option 43 unchanged for all families); `references/05_known-issues.md` gains the classified failure signatures over the SMC path
-(mowanjum: 152 off, 16 TLS EOF, 14 SSH 255, 5 vault timeouts, 4 handshake timeouts, 1 ePMP lockout) with the rule to rule out the `tsh` certificate before reading device errors.
+v0.6.9 -> v0.6.10. Written back from unified-network-controller supplement Step 4 (device-seen events on the SMC's DHCP hook), 2026-09-26. `references/01_overview.md` gains "DHCP Vendor Class (Option
+60) per Family": the strings a factory-default unit sends (`Cambium-cnPilot R195P`, `Cambium-WiFi-AP`, `Cambium`), which family each maps to, whether the model is named (only the R-series names it;
+Enterprise Wi-Fi and ePMP are `UNKNOWN` types until read), how the SMC answers (Option 43 cnMaestro URL, 20-second lease) and what the hook receives. Source: umoona-smc01's dhcpd files read-only and
+the cnMaestro script's dispatch; exercised in the controller's dhcp-lab with the SMC's dhcpd version. cnWave is not on the hook. Also from today's controller work:
+`references/02_device-access-and-vault.md` records that every apn and nbn device is now on on-prem `apn-cnmaestro01` (operator, 2026-09-26; its `.apn.net.au` hostname did not resolve publicly) and Q9
+(Option 43 unchanged for all families); `references/05_known-issues.md` gains the classified failure signatures over the SMC path (mowanjum: 152 off, 16 TLS EOF, 14 SSH 255, 5 vault timeouts, 4
+handshake timeouts, 1 ePMP lockout) with the rule to rule out the `tsh` certificate before reading device errors.
 
 ## 20260924_1552 — R-series interfaces contracted by role; the `interfaces` check stops failing on every live unit
 
@@ -76,90 +84,83 @@ each role is a name pattern with count bounds and the meaning `references/06_dev
 endpoints by role (every key in exactly one role, counts within bounds, every value fitting the value schema) instead of listing every interface name as an unknown field.
 `schemas/cnpilot-r-series/interfaces.schema.json` regenerated through `merge`: the only change is `x-roles` (counters and facts regenerate identical). All 11 R195P observations conform, where all 11
 were divergent before; falsified five ways, each failing for its own reason. The other four families' `check` output is byte-identical before and after. `references/05_known-issues.md` row resolved;
-`schemas/README.md` "Map-shaped responses" describes the roles. Not done: `schemas/DIVERGENCE.md` is still computed from raw observations and lists the names as site-specific fields, and which radio interface
-is which band remains unrecorded.
+`schemas/README.md` "Map-shaped responses" describes the roles. Not done: `schemas/DIVERGENCE.md` is still computed from raw observations and lists the names as site-specific fields, and which radio
+interface is which band remains unrecorded.
 
 ## 20260922_1957
 
 v0.6.7 -> v0.6.8. `scripts/cambium_r195p_adapter.py`: sshpass exit 5 (wrong password) now raises `SSH login failed: password rejected (sshpass exit 5)` whatever `allow_nonzero` says; before,
-`get_snapshot()` swallowed it and reported `snapshot incomplete, sections missing`. Verified live on `MOW-R195P-1003` with a wrong and then the real password. `references/02_device-access-and-vault.md`:
-new table of each family's response to a wrong password, read live the same day. Enterprise Wi-Fi answers HTTP 403 "Invalid username or password", which unified-network-controller's legacy-retry
-check did not match.
+`get_snapshot()` swallowed it and reported `snapshot incomplete, sections missing`. Verified live on `MOW-R195P-1003` with a wrong and then the real password.
+`references/02_device-access-and-vault.md`: new table of each family's response to a wrong password, read live the same day. Enterprise Wi-Fi answers HTTP 403 "Invalid username or password", which
+unified-network-controller's legacy-retry check did not match.
 
-Also: new `references/snmp-oid-registry.yaml`, the verified SNMP OIDs per device type (operator, 2026-09-22), linked from `references/06_device-api-cli-reference.md` and the references index.
-Both read-write SNMP communities are proven by a test-and-revert sysLocation SET on six ePMP 3000L units at three sites, both clusters. The vault table no longer calls them untested.
+Also: new `references/snmp-oid-registry.yaml`, the verified SNMP OIDs per device type (operator, 2026-09-22), linked from `references/06_device-api-cli-reference.md` and the references index. Both
+read-write SNMP communities are proven by a test-and-revert sysLocation SET on six ePMP 3000L units at three sites, both clusters. The vault table no longer calls them untested.
 
 ## 20260922_0941
 
 From the unified-network-controller ePMP and cnWave canaries (18 devices), all read live:
 
-- `scripts/cambium_epmp_adapter.py` gains `get_snapshot()`: one `act=status` read builds facts, interfaces, wireless_link,
-  clients and `counters` (LAN and wireless kbit and error counters, `sysCPUUsage`); each getter had re-read it. `get_facts()`
-  adds `ipv4_address` (`cambiumEffectiveDeviceIPAddress`) and `lan_mac_address`; the LAN MAC is the one the asset register and
-  Nautobot hold, and `mac_address` stays the wireless MAC (LAN + 1).
-- `scripts/cambium_cnwave_adapter.py` gains `get_snapshot()`: facts, e2e_info, topology (E2E controller nodes only) and
-  per-port `counters.net_dev` from one `getNetworkStats` call over `nic1`-`nic3`. The 2026-09-21 "counters read 0" was the
-  unused `nic1`; `nic2` carries the traffic (HRN_T1_V5000_DN_IP4_10). No cnWave CPU or memory source found.
-- `scripts/cambium_r195p_adapter.py`: `get_snapshot()` restores the required `wan_mac_address` (first `wan*` port without a
-  VLAN suffix; the name varies by unit), and `_run()` retries once when sshpass misses the prompt (`ssh_askpass`, exit 255).
-- Standards re-merged for epmp-ap, epmp-sm, cnpilot-r-series and cnwave-60ghz; each gains a counters schema (for example `schemas/epmp-ap/counters.schema.json`).
-  `schemas/DIVERGENCE.md` regenerated (134 observations, 5 families). R195P `interfaces` stays divergent because it is keyed
-  by interface name, which `schema_tool` models as fields: recorded in references/05_known-issues.md. Tjuntjuntjara R195Ps
-  add VLANs `eth2.4` and `eth2.550` (the community's PTAC requirement, operator).
+- `scripts/cambium_epmp_adapter.py` gains `get_snapshot()`: one `act=status` read builds facts, interfaces, wireless_link, clients and `counters` (LAN and wireless kbit and error counters,
+  `sysCPUUsage`); each getter had re-read it. `get_facts()` adds `ipv4_address` (`cambiumEffectiveDeviceIPAddress`) and `lan_mac_address`; the LAN MAC is the one the asset register and Nautobot hold,
+  and `mac_address` stays the wireless MAC (LAN + 1).
+- `scripts/cambium_cnwave_adapter.py` gains `get_snapshot()`: facts, e2e_info, topology (E2E controller nodes only) and per-port `counters.net_dev` from one `getNetworkStats` call over `nic1`-`nic3`.
+  The 2026-09-21 "counters read 0" was the unused `nic1`; `nic2` carries the traffic (HRN_T1_V5000_DN_IP4_10). No cnWave CPU or memory source found.
+- `scripts/cambium_r195p_adapter.py`: `get_snapshot()` restores the required `wan_mac_address` (first `wan*` port without a VLAN suffix; the name varies by unit), and `_run()` retries once when
+  sshpass misses the prompt (`ssh_askpass`, exit 255).
+- Standards re-merged for epmp-ap, epmp-sm, cnpilot-r-series and cnwave-60ghz; each gains a counters schema (for example `schemas/epmp-ap/counters.schema.json`). `schemas/DIVERGENCE.md` regenerated
+  (134 observations, 5 families). R195P `interfaces` stays divergent because it is keyed by interface name, which `schema_tool` models as fields: recorded in references/05_known-issues.md.
+  Tjuntjuntjara R195Ps add VLANs `eth2.4` and `eth2.550` (the community's PTAC requirement, operator).
 
 ## 20260922_0754
 
 From the unified-network-controller 1 + 5 canaries (E-series, XV2, R195P; 18 devices at 7 sites), all read live:
 
-- `scripts/cambium_r195p_adapter.py` gains `get_snapshot()`: identity, interfaces and monitoring counters in ONE SSH session
-  (`;`-chained, `echo` section markers, no pipes): `/proc/uptime`, `/proc/loadavg`, the `processor` count from `/proc/cpuinfo`
-  (4 on MT7621), `/proc/meminfo` in bytes, and `/proc/net/dev` per interface. The getter path costs about seven SSH logins,
-  which this dropbear throttles. Verified on six units at mowanjum, horn-island and mornington.
-- Parser fix in `_parse_ip_addr()` (was inline in `get_interfaces()`): the flag pattern lacked `_`, so any flag list with
-  `LOWER_UP` never matched and `is_up` was only ever set on down interfaces. Now `<([A-Z_,]+)>`.
-- Enterprise Wi-Fi standard re-merged with `schemas/_observations/enterprise-wifi/horn-island-XV2-2T0-7.1.1-20260922.json`,
-  the first XV2 on firmware 7.1.1-r5. It adds `connected_ip`, `device_ipv6`, `fcc_id` and `reg_info` (device-summary),
-  `stream` and `tx_bytes_unicast` (radio-summary) and `tx_bytes_unicast` (wlan-summary), all optional. No required field
-  changed. E-series firmware 4.2.3-r2 and 4.2.3.1-r9 also checked conformant.
-- `_run()` raises on ssh exit 255 (connect, auth or dropped session) even with `allow_nonzero`; before, a failed session
-  reached `get_snapshot()` as empty output and read as "sections missing" (HOR-R195P-1002).
-- `get_snapshot()` also returns `cpu_percent`: utilisation from two `/proc/stat` samples `CPU_SAMPLE_S` (2 s) apart, idle =
-  idle + iowait. The load average is no CPU measure on this router: 9.75 on 4 cores while 2.1 % busy (MOW-R195P-1002).
-- R195P MACs seen live: `br0`, `eth2.500` (management, 10.255.0.0/18) and `wan3` each have their own. The management
-  interface's MAC equals the MAC the asset register and Nautobot hold.
+- `scripts/cambium_r195p_adapter.py` gains `get_snapshot()`: identity, interfaces and monitoring counters in ONE SSH session (`;`-chained, `echo` section markers, no pipes): `/proc/uptime`,
+  `/proc/loadavg`, the `processor` count from `/proc/cpuinfo` (4 on MT7621), `/proc/meminfo` in bytes, and `/proc/net/dev` per interface. The getter path costs about seven SSH logins, which this
+  dropbear throttles. Verified on six units at mowanjum, horn-island and mornington.
+- Parser fix in `_parse_ip_addr()` (was inline in `get_interfaces()`): the flag pattern lacked `_`, so any flag list with `LOWER_UP` never matched and `is_up` was only ever set on down interfaces. Now
+  `<([A-Z_,]+)>`.
+- Enterprise Wi-Fi standard re-merged with `schemas/_observations/enterprise-wifi/horn-island-XV2-2T0-7.1.1-20260922.json`, the first XV2 on firmware 7.1.1-r5. It adds `connected_ip`, `device_ipv6`,
+  `fcc_id` and `reg_info` (device-summary), `stream` and `tx_bytes_unicast` (radio-summary) and `tx_bytes_unicast` (wlan-summary), all optional. No required field changed. E-series firmware 4.2.3-r2
+  and 4.2.3.1-r9 also checked conformant.
+- `_run()` raises on ssh exit 255 (connect, auth or dropped session) even with `allow_nonzero`; before, a failed session reached `get_snapshot()` as empty output and read as "sections missing"
+  (HOR-R195P-1002).
+- `get_snapshot()` also returns `cpu_percent`: utilisation from two `/proc/stat` samples `CPU_SAMPLE_S` (2 s) apart, idle = idle + iowait. The load average is no CPU measure on this router: 9.75 on 4
+  cores while 2.1 % busy (MOW-R195P-1002).
+- R195P MACs seen live: `br0`, `eth2.500` (management, 10.255.0.0/18) and `wan3` each have their own. The management interface's MAC equals the MAC the asset register and Nautobot hold.
 
 ## 20260922_0020
 
-Enterprise Wi-Fi standard re-merged with `schema_tool merge` after a new observation, `schemas/_observations/enterprise-wifi/mowanjum-E430H-20260922.json` — the
-first E430 in the set (model reports as `cnPilot E430H`, firmware 4.2.3.1-r17). It adds `link_duplex2`, `link_duplex3`, `link_speed2` and `link_speed3` to `device-summary` and
-the `eth3_*`, `eth4_*`, `interface_eth3_*` and `interface_eth4_*` families to `ethports-config`, now optional and attributed to E430H at mowanjum. Four mowanjum E500s checked conformant against
-the standard before the merge. Also recorded: `redact()`'s key pattern matches `authorized`, so observations must be taken from unredacted payloads (the
-schema tool records no values). Source: unified-network-controller's enterprise Wi-Fi canary, cambium-swap evidence E141.
+Enterprise Wi-Fi standard re-merged with `schema_tool merge` after a new observation, `schemas/_observations/enterprise-wifi/mowanjum-E430H-20260922.json` — the first E430 in the set (model reports as
+`cnPilot E430H`, firmware 4.2.3.1-r17). It adds `link_duplex2`, `link_duplex3`, `link_speed2` and `link_speed3` to `device-summary` and the `eth3_*`, `eth4_*`, `interface_eth3_*` and
+`interface_eth4_*` families to `ethports-config`, now optional and attributed to E430H at mowanjum. Four mowanjum E500s checked conformant against the standard before the merge. Also recorded:
+`redact()`'s key pattern matches `authorized`, so observations must be taken from unredacted payloads (the schema tool records no values). Source: unified-network-controller's enterprise Wi-Fi canary,
+cambium-swap evidence E141.
 
 ## 20260921_2015
 
-Added "Monitoring Counter and Resource Surfaces — Probed Live 2026-09-21" to
-[references/06_device-api-cli-reference.md](references/06_device-api-cli-reference.md), under this pack's write-back contract: live read-only probes from
-`unified-network-controller` found the ePMP `device_props` kbit counters and `sysCPUUsage`, R195P's `/proc` counters, load and memory (plain `cat` only, pipes
-exit 127), cnWave `getNetworkStats` reading 0 on a POP node with the KPI and radio endpoints giving rates rather than counters, and the fleet-wide absence of
-Wi-Fi mesh that makes client `wds: false` a measurement. No script changed.
+Added "Monitoring Counter and Resource Surfaces — Probed Live 2026-09-21" to [references/06_device-api-cli-reference.md](references/06_device-api-cli-reference.md), under this pack's write-back
+contract: live read-only probes from `unified-network-controller` found the ePMP `device_props` kbit counters and `sysCPUUsage`, R195P's `/proc` counters, load and memory (plain `cat` only, pipes exit
+127), cnWave `getNetworkStats` reading 0 on a POP node with the KPI and radio endpoints giving rates rather than counters, and the fleet-wide absence of Wi-Fi mesh that makes client `wds: false` a
+measurement. No script changed.
 
 ## 20260921_1541
 
 ### cnMaestro API lifetime across the estate recorded (v0.6.6 -> v0.6.7)
 
-`references/02_device-access-and-vault.md` "cnMaestro REST API v2 Access" now opens with the operator's 2026-09-21 statement: the API depends on cnMaestro X; cw-cnmaestro01
-and lt-cnmaestro lose X soon, Cloud has no API and is being retired, and the new on-prem apn-cnmaestro01 has none. Controller-side automation must plan for web scraping;
-device-local REST/SNMP is unaffected. Found while unified-network-controller modelled each cnMaestro as a Nautobot Controller.
+`references/02_device-access-and-vault.md` "cnMaestro REST API v2 Access" now opens with the operator's 2026-09-21 statement: the API depends on cnMaestro X; cw-cnmaestro01 and lt-cnmaestro lose X
+soon, Cloud has no API and is being retired, and the new on-prem apn-cnmaestro01 has none. Controller-side automation must plan for web scraping; device-local REST/SNMP is unaffected. Found while
+unified-network-controller modelled each cnMaestro as a Nautobot Controller.
 
 ## 20260921_1237
 
 ### Direct device SSH from the operator Mac via `ProxyJump`; one XV2 variant resolved (v0.6.5 -> v0.6.6)
 
-`references/02_device-access-and-vault.md` gains a section on reaching a device with OpenSSH `ProxyJump` through its SMC box instead of the nested `tsh ssh` + `sshpass` form, so the device
-credential is never materialised in a shell on the box. Verified with `<secret:keepassxc:cambium-devices/enterprise-wifi>` against `GAL_XV2_AP32_IP3_32` (`10.255.3.32`, Galiwinku): `show version`
-identified the unit as XV2-2T0, serial `WLZE1F5BWMB9`, firmware `6.6.0.3-r9` — resolving the variant `device-inventory.csv` records as unconfirmed, for this unit only. The Teleport and SSH-config
-side lives in `skill-smc`; not duplicated here.
+`references/02_device-access-and-vault.md` gains a section on reaching a device with OpenSSH `ProxyJump` through its SMC box instead of the nested `tsh ssh` + `sshpass` form, so the device credential
+is never materialised in a shell on the box. Verified with `<secret:keepassxc:cambium-devices/enterprise-wifi>` against `GAL_XV2_AP32_IP3_32` (`10.255.3.32`, Galiwinku): `show version` identified the
+unit as XV2-2T0, serial `WLZE1F5BWMB9`, firmware `6.6.0.3-r9` — resolving the variant `device-inventory.csv` records as unconfirmed, for this unit only. The Teleport and SSH-config side lives in
+`skill-smc`; not duplicated here.
 
 ## 20260921_1015
 
@@ -168,15 +169,15 @@ side lives in `skill-smc`; not duplicated here.
 Live walks from `hope-vale-smc01`, `mornington-smc01`, `horn-island-smc01` and `bidyadanga-smc01` while building the `unified-network-controller` adapter layer. Written back here per the Standing
 Write-Back Contract.
 
-**The correction worth reading first.** A first pass at hope-vale timed out on every cnWave and very nearly entered the record as "cnWave has no SNMP". Those units were simply down — no ICMP and no TCP
-on 443, 80 or 22 — while a control XV2 on the same hop answered normally. Sampling `rcp` sites reversed it completely: **cnWave speaks SNMP on `cambium 60`** (`.1.3.6.1.4.1.17713.60`), its own
+**The correction worth reading first.** A first pass at hope-vale timed out on every cnWave and very nearly entered the record as "cnWave has no SNMP". Those units were simply down — no ICMP and no
+TCP on 443, 80 or 22 — while a control XV2 on the same hop answered normally. Sampling `rcp` sites reversed it completely: **cnWave speaks SNMP on `cambium 60`** (`.1.3.6.1.4.1.17713.60`), its own
 enterprise arm, which is why walking `21` or `22` finds nothing even on a unit where SNMP works. Confirmed across two sites, three models (V1000, V3000, V5000) and both Distribution and Client roles.
 
-**Enablement splits by PROGRAMME, and the first answer was wrong.** An `rcp`-only sample said "mostly off". Closing the address gap and probing `nbn_accelerate` reversed it:
-**40 of 40 reachable nbn units answer; 5 of 19 on rcp.** Same three models, same firmware `1.4`, both node roles on both sides, so this is a provisioning difference between the programmes rather
-than a hardware or version one. Addresses were derived by ping-sweeping `10.255.4.0/24` from each SMC box and joining `ip neigh` against the inventory MAC column — 40 cnWave resolved against the 12  <!-- path:example -->
-recoverable from stale ARP. `aurukun` and `hope-vale` return zero ARP for that subnet, so their cnWave network is unreachable from the SMC box: a routing question, not an SNMP one. A cnWave timeout means
-"not enabled here", never "this family has no SNMP".
+**Enablement splits by PROGRAMME, and the first answer was wrong.** An `rcp`-only sample said "mostly off". Closing the address gap and probing `nbn_accelerate` reversed it: **40 of 40 reachable nbn
+units answer; 5 of 19 on rcp.** Same three models, same firmware `1.4`, both node roles on both sides, so this is a provisioning difference between the programmes rather than a hardware or version
+one. Addresses were derived by ping-sweeping `10.255.4.0/24` from each SMC box and joining `ip neigh` against the inventory MAC column — 40 cnWave resolved against the 12 <!-- path:example -->
+recoverable from stale ARP. `aurukun` and `hope-vale` return zero ARP for that subnet, so their cnWave network is unreachable from the SMC box: a routing question, not an SNMP one. A cnWave timeout
+means "not enabled here", never "this family has no SNMP".
 
 **Sampling limit, recorded rather than glossed.** All five responders are `rcp`. `nbn_accelerate` holds 93 of the fleet's 117 cnWave and is unsampled, because hope-vale was unreachable and the other
 five nbn cnWave sites — aurukun, doomadgee, galiwinku, kowanyama, pukatja, **86 devices** — carry no `management_ip` in the inventory at all. That address gap is now a documented inventory finding in
@@ -187,17 +188,17 @@ hope-vale (10 SMs), mornington (29) and horn-island (14). Enterprise Wi-Fi's rad
 enablement varies within a programme for Wi-Fi too — mornington `10.255.3.10` is silent.
 
 **Three SNMP mechanics documented, each having already cost a wrong reading.** A table entry OID ends in `.1` and a row is `<entry>.<column>.<index>` — using the table OID instead produced 420
-"subscriber links" for an AP with 10. A scalar is instance `.0` of its object. An empty table walks as `noSuchObject`, confirmed again when `HOP_XV2_AP26` returned that for `cambiumClientTable` **and**
-`0` for `cambiumAPTotalClients` — genuinely zero clients, not an unimplemented subtree.
+"subscriber links" for an AP with 10. A scalar is instance `.0` of its object. An empty table walks as `noSuchObject`, confirmed again when `HOP_XV2_AP26` returned that for `cambiumClientTable`
+**and** `0` for `cambiumAPTotalClients` — genuinely zero clients, not an unimplemented subtree.
 
 **Per-device survey filed** as [references/snmp-enablement-survey-20260921.csv](references/snmp-enablement-survey-20260921.csv) — 27 devices, five sites, three families, with the community tried
-recorded per row so the "wrong community or not configured?" question is answerable without re-deriving which credential was used where. **13 rows are the actionable ones: pingable but silent.**
-Three outcomes are kept distinct because they are not interchangeable — `UP`/`OK` means enabled and the community is right, `UP`/`TIMEOUT` is actionable, and `DOWN`/`TIMEOUT` carries no information
-about SNMP at all. That last distinction is the whole hope-vale lesson in one table row.
+recorded per row so the "wrong community or not configured?" question is answerable without re-deriving which credential was used where. **13 rows are the actionable ones: pingable but silent.** Three
+outcomes are kept distinct because they are not interchangeable — `UP`/`OK` means enabled and the community is right, `UP`/`TIMEOUT` is actionable, and `DOWN`/`TIMEOUT` carries no information about
+SNMP at all. That last distinction is the whole hope-vale lesson in one table row.
 
-**Schemas.** New `snmp` layer in `schemas/`, derived by the new `scripts/snmp_schema_from_walk.py` from live walks rather than from mirrors: `schemas/enterprise-wifi/snmp-radio-entry.schema.json` (18 columns),
-`schemas/epmp-ap/snmp-connected-sta.schema.json` (42 columns, 13 undocumented in the mirror, including `.43` carrying subscriber firmware), `schemas/cnwave-60ghz/snmp-link-entry.schema.json` (6 columns; `.5` and `.6` left unnamed because
-nothing here documents them).
+**Schemas.** New `snmp` layer in `schemas/`, derived by the new `scripts/snmp_schema_from_walk.py` from live walks rather than from mirrors: `schemas/enterprise-wifi/snmp-radio-entry.schema.json` (18
+columns), `schemas/epmp-ap/snmp-connected-sta.schema.json` (42 columns, 13 undocumented in the mirror, including `.43` carrying subscriber firmware), `schemas/cnwave-60ghz/snmp-link-entry.schema.json`
+(6 columns; `.5` and `.6` left unnamed because nothing here documents them).
 
 Checks **226 -> 228**.
 
@@ -206,25 +207,25 @@ Checks **226 -> 228**.
 
 ### Path checking now covers this package's root docs, and a split-filename defect class is enforced (v0.6.3 -> v0.6.4)
 
-Ported from `unified-network-controller`'s staleness audit of the same evening
-(`unified-network-controller/docs/reports/staleness-audits/staleness-audit-20260920_2324.md`), which found the same two defects there.
+Ported from `unified-network-controller`'s staleness audit of the same evening (`unified-network-controller/docs/reports/staleness-audits/staleness-audit-20260920_2324.md`), which found the same two
+defects there.
 
 **`SURFACES` was a hand-list of seven files.** `PLAN-xv2-adapter-live-test.md` and anything added later sat outside every path check. It is now derived from the tree — root `*.md` plus
 `scripts/README.md`. `references/**` stays excluded, and the reason is stated in the code rather than left as an omission: those files use slash notation for KeePassXC vault groups
-(`cambium-devices/epmp-ap`), CIDR blocks and sibling-repo paths, and a path check over them reports about fifty non-defects, which is a check nobody reads. Bringing them in needs a token  <!-- path:example -->
-discriminator, not a longer exemption list.
+(the KeePassXC entry cambium-devices/epmp-ap), CIDR blocks and sibling-repo paths, and a path check over them reports about fifty non-defects, which is a check nobody reads. Bringing them in needs a token <!--
+path:example --> discriminator, not a longer exemption list.
 
-**Three references pointed at a path that no longer exists anywhere.** `PLAN-xv2-adapter-live-test.md` cited `cambium-swap`'s `docs/migration/controller-option3/option-3-architecture.md` and  <!-- path:example -->
-`cambium-vendor-adapter-data-points.md`. Those files moved to `unified-network-controller/docs/controller-option3/` in the 2026-09-18 split, so both the root and the path changed and every citation  <!-- path:example -->
-here silently sent the reader nowhere. Repointed.
+**Three references pointed at a path that no longer exists anywhere.** `PLAN-xv2-adapter-live-test.md` cited `cambium-swap`'s [option-3-architecture.md](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/controller-option3/option-3-architecture.md) (moved there from cambium-swap's docs/migration/controller-option3/ on the 2026-09-18 split) and <!--
+path:example --> `cambium-vendor-adapter-data-points.md`. Those files moved to `unified-network-controller/docs/controller-option3/` in the 2026-09-18 split, so both the root and the path changed and
+every citation <!-- path:example --> here silently sent the reader nowhere. Repointed.
 
 **`SIBLING_ROOTS` added.** A reference into `cambium-swap`, `unified-network-controller` or `skill-smc` now resolves against a declared root, which makes it *verified* rather than merely unchecked —
 if a sibling renames the target, this package's routing into it fails loudly. An absent root prints SKIPPED, never passed. Bare basenames are deliberately NOT resolved this way, so
-`scripts/README.md`'s `site-addressing.yaml` and `teleport-tunnel.sh` were qualified to `references/site-addressing.yaml` and `skill-smc/scripts/teleport-tunnel.sh`.  <!-- path:example -->
+`scripts/README.md`'s `site-addressing.yaml` and `teleport-tunnel.sh` were qualified to `references/site-addressing.yaml` and `skill-smc/scripts/teleport-tunnel.sh`. <!-- path:example -->
 
-**`check_split_path_tokens()` added.** A wide table cell had wrapped mid-filename in three places here (`SKILL.md`, `RUNBOOK.md`, `references/02_device-access-and-vault.md`), leaving a token ending
-in a backslash with its tail on the next row — unfollowable for a reader, and invisible to the path check, which skips anything that does not look like a path. Twenty-one instances were found across
-this package and its siblings. Both new checks were negative-tested in both directions.
+**`check_split_path_tokens()` added.** A wide table cell had wrapped mid-filename in three places here (`SKILL.md`, `RUNBOOK.md`, `references/02_device-access-and-vault.md`), leaving a token ending in
+a backslash with its tail on the next row — unfollowable for a reader, and invisible to the path check, which skips anything that does not look like a path. Twenty-one instances were found across this
+package and its siblings. Both new checks were negative-tested in both directions.
 
 Checks **167 -> 225**.
 
@@ -259,8 +260,7 @@ complete records from the truncated JSON is possible but silently lossy — you 
 An earlier entry asserted that returning a map keyed by interface name is NAPALM's convention. That was argued from this pack's own XV2 `get_interfaces` docstring, which is the same repo claiming its
 own conformance — not an authoritative source. Context7 was unavailable at the time and the claim went in unverified.
 
-Now checked against NAPALM's own published documentation: `get_interfaces` does return a dict keyed by interface name, so **the
-claim stands and the correction it supported was right**.
+Now checked against NAPALM's own published documentation: `get_interfaces` does return a dict keyed by interface name, so **the claim stands and the correction it supported was right**.
 
 The check added something the local evidence could not. NAPALM defines six value fields — `is_up`, `is_enabled`, `description`, `last_flapped`, `speed`, `mac_address` — and the R-series adapter
 returns two of them plus `ipv4_addresses`, which NAPALM does not define. **"NAPALM-style" therefore describes the response shape, not conformance to the interface contract**, and code written against
@@ -271,8 +271,8 @@ NAPALM's documented fields will find four of the six absent. Recorded in `schema
 ### Changed — `ip6_ll` normalised to a list in `scripts/cambium_xv2_adapter.py`
 
 `get_clients()` now returns `ip6_ll` as a list on every record, including records where the device omits the key. The field's JSON type differs by model — array on XV2 (10 of 32 record-bearing fleet
-observations), string on E500 (6), absent where the client has no link-local (17) — and a list is the lossless target, since normalising to a string would truncate any XV2 client holding more than
-one address. The E500 shares this adapter, so one change covers both models.
+observations), string on E500 (6), absent where the client has no link-local (17) — and a list is the lossless target, since normalising to a string would truncate any XV2 client holding more than one
+address. The E500 shares this adapter, so one change covers both models.
 
 Verified against the six shapes the fleet returned (array, array containing empties, string, null, empty string, empty array), plus a record missing the key and non-dict entries, and live against an
 XV2. The value is identifying data — an IPv6 link-local is EUI-64 derived and encodes the client MAC, `fe80::6885:b9ff:feac:bb89` resolving exactly to `6A-85-B9-AC-BB-89` — so it is redacted on the
@@ -290,9 +290,9 @@ explained.
 
 ### Corrected — `snmpget` availability is per box, not per flavour
 
-An earlier entry recorded `net-snmp` as absent on `rcp`-flavour SMC boxes and present on `nbn_accelerate`. Sampling six boxes disproves it: `hope-vale-smc01` (nbn_accelerate) and
-`burringurrah-smc01` (rcp) have it; `wandawuy-smc01`, `amata-smc01`, `doomadgee-smc01` (all nbn_accelerate) and `tjuntjuntjara-smc01` (rcp) do not. Two of six, one from each flavour. The original
-claim was drawn from three boxes that happened to line up. Corrected in `skill-smc`'s known-issues reference: probe for the binary, never infer it from the flavour.
+An earlier entry recorded `net-snmp` as absent on `rcp`-flavour SMC boxes and present on `nbn_accelerate`. Sampling six boxes disproves it: `hope-vale-smc01` (nbn_accelerate) and `burringurrah-smc01`
+(rcp) have it; `wandawuy-smc01`, `amata-smc01`, `doomadgee-smc01` (all nbn_accelerate) and `tjuntjuntjara-smc01` (rcp) do not. Two of six, one from each flavour. The original claim was drawn from
+three boxes that happened to line up. Corrected in `skill-smc`'s known-issues reference: probe for the binary, never infer it from the flavour.
 
 ## 20260920_1745
 
@@ -334,7 +334,9 @@ boundary** — wrapping the E500 string and mapping absent to empty is lossless,
 
 ### Fleet sweep complete — the contract now rests on 111 live observations
 
-All 36 sites swept by `scripts/fleet_schema_sweep.py`, one representative device per family per site, across four runs — two of which produced confidently wrong data and were discarded and repeated. Merged standard: `enterprise-wifi` 9 endpoints / 381 fields / 35 observations, `cnwave-60ghz` 13 / 40 / 5, `cnpilot-r-series` 2 / 48 / 8, `epmp-ap` 4 / 20 / 35, `epmp-sm` 4 / 14 / 35. **118 of 122 site/family pairs contracted.** `client-summary` rests on 32 record-bearing observations covering **248 real client records**.
+All 36 sites swept by `scripts/fleet_schema_sweep.py`, one representative device per family per site, across four runs — two of which produced confidently wrong data and were discarded and repeated.
+Merged standard: `enterprise-wifi` 9 endpoints / 381 fields / 35 observations, `cnwave-60ghz` 13 / 40 / 5, `cnpilot-r-series` 2 / 48 / 8, `epmp-ap` 4 / 20 / 35, `epmp-sm` 4 / 14 / 35. **118 of 122
+site/family pairs contracted.** `client-summary` rests on 32 record-bearing observations covering **248 real client records**.
 
 The sweep was worth running rather than extrapolating from the baseline. Against the fleet, `client-summary` grew 95 → 98 fields, `device-summary` 45 → 47, `platform-info` 15 → 16 and
 `radio-rf-summary` 15 → 16. Three cnWave models (V1000, V3000, V5000) and ePMP Force 300-16 appeared that one site never showed.
@@ -344,13 +346,16 @@ The sweep was worth running rather than extrapolating from the baseline. Against
 **In `client-summary` only 43 of 98 fields are universal — 54 split by model.** `radio-rf-summary` is 7 universal against 9 model-split. An adapter written against an XV2 alone depends on fields an
 E500 simply does not return, and fails silently because the field is absent rather than wrong. `ip6_ll` additionally returns **an array at some sites and a string at others**, absent entirely at 17.
 
-the R-series `interfaces` getter turned out not to be contractable: its "site-specific fields" are interface names used as object keys (`eth2.17`, `wan1.500`), so each site's VLAN plan appears as schema
-fields. That is an adapter design bug, not device divergence — it should return a list with the name as a value. Recorded in `references/05_known-issues.md` rather than smuggled into the contract.
+the R-series `interfaces` getter turned out not to be contractable: its "site-specific fields" are interface names used as object keys (`eth2.17`, `wan1.500`), so each site's VLAN plan appears as
+schema fields. That is an adapter design bug, not device divergence — it should return a list with the name as a value. Recorded in `references/05_known-issues.md` rather than smuggled into the
+contract.
 
 ### Added
 
-`scripts/fleet_schema_sweep.py` (the sweep), `scripts/schema_divergence_report.py` and its generated `schemas/DIVERGENCE.md`, `schemas/SWEEP-LOG.md` (the run-by-run record, including the two sweeps that were discarded), plus `schemas/_observations/` holding all 118 inputs. Both scripts are
-cataloged in `scripts/README.md`. 59 reachability findings across the runs are recorded as estate facts rather than skips. A fourth run retried the 12 gaps at full timeout and recovered 7, proving most were a too-tight mid-run retune rather than estate faults. **Five genuine gaps remain**, three of them at kalumburu where 132 devices reject the documented vault credentials across two families — a credential problem that blocks all access to that site, not just this exercise.
+`scripts/fleet_schema_sweep.py` (the sweep), `scripts/schema_divergence_report.py` and its generated `schemas/DIVERGENCE.md`, `schemas/SWEEP-LOG.md` (the run-by-run record, including the two sweeps
+that were discarded), plus `schemas/_observations/` holding all 118 inputs. Both scripts are cataloged in `scripts/README.md`. 59 reachability findings across the runs are recorded as estate facts
+rather than skips. A fourth run retried the 12 gaps at full timeout and recovered 7, proving most were a too-tight mid-run retune rather than estate faults. **Five genuine gaps remain**, three of them
+at kalumburu where 132 devices reject the documented vault credentials across two families — a credential problem that blocks all access to that site, not just this exercise.
 
 ### Two defects the sweep found in its own tooling
 
@@ -385,18 +390,18 @@ adapters' getter output — because only the Falcon UI exposes raw endpoints con
 
 Three verbs: `observe` contracts one device, `merge` folds observations into the family standard, `check` reports a new observation's divergence and exits non-zero so it can gate a sweep.
 
-**The method fix that matters:** `required` counts only observations that actually returned a record. An endpoint returning an empty array is not evidence its fields are absent — an AP with no
-clients attached says nothing about a client record's shape. The first merge of the `client-summary` contract for `enterprise-wifi` produced **zero** required fields out of 95 purely because the E500 had no clients at
-capture time. Empty observations are now excluded from the presence maths and reported in `x-evidence`, and `check` reports such endpoints as `no-records` rather than divergent. The operational
-consequence is written into `schemas/README.md`: for client-bearing endpoints, sweep client counts across a site first and contract the device that has clients.
+**The method fix that matters:** `required` counts only observations that actually returned a record. An endpoint returning an empty array is not evidence its fields are absent — an AP with no clients
+attached says nothing about a client record's shape. The first merge of the `client-summary` contract for `enterprise-wifi` produced **zero** required fields out of 95 purely because the E500 had no
+clients at capture time. Empty observations are now excluded from the presence maths and reported in `x-evidence`, and `check` reports such endpoints as `no-records` rather than divergent. The
+operational consequence is written into `schemas/README.md`: for client-bearing endpoints, sweep client counts across a site first and contract the device that has clients.
 
 No response values are recorded. `x-candidate-values` carries short, low-cardinality, non-identifying values only — `"2.4GHz"`, `"ON"`, `"axa"` — where the value set is itself part of the contract.
 Client MAC, IP, IPv6, hostname, username and SSID are never emitted, and `--strict-pii` (default) also drops anything that looks like a MAC, IP or hostname whatever its field is called.
 
 ### Baseline gaps, stated
 
-the `client-summary` contract for `enterprise-wifi` rests on one record-bearing observation, so the XV2-versus-E-series field split (95 against 44, seen in an earlier run) is not yet in the contract. cnWave `gps`
-observed as `null` and `links_count` empty. cnWave at hope-vale was unreachable — all three units down on ping — so the baseline came from doomadgee.
+the `client-summary` contract for `enterprise-wifi` rests on one record-bearing observation, so the XV2-versus-E-series field split (95 against 44, seen in an earlier run) is not yet in the contract.
+cnWave `gps` observed as `null` and `links_count` empty. cnWave at hope-vale was unreachable — all three units down on ping — so the baseline came from doomadgee.
 
 ### Next
 
