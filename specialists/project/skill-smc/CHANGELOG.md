@@ -2,6 +2,11 @@
 
 ## Contents
 
+- [20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)](#20260926_2121-orbstack-virtual-smc-malik-rcp01-container-style-host-adaptations-recorded-working-cache-venvs-absent-v0158--v0159)
+- [20260926_1815 — Low-touch hook verified live on umoona-smc01; leases persist the hook variables; all devices on apn-cnmaestro01 (v0.1.57 -> v0.1.58)](#202609261815-low-touch-hook-verified-live-on-umoona-smc01-leases-persist-the-hook-variables-all-devices-on-apn-cnmaestro01-v0157---v0158)
+- [20260924_1957 — SMC physical port order and usual cabling recorded (v0.1.56 -> v0.1.57)](#20260924_1957--smc-physical-port-order-and-usual-cabling-recorded-v0156---v0157)
+- [20260924_1945 — x86 VLAN interface layout recorded with its Nautobot mirror; `ip -j` read confirmed (v0.1.55 -> v0.1.56)](#20260924_1945--x86-vlan-interface-layout-recorded-with-its-nautobot-mirror-ip--j-read-confirmed-v0155---v0156)
+- [20260924_1522 — `ifPhysAddress` verified on all three snmpd canaries; the identity anchor is now confirmed over SNMP every collector cycle (v0.1.54 -> v0.1.55)](#20260924_1522--ifphysaddress-verified-on-all-three-snmpd-canaries-the-identity-anchor-is-now-confirmed-over-snmp-every-collector-cycle-v0154---v0155)
 - [20260924_1222 — Neighbour table: mornington has refused 2,230 allocations at the 1024 cap; `gc_thresh1` = 1 corrected as not the cause of ARP loss (v0.1.53 -> v0.1.54)](#20260924_1222--neighbour-table-mornington-has-refused-2230-allocations-at-the-1024-cap-gc_thresh1--1-corrected-as-not-the-cause-of-arp-loss-v0153---v0154)
 - [20260924_1205 — TP-Link site switches reached behind the SMC; `tplink-switch.sh` access, discovery and redacted config capture (v0.1.52 -> v0.1.53)](#20260924_1205--tp-link-site-switches-reached-behind-the-smc-tplink-switchsh-access-discovery-and-redacted-config-capture-v0152---v0153)
 - [20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)](#20260922_1750--overlayroot-is-rpi-and-wh-only-x86-tmpfs-paths-differ-per-box-fping-on-three-x86-smcs-v0151---v0152)
@@ -68,41 +73,86 @@
 
 ---
 
+## 20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)
+
+From the unified-network-controller supplement Step 4 rehearsal (2026-09-26 evening).
+
+- `references/11_vagrant-lab.md` §12.6 (new): the stage host `malik-rcp01` is an OrbStack amd64 Ubuntu 22.04 machine (`lxc`), not a Vagrant VM. Every real-box assumption
+  `smc_bases.yml` made false there and its one adaptation, all behind the stage host var `smc_bases_container: true`: no bootloader (GRUB block skipped), the management NIC is also
+  the WAN (`use-routes: true`), networkd's DUID moved the DHCP lease (`dhcp-identifier: mac`), `/etc/cloud` absent (already ignored), and the `on commit` block only for `smc_ltp`
+  (stage-only `[malik_smc_ltp]` group; never `smc_ltp.yml` against it, a logging stand-in replaces the cnMaestro script). Also: `setsid` is not on macOS; `ntp`'s postinst takes a
+  minute in the container; package retries hide a failure for an hour.
+- `SKILL.md` Runtime Environments: both working-cache venvs the section named are absent on this Mac (verified); Homebrew `ansible-playbook` core 2.21.4, `ansible-lint` and
+  `yamllint` are what run ansible-wifi until a venv is created.
+- `references/06_failure-modes.md` (new subsection) and `references/01_overview.md`: an expired `tsh` certificate makes every device look failed (94 of 156 critical on 2026-09-25,
+  17,309 `cert has expired` lines, no alarm); `aurukun-smc01` refusing SSH on 2026-09-22/23 read as a site failure while smc02 and smc03 were fine. Check `tsh status` per cluster first;
+  the multi-SMC fallback recorded as `USER_STATED` on 2026-09-21 is now implemented in the controller's pushes.
+- `references/08_ansible-authoring.md`: the controller's proposed second `execute()` line on the low-touch hook (gated, Option 43 unchanged per Q9), where the spool lives, and the
+  stage rehearsal pointer.
+
+## 20260926_1815 — Low-touch hook verified live on umoona-smc01; leases persist the hook variables; all devices on apn-cnmaestro01 (v0.1.57 -> v0.1.58)
+
+`references/08_ansible-authoring.md`: read-only verification on umoona-smc01 for the unified-network-controller's Step 4 baseline. The live `on commit` block equals the `master` template and
+`big_push` does not change it (only the script: the box runs the 4,509-line build with redis-server active); provisioning shared-network `192.168.11.0/24`, 20-second Cambium leases, Option 43 still
+`https://3.105.84.178`; `dhcpd.leases` persists `clhw`, `clip`, `clvci` per lease (811 Cambium blocks of 1,338); one `log.<MAC>` per device under `/var/local/cnmaestro-provisioning/`. Aurukun's
+smc02 and smc03 are Teleport nodes but not Nautobot Devices. Operator statement, 2026-09-26: every apn and nbn device is managed by on-prem `apn-cnmaestro01` (Teleport node present; the stated
+hostname `apn-cnmaestro01.apn.net.au` did not resolve publicly). Capture kept in unified-network-controller `captures/`.
+
+## 20260924_1957 — SMC physical port order and usual cabling recorded (v0.1.56 -> v0.1.57)
+
+`references/02_service-map.md`: left-to-right port order for the BOXER-6404 and BOXER-6641 as the operator stated it, the usual cabling (ports 1-2 internet, port 3 trunk to switch 1, port 4 trunk to
+switch 2) confirmed on mornington, kalumburu and hope-vale, how the uplink VLANs split across the two trunks, and that `vlan621`/`vlan631` held no address on either 6641 site.
+
+## 20260924_1945 — x86 VLAN interface layout recorded with its Nautobot mirror; `ip -j` read confirmed (v0.1.55 -> v0.1.56)
+
+`references/02_service-map.md`: the x86 boxes' bridge-member sub-interfaces and standalone internet VLAN interfaces, counted on the three canaries (10 on the BOXER-6404, 16 on each 6641), the one-call
+JSON read (`ip -d -j link show type vlan`, iproute2 5.15), and unified-network-controller's per-box Nautobot record of them (`virtual` interfaces with parent, bridge and site VLAN; bridges per device,
+not in the device-type template; drift reported against the box and `topology_vars`). Also recorded there: the operator's target (2026-09-24), Nautobot as the source each SMC syncs its network setup
+from and applies, with rollback; the box read is the retrofit.
+
+## 20260924_1522 — `ifPhysAddress` verified on all three snmpd canaries; the identity anchor is now confirmed over SNMP every collector cycle (v0.1.54 -> v0.1.55)
+
+`references/snmp-oid-registry.yaml`: `.1.3.6.1.2.1.2.2.1.6` ifPhysAddress moves from `not_yet_read` to the verified set, walked on kalumburu-smc01, mornington-smc01 (apn) and hope-vale-smc01 (nbn).
+The physical `enp*` ports report their burned-in MACs, equal to what Nautobot holds; the lowest (the identity anchor) is `enp1s0` on all three. Consumer: unified-network-controller
+`wc-local/scripts/smc_collect.py`, now run by the 20-minute collector cycle, which reports anchor drift and never writes it. Also recorded: `sysUpTime` is the snmpd agent's uptime, not the host's (0
+days on all three, snmpd installed today), so the SMC uptime OpenWISP shows is agent uptime; `hrSystemUptime` is added to `not_yet_read`. Two governance failures that predated this entry are fixed: `SKILL.md` now names the consumer by its full path under the
+`apn-projects` sibling root, and the example marker in `references/08_ansible-authoring.md` is back on the line it exempts (a rewrap had moved it down one).
+
 ## 20260924_1222 — Neighbour table: mornington has refused 2,230 allocations at the 1024 cap; `gc_thresh1` = 1 corrected as not the cause of ARP loss (v0.1.53 -> v0.1.54)
 
 `ip -s ntable show name arp_cache` (read-only): mornington-smc01, 48 weeks up at 795 entries, shows `forced_gc_runs` 5,666,597 and `table_fulls` 2,230, so it has hit the 1024 hard cap and dropped
-packets; kalumburu-smc01 shows 145 and 0. `13_known-issues.md`'s neighbour-table section now carries the counters, what each threshold does to customer traffic, monitoring and the SMC, why whole-subnet
-sweeps make it worse, and the proposal reordered (`gc_thresh3` is the fix, `gc_thresh1` a nice-to-have) with a fleet `table_fulls` survey as the first rollout step. Correction to v0.1.53: the
-`gc_thresh1` of 1 is not why quiet devices leave ARP; both tables exceed the kernel default of 128 too. `16_tplink-site-switches.md` and `scripts/tplink-switch.sh` say so now.
+packets; kalumburu-smc01 shows 145 and 0. `13_known-issues.md`'s neighbour-table section now carries the counters, what each threshold does to customer traffic, monitoring and the SMC, why
+whole-subnet sweeps make it worse, and the proposal reordered (`gc_thresh3` is the fix, `gc_thresh1` a nice-to-have) with a fleet `table_fulls` survey as the first rollout step. Correction to v0.1.53:
+the `gc_thresh1` of 1 is not why quiet devices leave ARP; both tables exceed the kernel default of 128 too. `16_tplink-site-switches.md` and `scripts/tplink-switch.sh` say so now.
 
 ## 20260924_1205 — TP-Link site switches reached behind the SMC; `tplink-switch.sh` access, discovery and redacted config capture (v0.1.52 -> v0.1.53)
 
 Both kalumburu switches (10.255.0.2 Switch1, 10.255.0.3 Switch 2, SG2428P firmware 5.30.1) logged into with KeePass `/Network/tplink switch` from kalumburu-smc01. New
-`references/16_tplink-site-switches.md`: the per-site candidates from unified-network-controller's sweeps, the credential, the SSH quirks (`HostKeyAlgorithms=+ssh-rsa`, `MACs=hmac-sha2-256`, no
-exec channel, CR for Enter, swallowed first keystroke, client-first banner), the three `enable` cases, why discovery cannot use ARP (`gc_thresh1` is 1 on the SMCs, not the kernel's 128), and the rule never to sweep `bridge_501`. New
-`scripts/tplink-switch.sh` with `tplink_cli_driver.py`: read-only commands, `--discover`, `--shell` and `--backup` (redacted running-config, leak-checked against the known passwords). Telnet is
-refused on both switches. The login password was once typed into Switch1's CLI after an `enable` that needed none; the driver now sends a password only when a prompt asks for one. RUNBOOK routing,
-SKILL.md references and `scripts/README.md` updated. `13_known-issues.md` gains a neighbour-table finding and a proposed `gc_thresh1/2/3` standard of
-1024/4096/16384 (proposal only; the SMCs run 1/512/1024 and mornington holds 757 entries).
+`references/16_tplink-site-switches.md`: the per-site candidates from unified-network-controller's sweeps, the credential, the SSH quirks (`HostKeyAlgorithms=+ssh-rsa`, `MACs=hmac-sha2-256`, no exec
+channel, CR for Enter, swallowed first keystroke, client-first banner), the three `enable` cases, why discovery cannot use ARP (`gc_thresh1` is 1 on the SMCs, not the kernel's 128), and the rule never
+to sweep `bridge_501`. New `scripts/tplink-switch.sh` with `tplink_cli_driver.py`: read-only commands, `--discover`, `--shell` and `--backup` (redacted running-config, leak-checked against the known
+passwords). Telnet is refused on both switches. The login password was once typed into Switch1's CLI after an `enable` that needed none; the driver now sends a password only when a prompt asks for
+one. RUNBOOK routing, SKILL.md references and `scripts/README.md` updated. `13_known-issues.md` gains a neighbour-table finding and a proposed `gc_thresh1/2/3` standard of 1024/4096/16384 (proposal
+only; the SMCs run 1/512/1024 and mornington holds 757 entries).
 
 ## 20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)
 
-SKILL.md said "All SMC boxes run overlayroot". Wrong, per the operator (2026-09-22): only RPi and WH boxes do. It now says so, matching what `references/07_hardware-overlay.md` already recorded per flavour.
-`07_hardware-overlay.md` gains an x86 section: plain ext4 root (an apt install persists), and the tmpfs mounts, which differ per box. `/tmp` is tmpfs on mowanjum-smc01 but ext4 on hope-vale-smc01, so use
-`/run`. fping 5.1 was installed by apt on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability pre-check. No ansible-wifi role installs it yet.
+SKILL.md said "All SMC boxes run overlayroot". Wrong, per the operator (2026-09-22): only RPi and WH boxes do. It now says so, matching what `references/07_hardware-overlay.md` already recorded per
+flavour. `07_hardware-overlay.md` gains an x86 section: plain ext4 root (an apt install persists), and the tmpfs mounts, which differ per box. `/tmp` is tmpfs on mowanjum-smc01 but ext4 on
+hope-vale-smc01, so use `/run`. fping 5.1 was installed by apt on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability pre-check. No ansible-wifi role
+installs it yet.
 
 ## 20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)
 
-`references/04_dependency-tree.md` resolves its open "naming collision" item: the Redis-dependent `cnmaestro-provisioning` service and the `smc_ltp` low-touch
-script are one mechanism at two versions. `master` holds the older 3,222-line script with no Redis; the unmerged `big_push` branch (Daniel Gravolin, 36
-commits) holds the 4,514-line Redis version. Checked live, read-only: `umoona-smc01` runs `big_push` commit `40c283b6`; `pandanus-park-smc01` runs a copy
-matching no commit (deployed from uncommitted changes). Consumer: `unified-network-controller`'s architecture brief, point 3.
+`references/04_dependency-tree.md` resolves its open "naming collision" item: the Redis-dependent `cnmaestro-provisioning` service and the `smc_ltp` low-touch script are one mechanism at two versions.
+`master` holds the older 3,222-line script with no Redis; the unmerged `big_push` branch (Daniel Gravolin, 36 commits) holds the 4,514-line Redis version. Checked live, read-only: `umoona-smc01` runs
+`big_push` commit `40c283b6`; `pandanus-park-smc01` runs a copy matching no commit (deployed from uncommitted changes). Consumer: `unified-network-controller`'s architecture brief, point 3.
 
 ## 20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)
 
 `references/01_overview.md` "Remote Access": at a multi-SMC site the boxes share one management address space as a VRRP-style set, and failover runs through the switching layer and the wireless
-network, so any box is a valid jump host for every device at the site (operator-stated, 2026-09-21, aurukun as the example). A fixed `ProxyJump` does not fail over on its own; device host
-keys stay keyed by site. Consumer: `unified-network-controller`'s options register, D3.6 sketch — one site agent and one Nautobot Namespace per site, not per box.
+network, so any box is a valid jump host for every device at the site (operator-stated, 2026-09-21, aurukun as the example). A fixed `ProxyJump` does not fail over on its own; device host keys stay
+keyed by site. Consumer: `unified-network-controller`'s options register, D3.6 sketch — one site agent and one Nautobot Namespace per site, not per box.
 
 ## 20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)
 
@@ -122,22 +172,22 @@ Consumer: `unified-network-controller` `docs/inventory/device-access-via-proxyju
 Ported from `unified-network-controller`'s staleness audit of the same evening, which found the same defects there and promoted the underlying rule to
 `unified-network-controller/.archcore/rules/govern-a-derived-population-never-a-hand-list.rule.md`.
 
-**Nineteen split filenames, the most of any package in this family.** A wide table cell wraps mid-filename and leaves the token ending in a backslash with its tail on the next row — unfollowable
-for a reader, and invisible to `check_referenced_paths`, which skips anything that does not look like a path. So the defect hid from the very check that should have caught it. All joined across
-`SKILL.md`, `references/07_hardware-overlay.md`, `references/13_known-issues.md` and `scripts/README.md`; one was a THREE-row split. `check_split_path_tokens()` now asserts the shape directly and
-scans every markdown file in the package, not only the governance surfaces.
+**Nineteen split filenames, the most of any package in this family.** A wide table cell wraps mid-filename and leaves the token ending in a backslash with its tail on the next row — unfollowable for a
+reader, and invisible to `check_referenced_paths`, which skips anything that does not look like a path. So the defect hid from the very check that should have caught it. All joined across `SKILL.md`,
+`references/07_hardware-overlay.md`, `references/13_known-issues.md` and `scripts/README.md`; one was a THREE-row split. `check_split_path_tokens()` now asserts the shape directly and scans every
+markdown file in the package, not only the governance surfaces.
 
-**`SURFACES` was a hand-list of five files**, so `ARCHITECTURE.md`, `PROFILE.md`, `SYSTEM_PROMPT.md` and anything added later were outside every path check. Now derived from the tree.
-`CHANGELOG.md` and `SCRATCHPAD.md` are excluded with the reason stated in the code: both are append-only history, and SCRATCHPAD's 2026-06-26 entry recording that a dead `references/PROFILE.md`
-pointer was *removed* reads to a path check as a live broken reference. Exempt history by marker, never by rewriting it. `references/**` is excluded for a different stated reason — its slash
-notation is mostly device paths, CIDR blocks and systemd units rather than repo paths.
+**`SURFACES` was a hand-list of five files**, so `ARCHITECTURE.md`, `PROFILE.md`, `SYSTEM_PROMPT.md` and anything added later were outside every path check. Now derived from the tree. `CHANGELOG.md`
+and `SCRATCHPAD.md` are excluded with the reason stated in the code: both are append-only history, and SCRATCHPAD's 2026-06-26 entry recording that a dead `references/PROFILE.md` pointer was *removed*
+reads to a path check as a live broken reference. Exempt history by marker, never by rewriting it. `references/**` is excluded for a different stated reason — its slash notation is mostly device
+paths, CIDR blocks and systemd units rather than repo paths.
 
 **`SIBLING_ROOTS` added, with `ansible-wifi` as the important one.** This package's entire subject is that repository, and its prose names roles, inventories and flavour files by their path there.
 Those references are now *verified* rather than merely unchecked: if ansible-wifi renames a role, this package's routing into it fails loudly. An absent root prints SKIPPED, never passed.
 
-**Bare basenames resolve on a unique match only.** `01_overview.md` unambiguously means `references/01_overview.md` within one package, so it resolves; a name carried by more than one file is
-reported as ambiguous rather than silently accepted, and a rename still fails. Evidence-collector OUTPUT filenames (`MANIFEST.txt`, `SUMMARY.txt`, the numbered capture files), git refs
-(`origin/main`) and the Apache log name `wifi/access` are registered as conditional paths with per-entry reasons — they are not repo paths despite the shape.
+**Bare basenames resolve on a unique match only.** `01_overview.md` unambiguously means `references/01_overview.md` within one package, so it resolves; a name carried by more than one file is reported
+as ambiguous rather than silently accepted, and a rename still fails. Evidence-collector OUTPUT filenames (`MANIFEST.txt`, `SUMMARY.txt`, the numbered capture files), git refs (`origin/main`) and the
+Apache log name `wifi/access` are registered as conditional paths with per-entry reasons — they are not repo paths despite the shape.
 
 Both new check behaviours negative-tested in both directions. Checks **184 -> 286**.
 

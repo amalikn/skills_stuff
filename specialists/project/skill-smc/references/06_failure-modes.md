@@ -408,3 +408,17 @@ VIP" first for the ownership correction that makes this an internal escalation.
 **Prevention**: nothing today audits site public egress IPs against the expected pool. See `03_communication-flows.md` "Per-Site Public Egress IP" for the `curl -sS https://api.ipify.org` check, the
 known per-site values, and the recommended fleet-wide audit. For the method used to prove the rejection was generated at the far end rather than by a nearby middlebox, see `05_troubleshooting.md`
 "Cross-Tier: Reject vs Drop, Where a Rejection Was Generated, and On-Box Tooling Gotchas".
+
+### Expired `tsh` Certificate Masquerades as a Fleet-Wide Device Failure (2026-09-25/26); a Refusing Box Masquerades as a Site Failure (aurukun, 2026-09-22/23)
+
+Found by unified-network-controller while building its alarm engine (its CHANGELOG 20260926_1810). Any automation that reaches devices through `tsh` (SSH to the SMC, `-L` tunnels)
+fails every call the moment the cluster's certificate lapses, and each failure looks like the device's own fault: 94 of 156 monitored devices went `critical` on 2026-09-25 with 17,309
+`cert has expired` lines in the collector log and nothing naming the certificate. The same week, "Aurukun polls failing since 2026-09-22" was `aurukun-smc01` refusing SSH on the 22nd
+and 23rd, then the certificate; the site's other two boxes were fine.
+
+- **Check first, before any device diagnosis:** `tsh status` for each cluster you will cross (`teleport.apn.au`, `teleport.communitywifi.net.au`: separate logins, separate expiries); the
+  controller now refuses to poll a cluster whose certificate has lapsed and raises one alarm for it instead of one per device
+  (`unified-network-controller/wc-local/scripts/run_collector.py`).
+- **At a multi-SMC site, fall back to the other boxes** before calling the site down: `01_overview.md`'s "any box is a valid jump host" is now implemented for the controller's pushes
+  (`unified-network-controller/wc-local/scripts/batch_push_devices.py`, 2026-09-26) and holds for hand diagnosis too.
+- Related earlier trap, same shape (the tool's error reads as the fleet's): `--cluster=` instead of `--proxy=` on `teleport.communitywifi.net.au`, `01_overview.md` "Remote Access".

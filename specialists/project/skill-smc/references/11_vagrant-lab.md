@@ -6,6 +6,7 @@
 - Key Vagrant nuances and known issues
 - Bring-up procedure
 - Useful commands
+- OrbStack virtual SMC (malik-rcp01): container-style host adaptations
 
 ## 12. Vagrant Lab — family-friendly-vsmc01
 
@@ -160,3 +161,32 @@ vagrant ssh family-friendly-vsmc01 -- cat /var/lib/dhcp/dhcpd.leases | grep -A5 
 ```
 
 ---
+
+### 12.6 OrbStack virtual SMC (`malik-rcp01`): container-style host adaptations
+
+Recorded 2026-09-26 from the unified-network-controller Step 4 rehearsal (its log:
+`unified-network-controller/docs/onboarding/device-seen-events-step4-20260926_1838.md`, "Rehearsal log"). The stage host `malik-rcp01`
+(`inventories/rcp/stage`, group `malik_smc_bases`, topology `malik.yml`) is no longer a Vagrant VM: it is an OrbStack amd64 Ubuntu 22.04
+machine (`systemd-detect-virt` = `lxc`, 192.168.139.15 on the Mac's OrbStack network, dummy NICs `eth1`..`eth3` for the topology). Ansible
+reaches it as root over plain SSH (`ansible_host`, `ansible_ssh_private_key_file`, `-o IdentitiesOnly=yes` in its host_vars); out-of-band
+access is `orb -m malik-rcp01 -u root sh -c '...'`, the console to use when a network change cuts SSH.
+
+`smc_bases.yml` runs against it with `--skip-tags autossh,teleport,asterisk,generate_extensions,application,squid,url_capture,disk_failover,
+latlon,tstiklatlon,mqtt,router_provisioning,clamav,lynis`; the skipped plays register a box with production Teleport, SIP and the portal.
+Everything a container-style host makes false is guarded by one stage host var, `smc_bases_container: true`, so a Vagrant VM or a real box
+renders exactly as before:
+
+| Real-box assumption                                    | Where                                                      | Under the guard                                                   |
+| ------------------------------------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------------- |
+| A bootloader: edit `/etc/default/grub`, reboot         | `roles/smc_network/tasks/ubuntu.yml`, "Disable ipv6 for vagrant" | Block skipped (no GRUB, no kernel to reboot into)           |
+| The management NIC is not the WAN (`use-routes: false`) | `roles/smc_network/templates/vagrant-netplan.yml.j2`       | `use-routes: true` (eth0 is the only uplink; the box had no default route) |
+| DHCP client id does not matter                          | same template                                              | `dhcp-identifier: mac`: networkd's DUID took a second lease and `.15` became `.16`, and the run lost the host at the `Reload systemd-networkd` handler |
+| `/etc/cloud` exists                                     | `smc_system` cloud-init file                               | Already `ignore_errors`; nothing to do                            |
+| AppArmor in the kernel (`apparmor_parser -R` dhcpd profile) | `roles/smc_dhcpd/tasks/ubuntu.yml`, `smc_ltp` block        | Unload task skipped (exit 2 with no AppArmor; the disable symlink and root-user unit still apply) |
+| The topology has a provisioning DHCP scope              | `inventories/rcp/topology_vars/malik.yml`                  | Stage topology gains umoona's `gateways` and `dhcp_scopes` on the provisioning link; without them there is no `provisioning` shared-network and no `on commit` block. Delete `.malik.yml` after editing |
+| `on commit` block only for `smc_ltp`                    | `roles/smc_dhcpd/templates/dhcpd.conf.j2`                  | Stage inventory: `[malik_smc_ltp]` with the one host under `[smc_ltp:children]`, the same shape as `nocprov_smc_ltp` and `whprov_smc_ltp`. Never run `smc_ltp.yml` against it (its provisioning script talks to production cnMaestro); the controller repo's `wc-local/smc/ansible/virtual_smc_lab_stubs.yml` installs a logging stand-in instead |
+
+Two Mac-side facts from the same run: `setsid` does not exist on macOS, so a playbook started from an agent tool shell dies with that
+shell unless the tool's own background mode is used; and `ntp`'s postinst takes about a minute in the container before `ntpd` comes up
+(not a hang). The roles' package tasks retry until success (`retries: 60`, `delay: 60`), so a package that cannot install shows as up to
+an hour of silence, not an error.

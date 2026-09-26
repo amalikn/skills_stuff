@@ -11,7 +11,7 @@
 # rest of the fleet has no agent until the ansible-wifi role carries it.
 
 schema_version: 1
-updated: "2026-09-24"
+updated: "2026-09-24"  # ifPhysAddress verified on all three canaries, 15:20
 
 box_types:
   boxer-6641:
@@ -21,7 +21,7 @@ box_types:
     oids: &smc_oids
       - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "'Linux <hostname> <kernel> #… x86_64'",
          verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
-      - {oid: ".1.3.6.1.2.1.1.3.0", name: sysUpTime, access: ro, note: "timeticks; smc_collect divides by 100 for NetJSON general.uptime",
+      - {oid: ".1.3.6.1.2.1.1.3.0", name: sysUpTime, access: ro, note: "timeticks since the AGENT (snmpd) started, not the host; smc_collect divides by 100 for NetJSON general.uptime, so the SMC uptime in OpenWISP is agent uptime (hrSystemUptime is the host's, not yet read)",
          verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
       - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, access: ro, note: "the box hostname, e.g. mornington-smc01; drift against the Nautobot name is reported, never written",
          verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
@@ -30,7 +30,7 @@ box_types:
       - oid: ".1.3.6.1.2.1.31.1.1.1.1"
         name: ifName
         access: ro
-        note: "IF-MIB ifXTable; rows for lo, the physical ports (eno1, enp1s0…), the bridges bridge_500/501/502, VLAN sub-interfaces and docker/veth. smc_collect keeps enp* and bridge_* only (12-13 rows)"
+        note: "IF-MIB ifXTable; rows for lo, the physical ports (eno1, enp1s0…), the bridges bridge_500/501/502, VLAN sub-interfaces and docker/veth. smc_collect keeps exactly the interfaces on the box's Nautobot record: physical ports, bridges and VLAN interfaces, 17 to 23 rows (since 2026-09-24; was enp* and bridge_* only, 12-13 rows)"
         verified: {date: "2026-09-24", unit: mornington-smc01, method: walk}
       - {oid: ".1.3.6.1.2.1.31.1.1.1.6", name: ifHCInOctets, access: ro, note: "64-bit; per ifName row",
          verified: {date: "2026-09-24", unit: mornington-smc01, method: walk}}
@@ -48,6 +48,11 @@ box_types:
          verified: {date: "2026-09-24", unit: mornington-smc01, method: get}}
       - {oid: ".1.3.6.1.2.1.25.3.3.1.2", name: hrProcessorLoad, access: ro, note: "HOST-RESOURCES; one row per core, the row count is NetJSON resources.cpus",
          verified: {date: "2026-09-24", unit: mornington-smc01, method: walk}}
+      - oid: ".1.3.6.1.2.1.2.2.1.6"
+        name: ifPhysAddress
+        access: ro
+        note: "Hex-STRING '00 07 32 36 8E E7'; enp1s0-enp4s0 report their burned-in MACs, bridges and VLANs a locally administered one. smc_collect compares the enp* ports with Nautobot each run and confirms the identity anchor (lowest burned-in port MAC); drift is reported, never written"
+        verified: {date: "2026-09-24", units: [kalumburu-smc01, mornington-smc01, hope-vale-smc01], method: walk}
   boxer-6404:
     models: [BOXER-6404]
     os: "Ubuntu 22.04, kernel 5.15"
@@ -55,6 +60,6 @@ box_types:
     oids: *smc_oids   # the same net-snmp agent answers the same set; verified on kalumburu-smc01 the same day
 
 not_yet_read:
-  - ".1.3.6.1.2.1.2.2.1.6 ifPhysAddress — would let the collector confirm the identity anchor (lowest burned-in port MAC) over SNMP; read over SSH at seed time today"
+  - ".1.3.6.1.2.1.25.1.1.0 hrSystemUptime — host uptime; sysUpTime is the agent's, which reads 0 days on all three canaries (snmpd installed 2026-09-24)"
   - "UCD dskTable .1.3.6.1.4.1.2021.9 — disk usage, relevant to the overlayroot/log-fill alerts in 05_troubleshooting.md; needs `disk` lines in snmpd.conf"
   - "HOST-RESOURCES hrSWRunTable — service presence; snmpd config decision first"

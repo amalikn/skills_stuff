@@ -175,8 +175,9 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 ---
 
 ## Runtime Environments
-- ansible-wifi tooling venv: `/Volumes/Data/_ai/_skills/skills-working-cache/ansible-wifi/venv`
-- skill-smc specialist venv: `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/venv`
+- **Neither working-cache venv exists on this Mac (verified 2026-09-26)**: the ansible-wifi and skill-smc venvs this section used to name under the skills working cache are
+  absent, and the ansible-wifi checkout has no venv of its own. What runs ansible-wifi here is Homebrew: `/opt/homebrew/bin/ansible-playbook` (core 2.21.4), `ansible-lint`,
+  `yamllint`. Create the working-cache venv before relying on it; until then, use the Homebrew tools.
 - Ephemeral logs, pid files, and sockets belong under `/Volumes/Data/_ai/_skills/skills-runtime/<skill>/`.
 - Prefer the working-cache venvs when running SMC validation tooling (`ansible-lint`, `yamllint`, `ansible-inventory`, `ansible-playbook`) to keep versions stable across sessions.
 
@@ -197,7 +198,7 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - `references/13_known-issues.md` — coverage gaps, live-validation limits, and staleness risks.
 - `references/14_pin-activation-diagnosis.md` — pin validity (mangle) vs pin issuance (Apache access log): two independent mechanisms, marks-≠-activations pitfalls, and the 2026-09-11 fleet case
   study.
-- `references/snmp-oid-registry.yaml` — verified SNMP OIDs on the SMC box itself (net-snmp agent; canary 2026-09-24), the list unified-network-controller's `smc_collect.py` reads.
+- `references/snmp-oid-registry.yaml` — verified SNMP OIDs on the SMC box itself (net-snmp agent; canary 2026-09-24), the list `unified-network-controller/wc-local/scripts/smc_collect.py` reads.
 - `references/15_cambium-asset-registers.md` — pointer only: the ansible-wifi `site_name` join point for a Cambium asset register. Full asset-register naming-convention/extraction knowledge now lives
   in `skill-cambium` — see Related Skills below.
 - `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture; driven by
