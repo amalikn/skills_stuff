@@ -142,6 +142,11 @@ migrate devices off Cloud) has no API because X is not available after 2026-10-0
 REST/SNMP (see `06_device-api-cli-reference.md`) does not depend on any cnMaestro edition. apn-cnmaestro01's web login is `<secret:keepassxc:cambium-devices/apn-cnmaestro01 web login>`.
 The per-instance record is cambium-swap `inventory/cnmaestro-instances.yaml`.
 
+**Estate as of 2026-09-26 (`USER_STATED`, operator):** every apn and nbn device is now managed by on-prem `apn-cnmaestro01` (the Cloud migration is done for both programs). The
+hostname the operator gave for it, `apn-cnmaestro01.apn.net.au`, did not resolve in public DNS when checked the same day, so automation keeps the URL it had until the name is verified.
+The low-touch `rcp` sites still serve Option 43 `https://3.105.84.178` (lt-cnmaestro) to Cambium DHCP clients, unchanged for every family while the controller's device-seen path runs
+beside the cnMaestro one (operator decision Q9, 2026-09-26; see `01_overview.md` "DHCP Vendor Class").
+
 Confirmed live against the `cw-cnmaestro01` on-prem controller for the `nbn_accelerate` fleet — host resolves publicly to `13.237.46.180` (reachable directly, no Teleport tunnel needed for the API
 itself), instance version `3.0.0-r34` (operator-confirmed), though the API v2 shape matches the archived `cnmaestro-onprem-6.0.0` user guide exactly.
 

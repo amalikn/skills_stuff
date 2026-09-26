@@ -8,6 +8,7 @@
 - [Security Incidents](#security-incidents)
 - [Pack Staleness Risks](#pack-staleness-risks)
 - [LLDP on Cambium devices — checked 2026-09-23, partly answered](#lldp-on-cambium-devices--checked-2026-09-23-partly-answered)
+- [Failure signatures over the SMC path (mowanjum, 60-plus collector cycles to 2026-09-26)](#failure-signatures-over-the-smc-path-mowanjum-60-plus-collector-cycles-to-2026-09-26)
 
 ---
 
@@ -18,7 +19,7 @@
 | `hardware_revision` for all 17 catalogued models              | Requires a real cnMaestro export or device session | Pending — `cambium-swap` walk-before-run gate flagged this as unverified |
 | Which specific serials are on the legacy (`-legacy`) password | Registers don't record credential state per device | Try primary vault entry, fall back to `-legacy` per device               |
 | XV2 hardware variant (2T0 vs 22H) at Burringurrah             | That register has no `Model` column for XV2 rows   | Left as bare `XV2` in `device-inventory.csv` — don't guess the variant   |
-| R195P `interfaces` schema keyed by interface name              | Names differ per unit; `schema_tool` models the map as fields | Every live check lists the names as unknown fields (2026-09-22); fix is map support in `schema_tool` |
+| R195P `interfaces` schema keyed by interface name              | RESOLVED 2026-09-24 | `schema_tool` contracts map keys by role (`MAP_ROLES`, schema `x-roles`); all 11 observations conform; see `schemas/README.md` "Map-shaped responses" |
 
 ## Coverage Gaps (partial knowledge)
 
@@ -147,3 +148,11 @@ Operator note, 2026-09-23: is LLDP available on any Cambium family? Checked the 
 - **ePMP transmits LLDP.** Every one of six ePMP `config_regular` backups (3000L APs and Force 300 SMs) holds `networkLLDP: "1"`, `networkLLDPMode: "1"`, `lldp_user_enabled: "1"`. Which neighbour table a unit keeps, if any, is not in `device_props` seen so far — `UNVERIFIED`; nothing to read over REST was found.
 - **The SMC cannot see them across the switch.** LLDP frames are link-local (`01:80:c2:00:00:0e`) and are not bridged, so a 70 s `tcpdump ether proto 0x88cc` on `bridge_500` at kalumburu captured nothing; the SMC has no `lldpd`. The consumer of ePMP LLDP is the switch port the radio hangs off (the switching-refresh project's ground), not the SMC.
 - Enterprise Wi-Fi (XV2/E-series) and cnWave transmit-side support: `UNVERIFIED` (no config key looked for yet).
+
+## Failure signatures over the SMC path (mowanjum, 60-plus collector cycles to 2026-09-26)
+
+What "12 per-device errors" at one site turned out to be when classified (unified-network-controller, CHANGELOG 20260926_1810; devices reached through the SMC over `tsh`): 152 `down`
+(units switched off at the site, not faults), 16 TLS EOF, 14 SSH exit 255, 5 credential-lookup timeouts (the vault, not the device), 4 handshake timeouts, and 1 ePMP `auth_failed`, the
+2026-09-22 lockout from a bad-credential attempt (see the lockout note under Security Incidents). Two lessons for anyone reading device errors from this path: classify before counting,
+because most of a site's "errors" are units that are off; and rule out the path first, because an expired `tsh` certificate produces the same per-device failures fleet-wide
+(skill-smc `references/06_failure-modes.md`). Replay evidence from the same cycles: 151 registered devices, 0 duplicate names or MACs.

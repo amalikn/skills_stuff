@@ -4,6 +4,7 @@
 
 - [What This Pack Covers](#what-this-pack-covers)
 - [Device Families in APN's Fleet](#device-families-in-apns-fleet)
+- [DHCP Vendor Class (Option 60) per Family](#dhcp-vendor-class-option-60-per-family)
 - [EoL / EoS Snapshot](#eol--eos-snapshot)
 - [Evidence-State Discipline](#evidence-state-discipline)
 - [Wireless Security Posture Across the Fleet](#wireless-security-posture-across-the-fleet)
@@ -29,6 +30,24 @@ Five families, 17 models catalogued as of 2026-09-17 (source: `cambium-swap/inve
 | cnWave 60 GHz    | V5000, V3000, V2000, V1000                                                | 60 GHz P2MP/P2P millimetre-wave backhaul  |
 
 `ePMP 1000` (all variants) and `Force 180` are legacy — operator: "very old and unsupported, being migrated to MikroTik 'metal' APs and XV2-2T0". Don't recommend them for new deployments.
+
+## DHCP Vendor Class (Option 60) per Family
+
+What a factory-default Cambium unit sends in its DHCP request, and the only thing the SMC's low-touch hook has to tell families apart before any device API is reachable. Read
+2026-09-26 from a production SMC's `dhcpd.leases` and `dhcpd.conf` (umoona-smc01, read-only; 811 Cambium lease blocks) and from the dispatch in ansible-wifi's `cnmaestro-provisioning.py`
+(`big_push`); exercised live in the unified-network-controller `dhcp-lab` with the SMC's own dhcpd version (`VERIFIED`, matching is prefix-based, case as sent):
+
+| Vendor class as sent      | Family           | Model named? | Low-touch dispatch (the cnMaestro script)                              |
+| ------------------------- | ---------------- | ------------ | ---------------------------------------------------------------------- |
+| `Cambium-cnPilot R195P`   | cnPilot R-series | Yes          | prefix `Cambium-cnPilot R`; the model follows the prefix               |
+| `Cambium-WiFi-AP`         | Enterprise Wi-Fi | No           | exact; XV2 and E-series are told apart only after the device is read   |
+| `Cambium`                 | ePMP (AP and SM) | No           | exact; AP versus SM and the Force model come from the device, not DHCP |
+| (none of the above)       | cnWave 60 GHz    | n/a          | cnWave is not on the low-touch hook: its units are addressed by hand   |
+
+The SMC matches `substring(option vendor-class-identifier, 0, 7) = "Cambium"` and answers those clients with Option 43 (`vendor-encapsulated-options`) set to the cnMaestro URL and a
+20-second lease; the `on commit` hook then receives MAC, leased address, the vendor class verbatim and the Option 82 remote id (the upstream relay's MAC, or empty). A device family that
+does not name its model in Option 60 is created as an `UNKNOWN` type by the controller's device-seen path until the first read of the device fills it in. Where the hook and the
+controller side live: skill-smc `references/08_ansible-authoring.md` and `unified-network-controller/docs/onboarding/device-seen-events-step4-20260926_1838.md`.
 
 ## EoL / EoS Snapshot
 

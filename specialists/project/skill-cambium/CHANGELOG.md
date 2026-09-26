@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20260926_2126 — DHCP vendor class (Option 60) per family recorded: what the low-touch hook can and cannot tell from a lease](#20260926_2126--dhcp-vendor-class-option-60-per-family-recorded-what-the-low-touch-hook-can-and-cannot-tell-from-a-lease)
+- [20260924_1552 — R-series interfaces contracted by role; the `interfaces` check stops failing on every live unit](#20260924_1552--r-series-interfaces-contracted-by-role-the-interfaces-check-stops-failing-on-every-live-unit)
 - [20260922_1957](#20260922_1957)
 - [20260922_0941](#20260922_0941)
 - [20260922_0754](#20260922_0754)
@@ -56,6 +58,26 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260926_2126 — DHCP vendor class (Option 60) per family recorded: what the low-touch hook can and cannot tell from a lease
+
+v0.6.9 -> v0.6.10. Written back from unified-network-controller supplement Step 4 (device-seen events on the SMC's DHCP hook), 2026-09-26. `references/01_overview.md` gains
+"DHCP Vendor Class (Option 60) per Family": the strings a factory-default unit sends (`Cambium-cnPilot R195P`, `Cambium-WiFi-AP`, `Cambium`), which family each maps to, whether the model
+is named (only the R-series names it; Enterprise Wi-Fi and ePMP are `UNKNOWN` types until read), how the SMC answers (Option 43 cnMaestro URL, 20-second lease) and what the hook receives.
+Source: umoona-smc01's dhcpd files read-only and the cnMaestro script's dispatch; exercised in the controller's dhcp-lab with the SMC's dhcpd version. cnWave is not on the hook.
+Also from today's controller work: `references/02_device-access-and-vault.md` records that every apn and nbn device is now on on-prem `apn-cnmaestro01` (operator, 2026-09-26; its
+`.apn.net.au` hostname did not resolve publicly) and Q9 (Option 43 unchanged for all families); `references/05_known-issues.md` gains the classified failure signatures over the SMC path
+(mowanjum: 152 off, 16 TLS EOF, 14 SSH 255, 5 vault timeouts, 4 handshake timeouts, 1 ePMP lockout) with the rule to rule out the `tsh` certificate before reading device errors.
+
+## 20260924_1552 — R-series interfaces contracted by role; the `interfaces` check stops failing on every live unit
+
+v0.6.8 -> v0.6.9. Asked for by unified-network-controller (engineering queue item 5, closing R195P A4 in its device-type matrix). `scripts/schema_tool.py` gains `MAP_ROLES`: for a map-shaped endpoint,
+each role is a name pattern with count bounds and the meaning `references/06_device-api-cli-reference.md` records. `merge` writes it into the schema as `x-roles`; `check` now judges map-shaped
+endpoints by role (every key in exactly one role, counts within bounds, every value fitting the value schema) instead of listing every interface name as an unknown field.
+`schemas/cnpilot-r-series/interfaces.schema.json` regenerated through `merge`: the only change is `x-roles` (counters and facts regenerate identical). All 11 R195P observations conform, where all 11
+were divergent before; falsified five ways, each failing for its own reason. The other four families' `check` output is byte-identical before and after. `references/05_known-issues.md` row resolved;
+`schemas/README.md` "Map-shaped responses" describes the roles. Not done: `schemas/DIVERGENCE.md` is still computed from raw observations and lists the names as site-specific fields, and which radio interface
+is which band remains unrecorded.
 
 ## 20260922_1957
 

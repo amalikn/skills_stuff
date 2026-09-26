@@ -191,6 +191,15 @@ adapter. Contracting its keys as fields was a defect in the schema tool, not in 
 fields". Such endpoints are now listed in the tool's `MAP_SHAPED` registry and contracted as `additionalProperties` describing the **value** shape, with the observed keys recorded separately. The
 R-series interface value is three fields: `ipv4_addresses`, `is_up`, `mac_address`.
 
+**Keys are contracted by role (2026-09-24).** A map's keys vary by site, so they cannot be contracted by name, but that does not leave them unchecked. The tool's `MAP_ROLES` registry
+gives each map-shaped endpoint a list of roles, each a name pattern with count bounds and what the reference records about it; `merge` writes it into the schema as `x-roles`, and
+`check` requires every observed key to fall into exactly one role within bounds, and every value to fit the value schema. The R-series roles are `loopback` (`lo`), `lan_bridge`
+(`br0`, the LAN MAC), `switch_port` (`eth2`), `switch_vlan` (`eth2.N`, management on `eth2.500`), `wan` (`wanN`, name varies per unit, may be absent), `wan_vlan`, `radio` (`raN`,
+`raiN`; band per interface not recorded), `radio_client` (`apcliN`, `apcliiN`), `wds` (`wdsN`) and `qos_pseudo` (`imqN`, not traffic). All eleven observations conform; the check was
+falsified five ways (an unknown name, an unknown port, no LAN bridge, no switch VLAN, a new value field), each failing for its own reason. Bounds stay loose where the evidence is:
+the 2026-09-20 observations are one per site and may combine units, so only single-instance roles carry a maximum. `DIVERGENCE.md` is computed from the raw observations and still
+lists these names as site-specific fields; read it for which sites have which VLANs, not as a contract failure.
+
 **Verified against upstream, 2026-09-20.** NAPALM's own documentation shows `get_interfaces` returning a dict keyed by interface name — `{"Ethernet1/1": {"is_up": …, "is_enabled": …, "description": …,
 "last_flapped": …, "speed": …, "mac_address": …}}` (the NAPALM project's own docs — `mock_driver.rst` and `cli.rst` in its documentation tree). The keying convention is genuine rather than this pack's
 invention, which is what the earlier "adapter bug" reading got wrong.

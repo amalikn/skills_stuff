@@ -28,7 +28,7 @@
       "tjuntjuntjara",
       "wujal-wujal"
     ],
-    "generated_utc": "2026-09-21T23:37:48Z"
+    "generated_utc": "2026-09-24T05:48:48Z"
   },
   "type": "object",
   "x-observed-count": 0,
@@ -112,5 +112,68 @@
     "wds1",
     "wds2",
     "wds3"
+  ],
+  "x-roles": [
+    {
+      "role": "loopback",
+      "pattern": "lo",
+      "min": 1,
+      "max": 1
+    },
+    {
+      "role": "lan_bridge",
+      "pattern": "br0",
+      "min": 1,
+      "max": 1,
+      "note": "carries the LAN MAC; the WAN MAC is LAN + 1 (references/06, BUR-R195P-1047)"
+    },
+    {
+      "role": "switch_port",
+      "pattern": "eth2",
+      "min": 1,
+      "max": 1,
+      "note": "the port the switch-side VLANs ride on"
+    },
+    {
+      "role": "switch_vlan",
+      "pattern": "eth2\\.\\d+",
+      "min": 1,
+      "note": "VLAN sub-interfaces; management is eth2.500. The set varies per site (eth2.17, eth2.550 at some only)"
+    },
+    {
+      "role": "wan",
+      "pattern": "wan\\d+",
+      "min": 0,
+      "note": "name varies per unit (wan1, wan3); one Burringurrah unit had its WAN on eth2.500 and no wan* (references/06)"
+    },
+    {
+      "role": "wan_vlan",
+      "pattern": "wan\\d+\\.\\d+",
+      "min": 0
+    },
+    {
+      "role": "radio",
+      "pattern": "rai?\\d+",
+      "min": 1,
+      "note": "MediaTek radio interfaces; which is which band is not recorded"
+    },
+    {
+      "role": "radio_client",
+      "pattern": "apclii?\\d+",
+      "min": 0,
+      "note": "MediaTek AP-client interfaces; no use recorded on this estate"
+    },
+    {
+      "role": "wds",
+      "pattern": "wds\\d+",
+      "min": 0,
+      "note": "WDS link interfaces; no mesh is enabled on this estate"
+    },
+    {
+      "role": "qos_pseudo",
+      "pattern": "imq\\d+",
+      "min": 0,
+      "note": "QoS pseudo-interfaces, not traffic (references/06)"
+    }
   ]
 }

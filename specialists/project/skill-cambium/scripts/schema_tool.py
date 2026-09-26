@@ -352,8 +352,31 @@ MAP_SHAPED = {
     ("cnpilot-r-series", "interfaces"): "interface name, e.g. eth2.17, wan1.500 — varies per site",
 }
 
+# A map's keys are contracted by ROLE, not by name: which interface does what, matched by pattern. Every observed name must
+# fall into exactly one role (a name in none is divergent), and a role's count must sit within its bounds. Bounds come from
+# the observations (11 R195P, nine sites, 2026-09-20/22) and stay loose where the evidence is: the 2026-09-20 files are one
+# per site and may combine units, so only single-instance roles carry a maximum. Meanings are those references/06 records;
+# where it records none (which radio is which band) the role says so rather than guessing.
+MAP_ROLES = {
+    ("cnpilot-r-series", "interfaces"): [
+        {"role": "loopback", "pattern": r"lo", "min": 1, "max": 1},
+        {"role": "lan_bridge", "pattern": r"br0", "min": 1, "max": 1,
+         "note": "carries the LAN MAC; the WAN MAC is LAN + 1 (references/06, BUR-R195P-1047)"},
+        {"role": "switch_port", "pattern": r"eth2", "min": 1, "max": 1, "note": "the port the switch-side VLANs ride on"},
+        {"role": "switch_vlan", "pattern": r"eth2\.\d+", "min": 1,
+         "note": "VLAN sub-interfaces; management is eth2.500. The set varies per site (eth2.17, eth2.550 at some only)"},
+        {"role": "wan", "pattern": r"wan\d+", "min": 0,
+         "note": "name varies per unit (wan1, wan3); one Burringurrah unit had its WAN on eth2.500 and no wan* (references/06)"},
+        {"role": "wan_vlan", "pattern": r"wan\d+\.\d+", "min": 0},
+        {"role": "radio", "pattern": r"rai?\d+", "min": 1, "note": "MediaTek radio interfaces; which is which band is not recorded"},
+        {"role": "radio_client", "pattern": r"apclii?\d+", "min": 0, "note": "MediaTek AP-client interfaces; no use recorded on this estate"},
+        {"role": "wds", "pattern": r"wds\d+", "min": 0, "note": "WDS link interfaces; no mesh is enabled on this estate"},
+        {"role": "qos_pseudo", "pattern": r"imq\d+", "min": 0, "note": "QoS pseudo-interfaces, not traffic (references/06)"},
+    ],
+}
 
-def collapse_map(node, key_meaning):
+
+def collapse_map(node, key_meaning, roles=None):
     """Fold a map's per-key schemas into one value schema under `additionalProperties`."""
     target = node.get("items", node)
     props = target.pop("properties", {}) or {}
@@ -363,6 +386,8 @@ def collapse_map(node, key_meaning):
     target["additionalProperties"] = merged or {"type": "object"}
     target["x-map-keyed-by"] = key_meaning
     target["x-keys-observed"] = sorted(props)
+    if roles:
+        target["x-roles"] = roles
     target.pop("required", None)
     target.pop("x-optional", None)
     return node
@@ -422,7 +447,7 @@ def cmd_merge(args):
 
         key_meaning = MAP_SHAPED.get((args.family, ep))
         if key_meaning:
-            merged = collapse_map(merged, key_meaning)
+            merged = collapse_map(merged, key_meaning, MAP_ROLES.get((args.family, ep)))
 
         doc = {
             "$schema": SCHEMA_DIALECT,
@@ -461,6 +486,41 @@ def cmd_merge(args):
         print(f"{ep}: {detail} -> {out_dir / (ep + '.schema.json')}")
 
 
+def _types(node):
+    t = (node or {}).get("type")
+    return set(t if isinstance(t, list) else [t])
+
+
+def check_map(std_t, obs_props):
+    """A map-shaped endpoint: each key must fall into exactly one role within its bounds, and each value must fit the
+    one value schema under `additionalProperties`. With no `x-roles` the keys are not judged, only the values."""
+    roles = std_t.get("x-roles") or []
+    counts, unmatched, ambiguous = {r["role"]: 0 for r in roles}, [], {}
+    for key in sorted(obs_props):
+        hits = [r["role"] for r in roles if re.fullmatch(r["pattern"], key)]
+        if len(hits) == 1:
+            counts[hits[0]] += 1
+        elif roles and not hits:
+            unmatched.append(key)
+        elif len(hits) > 1:
+            ambiguous[key] = hits
+    out_of_bounds = {r["role"]: {"observed": counts[r["role"]], "min": r.get("min", 0), "max": r.get("max")}
+                     for r in roles if counts[r["role"]] < r.get("min", 0)
+                     or (r.get("max") is not None and counts[r["role"]] > r["max"])}
+    value_std = (std_t.get("additionalProperties") or {}).get("properties", {})
+    unknown_value_fields, value_type_changes = set(), {}
+    for spec in obs_props.values():
+        for field, fspec in (spec.get("properties") or {}).items():
+            if field not in value_std:
+                unknown_value_fields.add(field)
+            elif not _types(fspec) <= _types(value_std[field]):
+                value_type_changes[field] = {"standard": value_std[field].get("type"), "observed": fspec.get("type")}
+    divergent = unmatched or ambiguous or out_of_bounds or unknown_value_fields or value_type_changes
+    return {"status": "divergent" if divergent else "conformant", "keyed_by": std_t["x-map-keyed-by"], "role_counts": counts,
+            "unmatched_keys": unmatched, "ambiguous_keys": ambiguous, "roles_out_of_bounds": out_of_bounds,
+            "unknown_value_fields": sorted(unknown_value_fields), "value_type_changes": value_type_changes}
+
+
 def cmd_check(args):
     obs = json.loads(Path(args.observation).read_text())
     std_dir = Path(args.standard)
@@ -489,6 +549,12 @@ def cmd_check(args):
             }
             continue
         std_props, obs_props = std_t.get("properties", {}), obs_t.get("properties", {})
+        if "x-map-keyed-by" in std_t:
+            result = check_map(std_t, obs_props)
+            if result["status"] == "divergent":
+                worst = "divergent"
+            report["endpoints"][ep] = result
+            continue
         missing_required = sorted(set(std_t.get("required", [])) - set(obs_props))
         unknown = sorted(set(obs_props) - set(std_props))
         type_changes = {}
