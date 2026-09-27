@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)](#20260927_1954--r195-tftp-files-varlibtftpboot-missing-on-fresh-2204-wangkatjungka-runs-an-uncommitted-template-with-apn-cnmaestro01-v0168---v0169)
 - [20260927_1752 — the rcp "seven sites" observations are dated as at 2026-07-29/30 (v0.1.67 -> v0.1.68)](#20260927_1752--the-rcp-seven-sites-observations-are-dated-as-at-2026-07-2930-v0167---v0168)
 - [20260927_1704 — fping approved per flavour (rcp, nbn_accelerate); the package-install guard that followed a Location-driven widening (v0.1.66 -> v0.1.67)](#20260927_1704--fping-approved-per-flavour-rcp-nbn_accelerate-the-package-install-guard-that-followed-a-location-driven-widening-v0166---v0167)
 - [20260927_1632 — smc_ltp has nine sites, not seven (pia and yakanarra were missing); topology_vars layout; the nine seeded into unified-network-controller's Nautobot (v0.1.65 -> v0.1.66)](#20260927_1632--smc_ltp-has-nine-sites-not-seven-pia-and-yakanarra-were-missing-topology_vars-layout-the-nine-seeded-into-unified-network-controllers-nautobot-v0165---v0166)
@@ -81,6 +82,13 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)
+
+Found by unified-network-controller Step 8 (report `docs/reports/controller-option3/step8-extensions-tftp-intent-20260927_1949.md` there). `references/08_ansible-authoring.md`, the TFTP bullet of
+"What a low-touch SMC keeps per device": the role never creates `/var/lib/tftpboot` (22.04's `tftpd-hpa` makes `/srv/tftp`), the seven per-extension keys and the tab-separated lines,
+wangkatjungka-smc01's configs from an uncommitted template variant, the `extension_end` hosts the role cannot render, low-touch CSVs starting at 1000 against cnMaestro ranges at x001, and the older
+10.255.1.x layout. `references/07_hardware-overlay.md`: the "template hard-codes Cloud" line corrected for what boxes actually serve. Read back after writing.
 
 ## 20260927_1752 — the rcp "seven sites" observations are dated as at 2026-07-29/30 (v0.1.67 -> v0.1.68)
 

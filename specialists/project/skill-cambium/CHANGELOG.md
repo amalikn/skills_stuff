@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_1954 — R195P management server: cns_static_url, Cloud in git, apn-cnmaestro01 live at wangkatjungka (v0.6.12 -> v0.6.13)](#20260927_1954--r195p-management-server-cns_static_url-cloud-in-git-apn-cnmaestro01-live-at-wangkatjungka-v0612---v0613)
 - [20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator); it resolves (v0.6.11 -> v0.6.12)](#20260927_0258--apn-cnmaestro01-hostname-corrected-to-apn-cnmaestro01apnau-operator-it-resolves-v0611---v0612)
 - [20260926_2320 — monitoring counter surface: the "not wired yet" sentence corrected (wired 2026-09-22, guarded 2026-09-26)](#20260926_2320--monitoring-counter-surface-the-not-wired-yet-sentence-corrected-wired-2026-09-22-guarded-2026-09-26)
 - [20260926_2126 — DHCP vendor class (Option 60) per family recorded: what the low-touch hook can and cannot tell from a lease](#20260926_2126--dhcp-vendor-class-option-60-per-family-recorded-what-the-low-touch-hook-can-and-cannot-tell-from-a-lease)
@@ -60,6 +61,12 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260927_1954 — R195P management server: cns_static_url, Cloud in git, apn-cnmaestro01 live at wangkatjungka (v0.6.12 -> v0.6.13)
+
+`references/06_device-api-cli-reference.md`, cnPilot R195P: the unit learns its cnMaestro from the TFTP config key `cns_static_url`; git says Cloud, wangkatjungka-smc01 serves
+`https://apn-cnmaestro01.apn.au/` from an uncommitted template (read-only capture in unified-network-controller, 2026-09-27); the value is per era and belongs in the source of truth. Read back after
+writing.
 
 ## 20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator); it resolves (v0.6.11 -> v0.6.12)
 

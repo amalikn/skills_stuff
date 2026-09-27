@@ -464,6 +464,12 @@ First attempted 2026-09-17 with live ARP alone (E110/E112 below) — inconclusiv
 - `device-inventory.csv` has since been fully reconciled against this export and eight further rcp-site exports (evidence E114–E117, E120) — all nine rcp sites the operator supplied are now
   represented, spanning 2,520 rows total. The `not yet corrected` state described when this section was first written no longer applies.
 
+
+**Management server in the unit's config (2026-09-27, read-only, wangkatjungka-smc01).** An R195P learns its cnMaestro from the TFTP config key `cns_static_url`. ansible-wifi's template in git
+hard-codes `https://cloud.cambiumnetworks.com`; wangkatjungka-smc01 serves `https://apn-cnmaestro01.apn.au/` to its 200 extensions from an uncommitted template variant (`VERIFIED` from the files on
+the box; capture in unified-network-controller `captures/r195-tftp-wangkatjungka-smc01-20260927_1947`). `DBID_TR_ACS_URL` is empty in both. The value is per era (Cloud, `lt-cnmaestro`,
+`apn-cnmaestro01`, then unified-network-controller; operator) and should come from the source of truth, not the template. SMC side: `skill-smc` `references/08_ansible-authoring.md`.
+
 ### Adapter — SSH Only, No REST API Confirmed
 
 **Monitoring path, 2026-09-22: `get_snapshot()`.** One SSH session returns `facts`, `interfaces` and `counters` (uptime, load average, core count, memory in bytes, `/proc/net/dev` per interface). Use

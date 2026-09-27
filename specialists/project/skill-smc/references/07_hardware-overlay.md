@@ -851,6 +851,9 @@ SMC facts that matter to cnMaestro continuity:
   DHCP change unless the Elastic IP is kept.
 - The `smc_ltp` flavour points at the On-Premises instance `lt-cnmaestro.apn.au` and runs `smc_cnmaestro_provisioning` against its local REST API.
 - The r195P router template hard-codes `cns_static_url=https://cloud.cambiumnetworks.com`, so those routers are managed by the Cambium-hosted cnMaestro Cloud, not by APN's On-Prem instances.
+  **Corrected 2026-09-27 (read-only capture, unified-network-controller `captures/r195-tftp-wangkatjungka-smc01-20260927_1947`):** that is true of the template in git, not of every box.
+  wangkatjungka-smc01's 200 live configs (26 Sep) carry `cns_static_url=https://apn-cnmaestro01.apn.au/`, rendered from a template that is in no ansible-wifi branch; a re-run of
+  `smc_router_provisioning` from git would point them back at Cloud. The server is a per-era value (Cloud, `lt-cnmaestro`, `apn-cnmaestro01`, then unified-network-controller; operator).
 - `smc_dns_mgmt` deploys an empty `cambium-rpz` response-policy zone (`force: no`); its live contents are node-managed and unrecorded.
 - The cnMaestro On-Premises 6.0.0 User Guide documents a 90-day grace period after the instance loses subscription sync with the Cambium Cloud Anchor. At expiry "all the devices will be moved to the
   onboarding queue", so new low-touch onboarding and device approval stop once the Anchor is gone.

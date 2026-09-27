@@ -1854,7 +1854,16 @@ The per-device records an `rcp` low-touch box holds are projections of two sourc
   per thousand block. A premises unit's management and public addresses follow from its extension number alone.
 - **`/var/lib/tftpboot/<extension>.cfg`** (`roles/smc_router_provisioning`): one flat nvram `key=value` file per extension from `r195_template.cfg.j2` (`r195_tjuntjun_template.cfg.j2` for `TJUN`), fed
   by `item.extension/mgmt_ip/public_ip/password` plus site vars (`HostName=<SITE>-R195P-<ext>`, `mwan_ipaddr`, SIP account and password, `SNMPTrapCommunity`, TR-069 ACS credentials in clear). The
-  directory is emptied and regenerated on every run and served by `tftpd-hpa`. How a unit learns its file name is `UNVERIFIED`: nothing in `smc_dhcpd` sets option 66.
+  directory is emptied and regenerated on every run and served by `tftpd-hpa`. How a unit learns its file name is `UNVERIFIED`: nothing in `smc_dhcpd` sets option 66. **Added 2026-09-27
+  (unified-network-controller Step 8 report `docs/reports/controller-option3/step8-extensions-tftp-intent-20260927_1949.md`):** the role never creates `/var/lib/tftpboot`; Ubuntu 22.04's `tftpd-hpa`
+  (5.2+20150808-1.2build2) creates `/srv/tftp`, so on a fresh box the unarchive fails ("must be an existing dir"), and production boxes have the directory only from older images. The files are a pure
+  function of the CSV row plus the site short name (seven per-extension keys: `DBID_SIP_ACCOUNT`, `DBID_SIP_DIS_NAME`, `DBID_SIP_PASSWORD`, `DBID_SIP_PHONE_NUM`, `HostName`, `SNMPTrapCommunity`,
+  `mwan_ipaddr`); 260 lines separate per-port values with tabs, which must stay tabs. wangkatjungka-smc01's live set was rendered from an uncommitted variant of the template (lines reordered,
+  `cns_static_url=https://apn-cnmaestro01.apn.au/`, `DBID_RANDOM_NUM=23552`; one variant explains all 200 files). `smc_generate_extensions` reads
+  `smc_bases_extension_start`/`_count`/`_site_short_name`: mowanjum-smc01, generic-rcp01 and generic-rcp02 set `smc_bases_extension_end` instead, so the role cannot render them. Low-touch sites start
+  their CSV at 1000 while `smc_ltp.yml`'s cnMaestro auto-extension ranges start at x001. Kalumburu, mowanjum, horn-island and mornington R195Ps sit on an older 10.255.1.x/22 layout the arithmetic
+  never produced. unified-network-controller's `wc-local/scripts/smc_extensions_intent.py` renders both file sets from a Nautobot extension plan, byte-identical to ansible-wifi (30 rcp plans; all 400
+  malik configs against real Ansible).
 - **No DHCP reservations.** `/etc/dhcp/dhcpd.conf` carries no `host`/`fixed-address` entries; a device's static `mgmt_ip` is pushed by cnMaestro as a template variable at onboarding.
 - **DNS A records for devices** live in `/etc/bind/db.cambium-rpz`, rebuilt by `cnmaestro-provisioning.py` `_update_dns()` (`roles/smc_cnmaestro_provisioning/files/cnmaestro-provisioning.py` line 2855
   on `big_push`, called at line 3258; an earlier "2407 to 2431" was wrong, corrected 2026-09-27): copy `db.rpz.template`, append `<name> IN A <mgmt_ip>` and `<name>-public IN A <public_ip>` for every
