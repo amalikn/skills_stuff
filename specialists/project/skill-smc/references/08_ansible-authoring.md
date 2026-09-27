@@ -1197,6 +1197,14 @@ Properties worth knowing before you fight it:
   findings into the blocking set — that mistake turned a 43-finding job into a 404-finding one.
 - yamllint has no baseline, so inherited whitespace defects in a file you touch block the push even though they predate you. That cleanup is unavoidable; keep it whitespace-only and in its own commit.
 
+**Fixed 2026-09-27 (unified-network-controller session; ansible-wifi's hook is untracked, `.git/hooks/pre-push`, old copy kept as `pre-push.bak-20260927`):** three defects made stacked or
+non-checked-out branches unpushable without `--no-verify`. (1) The gate linted `HEAD`, not the pushed commit: the hook now lints each pushed commit, in a temporary detached worktree when it is not the
+checked-out `HEAD`. (2) A new branch was compared with `origin/master` (1,066 files for `unc-virtual-smc-malik-rcp01`, stacked on `internet-label-rename`): the base is now the merge-base with the
+remote branch that has the fewest commits between it and the pushed commit, passed to the gate as `DELTA_BASE` (both gate copies honour it and find the baseline through `git rev-parse
+--git-common-dir`, so a worktree run still sees `.ansible-lint-ignore`). (3) shellcheck ran on Jinja templates: `.sh` files under `templates/` or containing `{{`, `{%` or `{#` are skipped with a log
+line. Tested by feeding the hook `git push`'s stdin lines (stacked branch: 12 files, no new violations; a local-only commit: base is its stacked branch, not master; `fix/routing-issue` pushed while
+another branch is checked out: its own 23 inherited `main.yml` findings, not the checked-out branch's). Other clones still carry the old hook.
+
 ### The hook's ansible venv is under-provisioned (corrected 2026-08-18)
 
 Earlier revisions of this section said that if the hook fails you should ensure `/Volumes/Data/_ai/_skills/skills-runtime/ansible-wifi/.venv/bin` is on `PATH`. **That is now known to be the cause

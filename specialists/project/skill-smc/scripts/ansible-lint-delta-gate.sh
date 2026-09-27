@@ -48,7 +48,8 @@ if [[ ${#files[@]} -eq 0 ]]; then
 fi
 
 config_file="${ANSIBLE_LINT_CONFIG:-$repo_root/.ansible-lint}"
-baseline_file="$repo_root/.git/.ansible-lint-ignore"
+# The git common dir, so the baseline is found from a linked worktree too (the pre-push hook lints the pushed commit in one; 2026-09-27).
+baseline_file="$(cd "$(git rev-parse --git-common-dir)" && pwd)/.ansible-lint-ignore"
 
 if [[ ! -f "$config_file" ]]; then
   echo "[ansible-lint-delta] missing config: $config_file" >&2
@@ -69,7 +70,10 @@ if [[ -f "$baseline_file" ]]; then
 fi
 
 empty_tree="$(git hash-object -t tree /dev/null)"
-if git rev-parse --verify '@{upstream}' >/dev/null 2>&1; then
+if [[ -n "${DELTA_BASE:-}" ]]; then
+  # Set by the pre-push hook: the pushed branch's own base (its remote commit, or the nearest remote branch for a new one).
+  base_ref="$DELTA_BASE"
+elif git rev-parse --verify '@{upstream}' >/dev/null 2>&1; then
   base_ref="$(git merge-base HEAD '@{upstream}')"
 elif git rev-parse --verify 'origin/master' >/dev/null 2>&1; then
   base_ref="$(git merge-base HEAD 'origin/master')"

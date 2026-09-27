@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_2024 — pre-push gate: lint the pushed commit, compare a new branch with its nearest remote branch, skip Jinja for shellcheck (v0.1.69 -> v0.1.70)](#20260927_2024--pre-push-gate-lint-the-pushed-commit-compare-a-new-branch-with-its-nearest-remote-branch-skip-jinja-for-shellcheck-v0169---v0170)
 - [20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)](#20260927_1954--r195-tftp-files-varlibtftpboot-missing-on-fresh-2204-wangkatjungka-runs-an-uncommitted-template-with-apn-cnmaestro01-v0168---v0169)
 - [20260927_1752 — the rcp "seven sites" observations are dated as at 2026-07-29/30 (v0.1.67 -> v0.1.68)](#20260927_1752--the-rcp-seven-sites-observations-are-dated-as-at-2026-07-2930-v0167---v0168)
 - [20260927_1704 — fping approved per flavour (rcp, nbn_accelerate); the package-install guard that followed a Location-driven widening (v0.1.66 -> v0.1.67)](#20260927_1704--fping-approved-per-flavour-rcp-nbn_accelerate-the-package-install-guard-that-followed-a-location-driven-widening-v0166---v0167)
@@ -82,6 +83,12 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260927_2024 — pre-push gate: lint the pushed commit, compare a new branch with its nearest remote branch, skip Jinja for shellcheck (v0.1.69 -> v0.1.70)
+
+`scripts/ansible-lint-delta-gate.sh` honours `DELTA_BASE` (set by the hook) before `@{upstream}`/`origin/master`, and reads the baseline from the git common dir so it works from a linked worktree. The
+same patch went into the copy the ansible-wifi hook calls (local-knowledge-ansible). The hook itself was fixed in the ansible-wifi clone (untracked); `references/08_ansible-authoring.md` records the
+three defects, the fix and the tests. Read back after writing.
 
 ## 20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)
 
