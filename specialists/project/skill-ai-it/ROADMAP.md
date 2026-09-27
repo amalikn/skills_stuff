@@ -57,6 +57,14 @@ Report-first approach for Archcore: `bootstrap` and `refresh` emit `ARCHCORE_PRO
   alarms. **Promotion:** copy the module, the check and the hook into `templates/`, make `bootstrap` offer a starter map (inline mode when a project has no plan document), teach `refresh` and the
   upgrader to carry them, and write a governance standard whose field table is the `--schema` output (check the governance sync map). Open question from the pilot: whether a source should be allowed
   to be only partly tracked (today every heading a source defines needs a target).
+  **Gaps to close before promotion** (found 2026-09-27, asking how the skill would generate a map):
+  - **`--init`:** `target_map.py` only validates, renders (`--write`) and prints the schema; nothing creates a map. Add `--init` printing a starter map: source mode, one target per plan heading
+    (`state: not started`, `exit_met: false`, one `status: not run` criterion per numbered acceptance test, text left in the plan), reusing the renderer's plan reader; inline mode, one goal and one
+    target with placeholder name, exit condition and criteria text that fail the check until filled. `bootstrap` calls it; it never assigns a status above `not run`.
+  - **`--sync`:** when a plan gains a heading, the check fails until a target is added by hand. Add `--sync` appending missing targets as `not started`, never changing existing ones; settle it
+    together with the open question on partly tracked sources.
+  - **Generic header template:** the pilot's `target-map.yaml` header and section comments (2026-09-27) explain the fields but carry UNC wording (P0, the plan's §1.6, `[vSMC]`, `[plan≠]`). Ship a
+    generic version under `templates/` for `--init` to emit; the UNC wording stays in the pilot.
 
 ### Medium-term
 

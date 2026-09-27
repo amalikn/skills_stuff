@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_1819 — docs: three gaps recorded before the target map standard can be promoted](#20260927_1819--docs-three-gaps-recorded-before-the-target-map-standard-can-be-promoted)
 - [20260927_1354 — docs: the target map standard recorded as a promotion candidate (pilot in unified-network-controller)](#20260927_1354--docs-the-target-map-standard-recorded-as-a-promotion-candidate-pilot-in-unified-network-controller)
 - [20260923_1320 — fix: the generated `lint-md` recipe could not fail](#20260923_1320--fix-the-generated-lint-md-recipe-could-not-fail)
 - [20260923_1300 — feat: the package now governs itself, and its own scripts/README.md had been eaten by its own upgrader](#20260923_1300--feat-the-package-now-governs-itself-and-its-own-scriptsreadmemd-had-been-eaten-by-its-own-upgrader)
@@ -45,6 +46,11 @@
 - [20260812_1300](#20260812_1300)
 
 ---
+
+## 20260927_1819 — docs: three gaps recorded before the target map standard can be promoted
+
+ROADMAP's target map entry gains "Gaps to close before promotion": `target_map.py` has no `--init` to write a starter map (source mode from the plan's headings, inline mode with placeholders
+that fail until filled); no `--sync` to add targets when a plan grows; and the pilot's header comments carry project wording, so a generic header template is needed. Documentation only.
 
 ## 20260927_1354 — docs: the target map standard recorded as a promotion candidate (pilot in unified-network-controller)
 
