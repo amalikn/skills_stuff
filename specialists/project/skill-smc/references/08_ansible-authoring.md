@@ -1855,11 +1855,17 @@ The per-device records an `rcp` low-touch box holds are projections of two sourc
   by `item.extension/mgmt_ip/public_ip/password` plus site vars (`HostName=<SITE>-R195P-<ext>`, `mwan_ipaddr`, SIP account and password, `SNMPTrapCommunity`, TR-069 ACS credentials in clear). The
   directory is emptied and regenerated on every run and served by `tftpd-hpa`. How a unit learns its file name is `UNVERIFIED`: nothing in `smc_dhcpd` sets option 66.
 - **No DHCP reservations.** `/etc/dhcp/dhcpd.conf` carries no `host`/`fixed-address` entries; a device's static `mgmt_ip` is pushed by cnMaestro as a template variable at onboarding.
-- **DNS A records for devices** live in `/etc/bind/db.cambium-rpz`, rebuilt by `cnmaestro-provisioning.py` `_update_dns()` (lines 2407 to 2431 on `big_push`): copy `db.rpz.template`, append `<name> IN
-  A <mgmt_ip>` and `<name>-public IN A <public_ip>` for every MAC in the cnMaestro snapshot plus the device being provisioned, move into place, `systemctl reload named`. The zone is therefore a
-  projection of cnMaestro's `name`, `mgmt_ip` and `public_ip` variables and stops being maintained without cnMaestro. `named` forwards everything else to 8.8.8.8 and 8.8.4.4 (`named.conf.options`);
-  `bridge_501` clients are handed the gateway address as DNS, which is this `named`; management and provisioning scopes hand out 8.8.8.8 directly where their topology `name_servers` say so (operator,
-  2026-09-27).
+- **DNS A records for devices** live in `/etc/bind/db.cambium-rpz`, rebuilt by `cnmaestro-provisioning.py` `_update_dns()` (`roles/smc_cnmaestro_provisioning/files/cnmaestro-provisioning.py` line 2855
+  on `big_push`, called at line 3258; an earlier "2407 to 2431" was wrong, corrected 2026-09-27): copy `db.rpz.template`, append `<name> IN A <mgmt_ip>` and `<name>-public IN A <public_ip>` for every
+  MAC in the cnMaestro snapshot plus the device being provisioned, move into place, `systemctl reload named`. The zone is therefore a projection of cnMaestro's `name`, `mgmt_ip` and `public_ip`
+  variables and stops being maintained without cnMaestro. `named` forwards everything else to 8.8.8.8 and 8.8.4.4 (`named.conf.options`); `bridge_501` clients are handed the gateway address as DNS,
+  which is this `named`; management and provisioning scopes hand out 8.8.8.8 directly where their topology `name_servers` say so (operator, 2026-09-27).
+- **A production zone, read once (umoona-smc01, 2026-09-27, operator-approved, read-only; capture in unified-network-controller `captures/rpz-umoona-smc01-20260927_1616.txt`):** 21 A records named by
+  cnMaestro, not by site convention (`home-1` .. `home-4` with `-public`, `ap-1` .. `ap-5`, `3000L-ap-1`/`-2`, `sm-1` .. `sm-4`, `ap-ep2p-1`, `sm-ep2p-1`), management addresses in 10.255.1.x and
+  public ones in 10.0.1.x; file last written 2026-04-16, so the script had not provisioned a device there for five months. `/etc/bind/db.rpz.template` has md5 `c700aa2e3118a4d97c5598d674f7953b` on
+  umoona and on the virtual SMC `malik-rcp01`, so the header is the same fleet-wide. The names are unique only within a site, and the 10.255.x addresses repeat across sites: a lookup outside the
+  site's own Nautobot Namespace matches other sites' devices. None of the seven `smc_ltp` sites (guda-guda, pandanus-park, old-looma, new-looma, warburton, beagle-bay, umoona) has a Location,
+  Namespace or device in unified-network-controller's Nautobot, or a row in cambium-swap's device inventory (checked 2026-09-27).
 - **Redis**: the script's counter for cnMaestro location IDs; per-MAC locks under `/var/local/cnmaestro-provisioning/`; `dhcpd.leases` persists the hook's `clhw/clip/clvci/clrid`.
 - **`/etc/hosts`**: only the Teleport FQDN (`smc_dns_mgmt`).
 

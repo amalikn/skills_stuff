@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_1617 — _update_dns() location corrected (line 2855, not 2407); one production RPZ zone read: cnMaestro names, a fleet-wide template, low-touch sites absent from Nautobot (v0.1.64 -> v0.1.65)](#20260927_1617--_update_dns-location-corrected-line-2855-not-2407-one-production-rpz-zone-read-cnmaestro-names-a-fleet-wide-template-low-touch-sites-absent-from-nautobot-v0164---v0165)
 - [20260927_0322 — what a low-touch SMC keeps per device: extensions CSV, TFTP configs, the cnMaestro-fed RPZ zone, no DHCP reservations (v0.1.63 -> v0.1.64)](#20260927_0322--what-a-low-touch-smc-keeps-per-device-extensions-csv-tftp-configs-the-cnmaestro-fed-rpz-zone-no-dhcp-reservations-v0163---v0164)
 - [20260927_0308 — smc_dhcpd: debounced hook and StartLimit adopted on the rehearsal branch; the vars-plugin and dhcpd.conf.j2 cautions recorded (v0.1.62 -> v0.1.63)](#20260927_0308--smc_dhcpd-debounced-hook-and-startlimit-adopted-on-the-rehearsal-branch-the-vars-plugin-and-dhcpdconfj2-cautions-recorded-v0162---v0163)
 - [20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator) (v0.1.61 -> v0.1.62)](#20260927_0258--apn-cnmaestro01-hostname-corrected-to-apn-cnmaestro01apnau-operator-v0161---v0162)
@@ -77,6 +78,13 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260927_1617 — _update_dns() location corrected (line 2855, not 2407); one production RPZ zone read: cnMaestro names, a fleet-wide template, low-touch sites absent from Nautobot (v0.1.64 -> v0.1.65)
+
+From unified-network-controller's Step 8 RPZ work (its CHANGELOG `20260927_1555` and `20260927_1611`). `references/08_ansible-authoring.md`: the `_update_dns()` line numbers were wrong (the function
+is at line 2855 of `roles/smc_cnmaestro_provisioning/files/cnmaestro-provisioning.py` on `big_push`, called at 3258); new bullet on umoona-smc01's live `db.cambium-rpz` (one operator-approved
+read-only look): 21 records under cnMaestro's names, last written 2026-04-16, template md5 identical to the virtual SMC's, names unique only per site, and none of the seven `smc_ltp` sites modelled in
+Nautobot or in cambium-swap's inventory. Documentation only.
 
 ## 20260927_0322 — what a low-touch SMC keeps per device: extensions CSV, TFTP configs, the cnMaestro-fed RPZ zone, no DHCP reservations (v0.1.63 -> v0.1.64)
 
