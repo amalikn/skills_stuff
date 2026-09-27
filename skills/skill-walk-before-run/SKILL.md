@@ -8,7 +8,7 @@ description: >-
   overwhelming. Manual invocation only.
 metadata:
   aliases: skill-wbr
-  version: 0.1.2
+  version: 0.1.3
 ---
 
 # Skill: Walk Before Run
@@ -43,8 +43,13 @@ assumption. If evidence found later proves it was scoped wrongly, correct it exp
 Then, not before: check `ledger.jsonl` for prior entries on the calling project — if it's missing or unreadable, fall back to that project's own `.wbr-ledger.jsonl` mirror — for an unresolved RED (no
 matching RESOLVED) on *this same* assumption just named, not a different one. A project may have more than one unresolved RED open at once if the assumptions are genuinely different; only a match on
 the one just named is reused. If a match exists: append a RESOLVED entry now if reality contact for it has occurred since (the `next_test` or an equivalent was actually run); otherwise surface it
-as-is — this invocation is a status check, not a fresh run. If there's no match — a newly-developed assumption, even if some other RED is still open for this project — proceed normally below; a new
-RED gets its own new entry. Never edit a past entry to reflect new information; append.
+as-is — this invocation is a status check, not a fresh run.
+
+Also list every unresolved RED for the project, whatever its assumption, with the read-only [`scripts/open_reds.py`](scripts/open_reds.py) (`python3 scripts/open_reds.py --project <project>
+--project-root <root>`). The run still judges only the one assumption named above; the list only makes the others visible, since a RED on another assumption otherwise stays hidden until someone reads
+the ledger. A RED shown with a `partial?` line was resolved only on a narrower assumption: say what is still open. Two or more waivers on one assumption are shown as a finding. If there's no match — a
+newly-developed assumption, even if some other RED is still open for this project — proceed normally below; a new RED gets its own new entry. Never edit a past entry to reflect new information;
+append.
 
 ## Verdict
 
@@ -80,7 +85,7 @@ Never emit a plan, design doc or roadmap as the remedy — "let's design this pr
 
 ## Output
 
-One screen: verdict, the assumption, cheapest test, gate status, one next action.
+One screen: verdict, the assumption, cheapest test, gate status, one next action, then the other unresolved REDs from `scripts/open_reds.py`, one line each (or "none").
 
 ## Stand down (state in one line, no lecturing)
 

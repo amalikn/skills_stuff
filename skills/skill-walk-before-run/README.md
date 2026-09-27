@@ -1,7 +1,7 @@
 ---
 Title: skill-walk-before-run — README
 Status: current
-Last reviewed: 2026-09-16
+Last reviewed: 2026-09-27
 Summary: Purpose, invocation, package map and state location for the walk-before-run gate skill.
 ---
 
@@ -30,6 +30,8 @@ session-start auto-fire and no self-modification in v0.1.
 - `schemas/ledger-entry.md` — field reference and examples for `ledger.jsonl` entries. Not loaded at runtime; `SKILL.md`'s inline JSON templates are sufficient to act on.
 - `scripts/append_entry.py` — added in v0.1.2, incident-driven rather than a parked-list earn-in (see [`BRIEF.md`](BRIEF.md) decision #16): the only sanctioned writer to `ledger.jsonl`. An OPA policy
   rule hard-blocks any other write path to `ledger.jsonl` or a project's `.wbr-ledger.jsonl` mirror.
+- `scripts/open_reds.py` — added in v0.1.3 at the operator's request: read-only; lists every unresolved RED for a project (a narrower RESOLVED shown as partial, repeated waivers flagged), so each
+  run's output names the whole open set, not only the assumption it judged. Tests: `python3 -m unittest discover -s scripts -p 'test_*.py'`.
 
 No `references/`, `evals/` or `docs/` directories yet. Each has a named earn-in trigger in the brief's parked list (§ "Parked for v0.2") and is added only when the trial actually presses on it.
 

@@ -1,11 +1,18 @@
 ---
 Title: skill-walk-before-run — CHANGELOG
 Status: current
-Last reviewed: 2026-09-17
+Last reviewed: 2026-09-27
 Summary: Behavioural revisions to skill-walk-before-run between versions.
 ---
 
 # Changelog
+
+## v0.1.3 — every open RED listed on each run, 2026-09-27
+
+Operator request after a unified-network-controller run named one new RED while an older one (the TR-069 half of 2026-09-18) stayed open and unmentioned. Step 0 still judges exactly one assumption;
+the run now also lists every unresolved RED for the project with the new read-only `scripts/open_reds.py`, and the one-screen output ends with that list. A RED counts as closed only when a RESOLVED
+restates its assumption (whitespace-normalised); a RESOLVED on a narrower assumption sharing its opening is shown as `partial?`, leaving the RED open, which is exactly the 2026-09-18 case. Two or more
+waivers on one assumption are flagged. Seven fixture tests. Not a parked-list earn-in: requested by the operator, like v0.1.2's writer script was incident-driven.
 
 ## Unreleased — canary becomes 1 + 5 across sites and clusters, 2026-09-22
 
