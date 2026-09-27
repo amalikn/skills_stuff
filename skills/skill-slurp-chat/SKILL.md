@@ -1,128 +1,118 @@
 ---
 name: skill-slurp-chat
-description: Persist unsaved conversation context to memory-keeper and project-context before compaction or closeout.
+description: "Use when the user says /slurp-chat, slurp, slurp in detail or slurp close, before context compaction, or at session closeout."
 ---
 
 # skill-slurp-chat
 
+A slurp is done when every significant item of the session is findable in two places: the memory backends (memory-keeper, project-context, SCRATCHPAD) **and** the project's governed record (change
+log, agent rules, status surfaces). Memory alone is not capture: the next agent reads the repo first.
+
+## Contents
+
+- [Modes](#modes)
+- [Step 0 — The clock](#step-0--the-clock)
+- [Step 1 — Channel and project ID](#step-1--channel-and-project-id)
+- [Step 2 — Read existing state (mandatory before any write)](#step-2--read-existing-state-mandatory-before-any-write)
+- [Step 3 — Zone B scan (thorough)](#step-3--zone-b-scan-thorough)
+- [Step 4 — Zone A scan (light)](#step-4--zone-a-scan-light)
+- [Step 5 — Memory backends](#step-5--memory-backends)
+- [Step 6 — Governed record (the step memory-only slurps skip)](#step-6--governed-record-the-step-memory-only-slurps-skip)
+- [Step 7 — Checkpoints and SCRATCHPAD](#step-7--checkpoints-and-scratchpad)
+- [Step 8 — Closeout mode only](#step-8--closeout-mode-only)
+- [Report — the coverage table](#report--the-coverage-table)
+- [Red flags — stop and route the item](#red-flags--stop-and-route-the-item)
+
+---
+
 ## Modes
-- **`/slurp-chat`** — read existing → find last save points → zone-aware scan → save gaps → checkpoint
-- **`/slurp-chat close`** — same + full closeout template (see end)
+- **`/slurp-chat`** — steps 0 to 7
+- **`/slurp-chat close`** — same, plus the closeout entry (step 8)
+
+A slurp never commits or pushes unless the user asked for that in the same request.
+
+## Step 0 — The clock
+Run `date '+%Y%m%d_%H%M'` before writing anything. Every stamp this slurp writes (keys, checkpoints, change-log entries, SCRATCHPAD lines) comes from that output or a later `date`. Never write a time
+you did not read.
 
 ## Step 1 — Channel and project ID
-Derive channel from active repo (e.g. `ansible-wifi`). Never `claude-main`.
-Get project ID via `list_projects` if not known.
+Derive the channel from the active repo (e.g. `ansible-wifi`). Never `claude-main`. Get the project ID via `list_projects` if not known.
 
-## Step 2 — Read existing state and find last-save timestamps (mandatory before any write)
-
-Both backends support `sort="created_desc"` — use it to get the most recent entry first.
-
+## Step 2 — Read existing state (mandatory before any write)
 ```
-# memory-keeper — read all entries for channel, newest first
-context_get(channel="<channel>", includeMetadata=true, sort="created_desc")
-
-# mcp-project-context — read all notes for project/channel, newest first
+context_get(channel="<channel>", includeMetadata=true, sort="created_desc", limit=20)
 get_project_context(projectId="<id>", channel="<channel>", section="notes", sort="created_desc")
 ```
+Extract the newest memory-keeper and project-context timestamps and the topics each already covers. memory-keeper stores local time, so a `createdAfter` filter in UTC can return nothing: list by
+`sort` instead. Also note the newest change-log entry's stamp.
 
-From each result, extract:
-- **Last MK timestamp** — `createdAt` of the first (newest) memory-keeper entry
-- **Last PC timestamp** — `createdAt` of the first (newest) project-context note
-- **Topics covered in MK** — keys that exist and their content summary
-- **Topics covered in PC** — notes that exist and what they cover
+**Zone boundary = the later of the two backend timestamps.** After it is Zone B (unsaved); before it is Zone A (light check). No entries in either backend → the whole conversation is Zone B.
 
-**Zone boundary = the LATER of the two timestamps.**
-Anything after the later timestamp is Zone B (unsaved in both backends).
-Anything before it is Zone A (at least partially covered, light check only).
+## Step 3 — Zone B scan (thorough)
+List every significant item as a numbered **item list**, one line each. Each item has a type:
 
-If no entries exist in either backend → entire conversation is Zone B.
+| Type                  | Examples                                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------------------- |
+| repo change           | file added or edited, rename, commit                                                               |
+| operational event     | backup, restore, data written to a system of record, a production read or write done with approval |
+| operator decision     | a choice the user made, with reason and the alternatives turned down                               |
+| operator rule         | "from now on", "never", "always": anything that constrains future agent behaviour                  |
+| undecided proposal    | options or a design put forward that the user did not decide                                       |
+| status change         | work that moves a tracked target, milestone or step                                                |
+| finding / error / fix | constraint, tool behaviour, root cause, workaround                                                 |
+| open task             | pending work with owner, target and commands                                                       |
 
-## Step 3 — Zone B scan (after last-save boundary — thorough)
+Skip chitchat and anything derivable from the repo alone (file contents, git log).
 
-Extract every significant item from this portion. Categorize:
+## Step 4 — Zone A scan (light)
+For each existing entry, ask only: does the conversation hold specific detail (commands, sizes, names, error text) the entry omits? Yes → update that key, or a clearly titled delta note. No → skip.
 
-| Category | mk category |
-|---|---|
-| Technical finding / constraint / tool behavior | `note` |
-| Decision + reason + alternatives | `decision` |
-| File change + why | `progress` |
-| Error / fix / workaround | `error` |
-| Pending task + target + commands | `task` |
-| Access detail (SSH, Teleport, node names) | `note` |
-| Cron / write inventory (frequencies, destinations) | `note` |
+## Step 5 — Memory backends
+- memory-keeper: `context_save(key="<project>.<topic>", category, priority, channel, value)`. One key per topic. `high` for blockers.
+- project-context: `add_note` per Zone B topic; `record_decision` for each operator decision. Never duplicate an existing note.
+- Undecided proposals are saved as open, never as decisions.
 
-Skip: chitchat, tool scaffolding, content derivable from repo (file contents, git log).
+## Step 6 — Governed record (the step memory-only slurps skip)
+Find the project's governed surfaces before writing: its AGENTS.md or CLAUDE.md (change-log rule, working rules), `context-map.yaml` `update_rules`, and any status source of truth (a target map,
+tracker, roadmap). Then route every item:
 
-## Step 4 — Zone A scan (before last-save boundary — light gap-fill)
+| Item type          | Must land in                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------ |
+| repo change        | change-log entry, if the project keeps one                                                       |
+| operational event  | change-log entry, **even when no repo file changed** (what, where, size or count, how verified)  |
+| operator decision  | change-log entry, plus the project's decision surface (register, roadmap) where one exists       |
+| operator rule      | the project's agent rules (AGENTS.md working rules or its rules folder)                          |
+| undecided proposal | SCRATCHPAD open items and the change log as "proposed, not decided"; never in a decision surface |
+| status change      | the status source of truth, then regenerate its derived views                                    |
 
-For each existing MK entry and PC note, re-read the corresponding conversation segment.
-Ask only: *does the conversation contain specific detail (exact commands, sizes, node names, error text, config snippets) that the existing entry omits?*
-- Yes → plan an update to that key (MK) or a delta note (PC) with only the missing detail
-- No → skip entirely
+Run the project's own governance check (e.g. `scripts/check_governance.py`, `just check`) and any status validator afterwards. Fix the project, not the check.
 
-This pass should be fast — most Zone A content is already covered.
-
-## Step 5 — Save gaps
-
-### memory-keeper
-Key format: `<project>.<topic>` e.g. `smc.audit.tooling.overlayfs`
-One key per topic. Same key = overwrites in place (use this for Zone A additions to existing entries).
-
-```
-context_save(key, category, priority="high|normal|low", channel, value)
-```
-
-Priority: `high` for blockers and tasks gating the next milestone.
-
-### mcp-project-context
-- Zone B topics: `add_note` with the new content
-- Zone A gaps: `add_note` only if the missing detail is material; title it clearly as a delta/addendum so it is distinguishable from the existing note
-- If existing notes already cover the topic sufficiently → skip; no duplicate notes (project-context cannot delete)
-
-## Step 6 — Checkpoint both
+## Step 7 — Checkpoints and SCRATCHPAD
 ```
 context_checkpoint(name="slurp-<YYYYMMDD>-<topic>")
 create_checkpoint(projectId, name="slurp-<YYYYMMDD>-<topic>")
 ```
+In the project's `SCRATCHPAD.md` (create via `/skill-ai-it` if missing), update only the sections this session changed, marked `KEEP`: Current state, Open items (add undecided proposals), Key anchors,
+Recent decisions, Session history (2–3 bullets), Next actions (replace), Memory pointers (keys, note and checkpoint IDs). No file-change lists, no task detail, no session logs.
 
-## Step 6.5 — Update SCRATCHPAD.md
+## Step 8 — Closeout mode only
+One more memory-keeper `progress` entry, key `session.closeout.<YYYYMMDD>.<topic>`: Session / Workstream, Scope, Completed, Files Changed, Decisions, Open Issues, Next Actions, Persistence Status
+(memory-keeper, project-context, checkpoints, commits).
 
-Locate `SCRATCHPAD.md` in the project folder (same directory as AGENTS.md / README.md for the
-active project). If none exists, create one via `/skill-ai-it` first.
+## Report — the coverage table
+One row per Step 3 item. No cell may be blank: write the destination, or `not needed` with the reason.
 
-Update only the sections affected by this session's Zone B content. Do not rewrite sections that
-are already current. Apply tiered ownership rules:
+| #   | Item | Type | memory-keeper key | project-context | Governed file | Status |
+| --- | ---- | ---- | ----------------- | --------------- | ------------- | ------ |
 
-| Section | What to write |
-|---|---|
-| `## Current state` | Update phase and prose if project state changed this session |
-| `## Open items` | Add new items; tick off completed ones |
-| `## Key anchors` | Add new paths, contacts, or facts discovered this session |
-| `## Recent decisions` | Prepend decisions made this session (date + decision + brief rationale) |
-| `## Session history` | Prepend 2–3 bullet summary of this session (not full detail — full detail is in memory-keeper) |
-| `## Next actions` | Replace with current next actions |
-| `## Memory pointers` | Add/update memory-keeper keys and project-context IDs from this slurp |
+Then: last memory-keeper and project-context timestamps, the boundary used, and how much of the conversation was Zone A and Zone B.
 
-Mark updated content `KEEP`. Do not duplicate: no file-change lists (those live in memory-keeper),
-no structured task detail (that lives in project-context), no full session logs.
-
-If the project spans multiple channels/projects saved in this slurp, update each project's
-SCRATCHPAD.md separately.
-
-## Closeout mode only — Step 7
-Save one additional `progress` entry to memory-keeper:
-```
-key: session.closeout.<YYYYMMDD>.<topic>
-Session / Workstream:
-Scope:
-Completed:
-Files Changed:
-Decisions:
-Open Issues:
-Next Actions:
-Persistence Status: memory-keeper: / project-context: / checkpoints:
-```
-
-## Report
-Compact table: key | zone | action (created/updated/skipped) | reason if skipped.
-State: last MK timestamp, last PC timestamp, zone boundary used, how much conversation was in each zone.
+## Red flags — stop and route the item
+| Thought                                           | Reality                                                                       |
+| ------------------------------------------------- | ----------------------------------------------------------------------------- |
+| "No repo file changed, so no change-log entry."   | Operational events are durable; the change log is where the next agent looks. |
+| "It is in memory-keeper, so it is captured."      | Memory is not the project's record. Step 6 applies.                           |
+| "Nobody decided it, so there is nothing to save." | An undecided proposal is saved as open, or it is lost.                        |
+| "The rule is obvious from the code."              | Agents read the rules file, not the code. Write the rule.                     |
+| "The status file will be updated next session."   | A stale status source misleads the next reader now.                           |
+| "The time is about HH:MM."                        | Run `date`.                                                                   |
