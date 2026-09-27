@@ -31,6 +31,20 @@ Five families, 17 models catalogued as of 2026-09-17 (source: `cambium-swap/inve
 
 `ePMP 1000` (all variants) and `Force 180` are legacy — operator: "very old and unsupported, being migrated to MikroTik 'metal' APs and XV2-2T0". Don't recommend them for new deployments.
 
+### Telling XV2-2T0 from XV2-22H (2026-09-27)
+
+cnMaestro exports and most asset registers say only "XV2", and a device name says nothing (`HOP_XV2_AP26_IP3_26` is a 22H). The unit itself says which, over REST (one read-only session):
+
+| Variant | `device-summary.model` and `platform-info.model` | `platform-info.sku` | `max_ethernet_ports` |
+| ------- | ------------------------------------------------ | ------------------- | -------------------- |
+| XV2-2T0 | `XV2-2T0`                                        | 22                  | 2                    |
+| XV2-22H | `XV2-22H`                                        | 34                  | 3                    |
+
+Seen on 15 units at six sites across both Teleport clusters (unified-network-controller canaries of 2026-09-22 and 2026-09-27). The six of 2026-09-27 were identified by `device-summary.serial_number` equal to the Nautobot serial; the nine
+earlier captures are serial-redacted and are matched by device name.
+On all 15, a serial starting `WL` (WLZA, WLYM, WLZE, WLYB, WLXL) was an XV2-2T0 and one starting `W4ZA` or `W6YJ` an XV2-22H. That is an observation, not a documented Cambium rule: use it to order
+work, never instead of the read. unified-network-controller's `wc-local/scripts/resolve_xv2_variants.py` does the read per site and never retypes.
+
 ## DHCP Vendor Class (Option 60) per Family
 
 What a factory-default Cambium unit sends in its DHCP request, and the only thing the SMC's low-touch hook has to tell families apart before any device API is reachable. Read
