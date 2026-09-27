@@ -250,4 +250,6 @@ Check only what exists in this project (skip missing files without marking):
 ## Tool hazards
 
 - **The markdown rewrap tool rebuilds any `## Contents` section as a table of contents.** Never put a folder index or file list under `## Contents`; use `## Index`. A list written there is erased.
+- **`stale_refs.py` matches line by line, so a phrase the rewrap tool split across two lines is invisible to it.** On 2026-09-27 a runbook kept a superseded time window ("22:35 to" /
+  "23:06") through a sweep reporting 0 active. Until the script joins lines, follow a 0-active result with a whitespace-tolerant regex over whole files for each multi-word old phrase.
 - **An unquoted heredoc (`<<EOF`) runs every backticked word as a command.** Write markdown with `<<'EOF'`, or with the Write tool, and read the result back.

@@ -1,5 +1,10 @@
 # Changelog — skill-project-coherence
 
+## 2026-09-27 (evening) — a phrase split across a wrapped line escapes the sweep
+
+Found in unified-network-controller: its P0 runbook stated a superseded window as "22:35 to" on one line and "23:06" on the next, and `stale_refs.py` (line by line) reported 0 active. Recorded
+as a tool hazard in SKILL.md with the workaround (a whitespace-tolerant regex over whole files); the script itself is unchanged, so the fix is still open.
+
 ## 2026-09-27 — the sweep could not see live data, sibling skills, or the page readers open first
 
 Found while running this skill after the seventh staleness audit of unified-network-controller ("seven sites" → "nine sites", and a new one-writer rule for each site's DNS zone). A subagent run
