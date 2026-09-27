@@ -108,6 +108,13 @@ RULES = [
     ((), (".lock",), "dependency-lock", "examined", ""),
     ((), (".ipynb",), "notebook", "examined-special", "outputs may predate current code"),
     ((), (".tf", ".tfvars"), "iac", "examined", ""),
+    # Added 2026-09-20 on unified-network-controller: container build files were unclassified.
+    # A Dockerfile is IaC and a supply-chain surface -- a pinned base image, an apt repo codename,
+    # or a package version in it goes stale silently and is only noticed on the next rebuild, which
+    # may be months later. Match by name, since these files conventionally carry no extension.
+    (("Dockerfile", "Containerfile"), (".dockerfile",),
+     "container-build", "examined",
+     "pinned base image, repo codenames and package versions go stale silently until the next rebuild"),
     # Templates are CODE. In infra projects they are where the silent failure lives: a renamed
     # variable still renders, still exits 0, and quietly produces the wrong config.
     ((), (".j2", ".jinja", ".jinja2", ".tmpl", ".tpl", ".mustache", ".erb"),
@@ -132,6 +139,14 @@ RULES = [
      "audit by whether it still depicts current behaviour, not by grep"),
     ((), (".service", ".conf", ".cfg", ".inventory", ".properties", ".env"),
      "runtime-config", "examined", "check referenced hosts, paths and units still exist"),
+    # Added 2026-09-20 on unified-network-controller: vendor/network device configs in a lab tree
+    # were unclassified -- MikroTik .rsc scripts and an FRR daemons file. These are DEVICE STATE
+    # expressed as text: an interface name, an IP, or a daemon toggle that no longer matches the
+    # topology still parses and still loads, and the lab comes up subtly wrong rather than failing.
+    (("/configs/frr/", "/configs/mikrotik/", "/configs/cumulus/", "/configs/sonic/"),
+     (".rsc", ".nclu", ".frr"),
+     "device-config", "examined",
+     "device state as text -- a stale interface, address or daemon toggle loads cleanly and is wrong"),
     (("COPYING", "LICENSE", "LICENCE", "NOTICE"), (".license",),
      "licence", "exempt", "licence text, not a project claim"),
     ((), (".zip", ".tar", ".gz", ".tgz", ".7z"),
@@ -140,7 +155,7 @@ RULES = [
      "evidence-log", "examined-special", "append-only record; one malformed line is silent, so parse every line"),
     ((".env.example", ".env.sample", ".env.template"), (),
      "config-template", "examined", "a template that gets copied — a stale value in it is a live instruction"),
-    ((), (".yaml", ".yml", ".json", ".toml", ".ini"),
+    ((), (".yaml", ".yml", ".json", ".toml", ".ini", ".jsonc", ".json5"),
      "structured-config", "examined-special", "parse with a strict loader; do not read as text"),
     ((), (".md", ".rst", ".txt"), "prose", "examined", ""),
     ((), (".trace", ".log"),
