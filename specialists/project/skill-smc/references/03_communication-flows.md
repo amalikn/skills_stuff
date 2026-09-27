@@ -275,18 +275,18 @@ communication, and formal stakeholder sign-off for deployment-specific decisions
 mornington. Useful when judging whether an unexpected VLAN is a new uplink or a typo.
 
 - **Every rcp site is wired with both VLAN blocks, but switch02 (`53x`) is cold standby by design at every site except Horn Island.** *(live-verified 2026-07-29, Grafana `rate()` on
-  `node_network_receive_bytes_total`, all seven sites)* Horn Island is the transition site — built at the point the fleet moved from two switches to one, with too many Starlink services to fit on a
-  single switch, so it's the only site actually using both. Every site built after it (all six others) shows exactly **0 bps** on every `53x` VLAN, live, right now — netplan/the hook still define
-  those VLANs (so they count toward a "missing N" hook-coverage gap), but nothing is physically plugged into switch02 there. **Do not size customer impact directly from a hook-coverage gap without
-  splitting switch01 from switch02 first** — on the four sites checked during the 2026-07-29 routing investigation, roughly half of each site's "missing" count was switch02, cold and harmless; only
-  the switch01 half was costing anything. A second refinement on the switch01 half itself: `ip -br link` showing an interface `UP` does not mean it's **leased** — `ip -br addr` (a real CGNAT address
-  present) is what distinguishes a genuine orphaned uplink (costing bandwidth right now) from an empty, never-provisioned slot (present in netplan, no dish behind it yet, costing nothing). **Caveat:**
-  this assumes switch02 stays unplugged — if it's ever wired up at a site whose `dhclient-enter-hooks` case list is stale, the hook's ignorance of those VLANs reproduces the exact same
-  stray-route/missing-route symptom the moment they go live.
+  `node_network_receive_bytes_total`, all seven sites)* **As at 2026-07-29, when rcp had seven production sites; not re-verified since the fleet grew.** Horn Island is the transition site — built at
+  the point the fleet moved from two switches to one, with too many Starlink services to fit on a single switch, so it's the only site actually using both. Every site built after it (all six others)
+  shows exactly **0 bps** on every `53x` VLAN, live, right now — netplan/the hook still define those VLANs (so they count toward a "missing N" hook-coverage gap), but nothing is physically plugged
+  into switch02 there. **Do not size customer impact directly from a hook-coverage gap without splitting switch01 from switch02 first** — on the four sites checked during the 2026-07-29 routing
+  investigation, roughly half of each site's "missing" count was switch02, cold and harmless; only the switch01 half was costing anything. A second refinement on the switch01 half itself: `ip -br
+  link` showing an interface `UP` does not mean it's **leased** — `ip -br addr` (a real CGNAT address present) is what distinguishes a genuine orphaned uplink (costing bandwidth right now) from an
+  empty, never-provisioned slot (present in netplan, no dish behind it yet, costing nothing). **Caveat:** this assumes switch02 stays unplugged — if it's ever wired up at a site whose
+  `dhclient-enter-hooks` case list is stale, the hook's ignorance of those VLANs reproduces the exact same stray-route/missing-route symptom the moment they go live.
 - **`LAN1`/`LAN2` (Testra-managed, residential-plan Starlink, 50 Mbps unlimited) are a separate uplink pair, outside the `Swp1/9`–`1/18` VLAN scheme entirely and not yet correlated to any
-  `topology_vars` interface key.** *(operator-reported provisioning table, 2026-07-29)* Present at six of seven sites (two lines each); Horn Island has only `LAN1`. Distinct from the direct-Starlink
-  enterprise-plan VLANs (`521`–`52N`/`531`–`53N`, 2 TB cap) this section otherwise describes — if a site-specific WAN count doesn't add up against `topology_vars`, check whether `LAN1`/`LAN2` are the
-  unaccounted-for difference before assuming a topology drift.
+  `topology_vars` interface key.** *(operator-reported provisioning table, 2026-07-29)* Present at six of the seven sites as at 2026-07-29 (two lines each); Horn Island has only `LAN1`. Distinct from
+  the direct-Starlink enterprise-plan VLANs (`521`–`52N`/`531`–`53N`, 2 TB cap) this section otherwise describes — if a site-specific WAN count doesn't add up against `topology_vars`, check whether
+  `LAN1`/`LAN2` are the unaccounted-for difference before assuming a topology drift.
 
 WAN interfaces are *not* managed by systemd-networkd. `netplan.yml.j2` renders every interface with `role: internet` or `role: starlink` as `activation-mode: manual` with **no `dhcp4` key**;
 `00-interface-activation.sh.j2` brings them up, and a per-interface `dhclient@<iface>.service` does DHCP using `ubuntu-dhclient-script.j2` (an APN fork of the CentOS dhclient script).
@@ -331,9 +331,9 @@ Consequences worth knowing before diagnosing any WAN routing question:
   VLAN that's since been removed from `topology_vars` (see `smc_network`'s idempotency gap below) has no running unit behind it and is currently inert — `systemctl list-units 'dhclient@*' --all` only
   ever shows real, live interfaces, never orphaned conf-file names. Useful when auditing whether a conf file on disk implies an active interface: it doesn't, check `dhclient@<name>.service` state
   directly rather than inferring from file presence.
-- **The deployed commit is a per-host fact, not a fleet-wide one.** Two of seven sites were found running a hook rendered from a *different branch* than the one believed deployed. Where a site's
-  topology differs between two candidate commits, the hook's case list identifies which one it came from — a cheap, reliable way to pin per-host deploy state. Where the commits define a site
-  identically the hook cannot discriminate, and that must be stated rather than assumed away.
+- **The deployed commit is a per-host fact, not a fleet-wide one.** Two of the seven sites as at 2026-07-29 were found running a hook rendered from a *different branch* than the one believed deployed.
+  Where a site's topology differs between two candidate commits, the hook's case list identifies which one it came from — a cheap, reliable way to pin per-host deploy state. Where the commits define a
+  site identically the hook cannot discriminate, and that must be stated rather than assumed away.
 - **A topology file can shrink.** One site's `internetNN` definitions went from 16 to 6 on a branch, and the shrunken render reached `smc_application` while netplan still held all 16. The failure
   looks identical to a site outgrowing its topology file; only the direction differs. **Stale `ip rule` entries are the forensic marker** — a rule with no matching hook entry is residue from an
   earlier render, since rules persist until deleted or reboot. An interface holding *both* a stale rule and a `metric 100` default is two renders coexisting, not a contradiction.
@@ -455,9 +455,9 @@ Consistent with shaping being rolled out per-site by hand rather than fleet-wide
 **Corrected 2026-07-30 — not "planned, not started".** A `smc_qos` role already exists in the repo, but it is gated `when: inventory_dir.split('/')|last == 'rct'` — it silently no-ops on every
 `rcp`/`nbn_accelerate` deploy. `--tags qos` ran clean during all three 2026-07-30 canary deploys and never fired. Manual TBF/`ifb` shaping (above) remains the only active mechanism on rcp, and it has
 NOT been extended to VLANs that were only newly fixed by the routing-drift remediation: 2 VLANs missing shaping at Pandanus Park, 10 at Umoona, 8 at Old Looma (as of 2026-07-30). Two open design
-questions if `smc_qos` is regated for rcp/nbn_accelerate: (1) the rate-variable shape needs to support Horn Island's per-VLAN split, not just a single per-host rate — six of seven sites use one rate,
-Horn Island needs two; (2) role placement/name relative to `smc_network`/`smc_application` in `smc_bases.yml`'s run order is unconfirmed. Source: `local-knowledge-ansible/ansible-wifi/
-issues/apn/routing-issue/docs/ingress-shaping-not-managed-or-extended-20260730_1245.md`.
+questions if `smc_qos` is regated for rcp/nbn_accelerate: (1) the rate-variable shape needs to support Horn Island's per-VLAN split, not just a single per-host rate — six of the seven sites as at
+2026-07-30 use one rate, Horn Island needs two; (2) role placement/name relative to `smc_network`/`smc_application` in `smc_bases.yml`'s run order is unconfirmed. Source:
+`local-knowledge-ansible/ansible-wifi/ issues/apn/routing-issue/docs/ingress-shaping-not-managed-or-extended-20260730_1245.md`.
 
 ### WAN-Path Diagnostic Techniques (from the 2026-07-30 dark-VLAN investigation)
 

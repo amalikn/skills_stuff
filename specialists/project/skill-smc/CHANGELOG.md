@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_1752 — the rcp "seven sites" observations are dated as at 2026-07-29/30 (v0.1.67 -> v0.1.68)](#20260927_1752--the-rcp-seven-sites-observations-are-dated-as-at-2026-07-2930-v0167---v0168)
 - [20260927_1704 — fping approved per flavour (rcp, nbn_accelerate); the package-install guard that followed a Location-driven widening (v0.1.66 -> v0.1.67)](#20260927_1704--fping-approved-per-flavour-rcp-nbn_accelerate-the-package-install-guard-that-followed-a-location-driven-widening-v0166---v0167)
 - [20260927_1632 — smc_ltp has nine sites, not seven (pia and yakanarra were missing); topology_vars layout; the nine seeded into unified-network-controller's Nautobot (v0.1.65 -> v0.1.66)](#20260927_1632--smc_ltp-has-nine-sites-not-seven-pia-and-yakanarra-were-missing-topology_vars-layout-the-nine-seeded-into-unified-network-controllers-nautobot-v0165---v0166)
 - [20260927_1617 — _update_dns() location corrected (line 2855, not 2407); one production RPZ zone read: cnMaestro names, a fleet-wide template, low-touch sites absent from Nautobot (v0.1.64 -> v0.1.65)](#20260927_1617--_update_dns-location-corrected-line-2855-not-2407-one-production-rpz-zone-read-cnmaestro-names-a-fleet-wide-template-low-touch-sites-absent-from-nautobot-v0164---v0165)
@@ -80,6 +81,13 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260927_1752 — the rcp "seven sites" observations are dated as at 2026-07-29/30 (v0.1.67 -> v0.1.68)
+
+`references/03_communication-flows.md`: four statements about the rcp fleet ("all seven sites", "six of seven", "two of seven") read as current, though `inventories/rcp/host_vars` now holds many more
+host files (production group membership not recounted here). They were live-verified or operator-reported on 2026-07-29/30 and are now framed as at those dates, with a note that the switch02
+cold-standby observation was not re-verified since. No claim was changed; re-verifying them needs Grafana against today's fleet. Found by skill-project-coherence's new `stale_refs.py` sweep; these
+lines are about rcp, not the `smc_ltp` group (whose count was corrected to nine in v0.1.66). Documentation only.
 
 ## 20260927_1704 — fping approved per flavour (rcp, nbn_accelerate); the package-install guard that followed a Location-driven widening (v0.1.66 -> v0.1.67)
 
