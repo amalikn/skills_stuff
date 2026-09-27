@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_1704 — fping approved per flavour (rcp, nbn_accelerate); the package-install guard that followed a Location-driven widening (v0.1.66 -> v0.1.67)](#20260927_1704--fping-approved-per-flavour-rcp-nbn_accelerate-the-package-install-guard-that-followed-a-location-driven-widening-v0166---v0167)
 - [20260927_1632 — smc_ltp has nine sites, not seven (pia and yakanarra were missing); topology_vars layout; the nine seeded into unified-network-controller's Nautobot (v0.1.65 -> v0.1.66)](#20260927_1632--smc_ltp-has-nine-sites-not-seven-pia-and-yakanarra-were-missing-topology_vars-layout-the-nine-seeded-into-unified-network-controllers-nautobot-v0165---v0166)
 - [20260927_1617 — _update_dns() location corrected (line 2855, not 2407); one production RPZ zone read: cnMaestro names, a fleet-wide template, low-touch sites absent from Nautobot (v0.1.64 -> v0.1.65)](#20260927_1617--_update_dns-location-corrected-line-2855-not-2407-one-production-rpz-zone-read-cnmaestro-names-a-fleet-wide-template-low-touch-sites-absent-from-nautobot-v0164---v0165)
 - [20260927_0322 — what a low-touch SMC keeps per device: extensions CSV, TFTP configs, the cnMaestro-fed RPZ zone, no DHCP reservations (v0.1.63 -> v0.1.64)](#20260927_0322--what-a-low-touch-smc-keeps-per-device-extensions-csv-tftp-configs-the-cnmaestro-fed-rpz-zone-no-dhcp-reservations-v0163---v0164)
@@ -79,6 +80,11 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260927_1704 — fping approved per flavour (rcp, nbn_accelerate); the package-install guard that followed a Location-driven widening (v0.1.66 -> v0.1.67)
+
+From unified-network-controller's seventh staleness audit (its CHANGELOG `20260927_1659`). `references/07_hardware-overlay.md` fping section: the operator's approval of fping installs on every `rcp`
+and `nbn_accelerate` box, and the guard in that project's package checker, added after seeding the nine `smc_ltp` Locations silently widened its install reach. Documentation only.
 
 ## 20260927_1632 — smc_ltp has nine sites, not seven (pia and yakanarra were missing); topology_vars layout; the nine seeded into unified-network-controller's Nautobot (v0.1.65 -> v0.1.66)
 

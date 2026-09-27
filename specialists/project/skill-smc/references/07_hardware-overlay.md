@@ -3,14 +3,58 @@
 ## Contents
 
 - [7. Hardware Differences: x86 vs Raspberry Pi](#7-hardware-differences-x86-vs-raspberry-pi)
-- [Ubuntu Core suitability assessment (2026-09-17)](#ubuntu-core-suitability-assessment-2026-09-17)
-- [Other OS alternatives assessment (2026-09-17)](#other-os-alternatives-assessment-2026-09-17)
+  - [Ubuntu Core suitability assessment (2026-09-17)](#ubuntu-core-suitability-assessment-2026-09-17)
+  - [Other OS alternatives assessment (2026-09-17)](#other-os-alternatives-assessment-2026-09-17)
+  - [Storage health monitoring — two different tools, clarified 2026-07-13](#storage-health-monitoring--two-different-tools-clarified-2026-07-13)
+  - [Transcend SSD wear metric — firmware limitation, fixed fleet-wide (found 2026-06-02, root-caused 2026-07-13, Part 1 shipped + confirmed live 2026-07-17)](#transcend-ssd-wear-metric--firmware-limitation-fixed-fleet-wide-found-2026-06-02-root-caused-2026-07-13-part-1-shipped--confirmed-live-2026-07-17)
+  - [RPi/Swissbit microSD wear metrics — genuinely low fleet-wide usage, not a bug (investigated 2026-07-13)](#rpiswissbit-microsd-wear-metrics--genuinely-low-fleet-wide-usage-not-a-bug-investigated-2026-07-13)
+  - [Mismatched Transcend SSD pairs on BOXER-6641 — now a recurring pattern (3 nodes confirmed 2026-07-17→2026-07-21)](#mismatched-transcend-ssd-pairs-on-boxer-6641--now-a-recurring-pattern-3-nodes-confirmed-2026-07-172026-07-21)
+  - [Same 3 nodes: `smartmon.py`'s `remaining_lifetime_perc` didn't publish — fixed 2026-07-21 (attribute-169 name-resolution gap, not a hardware limitation)](#same-3-nodes-smartmonpys-remaining_lifetime_perc-didnt-publish--fixed-2026-07-21-attribute-169-name-resolution-gap-not-a-hardware-limitation)
+  - [`fatrace` not installed on ungoverned nodes — audit-methodology gotcha (found 2026-07-21, old-looma-smc01) — standing fix: install it, don't just substitute](#fatrace-not-installed-on-ungoverned-nodes--audit-methodology-gotcha-found-2026-07-21-old-looma-smc01--standing-fix-install-it-dont-just-substitute)
+  - [Verifying 12-fix parity on-box — two probe gotchas + what "healthy" looks like (2026-07-22)](#verifying-12-fix-parity-on-box--two-probe-gotchas--what-healthy-looks-like-2026-07-22)
+  - [NBN Accelerate / NBN WH Hardware Inventory (first live fleet sweep, 2026-08-03)](#nbn-accelerate--nbn-wh-hardware-inventory-first-live-fleet-sweep-2026-08-03)
 - [8. Overlay Filesystem (Critical Concept)](#8-overlay-filesystem-critical-concept)
+  - [Structure](#structure)
+  - [Runtime Behavior](#runtime-behavior)
+  - [The copy_up cost model — size at first write, not write rate (established 2026-08-18)](#the-copy_up-cost-model--size-at-first-write-not-write-rate-established-2026-08-18)
+  - [`overlay.size_ratio` is inert — the budget is always 50% of RAM (verified at source 2026-08-18)](#overlaysize_ratio-is-inert--the-budget-is-always-50-of-ram-verified-at-source-2026-08-18)
+  - [`recurse=0` — the escape hatch that is already unlocked (verified at source 2026-08-18)](#recurse0--the-escape-hatch-that-is-already-unlocked-verified-at-source-2026-08-18)
+  - [Bounding writes instead: `roles/smc_rise_logcaps` (added 2026-08-18)](#bounding-writes-instead-rolessmc_rise_logcaps-added-2026-08-18)
+  - [x86 boxes: no overlayroot; which paths are tmpfs (verified 2026-09-22)](#x86-boxes-no-overlayroot-which-paths-are-tmpfs-verified-2026-09-22)
+  - [Checking Overlayroot Status](#checking-overlayroot-status)
+  - [Configuration](#configuration)
+  - [Ansible + Overlayroot](#ansible--overlayroot)
+  - [Disable Sequence (when needed)](#disable-sequence-when-needed)
+  - [Read-Only Migration Status (per flavor)](#read-only-migration-status-per-flavor)
+  - [`smc_disk_failover` role — EFI BootNext mechanism, not a guaranteed live-corruption failover](#smc_disk_failover-role--efi-bootnext-mechanism-not-a-guaranteed-live-corruption-failover)
+  - [rcp Disk Write Profile (confirmed jigalong-smc01, 2026-04-20; re-confirmed 3 more nodes 2026-07-20)](#rcp-disk-write-profile-confirmed-jigalong-smc01-2026-04-20-re-confirmed-3-more-nodes-2026-07-20)
+  - [url_capture DNS Monitoring Service (rcp only)](#url_capture-dns-monitoring-service-rcp-only)
+  - [fatrace write-rate audits: filter bug — RO/RC/RCO counted as writes (2026-07-09)](#fatrace-write-rate-audits-filter-bug--rorcrco-counted-as-writes-2026-07-09)
+  - [fatrace write counts measure syscalls, not physical disk I/O (2026-07-15)](#fatrace-write-counts-measure-syscalls-not-physical-disk-io-2026-07-15)
+  - [fatrace excludes tmpfs entirely — every sweep in this project is real-disk-only (confirmed 2026-07-24)](#fatrace-excludes-tmpfs-entirely--every-sweep-in-this-project-is-real-disk-only-confirmed-2026-07-24)
 - [Orphaned persistent journal after the volatile conversion (~44 GB fleet-wide, reclaimed 2026-07-28)](#orphaned-persistent-journal-after-the-volatile-conversion-44-gb-fleet-wide-reclaimed-2026-07-28)
+  - [`journalctl --vacuum-*` cannot do this job](#journalctl---vacuum--cannot-do-this-job)
+  - [Safe reclaim procedure](#safe-reclaim-procedure)
 - [Fleet status-probe gotchas — three checks that read as fleet-wide failures but are wrong paths (verified 2026-08-25)](#fleet-status-probe-gotchas--three-checks-that-read-as-fleet-wide-failures-but-are-wrong-paths-verified-2026-08-25)
+  - [Teleport node name can differ from hostname and inventory name](#teleport-node-name-can-differ-from-hostname-and-inventory-name)
+  - [Inventory group membership proves eligibility, not application](#inventory-group-membership-proves-eligibility-not-application)
 - [Write-rate sweeps are blind to burst writers (2026-08-26)](#write-rate-sweeps-are-blind-to-burst-writers-2026-08-26)
+  - [Events are not bytes](#events-are-not-bytes)
+  - [Windows miss burst writers entirely — this is the bigger problem](#windows-miss-burst-writers-entirely--this-is-the-bigger-problem)
+  - [snapd is a read-only-root blocker, not just a wear problem](#snapd-is-a-read-only-root-blocker-not-just-a-wear-problem)
+  - [Lifetime counters are contaminated by pre-remediation history — do not use them](#lifetime-counters-are-contaminated-by-pre-remediation-history--do-not-use-them)
+  - [What the continuous writers actually are (2026-08-26, 9 nodes)](#what-the-continuous-writers-actually-are-2026-08-26-9-nodes)
+  - [Tooling](#tooling)
 - [The 24 h write baseline, and what two attribution passes buy you (2026-08-27/28 capture)](#the-24-h-write-baseline-and-what-two-attribution-passes-buy-you-2026-08-2728-capture)
+  - [The collector runs two passes that share no mechanism — compare them per node](#the-collector-runs-two-passes-that-share-no-mechanism--compare-them-per-node)
+  - [Rewrite-in-place bytes are an UPPER bound — the direction matters and has been got wrong](#rewrite-in-place-bytes-are-an-upper-bound--the-direction-matters-and-has-been-got-wrong)
+  - [Process-sum figures are a floor, not a total — 30–42% of device bytes are unattributed](#process-sum-figures-are-a-floor-not-a-total--3042-of-device-bytes-are-unattributed)
+  - [squidguard is the largest single writer at ~440 MB/node/day](#squidguard-is-the-largest-single-writer-at-440-mbnodeday)
+  - [A single window never gives an event-driven writer's daily rate — snapd is the worked example](#a-single-window-never-gives-an-event-driven-writers-daily-rate--snapd-is-the-worked-example)
+  - [squidguard is silently dead on mornington and bidyadanga](#squidguard-is-silently-dead-on-mornington-and-bidyadanga)
+  - [rsyslogd spread is 6.7× and unexplained](#rsyslogd-spread-is-67-and-unexplained)
 - [Cambium radio and AP estate by flavour (operator-stated 2026-09-14)](#cambium-radio-and-ap-estate-by-flavour-operator-stated-2026-09-14)
+
 - Hardware differences: x86 vs Raspberry Pi
 - NBN Accelerate / NBN WH hardware inventory (first live fleet sweep)
 - Overlay filesystem structure and runtime behavior
@@ -75,8 +119,8 @@ Conditional Branching" for the full selector-mechanism reference.
 
 ### Ubuntu Core suitability assessment (2026-09-17)
 
-**Design recommendation — not implemented or canary-tested:** retain Ubuntu Server LTS as the standard OS for new Raspberry Pi SMCs; do not introduce Ubuntu Core into the current SMC appliance
-fleet. This is an SMC-workload conclusion, not a claim that Ubuntu Core is unsuitable for embedded devices generally.
+**Design recommendation — not implemented or canary-tested:** retain Ubuntu Server LTS as the standard OS for new Raspberry Pi SMCs; do not introduce Ubuntu Core into the current SMC appliance fleet.
+This is an SMC-workload conclusion, not a claim that Ubuntu Core is unsuitable for embedded devices generally.
 
 The existing `smc_bases.yml` design assumes a conventional Ubuntu host that Ansible manages as `root`: it runs APT/package tasks and directly manages `/etc`, `/usr/local`, `/var`, systemd units,
 netplan/systemd-networkd, DHCP/DNS, hostapd, iptables/netfilter-persistent, Teleport/autossh, Prometheus and application services. RISE already makes the normal Server root filesystem disposable with
@@ -90,8 +134,9 @@ Before reconsidering Core, create a separate greenfield appliance design and can
 model/gadget/image and refresh policy, and prove on a Pi under realistic constrained-link conditions: hostapd/AP mode, DHCP/DNS, netfilter/traffic control, routing/failover, Teleport reverse access,
 telemetry, storage-health collection, updates and recovery. Treat an existing SMC migration as out of scope until that canary has passed; it should not be used as an SD-card reliability shortcut.
 
-**Sources:** Canonical, [Ubuntu Core documentation](https://documentation.ubuntu.com/core/) (last updated 2026-04-21); [Using Ubuntu Core](https://documentation.ubuntu.com/core/how-to-guides/using-ubuntu-core/)
-(last updated 2026-08-21); [Snap confinement](https://documentation.ubuntu.com/security/security-features/privilege-restriction/snap-confinement/) (retrieved 2026-09-17).
+**Sources:** Canonical, [Ubuntu Core documentation](https://documentation.ubuntu.com/core/) (last updated 2026-04-21); [Using Ubuntu
+Core](https://documentation.ubuntu.com/core/how-to-guides/using-ubuntu-core/) (last updated 2026-08-21); [Snap
+confinement](https://documentation.ubuntu.com/security/security-features/privilege-restriction/snap-confinement/) (retrieved 2026-09-17).
 
 ### Other OS alternatives assessment (2026-09-17)
 
@@ -108,8 +153,8 @@ the same Server release that has been ARM-canary-qualified for the fleet; OS rel
 **VERIFIED_PRIMARY (retrieved 2026-09-17):** Raspberry Pi OS is Debian-based and supports APT-managed packages, including Pi kernel and firmware updates; OpenWrt is a Linux distribution for embedded
 devices, typically wireless routers. The suitability decisions above are an inference from those models and the verified SMC workload, not claims of general-purpose superiority.
 
-**Sources:** Raspberry Pi, [Raspberry Pi OS documentation](https://www.raspberrypi.com/documentation/computers/os.html) (retrieved 2026-09-17); OpenWrt, [Documentation overview](https://openwrt.org/docs/start)
-(retrieved 2026-09-17).
+**Sources:** Raspberry Pi, [Raspberry Pi OS documentation](https://www.raspberrypi.com/documentation/computers/os.html) (retrieved 2026-09-17); OpenWrt, [Documentation
+overview](https://openwrt.org/docs/start) (retrieved 2026-09-17).
 
 ### Storage health monitoring — two different tools, clarified 2026-07-13
 
@@ -413,8 +458,8 @@ The scan is `-xdev`, so it is forward-compatible with the structural fix: anythi
 
 ### x86 boxes: no overlayroot; which paths are tmpfs (verified 2026-09-22)
 
-Operator, 2026-09-22: only RPi and WH boxes run overlayroot. x86 SMCs have a plain LVM/ext4 root (`overlayroot=""` in `/etc/overlayroot.conf`), so an `apt install` survives a reboot there.
-Scratch data that must not touch disk goes on a tmpfs mount, and those mounts differ box to box:
+Operator, 2026-09-22: only RPi and WH boxes run overlayroot. x86 SMCs have a plain LVM/ext4 root (`overlayroot=""` in `/etc/overlayroot.conf`), so an `apt install` survives a reboot there. Scratch
+data that must not touch disk goes on a tmpfs mount, and those mounts differ box to box:
 
 | Box (x86)          | `/`  | `/tmp` | `/run` | `/dev/shm` |
 | ------------------ | ---- | ------ | ------ | ---------- |
@@ -428,10 +473,21 @@ Use `/run` (systemd's tmpfs) for throwaway files and check it with `stat -f -c %
 `/var/lib/node_exporter/textfile_collector`, `/var/lib/prometheus` and `/var/log/smc-groups` (the last from `/etc/tmpfiles.d/smc-log-groups.conf`).
 
 **fping** (2026-09-22): not in any ansible-wifi role. Installed by hand with apt (5.1-1, jammy) on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability
-pre-check (`wc-local/scripts/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That script falls back to `ping`,
-and a fleet install belongs in an ansible-wifi role.
+pre-check (`wc-local/scripts/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That script
+falls back to `ping`, and a fleet install belongs in an ansible-wifi role.
 
-**fping fleet install (2026-09-23, operator: "install fping where needed").** A survey of all 36 `<site>-smc01` nodes in Nautobot found fping on only those three; `apt-get install -y fping` (5.1-1, jammy) then ran on the other 32 reachable boxes plus aurukun-smc02 and aurukun-smc03, all x86 22.04 with an ext4 root except bungardi and darlngunaya (aarch64, no overlay mounted, so the install persists there too). mungkarta-smc01 was unreachable and still lacks it. **bungardi and darlngunaya are `nbn_wh` sites and the operator's rule is not to touch `nbn_wh`**; the install there predated the instruction and was removed the same evening (`apt-get remove --purge fping`, 21:27) on the operator's call; both boxes are back as found. The one-shot survey pitfall: an `ssh host sh -c 'cmd'` with the command passed as separate ssh arguments is re-joined on the box, so `command -v` tested nothing and reported yes everywhere; pass the whole remote command as one string. Still not in any ansible-wifi role, so a reimaged box loses it: the durable fix is a package entry in the base role.
+**fping fleet install (2026-09-23, operator: "install fping where needed").** A survey of all 36 `<site>-smc01` nodes in Nautobot found fping on only those three; `apt-get install -y fping` (5.1-1,
+jammy) then ran on the other 32 reachable boxes plus aurukun-smc02 and aurukun-smc03, all x86 22.04 with an ext4 root except bungardi and darlngunaya (aarch64, no overlay mounted, so the install
+persists there too). mungkarta-smc01 was unreachable and still lacks it. **bungardi and darlngunaya are `nbn_wh` sites and the operator's rule is not to touch `nbn_wh`**; the install there predated
+the instruction and was removed the same evening (`apt-get remove --purge fping`, 21:27) on the operator's call; both boxes are back as found. The one-shot survey pitfall: an `ssh host sh -c 'cmd'`
+with the command passed as separate ssh arguments is re-joined on the box, so `command -v` tested nothing and reported yes everywhere; pass the whole remote command as one string. Still not in any
+ansible-wifi role, so a reimaged box loses it: the durable fix is a package entry in the base role.
+
+**fping approval per flavour, and the install guard (2026-09-27, operator: "I am fine with installing fping to rcp and nbn_accelerate flavors when needed").** fping may be installed wherever it is
+missing on any `rcp` or `nbn_accelerate` box; any other package, or any other flavour, needs the box chosen one by one. unified-network-controller's `wc-local/scripts/smc_package_check.py` builds its
+node list from every Nautobot Location with a programme tenant, so seeding the nine `smc_ltp` Locations that day had silently widened `--install` to nine more production boxes; its `install_targets`
+guard now installs only on a node whose package is approved for its flavour (`APPROVED_INSTALLS`), whose SMC Device exists in Nautobot, or that was named with `--nodes`. Both approved flavours are x86
+with a plain ext4 root, so the approval never meets an overlayroot (those are the RPi and WH flavours: `rct`, `wh`, `nbn_wh`); `nbn_wh` stays skipped.
 
 ### Checking Overlayroot Status
 
