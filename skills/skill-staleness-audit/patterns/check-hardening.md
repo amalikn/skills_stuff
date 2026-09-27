@@ -34,18 +34,23 @@ This is not hypothetical. In the originating run, a divergence warning was added
 therefore **never fired**, and nothing anywhere reported a problem — because a warning that does not trigger produces no output and breaks no test. It was caught only by deliberately running a preset
 that *should* have triggered it and noticing silence.
 
-The protocol, every time:
+The protocol, every time — through the recorder, which runs the check itself and keeps the evidence:
 
 ```bash
 # 1. Prove it can go RED — introduce the exact defect the check exists for
-cp target.file /tmp/bak
+cp target.file .staleness-audit/target.bak
 printf '\n<the defect>\n' >> target.file
-just check 2>&1 | grep "<expected message>"      # MUST appear
+python3 <skill>/scripts/audit_state.py negtest red --check <name> \
+    --expect "<failure-specific message>" --cmd "just check"     # refused unless non-zero AND message printed
 
 # 2. Prove it goes GREEN again
-cp /tmp/bak target.file && rm /tmp/bak
-just check 2>&1 | tail -3                        # MUST pass
+cp .staleness-audit/target.bak target.file
+python3 <skill>/scripts/audit_state.py negtest green --check <name>   # refused unless exit 0 and message gone
 ```
+
+`checks_negative_tested` is derived from these records; `audit_state.py record` refuses it. **Why the recorder and not a typed count:** on 2026-09-27 an agent's first negative test of a new check
+*passed while the project was broken* — the break never reached what the check read — and the typed receipt still counted it. The recorder rejects that red leg, and rejects a green leg whose passing
+output still contains the expected text (a string that appears either way proves nothing). Pick `--expect` so it can only appear on failure: the check's FAIL line, not its name.
 
 For a check with a threshold or a conditional, test **both sides of the boundary** — one case that must warn and one that must not. A guard that fires on everything is as useless as one that fires on
 nothing, and only bidirectional testing separates them.

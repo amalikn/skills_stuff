@@ -69,6 +69,10 @@ Each claim ends in exactly one cell. The three counts must reconcile against the
 
 Anything not in one of those three is unexamined, and the audit is not finished.
 
+`claim_scan.py --record` splits RESIDUAL into its classes, so the bucket says what it holds: `claims_residual_manual` (needs a person), `claims_residual_broken` (a path that resolves nowhere — the
+finding), `claims_residual_conditional` ("when present", gitignored, or in the project's `CONDITIONAL_PATHS`) and `claims_residual_on_box` (a system path on a managed host). Paths into a declared
+sibling checkout (`SIBLING_ROOTS`) are resolved there and count as VERIFIED. Claims under a dated heading, or on a line that starts with a date, are MARKED-HISTORICAL without a hand-added marker.
+
 ## Running the sweep
 
 Run **after** Phase 5, so the checks written there participate.
@@ -101,6 +105,7 @@ Then check the direction that grows silently: **does anything exist that no cata
 - A script absent from the task runner, or a runner recipe with no script.
 - A surface restating a registered threshold without being registered.
 - A new document not in the index.
+- An index that exists and names none, or only some, of its folder's entries (`EMPTY-INDEX`, `UNLISTED`). Existence is not the property; the list is.
 
 *Catalog names something that vanished* and *something exists that no catalog names* are different defects. Only the second grows while you are not looking.
 
@@ -141,8 +146,10 @@ All must hold. Any failure means the audit is incomplete — say so rather than 
 - [ ] Inverse sweep clean — nothing exists that no catalog names
 - [ ] Every structured config parsed and inspected, not read as text
 - [ ] Evidence byte-compared against committed
-- [ ] Every new check negative-tested in both directions
+- [ ] Every new check negative-tested in both directions, through `audit_state.py negtest`
+- [ ] Systems of record read back for objects changed since the last audit
 - [ ] Residual-risk register written, including errors made during the audit
 - [ ] The report states **what could not be verified from inside the project**
+- [ ] The report is written (`audit_report.py`) **before** the gate, so the gate's cleanup never deletes the only copy of the evidence
 
 **Do not report "no stale information remains" without this gate.** Report what was verified, how, and what remains — which is a stronger claim, because it can be checked.

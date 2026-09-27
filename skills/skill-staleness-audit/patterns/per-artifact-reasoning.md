@@ -8,7 +8,7 @@ Phase 4 in full: the pass that finds what a grep structurally cannot.
 
 - [Why this cannot be delegated to grep](#why-this-cannot-be-delegated-to-grep)
 - [The method](#the-method)
-- [The two prompts](#the-two-prompts)
+- [The three prompts](#the-three-prompts)
 - [Worked pass](#worked-pass)
 - [Clearing an artifact is a real output](#clearing-an-artifact-is-a-real-output)
 - [Generators need a second question](#generators-need-a-second-question)
@@ -35,12 +35,12 @@ List **every** script, generator, data file and template in scope. Write **one l
 Skipping an artifact is fine. **Skipping the question is not.** The discipline is that every artifact appears in the output with a verdict beside it, including the boring ones — because "I looked and
 it does not apply" and "I did not look" are different states, and only the first is an audit.
 
-A useful accelerator: dump each artifact's docstring plus a signal scan for the values under audit, then reason over that table rather than opening twenty files. `scripts/stale_scan.py --signals`
-produces it. The table tells you where to look; it does not answer the question.
+A useful accelerator: dump each artifact's docstring plus a signal scan for the values under audit, then reason over that table rather than opening twenty files. `scripts/artifact_signals.py` produces
+it (`--since <commit>` flags and front-loads what changed, without shrinking the denominator). The table tells you where to look; it does not answer the question.
 
-## The two prompts
+## The three prompts
 
-Ask both of every artifact:
+Ask all three of every artifact, **including artifacts whose code did not change** — a change in the data they read is a change:
 
 ### 1. Does it print or compute anything whose **meaning** changed, though its wording did not?
 
@@ -53,6 +53,17 @@ matches the other side of the comparison.
 
 The second prompt found, in an earlier pass on the same project, a break-even script printing an annual steady-state figure for a track whose regulatory pathway closes in 2028 — *"describes a year
 that will not arrive"*. No stale string; the assumption was in the shape of the output.
+
+### 3. Does it enumerate a **live inventory** whose population changed since the last audit?
+
+Catches: a script whose targets come from an API list, a database query or an inventory file rather than from its own code. Its reach is set by data, so it changes when records are added, with no line
+of code changing and nothing for a grep or a diff to find.
+
+The instance (2026-09-27, a network-controller project): a package-install script walked every Nautobot Location that had an SMC. Seeding nine low-touch sites as Locations raised its reach from four
+boxes to thirteen, on flavours the install had never been approved for. The code was byte-identical to the previous audit. It was the most serious finding of that run and no signal pointed there.
+
+`artifact_signals.py` flags `enumerates-live?` (`.all()`, `.filter(`, paginated REST lists, `ansible-inventory`, SQL) and `REACH?` when the same file also writes, installs or connects. For each: name
+the population **today**, and whether every member is meant. If a narrower guard exists (an approved list, an explicit `--nodes`), check it is what bounds the write.
 
 ## Worked pass
 

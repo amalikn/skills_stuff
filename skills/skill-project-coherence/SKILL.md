@@ -18,12 +18,13 @@ rate card, updating a data source, resolving an investigation item.
 ## Contents
 
 - [Mandatory Start](#mandatory-start)
-- [Step 1 — Identify the Change](#step-1-identify-the-change)
-- [Step 2 — Scan for Affected Files](#step-2-scan-for-affected-files)
-- [Step 3 — Update Rules and Order](#step-3-update-rules-and-order)
-- [Step 4 — Stale-Reference Validation](#step-4-stale-reference-validation)
-- [Step 5 — Edge Cases](#step-5-edge-cases)
-- [Step 6 — Final Checklist](#step-6-final-checklist)
+- [Step 1 — Identify the Change](#step-1--identify-the-change)
+- [Step 2 — Scan for Affected Files](#step-2--scan-for-affected-files)
+- [Step 3 — Update Rules and Order](#step-3--update-rules-and-order)
+- [Step 4 — Stale-Reference Validation](#step-4--stale-reference-validation)
+- [Step 5 — Edge Cases](#step-5--edge-cases)
+- [Step 6 — Final Checklist](#step-6--final-checklist)
+- [Tool hazards](#tool-hazards)
 
 ---
 
@@ -36,13 +37,27 @@ rate card, updating a data source, resolving an investigation item.
    Old state:    <figure, path, or phrase>
    New state:    <figure, path, or phrase>
    Affected:     <script/file that implements the fix>
+   Decision?:    <yes/no — an operator decision or rule, wherever it was recorded>
+   Duties:       <each "update X when Y" duty from the parent policies that this change triggers>
+   Siblings:     <each skill package or sibling repo that restates facts this change touches>
+   Live data:    <each system of record holding prose this change makes stale, e.g. Nautobot descriptions>
    ```
 3. Scan the project root to inventory what exists:
    ```bash
    find . -maxdepth 2 -type f \( -name "*.md" -o -name "*.yaml" -o -name "*.yml" -o -name "justfile" -o -name "*.json" \) | grep -v node_modules | grep -v __pycache__ | grep -v .git/ | grep -v .serena | sort
    ```
 4. Check the **parent folder** for governance context — read parent `AGENTS.md`, `AI_NAVIGATION.md`, `context-map.yaml`, and `CHANGELOG.md` for inherited rules, routing patterns, and naming
-   conventions.
+   conventions. **Then list the parent policies' duties and carry out the ones this change triggers** — reading them is not doing them. Walk every `AGENTS.md` from the project up to the workspace
+   root:
+   ```bash
+   d=$PWD
+   while [ "$d" != / ]; do
+     [ -f "$d/AGENTS.md" ] && grep -Hn -iE \
+       "update .* when|whenever|when (adding|creating|moving|renaming)|in the same pass" "$d/AGENTS.md"
+     d=$(dirname "$d")
+   done
+   ```
+Each hit is a duty ("update the wiki project page when creating new project areas"). Put the triggered ones in the scope declaration's `Duties:` line; each is done or reported as not done.
 
 ---
 
@@ -50,7 +65,7 @@ rate card, updating a data source, resolving an investigation item.
 
 Scope declaration (from Mandatory Start step 2) must be complete before proceeding. Then identify:
 
-- **Affected figures/phrases** — exact strings to grep for in Step 5 (old values, old paths, old terms)
+- **Affected figures/phrases** — exact strings to sweep for in Step 4 (old values, old paths, old terms)
 - **Affected file types** — which tiers in Step 2 are in scope
 
 ---
@@ -67,6 +82,8 @@ The project may have some, all, or none of these. Check which exist, then update
 | **Data files** (`csv/*.csv`, `db/*.parquet`) | Are data files affected? Rebuild? | Rebuild if needed |
 | **Task runner** (`justfile`, `Taskfile.yml`, `Makefile`) | Does it reference old scripts, stale task names, or outdated descriptions? | Update references |
 | **CI config** (`.github/workflows/*.yml`) | Does it reference old scripts or commands? | Update |
+| **Live system of record** (Nautobot, a CMDB, a database the project writes to) | Do descriptions, comments or custom fields of objects the change touched restate the old fact? | Read back the |
+|  |   List objects changed since the change or holding the old value (Nautobot: `?last_updated__gte=`, `?q=`) and read their free text |   prose; fix it through the project's named writer, not by hand |
 
 **Tier 1 requires per-script reasoning, and the Step 4 grep does not discharge it.** List every script in the project and write one line each on why the change does or does not affect what that script
 *computes, asserts, or prints*. Skipping a script is fine; skipping the question is not.
@@ -91,6 +108,10 @@ Two prompts that catch this class:
 
 | Component | Check | Action |
 |---|---|---|
+| **Reader-first page** (`ARCHITECTURE.md` "Key decisions", or the page `AI_NAVIGATION.md` sends readers to first) | Does every operator decision this change carries appear there — | Add it with a |
+|  |   whether it was recorded in the register, in `AGENTS.md`, in a `.archcore/` rule, or only in the CHANGELOG? |   pointer to its record |
+| **Sibling skill packages and repos** (every skill the project invokes: `AGENTS.md` "Required skills", `CLAUDE.md`, `SIBLING_ROOTS` in `scripts/check_governance.py`) | Do their | Fix in the |
+|  |   `SKILL.md`, `references/` or docs restate the old value? Sweep them with `stale_refs.py --also <path>` |   package's own canonical repo, with its own changelog and version |
 | **Skill entrypoint** (`skills/*/SKILL.md`) | Hard safety rules mention old approach? Stale figures? | Add/update hard safety rules |
 | **Skill references** (`skills/*/references/*.md`) | Old methodology, figures, or file paths? | Update routing guidance |
 | **Context router** (`AI_NAVIGATION.md`) | Old methodology, blockers, or stale routing? | Update relevant sections |
@@ -149,17 +170,25 @@ Applicable files: `AI_NAVIGATION.md`, `context-map.yaml`, `SCRATCHPAD.md` status
 
 ## Step 4 — Stale-Reference Validation
 
-After updating all files, validate with targeted greps using the old figures/phrases from your scope declaration:
+After updating all files, sweep for the old figures/phrases from your scope declaration — this project **and** every sibling on the `Siblings:` line:
 
 ```bash
-grep -rn "OLD_FIGURE_1\|OLD_FIGURE_2" --include="*.md" --include="*.yaml" --include="*.py" . | grep -v archive/ | grep -v .git/ | grep -v node_modules
-
-grep -rn "OLD_PHRASE\|OLD_TERM" --include="*.md" --include="*.yaml" . | grep -v archive/ | grep -v .git/ | grep -v node_modules
+python3 <skill>/scripts/stale_refs.py --old "OLD_FIGURE" --old "OLD PHRASE" --also <sibling-skill-path> [-i]
 ```
 
-Expected results:
-- **Active files:** Zero hits (new figures only, or correctly framed as "old/was/previously")
-- **Historical files:** Hits acceptable in `archive/`, clearly labelled as superseded, or CHANGELOG/SCRATCHPAD audit trail entries
+`<skill>` is this skill's own directory (its canonical source, or the installed symlink to it).
+
+Every hit lands in one class, counted separately, so history is excluded by rule rather than by eye:
+
+- **`active`** — a live statement of the old value. Zero is the target; exit 1 while any remain. Fix each, or frame it as history ("was", "previously", a dated line).
+- **`history-path`** — `CHANGELOG*`, `archive/`, `.remember/`, snapshots, source captures, backups.
+- **`history-dated`** — under a dated heading (`## 2026-09-20 session`), on a line starting with a date, or carrying an as-at / superseded marker. Spot-check a few: a live sentence that happens to sit
+  under a dated heading is still live.
+- **`history-superseded`** — a document whose top carries a supersession banner (`> **Superseded <date>** by …`, Step 3 rule 7). A dated report with the old figure and **no** banner stays `active`:
+  give it the banner (Tier 2) rather than editing its figures.
+- **`generated`** — `.ai-context/`, `graphify-out/`: regenerate in Tier 5, never edit.
+
+Without the script, the fallback is `grep -rn` per root with `grep -v` for each history path above — and then the dated sections are still yours to judge by eye.
 
 **If grep finds unexpected hits in active files after updates:** patch those files before declaring done — do not skip.
 
@@ -180,6 +209,11 @@ the part that finds those, and this step only confirms the string-level cleanup 
 | **No generated context tools** | Skip; note in CHANGELOG |
 | **Parent governance exists** | Check parent `AGENTS.md`, `AI_NAVIGATION.md` for inherited conventions |
 | **Generated files need updating** | `.ai-context/`, `graphify-out/` are disposable — always regenerable, never canonical truth |
+| **The change is a decision with no register entry** | It still reaches the reader-first page (Tier 3). A rule recorded only in `AGENTS.md` or `.archcore/` is invisible to someone who opens ARCHITECTURE first |
+| **A sibling skill restates the fact** | Fix it in that skill's canonical source, bump its version and changelog; never edit an installed copy. It is another repo: commit it there separately, and only when asked |
+| **No read access to the system of record** | Report the objects you could not read back as not done; do not mark the tier complete |
+| **The project names no writer for the system of record** | Report the stale objects and ask the operator; do not write with an admin account by default |
+| **A parent duty may or may not be triggered** | Quote it and say which way you judged it on the `Duties:` line, so the operator can correct the call |
 
 ---
 
@@ -189,12 +223,14 @@ Check only what exists in this project (skip missing files without marking):
 
 - [ ] **Every script reasoned about individually** — one line each on why the change does or does not affect what it computes, asserts or prints. Not satisfied by a clean Step 4 grep
 - [ ] Script/data files fixed
+- [ ] Live system of record read back — descriptions and notes of the objects the change touched
 - [ ] Generators checked, not just their output — a generated file re-emits the old model on every rebuild
 - [ ] justfile / task runner updated (if stale)
 - [ ] Current report routers updated
 - [ ] Dated reports updated or superseded
+- [ ] Every operator decision in this change reaches the reader-first page (ARCHITECTURE "Key decisions"), register or not
 - [ ] Skill hard safety rules updated
-- [ ] Skill references updated
+- [ ] Skill references updated — this project's skills **and** every sibling skill package it invokes
 - [ ] AI_NAVIGATION.md updated
 - [ ] context-map.yaml updated
 - [ ] AGENTS.md / CLAUDE.md updated
@@ -206,5 +242,12 @@ Check only what exists in this project (skip missing files without marking):
 - [ ] Subdirectory docs updated (scripts/README.md, docs/README.md, .archcore/ guides/ADRs) (if stale)
 - [ ] .remember/ files updated (if exists)
 - [ ] Generated context regenerated (if tools available)
-- [ ] Stale-reference grep passes (Step 4)
-- [ ] Parent governance reviewed
+- [ ] Stale-reference sweep has zero `active` hits across the project and its siblings (Step 4)
+- [ ] Parent governance reviewed, and every triggered duty on the `Duties:` line done or reported as not done
+
+---
+
+## Tool hazards
+
+- **The markdown rewrap tool rebuilds any `## Contents` section as a table of contents.** Never put a folder index or file list under `## Contents`; use `## Index`. A list written there is erased.
+- **An unquoted heredoc (`<<EOF`) runs every backticked word as a command.** Write markdown with `<<'EOF'`, or with the Write tool, and read the result back.

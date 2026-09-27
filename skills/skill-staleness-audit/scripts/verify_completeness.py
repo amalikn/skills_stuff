@@ -15,6 +15,9 @@ This checks the things that are mechanically checkable and BLOCKS on them:
   * no old value survives outside audit-trail surfaces
   * every governed YAML/JSON parses, with no duplicate keys
   * evidence still byte-matches its committed form
+  * every required receipt key is present, not only every phase
+  * the audit report exists, embeds the current scratch, and has no unfilled template placeholder — BEFORE anything
+    is deleted (see audit_report.py; the sixth audit of a real project left no report because nothing required one)
 
 What it CANNOT check, and says so rather than implying coverage: whether any claim about the
 external world is still true. That is stated in the output so the report cannot overclaim.
@@ -32,6 +35,7 @@ import json
 import re
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 SWEEP_EXEMPT = ("/archive/", "CHANGELOG.md", "/.git/", "/.ai-context/", "/.remember/",
@@ -49,6 +53,7 @@ SWEEP_EXEMPT = ("/archive/", "CHANGELOG.md", "/.git/", "/.ai-context/", "/.remem
                 "-update-backups/", "/backups/", ".backup/")
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))  # audit_report is a sibling module; the gate and the writer must share one sha function
 
 
 def run(cmd: list[str], cwd: Path) -> tuple[int, str]:
@@ -71,6 +76,11 @@ def check_state(root: Path, fails: list[str], warns: list[str]) -> dict:
     for n in range(0, 8):
         if str(n) not in data.get("phases", {}):
             fails.append(f"state: phase {n} has no receipt — it was skipped or never recorded")
+    # A recorded phase missing a REQUIRED key was reported as done until 2026-09-27: status listed it as MISSING and the
+    # gate never read that list, so `defects_found` or `findings` could be left out and the run still passed.
+    for n, keys in sorted(data.get("missing_keys", {}).items()):
+        if int(n) < 8:
+            fails.append(f"state: phase {n} receipt is missing {', '.join(keys)}")
     return data
 
 
@@ -118,7 +128,8 @@ def strip_jsonc_comments(raw: str) -> str:
     return "".join(out)
 
 
-def check_old_values(root: Path, values: list[str], fails: list[str]) -> int:
+def check_old_values(root: Path, values: list[str], fails: list[str], skip: tuple[str, ...] = ()) -> int:
+    """`skip` is this audit's own report: its defect register quotes the old value by design, as a dated record."""
     hits = 0
     if not values:
         return 0
@@ -127,7 +138,7 @@ def check_old_values(root: Path, values: list[str], fails: list[str]) -> int:
         if not p.is_file() or p.suffix.lower() not in {".md", ".py", ".yaml", ".yml", ".json"}:
             continue
         rel = "/" + str(p.relative_to(root))
-        if any(e in rel for e in SWEEP_EXEMPT):
+        if any(e in rel for e in SWEEP_EXEMPT) or rel.lstrip("/") in skip:
             continue
         try:
             for i, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
@@ -322,6 +333,8 @@ def main() -> int:
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
 
+    import audit_report
+
     root = Path(a.root).resolve()
     fails: list[str] = []
     warns: list[str] = []
@@ -337,7 +350,8 @@ def main() -> int:
         if cov.get("unclassified", 0) / max(cov["total"], 1) >= 0.05:
             fails.append(f"{cov['unclassified']} files unclassified — coverage blind spot")
 
-    sweep_hits = check_old_values(root, a.old_value, fails)
+    report_rel = state.get("report", {}).get("path")
+    sweep_hits = check_old_values(root, a.old_value, fails, (report_rel,) if report_rel else ())
     parsed = check_structured(root, fails, warns)
     inverse = check_inverse_sweep(root, fails, warns)
     check_evidence(root, fails, warns)
@@ -348,6 +362,11 @@ def main() -> int:
         if suite_rc != 0:
             fails.append(f"project check suite FAILED (`{a.suite}`)")
             warns.append(suite_out.strip().splitlines()[-1] if suite_out.strip() else "")
+
+    # Last, so it never masks another failure: with everything else green, the only thing standing between the run and
+    # the deletion of its evidence is whether a report now holds that evidence.
+    if state and not fails:
+        fails.extend(f"report: {x}" for x in audit_report.report_problems(root, state))
 
     result = {
         "passed": not fails,
@@ -391,6 +410,19 @@ def main() -> int:
                 # Deliberate: a failed gate is exactly when the pre-audit state is worth having.
                 print(f"  Snapshot(s) KEPT for diagnosis: {', '.join(kept)}")
         else:
+            summary = [f"GATE PASSED {datetime.now().strftime('%Y-%m-%d %H:%M')}"]
+            if cov:
+                summary.append(f"coverage      : {cov['examined']} examined + {cov['exempt']} exempt = {cov['total']}")
+            summary += [f"structured    : {parsed} files parsed (duplicate keys checked)",
+                        f"old-value hits: {sweep_hits} for {a.old_value or 'none given'}",
+                        f"inverse sweep : {'NOT RUN' if inverse < 0 else str(inverse) + ' item(s)'}"]
+            if suite_rc is not None:
+                summary.append(f"suite         : exit {suite_rc} ({a.suite})")
+            summary += [f"warning       : {w}" for w in result["warnings"]]
+            summary.append("Does NOT establish that any claim about the external world is still true; for those the "
+                           "audit verified provenance label and as-at date only.")
+            audit_report.write_gate_block(root, report_rel, summary)
+            print(f"  report        : gate result written to {report_rel}")
             for line in cleanup_snapshots(root, a.keep_snapshot):
                 print(f"  snapshot: {line}")
             print("\nGATE PASSED.")

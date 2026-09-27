@@ -9,6 +9,7 @@
 - [2026-08-12 (later) — snapshots were never cleaned up, and accumulated invisibly](#2026-08-12-later--snapshots-were-never-cleaned-up-and-accumulated-invisibly)
 - [2026-08-12 (later still) — path claims inside source docstrings were never checked](#2026-08-12-later-still--path-claims-inside-source-docstrings-were-never-checked)
 - [2026-09-14 — structured-config parsing did not know the log-preamble-before-JSON capture convention](#2026-09-14--structured-config-parsing-did-not-know-the-log-preamble-before-json-capture-convention)
+- [2026-09-27 — the gate trusted what it should not, and the audit could not see live data](#2026-09-27--the-gate-trusted-what-it-should-not-and-the-audit-could-not-see-live-data)
 
 ---
 
@@ -154,3 +155,41 @@ source instead of worked around per project.
   convention this class of capture actually uses — never `[`.
 
 Verified on the real project: 69 structured files parsed where 66 had before, all 3 previously-failing files now included; the gate went from FAILED to PASSED with no other change.
+
+## 2026-09-27 — the gate trusted what it should not, and the audit could not see live data
+
+Found by the seventh audit of unified-network-controller, where several of the run's own mistakes traced to gaps here rather than to the agent. Each fix below was written test-first:
+`scripts/tests/test_gate_and_scanners.py` (22 fixture tests) failed 17 of 21 against the previous scripts before any change, and passes in full after. Two subagent runs against the old SKILL.md
+confirmed the prose gaps: asked where the register goes before the gate deletes it, and how to cover the Nautobot data, both answered "SKILL.md does not say".
+
+**The gate deleted the evidence before anything held it.** On PASS it removed `.staleness-audit/`, which holds the defect register and the Phase 4 worksheet. The sixth audit left no report at all; the
+seventh kept its evidence only because the agent copied it out by hand. New `audit_report.py` writes the report into the project's audit folder with a managed, sha256-stamped evidence block (receipts,
+negative-test excerpts, register and worksheet verbatim). The gate now fails, and deletes nothing, while that report is missing, stale against the scratch, or still holds template placeholders; on
+PASS it writes its own result into the report before cleanup. The report path is exempt from the old-value sweep, since its register quotes the old value by design.
+
+**The gate never read the required keys.** `REQUIRED_KEYS` was listed by `status` and ignored by the gate, which checked only that each phase existed. It now fails on a missing required key.
+
+**The negative-test count was typed.** A negative test that passed while the project was broken was still counted. `audit_state.py negtest red|green` runs the check itself: red must exit non-zero and
+print a failure-specific `--expect`; green must exit 0 without it. `checks_negative_tested` is derived from that evidence, and `record` refuses it.
+
+**An index that existed was taken as an index.** `captures/readme.md` passed UNINDEXED-DIR while listing none of 40 files. `inverse_sweep.py` now compares each folder index with its folder:
+EMPTY-INDEX and UNLISTED, with an `inverse-sweep:describes-only` marker for indexes that describe by design; more than five gaps in one index collapse to one row. Index detection no longer depends on
+macOS's case-insensitive filesystem to find `readme.md`. On real repos: unified-network-controller 20 findings (its `tests/README.md` table omits 13 test files), cambium-swap 4 rows.
+
+**Paths into sibling repos and onto boxes were all "BROKEN".** `claim_scan.py` now reads `SIBLING_ROOTS`, `SIBLING_BRANCHES` and `CONDITIONAL_PATHS` from the project's `scripts/check_governance.py`
+(by `ast`, never executed), resolves paths there, and splits the rest into ON-BOX, CONDITIONAL and BROKEN, with each residual class recorded separately. Version strings are no longer counts (`6.6.0.3
+docs`, `v2 files`), thousands separators are read whole (`1,225 checks`), and claims under a dated heading or on a dated line are MARKED-HISTORICAL. On unified-network-controller: BROKEN 299 → 71,
+NEEDS-MANUAL 713 → 519, MARKED-HISTORICAL 11 → 106.
+
+**No prompt pointed at live data.** The run's worst finding had no string and no code change: nine Nautobot Locations widened a package-install script that walks all Locations. Phase 4 gains a third
+prompt (does it enumerate a live inventory whose population changed?), and `artifact_signals.py` flags `enumerates-live?` and `REACH?`. Phase 1 gains systems of record: `systems_of_record` is a
+required key, and a non-zero one requires `sor_objects_read >= min(sor_objects_changed, 50)`.
+
+**Focus mode.** `audit_state.py init --since <commit|last-audit>`; the claim scan and worksheet flag and front-load changed files, and every denominator stays whole-project.
+
+**Also fixed:** `inverse_sweep.py --record` wrote its counts beside the phase's `data` instead of inside it, which left an entry `audit_state.py` could not read when the sweep ran before the first
+phase 7 record. **Documented:** two tool hazards that hit this run (the rewrap tool rebuilds `## Contents`; an unquoted heredoc executes backticks), in SKILL.md and the markdown governance guide.
+- **Later the same day:** `patterns/README.md` and `templates/README.md` added, so the skill passes its own inverse sweep (it had flagged both folders as UNINDEXED-DIR since before these changes).
+  `just audit-templates` no longer copies the templates readme into the scratch.
+- **Index check false positive fixed:** a folder named only as the end of a path (`docker build ... ./containerlab/cambium-mock`) was reported UNLISTED. A directory now counts as named when it ends a
+  path segment; a bare word ("build the mock") still does not. Both directions tested. unified-network-controller: 20 rows → 6, all real.

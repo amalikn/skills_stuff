@@ -11,6 +11,7 @@ The contract that makes the audit **exhaustive rather than opportunistic**: ever
 - [File classes](#file-classes)
 - [Binary and tabular data](#binary-and-tabular-data)
 - [Generated context](#generated-context)
+- [Systems of record](#systems-of-record)
 - [Legitimate exemptions](#legitimate-exemptions)
 - [Worked accounting](#worked-accounting)
 
@@ -100,6 +101,19 @@ head -1 data.csv; wc -l data.csv
 
 Do not audit their contents — you would be auditing a copy. **Regenerate them at the end of Phase 2** and confirm the rebuild succeeded. If one embeds copies of managed blocks or governance text, a
 stale pack will keep serving pre-audit content to the next agent, which makes regeneration part of the fix rather than housekeeping.
+
+## Systems of record
+
+**Prose the project writes into a live system is a surface, and no file scan reaches it.** Nautobot descriptions, comments and custom fields; a CMDB; a database; a ticket queue. On 2026-09-27 a
+Nautobot DNS zone's description stated a superseded fact; it sat outside every file scan and was found by luck.
+
+For each system of record the project writes to:
+
+1. List the objects changed since the last audit — Nautobot: `GET /api/<app>/<model>/?last_updated__gte=<date>`, or `/api/extras/object-changes/?time__gte=<date>` for every model at once.
+2. Read back each object's free-text fields and compare them with the project's current facts.
+3. Record `systems_of_record`, `sor_objects_changed` and `sor_objects_read` in the Phase 1 receipt. The gate requires `read >= min(changed, 50)`; past fifty, sample and say so in a note.
+
+A project that writes to none records `systems_of_record 0`. Read-only access only: an audit reads a system of record, and a fix goes through the project's own named writer.
 
 ## Legitimate exemptions
 

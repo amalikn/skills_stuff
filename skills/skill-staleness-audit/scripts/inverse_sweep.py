@@ -35,6 +35,15 @@ WHAT IT REPORTS
   UNINDEXED-DIR a directory holding documents but no README, where sibling directories have one
   DISPLACED     a bare-name reference that resolves ONLY via repo-wide search, to a file in a
                 different directory from the one citing it
+  EMPTY-INDEX   a folder index (readme.md / README.md / index.md) that names NONE of its folder's entries
+  UNLISTED      an entry in a folder whose index names some entries but not this one
+
+The last two were added 2026-09-27. UNINDEXED-DIR asks whether an index EXISTS; it passed while a project's
+`captures/readme.md` listed zero of the folder's 40 files, because its only index content had been written under
+`## Contents`, a heading the markdown rewrap tool rebuilds as a table of contents, erasing the list. An index that
+exists and lists nothing is the same defect as no index, and only comparing its text with the folder finds it.
+An index that deliberately describes rather than lists (bulk dated captures, say) declares so, with a reason:
+    <!-- inverse-sweep:describes-only reason="..." -->
 
 Exit 1 if anything is found, so the Phase 7 gate can block on it.
 
@@ -44,10 +53,12 @@ Usage:
     inverse_sweep.py --catalog README.md --catalog AGENTS.md    # extra catalog files
     inverse_sweep.py --min-docs 2             # UNINDEXED-DIR threshold (default 2)
 """
+# claim-scan:examples — paths in this docstring are illustrative examples from real runs, not references.
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -74,6 +85,16 @@ SKIP_DIR_PARTS = {".git", "__pycache__", "node_modules", ".venv", "venv", ".pyte
                   ".ai-context", ".remember", ".serena", ".staleness-audit",
                   "out", "dist", "build", "graphify-out", "coverage", ".next", "target"}
 DOC_SUFFIXES = {".md", ".rst", ".txt"}
+
+# A folder's index, matched case-insensitively from the directory listing rather than by `is_file()`, which is
+# case-insensitive only on macOS: `(dir / "README.md").is_file()` found a `readme.md` on the Mac and would not on Linux.
+INDEX_NAMES = {"readme.md", "index.md"}
+# The HTML-comment form only: a README that merely MENTIONS the marker (this skill's own scripts/README.md) must still
+# be compared, and the first version let it opt out.
+DESCRIBES_ONLY = "<!-- inverse-sweep:describes-only"
+# Package plumbing, never an index entry.
+NOT_ENTRIES = {"__init__.py", "__pycache__", ".gitkeep", "py.typed"}
+UNLISTED_ROWS_PER_INDEX = 5
 
 
 def skipped(p: Path) -> bool:
@@ -186,7 +207,7 @@ def find_unindexed_dirs(root: Path, min_docs: int) -> list[str]:
 
     out = []
     for _parent, sibs in by_parent.items():
-        has_readme = {s for s in sibs if (root / s / "README.md").is_file()}
+        has_readme = {s for s in sibs if index_file(root / s) is not None}
         if not has_readme:
             continue                      # this parent does not use the convention; nothing to be consistent with
         for s in sibs:
@@ -196,6 +217,84 @@ def find_unindexed_dirs(root: Path, min_docs: int) -> list[str]:
             if len(docs) >= min_docs:
                 out.append(f"{s}  ({len(docs)} documents, siblings have READMEs)")
     return sorted(out)
+
+
+def index_file(d: Path) -> Path | None:
+    try:
+        names = sorted(os.listdir(d))
+    except OSError:
+        return None
+    for n in names:
+        if n.lower() in INDEX_NAMES and (d / n).is_file():
+            return d / n
+    return None
+
+
+def git_visible(root: Path) -> set[str] | None:
+    """Tracked plus untracked-not-ignored paths. A gitignored runtime folder is not something an index must list."""
+    try:
+        out = subprocess.run(["git", "ls-files", "-z", "-c", "-o", "--exclude-standard"], cwd=root,
+                             capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if out.returncode != 0:
+        return None
+    return {f for f in out.stdout.split("\0") if f}
+
+
+def named_in(name: str, is_dir: bool, text: str) -> bool:
+    from urllib.parse import quote
+    for cand in {name, quote(name)}:
+        tail = r"(?:/|\))" if is_dir else r"(?![\w-])"
+        if re.search(rf"(?<![\w.-]){re.escape(cand)}{tail}", text):
+            return True
+        # A directory ending a path (`./containerlab/cambium-mock`) is named too. A bare word is not: "the mock", or
+        # `docs` in prose, says nothing about the folder.
+        if is_dir and re.search(rf"/{re.escape(cand)}(?![\w.-])", text):
+            return True
+    return False
+
+
+def find_index_gaps(root: Path, min_docs: int) -> tuple[list[str], list[str], int]:
+    """Compare each folder index with its folder. Returns (EMPTY-INDEX rows, UNLISTED rows, describes-only count)."""
+    visible = git_visible(root)
+    empty, unlisted, declared = [], [], 0
+    for rel in directories(root):
+        if "archive" in rel.split("/"):
+            continue                              # history; its index is a record of what was archived then
+        d = root / rel
+        idx = index_file(d)
+        if idx is None:
+            continue
+        try:
+            text = idx.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        entries = []
+        for e in sorted(d.iterdir(), key=lambda x: x.name):
+            if e.name.startswith(".") or e.name.lower() in INDEX_NAMES or e.name in NOT_ENTRIES or skipped(e):
+                continue
+            er = e.relative_to(root).as_posix()
+            if visible is not None and er not in visible and not any(v.startswith(er + "/") for v in visible):
+                continue
+            entries.append(e)
+        if not entries:
+            continue
+        if DESCRIBES_ONLY in text:
+            declared += 1
+            continue
+        missing = [e for e in entries if not named_in(e.name, e.is_dir(), text)]
+        idx_rel = idx.relative_to(root).as_posix()
+        if len(missing) == len(entries) and len(entries) >= min_docs:
+            empty.append(f"{idx_rel}  (names none of the folder's {len(entries)} entries)")
+        elif len(missing) > UNLISTED_ROWS_PER_INDEX:
+            # One row per index past a handful: 121 rows for one folder that indexes by pattern buried the other findings.
+            names = ", ".join(e.name for e in missing[:3])
+            unlisted.append(f"{rel}/  ({len(missing)} of {len(entries)} entries not named in {idx_rel}: {names}, …)")
+        else:
+            unlisted += [f"{e.relative_to(root).as_posix()}{'/' if e.is_dir() else ''}  (not named in {idx_rel})"
+                         for e in missing]
+    return sorted(empty), sorted(unlisted), declared
 
 
 def find_displaced_refs(root: Path, files: list[Path]) -> list[str]:
@@ -266,6 +365,7 @@ def main() -> int:
     orphan = find_orphan_dirs(root, cats)
     unindexed = find_unindexed_dirs(root, a.min_docs)
     displaced = find_displaced_refs(root, files)
+    empty_idx, unlisted, declared = find_index_gaps(root, a.min_docs)
 
     print("=" * 78)
     print(f"INVERSE SWEEP — {root}")
@@ -278,6 +378,8 @@ def main() -> int:
         ("ORPHAN-DIR", orphan, "exists but no catalog file names it"),
         ("UNINDEXED-DIR", unindexed, "documents but no README, where siblings have one"),
         ("DISPLACED", displaced, "reference resolves, but to a file in another directory"),
+        ("EMPTY-INDEX", empty_idx, "a folder index that lists none of its folder's entries"),
+        ("UNLISTED", unlisted, "an entry its folder's index does not name"),
     ):
         if rows:
             print(f"  {label} ({len(rows)}) — {note}")
@@ -287,15 +389,24 @@ def main() -> int:
                 print(f"      … and {len(rows) - 40} more")
             print()
 
-    total = len(orphan) + len(unindexed) + len(displaced)
+    if declared:
+        print(f"  describes-only indexes (declared by marker, not compared): {declared}")
+        print()
+    total = len(orphan) + len(unindexed) + len(displaced) + len(empty_idx) + len(unlisted)
     if a.record:
         state = root / ".staleness-audit" / "state.json"
         if state.is_file():
             doc = json.loads(state.read_text(encoding="utf-8"))
-            doc.setdefault("phases", {}).setdefault("7", {}).update({
+            # Into the phase's "data", like every other receipt. Writing these beside "data" left an entry that
+            # audit_state.py could not read when this ran before the first phase 7 record (fixed 2026-09-27).
+            entry = doc.setdefault("phases", {}).setdefault("7", {})
+            entry.setdefault("notes", [])
+            entry.setdefault("data", {}).update({
                 "inverse_orphan_dirs": len(orphan),
                 "inverse_unindexed_dirs": len(unindexed),
                 "inverse_displaced_refs": len(displaced),
+                "inverse_empty_indexes": len(empty_idx),
+                "inverse_unlisted_entries": len(unlisted),
             })
             state.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
             print("  recorded into .staleness-audit/state.json")
@@ -304,7 +415,8 @@ def main() -> int:
         print(f"INVERSE SWEEP FOUND {total} ITEM(S) — the catalog and the tree disagree.")
         print("=" * 78)
         return 1
-    print("INVERSE SWEEP CLEAN — every directory is catalogued and indexed, no displaced references.")
+    print("INVERSE SWEEP CLEAN — every directory is catalogued and indexed, every index names its folder, "
+          "no displaced references.")
     print("=" * 78)
     return 0
 

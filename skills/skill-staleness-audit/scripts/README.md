@@ -29,12 +29,14 @@ would just be another claim, and this skill exists because of claims nobody chec
 | Script | Phase | Purpose | Safety | Idempotent |
 |---|---|---|---|---|
 | `snapshot_worktree.sh` | 0 | Snapshot modified + untracked files before any edit. **Verifies its own output is non-empty** and exits 1 if not | `safe`, `modifies-files` (writes only to the snapshot dir) | yes — new dir per run |
-| `audit_state.py` | all | Receipts and reconciliation. `init` / `record` / `note` / `status` / `require` / `reset` | `safe`, `modifies-files` (`.staleness-audit/` only) | yes |
+| `audit_state.py` | all | Receipts and reconciliation. `init` (`--since` focus) / `record` / `negtest red\|green` / `note` / `status` / `require` / `reset`. `negtest` runs the check itself and keeps output evidence; `checks_negative_tested` is derived from it and `record` refuses it | `safe`, `modifies-files` (`.staleness-audit/` only); `negtest` runs the check command you give it | yes |
 | `coverage_manifest.py` | 1 | Classify every file: examined / exempt / out-of-scope. Names files a text sweep cannot open. **Fails when ≥5% is unclassified** | `safe`, read-only (`--record` writes state) | yes |
-| `claim_scan.py` | 1, 7 | Enumerate checkable claims — counts, dates, paths, uniqueness — and verify what is mechanically verifiable | `safe`, read-only (`--record` writes state) | yes |
-| `artifact_signals.py` | 4 | Per-artifact worksheet with signal flags. Its row count becomes the gate's denominator | `safe`, read-only (`--out` writes a worksheet) | yes |
-| `inverse_sweep.py` | **Phase 7 — what exists that no catalog names.** Reports ORPHAN-DIR (a directory no catalog mentions), UNINDEXED-DIR (documents but no README where siblings have one) and DISPLACED (a README listing names that moved into its own subtree — resolves fine, sends the reader to the wrong place). Exit 1 on findings; `verify_completeness.py` blocks on it. Was prose until 2026-08-12, which is how a completed audit passed with three of these outstanding. | stdlib | safe (read-only; `--record` writes only the audit receipts) |
-| `verify_completeness.py` | 7 | **The exit gate.** Receipts, reconciliation, coverage, old-value sweep, structured-config parse, duplicate keys, evidence byte-compare, optional project suite | `safe`, read-only | yes |
+| `claim_scan.py` | 1, 7 | Enumerate checkable claims — counts, dates, paths, uniqueness — and verify what is mechanically verifiable. Resolves paths into the project's declared `SIBLING_ROOTS`; splits the rest into `ON-BOX` / `CONDITIONAL` / `BROKEN`; claims under dated headings are historical; `--since` front-loads changed files | `safe`, read-only (`--record` writes state) | yes |
+| `artifact_signals.py` | 4 | Per-artifact worksheet with signal flags, including `enumerates-live?` and `REACH?`. Its row count becomes the gate's denominator; `--since` flags `CHANGED` rows without shrinking it | `safe`, read-only (`--out` writes a worksheet) | yes |
+| `inverse_sweep.py` | **Phase 7 — what exists that no catalog names.** Reports ORPHAN-DIR (a directory no catalog mentions), UNINDEXED-DIR (documents but no README where siblings have one), EMPTY-INDEX / UNLISTED (a folder index that names none, or not all, of its folder's entries; `inverse-sweep:describes-only` marker opts a descriptive index out) and DISPLACED (a README listing names that moved into its own subtree — resolves fine, sends the reader to the wrong place). Exit 1 on findings; `verify_completeness.py` blocks on it. Was prose until 2026-08-12, which is how a completed audit passed with three of these outstanding. | stdlib | safe (read-only; `--record` writes only the audit receipts) |
+| `audit_report.py` | 7 | Writes `staleness-audit-<stamp>.md` into the project's audit folder **before the gate**: narrative skeleton plus a managed evidence block (receipts, negative-test excerpts, defect register and worksheet verbatim, sha256-stamped). Re-runs replace only the block | `safe`, `modifies-files` (the report and `.staleness-audit/state.json`) | yes |
+| `verify_completeness.py` | 7 | **The exit gate.** Receipts and every required key, reconciliation, coverage, old-value sweep, structured-config parse, duplicate keys, evidence byte-compare, optional project suite, and a current report. On PASS writes its result into the report, then deletes the scratch | `safe`; on PASS `modifies-files` (report gate block) and deletes `.staleness-audit*` scratch | yes |
+| `tests/test_gate_and_scanners.py` | — | Fixture tests: each builds a throwaway git project and runs the scripts as an agent would. `python3 -m unittest discover -s scripts/tests` | `safe` (temp dirs only) | yes |
 
 Exit codes are uniform: **0** ok · **1** attention required / gate failed · **2** usage or state error.
 
@@ -56,7 +58,7 @@ cd <project>
 
 # Phase 0 — ALWAYS FIRST
 bash "$SKILL/scripts/snapshot_worktree.sh"
-python3 "$SKILL/scripts/audit_state.py" init --scope "whole project"
+python3 "$SKILL/scripts/audit_state.py" init --scope "whole project" --since last-audit
 python3 "$SKILL/scripts/audit_state.py" record --phase 0 \
     --key snapshot_path --value <path> --key files_snapshotted --value <n>
 
@@ -69,10 +71,13 @@ python3 "$SKILL/scripts/artifact_signals.py" --record --signal 2500 --signal REC
     --out .staleness-audit/phase4-worksheet.md
 
 # Phases 2, 3, 5, 6 — judgement. Record receipts as you complete them.
-python3 "$SKILL/scripts/audit_state.py" record --phase 5 \
-    --key checks_added --value 3 --key checks_negative_tested --value 3
+python3 "$SKILL/scripts/audit_state.py" record --phase 5 --key checks_added --value 1
+# per check: break the project, then red; restore, then green (the count is derived from these)
+python3 "$SKILL/scripts/audit_state.py" negtest red --check gate-guard --expect "FAIL gate-guard" --cmd "just check"
+python3 "$SKILL/scripts/audit_state.py" negtest green --check gate-guard
 
-# Phase 7 — the gate
+# Phase 7 — the report first (the gate deletes the scratch it is built from), then the gate
+python3 "$SKILL/scripts/audit_report.py" --out-dir docs/reports/staleness-audits
 python3 "$SKILL/scripts/verify_completeness.py" --old-value '$2,500 profit gate' --suite "just check"
 ```
 

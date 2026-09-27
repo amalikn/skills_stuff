@@ -64,7 +64,7 @@ skill-staleness-audit/
 ├── CHANGELOG.md        # version history and provenance
 ├── patterns/           # depth — load the one for the phase you are in
 ├── templates/          # register, banner, residual-risk and report boilerplate
-└── scripts/            # snapshot_worktree.sh, stale_scan.py (+ catalog)
+└── scripts/            # snapshot, receipts, coverage, claims, Phase 4 worksheet, inverse sweep, report, gate (+ catalog, tests/)
 ```
 
 Full annotated tree: `SKILL.md` → *Skill package layout*.

@@ -16,8 +16,10 @@ State lives in `.staleness-audit/state.json` under the audit root. It is working
 durable artifact: add it to .gitignore and delete it when the audit closes.
 
 Usage:
-    audit_state.py init   [--root .] [--scope "whole project"]
+    audit_state.py init   [--root .] [--scope "whole project"] [--since REF|last-audit]
     audit_state.py record --phase N --key K --value V [--key K2 --value V2 ...]
+    audit_state.py negtest red   --check ID --expect TEXT --cmd "CMD"   # after breaking the project
+    audit_state.py negtest green --check ID [--cmd "CMD"]                # after restoring it
     audit_state.py note   --phase N --text "..."
     audit_state.py status [--json]
     audit_state.py require --phase N          # exit 1 if that phase has no receipt
@@ -31,9 +33,12 @@ Exit codes: 0 ok · 1 requirement not met · 2 usage/state error
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
-import os
+import shlex
+import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 STATE_DIR = ".staleness-audit"
@@ -55,7 +60,10 @@ PHASES = {
 # checked — a coverage receipt whose numbers do not reconcile is not a completed phase.
 REQUIRED_KEYS = {
     0: ["snapshot_path", "files_snapshotted"],
-    1: ["files_total", "files_examined", "files_exempt", "files_out_of_scope", "defects_found"],
+    # systems_of_record: how many live systems of record (Nautobot, a CMDB, a database the project writes to) hold
+    # prose about this project. 0 is a valid answer; not asking is not. Added 2026-09-27 after a stale description sat in
+    # Nautobot, outside every file scan, and was found by luck.
+    1: ["files_total", "files_examined", "files_exempt", "files_out_of_scope", "defects_found", "systems_of_record"],
     2: ["defects_fixed"],
     3: ["banners_added"],
     4: ["artifacts_total", "artifacts_reasoned", "findings"],
@@ -64,6 +72,13 @@ REQUIRED_KEYS = {
     7: ["claims_total", "claims_verified", "claims_historical", "claims_residual"],
     8: ["changelog_updated"],
 }
+
+# Keys only a command may write. `checks_negative_tested` was a number the agent typed, and on 2026-09-27 a negative test
+# that PASSED while the project was broken was still counted. It is now derived from `negtest` evidence.
+DERIVED_KEYS = {5: {"checks_negative_tested"}}
+
+# A system-of-record sample must cover every changed object up to this many. Beyond it, read this many and say so.
+SOR_SAMPLE_CAP = 50
 
 
 def state_path(root: Path) -> Path:
@@ -114,6 +129,15 @@ def reconcile_issues(data: dict) -> list[str]:
                 f"{'+'.join(str(x) for x in parts)} = {sum(parts)}, but files_total = {total}"
             )
 
+    if p1.get("systems_of_record", 0) not in (0, None):
+        changed, read = p1.get("sor_objects_changed"), p1.get("sor_objects_read")
+        if not isinstance(changed, int) or not isinstance(read, int):
+            issues.append("phase 1: systems_of_record > 0 but sor_objects_changed / sor_objects_read not recorded — "
+                          "read back the prose of objects changed since the last audit")
+        elif read < min(changed, SOR_SAMPLE_CAP):
+            issues.append(f"phase 1: system-of-record sample read {read} of {changed} changed objects "
+                          f"(needs {min(changed, SOR_SAMPLE_CAP)})")
+
     p4 = ph.get("4", {}).get("data", {})
     if p4:
         tot, done = p4.get("artifacts_total"), p4.get("artifacts_reasoned")
@@ -125,8 +149,12 @@ def reconcile_issues(data: dict) -> list[str]:
 
     p5 = ph.get("5", {}).get("data", {})
     if p5:
-        added, tested = p5.get("checks_added"), p5.get("checks_negative_tested")
-        if isinstance(added, int) and isinstance(tested, int) and tested < added:
+        derived = negtested_count(ph.get("5", {}))
+        if p5.get("checks_negative_tested", derived) != derived:
+            issues.append(f"phase 5: checks_negative_tested says {p5.get('checks_negative_tested')} but negtest "
+                          f"evidence proves {derived}. The count is derived; it cannot be typed")
+        added, tested = p5.get("checks_added"), derived
+        if isinstance(added, int) and tested < added:
             issues.append(
                 f"phase 5: {added} checks added but only {tested} negative-tested. A check that "
                 f"never fires breaks nothing and passes forever"
@@ -145,18 +173,79 @@ def reconcile_issues(data: dict) -> list[str]:
     return issues
 
 
+def missing_keys(data: dict) -> dict[str, list[str]]:
+    """Required receipt keys absent from a recorded phase. The gate blocks on these, not only on absent phases."""
+    out: dict[str, list[str]] = {}
+    for n, keys in REQUIRED_KEYS.items():
+        entry = data.get("phases", {}).get(str(n))
+        if not entry:
+            continue
+        miss = [k for k in keys if k not in entry.get("data", {})]
+        if miss:
+            out[str(n)] = miss
+    return out
+
+
+def negtested_count(entry: dict) -> int:
+    """Checks with a failing run that matched its expected text, followed by a passing run of the same check."""
+    n = 0
+    for ev in entry.get("negtests", {}).values():
+        red, green = ev.get("red"), ev.get("green")
+        if red and green and red.get("ok") and green.get("ok") and green["seq"] > red["seq"]:
+            n += 1
+    return n
+
+
+def phase_entry(data: dict, phase: int) -> dict:
+    """setdefault that also repairs an entry another script created without the data/notes shape."""
+    entry = data["phases"].setdefault(str(phase), {})
+    entry.setdefault("data", {})
+    entry.setdefault("notes", [])
+    return entry
+
+
+def resolve_since(root: Path, ref: str) -> tuple[str, str]:
+    """REF or `last-audit` -> (sha, how). `last-audit` is the commit that added the newest staleness-audit report."""
+    if ref == "last-audit":
+        reports = sorted(p for p in root.rglob("staleness-audit-*.md")
+                         if not any(part.startswith(".staleness-audit") for part in p.relative_to(root).parts))
+        if not reports:
+            raise ValueError("--since last-audit: no staleness-audit-*.md report found under the root")
+        newest = max(reports, key=lambda p: p.name)
+        r = subprocess.run(["git", "log", "-1", "--format=%H", "--diff-filter=A", "--", str(newest)], cwd=root,
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            raise ValueError(f"--since last-audit: git cannot read history here ({r.stderr.strip()[:120]})")
+        sha = r.stdout.strip()
+        if not sha:
+            raise ValueError(f"--since last-audit: {newest.name} is not committed")
+        return sha, f"last-audit ({newest.name})"
+    r = subprocess.run(["git", "rev-parse", "--verify", f"{ref}^{{commit}}"], cwd=root, capture_output=True, text=True)
+    if r.returncode != 0:
+        raise ValueError(f"--since {ref}: not a commit")
+    return r.stdout.strip(), ref
+
+
 def cmd_init(a) -> int:
     root = Path(a.root).resolve()
     p = state_path(root)
     if p.is_file() and not a.force:
         sys.stderr.write(f"ERROR: audit already in progress ({p}). Use --force to restart.\n")
         return 2
-    save(root, {
+    doc = {
         "root": str(root),
         "scope": a.scope,
         "started": a.started or "(timestamp not supplied)",
         "phases": {},
-    })
+    }
+    if a.since:
+        try:
+            sha, how = resolve_since(root, a.since)
+        except ValueError as e:
+            sys.stderr.write(f"ERROR: {e}\n")
+            return 2
+        doc["since"] = {"sha": sha, "ref": how}
+    save(root, doc)
     gitignore = root / ".gitignore"
     line = f"{STATE_DIR}/"
     try:
@@ -169,6 +258,9 @@ def cmd_init(a) -> int:
     except OSError:
         print(f"NOTE: could not update .gitignore — add '{line}' by hand")
     print(f"audit initialised: {p}\nscope: {a.scope}")
+    if doc.get("since"):
+        print(f"focus: changed since {doc['since']['ref']} = {doc['since']['sha'][:12]} "
+              f"(scanners flag these; coverage and denominators stay whole-project)")
     return 0
 
 
@@ -178,9 +270,16 @@ def cmd_record(a) -> int:
     if len(a.key) != len(a.value):
         sys.stderr.write("ERROR: --key and --value must be given in pairs\n")
         return 2
-    entry = data["phases"].setdefault(str(a.phase), {"data": {}, "notes": []})
+    refused = [k for k in a.key if k in DERIVED_KEYS.get(a.phase, set())]
+    if refused:
+        sys.stderr.write(f"REFUSED: {', '.join(refused)} is derived from evidence and cannot be typed. "
+                         f"Run: audit_state.py negtest red|green --check <id> ...\n")
+        return 2
+    entry = phase_entry(data, a.phase)
     for k, v in zip(a.key, a.value):
         entry["data"][k] = coerce(v)
+    if a.phase == 5:
+        entry["data"]["checks_negative_tested"] = negtested_count(entry)
     save(root, data)
     missing = [k for k in REQUIRED_KEYS.get(a.phase, []) if k not in entry["data"]]
     print(f"phase {a.phase} ({PHASES.get(a.phase, '?')}) recorded: {entry['data']}")
@@ -192,7 +291,7 @@ def cmd_record(a) -> int:
 def cmd_note(a) -> int:
     root = Path(a.root).resolve()
     data = load(root)
-    data["phases"].setdefault(str(a.phase), {"data": {}, "notes": []})["notes"].append(a.text)
+    phase_entry(data, a.phase)["notes"].append(a.text)
     save(root, data)
     print(f"phase {a.phase} note added")
     return 0
@@ -205,7 +304,7 @@ def cmd_require(a) -> int:
     if not entry:
         sys.stderr.write(f"BLOCKED: phase {a.phase} ({PHASES[a.phase]}) has no receipt.\n")
         return 1
-    missing = [k for k in REQUIRED_KEYS.get(a.phase, []) if k not in entry["data"]]
+    missing = [k for k in REQUIRED_KEYS.get(a.phase, []) if k not in entry.get("data", {})]
     if missing:
         sys.stderr.write(f"BLOCKED: phase {a.phase} incomplete — missing {', '.join(missing)}\n")
         return 1
@@ -218,7 +317,7 @@ def cmd_status(a) -> int:
     data = load(root)
     issues = reconcile_issues(data)
     if a.json:
-        print(json.dumps({**data, "reconcile_issues": issues}, indent=2))
+        print(json.dumps({**data, "reconcile_issues": issues, "missing_keys": missing_keys(data)}, indent=2))
         return 1 if issues else 0
 
     print(f"Staleness audit — {data['root']}")
@@ -231,14 +330,17 @@ def cmd_status(a) -> int:
             print(f"  [ ] {n}  {title}")
             incomplete.append(n)
             continue
-        missing = [k for k in REQUIRED_KEYS.get(n, []) if k not in entry["data"]]
+        missing = [k for k in REQUIRED_KEYS.get(n, []) if k not in entry.get("data", {})]
         mark = "~" if missing else "x"
         if missing:
             incomplete.append(n)
         print(f"  [{mark}] {n}  {title}")
-        for k, v in entry["data"].items():
+        for k, v in entry.get("data", {}).items():
             print(f"          {k}: {v}")
-        for note in entry["notes"]:
+        for cid, ev in entry.get("negtests", {}).items():
+            legs = ", ".join(f"{leg} {'ok' if ev[leg]['ok'] else 'REFUSED'}" for leg in ("red", "green") if leg in ev)
+            print(f"          negtest {cid}: {legs}")
+        for note in entry.get("notes", []):
             print(f"          note: {note}")
         if missing:
             print(f"          MISSING: {', '.join(missing)}")
@@ -253,6 +355,69 @@ def cmd_status(a) -> int:
         print("All phases recorded and reconciling.")
         return 0
     return 1
+
+
+def _run_capture(cmd: str, cwd: Path) -> tuple[int, str]:
+    try:
+        r = subprocess.run(shlex.split(cmd), cwd=cwd, capture_output=True, text=True, timeout=900)
+        return r.returncode, (r.stdout or "") + (r.stderr or "")
+    except (OSError, subprocess.SubprocessError, ValueError) as e:
+        return 127, f"could not run: {e}"
+
+
+def cmd_negtest(a) -> int:
+    """Record one leg of a negative test by RUNNING the check, never by taking the agent's word for it.
+
+    red   — the project has been broken on purpose. The check must exit non-zero AND print --expect, so a failure for
+            some unrelated reason (a syntax error, a missing tool) is not mistaken for the check firing.
+    green — the break has been undone. The same check must exit 0, and --expect must no longer appear: text that also
+            shows in a passing run is not failure-specific, so the red leg proved nothing.
+    Both legs keep an excerpt and a sha256 of the output, and the count the gate uses is derived from them.
+    """
+    root = Path(a.root).resolve()
+    data = load(root)
+    entry = phase_entry(data, 5)
+    tests = entry.setdefault("negtests", {})
+    ev = tests.setdefault(a.check, {})
+    if a.leg == "red":
+        if not a.expect or not a.cmd:
+            sys.stderr.write("ERROR: negtest red needs --expect TEXT and --cmd CMD\n")
+            return 2
+        cmd, expect = a.cmd, a.expect
+    else:
+        if "red" not in ev:
+            sys.stderr.write(f"REFUSED: check {a.check!r} has no red leg. Break the project and run the red leg first\n")
+            return 1
+        cmd, expect = a.cmd or ev["red"]["cmd"], ev["red"]["expect"]
+    rc, out = _run_capture(cmd, root)
+    seq = 1 + max((leg.get("seq", 0) for t in tests.values() for leg in t.values() if isinstance(leg, dict)),
+                  default=0)
+    hit = expect in out
+    if a.leg == "red":
+        ok = rc != 0 and hit
+        why = ("" if ok else "the check exited 0 while the project was broken — it cannot fail, or the break did not "
+               "reach it" if rc == 0 else f"the check failed (exit {rc}) but its output lacks {expect!r} — it failed "
+               "for some other reason")
+    else:
+        ok = rc == 0 and not hit
+        why = ("" if ok else f"the check still fails (exit {rc}) after the restore" if rc != 0 else
+               f"{expect!r} also appears in the passing output, so it is not failure-specific and the red leg proves "
+               "nothing — re-run red with a failure-specific --expect")
+    lines = out.splitlines()
+    excerpt = [ln for ln in lines if expect in ln][:5] + ["…"] + lines[-5:]
+    ev[a.leg] = {"ok": ok, "cmd": cmd, "expect": expect, "exit": rc, "seq": seq,
+                 "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                 "output_sha256": hashlib.sha256(out.encode()).hexdigest(), "excerpt": excerpt}
+    entry["data"]["checks_negative_tested"] = negtested_count(entry)
+    save(root, data)
+    if not ok:
+        sys.stderr.write(f"REFUSED ({a.leg}): {why}\n")
+        for ln in excerpt:
+            sys.stderr.write(f"    {ln}\n")
+        return 1
+    print(f"negtest {a.check} {a.leg}: exit {rc}, evidence recorded. "
+          f"checks_negative_tested = {entry['data']['checks_negative_tested']}")
+    return 0
 
 
 def cmd_reset(a) -> int:
@@ -273,7 +438,15 @@ def main() -> int:
 
     p = sub.add_parser("init"); p.add_argument("--scope", default="whole project")
     p.add_argument("--started", default=""); p.add_argument("--force", action="store_true")
+    p.add_argument("--since", default=None,
+                   help="focus mode: a commit, or `last-audit`. Scanners flag files changed since it")
     p.set_defaults(fn=cmd_init)
+
+    p = sub.add_parser("negtest"); p.add_argument("leg", choices=["red", "green"])
+    p.add_argument("--check", required=True, help="a short name for the check under test")
+    p.add_argument("--expect", default=None, help="red only: text the failing check must print")
+    p.add_argument("--cmd", default=None, help="the check command; green defaults to red's")
+    p.set_defaults(fn=cmd_negtest)
 
     p = sub.add_parser("record"); p.add_argument("--phase", type=int, required=True)
     p.add_argument("--key", action="append", default=[])

@@ -12,11 +12,18 @@ this emits a worksheet with one row per artifact and a signal scan to prioritise
 count of rows becomes the denominator the Phase 7 gate checks `artifacts_reasoned` against.
 Skipping an artifact is fine; skipping the QUESTION is not.
 
+THE THIRD PROMPT (2026-09-27). The most serious finding of a real audit had no string and no changed line: seeding
+nine new Locations into Nautobot widened a package-install script that walks ALL Locations, so its reach grew from
+four boxes to thirteen while its code stayed byte-identical. Neither prompt pointed there. So code that ENUMERATES a
+live inventory (an API list, `.all()`, a paginated GET, an inventory file) is flagged `enumerates-live?`, and
+`REACH?` when it also writes, installs or connects — its population is data, and data changes between audits.
+
 Usage:
-    artifact_signals.py [--root .] [--signal VALUE ...] [--out FILE] [--record]
+    artifact_signals.py [--root .] [--signal VALUE ...] [--out FILE] [--record] [--since REF]
 
     --signal   a value under audit (e.g. 2500 15% RECOMMENDED). Repeatable.
     --record   write artifacts_total into the audit state (phase 4)
+    --since    focus: flag CHANGED artifacts and list them first. The denominator stays every artifact.
 
 Exit codes: 0 worksheet written · 2 error
 """
@@ -45,6 +52,15 @@ BACKSOLVE = re.compile(
     r"\b(max[ _]?bid|break[ _-]?even|target|solve|back[ _-]?solve|required|ceiling|"
     r"threshold|floor|minimum|budget)", re.I)
 WRITES = re.compile(r"\b(open\([^)]*['\"][wa]|write_text|to_csv|to_parquet|savefig|dump\()")
+# Enumerates a live inventory: ORM/pynautobot `.all()` / `.filter(`, paginated REST lists, inventory tools, SQL.
+ENUMERATES = re.compile(
+    r"(\.all\(\)|\.filter\(|[?&]limit=|\bpaginat|\bnext_page|\bget_all|\blist_all|"
+    r"/api/(?:dcim|ipam|extras|tenancy|virtualization|circuits|plugins|dns)/|ansible-inventory|"
+    r"\btsh\s+ls\b|\bkubectl\s+get\b|\bdescribe_[a-z_]+s\b|\bSELECT\b[^;\n]*\bFROM\b)")
+# ...and acts on what it found: writes to an API, installs, connects to a host, runs a playbook.
+MUTATES = re.compile(
+    r"(requests\.(?:post|put|patch|delete)|\.(?:post|put|patch|delete|create|save|update)\(|"
+    r"\b(?:apt|apt-get|dnf|yum|pip)\s+install\b|\bssh\b|\bscp\b|ansible-playbook|\bsystemctl\b)")
 
 
 
@@ -104,9 +120,14 @@ def main() -> int:
     ap.add_argument("--signal", action="append", default=[])
     ap.add_argument("--out", default=None)
     ap.add_argument("--record", action="store_true")
+    ap.add_argument("--since", default=None)
     a = ap.parse_args()
 
     root = Path(a.root).resolve()
+    sys.path.insert(0, str(Path(__file__).parent))
+    from claim_scan import changed_since, focus_ref  # one definition of "changed", shared with the claim scan
+    ref, ref_label = focus_ref(root, a.since)
+    changed = changed_since(root, ref)
     artifacts = []
     for rel in sorted(list_files(root)):
         if any(e in "/" + rel for e in EXEMPT):
@@ -128,17 +149,28 @@ def main() -> int:
             flags.append("continuity?")
         if fp.suffix in GEN_EXT and WRITES.search(src):
             flags.append("GENERATOR")
+        if ENUMERATES.search(src):
+            flags.append("enumerates-live?")
+            if MUTATES.search(src):
+                flags.append("REACH?")
+        if changed is not None and rel in changed:
+            flags.insert(0, "CHANGED")
         artifacts.append((rel, summarise(fp), flags))
+    if changed is not None:
+        artifacts.sort(key=lambda t: "CHANGED" not in t[2])
 
     lines = [
         "# Phase 4 — per-artifact reasoning worksheet",
         "",
         "**One line per artifact. Skipping an artifact is fine; skipping the QUESTION is not.**",
         "",
-        "Ask both prompts of each:",
+        "Ask all three prompts of each:",
         "",
         "1. Does it print or compute anything whose **meaning** changed, though its wording did not?",
         "2. Does it assume **continuity, completeness, or availability** that is no longer true?",
+        "3. Does it **enumerate a live inventory** (an API list, a database, an inventory file) whose population",
+        "   changed since the last audit? Then its reach changed with no line of code changing. `REACH?` rows also",
+        "   write, install or connect: name what the population is today and whether every member is meant.",
         "",
         "`GENERATOR` rows get a third: **would running it now revert something?** Run it and diff —",
         "a clean diff proves the output is current and proves nothing about the generator's assumptions.",
@@ -148,6 +180,8 @@ def main() -> int:
         "",
         f"Artifacts: **{len(artifacts)}**",
         "",
+        *([f"Focus: **{sum('CHANGED' in f for _, _, f in artifacts)}** changed since {ref_label}, listed first. "
+           "Every artifact still needs a verdict.", ""] if changed is not None else []),
         "| Artifact | What it is | Flags | Verdict (fill in) |",
         "|---|---|---|---|",
     ]

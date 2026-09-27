@@ -3,6 +3,9 @@
 <!-- claim-scan:examples reason="names filenames as examples of a class, not as references" -->
 
 > Final report shape. Lead with what could cost money; put reconciliation and method after. A reader who stops at the third paragraph should already know the worst of it.
+>
+> `scripts/audit_report.py` starts the report from this file and appends a managed **Audit evidence** block (receipts, negative-test excerpts, the defect register and Phase 4 worksheet verbatim). Fill
+> every placeholder above that block: the gate refuses to pass, and to delete the scratch, while one is left. Delete this note.
 
 **Scope:** `<whole project | subtree | --money-only>`
 **Standard:** would a careful reader be misled — not "does the suite pass"
