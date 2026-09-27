@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_1632 — smc_ltp has nine sites, not seven (pia and yakanarra were missing); topology_vars layout; the nine seeded into unified-network-controller's Nautobot (v0.1.65 -> v0.1.66)](#20260927_1632--smc_ltp-has-nine-sites-not-seven-pia-and-yakanarra-were-missing-topology_vars-layout-the-nine-seeded-into-unified-network-controllers-nautobot-v0165---v0166)
 - [20260927_1617 — _update_dns() location corrected (line 2855, not 2407); one production RPZ zone read: cnMaestro names, a fleet-wide template, low-touch sites absent from Nautobot (v0.1.64 -> v0.1.65)](#20260927_1617--_update_dns-location-corrected-line-2855-not-2407-one-production-rpz-zone-read-cnmaestro-names-a-fleet-wide-template-low-touch-sites-absent-from-nautobot-v0164---v0165)
 - [20260927_0322 — what a low-touch SMC keeps per device: extensions CSV, TFTP configs, the cnMaestro-fed RPZ zone, no DHCP reservations (v0.1.63 -> v0.1.64)](#20260927_0322--what-a-low-touch-smc-keeps-per-device-extensions-csv-tftp-configs-the-cnmaestro-fed-rpz-zone-no-dhcp-reservations-v0163---v0164)
 - [20260927_0308 — smc_dhcpd: debounced hook and StartLimit adopted on the rehearsal branch; the vars-plugin and dhcpd.conf.j2 cautions recorded (v0.1.62 -> v0.1.63)](#20260927_0308--smc_dhcpd-debounced-hook-and-startlimit-adopted-on-the-rehearsal-branch-the-vars-plugin-and-dhcpdconfj2-cautions-recorded-v0162---v0163)
@@ -78,6 +79,14 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260927_1632 — smc_ltp has nine sites, not seven (pia and yakanarra were missing); topology_vars layout; the nine seeded into unified-network-controller's Nautobot (v0.1.65 -> v0.1.66)
+
+Operator (2026-09-27) named yakanarra; re-reading `inventories/rcp/prod` on `big_push` shows `smc_ltp:children` has nine members: guda-guda, pia, umoona, warburton, beagle-bay, pandanus-park,
+new-looma, old-looma, yakanarra. The seven-site list is corrected where it states current membership (SKILL.md, `references/01_overview.md` and `02_service-map.md` counts with a note under the table,
+`05_troubleshooting.md`, `08_ansible-authoring.md`); dated history (the 2026-08-03 "now lists all 7") is left as written. `08_ansible-authoring.md` also gains the `topology_vars` layout
+(`inventory.hosts`, `switching.bridges`, `layer3.links` / `layer3.vrfs`) and the fact that all nine `smc_ltp` sites share the same three link subnets; the umoona bullet now says the sites had no
+Nautobot records when checked and were seeded the same day. Documentation only.
 
 ## 20260927_1617 — _update_dns() location corrected (line 2855, not 2407); one production RPZ zone read: cnMaestro names, a fleet-wide template, low-touch sites absent from Nautobot (v0.1.64 -> v0.1.65)
 

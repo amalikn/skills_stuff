@@ -56,7 +56,10 @@ An SMC box is an **x86 PC** or **ARM64 Raspberry Pi** running **Ubuntu 20.04+ (2
 {{inventory_hostname}}.teleport.<project>.au` — the domain splits by **project** (APN, nbn_accelerate), not by flavor; each project has multiple flavors nested under it (see `01_overview.md` "Remote
 Access").
 
-**Critical — Overlayroot (RPi and WH boxes only; operator, 2026-09-22):** overlayroot runs on the Raspberry Pi and WH boxes (`rct`, `wh`, and `nbn_wh` once rolled out), not on x86. On those, writes go to tmpfs (`/media/root-rw/overlay`) and are **lost on reboot**; Ansible changes only persist if the lower dir (`/media/root-ro`) is remounted read-write first, so check overlayroot status before assuming a change persisted. x86 boxes (e.g. `rcp`, `nbn_accelerate`) have a plain ext4 root, where an `apt install` persists, and keep volatile data on tmpfs mounts instead. Which paths are tmpfs varies by box: `/tmp` is tmpfs on mowanjum-smc01 but ext4 on hope-vale-smc01; `/run` is tmpfs everywhere (see `references/07_hardware-overlay.md`).
+**Critical — Overlayroot (RPi and WH boxes only; operator, 2026-09-22):** overlayroot runs on the Raspberry Pi and WH boxes (`rct`, `wh`, and `nbn_wh` once rolled out), not on x86. On those, writes go
+to tmpfs (`/media/root-rw/overlay`) and are **lost on reboot**; Ansible changes only persist if the lower dir (`/media/root-ro`) is remounted read-write first, so check overlayroot status before
+assuming a change persisted. x86 boxes (e.g. `rcp`, `nbn_accelerate`) have a plain ext4 root, where an `apt install` persists, and keep volatile data on tmpfs mounts instead. Which paths are tmpfs
+varies by box: `/tmp` is tmpfs on mowanjum-smc01 but ext4 on hope-vale-smc01; `/run` is tmpfs everywhere (see `references/07_hardware-overlay.md`).
 
 ## Related Workspaces
 
@@ -98,8 +101,9 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
 - DHCP: `dhcpd -t -cf /etc/dhcp/dhcpd.conf` (config test); `grep -i error /var/log/syslog`
 - DNS, non-`smc_ltp` hosts (all flavors — Unbound + Stubby, client path only): `unbound-checkconf`; `unbound-control status`; `systemctl status stubby`; config at `/etc/unbound/`, DoT upstream config
   at `/etc/stubby/stubby.yml` (Stubby listens on `127.0.0.1@60053`, single upstream `127.0.0.1@60853` via autossh local forward, no failover)
-- DNS, `smc_ltp` hosts only (static `rcp` group, 7 sites — `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona` — all "low touch"-onboarded sites; also runs
-  CNMaestro Cambium backhaul provisioning, see `references/08_ansible-authoring.md`): `named-checkconf`; `rndc status`; verify zones loaded in `/etc/bind/`
+- DNS, `smc_ltp` hosts only (static `rcp` group, 9 sites — `guda-guda`, `pia`, `umoona`, `warburton`, `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra` (nine on `big_push`, re-read
+  2026-09-27: `pia` and `yakanarra` had been missing from this list) — all "low touch"-onboarded sites; also runs CNMaestro Cambium backhaul provisioning, see `references/08_ansible-authoring.md`):
+  `named-checkconf`; `rndc status`; verify zones loaded in `/etc/bind/`
 - DNS, host's own resolution (separate from the two rows above — see `references/02_service-map.md`): `resolvectl status`; `systemctl status systemd-resolved`; `DNSStubListener=no` by default means
   the box's own `getaddrinfo()` bypasses Unbound/Stubby/BIND entirely
 
@@ -175,9 +179,9 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 ---
 
 ## Runtime Environments
-- **Neither working-cache venv exists on this Mac (verified 2026-09-26)**: the ansible-wifi and skill-smc venvs this section used to name under the skills working cache are
-  absent, and the ansible-wifi checkout has no venv of its own. What runs ansible-wifi here is Homebrew: `/opt/homebrew/bin/ansible-playbook` (core 2.21.4), `ansible-lint`,
-  `yamllint`. Create the working-cache venv before relying on it; until then, use the Homebrew tools.
+- **Neither working-cache venv exists on this Mac (verified 2026-09-26)**: the ansible-wifi and skill-smc venvs this section used to name under the skills working cache are absent, and the
+  ansible-wifi checkout has no venv of its own. What runs ansible-wifi here is Homebrew: `/opt/homebrew/bin/ansible-playbook` (core 2.21.4), `ansible-lint`, `yamllint`. Create the working-cache venv
+  before relying on it; until then, use the Homebrew tools.
 - Ephemeral logs, pid files, and sockets belong under `/Volumes/Data/_ai/_skills/skills-runtime/<skill>/`.
 - Prefer the working-cache venvs when running SMC validation tooling (`ansible-lint`, `yamllint`, `ansible-inventory`, `ansible-playbook`) to keep versions stable across sessions.
 
@@ -201,8 +205,7 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - `references/snmp-oid-registry.yaml` — verified SNMP OIDs on the SMC box itself (net-snmp agent; canary 2026-09-24), the list `unified-network-controller/wc-local/scripts/smc_collect.py` reads.
 - `references/15_cambium-asset-registers.md` — pointer only: the ansible-wifi `site_name` join point for a Cambium asset register. Full asset-register naming-convention/extraction knowledge now lives
   in `skill-cambium` — see Related Skills below.
-- `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture; driven by
-  `scripts/tplink-switch.sh`.
+- `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture; driven by `scripts/tplink-switch.sh`.
 - `scripts/` — reusable read-only diagnostic tooling for WAN-routing/topology-drift investigations (evidence capture, the "hook covers netplan" drift analyser, and a topology_vars-vs-live-hardware
   cross-check), fleet hardware/service-health + portal-FQDN-status audit, captive-portal pin-activation diagnosis, plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate);
   see `scripts/README.md`.

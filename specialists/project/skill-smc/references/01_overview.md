@@ -131,7 +131,7 @@ and has real functional differences beyond the SSH endpoint — do not assume "c
 |                         |                                                                    |   **hosts, but `clamav-freshclam` failing on 26/26 — root cause confirmed: fleet-wide `clamav 0.103.x`** |
 |                         |                                                                    |   **is past its 2025-09-14 database-update end-of-life, CDN now hard-blocks it (HTTP 403)**, fix is a |
 |                         |                                                                    |   version upgrade to 1.0/1.4 LTS, not a retry. See `13_known-issues.md`.                              |
-| `smc_ltp` sub-group     | `rcp`-only static group (`inventories/rcp/prod`), 7 sites (all     | Not present — no cw-cluster equivalent                                                                |
+| `smc_ltp` sub-group     | `rcp`-only static group (`inventories/rcp/prod`), 9 sites (all     | Not present — no cw-cluster equivalent                                                                |
 |                         |   "low touch"-onboarded) — dual purpose: (1) CNMaestro-managed     |                                                                                                       |
 |                         |   Cambium ePMP/cnPilot wireless backhaul provisioning, (2)         |                                                                                                       |
 |                         |   switches DNS resolver from unbound+stubby to bind9+RPZ. See      |                                                                                                       |

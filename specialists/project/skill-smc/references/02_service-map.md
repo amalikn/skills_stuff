@@ -3,6 +3,8 @@
 ## Contents
 
 - [2. Service Architecture Map](#2-service-architecture-map)
+- [snmpd on the SMC (canary, 2026-09-24)](#snmpd-on-the-smc-canary-2026-09-24)
+
 - Core networking
 - Netplan internet interface behavior
 - Remote access and tunneling
@@ -35,7 +37,7 @@
 |                   |   (non-`smc_ltp`      |                     |                              |   (`-L 60853:127.0.0.1:853`, not a reverse tunnel) to `teleport.apn.au:853` — not a public DoT      |
 |                   |   hosts)              |                     |                              |   resolver                                                                                          |
 | bind/named        | DNS resolver + RPZ    | `named`             | `/etc/bind/`                 | Gated `hosts: smc_ltp` — a static group defined in `inventories/rcp/prod` (INI inventory, not       |
-|   (`smc_dns_mgmt` |   content filter,     |                     |                              |   topology_vars-generated), **7** `rcp` sites: `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`,  |
+|   (`smc_dns_mgmt` |   content filter,     |                     |                              |   topology_vars-generated), **9** `rcp` sites: `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`,  |
 |   role)           |   replaces unbound    |                     |                              |   `warburton`, `beagle-bay`, `umoona` (all "low touch"-onboarded sites — see                        |
 |                   |   entirely            |                     |                              |   `08_ansible-authoring.md` "'Low Touch' Onboarding Method"). **Corrected 2026-08-03, twice same day**: |
 |                   |                       |                     |                              |   first found as "only `rcp`/guda-guda" (stale `.yml`-scoped grep missing the INI-format `prod`     |
@@ -55,9 +57,10 @@
 **Corrected 2026-07-03** (garimba-smc01 DNS RCA): the original "unbound = RCT flavor / bind = non-RCT flavors" framing above was a generalization from the initial single-host (`malik-rct01`, RCT)
 validation that turned out to be wrong once checked against the full repo. The real architecture split is: **unbound+stubby serves every flavor's DHCP/LAN clients** except hosts in the `smc_ltp`
 inventory group (which get bind9/RPZ instead via `smc_dns_mgmt`); this is orthogonal to flavor and currently coincides with 7 `rcp` sites (`guda-guda`, `pandanus-park`, `old-looma`, `new-looma`,
-`warburton`, `beagle-bay`, `umoona` — corrected 2026-08-03, see the row above). Separately, **the SMC's own DNS queries never go through unbound/stubby/bind at all** — they go through
-`systemd-resolved`/glibc directly to the same upstream servers, because the client-facing PREROUTING DNS redirect (`roles/smc_iptables/templates/iptables.smp.j2`) is scoped to the LAN-facing bridge
-interface, not the host's own OUTPUT traffic. Conflating "host DNS" and "client DNS" is a common source of confusion when debugging DNS delays reported from the box itself vs. from a connected client.
+`warburton`, `beagle-bay`, `umoona` — corrected 2026-08-03, see the row above) `pia` and `yakanarra` are members too (nine sites on `big_push`, re-read 2026-09-27); the row above predates them..
+Separately, **the SMC's own DNS queries never go through unbound/stubby/bind at all** — they go through `systemd-resolved`/glibc directly to the same upstream servers, because the client-facing
+PREROUTING DNS redirect (`roles/smc_iptables/templates/iptables.smp.j2`) is scoped to the LAN-facing bridge interface, not the host's own OUTPUT traffic. Conflating "host DNS" and "client DNS" is a
+common source of confusion when debugging DNS delays reported from the box itself vs. from a connected client.
 
 **Live-verified network layout (RCT):**
 - `eth1.500` → `bridge_500` (management VLAN, 10.255.0.0/24, DHCP .100-.110)
@@ -65,20 +68,19 @@ interface, not the host's own OUTPUT traffic. Conflating "host DNS" and "client 
 
 **eth1 has no IP by design** — it is the VLAN trunk interface. IPs live only on VLANs (vlan521, vlan522) and bridges above it. This is correct even if `ip addr show eth1` shows no inet address.
 
-**x86 layout and its Nautobot record (2026-09-24, unified-network-controller canaries mornington, kalumburu, hope-vale).** The x86 boxes follow the same pattern on two
-trunk ports: `enp3s0.50N` and `enp4s0.50N` (or `enp1s0.50N` on a BOXER-6641) are members of `bridge_50N` and share their parent's MAC, while the internet uplinks are standalone
-VLAN interfaces (`vlan521`…`vlan538`, and `vlan621`/`vlan631` on the 6641 sites) with `72:77:77` MACs derived as above. 10 VLAN interfaces on the 6404 at kalumburu, 16 on each
+**x86 layout and its Nautobot record (2026-09-24, unified-network-controller canaries mornington, kalumburu, hope-vale).** The x86 boxes follow the same pattern on two trunk ports: `enp3s0.50N` and
+`enp4s0.50N` (or `enp1s0.50N` on a BOXER-6641) are members of `bridge_50N` and share their parent's MAC, while the internet uplinks are standalone VLAN interfaces (`vlan521`…`vlan538`, and
+`vlan621`/`vlan631` on the 6641 sites) with `72:77:77` MACs derived as above. 10 VLAN interfaces on the 6404 at kalumburu, 16 on each
 6641. `ip -d -j link show type vlan` (iproute2 5.15 here) returns each one's parent (`link`), VLAN ID and bridge (`master`) as JSON in one call; `ip -j link show type bridge`
-lists the bridges. unified-network-controller's `wc-local/scripts/seed_smc_devices.py` records them per box in Nautobot as `virtual` interfaces with parent, bridge and site VLAN
-(bridges per device, never in the device-type template) and reports drift against the box and `topology_vars`. That box read is the retrofit: the operator's target (2026-09-24)
-is Nautobot as the source each SMC syncs its network setup from and applies, with rollback.
+lists the bridges. unified-network-controller's `wc-local/scripts/seed_smc_devices.py` records them per box in Nautobot as `virtual` interfaces with parent, bridge and site VLAN (bridges per device,
+never in the device-type template) and reports drift against the box and `topology_vars`. That box read is the retrofit: the operator's target (2026-09-24) is Nautobot as the source each SMC syncs its
+network setup from and applies, with rollback.
 
-**Physical port order and the usual cabling (operator, 2026-09-24; confirmed on the same three canaries).** Left to right as the box is faced: BOXER-6404 `enp1s0`, `enp2s0`,
-`enp3s0`, `enp4s0`; BOXER-6641 `eno1`, `enp3s0`, `enp2s0`, `enp1s0` (so the 6641's lowest-MAC port, `enp1s0`, is physical port 4). Usual use: ports 1 and 2 are the first and
-second internet connections (each its own `/30` address), port 3 the trunk to switch 1 and port 4 the trunk to switch 2 (each carrying `.500/.501/.502` into the bridges). The
-standalone internet uplink VLANs also ride the trunks, split between them: 521/523/525/527/621 on switch 1's trunk, 532/534/536/538/631 on switch 2's. `vlan621` and `vlan631` held
-no address on either 6641 site that day. unified-network-controller records position as the interface label (`Port N`, from its catalog) and the role (Internet, Switch trunk) from
-what each interface carries on the box, noting any port that breaks this convention.
+**Physical port order and the usual cabling (operator, 2026-09-24; confirmed on the same three canaries).** Left to right as the box is faced: BOXER-6404 `enp1s0`, `enp2s0`, `enp3s0`, `enp4s0`;
+BOXER-6641 `eno1`, `enp3s0`, `enp2s0`, `enp1s0` (so the 6641's lowest-MAC port, `enp1s0`, is physical port 4). Usual use: ports 1 and 2 are the first and second internet connections (each its own
+`/30` address), port 3 the trunk to switch 1 and port 4 the trunk to switch 2 (each carrying `.500/.501/.502` into the bridges). The standalone internet uplink VLANs also ride the trunks, split
+between them: 521/523/525/527/621 on switch 1's trunk, 532/534/536/538/631 on switch 2's. `vlan621` and `vlan631` held no address on either 6641 site that day. unified-network-controller records
+position as the interface label (`Port N`, from its catalog) and the role (Internet, Switch trunk) from what each interface carries on the box, noting any port that breaks this convention.
 
 ### Netplan Internet Interface Behavior (Critical)
 
@@ -279,12 +281,11 @@ pending vs. offline is distinguished by whether the watchdog series has ever exi
 ## snmpd on the SMC (canary, 2026-09-24)
 
 Until 2026-09-24 no SMC ran an SNMP agent: `snmpd` was absent everywhere, only the net-snmp client tools and `/etc/snmp/snmp.conf` (unified-network-controller's collector runs its
-`snmpget`/`snmpbulkwalk` against radios from the box). Operator, 2026-09-24: the SMCs become Nautobot Devices (x86 only) and the controller reads them over SNMP too. Canary on
-mornington-smc01, kalumburu-smc01 (apn) and hope-vale-smc01 (nbn): `apt-get install snmpd` (net-snmp 5.9, jammy), `/etc/snmp/snmpd.conf` rewritten (the distribution file kept as
-`snmpd.conf.dist`, mode 600): `agentaddress udp:<bridge_500 address>:161,udp:127.0.0.1:161`, `rocommunity <cluster read-only community> 10.255.0.0/19`, the same for 127.0.0.1,
-`sysLocation <site>`, `sysContact noc`. The community is the cluster's existing read-only one from the vault (`cambium-devices/apn-snmp-ro` / `nbn-snmp-ro`), never a new secret.
-Verified: `snmpget sysName` answers the box's hostname from its own management address on all three. Still a hand install, not an ansible-wifi role; a reimaged box loses it, and
-the fleet rollout belongs in the role with the community from the vault. **Pitfall recorded:** feeding the community as the first stdin line to `ssh host sh -s` executes it as a
-command and echoes it in stderr; carry it inside the script body (a quoted here-doc) instead. That mistake printed both read-only communities into one agent session's transcript on
-2026-09-24 01:20; rotation of the two RO communities is recommended.
+`snmpget`/`snmpbulkwalk` against radios from the box). Operator, 2026-09-24: the SMCs become Nautobot Devices (x86 only) and the controller reads them over SNMP too. Canary on mornington-smc01,
+kalumburu-smc01 (apn) and hope-vale-smc01 (nbn): `apt-get install snmpd` (net-snmp 5.9, jammy), `/etc/snmp/snmpd.conf` rewritten (the distribution file kept as `snmpd.conf.dist`, mode 600):
+`agentaddress udp:<bridge_500 address>:161,udp:127.0.0.1:161`, `rocommunity <cluster read-only community> 10.255.0.0/19`, the same for 127.0.0.1, `sysLocation <site>`, `sysContact noc`. The community
+is the cluster's existing read-only one from the vault (`cambium-devices/apn-snmp-ro` / `nbn-snmp-ro`), never a new secret. Verified: `snmpget sysName` answers the box's hostname from its own
+management address on all three. Still a hand install, not an ansible-wifi role; a reimaged box loses it, and the fleet rollout belongs in the role with the community from the vault. **Pitfall
+recorded:** feeding the community as the first stdin line to `ssh host sh -s` executes it as a command and echoes it in stderr; carry it inside the script body (a quoted here-doc) instead. That
+mistake printed both read-only communities into one agent session's transcript on 2026-09-24 01:20; rotation of the two RO communities is recommended.
 

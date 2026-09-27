@@ -103,9 +103,10 @@
 ### Tier 3b: DNS Not Serving Clients (non-`smc_ltp` hosts — Unbound + Stubby)
 
 **Corrected 2026-07-03, membership count corrected twice 2026-08-03**: this is gated by `smc_ltp` inventory-group membership, not flavor — applies to every flavor's hosts except those in `smc_ltp` (a
-static `rcp`-only group, 7 sites — `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona`, all "low touch"-onboarded — see `08_ansible-authoring.md` "smc_ltp
-Sub-Group" for the full picture, including its unrelated CNMaestro backhaul-provisioning role). This tier only covers DHCP/LAN client DNS; the SMC's own DNS resolution is a separate
-`systemd-resolved`/glibc path — see `02_service-map.md` and `06_failure-modes.md` if the box itself (not a client) is slow to resolve names.
+static `rcp`-only group, 9 sites — `guda-guda`, `pia`, `umoona`, `warburton`, `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra` (nine on `big_push`, re-read 2026-09-27: `pia` and
+`yakanarra` had been missing from this list), all "low touch"-onboarded — see `08_ansible-authoring.md` "smc_ltp Sub-Group" for the full picture, including its unrelated CNMaestro
+backhaul-provisioning role). This tier only covers DHCP/LAN client DNS; the SMC's own DNS resolution is a separate `systemd-resolved`/glibc path — see `02_service-map.md` and `06_failure-modes.md` if
+the box itself (not a client) is slow to resolve names.
 
 ```
 1. Check Unbound:
@@ -129,10 +130,10 @@ Sub-Group" for the full picture, including its unrelated CNMaestro backhaul-prov
 
 ### Tier 3c: DNS Not Serving Clients (`smc_ltp` hosts only — BIND/named)
 
-Applies to the 7 static `smc_ltp` member sites only: `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona` (`rcp`-exclusive, all "low touch"-onboarded —
-`warburton`/`beagle-bay`/`umoona` added 2026-08-03 after the operator confirmed every low-touch site should be a member). These hosts also run CNMaestro-managed Cambium ePMP/cnPilot backhaul
-provisioning via a separate `smc_ltp.yml` playbook — if DNS is fine but backhaul radios aren't provisioning, check `roles/smc_cnmaestro_provisioning` and CNMaestro cloud connectivity instead, not this
-tier. See `08_ansible-authoring.md` "smc_ltp Sub-Group" for the full mechanism.
+Applies to the 9 static `smc_ltp` member sites only: `guda-guda`, `pia`, `umoona`, `warburton`, `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra` (nine on `big_push`, re-read
+2026-09-27: `pia` and `yakanarra` had been missing from this list) (`rcp`-exclusive, all "low touch"-onboarded — `warburton`/`beagle-bay`/`umoona` added 2026-08-03 after the operator confirmed every
+low-touch site should be a member). These hosts also run CNMaestro-managed Cambium ePMP/cnPilot backhaul provisioning via a separate `smc_ltp.yml` playbook — if DNS is fine but backhaul radios aren't
+provisioning, check `roles/smc_cnmaestro_provisioning` and CNMaestro cloud connectivity instead, not this tier. See `08_ansible-authoring.md` "smc_ltp Sub-Group" for the full mechanism.
 
 ```
 1. Check named:
