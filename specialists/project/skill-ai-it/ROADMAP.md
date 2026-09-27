@@ -45,6 +45,19 @@ Report-first approach for Archcore: `bootstrap` and `refresh` emit `ARCHCORE_PRO
 
 - **`ARCHCORE_PROMOTION_CANDIDATES.md` template** — add a template file under `templates/` so the format is governed and consistent across projects.
 
+- **Target map standard — promote after the pilot (pilot started 2026-09-27 in `unified-network-controller`).** A project-root `target-map.yaml`, beside `context-map.yaml`, is the source of truth for
+  a project's goals, targets and per-criterion status, and its tracker markdown is generated from it. The context map says where things are; the target map says where the project is going and how far
+  it has got. Pilot files: [target-map.yaml](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/target-map.yaml),
+  [scripts/target_map.py](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/scripts/target_map.py) (generic validator and renderer; `--schema` prints every field's level,
+  mandatory, recommended, optional or rejected, with its reason), `check_target_map` in
+  [scripts/check_governance.py](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/scripts/check_governance.py), the pre-commit hook
+  [scripts/githooks/pre-commit](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/scripts/githooks/pre-commit) with the `install-hooks` recipe, and
+  [tests/test_target_map.py](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/tests/test_target_map.py). Staleness guards: a change-log entry naming a target after its
+  `reviewed` moment fails, as does a map or `pending` criterion unverified for seven days. **Gate:** promote no earlier than 2026-10-04 and only if the pilot has caught real drift without false
+  alarms. **Promotion:** copy the module, the check and the hook into `templates/`, make `bootstrap` offer a starter map (inline mode when a project has no plan document), teach `refresh` and the
+  upgrader to carry them, and write a governance standard whose field table is the `--schema` output (check the governance sync map). Open question from the pilot: whether a source should be allowed
+  to be only partly tracked (today every heading a source defines needs a target).
+
 ### Medium-term
 
 - **`audit` mode refinement** — structured output format for audit findings (missing files, stale sections, routing gaps, drift) so agents can act on audit output without ambiguity.

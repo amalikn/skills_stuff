@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_1354 — docs: the target map standard recorded as a promotion candidate (pilot in unified-network-controller)](#20260927_1354--docs-the-target-map-standard-recorded-as-a-promotion-candidate-pilot-in-unified-network-controller)
 - [20260923_1320 — fix: the generated `lint-md` recipe could not fail](#20260923_1320--fix-the-generated-lint-md-recipe-could-not-fail)
 - [20260923_1300 — feat: the package now governs itself, and its own scripts/README.md had been eaten by its own upgrader](#20260923_1300--feat-the-package-now-governs-itself-and-its-own-scriptsreadmemd-had-been-eaten-by-its-own-upgrader)
 - [20260923_1246 — fix: the upgrader's inlined navigation block had drifted nine sections behind its template](#20260923_1246--fix-the-upgraders-inlined-navigation-block-had-drifted-nine-sections-behind-its-template)
@@ -44,6 +45,13 @@
 - [20260812_1300](#20260812_1300)
 
 ---
+
+## 20260927_1354 — docs: the target map standard recorded as a promotion candidate (pilot in unified-network-controller)
+
+Operator (2026-09-27), after the pilot was built in `unified-network-controller`: record it in the skills. No template or script changed here. ROADMAP Near-term gains the target map standard: what the
+pilot is (`target-map.yaml` as the source of truth for goals, targets and status, a generic validator and renderer with four field levels each carrying a reason, a change-log staleness rule and a
+pre-commit hook), where its files live, the promotion gate (no earlier than 2026-10-04, and only if it caught real drift without false alarms) and what promotion copies into `templates/`. Pilot
+record: [unified-network-controller CHANGELOG](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/CHANGELOG.md) entries `20260927_1310`, `20260927_1324` and `20260927_1345`.
 
 ## 20260923_1320 — fix: the generated `lint-md` recipe could not fail
 
@@ -135,8 +143,8 @@ The version marker in a template is not authoritative; `VERSION` in the upgrader
 
 Three smaller corrections came with it:
 
-- `templates/AI_NAVIGATION.md` is now the superset: `## Governance coherence checks` promoted from `###` to `##` with the fuller wording that states the ignore-list consequence, and
-  `## Companion consistency` added from the inlined copy.
+- `templates/AI_NAVIGATION.md` is now the superset: `## Governance coherence checks` promoted from `###` to `##` with the fuller wording that states the ignore-list consequence, and `## Companion
+  consistency` added from the inlined copy.
 
 - `## Contents` moved **outside** the managed markers. A table of contents indexes the whole file including project-authored sections below the END marker, so it cannot live in a region the upgrader
   regenerates.
@@ -146,11 +154,11 @@ Three smaller corrections came with it:
 
 **New: `scripts/selftest_blocks.py`** — 20 assertions over the three builders: canonical markers, current `VERSION` stamp, no trailing whitespace or blank runs, and every section in
 `REQUIRED_NAV_SECTIONS` present in the emitted navigation block. That floor is stated in the self-test independently of any template on purpose: comparing the emitted block against the template it is
-generated from would be tautological, and a check that cannot fail is indistinguishable from one that passes. Verified by truncating the template and observing
-`required sections absent from emitted block: ['## Drift handling', '## Update rules']`, then restoring it.
+generated from would be tautological, and a check that cannot fail is indistinguishable from one that passes. Verified by truncating the template and observing `required sections absent from emitted
+block: ['## Drift handling', '## Update rules']`, then restoring it.
 
-Verification: self-test 20/20; upgrade re-applied to `skills/skill-eval-manager` — headings 17 → 26, no project-authored section lost, byte-identical on an immediate re-run; that project's
-`just check` 188 passed, `just nav-validate` 0 warnings 0 failures, `markdownlint-cli2` 0 errors. Applied to this package itself: headings 16 → 19, validation 0 failures.
+Verification: self-test 20/20; upgrade re-applied to `skills/skill-eval-manager` — headings 17 → 26, no project-authored section lost, byte-identical on an immediate re-run; that project's `just
+check` 188 passed, `just nav-validate` 0 warnings 0 failures, `markdownlint-cli2` 0 errors. Applied to this package itself: headings 16 → 19, validation 0 failures.
 
 Known gap, not fixed here: this package still has no `scripts/check_governance.py` of its own, so it does not hold itself to the capability it installs elsewhere. Its own validator reports this as a
 warning.
