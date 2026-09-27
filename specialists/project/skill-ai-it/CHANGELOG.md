@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260927_2005 — docs: the three target map promotion gaps are built in the pilot](#20260927_2005--docs-the-three-target-map-promotion-gaps-are-built-in-the-pilot)
 - [20260927_1819 — docs: three gaps recorded before the target map standard can be promoted](#20260927_1819--docs-three-gaps-recorded-before-the-target-map-standard-can-be-promoted)
 - [20260927_1354 — docs: the target map standard recorded as a promotion candidate (pilot in unified-network-controller)](#20260927_1354--docs-the-target-map-standard-recorded-as-a-promotion-candidate-pilot-in-unified-network-controller)
 - [20260923_1320 — fix: the generated `lint-md` recipe could not fail](#20260923_1320--fix-the-generated-lint-md-recipe-could-not-fail)
@@ -47,10 +48,15 @@
 
 ---
 
+## 20260927_2005 — docs: the three target map promotion gaps are built in the pilot
+
+The ROADMAP entry records that unified-network-controller's `scripts/target_map.py` now has `--init` (starter map, source or inline mode), `--sync` (appends targets a plan gains, as text) and a
+generic starter header, with a placeholder rule so a generated map cannot pass unreviewed. The promotion gate (no earlier than 2026-10-04) is unchanged. Documentation only.
+
 ## 20260927_1819 — docs: three gaps recorded before the target map standard can be promoted
 
-ROADMAP's target map entry gains "Gaps to close before promotion": `target_map.py` has no `--init` to write a starter map (source mode from the plan's headings, inline mode with placeholders
-that fail until filled); no `--sync` to add targets when a plan grows; and the pilot's header comments carry project wording, so a generic header template is needed. Documentation only.
+ROADMAP's target map entry gains "Gaps to close before promotion": `target_map.py` has no `--init` to write a starter map (source mode from the plan's headings, inline mode with placeholders that fail
+until filled); no `--sync` to add targets when a plan grows; and the pilot's header comments carry project wording, so a generic header template is needed. Documentation only.
 
 ## 20260927_1354 — docs: the target map standard recorded as a promotion candidate (pilot in unified-network-controller)
 

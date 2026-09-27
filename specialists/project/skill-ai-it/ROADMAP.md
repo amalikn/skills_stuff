@@ -56,8 +56,9 @@ Report-first approach for Archcore: `bootstrap` and `refresh` emit `ARCHCORE_PRO
   `reviewed` moment fails, as does a map or `pending` criterion unverified for seven days. **Gate:** promote no earlier than 2026-10-04 and only if the pilot has caught real drift without false
   alarms. **Promotion:** copy the module, the check and the hook into `templates/`, make `bootstrap` offer a starter map (inline mode when a project has no plan document), teach `refresh` and the
   upgrader to carry them, and write a governance standard whose field table is the `--schema` output (check the governance sync map). Open question from the pilot: whether a source should be allowed
-  to be only partly tracked (today every heading a source defines needs a target).
-  **Gaps to close before promotion** (found 2026-09-27, asking how the skill would generate a map):
+  to be only partly tracked (today every heading a source defines needs a target). **Gaps to close before promotion** (found 2026-09-27, asking how the skill would generate a map). **All three built
+  in the pilot 2026-09-27 20:05** (unified-network-controller CHANGELOG `20260927_2005`): `--init`, `--sync`, and a generic starter header (`STARTER_HEADER` in `scripts/target_map.py`), plus a rule
+  that fails the check on any value still starting with `TODO`. Promotion copies them; the gate date is unchanged:
   - **`--init`:** `target_map.py` only validates, renders (`--write`) and prints the schema; nothing creates a map. Add `--init` printing a starter map: source mode, one target per plan heading
     (`state: not started`, `exit_met: false`, one `status: not run` criterion per numbered acceptance test, text left in the plan), reusing the renderer's plan reader; inline mode, one goal and one
     target with placeholder name, exit condition and criteria text that fail the check until filled. `bootstrap` calls it; it never assigns a status above `not run`.
