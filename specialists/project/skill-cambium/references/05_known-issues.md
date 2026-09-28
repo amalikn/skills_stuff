@@ -9,6 +9,7 @@
 - [Pack Staleness Risks](#pack-staleness-risks)
 - [LLDP on Cambium devices — checked 2026-09-23, partly answered](#lldp-on-cambium-devices--checked-2026-09-23-partly-answered)
 - [Failure signatures over the SMC path (mowanjum, 60-plus collector cycles to 2026-09-26)](#failure-signatures-over-the-smc-path-mowanjum-60-plus-collector-cycles-to-2026-09-26)
+- [Concurrent SSH reads of R195Ps fail (2026-09-28)](#concurrent-ssh-reads-of-r195ps-fail-2026-09-28)
 
 ---
 
@@ -144,15 +145,27 @@ Both produced confident, wrong output rather than an error, which is why they ar
 
 Operator note, 2026-09-23: is LLDP available on any Cambium family? Checked the same evening from kalumburu-smc01 (unified-network-controller):
 
-- **ePMP (3000L AP, Force 300 SM and master) and E500: LLDP-MIB is not exposed over SNMP.** `snmpbulkwalk .1.0.8802.1.1.2` and `.1.0.8802` answer `No Such Object` on all four units; the R195P returns `Error in packet` for the same walk. `VERIFIED_PRIMARY`.
-- **ePMP transmits LLDP.** Every one of six ePMP `config_regular` backups (3000L APs and Force 300 SMs) holds `networkLLDP: "1"`, `networkLLDPMode: "1"`, `lldp_user_enabled: "1"`. Which neighbour table a unit keeps, if any, is not in `device_props` seen so far — `UNVERIFIED`; nothing to read over REST was found.
-- **The SMC cannot see them across the switch.** LLDP frames are link-local (`01:80:c2:00:00:0e`) and are not bridged, so a 70 s `tcpdump ether proto 0x88cc` on `bridge_500` at kalumburu captured nothing; the SMC has no `lldpd`. The consumer of ePMP LLDP is the switch port the radio hangs off (the switching-refresh project's ground), not the SMC.
+- **ePMP (3000L AP, Force 300 SM and master) and E500: LLDP-MIB is not exposed over SNMP.** `snmpbulkwalk .1.0.8802.1.1.2` and `.1.0.8802` answer `No Such Object` on all four units; the R195P returns
+  `Error in packet` for the same walk. `VERIFIED_PRIMARY`.
+- **ePMP transmits LLDP.** Every one of six ePMP `config_regular` backups (3000L APs and Force 300 SMs) holds `networkLLDP: "1"`, `networkLLDPMode: "1"`, `lldp_user_enabled: "1"`. Which neighbour
+  table a unit keeps, if any, is not in `device_props` seen so far — `UNVERIFIED`; nothing to read over REST was found.
+- **The SMC cannot see them across the switch.** LLDP frames are link-local (`01:80:c2:00:00:0e`) and are not bridged, so a 70 s `tcpdump ether proto 0x88cc` on `bridge_500` at kalumburu captured
+  nothing; the SMC has no `lldpd`. The consumer of ePMP LLDP is the switch port the radio hangs off (the switching-refresh project's ground), not the SMC.
 - Enterprise Wi-Fi (XV2/E-series) and cnWave transmit-side support: `UNVERIFIED` (no config key looked for yet).
 
 ## Failure signatures over the SMC path (mowanjum, 60-plus collector cycles to 2026-09-26)
 
-What "12 per-device errors" at one site turned out to be when classified (unified-network-controller, CHANGELOG 20260926_1810; devices reached through the SMC over `tsh`): 152 `down`
-(units switched off at the site, not faults), 16 TLS EOF, 14 SSH exit 255, 5 credential-lookup timeouts (the vault, not the device), 4 handshake timeouts, and 1 ePMP `auth_failed`, the
-2026-09-22 lockout from a bad-credential attempt (see the lockout note under Security Incidents). Two lessons for anyone reading device errors from this path: classify before counting,
-because most of a site's "errors" are units that are off; and rule out the path first, because an expired `tsh` certificate produces the same per-device failures fleet-wide
-(skill-smc `references/06_failure-modes.md`). Replay evidence from the same cycles: 151 registered devices, 0 duplicate names or MACs.
+What "12 per-device errors" at one site turned out to be when classified (unified-network-controller, CHANGELOG 20260926_1810; devices reached through the SMC over `tsh`): 152 `down` (units switched
+off at the site, not faults), 16 TLS EOF, 14 SSH exit 255, 5 credential-lookup timeouts (the vault, not the device), 4 handshake timeouts, and 1 ePMP `auth_failed`, the 2026-09-22 lockout from a
+bad-credential attempt (see the lockout note under Security Incidents). Two lessons for anyone reading device errors from this path: classify before counting, because most of a site's "errors" are
+units that are off; and rule out the path first, because an expired `tsh` certificate produces the same per-device failures fleet-wide (skill-smc `references/06_failure-modes.md`). Replay evidence
+from the same cycles: 151 registered devices, 0 duplicate names or MACs.
+
+## Concurrent SSH reads of R195Ps fail (2026-09-28)
+
+Five R195Ps read at once over SSH through yakanarra-smc01 (unified-network-controller `identify_candidates.py`, one tunnel each): two failed with `SSH connection failed (exit 255)`, `sshpass` missing
+the password prompt and ssh falling back to `ssh_askpass`, after the adapter's one retry. Each unit read alone succeeded, twice. REST reads (ePMP, Enterprise Wi-Fi) in parallel through the same SMC
+were unaffected. Read R-series units one at a time; the controller's identify serialises them. The serial no longer needs SSH at all: SNMP `serialNumber` (41010) gives it (snmp-oid-registry.yaml).
+
+**Fixed the same day (v0.6.19):** the adapter hands the password to ssh through `SSH_ASKPASS` with `SSH_ASKPASS_REQUIRE=force` (OpenSSH 8.4+), so nothing watches a terminal for the prompt. Five R195Ps
+at once, three rounds: 15 of 15 logged in, 1.5 s each (about 4 s under `sshpass`). `sshpass -p` also put the password on the command line, where any local user could read it in `ps`; it is gone.

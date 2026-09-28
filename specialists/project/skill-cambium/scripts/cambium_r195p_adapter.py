@@ -12,8 +12,8 @@ session has ever actually logged into R195P's web UI this project. Do not assume
 (POST /api/login or /local/userLogin) without checking; R195P is a different, older cnPilot Home Router product line under the hood.
 
 No pure-stdlib SSH client exists (paramiko is a real dependency, not installed per this project's stdlib-only convention for these
-adapters) — this adapter shells out to the system `ssh`/`sshpass` binaries instead, the exact same mechanism used to reach every device in
-this project by hand. That is a real, if unconventional, trade-off: correctness depends on `ssh`/`sshpass` being on PATH and the caller
+adapters) — this adapter shells out to the system `ssh` binary instead, with the password handed over by `SSH_ASKPASS` (since
+2026-09-28; before that `sshpass`, see `_run`). That is a real, if unconventional, trade-off: correctness depends on OpenSSH 8.4 or later on PATH and the caller
 already having network access to the device (normally via a `tsh` tunnel through the site's SMC box — see references/
 02_device-access-and-vault.md).
 
@@ -45,8 +45,8 @@ import json
 import os
 import re
 import subprocess
-import time
 import sys
+import tempfile
 
 REDACT_KEY_PATTERN = re.compile(
     r"pass|psk|secret|key|shared|community|radius|credential|token|auth",
@@ -79,6 +79,24 @@ DEFAULT_SSH_TIMEOUT = 20
 # reverting the nested-tunnel access path, since that path is this family's documented normal case.
 
 
+#: The environment variable the askpass helper reads the password from; set only in the ssh child's environment, never on its command line.
+_PASS_ENV = "CAMBIUM_R195P_SSH_PASSWORD"
+_ASKPASS: str | None = None
+
+
+def _askpass_helper() -> str:
+    """Path of a private helper script that prints the password from `_PASS_ENV` (made once per process, mode 0700, in a 0700 temp dir;
+    it holds no secret)."""
+    global _ASKPASS
+    if _ASKPASS is None or not os.path.exists(_ASKPASS):
+        path = os.path.join(tempfile.mkdtemp(prefix="r195p-askpass-"), "askpass")
+        with open(path, "w") as fh:
+            fh.write(f'#!/bin/sh\nprintf "%s\\n" "${_PASS_ENV}"\n')
+        os.chmod(path, 0o700)
+        _ASKPASS = path
+    return _ASKPASS
+
+
 class CambiumR195PAdapter:
     """Talks to one cnPilot R195P's real BusyBox/Buildroot shell over SSH, via the system ssh/sshpass binaries."""
 
@@ -106,7 +124,12 @@ class CambiumR195PAdapter:
     def _run(self, remote_command: str, allow_nonzero: bool = False) -> str:
         """Run one remote shell command over SSH and return its stdout, raising on a non-zero exit or a timeout.
 
-        Uses `sshpass -p <password> ssh ...` — the same pattern this project's own live sessions used by hand. `StrictHostKeyChecking=no`
+        The password reaches `ssh` through `SSH_ASKPASS` with `SSH_ASKPASS_REQUIRE=force` (OpenSSH 8.4+): ssh runs a tiny helper that prints
+        it from this process's environment, so nothing watches a terminal for the prompt. Until 2026-09-28 this used `sshpass -p`, which
+        now and then missed the prompt; ssh then fell back to an absent `ssh-askpass`, sent no password and was denied three times (three
+        units in scheduled runs 2026-09-22; one or two of five R195Ps read at once 2026-09-28, each fine alone). `sshpass -p` also put the
+        password on the command line, readable by any local user in `ps`. `NumberOfPasswordPrompts=1`: a wrong password is one rejected
+        login, not three. `StrictHostKeyChecking=no`
         matches those sessions too: these are internal management-network devices reached through an already-authenticated Teleport
         tunnel, not internet-facing hosts.
 
@@ -119,7 +142,6 @@ class CambiumR195PAdapter:
         this is the common case here, not a rare edge case). Only `get_config()` opts into tolerating this.
         """
         cmd = [
-            "sshpass", "-p", self._password,
             "ssh",
             "-o", "StrictHostKeyChecking=no",
             # UserKnownHostsFile=/dev/null, not just StrictHostKeyChecking=no: this project's site management
@@ -138,6 +160,8 @@ class CambiumR195PAdapter:
             # is in fact correct) — silencing client-side advisory/warning banners avoids the
             # desync without changing auth behaviour.
             "-o", "LogLevel=ERROR",
+            "-o", "NumberOfPasswordPrompts=1",
+            "-o", "PubkeyAuthentication=no",
         ]
         if self._port:
             cmd += ["-p", self._port]
@@ -145,13 +169,10 @@ class CambiumR195PAdapter:
             f"{self._username}@{self.host}",
             remote_command,
         ]
+        env = {**os.environ, "SSH_ASKPASS": _askpass_helper(), "SSH_ASKPASS_REQUIRE": "force", _PASS_ENV: self._password,
+               "DISPLAY": os.environ.get("DISPLAY", ":0")}
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=self._timeout + 5)
-            # sshpass sometimes misses the password prompt and ssh falls back to ssh_askpass, which does not exist here (exit
-            # 255). Seen on three R195P units in three scheduled runs, never the same unit twice (2026-09-22), so one retry.
-            if result.returncode == 255 and "ssh_askpass" in result.stderr:
-                time.sleep(2)
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=self._timeout + 5)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=self._timeout + 5, env=env, stdin=subprocess.DEVNULL)
         except subprocess.TimeoutExpired as exc:
             # SECRET-EXPOSURE INCIDENT (2026-09-18, live R195P test): subprocess.TimeoutExpired's
             # default __str__/repr embeds the FULL argv it was given, including the `sshpass -p
@@ -164,13 +185,13 @@ class CambiumR195PAdapter:
         # 255 is ssh's own failure (connect, auth, dropped session), never the remote command's: raise it even when the
         # caller tolerates a non-zero remote exit, or get_snapshot() would report an unreachable unit as a parsing fault
         # (HOR-R195P-1002, 2026-09-22: "sections missing" from an empty read).
+        # A rejected password is ssh's 255 with "Permission denied" (sshpass used to exit 5 for it). Raised as "password rejected" whatever
+        # allow_nonzero says, so callers try the `-legacy` entry (batch_push_devices' auth classifier matches it), and get_snapshot() never
+        # reports a rejected login as an empty read ("snapshot incomplete, sections missing", MOW-R195P-1003, 2026-09-22).
+        if result.returncode == 255 and "Permission denied" in result.stderr:
+            raise RuntimeError(f"SSH login failed: password rejected: {result.stderr.strip()[:120]}")
         if result.returncode == 255:
             raise RuntimeError(f"SSH connection failed (exit 255): {result.stderr.strip()[:160]}")
-        # sshpass 1.10 exits 5 for "Invalid/incorrect password" (its man page; verified live 2026-09-22 on MOW-R195P-1003, stderr
-        # "Permission denied, please try again."). Raised whatever allow_nonzero says: get_snapshot() tolerates non-zero exits, so
-        # a rejected password used to come back as an empty read and surface as "snapshot incomplete, sections missing".
-        if result.returncode == 5 and cmd[0] == "sshpass":
-            raise RuntimeError(f"SSH login failed: password rejected (sshpass exit 5): {result.stderr.strip()[:120]}")
         if result.returncode != 0 and not allow_nonzero:
             raise RuntimeError(f"SSH command failed (exit {result.returncode}): {remote_command!r} -> {result.stderr.strip()}")
         return result.stdout

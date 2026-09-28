@@ -65,7 +65,9 @@ common word:
 
 Enterprise Wi-Fi's 403 surfaces as `HTTP 403` from `_request()`, before `login()` checks `success`, so matching only "login failed" misses it. That is how unified-network-controller's collector
 skipped the `-legacy` retry for every E500/XV2 until 2026-09-22 (the kalumburu case in `05_known-issues.md`). For R195P, `get_snapshot()` tolerates non-zero exits, so before 2026-09-22 a wrong
-password came back as `snapshot incomplete, sections missing`. `cambium_r195p_adapter.py` now raises `SSH login failed: password rejected (sshpass exit 5)`.
+password came back as `snapshot incomplete, sections missing`. `cambium_r195p_adapter.py` now raises `SSH login failed: password rejected (sshpass exit 5)`. **Since 2026-09-28 the adapter uses
+`SSH_ASKPASS` instead of `sshpass`:** a rejected password is ssh's exit 255 with `Permission denied (publickey,password)`, raised as `SSH login failed: password rejected: ...`, one attempt per login
+(`NumberOfPasswordPrompts=1`).
 
 ## `kp` Wrapper Gotchas
 

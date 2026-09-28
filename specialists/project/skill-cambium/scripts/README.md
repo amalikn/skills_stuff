@@ -87,9 +87,9 @@ other direction.
 |  |   adapter path, see its docstring |  |  |  |  |  |
 | `cambium_r195p_adapter.py` | Minimal cnPilot R195P SSH adapter — | `CAMBIUM_HOST`/`CAMBIUM_USER`/ | JSON (facts, | `external-network`, | Yes | Reading real |
 |  | `login()`/`logout()`, `get_facts()`, | `CAMBIUM_PASS` env vars; | interfaces) to stdout | `requires-credentials` |  | device state |
-|  |   `get_interfaces()`. No REST API confirmed |   `ssh`/`sshpass` on PATH; network |  |  |  |   from a real |
+|  |   `get_interfaces()`. No REST API confirmed |   `ssh` 8.4+ only on PATH; network |  |  |  |   from a real |
 |  |   for this family — shells out to system |   access to the device (normally a |  |  |  |   R195P; only |
-|  |   `ssh`/`sshpass`, not a pure-stdlib |   `tsh` tunnel through the site's |  |  |  |   family whose |
+|  |   `ssh` 8.4+ only, not a pure-stdlib |   `tsh` tunnel through the site's |  |  |  |   family whose |
 |  |   client. Verified live against two real |   SMC box) |  |  |  |   adapter shells |
 |  |   Burringurrah units, 2026-09-17. No |  |  |  |  |   out to `ssh` |
 |  |   `get_config()` — deliberately not |  |  |  |  |   instead of |

@@ -2,6 +2,9 @@
 
 ## Contents
 
+- [20260928_2050 — R195P adapter: SSH_ASKPASS replaces sshpass (v0.6.18 -> v0.6.19)](#20260928_2050--r195p-adapter-ssh_askpass-replaces-sshpass-v0618---v0619)
+- [20260928_2044 — Serials over SNMP for ePMP and Enterprise Wi-Fi; concurrent R195P SSH reads fail (v0.6.17 -> v0.6.18)](#20260928_2044--serials-over-snmp-for-epmp-and-enterprise-wi-fi-concurrent-r195p-ssh-reads-fail-v0617---v0618)
+- [20260928_2032 — R195P serial, firmware and hardware version over SNMP (CAMBIUM-MIB 41010); the "only signal" claim corrected (v0.6.16 -> v0.6.17)](#20260928_2032--r195p-serial-firmware-and-hardware-version-over-snmp-cambium-mib-41010-the-only-signal-claim-corrected-v0616---v0617)
 - [20260928_1540 — R195P interface layout and MAC offsets; the public address comes from the low-touch hook (v0.6.15 -> v0.6.16)](#20260928_1540--r195p-interface-layout-and-mac-offsets-the-public-address-comes-from-the-low-touch-hook-v0615---v0616)
 - [20260928_1447 — Force 300-25 and XV2-2T0 sysObjectIDs; sysDescr names the model on R-series and Enterprise Wi-Fi (v0.6.14 -> v0.6.15)](#20260928_1447--force-300-25-and-xv2-2t0-sysobjectids-sysdescr-names-the-model-on-r-series-and-enterprise-wi-fi-v0614---v0615)
 - [20260927_2138 — Telling XV2-2T0 from XV2-22H: the REST model, sku and port count; the serial prefix as an observation (v0.6.13 -> v0.6.14)](#20260927_2138--telling-xv2-2t0-from-xv2-22h-the-rest-model-sku-and-port-count-the-serial-prefix-as-an-observation-v0613---v0614)
@@ -64,6 +67,30 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260928_2050 — R195P adapter: SSH_ASKPASS replaces sshpass (v0.6.18 -> v0.6.19)
+
+`scripts/cambium_r195p_adapter.py` `_run` gives ssh the password through a private askpass helper (`SSH_ASKPASS`, `SSH_ASKPASS_REQUIRE=force`, OpenSSH 8.4+) that prints it from the child's
+environment. Why: `sshpass` now and then missed the password prompt, ssh fell back to an absent `ssh-askpass`, sent no password and was denied (three units in scheduled runs 2026-09-22; one or two of
+five R195Ps read at once on 2026-09-28, each fine alone; stderr showed three `ssh_askpass: exec ... No such file` lines). With askpass, five at once for three rounds: 15 of 15, 1.5 s each. Also: the
+password is off the command line (`sshpass -p` exposed it in `ps`); `NumberOfPasswordPrompts=1` (a wrong password is one rejected login, not three); `PubkeyAuthentication=no`; the one-retry workaround
+is gone. A rejected password is now ssh's 255 with `Permission denied`, raised as `SSH login failed: password rejected: ...`, which unified-network-controller's auth classifier still treats as a
+rejected credential (its `tests/test_r195p_ssh.py`, red against v0.6.18, green now; the rejected path is tested with a faked ssh, not live). `references/02_device-access-and-vault.md` rejection table,
+`references/05_known-issues.md` known issue (marked fixed) and `scripts/README.md` updated.
+
+## 20260928_2044 — Serials over SNMP for ePMP and Enterprise Wi-Fi; concurrent R195P SSH reads fail (v0.6.17 -> v0.6.18)
+
+`references/snmp-oid-registry.yaml`: `cambiumEPMPMSN` (`.1.3.6.1.4.1.17713.21.1.1.31.0`) on ePMP 3000L, Force 300-16 and Force 300-25, and `cambiumAPSerialNum` read by GET at
+`.1.3.6.1.4.1.17713.22.1.1.1.4.0` on XV2-2T0 and XV2-22H: every junjuwa unit that answered (18 of 19; the silent one is the Force 300-25 that answers no SNMP) read the serial Nautobot holds.
+`references/05_known-issues.md`: five R195Ps read at once over SSH lost two to `sshpass`; read them one at a time. Written back from unified-network-controller. Read back after writing.
+
+## 20260928_2032 — R195P serial, firmware and hardware version over SNMP (CAMBIUM-MIB 41010); the "only signal" claim corrected (v0.6.16 -> v0.6.17)
+
+`references/snmp-oid-registry.yaml` `cnpilot-r195p` gains four verified scalars from the R-series CAMBIUM-MIB (enterprise 41010, cambium-swap's MIB archive): `productName`, `hardwareVersion`,
+`firmwareVersion` and `serialNumber`, read by GET on umoona-home-2/-3 (4.7.3-R21) and kalumburu cnPilot-R195P-1027/-1038/-1106 (4.8.1-R4, 4.7-R9); the three kalumburu serials equal the ones Nautobot
+holds from cnMaestro. A walk of the arm answers `tooBig`: GET the scalars. The sysDescr note no longer calls it "the only SNMP model and firmware signal", and the R195P comes off the "no verified SNMP
+surface" list. `references/06_device-api-cli-reference.md`: the SSH "no serial" statements now say where the serial is. The earlier claim came from a sysDescr-only GET that never asked the enterprise
+arm. Written back from unified-network-controller. Read back after writing.
 
 ## 20260928_1540 — R195P interface layout and MAC offsets; the public address comes from the low-touch hook (v0.6.15 -> v0.6.16)
 

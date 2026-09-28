@@ -295,11 +295,13 @@ each, `SSID1`, `CountryCode`, `WPAPSK…`). `/etc/cambium/` holds only `keystore
 prints nothing, there is no `head`, and pipes do not work; `;` chaining does. `get_config()` now falls back to this path: 100 `nvram_get` per session took ~11 s, 200 got the session closed. Redaction
 covers `Password`, `*_pass`, `WPAPSK*`, RADIUS.
 
-**cnPilot R195P identity and SNMP facts (2026-09-24, unified-network-controller canary `TJN-R195P-1002/1004/1006` at tjuntjuntjara):** over SSH the unit reports no serial and no release; `uname -a`'s
-`2.6.36` is the kernel and must not be recorded as firmware (the controller's R-series identity now leaves the version empty and takes it from SNMP). `sysDescr` reads `cnPilot R195P <release>`
-(4.7-R9, 4.7.2-R10, 4.7.3-R21 seen), `sysObjectID` is the bare enterprises root, `sysName` the device name, and **`sysLocation` is writable** with `apn-snmp-rw` (default `Unknown`; 3 of 3
-set-and-revert). The `br0` LAN MAC is what the register holds and what ARP shows (exact MAC match on 39 of 44 kalumburu rows; the register's OUIs `BC:A9:93` and `BC:E6:7C` are both R195P and both
-Enterprise Wi-Fi, so the family comes from sysDescr, never the OUI). `get_config()` is the redacted UCI dump of `/etc/config/*`.
+**cnPilot R195P identity and SNMP facts (2026-09-24, unified-network-controller canary `TJN-R195P-1002/1004/1006` at tjuntjuntjara):** over SSH the unit reports no serial and no release; **its serial
+and release are on SNMP instead** (CAMBIUM-MIB 41010 `serialNumber` `.1.3.6.1.4.1.41010.1.1.6.0` and `firmwareVersion` `.1.1.5.0`, verified 2026-09-28 on five units at umoona and kalumburu, three
+equal to cnMaestro's serial; GET the scalars, a walk answers `tooBig`; see snmp-oid-registry.yaml). `uname -a`'s `2.6.36` is the kernel and must not be recorded as firmware (the controller's R-series
+identity now leaves the version empty and takes it from SNMP). `sysDescr` reads `cnPilot R195P <release>` (4.7-R9, 4.7.2-R10, 4.7.3-R21 seen), `sysObjectID` is the bare enterprises root, `sysName` the
+device name, and **`sysLocation` is writable** with `apn-snmp-rw` (default `Unknown`; 3 of 3 set-and-revert). The `br0` LAN MAC is what the register holds and what ARP shows (exact MAC match on 39 of
+44 kalumburu rows; the register's OUIs `BC:A9:93` and `BC:E6:7C` are both R195P and both Enterprise Wi-Fi, so the family comes from sysDescr, never the OUI). `get_config()` is the redacted UCI dump of
+`/etc/config/*`.
 
 **cnWave config layer facts (2026-09-23 evening, unified-network-controller canaries `MOR_T1_T1-T3_DN_IP4_10`, `MOR_T1_T1-T4_DN_IP4_20`, `MOR_T3_V5000_IP4_40` at mornington):** `get_config()`
 (getCnAgentConfig + minionConfigGet) flattens to 441–458 keys; the only credential-shaped values are the RADIUS server fields, redacted. Management keys: `minion.topologyInfo.nodeName`,
@@ -320,8 +322,9 @@ Nautobot until this run filled them).
 
 **Kalumburu is on the `-legacy` entries for every family (2026-09-23, stage 3 identification of 13 SNMP-silent units from kalumburu-smc01):** ePMP APs and SMs took `epmp-ap-legacy` / `epmp-sm-legacy`,
 an XV2-2T0 and an E500 took `enterprise-wifi-legacy`, and the R195P SSH path read fine. Two adapter facts from the same pass: the R195P SSH snapshot reports `2.6.36` as firmware (the kernel version,
-`raw_uname`) and no serial, so the R-series identity over SSH is name and MAC only; an ePMP unit can fail the TLS handshake outright on every attempt (`Tower7_Omni 6_IP_0_50_New`, 10.255.0.50) while
-answering ping and sitting in ARP. **Lockout window:** the SM locked at ~21:45 accepted a login again at 22:55; treat the ePMP lockout as about an hour.
+`raw_uname`) and no serial, so the R-series identity over SSH is name and MAC only (the serial comes over SNMP, 41010 `serialNumber`, 2026-09-28); an ePMP unit can fail the TLS handshake outright on
+every attempt (`Tower7_Omni 6_IP_0_50_New`, 10.255.0.50) while answering ping and sitting in ARP. **Lockout window:** the SM locked at ~21:45 accepted a login again at 22:55; treat the ePMP lockout as
+about an hour.
 
 **ePMP SM confirmed for the same write and read paths as the AP (2026-09-23 evening, unified-network-controller three-device canary, mornington `MOR_F300-16SM_EXT1003/1004/1005`):** SNMP `sysLocation`
 test-write and revert with `apn-snmp-rw` succeeded on 3 of 3 (default value `undefined` on every SM, where a 3000L AP holds its own name); `get_config()` returns 793 keys on a Force 300-16 SM against
