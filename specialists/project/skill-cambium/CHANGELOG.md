@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260928_2204 — cnWave node type, serial and link facts; ePMP link frequency and width OIDs (v0.6.19 -> v0.6.20)](#20260928_2204--cnwave-node-type-serial-and-link-facts-epmp-link-frequency-and-width-oids-v0619---v0620)
 - [20260928_2050 — R195P adapter: SSH_ASKPASS replaces sshpass (v0.6.18 -> v0.6.19)](#20260928_2050--r195p-adapter-ssh_askpass-replaces-sshpass-v0618---v0619)
 - [20260928_2044 — Serials over SNMP for ePMP and Enterprise Wi-Fi; concurrent R195P SSH reads fail (v0.6.17 -> v0.6.18)](#20260928_2044--serials-over-snmp-for-epmp-and-enterprise-wi-fi-concurrent-r195p-ssh-reads-fail-v0617---v0618)
 - [20260928_2032 — R195P serial, firmware and hardware version over SNMP (CAMBIUM-MIB 41010); the "only signal" claim corrected (v0.6.16 -> v0.6.17)](#20260928_2032--r195p-serial-firmware-and-hardware-version-over-snmp-cambium-mib-41010-the-only-signal-claim-corrected-v0616---v0617)
@@ -67,6 +68,13 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260928_2204 — cnWave node type, serial and link facts; ePMP link frequency and width OIDs (v0.6.19 -> v0.6.20)
+
+Written back from unified-network-controller's staleness audit (its defect 1): the facts verified on 2026-09-28 were in that project's change log but not in this pack.
+`references/06_device-api-cli-reference.md` gains "cnWave identity and link facts" (sysDescr names DN/CN on 82 of 82 units; serial is REST `getDeviceInfo` `msn`; topology links name ends by radio MAC;
+channel and `cb2Enable` config keys; a lone POP reports 0 links). `references/snmp-oid-registry.yaml`: ePMP 3000L `centerFrequency`, `wirelessInterfaceHTMode` and the connected-STA MAC column; Force
+300-25 connected frequency and bandwidth, with the width codes marked unverified beyond the MIB's 20 and 40 MHz. Read back after writing.
 
 ## 20260928_2050 — R195P adapter: SSH_ASKPASS replaces sshpass (v0.6.18 -> v0.6.19)
 

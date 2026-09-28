@@ -303,6 +303,13 @@ device name, and **`sysLocation` is writable** with `apn-snmp-rw` (default `Unkn
 44 kalumburu rows; the register's OUIs `BC:A9:93` and `BC:E6:7C` are both R195P and both Enterprise Wi-Fi, so the family comes from sysDescr, never the OUI). `get_config()` is the redacted UCI dump of
 `/etc/config/*`.
 
+**cnWave identity and link facts (2026-09-28, unified-network-controller, yakanarra and doomadgee, firmware 1.4):** `sysDescr` names the node type on every cnWave unit swept (82 of 82: "Cambium cnWave
+V3000 Client Node", "... V5000 Distribution Node"); the model does not decide it (V1000 and V3000 seen as both). The serial is REST `getDeviceInfo` `msn` (no SNMP serial verified). A POP's REST
+topology lists every node and link of its controller's network; each link names its ends by **radio** MAC (`12:04:56:...`, `22:04:56:...` for a V5000's two sectors), not the management MAC. The config
+(`get_config`) holds each radio's channel at `minion.radioParamsOverride.<radio MAC>.fwParams.channel` and the bonding switch at `...fwParams.cb2Enable` (radio override, else
+`minion.radioParamsBase.fwParams.cb2Enable`; 0 read everywhere, taken as 2160 MHz). A V5000 POP whose controller has no other node reports one node and 0 links (yakanarra), and its SNMP link table
+walks empty.
+
 **cnWave config layer facts (2026-09-23 evening, unified-network-controller canaries `MOR_T1_T1-T3_DN_IP4_10`, `MOR_T1_T1-T4_DN_IP4_20`, `MOR_T3_V5000_IP4_40` at mornington):** `get_config()`
 (getCnAgentConfig + minionConfigGet) flattens to 441–458 keys; the only credential-shaped values are the RADIUS server fields, redacted. Management keys: `minion.topologyInfo.nodeName`,
 `minion.envParams.CAMBIUM_MGMT_IPV4_ADDR/GW/NETMASK`, `CAMBIUM_MGMT_VLAN_ID`, `SNMP_ENABLED`, `SSH_ENABLED`, `E2E_ENABLED`, `TIMEZONE`, `minion.sysParams.ntpServers.N`, `country`,

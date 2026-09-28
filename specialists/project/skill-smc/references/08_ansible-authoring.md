@@ -197,6 +197,12 @@ the letters is not — do not guess/state one as fact without an operator confir
 
 ---
 
+**Low-touch is per box, and visible from the box (verified read-only 2026-09-28, unified-network-controller).** A box that is not low-touch has none of it: junjuwa-smc01 and arawerr-smc01
+(`nbn_accelerate`) have no `/etc/bind/db.cambium-rpz`, BIND inactive, and no `cnmaestro-provisioning` line in `/etc/dhcp/dhcpd.conf`. So a missing zone file means "not low-touch", not a failed read;
+unified-network-controller's onboarding reads it with `test -e` and treats absence as nothing to import. The test box **daniel-test-nbn-smc01** (cw, `teleport.communitywifi.net.au`) carries the
+machinery (zone file of 355 bytes dated 16 Sep, header only; BIND and `isc-dhcp-server` active; the `on commit` provisioning line) but is in no `smc_ltp` group; the operator approved converting it to
+low-touch through the stage inventory and testing freely on it (keep connectivity; back up its R195 at 10.255.11.1 and XV2 at 10.255.0.212 first).
+
 **Verified on umoona-smc01, read-only, 2026-09-26 (unified-network-controller supplement Step 4 baseline).** The `on commit` block in the live `/etc/dhcp/dhcpd.conf` is byte-for-byte the
 `dhcpd.conf.j2` block on `master`, and `git diff master origin/big_push -- roles/smc_dhcpd/templates/dhcpd.conf.j2` is empty: the hook did not change between the branches, only the script did (the box
 runs the 4,509-line `big_push` build, `redis-server` active; `big_push` also adds `python3-redis`, `redis-server` and a WiFi Dashboard access-key call to the role). The provisioning shared-network is

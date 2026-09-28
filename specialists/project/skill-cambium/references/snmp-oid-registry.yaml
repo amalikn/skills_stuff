@@ -33,6 +33,13 @@ device_types:
     models: [ePMP 3000L]
     arm: ".1.3.6.1.4.1.17713.21 (pmpMibTree, CAMBIUM-PMP80211-MIB)"
     oids:
+      # Link parameters, 2026-09-28 (unified-network-controller wireless links): an AP's frequency and width, and its registered SMs.
+      - {oid: ".1.3.6.1.4.1.17713.21.3.8.2.18.0", name: centerFrequency, access: ro, note: "the AP's centre frequency, MHz (5865 read); an SM's own value is its setting, not the link's",
+         verified: {date: "2026-09-28", unit: JUN_3000L_T1_NW_IP0_11, site: junjuwa, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.3.8.2.5.0", name: wirelessInterfaceHTMode, access: ro, note: "the channel-width setting as a code (read 1); the MIB of 2013 does not name each code: 1 is taken as 20 MHz, unverified",
+         verified: {date: "2026-09-28", unit: JUN_3000L_T1_NW_IP0_11, site: junjuwa, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.1.2.30.1.1", name: cambiumAPConnectedSTATable mac column, access: ro, note: "column 1 of the connected-STA entry: each registered SM's MAC (the AP-to-SM pairs)",
+         verified: {date: "2026-09-28", unit: JUN_3000L_T1_NW_IP0_11, site: junjuwa, firmware: "4.7.0.1", method: walk}}
       - {oid: ".1.3.6.1.4.1.17713.21.1.1.31.0", name: cambiumEPMPMSN, access: ro, note: "the unit's serial (MSN); equal to the recorded serial on every junjuwa unit of this model that answered",
          verified: {date: "2026-09-28", unit: JUN_3000L_T1_NW_IP0_11, site: junjuwa, firmware: "4.7.0.1", method: get}}
       - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "holds the device name, not a model string",
@@ -176,6 +183,10 @@ device_types:
     models: [Force 300-25]
     arm: ".1.3.6.1.4.1.17713.21 (pmpMibTree, CAMBIUM-PMP80211-MIB)"
     oids:
+      - {oid: ".1.3.6.1.4.1.17713.21.1.2.1.0", name: cambiumSTAConnectedRFFrequency, access: ro, note: "the frequency the SM is connected at, MHz (5240 read): the link's frequency, unlike the SM's own centerFrequency setting (5760 on the same unit)",
+         verified: {date: "2026-09-28", unit: JUN_F30025_AP2_IP3_21, site: junjuwa, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.1.2.2.0", name: cambiumSTAConnectedRFBandwidth, access: ro, note: "connected width code (read 1); MIB: 1 = 20 MHz, 2 = 40 MHz; other codes on current firmware unverified",
+         verified: {date: "2026-09-28", unit: JUN_F30025_AP2_IP3_21, site: junjuwa, firmware: "4.7.0.1", method: get}}
       - {oid: ".1.3.6.1.4.1.17713.21.1.1.31.0", name: cambiumEPMPMSN, access: ro, note: "the unit's serial (MSN); equal to the recorded serial on every junjuwa unit of this model that answered",
          verified: {date: "2026-09-28", unit: JUN_F30025_AP2_IP3_21, site: junjuwa, firmware: "4.7.0.1", method: get}}
       - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "holds 'Linux <device name> <kernel>' or a config blob, never a model string: the model comes from sysObjectID only",

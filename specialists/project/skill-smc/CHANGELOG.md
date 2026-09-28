@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)](#20260928_2206--low-touch-is-visible-per-box-the-test-box-daniel-test-nbn-smc01-v0170---v0171)
 - [20260927_2024 — pre-push gate: lint the pushed commit, compare a new branch with its nearest remote branch, skip Jinja for shellcheck (v0.1.69 -> v0.1.70)](#20260927_2024--pre-push-gate-lint-the-pushed-commit-compare-a-new-branch-with-its-nearest-remote-branch-skip-jinja-for-shellcheck-v0169---v0170)
 - [20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)](#20260927_1954--r195-tftp-files-varlibtftpboot-missing-on-fresh-2204-wangkatjungka-runs-an-uncommitted-template-with-apn-cnmaestro01-v0168---v0169)
 - [20260927_1752 — the rcp "seven sites" observations are dated as at 2026-07-29/30 (v0.1.67 -> v0.1.68)](#20260927_1752--the-rcp-seven-sites-observations-are-dated-as-at-2026-07-2930-v0167---v0168)
@@ -83,6 +84,12 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)
+
+`references/08_ansible-authoring.md`: boxes that are not low-touch have no RPZ zone file, BIND inactive and no provisioning hook (junjuwa-smc01, arawerr-smc01, read-only 2026-09-28), so an absent zone
+means "not low-touch"; daniel-test-nbn-smc01 on the cw cluster carries the machinery with a header-only zone and is in no `smc_ltp` group; the operator approved converting it and testing on it.
+Written back from unified-network-controller. Read back after writing.
 
 ## 20260927_2024 — pre-push gate: lint the pushed commit, compare a new branch with its nearest remote branch, skip Jinja for shellcheck (v0.1.69 -> v0.1.70)
 
