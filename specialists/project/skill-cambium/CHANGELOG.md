@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260929_0631 — cnWave has no serial over SNMP on firmware 1.4; REST getDeviceInfo is the source (v0.6.20 -> v0.6.21)](#20260929_0631--cnwave-has-no-serial-over-snmp-on-firmware-14-rest-getdeviceinfo-is-the-source-v0620---v0621)
 - [20260928_2204 — cnWave node type, serial and link facts; ePMP link frequency and width OIDs (v0.6.19 -> v0.6.20)](#20260928_2204--cnwave-node-type-serial-and-link-facts-epmp-link-frequency-and-width-oids-v0619---v0620)
 - [20260928_2050 — R195P adapter: SSH_ASKPASS replaces sshpass (v0.6.18 -> v0.6.19)](#20260928_2050--r195p-adapter-ssh_askpass-replaces-sshpass-v0618---v0619)
 - [20260928_2044 — Serials over SNMP for ePMP and Enterprise Wi-Fi; concurrent R195P SSH reads fail (v0.6.17 -> v0.6.18)](#20260928_2044--serials-over-snmp-for-epmp-and-enterprise-wi-fi-concurrent-r195p-ssh-reads-fail-v0617---v0618)
@@ -68,6 +69,12 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260929_0631 — cnWave has no serial over SNMP on firmware 1.4; REST getDeviceInfo is the source (v0.6.20 -> v0.6.21)
+
+- Write-back from unified-network-controller (its CHANGELOG, 2026-09-29): full SNMP walks of old-looma's V5000 DN (12,196 values) and V2000 CN (8,300 values), firmware 1.4, hold neither unit's serial;
+  ENTITY-MIB is not implemented and the cnWave arm `.60` holds only the link entry. Recorded under `cnwave-v5000` as `serial_over_snmp: available: false` with the units and method. The serial stays
+  REST `/local/getDeviceInfo` `msn` (`cambium_cnwave_adapter.get_facts`).
 
 ## 20260928_2204 — cnWave node type, serial and link facts; ePMP link frequency and width OIDs (v0.6.19 -> v0.6.20)
 

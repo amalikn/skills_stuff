@@ -113,6 +113,11 @@ device_types:
          verified: {date: "2026-09-23", unit: DMG_T1_V5000_DN_IP4_10, site: doomadgee, firmware: "1.4", method: set-refused}}
       - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, access: ro, note: "V2000 and V3000 client nodes answer 'Cambium cnWave V2000/V3000 Client Node, Version 1.4' (doomadgee sweep 2026-09-23); the link entry .60.1.1.1 columns 2,3,4,7 read on V5000 DNs and a V3000 CN the same evening (link_signal metric)",
          verified: {date: "2026-09-23", unit: DMG_T5_T5-T12_IP4_12, site: doomadgee, firmware: "1.4", method: get}}
+    # No serial over SNMP (2026-09-29, old-looma, firmware 1.4): a full walk of the V5000 DN LMA_T1_V5K-E_IP4_10 (12,196 values) and the V2000 CN
+    # LMA_T3_V2K_IP4_12 (8,300 values) holds neither unit's serial (REST VYZF00B62FQM, VYZF0279J6VM). ENTITY-MIB (.1.3.6.1.2.1.47) is not implemented; the
+    # cnWave arm .60 holds only the link entry; the rest is net-snmp (host resources, interfaces, IP). The serial is REST /local/getDeviceInfo `msn`
+    # (cambium_cnwave_adapter.get_facts), read by unified-network-controller's identify and its `links` stage.
+    serial_over_snmp: {available: false, verified: {date: "2026-09-29", units: [LMA_T1_V5K-E_IP4_10, LMA_T3_V2K_IP4_12], site: old-looma, firmware: "1.4", method: full walk}}
     unverified_siblings: [V1000]   # V3000 and V2000 identity read live 2026-09-23 (doomadgee); V1000 not yet
 
   # No verified SNMP surface yet (live walk not done): epmp-force300 (SM; SM-side scalars .17713.21.1.2.3/.18 exist on the SM, not walked here), e500, e430h, xv2-2t0.
