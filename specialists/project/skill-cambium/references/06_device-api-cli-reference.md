@@ -534,6 +534,21 @@ above resolves.
 
 </details>
 
+
+### R195P interface layout and MAC offsets (verified 2026-09-28)
+
+One SSH snapshot of `umoona-home-1` (umoona, 10.255.1.1, 4.7.3-R21, low-touch site) through `CambiumR195PAdapter.get_snapshot()`, read-only:
+
+| Interface | MAC | Carries |
+| --- | --- | --- |
+| `eth2`, `br0` (LAN) | base (`bc:a9:93:47:dd:50`, `facts.lan_mac_address`) | the residence LAN |
+| `eth2.500` | base + 1 (`…:dd:51`) | management, VLAN 500: the address on the SMC's `bridge_500` (10.255.1.1/19) |
+| `wan3.501` on `wan3` | base + 2 (`…:dd:52`, `facts.wan_mac_address`) | the public address, VLAN 501 on the WAN port: the SMC's `bridge_501` (10.0.1.1/18) |
+
+The management MAC a sweep sees is base + 1, and the public side answers from base + 2, one above it. Checked by ARP from umoona-smc01 on all four umoona R195Ps (10.0.1.1–.4 answer from each router's
+management MAC + 1). The public address is not handed out by the SMC's DHCP and is not in the TFTP configs: the low-touch hook (`cnmaestro-provisioning.py`, ansible-wifi
+`roles/smc_cnmaestro_provisioning`) assigns each R195P a `public_ip` keyed by its MAC, pushes it through cnMaestro, and writes the `<name>-public` RPZ record beside `<name>`. Written back from
+unified-network-controller (its CHANGELOG `20260928_1540`).
 ## cnWave 60GHz — REST API, Not the SSH TUI, Is the Real Adapter Path
 
 First live access attempt 2026-09-17 (evidence E118) reached a real V5000 (`HOP_T1_V5K_IP4_100`, Hope Vale, `10.255.4.100`) over SSH with the `cnwave-60ghz` vault credential, but only as far as the

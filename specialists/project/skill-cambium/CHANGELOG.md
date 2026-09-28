@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20260928_1540 — R195P interface layout and MAC offsets; the public address comes from the low-touch hook (v0.6.15 -> v0.6.16)](#20260928_1540--r195p-interface-layout-and-mac-offsets-the-public-address-comes-from-the-low-touch-hook-v0615---v0616)
+- [20260928_1447 — Force 300-25 and XV2-2T0 sysObjectIDs; sysDescr names the model on R-series and Enterprise Wi-Fi (v0.6.14 -> v0.6.15)](#20260928_1447--force-300-25-and-xv2-2t0-sysobjectids-sysdescr-names-the-model-on-r-series-and-enterprise-wi-fi-v0614---v0615)
 - [20260927_2138 — Telling XV2-2T0 from XV2-22H: the REST model, sku and port count; the serial prefix as an observation (v0.6.13 -> v0.6.14)](#20260927_2138--telling-xv2-2t0-from-xv2-22h-the-rest-model-sku-and-port-count-the-serial-prefix-as-an-observation-v0613---v0614)
 - [20260927_1954 — R195P management server: cns_static_url, Cloud in git, apn-cnmaestro01 live at wangkatjungka (v0.6.12 -> v0.6.13)](#20260927_1954--r195p-management-server-cns_static_url-cloud-in-git-apn-cnmaestro01-live-at-wangkatjungka-v0612---v0613)
 - [20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator); it resolves (v0.6.11 -> v0.6.12)](#20260927_0258--apn-cnmaestro01-hostname-corrected-to-apn-cnmaestro01apnau-operator-it-resolves-v0611---v0612)
@@ -63,11 +65,23 @@
 
 ---
 
+## 20260928_1540 — R195P interface layout and MAC offsets; the public address comes from the low-touch hook (v0.6.15 -> v0.6.16)
+
+`references/06_device-api-cli-reference.md` gains "R195P interface layout and MAC offsets": LAN base, management `eth2.500` base + 1, public `wan3.501` base + 2, from one read-only snapshot of
+umoona-home-1 and ARP checks of four routers; and where the public address comes from (the low-touch hook's `public_ip`, not DHCP). Written back from unified-network-controller. Read back after
+writing.
+
+## 20260928_1447 — Force 300-25 and XV2-2T0 sysObjectIDs; sysDescr names the model on R-series and Enterprise Wi-Fi (v0.6.14 -> v0.6.15)
+
+`references/snmp-oid-registry.yaml` gains `force-300-25` (sysObjectID `.1.3.6.1.4.1.17713.21.9.36`, 226 swept units, all 40 in Nautobot typed Force 300-25; its sysDescr carries no model) and `xv2-2t0`
+(`.1.3.6.1.4.1.17713.22.3.16`, 132 units, sysDescr names the variant). Written back from unified-network-controller, where a sweep left ten umoona units `UNKNOWN` because only the sysObjectID table
+was read (its CHANGELOG `20260928_1447`). Read back after writing: the YAML parses.
+
 ## 20260927_2138 — Telling XV2-2T0 from XV2-22H: the REST model, sku and port count; the serial prefix as an observation (v0.6.13 -> v0.6.14)
 
-`references/01_overview.md` gains "Telling XV2-2T0 from XV2-22H": `device-summary.model`/`platform-info.model` name the variant, backed by sku (22, 34) and port count (2, 3); seen on 15 units
-(six serial-proven, nine by name from serial-redacted captures). The WL / W4ZA-W6YJ serial-prefix split held on all 15 and is recorded as an observation only. Written back from unified-network-controller's Step 10 work (272 devices typed plain XV2,
-CHANGELOG `20260927_2135` there). Read back after writing.
+`references/01_overview.md` gains "Telling XV2-2T0 from XV2-22H": `device-summary.model`/`platform-info.model` name the variant, backed by sku (22, 34) and port count (2, 3); seen on 15 units (six
+serial-proven, nine by name from serial-redacted captures). The WL / W4ZA-W6YJ serial-prefix split held on all 15 and is recorded as an observation only. Written back from unified-network-controller's
+Step 10 work (272 devices typed plain XV2, CHANGELOG `20260927_2135` there). Read back after writing.
 
 ## 20260927_1954 — R195P management server: cns_static_url, Cloud in git, apn-cnmaestro01 live at wangkatjungka (v0.6.12 -> v0.6.13)
 
