@@ -137,7 +137,9 @@ RULES = [
     ((), (".mp4", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico"),
      "media", "examined-special",
      "audit by whether it still depicts current behaviour, not by grep"),
-    ((), (".service", ".conf", ".cfg", ".inventory", ".properties", ".env"),
+    # .plist (launchd jobs) and .hcl (HashiCorp configs) added 2026-09-28 on unified-network-controller: they name hosts, paths and
+    # schedules like any runtime config, and fell through to unclassified.
+    ((), (".service", ".conf", ".cfg", ".inventory", ".properties", ".env", ".plist", ".hcl"),
      "runtime-config", "examined", "check referenced hosts, paths and units still exist"),
     # Added 2026-09-20 on unified-network-controller: vendor/network device configs in a lab tree
     # were unclassified -- MikroTik .rsc scripts and an FRR daemons file. These are DEVICE STATE
@@ -189,9 +191,13 @@ DATED_STEM = re.compile(r"[-_](?:\d{8}(?:_\d{4,6})?|\d{4}-\d{2}-\d{2})(?:[-_.]|$
 NOT_EVIDENCE_DIRS = ("/reports/", "/logs/", "/output/", "/build/", "/dist/")
 
 
-def classify(rel: str) -> tuple[str, str, str]:
+def classify(rel: str, root: Path | None = None) -> tuple[str, str, str]:
     p = "/" + rel
     ext = Path(rel).suffix.lower()
+
+    # A bare `.env` has no suffix (Path(".env").suffix == ""), so the `.env` extension rule never saw it; found 2026-09-28.
+    if Path(rel).name == ".env":
+        return ("runtime-config", "examined", "check referenced hosts, paths and units still exist")
 
     # A venv/.venv SYMLINK (not a real directory) is listed by `git ls-files -o` as a single
     # leaf entry with no trailing slash -- e.g. rel==".venv", p=="/.venv" -- so it never matches
@@ -212,6 +218,10 @@ def classify(rel: str) -> tuple[str, str, str]:
             return cls, state, reason
         if exts and ext in exts:
             return cls, state, reason
+
+    # An extensionless script (a git hook, an installed hook) is code, recognised by its shebang; found 2026-09-28.
+    if not ext and root is not None and _has_shebang(root / rel):
+        return ("code", "examined", "script without an extension, recognised by its shebang")
     return "other", "examined", ""
 
 
@@ -221,6 +231,14 @@ AUDIT_SCRATCH = (".staleness-audit/", ".staleness-audit-snapshot-")
 def _is_audit_scratch(rel: str) -> bool:
     """True for this skill's own snapshot/receipt files, which are never project files."""
     return rel.startswith(AUDIT_SCRATCH) or any(("/" + m) in rel for m in AUDIT_SCRATCH)
+
+
+def _has_shebang(path: Path) -> bool:
+    try:
+        with path.open("rb") as fh:
+            return fh.read(2) == b"#!"
+    except OSError:
+        return False
 
 
 def list_files(root: Path, scope: str | None) -> list[str]:
@@ -270,7 +288,7 @@ def main() -> int:
     states = {"examined": 0, "examined-special": 0, "exempt": 0}
     reasons: dict[str, str] = {}
     for f in files:
-        cls, state, reason = classify(f)
+        cls, state, reason = classify(f, root)
         by_class[cls].append(f)
         states[state] = states.get(state, 0) + 1
         if reason:

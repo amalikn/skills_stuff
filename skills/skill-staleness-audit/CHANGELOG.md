@@ -11,6 +11,8 @@
 - [2026-09-14 — structured-config parsing did not know the log-preamble-before-JSON capture convention](#2026-09-14--structured-config-parsing-did-not-know-the-log-preamble-before-json-capture-convention)
 - [2026-09-27 — the gate trusted what it should not, and the audit could not see live data](#2026-09-27--the-gate-trusted-what-it-should-not-and-the-audit-could-not-see-live-data)
 
+- [2026-09-28 — coverage missed dotfile configs and extensionless scripts; the claim scan rejected `--since last-audit`](#2026-09-28--coverage-missed-dotfile-configs-and-extensionless-scripts-the-claim-scan-rejected---since-last-audit)
+
 ---
 
 ## 20260812_1400 — v1.0, initial release
@@ -193,3 +195,24 @@ phase 7 record. **Documented:** two tool hazards that hit this run (the rewrap t
   `just audit-templates` no longer copies the templates readme into the scratch.
 - **Index check false positive fixed:** a folder named only as the end of a path (`docker build ... ./containerlab/cambium-mock`) was reported UNLISTED. A directory now counts as named when it ends a
   path segment; a bare word ("build the mock") still does not. Both directions tested. unified-network-controller: 20 rows → 6, all real.
+
+## 2026-09-28 — coverage missed dotfile configs and extensionless scripts; the claim scan rejected `--since last-audit`
+
+Found on unified-network-controller's ninth audit.
+
+### Fixed
+
+- **`scripts/coverage_manifest.py`** — a bare `.env` is runtime config by name (`Path(".env").suffix` is empty, so the `.env` extension rule never matched it); `.plist` and `.hcl` join the
+  runtime-config extensions; an extensionless file whose first bytes are `#!` is code (`_has_shebang`, via the new `root` argument of `classify`). Seven files the manifest left unclassified on
+  that project were a git hook, an SMC hook, three launchd jobs, an OpenBao config and `.env`: the launchers and hooks that act on live systems.
+- **`scripts/claim_scan.py`** — `focus_ref` resolves `--since` through `audit_state.resolve_since`, so `last-audit` means the same as for `audit_state.py init`; it used to reach git as a revision
+  name and stop with "ambiguous argument".
+
+### Tests
+
+- `CoverageFileKinds` and `SinceLastAudit` in `scripts/tests/test_gate_and_scanners.py`, each red against the previous script and green against the fix, recorded through `negtest`.
+
+### Noted, not changed
+
+- `audit_state.py negtest --cmd` runs through `shlex.split` without a shell, so a compound command (`cd … && …`, `;`, `$?`) fails silently as a red; wrap it in a script.
+

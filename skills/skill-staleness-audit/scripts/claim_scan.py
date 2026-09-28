@@ -246,9 +246,15 @@ def changed_since(root: Path, ref: str | None) -> set[str] | None:
 
 
 def focus_ref(root: Path, given: str | None) -> tuple[str | None, str]:
-    """--since wins; otherwise the focus recorded by `audit_state.py init --since`."""
+    """--since wins (a commit, or `last-audit` resolved as `audit_state.py init` does); otherwise the focus recorded by init.
+
+    `last-audit` used to reach git as a revision name and fail, though init accepted it (2026-09-28)."""
     if given:
-        return given, given
+        from audit_state import resolve_since
+        try:
+            return resolve_since(root, given)
+        except ValueError as exc:
+            raise SystemExit(f"ERROR: {exc}") from None
     st = root / ".staleness-audit" / "state.json"
     if st.is_file():
         since = json.loads(st.read_text(encoding="utf-8")).get("since")

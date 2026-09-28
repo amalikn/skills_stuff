@@ -345,3 +345,28 @@ class RequiredKeys(Fixture):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ── Coverage: files the rules missed on unified-network-controller, 2026-09-28 ─────────────────────────────────────────
+class CoverageFileKinds(Fixture):
+    def test_env_plist_hcl_and_shebang_scripts_are_classified(self) -> None:
+        write(self.root, "wc/.env", "A=1\n")
+        write(self.root, "wc/launchd/job.plist", "<plist/>\n")
+        write(self.root, "wc/openbao.hcl", "storage {}\n")
+        write(self.root, "scripts/githooks/pre-commit", "#!/usr/bin/env bash\nexit 0\n")
+        write(self.root, "notes/NOEXT", "plain text, no shebang\n")
+        git(self.root, "add", "-A")
+        cov = json.loads(run("coverage_manifest.py", "--json", cwd=self.root).stdout)
+        self.assertEqual(cov["unclassified_files"], ["notes/NOEXT"])
+        self.assertEqual((cov["by_class"].get("runtime-config"), cov["by_class"].get("code")), (3, 1))
+
+
+class SinceLastAudit(Fixture):
+    def test_claim_scan_resolves_last_audit_like_init(self) -> None:
+        write(self.root, "docs/staleness-audit-20260101_0000.md", "# audit\n")
+        git(self.root, "add", "-A")
+        git(self.root, "commit", "-qm", "audit")
+        write(self.root, "docs/a.md", "# a changed\n")
+        r = run("claim_scan.py", "--json", "--since", "last-audit", cwd=self.root)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("last-audit", json.loads(r.stdout)["since"])
