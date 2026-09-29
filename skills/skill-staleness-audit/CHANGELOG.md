@@ -10,8 +10,8 @@
 - [2026-08-12 (later still) — path claims inside source docstrings were never checked](#2026-08-12-later-still--path-claims-inside-source-docstrings-were-never-checked)
 - [2026-09-14 — structured-config parsing did not know the log-preamble-before-JSON capture convention](#2026-09-14--structured-config-parsing-did-not-know-the-log-preamble-before-json-capture-convention)
 - [2026-09-27 — the gate trusted what it should not, and the audit could not see live data](#2026-09-27--the-gate-trusted-what-it-should-not-and-the-audit-could-not-see-live-data)
-
 - [2026-09-28 — coverage missed dotfile configs and extensionless scripts; the claim scan rejected `--since last-audit`](#2026-09-28--coverage-missed-dotfile-configs-and-extensionless-scripts-the-claim-scan-rejected---since-last-audit)
+- [2026-09-29 — a report's verbatim sources folder counted as live documentation](#2026-09-29--a-reports-verbatim-sources-folder-counted-as-live-documentation)
 
 ---
 
@@ -203,10 +203,10 @@ Found on unified-network-controller's ninth audit.
 ### Fixed
 
 - **`scripts/coverage_manifest.py`** — a bare `.env` is runtime config by name (`Path(".env").suffix` is empty, so the `.env` extension rule never matched it); `.plist` and `.hcl` join the
-  runtime-config extensions; an extensionless file whose first bytes are `#!` is code (`_has_shebang`, via the new `root` argument of `classify`). Seven files the manifest left unclassified on
-  that project were a git hook, an SMC hook, three launchd jobs, an OpenBao config and `.env`: the launchers and hooks that act on live systems.
-- **`scripts/claim_scan.py`** — `focus_ref` resolves `--since` through `audit_state.resolve_since`, so `last-audit` means the same as for `audit_state.py init`; it used to reach git as a revision
-  name and stop with "ambiguous argument".
+  runtime-config extensions; an extensionless file whose first bytes are `#!` is code (`_has_shebang`, via the new `root` argument of `classify`). Seven files the manifest left unclassified on that
+  project were a git hook, an SMC hook, three launchd jobs, an OpenBao config and `.env`: the launchers and hooks that act on live systems.
+- **`scripts/claim_scan.py`** — `focus_ref` resolves `--since` through `audit_state.resolve_since`, so `last-audit` means the same as for `audit_state.py init`; it used to reach git as a revision name
+  and stop with "ambiguous argument".
 
 ### Tests
 
@@ -216,3 +216,14 @@ Found on unified-network-controller's ninth audit.
 
 - `audit_state.py negtest --cmd` runs through `shlex.split` without a shell, so a compound command (`cd … && …`, `;`, `$?`) fails silently as a red; wrap it in a script.
 
+
+## 2026-09-29 — a report's verbatim sources folder counted as live documentation
+
+**Found** on unified-network-controller, whose new research rule keeps each report's upstream pulls verbatim beside it in `<slug>-sources-<YYYYMMDD_hhmm>/`. The coverage manifest filed those files as
+knowledge-base (examined, because they sit under `/reports/`) and the claim scan reported every upstream link in them as BROKEN: 144 of 259 BROKEN claims on that run were release notes, READMEs and
+page captures that can neither resolve locally nor be edited.
+
+**Changed:** `coverage_manifest.py`, `claim_scan.py` and `artifact_signals.py` treat a path under a dated `-sources-<YYYYMMDD_hhmm>/` folder as evidence (exempt), except the folder's own `readme.md`,
+which is authored and stays audited. `verify_completeness.py` is unchanged: its sweeps read only `.md`, `.py`, `.yaml` and `.json`, and the only such file there is that readme.
+
+**Test:** `ClaimClasses.test_dated_sources_folder_is_evidence` (failed before the change); 28 tests pass.

@@ -187,6 +187,10 @@ SPECIAL_METHOD = {
 # Covers `-YYYYMMDD_hhmm`, `-YYYYMMDD`, and `-YYYY-MM-DD` in the stem.
 DATED_STEM = re.compile(r"[-_](?:\d{8}(?:_\d{4,6})?|\d{4}-\d{2}-\d{2})(?:[-_.]|$)")
 
+# A research report's verbatim upstream pulls sit beside it in `<slug>-sources-<YYYYMMDD_hhmm>/` (unified-network-controller
+# rule, 2026-09-29): evidence even under /reports/, except the folder's authored readme.md.
+DATED_SOURCES = re.compile(r"-sources-\d{8}_\d{4}/(?!readme\.md$)")
+
 # Directories whose dated files are working output rather than evidence — do not exempt these.
 NOT_EVIDENCE_DIRS = ("/reports/", "/logs/", "/output/", "/build/", "/dist/")
 
@@ -208,6 +212,9 @@ def classify(rel: str, root: Path | None = None) -> tuple[str, str, str]:
     if Path(rel).name in (".venv", "venv") and Path(rel).is_symlink():
         return ("tooling-config", "exempt",
                 "venv symlink to a rebuildable working-cache venv, not project content")
+
+    if DATED_SOURCES.search(p):
+        return ("evidence", "exempt", "verbatim upstream source kept beside its report — never edited")
 
     if DATED_STEM.search(Path(rel).stem) and not any(d in p for d in NOT_EVIDENCE_DIRS):
         return ("evidence", "exempt",

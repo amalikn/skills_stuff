@@ -232,6 +232,18 @@ class ClaimClasses(Fixture):
         self.assertEqual(self.states(d, "12 sites"), ["MARKED-HISTORICAL"])
         self.assertEqual(self.states(d, "9 sites"), ["NEEDS-MANUAL"])
 
+    def test_dated_sources_folder_is_evidence(self) -> None:
+        # A research report's verbatim upstream pulls live beside it in `<slug>-sources-<YYYYMMDD_hhmm>/`
+        # (unified-network-controller, 2026-09-29): upstream links there cannot resolve here and must not be edited.
+        write(self.root, "docs/r-sources-20260929_1304/readme-x.txt", "Upstream `docs/upstream-only.md` link\n")
+        d = self.scan("Live `docs/gone.md`\n")
+        self.assertEqual(self.states(d, "docs/upstream-only.md"), [])
+        self.assertEqual(self.states(d, "docs/gone.md"), ["BROKEN"])
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        import coverage_manifest
+        self.assertEqual(coverage_manifest.classify("docs/reports/r-sources-20260929_1304/readme-x.txt")[1], "exempt")
+        self.assertEqual(coverage_manifest.classify("docs/reports/r-sources-20260929_1304/readme.md")[1], "examined")
+
     def test_residual_reconciles_with_new_classes(self) -> None:
         self.complete_receipts()
         self.scan("`/etc/x/y.conf.yaml` `Taskfile.yml` `docs/missing.md` 3 sites\n")

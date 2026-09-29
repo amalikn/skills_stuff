@@ -43,6 +43,11 @@ GEN_EXT = {".py", ".sh", ".js", ".ts"}
 EXEMPT = ("/.git/", "__pycache__", "/node_modules/", "/.venv/", "/archive/",
           "-snapshots/", "source-captures/", "/.ai-context/")
 
+# A research report's verbatim upstream pulls sit beside it in `<slug>-sources-<YYYYMMDD_hhmm>/` (unified-network-controller
+# rule, 2026-09-29). Upstream links there cannot resolve locally and must never be edited; the folder's own readme.md is
+# authored and stays audited.
+DATED_SOURCES = re.compile(r"-sources-\d{8}_\d{4}/(?!readme\.md$)")
+
 # Assumption signals — the second Phase 4 prompt, "does it assume continuity, completeness or
 # availability that is no longer true?" These words are where that assumption usually surfaces.
 CONTINUITY = re.compile(
@@ -130,7 +135,7 @@ def main() -> int:
     changed = changed_since(root, ref)
     artifacts = []
     for rel in sorted(list_files(root)):
-        if any(e in "/" + rel for e in EXEMPT):
+        if any(e in "/" + rel for e in EXEMPT) or DATED_SOURCES.search("/" + rel):
             continue
         if Path(rel).suffix.lower() not in CODE_EXT:
             continue

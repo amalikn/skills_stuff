@@ -98,9 +98,14 @@ def _is_audit_scratch(rel: str) -> bool:
     return any(p == ".staleness-audit" or p.startswith(".staleness-audit-snapshot")
                for p in parts)
 
+# A research report's verbatim upstream pulls sit beside it in `<slug>-sources-<YYYYMMDD_hhmm>/` (unified-network-controller
+# rule, 2026-09-29). Upstream links there cannot resolve locally and must never be edited; the folder's own readme.md is
+# authored and stays audited.
+DATED_SOURCES = re.compile(r"-sources-\d{8}_\d{4}/(?!readme\.md$)")
+
 def is_exempt(rel: str) -> bool:
     p = "/" + rel
-    return any(e in p for e in EXEMPT)
+    return any(e in p for e in EXEMPT) or bool(DATED_SOURCES.search(p))
 
 
 def list_files(root: Path) -> list[str]:
