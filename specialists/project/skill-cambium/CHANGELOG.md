@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260929_1903 — XV2-22H REST config writes proven on a test unit (v0.6.22 -> v0.6.23)](#20260929_1903--xv2-22h-rest-config-writes-proven-on-a-test-unit-v0622---v0623)
 - [20260929_1820 — SNMP writes per type on the stage test SMC; communities follow the programme; an R195P the vault cannot log in to (v0.6.21 -> v0.6.22)](#20260929_1820--snmp-writes-per-type-on-the-stage-test-smc-communities-follow-the-programme-an-r195p-the-vault-cannot-log-in-to-v0621---v0622)
 - [20260929_0631 — cnWave has no serial over SNMP on firmware 1.4; REST getDeviceInfo is the source (v0.6.20 -> v0.6.21)](#20260929_0631--cnwave-has-no-serial-over-snmp-on-firmware-14-rest-getdeviceinfo-is-the-source-v0620---v0621)
 - [20260928_2204 — cnWave node type, serial and link facts; ePMP link frequency and width OIDs (v0.6.19 -> v0.6.20)](#20260928_2204--cnwave-node-type-serial-and-link-facts-epmp-link-frequency-and-width-oids-v0619---v0620)
@@ -70,6 +71,12 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260929_1903 — XV2-22H REST config writes proven on a test unit (v0.6.22 -> v0.6.23)
+
+- Write-back from unified-network-controller (CHANGELOG 20260929_1902): `references/06_device-api-cli-reference.md` "Write Operations" rewritten from the
+  unit's own UI bundle and a restore on daniel-test-nbn's XV2-22H: per-section `POST /api/<section>-config`, partial bodies, list encoding, non-atomic
+  POSTs, keys to leave out, what was proven.
 
 ## 20260929_1820 — SNMP writes per type on the stage test SMC; communities follow the programme; an R195P the vault cannot log in to (v0.6.21 -> v0.6.22)
 

@@ -6,7 +6,7 @@
 - [Access — see 02, not duplicated here](#access--see-02-not-duplicated-here)
 - [Enterprise Wi-Fi (XV2) — Adapter Data Points](#enterprise-wi-fi-xv2--adapter-data-points)
 - [Config Backup — the SNMP Gap This Fills](#config-backup--the-snmp-gap-this-fills)
-- [Write Operations — Exist, Not Documented Here](#write-operations--exist-not-documented-here)
+- [Write Operations — XV2-22H REST writes proven on one test unit (2026-09-29)](#write-operations--xv2-22h-rest-writes-proven-on-one-test-unit-2026-09-29)
 - [Evidence and Version Scope](#evidence-and-version-scope)
 - [ePMP AP / ePMP SM — Adapter Data Points](#epmp-ap--epmp-sm--adapter-data-points)
 - [cnWave 60 GHz — SNMP Exists, on Its Own Arm, and Is Enabled Per Device](#cnwave-60-ghz--snmp-exists-on-its-own-arm-and-is-enabled-per-device)
@@ -190,11 +190,26 @@ carry no real secret values, only mode names/VLANs/counters/BSSIDs.
 Oxidized for config backup, but Oxidized needs a way to pull a config for devices where SNMP can't do it — `GET /api/system-config` (+ the network/dhcp/vlan/firewall config endpoints above) or `show
 config all` over SSH is that path for this family. Not yet wired into Oxidized or tested at scale — this file records the data source, not a finished integration.
 
-## Write Operations — Exist, Not Documented Here
+## Write Operations — XV2-22H REST writes proven on one test unit (2026-09-29)
 
-The API and CLI both expose write/destructive operations (`POST /api/create-wlan`/`delete-wlan`/`exec-command`/`reboot`; CLI `delete config`, `service boot backup-firmware`, `upgrade <url>`, `import
-config ...`). These matter for a future "apply config" adapter path but are out of scope for this file and must never be called against a production device without explicit operator authorization and
-a tested rollback plan.
+Read from the unit's own UI bundle (`assets/falcon-ng-client-2.0.0.min.js`, 6.6.0.3-r9; unified-network-controller
+`docs/reports/controller-option3/xv2-rest-config-write-20260929_1900.md` and its sources folder) and exercised on `daniel-test-nbn-Generic_XV2-22H_APX_IPX_X`
+(serial W4ZA0MQ97WNS), a stage test unit, with the operator's agreement:
+
+- Each section writes with `POST /api/<section>-config` (`system`, `radio`, `network`, `ethports`, `vlan`, `dhcp`, `firewall`, `service`, `wlan`; plus
+  `create-wlan`/`delete-wlan`). A partial body is accepted (the UI's password change posts `{admin_password}` alone). Answer: `{"success": true}` or
+  `{"success": false, "message": "<key>:<reason>"}`.
+- Lists go in the UI's form: `ntp_server` as `[{"data": "..."}]`, `syslog_server` as `[{"data": "...", "port": "514"}]` (with `syslog_server_port` folded
+  in). Plain lists fail with `Internal error appending config-list to list` **after emptying `ntp_server`**: a POST is not atomic, so read back after
+  every write.
+- Leave out read-only keys (`clock`, `country_codes`, `tz`, `reboot_reason`) and keys the model refuses (`radio_sbs_mode`: "The SBS mode is not
+  supported", though it reads `"false"`).
+- Proven: `system_location` set and restored; the whole `system` section restored from a redacted Golden Config backup with the redacted keys left out
+  (68 keys; the full config then equal to the backup on 139 non-secret keys); `system_name` set.
+- Not the restore path: whole-file import (`configUpdate`, a file upload) needs a reboot to apply. `GET /api/config-export` returns the config as text;
+  `POST /api/config-default` resets to defaults; `POST /api/reboot`. Still never call a write, reset or reboot against a production device without
+  explicit operator authorization and a tested rollback.
+- CLI (`delete config`, `import config`, `upgrade <url>`) remains untested.
 
 ## Evidence and Version Scope
 

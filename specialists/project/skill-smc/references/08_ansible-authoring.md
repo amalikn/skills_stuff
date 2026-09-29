@@ -205,8 +205,9 @@ low-touch through the stage inventory and testing freely on it (keep connectivit
 
 **Corrected 2026-09-29 (unified-network-controller, CHANGELOG 20260929_1819): nbn low-touch exists, on `big_push` only.** Daniel's `7cfb7a38` puts
 daniel-test-nbn-smc01 in `[daniel-test-nbn_smc_ltp]` under `smc_ltp:children` in `inventories/nbn_accelerate/stage`, and `9e60b1c9` (with later edits to
-`338f90cf`) adds `inventories/nbn_accelerate/group_vars/smc_ltp.yml`: cnMaestro `lt-cnmaestro.communitywifi.net.au` (52.63.121.56, the address in the test box's
-option 43). Unlike rcp's static `client_secret`, big_push's `smc_ltp.yml` play first POSTs `/wifi-dashboard/smc/v1/sites/<site_eclipse_siteid>/access-keys`
+`338f90cf`) adds `inventories/nbn_accelerate/group_vars/smc_ltp.yml`: host `nbn.prod.apn-services.com.au`, address 52.63.121.56 (the address in the test box's
+option 43; `lt-cnmaestro.communitywifi.net.au` in `9e60b1c9`, renamed by `4431e2dc` on 2026-01-19, when rcp's big_push host became
+`wifi.prod.apn-services.com.au`, 3.105.84.178; the working tree's rcp file still names `lt-cnmaestro.apn.au`). Unlike rcp's static `client_secret`, big_push's `smc_ltp.yml` play first POSTs `/wifi-dashboard/smc/v1/sites/<site_eclipse_siteid>/access-keys`
 on that host with a master `ltp_api_token` and registers `client_secret` from the reply, and the `smc_cnmaestro_provisioning` role differs there too; on a
 branch without that play, `smc_ltp.yml --check` fails with `'client_secret' is undefined`. The test box has the `on commit` line but no
 `/usr/local/lib/cnmaestro-provisioning/`, so the hook has nothing to run. Its stage inventory (siteid 9001, tunnel port 59001; topology read from the box:

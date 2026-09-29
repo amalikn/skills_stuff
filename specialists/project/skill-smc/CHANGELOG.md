@@ -93,6 +93,8 @@
   `lt-cnmaestro.communitywifi.net.au`) and a play that creates a per-site access key before the provisioning role; the test box's hook script is absent.
 - `references/07_hardware-overlay.md`: AAEON DMI serials follow the BIOS build (fleet survey), the MAC-serial rule, and the two `mungkarta-smc01` boxes.
 - `references/01_overview.md`: always name the proxy, never try both (operator, 2026-09-29): `mungkarta-smc01` exists on both clusters as different boxes.
+- Corrected the same day: big_push's nbn low-touch host is `nbn.prod.apn-services.com.au` (52.63.121.56) since `4431e2dc`; rcp's is
+  `wifi.prod.apn-services.com.au`; `lt-cnmaestro.communitywifi.net.au` was its name in `9e60b1c9`.
 
 ## 20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)
 
