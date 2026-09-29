@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)](#20260929_1821--nbn-low-touch-lives-on-big_push-with-an-access-key-play-the-test-smcs-stage-inventory-v0171---v0172)
 - [20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)](#20260928_2206--low-touch-is-visible-per-box-the-test-box-daniel-test-nbn-smc01-v0170---v0171)
 - [20260927_2024 — pre-push gate: lint the pushed commit, compare a new branch with its nearest remote branch, skip Jinja for shellcheck (v0.1.69 -> v0.1.70)](#20260927_2024--pre-push-gate-lint-the-pushed-commit-compare-a-new-branch-with-its-nearest-remote-branch-skip-jinja-for-shellcheck-v0169---v0170)
 - [20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)](#20260927_1954--r195-tftp-files-varlibtftpboot-missing-on-fresh-2204-wangkatjungka-runs-an-uncommitted-template-with-apn-cnmaestro01-v0168---v0169)
@@ -84,6 +85,14 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)
+
+- Write-back from unified-network-controller (its CHANGELOG 20260929_1819): `references/08_ansible-authoring.md` corrects "rcp-only, no cw-cluster
+  equivalent" for `smc_ltp`: big_push carries nbn low-touch (daniel-test-nbn in `smc_ltp`, `inventories/nbn_accelerate/group_vars/smc_ltp.yml`,
+  `lt-cnmaestro.communitywifi.net.au`) and a play that creates a per-site access key before the provisioning role; the test box's hook script is absent.
+- `references/07_hardware-overlay.md`: AAEON DMI serials follow the BIOS build (fleet survey), the MAC-serial rule, and the two `mungkarta-smc01` boxes.
+- `references/01_overview.md`: always name the proxy, never try both (operator, 2026-09-29): `mungkarta-smc01` exists on both clusters as different boxes.
 
 ## 20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)
 

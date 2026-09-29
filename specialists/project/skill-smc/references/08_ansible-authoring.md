@@ -138,8 +138,8 @@ folder name:
 | `smc_qos` role | `inventory_dir.split('/') | last == 'rct'` | QoS role exists but silently no-ops on |
 |  |  |  |   `rcp`/`nbn_accelerate`/`wh` — |
 |  |  |  |   see `13_known-issues.md` |
-| `smc_ltp` sub-group (CNMaestro backhaul + DNS switch —   | `'smc_ltp' in group_names`; group membership from `inventories/rcp/prod` (static INI),     | `rcp`-only (apn-cluster), no                 |
-|   see below)                                             |   vars from `inventories/rcp/group_vars/smc_ltp.yml`                                       |   cw-cluster equivalent                      |
+| `smc_ltp` sub-group (CNMaestro backhaul + DNS switch —   | `'smc_ltp' in group_names`; group membership from `inventories/rcp/prod` (static INI),     | `rcp`; nbn only on big_push                  |
+|   see below)                                             |   vars from `inventories/rcp/group_vars/smc_ltp.yml`                                       |   (2026-09-29, see below)                    |
 
 **`smc_autossh` cluster/Teleport-endpoint selection.** `roles/smc_autossh/tasks/main.yml` copies pem/key files from `roles/smc_autossh/files/{{ teleport_fqdn }}/...`. `teleport_fqdn` is set in
 `smc_bases.yml` from the per-inventory group_var `smc_bases_teleport_fqdn` (`inventories/{rcp,rct,wh}/group_vars/smc_bases.yml` → `teleport.apn.au`;
@@ -202,6 +202,16 @@ the letters is not — do not guess/state one as fact without an operator confir
 unified-network-controller's onboarding reads it with `test -e` and treats absence as nothing to import. The test box **daniel-test-nbn-smc01** (cw, `teleport.communitywifi.net.au`) carries the
 machinery (zone file of 355 bytes dated 16 Sep, header only; BIND and `isc-dhcp-server` active; the `on commit` provisioning line) but is in no `smc_ltp` group; the operator approved converting it to
 low-touch through the stage inventory and testing freely on it (keep connectivity; back up its R195 at 10.255.11.1 and XV2 at 10.255.0.212 first).
+
+**Corrected 2026-09-29 (unified-network-controller, CHANGELOG 20260929_1819): nbn low-touch exists, on `big_push` only.** Daniel's `7cfb7a38` puts
+daniel-test-nbn-smc01 in `[daniel-test-nbn_smc_ltp]` under `smc_ltp:children` in `inventories/nbn_accelerate/stage`, and `9e60b1c9` (with later edits to
+`338f90cf`) adds `inventories/nbn_accelerate/group_vars/smc_ltp.yml`: cnMaestro `lt-cnmaestro.communitywifi.net.au` (52.63.121.56, the address in the test box's
+option 43). Unlike rcp's static `client_secret`, big_push's `smc_ltp.yml` play first POSTs `/wifi-dashboard/smc/v1/sites/<site_eclipse_siteid>/access-keys`
+on that host with a master `ltp_api_token` and registers `client_secret` from the reply, and the `smc_cnmaestro_provisioning` role differs there too; on a
+branch without that play, `smc_ltp.yml --check` fails with `'client_secret' is undefined`. The test box has the `on commit` line but no
+`/usr/local/lib/cnmaestro-provisioning/`, so the hook has nothing to run. Its stage inventory (siteid 9001, tunnel port 59001; topology read from the box:
+521/522/621 on `enp3s0`, 531/532/631 on `enp4s0`, WAN `enp1s0`) is on `unc-virtual-smc-malik-rcp01`, uncommitted; `smc_bases.yml --check` renders its
+`dhcpd.conf` identical and netplan four blank lines apart. Conversion not pursued (operator, 2026-09-29).
 
 **Verified on umoona-smc01, read-only, 2026-09-26 (unified-network-controller supplement Step 4 baseline).** The `on commit` block in the live `/etc/dhcp/dhcpd.conf` is byte-for-byte the
 `dhcpd.conf.j2` block on `master`, and `git diff master origin/big_push -- roles/smc_dhcpd/templates/dhcpd.conf.j2` is empty: the hook did not change between the branches, only the script did (the box

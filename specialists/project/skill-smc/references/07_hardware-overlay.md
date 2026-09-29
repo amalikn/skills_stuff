@@ -53,6 +53,7 @@
   - [A single window never gives an event-driven writer's daily rate — snapd is the worked example](#a-single-window-never-gives-an-event-driven-writers-daily-rate--snapd-is-the-worked-example)
   - [squidguard is silently dead on mornington and bidyadanga](#squidguard-is-silently-dead-on-mornington-and-bidyadanga)
   - [rsyslogd spread is 6.7× and unexplained](#rsyslogd-spread-is-67-and-unexplained)
+- [AAEON DMI serials follow the BIOS build, not the OS (fleet survey 2026-09-29)](#aaeon-dmi-serials-follow-the-bios-build-not-the-os-fleet-survey-2026-09-29)
 - [Cambium radio and AP estate by flavour (operator-stated 2026-09-14)](#cambium-radio-and-ap-estate-by-flavour-operator-stated-2026-09-14)
 
 - Hardware differences: x86 vs Raspberry Pi
@@ -827,6 +828,24 @@ restored, not suppressed. Textbook RULE-008 — low write volume as the visible 
 
 mornington 672.8 MB/day against umoona's 100.9 — the largest single line item in the dataset, 2.1× the fleet median, not explained by site size. mornington also carries the known 64 MB `auth.log` and
 the unremediated auth-filter.
+
+
+## AAEON DMI serials follow the BIOS build, not the OS (fleet survey 2026-09-29)
+
+Read-only `dmidecode` over every reachable x86 SMC (unified-network-controller `captures/smc-dmi-serial-survey-20260929_1829.tsv`). The system serial is a
+placeholder on every box; the baseboard serial is real or a placeholder by BIOS build, which marks the factory batch:
+
+| Model | BIOS | Baseboard serial | Boxes |
+|---|---|---|---|
+| BOXER-6404 | B404BM16 (2022-05-18) | real (`2401…`, `2302…`, `2600…`) | 14 of 14 |
+| BOXER-6404 | B404BM14 (2019-02-19), B404BM10 (2015-07-16, kalumburu) | `To be filled by O.E.M.` | 10 of 10 |
+| BOXER-6641 | B641HM17 (2021-09-08) | real (`24A0…`, `2400…`, `2302…`) | 12 of 13 (doomadgee: `Default string`) |
+| BOXER-6641 | B641HM20 (2024-09-19) | `Default string` | 3 of 3 (beagle-bay, old-looma, warburton) |
+
+Ubuntu 22.04.1, .3 and .4 appear on both sides, so the OS does not decide it; `dmidecode` only reads the SMBIOS table the factory wrote. For the 14 boxes with
+no real serial, unified-network-controller's SMC seed records the identity anchor (lowest port MAC) as the serial: hex, upper case, no separators, leading
+zeros dropped (`00:07:32:92:3F:E7` -> `732923FE7`; operator, 2026-09-29). Two boxes answer to `mungkarta-smc01`: the nbn one is a BOXER-6404, the apn one a
+Raspberry Pi (kernel `5.15.0-1078-raspi`, no DMI), so a read by name must name the proxy.
 
 ## Cambium radio and AP estate by flavour (operator-stated 2026-09-14)
 

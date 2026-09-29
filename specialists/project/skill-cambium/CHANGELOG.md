@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260929_1820 — SNMP writes per type on the stage test SMC; communities follow the programme; an R195P the vault cannot log in to (v0.6.21 -> v0.6.22)](#20260929_1820--snmp-writes-per-type-on-the-stage-test-smc-communities-follow-the-programme-an-r195p-the-vault-cannot-log-in-to-v0621---v0622)
 - [20260929_0631 — cnWave has no serial over SNMP on firmware 1.4; REST getDeviceInfo is the source (v0.6.20 -> v0.6.21)](#20260929_0631--cnwave-has-no-serial-over-snmp-on-firmware-14-rest-getdeviceinfo-is-the-source-v0620---v0621)
 - [20260928_2204 — cnWave node type, serial and link facts; ePMP link frequency and width OIDs (v0.6.19 -> v0.6.20)](#20260928_2204--cnwave-node-type-serial-and-link-facts-epmp-link-frequency-and-width-oids-v0619---v0620)
 - [20260928_2050 — R195P adapter: SSH_ASKPASS replaces sshpass (v0.6.18 -> v0.6.19)](#20260928_2050--r195p-adapter-ssh_askpass-replaces-sshpass-v0618---v0619)
@@ -69,6 +70,15 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260929_1820 — SNMP writes per type on the stage test SMC; communities follow the programme; an R195P the vault cannot log in to (v0.6.21 -> v0.6.22)
+
+- Write-back from unified-network-controller (its CHANGELOG 20260929_1819), daniel-test-nbn (nbn_accelerate stage SMC) and its two units:
+  `references/snmp-oid-registry.yaml`: R195P `sysName` now `rw` (set-and-revert ok with apn-snmp-rw, which the unit refuses for GETs); XV2-22H `sysLocation` and
+  `sysName` SETs refused, and the E-series MIB's only writable objects (`cambiumAPSetIPAddress`, `cambiumAPReboot`), untested; a header note that a
+  unit moved between programmes keeps the old programme's community (both units behind the nbn cluster answer only apn-snmp-ro).
+- `references/05_known-issues.md`: the R195P `HOR-R195P-1001` (serial WFXK0CTQRQBW) rejects `cnpilot-r-series` over SSH and the vault holds no R-series
+  `-legacy` entry, so it has no login and no config backup.
 
 ## 20260929_0631 — cnWave has no serial over SNMP on firmware 1.4; REST getDeviceInfo is the source (v0.6.20 -> v0.6.21)
 

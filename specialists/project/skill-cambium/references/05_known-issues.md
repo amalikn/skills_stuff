@@ -10,6 +10,7 @@
 - [LLDP on Cambium devices — checked 2026-09-23, partly answered](#lldp-on-cambium-devices--checked-2026-09-23-partly-answered)
 - [Failure signatures over the SMC path (mowanjum, 60-plus collector cycles to 2026-09-26)](#failure-signatures-over-the-smc-path-mowanjum-60-plus-collector-cycles-to-2026-09-26)
 - [Concurrent SSH reads of R195Ps fail (2026-09-28)](#concurrent-ssh-reads-of-r195ps-fail-2026-09-28)
+- [An R195P no vault entry logs in to (2026-09-29)](#an-r195p-no-vault-entry-logs-in-to-2026-09-29)
 
 ---
 
@@ -169,3 +170,9 @@ were unaffected. Read R-series units one at a time; the controller's identify se
 
 **Fixed the same day (v0.6.19):** the adapter hands the password to ssh through `SSH_ASKPASS` with `SSH_ASKPASS_REQUIRE=force` (OpenSSH 8.4+), so nothing watches a terminal for the prompt. Five R195Ps
 at once, three rounds: 15 of 15 logged in, 1.5 s each (about 4 s under `sshpass`). `sshpass -p` also put the password on the command line, where any local user could read it in `ps`; it is gone.
+
+## An R195P no vault entry logs in to (2026-09-29)
+
+daniel-test-nbn's R195P `HOR-R195P-1001` (serial WFXK0CTQRQBW, 4.7.3-R21, a unit carrying a horn-island name) refuses `cambium-devices/cnpilot-r-series` over SSH
+(`Permission denied (publickey,password)`), and the vault has no R-series `-legacy` entry to fall back to, so it has no config backup. SNMP reads and writes
+work with the apn communities. Not retried: one login attempt per read, lockout behaviour of the family not established.
