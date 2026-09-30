@@ -3,6 +3,7 @@
 ## Contents
 
 - [2. Service Architecture Map](#2-service-architecture-map)
+- [Live services and listeners, hope-vale-smc01 (2026-09-30)](#live-services-and-listeners-hope-vale-smc01-2026-09-30)
 - [snmpd on the SMC (canary, 2026-09-24)](#snmpd-on-the-smc-canary-2026-09-24)
 
 - Core networking
@@ -277,6 +278,20 @@ pending vs. offline is distinguished by whether the watchdog series has ever exi
 | mosquitto | MQTT broker | `mosquitto` | `/etc/mosquitto/` | IoT device telemetry |
 
 ---
+
+## Live services and listeners, hope-vale-smc01 (2026-09-30)
+
+Read-only (`systemctl list-units --type=service --state=running`, `ss -lntup`) on nbn_accelerate, BOXER-6641, Ubuntu 22.04.3: 60 running services.
+Listeners: sshd tcp/22, postfix tcp/25 on 0.0.0.0 (not in this map's intended set; open question), apache2 tcp/80 and 443, unbound tcp+udp/53
+(control 127.0.0.1:8953), squid tcp/3128-3131, iperf3 tcp/55200-55209 (ten `iperf552NN` units), prometheus tcp/9090, node_exporter tcp/9100,
+mosquitto tcp/1883 on the management address only, snmpd udp/161 on 10.255.0.1 and 127.0.0.1, ntpd udp/123 on every address, rsyslogd udp/514,
+dhcpd udp/67, stubby 127.0.0.1:60053, speedtest_exporter 127.0.0.1:9798, and the tsh forwards 127.0.0.1:50007, 59090, 60007, 60853. One
+`dhclient@<iface>` per DHCP uplink (eno1, enp3s0, vlan521-538, vlan621, vlan631). Also running: snapd, packagekit, ModemManager.
+
+The internet VLAN interfaces (`vlan5NN`, not bridged) carry their own locally administered MACs (`72:77:77:...`), not their parent port's; the
+bridged `enpXs0.50N` sub-interfaces and the starlink ones carry the port's MAC; bridge_500 and bridge_501 share the set MAC 72:77:77:00:00:01.
+unified-network-controller's proposal for which of these Nautobot records:
+[smc-services-in-nautobot-proposal-20260930_1421.md](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/architecture/smc-services-in-nautobot-proposal-20260930_1421.md).
 
 ## snmpd on the SMC (canary, 2026-09-24)
 

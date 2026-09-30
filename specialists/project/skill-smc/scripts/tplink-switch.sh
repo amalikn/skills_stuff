@@ -20,7 +20,7 @@
 # teleport-tunnel.sh does it. Requires an active `tsh login` for that cluster.
 #
 # Credentials: KeePass entry "/Network/tplink switch" (user admin) via the `kp` wrapper; override with
-# TPLINK_KP_ENTRY. Verified at kalumburu only (2026-09-24); other sites may carry a different password.
+# TPLINK_KP_ENTRY. Verified on 11 switches at six sites (2026-09-30); another site may still carry a different password.
 # The login allows one password attempt per run (NumberOfPasswordPrompts=1) so a wrong entry cannot
 # pile up failures against the switch's lockout.
 #
@@ -29,7 +29,7 @@
 # otherwise the login password is tried once. The driver reports which case applied on stderr.
 #
 # --backup runs `show system-info` and `show running-config`, redacts every password/secret/community/key
-# value, refuses to write if either known password string survives redaction, and writes
+# value and the trap host's community name, refuses to write if a known password or any community survives, and writes
 # <dir>/<site>/<system-name>_<ip>_<YYYYMMDD_hhmm>.cfg. Keep <dir> out of git (the configs are site data).
 #
 # The switch-side quirks (legacy SSH algorithms, no exec channel, CR for Enter, enable) are handled
@@ -141,10 +141,19 @@ info, cfg = sections.get("show system-info", ""), sections.get("show running-con
 if not cfg.strip():
     sys.exit("No running-config captured; nothing written.")
 secret = re.compile(r"(\b(?:password|secret|community|key|passphrase|psk)\s+(?:[0-9]\s+)?)(\S+)", re.I)
-cfg = "\n".join(secret.sub(r"\1<redacted>", line) for line in cfg.splitlines())
-for known in (os.environ.get("TP_PASS"), os.environ.get("TP_ENABLE")):
-    if known and known in cfg:
-        sys.exit("A known password survived redaction; nothing written.")
+# A v2c trap host names its community in quotes (`snmp-server host 10.255.0.1 162 "<community>" smode v2c`); on the
+# SG2428Ps seen so far it is the read-write community itself (2026-09-30), so it is redacted and leak-checked too.
+trap_host = re.compile(r'^(\s*snmp-server host \S+ \d+ )("[^"]*"|\S+)', re.I)
+communities = set()
+for line in cfg.splitlines():
+    if (m := trap_host.search(line)):
+        communities.add(m.group(2).strip('"'))
+    if (m := re.search(r"\bcommunity\s+(\S+)", line, re.I)):
+        communities.add(m.group(1).strip('"'))
+cfg = "\n".join(trap_host.sub(r'\1"<redacted>"', secret.sub(r"\1<redacted>", line)) for line in cfg.splitlines())
+for known in (os.environ.get("TP_PASS"), os.environ.get("TP_ENABLE"), *communities):
+    if known and len(known) > 3 and known in cfg:
+        sys.exit("A known password or community survived redaction; nothing written.")
 name = re.search(r"System Name\s+-\s+(.+)", info)
 name = re.sub(r"[^A-Za-z0-9._-]+", "-", name.group(1).strip()) if name else "unknown"
 path = os.path.join(out_dir, site, f"{name}_{ip}_{stamp}.cfg")

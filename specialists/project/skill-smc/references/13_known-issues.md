@@ -20,6 +20,7 @@
 - [2026-09-08 — upstream keepalived VIP config bug: `lb_algo rr` silently ignores the lweb03 drain intent (`202.171.100.138`)](#2026-09-08--upstream-keepalived-vip-config-bug-lb_algo-rr-silently-ignores-the-lweb03-drain-intent-202171100138)
 - [2026-09-11 — portal-FQDN regression: two separate incidents, one still live on 2 sites](#2026-09-11--portal-fqdn-regression-two-separate-incidents-one-still-live-on-2-sites)
 - [2026-09-24 — neighbour table: mornington hits the 1024 hard cap (2,230 table-fulls); proposed `gc_thresh` standard (PROPOSAL, not applied)](#2026-09-24--neighbour-table-mornington-hits-the-1024-hard-cap-2230-table-fulls-proposed-gc_thresh-standard-proposal-not-applied)
+- [2026-09-30 — `bot-cw-dashboard` restarts netfilter-persistent on koonibba and amata, wiping every device's access mark (OPEN, owner outside this repo)](#2026-09-30--bot-cw-dashboard-restarts-netfilter-persistent-on-koonibba-and-amata-wiping-every-devices-access-mark-open-owner-outside-this-repo)
 
 ---
 
@@ -931,3 +932,66 @@ client /18 on `bridge_501`.
 Same values for `net.ipv6.neigh.default.*` where IPv6 runs on the bridges; `gc_stale_time` 60 and `base_reachable_time_ms` 30000 unchanged. Before rollout: a read-only `table_fulls` survey across the
 fleet to find the other overflowing sites; find what sets `gc_thresh1` to 1 so an ansible-managed `/etc/sysctl.d/` file is not overridden; canary on mornington-smc01 and watch `table_fulls` stop
 growing.
+
+## 2026-09-30 — `bot-cw-dashboard` restarts netfilter-persistent on koonibba and amata, wiping every device's access mark (OPEN, owner outside this repo)
+
+**Symptom:** Koonibba's usage fell ~90% (Mar 1233.8 GB → Aug 114.5 GB) while connected-device counts stayed flat. The dashboard showed the
+same-time "bursts" on every WAN link.
+
+**How access works at these sites (operator, 2026-09-30):** users never buy a PIN. They accept a terms-and-conditions page, and a PIN/mark is issued in the background (Eclipse free-PIN flow), which becomes the device's `ECLIPSE_MARK` entry. "Access mark" below means that mark.
+
+**Cause (caught live 2026-09-30 11:48:42):** Teleport user `bot-cw-dashboard` (remote `54.66.73.128`) runs `systemctl restart
+netfilter-persistent` on the box. The process ancestry is `systemctl restart` ← `teleport exec` ← `teleport start`. The restart reloads
+`/etc/iptables/rules.v4` (Koonibba's is dated 2026-07-01 and holds 0 `ECLIPSE_MARK` rules), so every T&C-accepted device's access mark is removed. FORWARD then
+rejects their new connections until the portal re-adds the marks 3-5 minutes later. Koonibba had **0 marks in 13 of 29 sampled minutes (45%)**;
+Pukatja had 0 of 29.
+
+**The bot runs two jobs.** Only the second one does harm:
+
+| Job | Commands | Sites (24h to 2026-09-30) |
+|---|---|---|
+| AP ping monitoring | `ping -c 1 10.255.x.x`, `df -h /` | koonibba, indulkana, warakurna, ampilatwatja, aurukun-smc03, hope-vale, arawerr, galiwinku, doomadgee |
+| "Usage fix" | `ps ... status:update:usage` → `kohana status:update:usage` → `systemctl restart netfilter-persistent` | **koonibba (137), amata (45) only** |
+
+- Every "usage fix" run ends in a restart (ps-check count = restart count).
+- Severity follows restart frequency.
+- The trigger is a dashboard-side condition or site list, not box state. Usage-updater run time was tested and does not separate targeted sites
+  from untouched ones.
+- It is probably self-sustaining: each wipe makes usage look low again.
+
+**Ruled out:**
+- Carrier throttling: `speedtest_exporter` shows ~100 Mbps per link Mar-Sep.
+- Portal code drift: `status.php` md5 `0b4d8da993` fleet-wide, app commit a50bdb7.
+- ansible-wifi changes: none in the Apr-May onset window.
+- Other on-box causes: `fqdn2ip` is disabled, `iptables.service` is masked, `url_capturev1.sh` and `apn-mqtt-client` have no firewall calls,
+  and the dhcpd dispatcher hook fires only on bridge_500/501.
+
+**Still unknown:**
+- When the bot started (box journals only reach 2026-09-22/25).
+- Whether ampilatwatja, mungkarta, pipalyatjara and indulkana (-55-65% from Apr-May, no "usage fix" runs in journals from late Aug) were
+  targeted earlier.
+
+Both need the central Teleport audit log or the dashboard's own logs. **Fix:** the dashboard owner stops the restart step. The alternative is
+making the restart non-destructive; this is not applied.
+
+**Detection:** see [14_pin-activation-diagnosis.md](14_pin-activation-diagnosis.md). Sample the `ECLIPSE_MARK` count per minute; repeated
+drops to zero mean a wipe. Then run `journalctl -u teleport | grep "teleportUser:bot-cw-dashboard"`. Full RCA and evidence:
+`local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/koonibba-usage-drop/`.
+
+**Side findings (same session):**
+- The hourly WAN bursts in Grafana are `speedtest_exporter`'s own tests, roughly 1.2 GB/hour of WAN data (5-minute-rate estimate).
+- `scripts/correlate-pin-activation.sh` has two bugs:
+  - It exits 0 when every `tsh ssh` fails. It uses the active Teleport profile; pass `TELEPORT_PROXY=teleport.communitywifi.net.au`.
+  - It reported "no 302 activations" on Koonibba, where the Apache log has 6-112 a day. Its log parser misses them.
+- Koonibba's 4 dead VLANs (522/524/531/533) restart dhclient every few seconds via networkd-dispatcher. This is log noise, not the cause.
+
+**RCP check (2026-09-30 ~12:08):** RCP has its own bot, `bot-apn-dashboard` on `teleport.apn.au`. It only runs `ping -c 1 <AP IP>`, on 8 of the
+18 `flavor=rcp` SMCs. Across all 18 there were no firewall restarts by any Teleport user and 0 `netfilter-persistent` restarts, and `ECLIPSE_MARK`
+was non-zero everywhere (80-1541). The mark wipe is nbn-only as far as visible. Caveat: RCP journals only reach 2026-09-28/29.
+
+Two gotchas from the check:
+- `tsh ls` in table form truncates labels, so grepping it for `flavor=rcp` finds 4 nodes. Use `tsh ls --proxy=teleport.apn.au flavor=rcp
+  --format=names`, which returns 18.
+- `new-looma-smc01` is in the inventory but has no `flavor=rcp` label and was unreachable on Teleport.
+
+The AP-ping monitoring path of both bots is recorded in skill-cambium `references/05_known-issues.md` (2026-09-30).

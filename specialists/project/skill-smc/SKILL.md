@@ -203,9 +203,13 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - `references/14_pin-activation-diagnosis.md` — pin validity (mangle) vs pin issuance (Apache access log): two independent mechanisms, marks-≠-activations pitfalls, and the 2026-09-11 fleet case
   study.
 - `references/snmp-oid-registry.yaml` — verified SNMP OIDs on the SMC box itself (net-snmp agent; canary 2026-09-24), the list `unified-network-controller/wc-local/scripts/smc_collect.py` reads.
+- `references/snmp-oid-registry-tplink.yaml` — verified SNMP OIDs on the TP-Link site switches (SG2428P, 2026-09-30), kept like skill-cambium's registry: each
+  with the controller's use for it, plus the MIBs checked and absent. `references/tplink-site-switches.yaml` holds one record per switch (identity, address,
+  VLANs, port descriptions, SNMP state, evidence) and `references/tplink-snmp-enablement-survey-20260930.csv` the SNMP survey, as skill-cambium keeps them.
 - `references/15_cambium-asset-registers.md` — pointer only: the ansible-wifi `site_name` join point for a Cambium asset register. Full asset-register naming-convention/extraction knowledge now lives
   in `skill-cambium` — see Related Skills below.
-- `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture; driven by `scripts/tplink-switch.sh`.
+- `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture, the
+  `SNMP-<location>` read-write community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/tplink-switch.sh`.
 - `scripts/` — reusable read-only diagnostic tooling for WAN-routing/topology-drift investigations (evidence capture, the "hook covers netplan" drift analyser, and a topology_vars-vs-live-hardware
   cross-check), fleet hardware/service-health + portal-FQDN-status audit, captive-portal pin-activation diagnosis, plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate);
   see `scripts/README.md`.

@@ -1,0 +1,151 @@
+# Verified SNMP OIDs on the TP-Link site switches behind the SMCs, the machine-readable list, kept like skill-cambium's
+# references/snmp-oid-registry.yaml (operator, 2026-09-30: "maintain a list of OIDs for TP-Link as well as for the SMCs like you have maintained
+# for Cambium"). TP-Link has no skill of its own; its switches live in this pack (16_tplink-site-switches.md).
+#
+# Rule: an OID enters a device type ONLY after a live exchange against a unit of that exact model, recorded with date, unit, site, firmware and
+# method, and only when unified-network-controller has a use for it (operator, 2026-09-30: "keep track of the OIDs which are relevant to this
+# project"); the note says what that use is. `access: ro` means read only: no SET has been tried. Prose, community and access mechanics stay in
+# 16_tplink-site-switches.md; this file is the list tools read. Consumers: none in code yet (unified-network-controller seeds the switches from
+# their config captures, seed_switch_devices.py); a switch collector reads here first. Update it in the same session as any new live SNMP result on a
+# switch, per this pack's Standing Write-Back Contract.
+#
+# Access: from the site's SMC only (UNC wc-local/scripts/smc_snmp.py), v2c, community SNMP-<sysLocation>, read-write, not in the vault
+# (16_tplink-site-switches.md "SNMP"). Use -t 5 -r 3: with -t 2 -r 1 about half the subtrees timed out after a large walk and looked absent.
+# Vendor MIBs and manuals: unified-network-controller docs/reports/monitoring/tplink-sg2428p-snmp-sources-20260930_1244/.
+# Table OIDs are COLUMN OIDs: a row reads <column>.<index>. Scalars answer at instance .0.
+
+schema_version: 1
+updated: "2026-09-30"
+
+device_types:
+  tplink-sg2428p:
+    family: switch
+    models: [SG2428P]
+    hardware: "5.30"
+    arm: ".1.3.6.1.4.1.11863 (TP-Link; tplinkMgmt .6, tplinkProducts .5)"
+    oids:
+      # identity: what Nautobot records and the collector re-confirms
+      - oid: ".1.3.6.1.2.1.1.2.0"
+        name: sysObjectID
+        access: ro
+        note: ".1.3.6.1.4.1.11863.5.274 (tplink-sg2428p-v530); detect the vendor by the prefix .1.3.6.1.4.1.11863.5."
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.2.1.1.1.0"
+        name: sysDescr
+        access: ro
+        note: "'Omada 28-Port Gigabit Smart Switch with 24-Port PoE+'; it says Omada, not JetStream"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.2.1.1.5.0"
+        name: sysName
+        access: ro
+        note: "the <sysName> in the Nautobot name <site>-<sysName> (Switch1, 'Switch 2')"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.2.1.1.6.0"
+        name: sysLocation
+        access: ro
+        note: "typed by hand per site (Bidyadanga, HopeVale, BURRINGURRAH); the community is SNMP-<this>"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.2.1.1.3.0"
+        name: sysUpTime
+        access: ro
+        note: "reboot detection"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - {oid: ".1.3.6.1.4.1.11863.6.1.1.5.0", name: tpSysInfoHwVersion, access: ro, note: "'SG2428P 5.30': the device type, then the hardware revision",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: get}}
+      - {oid: ".1.3.6.1.4.1.11863.6.1.1.6.0", name: tpSysInfoSwVersion, access: ro, note: "Nautobot software version, e.g. '5.30.5 Build 20250117 Rel.60446'",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: get}}
+      - {oid: ".1.3.6.1.4.1.11863.6.1.1.7.0", name: tpSysInfoMacAddr, access: ro, note: "identity anchor, the base MAC in '8C-86-DD-33-A5-0F' form",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: get}}
+      - {oid: ".1.3.6.1.4.1.11863.6.1.1.8.0", name: tpSysInfoSerialNum, access: ro, note: "Nautobot serial",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: get}}
+      # health (TPLINK-SYSMONITOR-MIB; one row per stack unit, .1 on a standalone switch)
+      - oid: ".1.3.6.1.4.1.11863.6.4.1.1.1.1.3"
+        name: tpSysMonitorCpu1Minute
+        access: ro
+        note: "CPU %; .2 is the 5-second and .4 the 5-minute figure"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.4.1.11863.6.4.1.2.1.1.2"
+        name: tpSysMonitorMemoryUtilization
+        access: ro
+        note: "memory %"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      # interfaces: ports join Nautobot by ifName, which the catalog's port names copy
+      - oid: ".1.3.6.1.2.1.31.1.1.1.1"
+        name: ifName
+        access: ro
+        note: "'gigabitEthernet 1/0/N' (ifIndex 49152+N) and 'Vlan-interface<vid>' (ifIndex = VLAN ID)"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.2.1.31.1.1.1.18"
+        name: ifAlias
+        access: ro
+        note: "the port description (SMC, Cambium, ...), compared with the Nautobot interface description"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.2.1.2.2.1.8"
+        name: ifOperStatus
+        access: ro
+        note: "port up/down: a lost AP, radio or SMC uplink"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.2.1.31.1.1.1.15"
+        name: ifHighSpeed
+        access: ro
+        note: "negotiated speed, Mb/s (0 on VLAN interfaces)"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.2.1.31.1.1.1.6"
+        name: ifHCInOctets
+        access: ro
+        note: "traffic in, 64-bit"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.2.1.31.1.1.1.10"
+        name: ifHCOutOctets
+        access: ro
+        note: "traffic out, 64-bit"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      # topology: which unit is on which port
+      - oid: ".1.3.6.1.2.1.17.7.1.2.2.1.2"
+        name: dot1qTpFdbPort
+        access: ro
+        note: "MAC table, index <vlan>.<mac as 6 decimals> -> bridge port; finds a Cambium unit's port by its MAC. Holds public Wi-Fi client MACs on VLAN 501: never store a raw walk"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - oid: ".1.3.6.1.2.1.17.1.4.1.2"
+        name: dot1dBasePortIfIndex
+        access: ro
+        note: "bridge port -> ifIndex, to read the MAC table"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      - {oid: ".1.0.8802.1.1.2.1.4.1.1.9", name: lldpRemSysName, access: ro, note: "neighbour name per port; ePMP units announce theirs (3000L_T1_OMNI1_BID_10 at bidyadanga), unlike their own LLDP-MIB (skill-cambium)",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}}
+      - {oid: ".1.0.8802.1.1.2.1.4.1.1.7", name: lldpRemPortId, access: ro, note: "neighbour port ID, a MAC on the ePMP units",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}}
+      - {oid: ".1.0.8802.1.1.2.1.3.7.1.3", name: lldpLocPortId, access: ro, note: "local port name for the LLDP rows ('gigabitEthernet 1/0/1')",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}}
+      # VLANs: TP-Link's own VLAN MIB (tplinkMgmt 14); the standard Q-BRIDGE static and port-VLAN tables are absent
+      - {oid: ".1.3.6.1.4.1.11863.6.14.1.2.1.1.2", name: dot1qVlanDescription, access: ro, note: "VLAN name by VLAN ID (500 Management, 501 Public Wifi, 502 R195 Config, 521-528 Internet N)",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}}
+      - {oid: ".1.3.6.1.4.1.11863.6.14.1.2.1.1.3", name: vlanTagPortMemberAdd, access: ro, note: "tagged ports per VLAN as a range string, e.g. '1/0/1-8'",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}}
+      - {oid: ".1.3.6.1.4.1.11863.6.14.1.2.1.1.4", name: vlanUntagPortMemberAdd, access: ro, note: "untagged ports per VLAN (the one-internet-per-port access ports)",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}}
+      - {oid: ".1.3.6.1.4.1.11863.6.14.1.1.1.1.2", name: vlanPortPvid, access: ro, note: "PVID per port, index ifIndex",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}}
+      - oid: ".1.3.6.1.4.1.11863.6.14.1.1.1.1.1"
+        name: vlanPortNumber
+        access: ro
+        note: "port name '1/0/N' per ifIndex"
+        verified: [{date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}, {date: "2026-09-30", unit: hope-vale-Switch1, site: hope-vale, firmware: "5.30.1 Build 20240202", method: walk}]
+      # PoE: the APs and radios on ports 1-24 draw from these (TPLINK-POWER-OVER-ETHERNET-MIB)
+      - {oid: ".1.3.6.1.4.1.11863.6.56.1.1.1.1.0", name: tpSystemPowerLimit, access: ro, note: "PoE budget, 0.1 W (2500 = 250 W)",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: get}}
+      - {oid: ".1.3.6.1.4.1.11863.6.56.1.1.1.3.0", name: tpSystemPowerConsumption, access: ro, note: "PoE drawn now, 0.1 W",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: get}}
+      - {oid: ".1.3.6.1.4.1.11863.6.56.1.1.1.4.0", name: tpSystemPowerRemain, access: ro, note: "PoE budget left, 0.1 W",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: get}}
+      - {oid: ".1.3.6.1.4.1.11863.6.56.1.1.2.1.1.7", name: tpPoePower, access: ro, note: "per-port draw, 0.1 W, 24 rows",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}}
+      - {oid: ".1.3.6.1.4.1.11863.6.56.1.1.2.1.1.11", name: tpPoePowerStatus, access: ro, note: "per-port PoE state, 0 off .. 9 overtemperature",
+         verified: {date: "2026-09-30", unit: bidyadanga-Switch1, site: bidyadanga, firmware: "5.30.5 Build 20250117", method: walk}}
+    absent:
+      # Checked 2026-09-30 on both units with -t 5 -r 3 (answer: No Such Object). Do not plan on them.
+      - ".1.3.6.1.2.1.105 POWER-ETHERNET-MIB: use the TP-Link PoE MIB above"
+      - ".1.3.6.1.2.1.47 ENTITY-MIB, .1.3.6.1.2.1.25 HOST-RESOURCES-MIB, .1.3.6.1.2.1.16 RMON"
+      - ".1.3.6.1.2.1.17.7.1.4 Q-BRIDGE dot1qVlanStaticTable and dot1qPortVlanTable: only the FDB and the dot1qBase scalars answer"
+      - ".1.3.6.1.4.1.11863.6.96 TPLINK-DDMSTATUS-MIB: empty with no SFP module fitted (ports 25-28 down on both); retest where an SFP is in"
+      - "temperature and fan: no pollable object in any TP-Link MIB for this model; notifications (traps) only"

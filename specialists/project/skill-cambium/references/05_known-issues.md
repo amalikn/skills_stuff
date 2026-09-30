@@ -12,6 +12,7 @@
 - [Concurrent SSH reads of R195Ps fail (2026-09-28)](#concurrent-ssh-reads-of-r195ps-fail-2026-09-28)
 - [An R195P no vault entry logs in to (2026-09-29)](#an-r195p-no-vault-entry-logs-in-to-2026-09-29)
 - [Redaction missed `PWD` keys (fixed 2026-09-30)](#redaction-missed-pwd-keys-fixed-2026-09-30)
+- [Dashboard bots monitor AP reachability by pinging from the SMC over Teleport (2026-09-30)](#dashboard-bots-monitor-ap-reachability-by-pinging-from-the-smc-over-teleport-2026-09-30)
 
 ---
 
@@ -189,3 +190,30 @@ adapters now match `pwd`. Consumers that stored a backup before the fix hold tho
 Golden Config backups, re-taken except 1006, plus Nautobot's change log). Side effect: ePMP `systemConfigFactoryResetKeepPwd` and
 `wirelessPMPWDSUnknownMACFlood` now redact too (harmless).
 
+
+## Dashboard bots monitor AP reachability by pinging from the SMC over Teleport (2026-09-30)
+
+Both production dashboards check AP reachability the same way. A Teleport bot user runs `ping -c 1 <AP management IP>` on the site's SMC through
+`teleport exec`, one command per AP per poll. There is no direct device API or SNMP poll on this path; the SMC is the jump host. Counts are from
+each box's teleport journal over 24h, read 2026-09-30:
+
+| Cluster | Bot user | Sites polled (commands/24h) |
+|---|---|---|
+| nbn_accelerate (`teleport.communitywifi.net.au`) | `bot-cw-dashboard` (54.66.73.128) | koonibba 1,314 pings, indulkana 540, warakurna 456, ampilatwatja 432, aurukun-smc03 286, hope-vale 258, arawerr 83, galiwinku 10, doomadgee 2 |
+| rcp (`teleport.apn.au`) | `bot-apn-dashboard` | kalumburu 644, mowanjum 423, tjuntjuntjara 378, bidyadanga 204, wujal-wujal 68, horn-island 54, wangkatjungka 43, yakanarra 21 |
+
+Targets seen: nbn `10.255.0.x` and `10.255.3.x` (e.g. indulkana `10.255.3.60/.61/.110`, koonibba `10.255.0.11-.62`).
+
+Implications for the device layer:
+
+- **Only some sites are polled.** 9 of 31 nbn SMCs and 8 of 18 rcp SMCs had any poll in the window. Dashboard AP status for the other sites does not
+  come from this path. Where it does come from is unverified.
+- **A failed SMC or Teleport path looks like a down AP.** A dead Teleport agent on the SMC, or a missing `ping`, would most likely show the site's
+  APs as down while they are fine. That is the same class of false negative as the `snmpget` finding in skill-smc (2026-09-20). Unverified for these
+  dashboards.
+- **The nbn bot does more than ping.** At koonibba and amata it also runs a "usage fix" routine that restarts the SMC firewall and wipes every
+  device's access mark. That is SMC-layer and recorded in skill-smc `references/13_known-issues.md` (2026-09-30). It is cross-referenced here because anyone reading
+  `bot-cw-dashboard` activity for AP monitoring will see those commands in the same journal.
+
+Source: read-only surveys, `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/koonibba-usage-drop/mark-watch/` (`bot-survey-20260930/`,
+`rcp-survey-20260930/`). RCP journals only reach 2026-09-28/29, so its counts cover about 1-2 days.

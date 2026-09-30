@@ -109,9 +109,13 @@ routing:
     - references/15_cambium-asset-registers.md
   tplink_site_switches:
     description: TP-Link site switches behind the SMC -- KeePass entry, SSH quirks, enable
-      with and without a password, fping discovery (not ARP), redacted config capture.
+      with and without a password, fping discovery (not ARP), redacted config capture, the
+      SNMP-<location> community, the OIDs the controller uses, one record per switch.
     read:
     - references/16_tplink-site-switches.md
+    - references/snmp-oid-registry-tplink.yaml
+    - references/tplink-site-switches.yaml
+    - references/tplink-snmp-enablement-survey-20260930.csv
     - scripts/tplink-switch.sh
   smcbox_basics:
     description: SMC box definition, inventory flavors, Teleport access pattern, satellite

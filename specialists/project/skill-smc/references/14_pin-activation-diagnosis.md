@@ -161,11 +161,13 @@ This is why the two mechanisms normally track each other tightly (9-second gap, 
 - **Marks ≠ activations.** On `hope-vale-smc01` (2026-09), one of the currently-valid marks (MAC `ea:7c:...` → `10.0.37.250`) had **no** corresponding `wifi/access` POST anywhere in the retained log
   window. The pin was generated Eclipse-side and pushed to the box by its periodic sync (roughly every 5 minutes) — the local box never ran the activation flow for it. Do not assume every mark implies
   a local activation event; do not assume every activation implies the reverse either without checking.
-- **A near-empty `ECLIPSE_MARK` chain does not mean a dead site.** Confirmed live 2026-09-11 on `amata-smc01` (a healthy control site): the mangle snapshot read **0 currently-valid marks** at the
-  exact moment it was sampled, on a box whose `wifi/access` log showed **628 successful activations** in the same window (dozens that same morning, minutes apart). Marks evidently don't sit around
-  long enough on this fleet for a point-in-time sample to reliably catch a nonzero count even on a thriving site — whatever expires/reissues them cycles faster than the snapshot interval. **Never call
-  a site dead on mark count alone; the `wifi/access` log's 302 count over a real time window is the more trustworthy signal, and the two should always be read together, not the mangle table in
-  isolation.** This is the mirror-image failure mode of the previous bullet: that one is "mark present, no activation logged"; this one is "activation-rich, mark snapshot reads zero."
+- **A zero `ECLIPSE_MARK` count is NOT normal — CORRECTED 2026-09-30.** The 2026-09-11 note here read `amata-smc01`'s **0 marks** beside **628 activations** as "marks cycle faster than a snapshot, so
+  a zero is fine on a healthy site". That was wrong. Healthy sites hold a steady non-zero count every minute (per-minute sampling 2026-09-30: `pukatja` 491 and `kowanyama` ~639, never zero). A zero is
+  the signature of the chain being **wiped**. The confirmed cause on `koonibba-smc01` and `amata-smc01` is the Teleport bot `bot-cw-dashboard` running `systemctl restart netfilter-persistent`, which
+  reloads a `rules.v4` holding no marks; see [13_known-issues.md](13_known-issues.md) § 2026-09-30. Amata's 09-11 zero is very likely the same event, but that is unverified: amata's journal only
+  starts 2026-09-22. **Diagnose by sampling the mark count once a minute for 30+ minutes.** Repeated drops to 0 followed by a refill mean the chain is being wiped; then check `journalctl -u
+  netfilter-persistent` for restarts and the teleport journal for who ran them. Count marks with `iptables -t mangle -S ECLIPSE_MARK | grep -c -- '-A'`, not `grep -c ECLIPSE` over the whole mangle
+  table, which also counts the ~35 `ECLIPSE_*` chain definitions. Still read the `wifi/access` 302 count alongside, because a site can be activation-rich and still mark-starved.
 - **Pin-generation timestamps and numbers are Eclipse-side only** — not queryable from the SMC appliance or from Grafana (confirmed no captive-portal/pin-issuance Prometheus metric exists anywhere in
   this fleet's monitoring — see [13_known-issues.md](13_known-issues.md)). **The operator does have a separate Eclipse admin report** ("PIN Last Issued" per site, by site ID/community name) outside
   this fleet's own tooling entirely — confirmed 2026-09-11 as a third, independent corroborating source: it flagged `bungardi` at 10 days stale (last issued 2026-09-01) while every healthy site showed

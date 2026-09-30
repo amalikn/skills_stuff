@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)](#20260930_1221--terminology-paid-pin-corrected-to-access-mark-v0626---v0627)
 - [20260930_1209 — Dashboard bots poll AP reachability by ping from the SMC over Teleport (v0.6.25 -> v0.6.26)](#20260930_1209--dashboard-bots-poll-ap-reachability-by-ping-from-the-smc-over-teleport-v0625---v0626)
 - [20260930_1200 — R195P SNMP communities: Get/Set plaintext equal the programme vault, Error `error`, Trap not the short name (v0.6.24 -> v0.6.25)](#20260930_1200--r195p-snmp-communities-getset-plaintext-equal-the-programme-vault-error-error-trap-not-the-short-name-v0624---v0625)
 - [20260930_0325 — XV2 WLAN and radio reads, ePMP set_param and R195P nvram_set write paths; PWD redaction fixed (v0.6.23 -> v0.6.24)](#20260930_0325--xv2-wlan-and-radio-reads-epmp-set_param-and-r195p-nvram_set-write-paths-pwd-redaction-fixed-v0623---v0624)
@@ -74,6 +75,11 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)
+
+- `references/05_known-issues.md` (dashboard bots section): the nbn bot's routine now reads "wipes every device's access mark", not "every paid PIN".
+  Access at these sites is free via T&C acceptance (operator, 2026-09-30).
 
 ## 20260930_1209 — Dashboard bots poll AP reachability by ping from the SMC over Teleport (v0.6.25 -> v0.6.26)
 

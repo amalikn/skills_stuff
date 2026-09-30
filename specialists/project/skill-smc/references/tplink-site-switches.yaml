@@ -1,0 +1,621 @@
+# TP-Link site switches, one record per unit: identity, management addressing, VLANs, port descriptions and SNMP state. The machine-readable
+# companion to 16_tplink-site-switches.md, as skill-cambium's site-addressing.yaml is to its 03_asset-register-conventions.md (operator, 2026-09-30:
+# keep for TP-Link what is kept for Cambium). Provenance is structured (evidence: date, method, capture) so the file can be filtered, not just read.
+# Regenerate from the captures after a new `tplink-switch.sh --backup`; never hand-edit a value the switch reports. No secret is recorded here: the
+# community is named by its pattern only.
+
+schema_version: 1
+updated: '2026-09-30'
+sites:
+  bidyadanga:
+    programme: apn
+    teleport_proxy: teleport.apn.au
+    switches:
+    - management_ip: 10.255.0.2
+      prefix_length: 19
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch1
+      sys_location: Bidyadanga
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.5 Build 20250117 Rel.60446
+      serial: 225605X001920
+      base_mac: 8C:86:DD:33:A5:0F
+      vlans:
+        500: Management
+        501: Public Wifi
+        502: R195 Config
+        521: Internet 1
+        522: Internet 2
+        523: Internet 3
+        524: Internet 4
+        525: Internet 5
+        526: Internet 6
+        527: Internet 7
+        528: Internet 8
+      port_descriptions:
+        1/0/1: SMC
+        1/0/2: Cambium
+        1/0/3: Cambium
+        1/0/4: Cambium
+        1/0/5: Cambium
+        1/0/6: Cambium
+        1/0/7: Cambium
+        1/0/8: Cambium
+        1/0/9: Internet
+        1/0/10: Internet
+        1/0/11: Internet
+        1/0/12: Internet
+        1/0/13: Internet
+        1/0/14: Internet
+        1/0/15: Internet
+        1/0/16: Internet
+        1/0/17: Internet Starlink
+        1/0/18: Internet Starlink
+        1/0/20: R195 Config
+        1/0/23: Public
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: bidyadanga-Switch1
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/bidyadanga/Switch1_10.255.0.2_20260930_1249.cfg
+  burringurrah:
+    programme: apn
+    teleport_proxy: teleport.apn.au
+    switches:
+    - management_ip: 10.255.0.3
+      prefix_length: 19
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch2
+      sys_location: BURRINGURRAH
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.1 Build 20240202 Rel.61907
+      serial: 22444T8000079
+      base_mac: D8:44:89:8E:11:F2
+      vlans:
+        500: Management
+        501: Public Wifi
+        502: R195 Config
+        531: Internet1
+        532: Internet2
+        533: Internet3
+        534: Internet4
+        535: Internet5
+        536: Internet6
+        537: Internet7
+        538: Internet8
+        631: Starlink1
+        632: Starlink2
+      port_descriptions:
+        1/0/1: SMC
+        1/0/2: Cambium
+        1/0/3: Cambium
+        1/0/4: Cambium
+        1/0/5: Cambium
+        1/0/6: Cambium
+        1/0/7: Cambium
+        1/0/8: Cambium
+        1/0/9: Internet
+        1/0/10: Internet
+        1/0/11: Internet
+        1/0/12: Internet
+        1/0/13: Internet
+        1/0/14: Internet
+        1/0/15: Internet
+        1/0/16: Internet
+        1/0/17: Starlink
+        1/0/18: Starlink
+        1/0/20: R195 Config
+        1/0/23: Public
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: burringurrah-Switch2
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/burringurrah/Switch2_10.255.0.3_20260930_1250.cfg
+  hope-vale:
+    programme: nbn
+    teleport_proxy: teleport.communitywifi.net.au
+    switches:
+    - management_ip: 10.255.0.2
+      prefix_length: 19
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch1
+      sys_location: HopeVale
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.1 Build 20240202 Rel.61907
+      serial: '2244610002941'
+      base_mac: D8:44:89:C3:77:56
+      vlans:
+        500: Management
+        501: Public Wifi
+        502: R195 Prov
+        503: Private Wifi
+        521: Internet 1
+        522: Internet 2
+        523: Internet 3
+        524: Internet 4
+        525: Internet 5
+        526: Internet 6
+        527: Internet 7
+        528: Internet 8
+      port_descriptions:
+        1/0/1: SMC
+        1/0/2: Cambium
+        1/0/3: Cambium
+        1/0/4: Cambium
+        1/0/5: Cambium
+        1/0/6: Cambium
+        1/0/7: Cambium
+        1/0/8: Cambium
+        1/0/9: Internet
+        1/0/10: Internet
+        1/0/11: Internet
+        1/0/12: Internet
+        1/0/13: Internet
+        1/0/14: Internet
+        1/0/15: Internet
+        1/0/16: Internet
+        1/0/23: Public
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: hope-vale-Switch1
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/hope-vale/Switch1_10.255.0.2_20260930_1250.cfg
+    - management_ip: 10.255.0.3
+      prefix_length: 19
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch2
+      sys_location: HopeVale
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.1 Build 20240202 Rel.61907
+      serial: '2244610001636'
+      base_mac: D8:44:89:C3:72:3D
+      vlans:
+        500: Management
+        501: Public Wifi
+        502: R195 Config
+        503: Private Wifi
+        531: Internet 1
+        532: Internet 2
+        533: Internet 3
+        534: Internet 4
+        535: Internet 5
+        536: Internet 6
+        537: Internet 7
+        538: Internet 8
+      port_descriptions:
+        1/0/1: SMC
+        1/0/2: Cambium
+        1/0/3: Cambium
+        1/0/4: Cambium
+        1/0/5: Cambium
+        1/0/6: Cambium
+        1/0/7: Cambium
+        1/0/8: Cambium
+        1/0/9: Internet
+        1/0/10: Internet
+        1/0/11: Internet
+        1/0/12: Internet
+        1/0/13: Internet
+        1/0/14: Internet
+        1/0/15: Internet
+        1/0/16: Internet
+        1/0/23: Public
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: null
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/hope-vale/Switch2_10.255.0.3_20260930_1251.cfg
+    - management_ip: 10.255.0.4
+      prefix_length: 19
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch3
+      sys_location: HopeVale
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.1 Build 20240202 Rel.61907
+      serial: 22444T8002712
+      base_mac: D8:44:89:8E:1C:3B
+      vlans:
+        500: Management
+        501: Public Wifi
+        502: R195 Config
+        521: Internet 1
+        522: Internet 2
+        523: Internet 3
+        524: Internet 4
+        525: Internet 5
+        526: Internet 6
+        527: Internet 7
+        528: Internet 8
+      port_descriptions:
+        1/0/1: Cambium
+        1/0/2: Cambium
+        1/0/3: Cambium
+        1/0/4: Cambium
+        1/0/5: Cambium
+        1/0/6: Cambium
+        1/0/7: Cambium
+        1/0/8: Cambium
+        1/0/9: Cambium
+        1/0/10: Cambium
+        1/0/11: Cambium
+        1/0/12: Cambium
+        1/0/13: Cambium
+        1/0/14: Cambium
+        1/0/15: Cambium
+        1/0/16: Cambium
+        1/0/17: Cambium
+        1/0/18: Cambium
+        1/0/19: Cambium
+        1/0/20: Cambium
+        1/0/21: Cambium
+        1/0/22: Cambium
+        1/0/23: Cambium
+        1/0/24: Mgmt
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: null
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/hope-vale/Switch3_10.255.0.4_20260930_1251.cfg
+  kalumburu:
+    programme: apn
+    teleport_proxy: teleport.apn.au
+    switches:
+    - management_ip: 10.255.0.2
+      prefix_length: 22
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch1
+      sys_location: Kalumburu
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.1 Build 20240202 Rel.61907
+      serial: 22480S0000948
+      base_mac: B0:19:21:EA:92:3B
+      vlans:
+        500: Management
+        501: Public Wifi
+        502: R195 Prov
+        503: Private Wifi
+        521: Internet 1
+        522: Internet 2
+        523: Internet 3
+        524: Internet 4
+        525: Internet 5
+        526: Internet 6
+        527: Internet 7
+        528: Internet 8
+      port_descriptions: {}
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: kalumburu-Switch1
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/kalumburu/Switch1_10.255.0.2_20260930_1249.cfg
+      mask_drift: switch configures /22; the site (topology_vars, SMC bridge_500, Nautobot Prefix) is /19
+    - management_ip: 10.255.0.3
+      prefix_length: 22
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch 2
+      sys_location: Kalumburu
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.1 Build 20240202 Rel.61907
+      serial: 22480S0000014
+      base_mac: B0:19:21:EA:8E:95
+      vlans:
+        500: Management
+        501: Public Wifi
+        502: R195 Config
+        503: Private Wifi
+        531: Internet 1
+        532: Internet 2
+        533: Internet 3
+        534: Internet 4
+        535: Internet 5
+        536: Internet 6
+        537: Internet 7
+        538: Internet 8
+      port_descriptions:
+        1/0/1: SMC
+        1/0/2: Cambium
+        1/0/3: Cambium
+        1/0/4: Cambium
+        1/0/5: Cambium
+        1/0/6: Cambium
+        1/0/7: Cambium
+        1/0/8: Cambium
+        1/0/9: Internet
+        1/0/10: Internet
+        1/0/11: Internet
+        1/0/12: Internet
+        1/0/13: Internet
+        1/0/14: Internet
+        1/0/15: Internet
+        1/0/16: Internet
+        1/0/22: R195 Config
+        1/0/23: Public
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: null
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/kalumburu/Switch-2_10.255.0.3_20260930_1249.cfg
+  kowanyama:
+    programme: nbn
+    teleport_proxy: teleport.communitywifi.net.au
+    switches:
+    - management_ip: 10.255.0.2
+      prefix_length: 22
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch1
+      sys_location: Kowanyama
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.1 Build 20240202 Rel.61907
+      serial: '2244610001586'
+      base_mac: D8:44:89:C3:72:0B
+      vlans:
+        500: Management
+        501: Public Wifi
+        503: Private Wifi
+        521: Internet 1
+        522: Internet 2
+        523: Internet 3
+        524: Internet 4
+        525: Internet 5
+        526: Internet 6
+        527: Internet 7
+        528: Internet 8
+      port_descriptions:
+        1/0/1: SMC
+        1/0/3: Cambium
+        1/0/4: Cambium
+        1/0/5: Cambium
+        1/0/6: Cambium
+        1/0/7: Cambium
+        1/0/8: Cambium
+        1/0/9: Internet
+        1/0/10: Internet
+        1/0/11: Internet
+        1/0/12: Internet
+        1/0/13: Internet
+        1/0/14: Internet
+        1/0/15: Internet
+        1/0/16: Internet
+        1/0/23: Public
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: kowanyama-Switch1
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/kowanyama/Switch1_10.255.0.2_20260930_1251.cfg
+      mask_drift: switch configures /22; the site (topology_vars, SMC bridge_500, Nautobot Prefix) is /19
+    - management_ip: 10.255.0.3
+      prefix_length: 19
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch2
+      sys_location: Kowanyama
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.1 Build 20240202 Rel.61907
+      serial: 22444T8003257
+      base_mac: D8:44:89:8E:1E:5C
+      vlans:
+        500: Management
+        501: Public Wifi
+        502: R195 Config
+        503: Private Wifi
+        531: Internet 1
+        532: Internet 2
+        533: Internet 3
+        534: Internet 4
+        535: Internet 5
+        536: Internet 6
+        537: Internet 7
+        538: Internet 8
+      port_descriptions:
+        1/0/1: SMC
+        1/0/2: Cambium
+        1/0/3: Cambium
+        1/0/4: Cambium
+        1/0/5: Cambium
+        1/0/6: Cambium
+        1/0/7: Cambium
+        1/0/8: Cambium
+        1/0/9: Internet
+        1/0/10: Internet
+        1/0/11: Internet
+        1/0/12: Internet
+        1/0/13: Internet
+        1/0/14: Internet
+        1/0/15: Internet
+        1/0/16: Internet
+        1/0/23: Public
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: null
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/kowanyama/Switch2_10.255.0.3_20260930_1252.cfg
+  pukatja:
+    programme: nbn
+    teleport_proxy: teleport.communitywifi.net.au
+    switches:
+    - management_ip: 10.255.0.2
+      prefix_length: 19
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch1
+      sys_location: Pukatja
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.1 Build 20240202 Rel.61907
+      serial: '2244610002789'
+      base_mac: D8:44:89:C3:76:BE
+      vlans:
+        500: Management
+        501: Public Wifi
+        502: R195 Prov
+        503: Private Wifi
+        521: Internet 1
+        522: Internet 2
+        523: Internet 3
+        524: Internet 4
+        525: Internet 5
+        526: Internet 6
+        527: Internet 7
+        528: Internet 8
+      port_descriptions:
+        1/0/1: SMC
+        1/0/2: Cambium
+        1/0/3: Cambium
+        1/0/4: Cambium
+        1/0/5: Cambium
+        1/0/6: Cambium
+        1/0/7: Cambium
+        1/0/8: Cambium
+        1/0/9: Internet
+        1/0/10: Internet
+        1/0/11: Internet
+        1/0/12: Internet
+        1/0/13: Internet
+        1/0/14: Internet
+        1/0/15: Internet
+        1/0/16: Internet
+        1/0/23: Public
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: pukatja-Switch1
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/pukatja/Switch1_10.255.0.2_20260930_1252.cfg
+    - management_ip: 10.255.0.3
+      prefix_length: 19
+      management_vlan: 500
+      gateway: 10.255.0.1
+      sys_name: Switch2
+      sys_location: Pukatja
+      model: SG2428P
+      hardware: '5.30'
+      firmware: 5.30.1 Build 20240202 Rel.61907
+      serial: 22444T8001579
+      base_mac: D8:44:89:8E:17:CE
+      vlans:
+        500: Management
+        501: Public Wifi
+        502: R195 Config
+        503: Private Wifi
+        531: Internet 1
+        532: Internet 2
+        533: Internet 3
+        534: Internet 4
+        535: Internet 5
+        536: Internet 6
+        537: Internet 7
+        538: Internet 8
+      port_descriptions:
+        1/0/1: SMC
+        1/0/2: Cambium
+        1/0/3: Cambium
+        1/0/4: Cambium
+        1/0/5: Cambium
+        1/0/6: Cambium
+        1/0/7: Cambium
+        1/0/8: Cambium
+        1/0/9: Internet
+        1/0/10: Internet
+        1/0/11: Internet
+        1/0/12: Internet
+        1/0/13: Internet
+        1/0/14: Internet
+        1/0/15: Internet
+        1/0/16: Internet
+        1/0/23: Public
+      snmp:
+        v2c: OK
+        community: SNMP-<sys_location>, read-write, not in the vault
+        trap_host: 10.255.0.1
+      nautobot: null
+      evidence:
+        date: '2026-09-30'
+        method:
+        - ssh show system-info + show running-config (tplink-switch.sh --backup)
+        - snmpget sysObjectID/sysName/serial from the SMC
+        capture: unified-network-controller captures/tplink-switch-configs/pukatja/Switch2_10.255.0.3_20260930_1253.cfg
+  aurukun:
+    switches: []
+    note: TP-Link OUIs in the 2026-09-23/24 sweeps, but no host answered with a TPSSH banner on the management subnet (--discover, 2026-09-30)
+  doomadgee:
+    switches: []
+    note: TP-Link OUIs in the 2026-09-23/24 sweeps, but no host answered with a TPSSH banner on the management subnet (--discover, 2026-09-30)
+  galiwinku:
+    switches: []
+    note: TP-Link OUIs in the 2026-09-23/24 sweeps, but no host answered with a TPSSH banner on the management subnet (--discover, 2026-09-30)

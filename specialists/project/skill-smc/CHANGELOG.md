@@ -2,6 +2,11 @@
 
 ## Contents
 
+- [20260930_1424 — TP-Link VLAN parsing and drift; live SMC services and interface MACs (v0.1.77 -> v0.1.78)](#20260930_1424--tp-link-vlan-parsing-and-drift-live-smc-services-and-interface-macs-v0177---v0178)
+- [20260930_1307 — TP-Link switches at six sites: SNMP community, the OIDs the controller uses, backup redaction fixed, Nautobot canary (v0.1.76 -> v0.1.77)](#20260930_1307--tp-link-switches-at-six-sites-snmp-community-the-oids-the-controller-uses-backup-redaction-fixed-nautobot-canary-v0176---v0177)
+- [20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)](#20260930_1221--terminology-access-is-free-via-tc-acceptance-not-a-paid-pin-v0175---v0176)
+- [20260930_1210 — RCP has its own bot (bot-apn-dashboard), ping-only, no mark wipe; skill-cambium now co-invoked (v0.1.74 -> v0.1.75)](#20260930_1210--rcp-has-its-own-bot-bot-apn-dashboard-ping-only-no-mark-wipe-skill-cambium-now-co-invoked-v0174---v0175)
+- [20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)](#20260930_1202--bot-cw-dashboard-wipes-pin-marks-on-koonibbaamata-a-zero-eclipse_mark-count-is-not-normal-v0173---v0174)
 - [20260930_0326 — The low-touch script's contract with cnMaestro, read end to end (v0.1.72 -> v0.1.73)](#20260930_0326--the-low-touch-scripts-contract-with-cnmaestro-read-end-to-end-v0172---v0173)
 - [20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)](#20260929_1821--nbn-low-touch-lives-on-big_push-with-an-access-key-play-the-test-smcs-stage-inventory-v0171---v0172)
 - [20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)](#20260928_2206--low-touch-is-visible-per-box-the-test-box-daniel-test-nbn-smc01-v0170---v0171)
@@ -87,22 +92,75 @@
 
 ---
 
+## 20260930_1424 — TP-Link VLAN parsing and drift; live SMC services and interface MACs (v0.1.77 -> v0.1.78)
+
+- `16_tplink-site-switches.md`: new section on parsing the switch config with netutils' `linux` parser (no FOSS TP-Link parser exists), general-mode
+  port semantics, finding which topology `switchNN` a switch is by exact MAC, and the VLAN drift found at hope-vale and bidyadanga.
+- `02_service-map.md`: the live services and listeners of hope-vale-smc01 (60 running; postfix on 0.0.0.0:25, snapd, packagekit, ModemManager
+  noted), and which SMC interfaces carry which MACs (internet VLAN interfaces have their own locally administered ones).
+- `16_tplink-site-switches.md` "In Nautobot": switches are onboarded through UNC's sweep (the `--discover` banner probe), identify (`--backup`) and
+  land stages.
+
+## 20260930_1307 — TP-Link switches at six sites: SNMP community, the OIDs the controller uses, backup redaction fixed, Nautobot canary (v0.1.76 -> v0.1.77)
+
+- **Where they are** (`16_tplink-site-switches.md`): `--discover` over nine candidate sites found 11 SG2428P switches at six (kalumburu 2, bidyadanga 1,
+  burringurrah 1, hope-vale 3, kowanyama 2, pukatja 2); aurukun, doomadgee and galiwinku answered no TPSSH. The KeePass login worked on all 11, both
+  clusters, one attempt each; every one enables with no password. Firmware 5.30.1 on ten, 5.30.5 on bidyadanga.
+- **SNMP community**: one v2c community per switch, read-write, equal to `SNMP-<location>` and also the v2c trap community to the SMC; in no vault
+  entry. Identified by comparing in memory, never printed. Recorded as a risk for the operator (guessable, grants write).
+- **Redaction fix** (`scripts/tplink-switch.sh`): `--backup` now redacts the `snmp-server host` community name and leak-checks every community value
+  found. Before this, the trap host line carried the community in clear text; the 2026-09-24 kalumburu captures in unified-network-controller held it
+  (redacted in place there; still in that repo's history at `3b54e4c`).
+- **OIDs** (new `snmp-oid-registry-tplink.yaml`, in skill-cambium's registry shape; operator: keep TP-Link's list as Cambium's is kept): 32 OIDs
+  read live on bidyadanga and hope-vale Switch1, each naming the unit that proved it and the use the controller has for it (identity, health, interfaces, MAC table, LLDP, TP-Link VLAN MIB, TP-Link PoE MIB), and the MIBs checked and absent
+  (POWER-ETHERNET, ENTITY, HOST-RESOURCES, RMON, Q-BRIDGE VLAN tables; DDM empty without an SFP). The agent needs `-t 5 -r 3`.
+- **Per-switch record and survey** (new `tplink-site-switches.yaml`, `tplink-snmp-enablement-survey-20260930.csv`, the counterparts of
+  skill-cambium's site-addressing.yaml and SNMP survey): all 11 switches answered SNMP with `SNMP-<location>`, and each serial read over SNMP
+  equals its capture. JSON schemas and observations, the third Cambium kind, wait for a switch adapter whose output they are derived from.
+- **Nautobot**: unified-network-controller seeds switches from their captures (`seed_switch_devices.py`, catalog `vendors/tp-link/`); canary of six,
+  Staged: nbn_accelerate hope-vale, kowanyama, pukatja; rcp bidyadanga, burringurrah, kalumburu. Management masks differ per site (37 /19, six /22):
+  each address takes its site's Prefix, checked against topology_vars; kalumburu and kowanyama Switch1 configure /22 on /19 sites (drift).
+
+## 20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)
+
+- `references/13_known-issues.md` (2026-09-30 section): "paid PIN" / "paid device" wording replaced with "access mark" / "T&C-accepted device". Per the
+  operator, users at these sites never buy a PIN: they accept a terms-and-conditions page and a PIN/mark is issued in the background (Eclipse
+  free-PIN flow). A note saying so was added. The heading changed, so its anchor changed too. The v0.1.74 CHANGELOG entry keeps its original wording
+  (append-only).
+
+## 20260930_1210 — RCP has its own bot (bot-apn-dashboard), ping-only, no mark wipe; skill-cambium now co-invoked (v0.1.74 -> v0.1.75)
+
+- `references/13_known-issues.md` (2026-09-30 section): RCP check across 18 `flavor=rcp` SMCs. `bot-apn-dashboard` only pings APs (8 sites). There
+  were 0 firewall or `netfilter-persistent` restarts and non-zero `ECLIPSE_MARK` everywhere. Two gotchas recorded: `tsh ls` label truncation
+  (use `flavor=rcp --format=names`) and `new-looma-smc01` being unlabelled and unreachable.
+- Operator rule (2026-09-30), recorded in ansible-wifi AGENTS.md: invoke skill-cambium alongside skill-smc for ansible-wifi analysis that touches
+  Cambium devices or AP monitoring, and feed findings back to both packs. The AP-ping monitoring path now lives in skill-cambium 05_known-issues.
+
+## 20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)
+
+- `references/13_known-issues.md`: new 2026-09-30 section. Teleport user `bot-cw-dashboard` (54.66.73.128) restarts netfilter-persistent on koonibba (137/24h) and amata (45/24h) through a "usage fix"
+  routine. Each restart reloads a mark-less `rules.v4` and removes every paid PIN, leaving koonibba with 0 authorised devices for 45% of sampled minutes. This is the root cause of koonibba's ~90%
+  usage drop. The 2026-09-15 carrier-throttling conclusion is withdrawn. Fleet survey of 31 SMCs included; side findings and 2 `correlate-pin-activation.sh` bugs recorded.
+- `references/14_pin-activation-diagnosis.md`: CORRECTED the 2026-09-11 bullet that called a 0-mark snapshot normal on a healthy site (amata). Healthy sites hold a steady non-zero count; a zero means
+  the chain was wiped. Added per-minute sampling as the detection method and the correct mark-count command.
+
 ## 20260930_0326 — The low-touch script's contract with cnMaestro, read end to end (v0.1.72 -> v0.1.73)
 
-- Write-back from unified-network-controller (CHANGELOG 20260930_0325): `references/08_ansible-authoring.md` gains the cnmaestro-provisioning.py contract
-  (calls through the wifi-dashboard proxy, what each expects, new/replacement/reset, the replaced-MAC sources per family, the RPZ rewrite).
-- `references/01_overview.md` (coherence, 2026-09-30): the flavour table no longer says `smc_ltp` has no cw-cluster equivalent; nbn low-touch is on big_push's stage inventory only (daniel-test-nbn), no production site.
+- Write-back from unified-network-controller (CHANGELOG 20260930_0325): `references/08_ansible-authoring.md` gains the cnmaestro-provisioning.py contract (calls through the wifi-dashboard proxy, what
+  each expects, new/replacement/reset, the replaced-MAC sources per family, the RPZ rewrite).
+- `references/01_overview.md` (coherence, 2026-09-30): the flavour table no longer says `smc_ltp` has no cw-cluster equivalent; nbn low-touch is on big_push's stage inventory only (daniel-test-nbn),
+  no production site.
 - `references/01_overview.md`: `--proxy` must precede the host in `tsh ssh` (after it, tsh uses the default profile; verified 2026-09-30).
 
 ## 20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)
 
-- Write-back from unified-network-controller (its CHANGELOG 20260929_1819): `references/08_ansible-authoring.md` corrects "rcp-only, no cw-cluster
-  equivalent" for `smc_ltp`: big_push carries nbn low-touch (daniel-test-nbn in `smc_ltp`, `inventories/nbn_accelerate/group_vars/smc_ltp.yml`,
-  `lt-cnmaestro.communitywifi.net.au`) and a play that creates a per-site access key before the provisioning role; the test box's hook script is absent.
+- Write-back from unified-network-controller (its CHANGELOG 20260929_1819): `references/08_ansible-authoring.md` corrects "rcp-only, no cw-cluster equivalent" for `smc_ltp`: big_push carries nbn
+  low-touch (daniel-test-nbn in `smc_ltp`, `inventories/nbn_accelerate/group_vars/smc_ltp.yml`, `lt-cnmaestro.communitywifi.net.au`) and a play that creates a per-site access key before the
+  provisioning role; the test box's hook script is absent.
 - `references/07_hardware-overlay.md`: AAEON DMI serials follow the BIOS build (fleet survey), the MAC-serial rule, and the two `mungkarta-smc01` boxes.
 - `references/01_overview.md`: always name the proxy, never try both (operator, 2026-09-29): `mungkarta-smc01` exists on both clusters as different boxes.
-- Corrected the same day: big_push's nbn low-touch host is `nbn.prod.apn-services.com.au` (52.63.121.56) since `4431e2dc`; rcp's is
-  `wifi.prod.apn-services.com.au`; `lt-cnmaestro.communitywifi.net.au` was its name in `9e60b1c9`.
+- Corrected the same day: big_push's nbn low-touch host is `nbn.prod.apn-services.com.au` (52.63.121.56) since `4431e2dc`; rcp's is `wifi.prod.apn-services.com.au`; `lt-cnmaestro.communitywifi.net.au`
+  was its name in `9e60b1c9`.
 
 ## 20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)
 

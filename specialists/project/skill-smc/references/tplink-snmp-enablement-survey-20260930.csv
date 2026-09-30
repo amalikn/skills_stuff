@@ -1,0 +1,12 @@
+site,programme,teleport_proxy,community_tried,family,management_ip,model_or_role,icmp,snmp_v2c,sysdescr_or_note
+bidyadanga,apn,teleport.apn.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.2,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch1; serial matches capture: True
+kalumburu,apn,teleport.apn.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.2,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch1; serial matches capture: True
+kalumburu,apn,teleport.apn.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.3,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch 2; serial matches capture: True
+burringurrah,apn,teleport.apn.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.3,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch2; serial matches capture: True
+hope-vale,nbn,teleport.communitywifi.net.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.2,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch1; serial matches capture: True
+hope-vale,nbn,teleport.communitywifi.net.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.3,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch2; serial matches capture: True
+hope-vale,nbn,teleport.communitywifi.net.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.4,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch3; serial matches capture: True
+kowanyama,nbn,teleport.communitywifi.net.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.2,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch1; serial matches capture: True
+kowanyama,nbn,teleport.communitywifi.net.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.3,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch2; serial matches capture: True
+pukatja,nbn,teleport.communitywifi.net.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.2,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch1; serial matches capture: True
+pukatja,nbn,teleport.communitywifi.net.au,SNMP-<sysLocation> (per switch; not in the vault),TP-Link switch,10.255.0.3,SG2428P,UP,OK,sysObjectID .1.3.6.1.4.1.11863.5.274; sysName Switch2; serial matches capture: True

@@ -463,6 +463,9 @@ the SMC over stdin, so no secret reaches a command line or transcript. The drive
 Read-only by default: only `show`, `ping` and `tracert` are sent unless `--write` is given, which needs operator approval. One password attempt per run. Driver exit codes: 3 auth failed, 4
 connect/timeout, 5 no prompt, 6 enable failed. Requires an active `tsh login` for the site's cluster and `kp` on PATH.
 
+`--backup` redacts the `snmp-server host` community name as well as `snmp-server community` (2026-09-30: on these switches the trap host names the
+read-write community), and refuses to write if the login or enable password or any community value found in the config survives.
+
 | Script                  | Touches                                                 | Safety                          | Notes                                                                             |
 | ----------------------- | ------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
 | `tplink-switch.sh`      | `tsh`, KeePass (`kp`), ansible-wifi inventories         | `external-network`,             | Logs into production switches; read-only unless `--write`. `--backup` writes      |
