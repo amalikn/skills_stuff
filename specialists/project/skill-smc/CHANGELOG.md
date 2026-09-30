@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20260930_0326 — The low-touch script's contract with cnMaestro, read end to end (v0.1.72 -> v0.1.73)](#20260930_0326--the-low-touch-scripts-contract-with-cnmaestro-read-end-to-end-v0172---v0173)
 - [20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)](#20260929_1821--nbn-low-touch-lives-on-big_push-with-an-access-key-play-the-test-smcs-stage-inventory-v0171---v0172)
 - [20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)](#20260928_2206--low-touch-is-visible-per-box-the-test-box-daniel-test-nbn-smc01-v0170---v0171)
 - [20260927_2024 — pre-push gate: lint the pushed commit, compare a new branch with its nearest remote branch, skip Jinja for shellcheck (v0.1.69 -> v0.1.70)](#20260927_2024--pre-push-gate-lint-the-pushed-commit-compare-a-new-branch-with-its-nearest-remote-branch-skip-jinja-for-shellcheck-v0169---v0170)
@@ -85,6 +86,12 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20260930_0326 — The low-touch script's contract with cnMaestro, read end to end (v0.1.72 -> v0.1.73)
+
+- Write-back from unified-network-controller (CHANGELOG 20260930_0325): `references/08_ansible-authoring.md` gains the cnmaestro-provisioning.py contract
+  (calls through the wifi-dashboard proxy, what each expects, new/replacement/reset, the replaced-MAC sources per family, the RPZ rewrite).
+- `references/01_overview.md` (coherence, 2026-09-30): the flavour table no longer says `smc_ltp` has no cw-cluster equivalent; nbn low-touch is on big_push's stage inventory only (daniel-test-nbn), no production site.
 
 ## 20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)
 

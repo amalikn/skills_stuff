@@ -11,6 +11,7 @@
 - [Failure signatures over the SMC path (mowanjum, 60-plus collector cycles to 2026-09-26)](#failure-signatures-over-the-smc-path-mowanjum-60-plus-collector-cycles-to-2026-09-26)
 - [Concurrent SSH reads of R195Ps fail (2026-09-28)](#concurrent-ssh-reads-of-r195ps-fail-2026-09-28)
 - [An R195P no vault entry logs in to (2026-09-29)](#an-r195p-no-vault-entry-logs-in-to-2026-09-29)
+- [Redaction missed `PWD` keys (fixed 2026-09-30)](#redaction-missed-pwd-keys-fixed-2026-09-30)
 
 ---
 
@@ -176,3 +177,12 @@ at once, three rounds: 15 of 15 logged in, 1.5 s each (about 4 s under `sshpass`
 daniel-test-nbn's R195P `HOR-R195P-1001` (serial WFXK0CTQRQBW, 4.7.3-R21, a unit carrying a horn-island name) refuses `cambium-devices/cnpilot-r-series` over SSH
 (`Permission denied (publickey,password)`), and the vault has no R-series `-legacy` entry to fall back to, so it has no config backup. SNMP reads and writes
 work with the apn communities. Not retried: one login attempt per read, lockout behaviour of the family not established.
+
+## Redaction missed `PWD` keys (fixed 2026-09-30)
+
+The adapters' `REDACT_KEY_PATTERN` (`pass|psk|secret|key|...`) did not match `PWD`, so the R195P reader returned `nvram.DBID_TR_ACS_PWD`,
+`DBID_TR_CONNECT_PWD` and `DBID_UPGRADE_FTP_PWD` unredacted (found by unified-network-controller's provisioning template derivation). All four
+adapters now match `pwd`. Consumers that stored a backup before the fix hold those values (unified-network-controller: the tjuntjuntjara R195P
+Golden Config backups, re-taken except 1006, plus Nautobot's change log). Side effect: ePMP `systemConfigFactoryResetKeepPwd` and
+`wirelessPMPWDSUnknownMACFlood` now redact too (harmless).
+

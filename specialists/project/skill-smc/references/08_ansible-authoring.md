@@ -214,6 +214,19 @@ branch without that play, `smc_ltp.yml --check` fails with `'client_secret' is u
 521/522/621 on `enp3s0`, 531/532/631 on `enp4s0`, WAN `enp1s0`) is on `unc-virtual-smc-malik-rcp01`, uncommitted; `smc_bases.yml --check` renders its
 `dhcpd.conf` identical and netplan four blank lines apart. Conversion not pursued (operator, 2026-09-29).
 
+**The low-touch contract, read end to end (2026-09-30, unified-network-controller
+`docs/reports/controller-option3/cnmaestro-low-touch-contract-20260930_0319.md`).** `cnmaestro-provisioning.py` (big_push, 4,514 lines) runs on every
+20 s provisioning-VLAN lease as a daemon, one per MAC. It calls `https://<fqdn>/wifi-dashboard/smc/v1/cnmaestro<cnMaestro v2 resource>` with the
+site access key as bearer: `GET /devices/<mac>` (state, product, mode, parent), `GET /devices?managed_account=&network=` (the site snapshot every
+allocation is made against), `PUT /devices/<mac>` to approve (name, account, network, `approved`, description JSON with `us`, auto variables,
+`locid`, `name`; AP group or template; variables as strings; overrides; software version) or to reconfigure (a `job_id`, polled on `/jobs/<id>`),
+`DELETE` for a replacement. Order per unit: vendor class -> family (`Cambium-cnPilot R`, `Cambium-WiFi-AP`, `Cambium`); wait for registered,
+online, upstream fully onboarded, Sidekick done; new (configuration from description, then the unit, then the model default; variables likewise;
+lowest free auto values skipping .0/.255), replacement (the unit's replaced MAC: R195P SNMP `.1.3.6.1.4.1.41010.1.13.3.0`, XV2 `location`, ePMP
+Sidekick JSON at `.1.3.6.1.4.1.17713.21.3.5.4.0`) or reset (onboarded but not at `mgmt_ip`); then `_update_dns` rebuilds `db.cambium-rpz`
+(`<name>` and `<name>-public` A records) and reloads named. It logs in to factory units with defaults hardcoded in the script. UNC's
+replacement is `unc_provision.py` (same project).
+
 **Verified on umoona-smc01, read-only, 2026-09-26 (unified-network-controller supplement Step 4 baseline).** The `on commit` block in the live `/etc/dhcp/dhcpd.conf` is byte-for-byte the
 `dhcpd.conf.j2` block on `master`, and `git diff master origin/big_push -- roles/smc_dhcpd/templates/dhcpd.conf.j2` is empty: the hook did not change between the branches, only the script did (the box
 runs the 4,509-line `big_push` build, `redis-server` active; `big_push` also adds `python3-redis`, `redis-server` and a WiFi Dashboard access-key call to the role). The provisioning shared-network is

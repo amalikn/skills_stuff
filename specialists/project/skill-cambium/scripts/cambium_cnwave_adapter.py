@@ -56,7 +56,7 @@ import urllib.error
 import urllib.request
 
 REDACT_KEY_PATTERN = re.compile(
-    r"pass|psk|secret|key|shared|community|radius|credential|token|auth",
+    r"pass|pwd|psk|secret|key|shared|community|radius|credential|token|auth",
     re.IGNORECASE,
 )
 

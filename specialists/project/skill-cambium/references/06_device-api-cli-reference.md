@@ -210,6 +210,21 @@ Read from the unit's own UI bundle (`assets/falcon-ng-client-2.0.0.min.js`, 6.6.
   `POST /api/config-default` resets to defaults; `POST /api/reboot`. Still never call a write, reset or reboot against a production device without
   explicit operator authorization and a tested rollback.
 - CLI (`delete config`, `import config`, `upgrade <url>`) remains untested.
+- WLANs and radios (not in `get_config()`): `GET /api/wlan-config?wlancount` lists the WLAN ids (`[1, 2]`), `GET /api/wlan-config?<id>` returns
+  `[{...}]` (about 670 keys; passphrase and RADIUS secrets redact), `GET /api/radio-config` a list of radios by `id`. Writes post lists:
+  `POST /api/wlan-config` `[{"id": 2, <changed keys>}]`, `POST /api/radio-config` `[{"id": 1, ...}]`; `vlan` posts the GET's nested shape
+  (`interface_vlan: {"500": {...}}`, `name_server` as `[{data}]`). Read-only capability keys (`channel_option`, `bands_supported`,
+  `is_*_supported`, `allowed_wlan_modes`) are not config. Read 2026-09-30 on daniel-test-nbn's XV2-22H; only `system` writes are proven.
+
+**ePMP write path (4.7.0.1 UI bundle, read 2026-09-30 from umoona-3000L-ap-1; not yet proven on a unit):** `POST
+/cgi-bin/luci/;stok=<stok>/admin/set_param` with form field `changed_elements` = JSON `{"device_props": {<changed keys>}, "template_props":
+{"config_id": <the unit's config_id>}}`, optional `trial=1` (apply on trial); some keys need a reboot (the UI flags them). A factory-reset unit
+has `config_id` 0 or 1. `cambiumDeviceMode` (1 AP, 2 SM) is in `config_regular` too; its writable keys are the configuration prefixes
+(`network*`, `wireless*`, `systemConfig*`, `snmp*`, `mgmtIF*`, ...), not `cambium*` status or counters.
+
+**R195P write path (4.7.3-R21, not proven: the only test unit refuses the vault password):** settings are MediaTek nvram zone 2860
+(`nvram_get 2860 <key>` read proven); the write counterpart is `nvram_set 2860 <key> <value>` with the tab-separated triples quoted, then a
+reboot. `mwan_ipaddr` is `<mgmt>\t\t<public>` (WAN1 management VLAN 500, WAN2 bridge, WAN3 public VLAN 501).
 
 ## Evidence and Version Scope
 
