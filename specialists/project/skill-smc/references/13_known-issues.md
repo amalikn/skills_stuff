@@ -983,6 +983,7 @@ drops to zero mean a wipe. Then run `journalctl -u teleport | grep "teleportUser
 - `scripts/correlate-pin-activation.sh` has two bugs:
   - It exits 0 when every `tsh ssh` fails. It uses the active Teleport profile; pass `TELEPORT_PROXY=teleport.communitywifi.net.au`.
   - It reported "no 302 activations" on Koonibba, where the Apache log has 6-112 a day. Its log parser misses them.
+- **Usage totals from Prometheus need a `> 0` filter.** amata-smc01's node_exporter counters contain spurious samples of exactly `0` between normal values (e.g. bridge_501 tx 639.5 GB -> 0 -> 639.8 GB at 2026-08-20 06:30Z). `rate()`/`increase()` read each 0 as a counter reset and count the whole counter as new traffic, so Amata's raw August total came out at 62,830 GB (true: 598 GB) and a 30-day window at ~3 PB. Use `rate((metric > 0)[5m:1m])` when summing usage. It looked like an L2 loop; it was not.
 - Koonibba's 4 dead VLANs (522/524/531/533) restart dhclient every few seconds via networkd-dispatcher. This is log noise, not the cause.
 
 **RCP check (2026-09-30 ~12:08):** RCP has its own bot, `bot-apn-dashboard` on `teleport.apn.au`. It only runs `ping -c 1 <AP IP>`, on 8 of the

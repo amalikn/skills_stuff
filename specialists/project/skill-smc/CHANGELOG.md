@@ -2,8 +2,10 @@
 
 ## Contents
 
+- [20260930_1959 — Never push ansible-wifi from a git worktree; which ref unified-network-controller reads (v0.1.78 -> v0.1.79)](#20260930_1959--never-push-ansible-wifi-from-a-git-worktree-which-ref-unified-network-controller-reads-v0178---v0179)
 - [20260930_1424 — TP-Link VLAN parsing and drift; live SMC services and interface MACs (v0.1.77 -> v0.1.78)](#20260930_1424--tp-link-vlan-parsing-and-drift-live-smc-services-and-interface-macs-v0177---v0178)
 - [20260930_1307 — TP-Link switches at six sites: SNMP community, the OIDs the controller uses, backup redaction fixed, Nautobot canary (v0.1.76 -> v0.1.77)](#20260930_1307--tp-link-switches-at-six-sites-snmp-community-the-oids-the-controller-uses-backup-redaction-fixed-nautobot-canary-v0176---v0177)
+- [20260930_1803 — Prometheus usage sums need a `> 0` filter (spurious zero samples) (v0.1.76 -> v0.1.77)](#20260930_1803--prometheus-usage-sums-need-a--0-filter-spurious-zero-samples-v0176---v0177)
 - [20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)](#20260930_1221--terminology-access-is-free-via-tc-acceptance-not-a-paid-pin-v0175---v0176)
 - [20260930_1210 — RCP has its own bot (bot-apn-dashboard), ping-only, no mark wipe; skill-cambium now co-invoked (v0.1.74 -> v0.1.75)](#20260930_1210--rcp-has-its-own-bot-bot-apn-dashboard-ping-only-no-mark-wipe-skill-cambium-now-co-invoked-v0174---v0175)
 - [20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)](#20260930_1202--bot-cw-dashboard-wipes-pin-marks-on-koonibbaamata-a-zero-eclipse_mark-count-is-not-normal-v0173---v0174)
@@ -92,6 +94,14 @@
 
 ---
 
+## 20260930_1959 — Never push ansible-wifi from a git worktree; which ref unified-network-controller reads (v0.1.78 -> v0.1.79)
+
+- `references/08_ansible-authoring.md` (pre-push hook): pushing from a linked worktree makes the knowledge-capture step act on ansible-wifi itself
+  (local `user.name`/`user.email` overwritten, a snapshot commit on the worktree's branch); recovery steps; push from the main checkout. Met and
+  cleaned up 2026-09-30 while cherry-picking wangkatjungka's inventory onto big_push (`756e86b6`). The helper was fixed the same evening
+  (skill-repo-knowledge-capture 0.1.1).
+- Same file: unified-network-controller reads `origin/big_push` whatever is checked out; `UNC_ANSIBLE_WIFI_REF` overrides it per command.
+
 ## 20260930_1424 — TP-Link VLAN parsing and drift; live SMC services and interface MACs (v0.1.77 -> v0.1.78)
 
 - `16_tplink-site-switches.md`: new section on parsing the switch config with netutils' `linux` parser (no FOSS TP-Link parser exists), general-mode
@@ -120,6 +130,12 @@
 - **Nautobot**: unified-network-controller seeds switches from their captures (`seed_switch_devices.py`, catalog `vendors/tp-link/`); canary of six,
   Staged: nbn_accelerate hope-vale, kowanyama, pukatja; rcp bidyadanga, burringurrah, kalumburu. Management masks differ per site (37 /19, six /22):
   each address takes its site's Prefix, checked against topology_vars; kalumburu and kowanyama Switch1 configure /22 on /19 sites (drift).
+
+## 20260930_1803 — Prometheus usage sums need a `> 0` filter (spurious zero samples) (v0.1.76 -> v0.1.77)
+
+- `references/13_known-issues.md` (2026-09-30 side findings): amata-smc01 counters contain spurious 0 samples. `rate()` reads each as a reset, which
+  inflated Amata's August to 62,830 GB (true: 598 GB). The fix is to filter `(metric > 0)` before `rate`. The result had initially been misread as an
+  L2 loop.
 
 ## 20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)
 

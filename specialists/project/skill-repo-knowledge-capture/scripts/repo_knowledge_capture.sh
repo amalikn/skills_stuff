@@ -17,6 +17,11 @@ command="$1"
 repo_input="$2"
 snapshot_name="${3:-}"
 
+# Run as a git hook from a linked worktree, git exports GIT_DIR (and friends) pointing at the repo being pushed. `git -C <dir>` does not override
+# them, so every git call below, including those meant for the history repo, would act on that repo instead: on 2026-09-30 this wrote the
+# history identity into ansible-wifi's config and committed a snapshot onto its checked-out branch. Every call here names its repo with -C.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_COMMON_DIR GIT_PREFIX GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES
+
 require_repo() {
   git -C "$repo_input" rev-parse --show-toplevel
 }

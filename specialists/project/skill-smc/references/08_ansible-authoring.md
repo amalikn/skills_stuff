@@ -1235,6 +1235,24 @@ remote branch that has the fewest commits between it and the pushed commit, pass
 line. Tested by feeding the hook `git push`'s stdin lines (stacked branch: 12 files, no new violations; a local-only commit: base is its stacked branch, not master; `fix/routing-issue` pushed while
 another branch is checked out: its own 23 inherited `main.yml` findings, not the checked-out branch's). Other clones still carry the old hook.
 
+**Never push ansible-wifi from a linked git worktree (2026-09-30, unified-network-controller session).** The hook's first step, the knowledge
+capture (skill-repo-knowledge-capture's `repo_knowledge_capture.sh`), runs `git -C <history dir>` without clearing `GIT_DIR`, and git sets
+`GIT_DIR` for a hook run from a linked worktree. So its git commands acted on ansible-wifi itself: it wrote `user.name` and `user.email`
+(`repo-knowledge-capture`, `repo-knowledge-capture@local.invalid`) into ansible-wifi's local config, and committed the snapshot tree onto the
+worktree's checked-out branch (one commit, 4,704 files changed, local only; the push itself sent the right commit). Seen when a commit was
+cherry-picked onto big_push in a scratch worktree and pushed from there. Recovery: reset that local branch to the pushed commit, remove the
+worktree, and unset the two local config keys (check with `git config --local --get user.name`; empty is right, the global identity then
+applies). The snapshot folder is still written, but its history commit does not land in the local-knowledge repo. Push from the main checkout;
+to push a branch that is not checked out, `git push origin <branch>` from there works, and the hook lints it in its own temporary worktree.
+The helper was fixed the same evening (skill-repo-knowledge-capture, its 2026-09-30 release: it clears git's repo-locating variables first; reproduced and
+retested in a throwaway repo), but not retested with a real ansible-wifi push from a worktree, so the rule stands.
+
+**Which ref unified-network-controller reads (2026-09-30).** Its tools read ansible-wifi at `origin/big_push` with `git show` and `git ls-tree`,
+whatever branch is checked out, so a site whose inventory is only on a working branch does not exist for them (wangkatjungka, until its
+inventory commit was cherry-picked onto big_push as `756e86b6`). `UNC_ANSIBLE_WIFI_REF=<ref>` overrides the ref for one command; the
+project's governance check has its own pin with no override. big_push and `unc-virtual-smc-malik-rcp01` have diverged (36 and 95 commits; 30
+sites' topology_vars differ), so the override is for one site's commands, not a way to move the project to another branch.
+
 ### The hook's ansible venv is under-provisioned (corrected 2026-08-18)
 
 Earlier revisions of this section said that if the hook fails you should ensure `/Volumes/Data/_ai/_skills/skills-runtime/ansible-wifi/.venv/bin` is on `PATH`. **That is now known to be the cause

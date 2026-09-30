@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.1.1 (2026-09-30)
+- Fixed: run as a pre-push hook from a linked git worktree, the helper inherited `GIT_DIR` and its `git -C <history dir>` calls acted on the
+  repo being pushed: it wrote the history identity into that repo's config and committed the snapshot onto its checked-out branch (ansible-wifi,
+  2026-09-30; cleaned up by hand). The helper now clears git's repo-locating variables before any git call. Reproduced in a throwaway repo
+  before the fix (branch moved, identity written, no history commit) and passing after it.
+
 ## 0.1.0
 - Added canonical specialist for local-only repo knowledge capture.
 - Added deterministic helper script for setup, snapshot, history init/commit, and restore.
