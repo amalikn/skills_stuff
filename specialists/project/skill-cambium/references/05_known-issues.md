@@ -174,6 +174,9 @@ at once, three rounds: 15 of 15 logged in, 1.5 s each (about 4 s under `sshpass`
 
 ## An R195P no vault entry logs in to (2026-09-29)
 
+> **Resolved 2026-09-30:** the unit's SSH (Dropbear 2020.81) rejected the correct `cnpilot-r-series` password while its web UI accepted it;
+> a reboot restored SSH logins. When an R195P refuses SSH but its web UI works, reboot it before trying other vault entries.
+
 daniel-test-nbn's R195P `HOR-R195P-1001` (serial WFXK0CTQRQBW, 4.7.3-R21, a unit carrying a horn-island name) refuses `cambium-devices/cnpilot-r-series` over SSH
 (`Permission denied (publickey,password)`), and the vault has no R-series `-legacy` entry to fall back to, so it has no config backup. SNMP reads and writes
 work with the apn communities. Not retried: one login attempt per read, lockout behaviour of the family not established.

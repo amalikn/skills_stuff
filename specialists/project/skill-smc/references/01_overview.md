@@ -86,6 +86,8 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
     three boxes); if one fails, traffic moves to the others through the switching layer and the wireless network. A fixed `ProxyJump` does not fail over by itself — pick another box by hand, or use a
     `ProxyCommand` that tries each in turn (untested). Device host keys stay keyed by site, not by box, because the device is the same whichever box you enter through. Implemented for
     the controller's device pushes on 2026-09-26 (`unified-network-controller/wc-local/scripts/batch_push_devices.py` tries the site's other SMC boxes); see `06_failure-modes.md`.
+- **`--proxy` goes before the host (verified 2026-09-30).** `tsh ssh --proxy=teleport.communitywifi.net.au root@<node>` works; `tsh ssh root@<node>
+  --proxy=...` passes the flag to the node as a command and uses the default profile, failing with `dial tcp: lookup <node> ... server misbehaving`.
 - **Always name the proxy; never try one and then the other (operator, 2026-09-29).** A node name can exist on both clusters: `mungkarta-smc01` is a
   BOXER-6404 on `teleport.communitywifi.net.au` and a Raspberry Pi (kernel `5.15.0-1078-raspi`) on `teleport.apn.au`. A loop that tries apn first and
   keeps the first answer reads the wrong box without any error. Take the proxy from the box's flavour (inventory folder) or its Nautobot SMC Device.

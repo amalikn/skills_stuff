@@ -92,6 +92,7 @@
 - Write-back from unified-network-controller (CHANGELOG 20260930_0325): `references/08_ansible-authoring.md` gains the cnmaestro-provisioning.py contract
   (calls through the wifi-dashboard proxy, what each expects, new/replacement/reset, the replaced-MAC sources per family, the RPZ rewrite).
 - `references/01_overview.md` (coherence, 2026-09-30): the flavour table no longer says `smc_ltp` has no cw-cluster equivalent; nbn low-touch is on big_push's stage inventory only (daniel-test-nbn), no production site.
+- `references/01_overview.md`: `--proxy` must precede the host in `tsh ssh` (after it, tsh uses the default profile; verified 2026-09-30).
 
 ## 20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)
 

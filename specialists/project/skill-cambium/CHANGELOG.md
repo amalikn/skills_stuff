@@ -78,6 +78,7 @@
 - Write-back from unified-network-controller (CHANGELOG 20260930_0325, low-touch provisioning): `references/06_device-api-cli-reference.md` gains the
   XV2 WLAN/radio read and write shapes, the ePMP `set_param` body and the R195P `nvram_set` path (both unproven); `scripts/cambium_*_adapter.py`
   redaction now matches `pwd`; `references/05_known-issues.md` records the gap and its consumers.
+- `references/05_known-issues.md`: the daniel-test R195P's SSH rejected the right password until a reboot (web UI worked throughout); resolved 2026-09-30.
 
 ## 20260929_1903 — XV2-22H REST config writes proven on a test unit (v0.6.22 -> v0.6.23)
 
