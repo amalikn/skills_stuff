@@ -333,6 +333,12 @@ device name, and **`sysLocation` is writable** with `apn-snmp-rw` (default `Unkn
 44 kalumburu rows; the register's OUIs `BC:A9:93` and `BC:E6:7C` are both R195P and both Enterprise Wi-Fi, so the family comes from sysDescr, never the OUI). `get_config()` is the redacted UCI dump of
 `/etc/config/*`.
 
+
+**cnPilot R195P SNMP communities (2026-09-30, unified-network-controller read-only probe of `daniel-test-nbn-HOR-R195P-1001`, `TJN-R195P-1002` and `-1004`; values compared in-process, never
+printed):** `nvram.SNMPGetCommunity` and `nvram.SNMPSetCommunity` hold plaintext equal to the apn vault's `apn-snmp-ro` and `apn-snmp-rw` on all three, including the unit on an nbn site; the
+ansible-wifi R195P templates carry them as a bracketed hex form, which is not what the unit's nvram holds. `nvram.SNMPErrorCommunity` is `error`, as the template sets it. `nvram.SNMPTrapCommunity` is
+**not** the site short name the template gives it (8 characters on the TJN units, whose short name is `TJUN`; 3 on the daniel-test unit); its source is unknown. `nvram.SNMPTrapServerAddress` is empty
+on all four backed-up units, so no traps are sent. unified-network-controller compares Get, Set and Error as keyed fingerprints (its `config_fingerprint.py`), never as values.
 **cnWave identity and link facts (2026-09-28, unified-network-controller, yakanarra and doomadgee, firmware 1.4):** `sysDescr` names the node type on every cnWave unit swept (82 of 82: "Cambium cnWave
 V3000 Client Node", "... V5000 Distribution Node"); the model does not decide it (V1000 and V3000 seen as both). The serial is REST `getDeviceInfo` `msn` (no SNMP serial verified). A POP's REST
 topology lists every node and link of its controller's network; each link names its ends by **radio** MAC (`12:04:56:...`, `22:04:56:...` for a V5000's two sectors), not the management MAC. The config

@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20260930_1209 — Dashboard bots poll AP reachability by ping from the SMC over Teleport (v0.6.25 -> v0.6.26)](#20260930_1209--dashboard-bots-poll-ap-reachability-by-ping-from-the-smc-over-teleport-v0625---v0626)
+- [20260930_1200 — R195P SNMP communities: Get/Set plaintext equal the programme vault, Error `error`, Trap not the short name (v0.6.24 -> v0.6.25)](#20260930_1200--r195p-snmp-communities-getset-plaintext-equal-the-programme-vault-error-error-trap-not-the-short-name-v0624---v0625)
 - [20260930_0325 — XV2 WLAN and radio reads, ePMP set_param and R195P nvram_set write paths; PWD redaction fixed (v0.6.23 -> v0.6.24)](#20260930_0325--xv2-wlan-and-radio-reads-epmp-set_param-and-r195p-nvram_set-write-paths-pwd-redaction-fixed-v0623---v0624)
 - [20260929_1903 — XV2-22H REST config writes proven on a test unit (v0.6.22 -> v0.6.23)](#20260929_1903--xv2-22h-rest-config-writes-proven-on-a-test-unit-v0622---v0623)
 - [20260929_1820 — SNMP writes per type on the stage test SMC; communities follow the programme; an R195P the vault cannot log in to (v0.6.21 -> v0.6.22)](#20260929_1820--snmp-writes-per-type-on-the-stage-test-smc-communities-follow-the-programme-an-r195p-the-vault-cannot-log-in-to-v0621---v0622)
@@ -72,6 +74,19 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20260930_1209 — Dashboard bots poll AP reachability by ping from the SMC over Teleport (v0.6.25 -> v0.6.26)
+
+- `references/05_known-issues.md`: new section. Both dashboards check AP reachability by running `ping -c 1 <AP IP>` on the SMC through `teleport exec`:
+  `bot-cw-dashboard` on nbn (9 of 31 sites polled) and `bot-apn-dashboard` on rcp (8 of 18). Per-site 24h counts and AP IP ranges are recorded. The
+  implications are flagged as unverified: sites not polled get AP status from somewhere else, and a failed SMC or Teleport path would show APs as down.
+  Cross-references skill-smc 13_known-issues (2026-09-30) for the nbn bot's firewall-restart routine. Written back from the ansible-wifi
+  koonibba-usage-drop investigation.
+
+## 20260930_1200 — R195P SNMP communities: Get/Set plaintext equal the programme vault, Error `error`, Trap not the short name (v0.6.24 -> v0.6.25)
+
+- Write-back from unified-network-controller (CHANGELOG 20260930_1159, Golden Config option B): `references/06_device-api-cli-reference.md` records
+  what three R195P hold in their four community keys, from a read-only in-process comparison (no value printed or stored).
 
 ## 20260930_0325 — XV2 WLAN and radio reads, ePMP set_param and R195P nvram_set write paths; PWD redaction fixed (v0.6.23 -> v0.6.24)
 
