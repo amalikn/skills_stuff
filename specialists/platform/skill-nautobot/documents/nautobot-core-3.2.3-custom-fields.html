@@ -1,0 +1,194 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="custom-fields">Custom Fields<a class="headerlink" href="#custom-fields" title="Permanent link">¶</a></h1>
+<p>Each model in Nautobot is represented in the database as a discrete table, and each attribute of a model exists as a column within its table. For example, locations are stored in the <code>dcim_location</code> table, which has columns named <code>name</code>, <code>facility</code>, <code>physical_address</code>, and so on. As new attributes are added to objects throughout the development of Nautobot, tables are expanded to include new columns.</p>
+<p>However, some users might want to store additional object attributes that are somewhat esoteric in nature, and that would not make sense to include in the core Nautobot database schema. For instance, suppose your organization needs to associate each device with a ticket number correlating it with an internal support system record. This is certainly a legitimate use for Nautobot, but it's not a common enough need to warrant including a field for <em>every</em> Nautobot installation. Instead, you can create a custom field to hold this data.</p>
+<p>Within the database, custom fields are stored as JSON data directly alongside each object. This alleviates the need for complex queries when retrieving objects.</p>
+<h2 id="creating-custom-fields">Creating Custom Fields<a class="headerlink" href="#creating-custom-fields" title="Permanent link">¶</a></h2>
+<p>Custom fields can be created through the UI under <strong>Extensibility &gt; Miscellaneous &gt; Custom Fields</strong> or through the REST API.</p>
+<p>Nautobot supports these custom field types:</p>
+<ul>
+<li>Text: Free-form text</li>
+<li>Integer: A whole number (positive or negative)</li>
+<li>Boolean: True or false</li>
+<li>Date: A date in ISO 8601 format (YYYY-MM-DD)</li>
+<li>Date/time: A date and time in ISO 8601 format (YYYY-MM-DDThh<img alt="🇲🇲" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f1f2-1f1f2.svg" title=":mm:">ssZ)</li>
+<li>URL: This will be presented as a link in the web UI</li>
+<li>JSON: Arbitrary JSON data</li>
+<li>Markdown: Free-form text that will be rendered from Markdown in the web UI.</li>
+<li>Selection: A selection of one of several pre-defined custom choices</li>
+<li>Multiple selection: A selection field which supports the assignment of multiple values</li>
+</ul>
+<details class="version-changed">
+<summary>Changed in version 2.1.8</summary>
+<p>Prior to this release, text-type custom fields were always limited to a maximum of 255 characters. In this and later releases, text-type custom fields have no intrinsic length limit unless one is <a href="#custom-field-validation">explicitly defined</a>.</p>
+</details>
+<p>Each custom field must have a key; this should be a simple database-friendly string, e.g. <code>tps_report</code>. You may also assign a corresponding human-friendly label (e.g. "TPS report"); the label will be displayed on web forms. A weight is also required: Higher-weight fields will be ordered lower within a form. (The default weight is 100.) If a description is provided, it will appear beneath the field in a form.</p>
+<details class="version-changed">
+<summary>Changed in version 2.0.0</summary>
+<p>The custom field <code>slug</code> has been renamed to <code>key</code>, and <code>name</code> to <code>label</code>, in order to provide more clarity around their usage. Existing custom fields will automatically be migrated when upgrading to Nautobot 2.0.0 or later.</p>
+<p>Additionally, the <code>key</code> now <strong>must</strong> be a valid GraphQL identifier, which in general means that it must start with a lowercase letter and contain only lowercase letters, numbers, and underscores.</p>
+</details>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>key</code> and <code>type</code> of a custom field cannot be modified once created, so take care in defining these fields. This helps to reduce the possibility of inconsistent data and enforces the importance of thinking about the data model when defining a new custom field.</p>
+</div>
+<p>Marking a field as required will force the user to provide a value for the field when creating a new object or when saving an existing object. A default value for the field may also be provided. Use "true" or "false" for boolean fields, or the exact value of a choice for selection fields.</p>
+<p>The filter logic controls how values are matched when filtering objects by the custom field. Loose filtering (the default) matches on a partial value, whereas exact matching requires a complete match of the given string to a field's value. For example, exact filtering with the string "red" will only match the exact value "red", whereas loose filtering will match on the values "red", "red-orange", or "bored". Setting the filter logic to "disabled" disables filtering by the field entirely.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Custom field <a href="rest-api/filtering.html#lookup-expressions">extended filtering</a> introduced extended lookup expression filters for <code>exact</code> and <code>icontains</code>, duplicating the functionality of both the <code>Strict</code> and <code>Loose</code> settings.</p>
+</div>
+<p>A custom field must be assigned to one or more object types, or models, in Nautobot. Once created, custom fields will automatically appear as part of these models in the web UI and REST API.</p>
+<p>When creating a custom field, if "Move to Advanced tab" is checked, this custom field won't appear on the object's main detail tab in the UI, but will appear in the "Advanced" tab. This is useful when the requirement is to hide this field from the main detail tab when, for instance, it is only required for machine-to-machine communication and not user consumption.</p>
+<h3 id="custom-field-validation">Custom Field Validation<a class="headerlink" href="#custom-field-validation" title="Permanent link">¶</a></h3>
+<p>Nautobot supports limited custom validation for custom field values. Following are the types of validation that can be enforced for each field type:</p>
+<table>
+<thead>
+<tr>
+<th>Field Type</th>
+<th>Minimum</th>
+<th>Maximum</th>
+<th>Regex</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Text</td>
+<td>✅ (length)</td>
+<td>✅ (length)</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Integer</td>
+<td>✅ (value)</td>
+<td>✅ (value)</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>Boolean</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>Date</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>Date/time</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>URL</td>
+<td>✅ (length)</td>
+<td>✅ (length)</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td>✅ (length)</td>
+<td>✅ (length)</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>JSON</td>
+<td>✅ (length)</td>
+<td>✅ (length)</td>
+<td>✅</td>
+<td>Must be valid JSON; validators apply to string representation</td>
+</tr>
+<tr>
+<td>Select</td>
+<td>✅ (length)</td>
+<td>✅ (length)</td>
+<td>✅</td>
+<td>Must match defined choice; validators apply to defining choices</td>
+</tr>
+<tr>
+<td>Multi-select</td>
+<td>✅ (length)</td>
+<td>✅ (length)</td>
+<td>✅</td>
+<td>Must match defined choice(s); validators apply to defining choices</td>
+</tr>
+</tbody>
+</table>
+<h3 id="custom-selection-fields">Custom Selection Fields<a class="headerlink" href="#custom-selection-fields" title="Permanent link">¶</a></h3>
+<p>Choices are stored as independent values and are assigned a numeric weight which affects their ordering in selection lists and dropdowns. Note that choice values are saved exactly as they appear, so it's best to avoid superfluous punctuation or symbols where possible.</p>
+<p>A regular expression can optionally be defined on custom selection choices to validate the defined field choices in the user interface and the API. Similarly, minimum and maximum lengths may be defined to validate defined field choices.</p>
+<p>If a default value is specified for a selection field, it must exactly match one of the provided choices. Note that the default value can only be set on the custom field after its corresponding choice has been added.</p>
+<p>The value of a multiple selection field will always return a list, even if only one value is selected.</p>
+<h3 id="filtering-on-custom-fields">Filtering on Custom Fields<a class="headerlink" href="#filtering-on-custom-fields" title="Permanent link">¶</a></h3>
+<p>There are a number of available built-in filters for custom fields.</p>
+<p>Filtering on an object's list view follows the same pattern as <a href="rest-api/filtering.html#filtering-by-custom-field">custom field filtering on the API</a>.</p>
+<p>When using the ORM, you can filter on custom fields using <code>_custom_field_data__&lt;field name&gt;</code> (note the underscore before <code>custom_field_data</code> and the double-underscore before the field name). For example, if a custom field of string type with a <code>name</code> of  <code>"location_code"</code> was created for Location objects, you could filter as follows:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot.dcim.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Location</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">all_locs</span> <span class="o">=</span> <span class="n">Location</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>  <span class="c1"># -&gt; ['Raleigh', 'Charlotte', 'Greensboro']</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">filtered_locs_1</span> <span class="o">=</span> <span class="n">Location</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_custom_field_data__location_code</span><span class="o">=</span><span class="s2">"US-NC-RAL42"</span><span class="p">)</span>  <span class="c1"># -&gt; ['Raleigh']</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">filtered_locs_2</span> <span class="o">=</span> <span class="n">Location</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">_custom_field_data__location_code__in</span><span class="o">=</span><span class="p">[</span><span class="s2">"US-NC-RAL42"</span><span class="p">,</span> <span class="s2">"US-NC-CLT22"</span><span class="p">]</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span>  <span class="c1"># -&gt; ['Raleigh', 'Charlotte']</span>
+</code></pre></div>
+<p>For further ORM interaction with custom fields check out the <a href="../feature-guides/custom-fields.html">custom fields user guide</a>.</p>
+<h2 id="custom-fields-and-the-rest-api">Custom Fields and the REST API<a class="headerlink" href="#custom-fields-and-the-rest-api" title="Permanent link">¶</a></h2>
+<p>When retrieving an object via the REST API, all of its custom field data will be included within the <code>custom_fields</code> attribute. For example, below is the partial output of a location with two custom fields defined:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">42568</span><span class="err">d</span><span class="mi">63-0</span><span class="kc">f</span><span class="mi">8</span><span class="err">c</span><span class="mi">-453</span><span class="kc">f</span><span class="mi">-8</span><span class="err">d</span><span class="mi">13-1355</span><span class="kc">f</span><span class="mi">677</span><span class="err">a</span><span class="kc">f</span><span class="mf">4e</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080/api/dcim/locations/42568d63-0f8c-453f-8d13-1355f677af4e/"</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Raleigh 42"</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="err">...</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="nt">"custom_fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="nt">"deployed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-06-19"</span><span class="p">,</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">        </span><span class="nt">"location_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"US-NC-RAL42"</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="err">...</span>
+</code></pre></div>
+<details class="version-changed">
+<summary>Changed in version 2.0.0</summary>
+<p>In the Nautobot 1.x REST API, depending on the exact API version in use, the <code>custom_fields</code> dictionary would be keyed by either the <code>name</code> or the <code>slug</code> of each custom field. In Nautobot 2.0, this has been standardized and the dictionary keys will <strong>always</strong> correspond to the custom field's <code>key</code> strings.</p>
+</details>
+<p>To set or change custom field values, simply include nested JSON data in your REST API POST, PATCH, or PUT request. Unchanged fields may be omitted from the data. For example, the below would set a value for the <code>deployed</code> custom field but would leave the <code>location_code</code> value unchanged:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New Location"</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">"custom_fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="nt">"deployed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-03-24"</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">}</span>
+</code></pre></div>
+<h2 id="custom-fields-user-guide">Custom Fields User Guide<a class="headerlink" href="#custom-fields-user-guide" title="Permanent link">¶</a></h2>
+<p>More in depth documentation on how to use custom fields can be found in the <a href="../feature-guides/custom-fields.html">custom fields user guide</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

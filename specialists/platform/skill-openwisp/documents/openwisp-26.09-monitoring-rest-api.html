@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en" data-content_root="../../"
+  x-data="{ darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches), activeSection: ''}"
+  :class="{ 'dark' : darkMode === true }">
+
+<head>
+  <script>
+    (function () {
+      // Set initial color scheme
+      if ((localStorage.getItem("_x_darkMode") === "true") || (window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      }
+
+      // Watch for media preference changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+        localStorage.setItem("_x_darkMode", event.matches);
+        document.documentElement.classList.toggle("dark", event.matches);
+      });
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030711" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>REST API Reference | OpenWISP 26.09 documentation</title>
+  <meta property="og:title" content="REST API Reference | OpenWISP 26.09 documentation" />
+  <meta name="twitter:title" content="REST API Reference | OpenWISP 26.09 documentation" />
+  <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e48b8583" />
+  <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../_static/pygments_dark.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/theme.css?v=d6d7c91b" />
+  <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=d3e37945" />
+  <link rel="icon" href="../../_static/favicon.svg" />
+
+  <link rel="search" title="Search" href="../../search.html" />
+  <link rel="next" title="Settings" href="settings.html" />
+  <link rel="prev" title="Monitoring WiFi Sessions" href="wifi-sessions.html" />
+<meta property="og:image" content="https://openwisp.io/docs/26.09/_static/docs-og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="480" />
+
+<link rel="canonical" href="https://openwisp.io/docs/stable/monitoring/user/rest-api.html" />
+
+
+</head>
+
+<body x-data="{ showSidebar: false, showScrollTop: false }"
+  class="min-h-screen font-sans antialiased bg-background text-foreground" :class="{ 'overflow-hidden': showSidebar }"@scroll.window="showScrollTop = pageYOffset > 100">
+  <div x-cloak x-show="showSidebar"
+    class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden"
+    @click.self="showSidebar = false"></div><div id="page" class="relative flex flex-col min-h-screen"><a href="#content"
+      class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100">
+      Skip to content
+    </a><header class="sticky top-0 z-40 w-full border-b shadow-xs border-border bg-background/90 backdrop-blur"><div class="container flex items-center h-14">
+    <div class="hidden mr-4 md:flex">
+      <a href="../../index.html" class="flex items-center mr-6">
+        <img width="24" height="24" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+          alt="Logo" />
+        <img width="24" height="24" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+          alt="Logo" /><span class="hidden font-bold sm:inline-block text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+      </a><nav class="flex items-center space-x-6 text-sm font-medium">
+    
+    <a href="https://openwisp.org/features/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Features</a>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/faq/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Blog</a>
+</nav></div><button
+      class="inline-flex items-center justify-center h-10 px-0 py-2 mr-2 text-base font-medium transition-colors rounded-md hover:text-accent-foreground hover:bg-transparent md:hidden"
+      type="button" @click="showSidebar = true">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" aria-hidden="true"
+        fill="currentColor">
+        <path
+          d="M152.587 825.087q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440Zm0-203.587q-19.152 0-32.326-13.174T107.087 576q0-19.152 13.174-32.326t32.326-13.174h320q19.152 0 32.326 13.174T518.087 576q0 19.152-13.174 32.326T472.587 621.5h-320Zm0-203.587q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440ZM708.913 576l112.174 112.174q12.674 12.674 12.674 31.826t-12.674 31.826Q808.413 764.5 789.261 764.5t-31.826-12.674l-144-144Q600 594.391 600 576t13.435-31.826l144-144q12.674-12.674 31.826-12.674t31.826 12.674q12.674 12.674 12.674 31.826t-12.674 31.826L708.913 576Z" />
+      </svg>
+      <span class="sr-only">Toggle navigation menu</span>
+    </button>
+    <div class="flex items-center justify-between flex-1 gap-2 sm:gap-4 md:justify-end">
+      <div class="flex-1 w-full md:w-auto md:flex-none"><form id="searchbox"
+      action="../../search.html"
+      method="get"
+      class="relative flex items-center group"
+      @keydown.k.window.meta="$refs.search.focus()">
+  <input x-ref="search"
+          name="q"
+          id="search-input"
+          type="search"
+          aria-label="Search the docs"
+          placeholder="Search ..."
+          class="inline-flex items-center font-medium transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background border border-input hover:bg-accent focus:bg-accent hover:text-accent-foreground focus:text-accent-foreground hover:placeholder-accent-foreground py-2 px-4 relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64" />
+  <kbd class="pointer-events-none absolute right-1.5 top-2 hidden h-5 select-none text-muted-foreground items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex group-hover:bg-accent group-hover:text-accent-foreground">
+    <span class="text-xs">⌘</span>
+    K
+  </kbd>
+</form>
+      </div>
+      <nav class="flex items-center gap-1">
+        <button @click="darkMode = !darkMode"
+          class="relative inline-flex items-center justify-center px-0 text-sm font-medium transition-colors rounded-md hover:bg-accent hover:text-accent-foreground h-9 w-9"
+          type="button"
+          title="Toggle color scheme">
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-100 rotate-0 dark:-rotate-90 dark:scale-0">
+            <path
+              d="M480 685q45.456 0 77.228-31.772Q589 621.456 589 576q0-45.456-31.772-77.228Q525.456 467 480 467q-45.456 0-77.228 31.772Q371 530.544 371 576q0 45.456 31.772 77.228Q434.544 685 480 685Zm0 91q-83 0-141.5-58.5T280 576q0-83 58.5-141.5T480 376q83 0 141.5 58.5T680 576q0 83-58.5 141.5T480 776ZM80 621.5q-19.152 0-32.326-13.174T34.5 576q0-19.152 13.174-32.326T80 530.5h80q19.152 0 32.326 13.174T205.5 576q0 19.152-13.174 32.326T160 621.5H80Zm720 0q-19.152 0-32.326-13.174T754.5 576q0-19.152 13.174-32.326T800 530.5h80q19.152 0 32.326 13.174T925.5 576q0 19.152-13.174 32.326T880 621.5h-80Zm-320-320q-19.152 0-32.326-13.174T434.5 256v-80q0-19.152 13.174-32.326T480 130.5q19.152 0 32.326 13.174T525.5 176v80q0 19.152-13.174 32.326T480 301.5Zm0 720q-19.152 0-32.326-13.17Q434.5 995.152 434.5 976v-80q0-19.152 13.174-32.326T480 850.5q19.152 0 32.326 13.174T525.5 896v80q0 19.152-13.174 32.33-13.174 13.17-32.326 13.17ZM222.174 382.065l-43-42Q165.5 327.391 166 308.239t13.174-33.065q13.435-13.674 32.587-13.674t32.065 13.674l42.239 43q12.674 13.435 12.555 31.706-.12 18.272-12.555 31.946-12.674 13.674-31.445 13.413-18.772-.261-32.446-13.174Zm494 494.761-42.239-43q-12.674-13.435-12.674-32.087t12.674-31.565Q686.609 756.5 705.38 757q18.772.5 32.446 13.174l43 41.761Q794.5 824.609 794 843.761t-13.174 33.065Q767.391 890.5 748.239 890.5t-32.065-13.674Zm-42-494.761Q660.5 369.391 661 350.62q.5-18.772 13.174-32.446l41.761-43Q728.609 261.5 747.761 262t33.065 13.174q13.674 13.435 13.674 32.587t-13.674 32.065l-43 42.239q-13.435 12.674-31.706 12.555-18.272-.12-31.946-12.555Zm-495 494.761Q165.5 863.391 165.5 844.239t13.674-32.065l43-42.239q13.435-12.674 32.087-12.674t31.565 12.674Q299.5 782.609 299 801.38q-.5 18.772-13.174 32.446l-41.761 43Q231.391 890.5 212.239 890t-33.065-13.174ZM480 576Z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-0 rotate-90 dark:rotate-0 dark:scale-100">
+            <path
+              d="M480 936q-151 0-255.5-104.5T120 576q0-138 90-239.5T440 218q25-3 39 18t-1 44q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q21-14 43-1.5t19 39.5q-14 138-117.5 229T480 936Zm0-80q88 0 158-48.5T740 681q-20 5-40 8t-40 3q-123 0-209.5-86.5T364 396q0-20 3-40t8-40q-78 32-126.5 102T200 576q0 116 82 198t198 82Zm-10-270Z" />
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+    <div class="flex-1"><div
+        class="container md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10"><aside id="left-sidebar"
+  class="fixed inset-y-0 left-0 md:top-14 z-50 md:z-30 bg-background md:bg-transparent transition-all duration-100 -translate-x-full md:translate-x-0 ml-0 p-6 md:p-0 md:-ml-2 md:h-[calc(100vh-3.5rem)] w-5/6 md:w-full overflow-y-auto border-r border-border md:sticky"
+  :aria-hidden="!showSidebar" :class="{ 'translate-x-0': showSidebar }">
+
+    <a href="../../index.html" class="justify-start text-sm md:!hidden bg-background">
+      <img width="16" height="16" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+        alt="Logo" />
+      <img width="16" height="16" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+        alt="Logo" /><span class="font-bold text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+    </a>
+
+    <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
+      <div class="overflow-y-auto h-full w-full relative pr-6"><div class="doc-versions">
+    <label>Version</label>
+    <div class="dropdown" x-data="{ showVersionSwitcher: false, buttonWidth: 0 }"
+        x-init="buttonWidth = $refs.button.offsetWidth">
+        <button type="button" x-ref="button" class="dropbtn "
+             @click="showVersionSwitcher = !showVersionSwitcher"
+            :class="{'active': showVersionSwitcher}" >
+            26.09
+            
+            <svg fill="currentColor" height="18px" stroke="none" viewBox="0 0 24 24" width="18px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+            
+        </button>
+        <div x-show="showVersionSwitcher" class="dropdown-content" :class="{'hidden': !showVersionSwitcher}"
+            @click.away="showVersionSwitcher = false" style="display: none;" :style="{ width: buttonWidth + 'px' }">
+            
+            
+            <a href="/docs/dev/monitoring/user/rest-api.html">dev</a>
+            
+            
+            
+            
+            
+            <a href="/docs/25.10/monitoring/user/rest-api.html">25.10</a>
+            
+            
+            
+            <a href="/docs/24.11/monitoring/user/rest-api.html">24.11</a>
+            
+            
+        </div>
+    </div>
+</div>
+<nav class="flex flex-col font-bold md:hidden">
+    
+    <a href="https://openwisp.org/features/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Features
+    </a>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/faq/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Blog
+    </a>
+</nav>
+<nav class="table w-full min-w-full my-6 lg:my-8 mt-4">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../first-steps.html">First Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project-overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installers.html">Installers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../users/index.html">Users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../controller/index.html">Controller</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Monitoring</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="intro.html">Monitoring: Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device-health-status.html">Device Health Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geo-indoor-maps.html">Geographic &amp; Indoor Maps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metrics.html">Metrics &amp; Charts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="checks.html">Checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alerts.html">Alerts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device-checks-and-alert-settings.html">Device Checks &amp; Alert Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuring-iperf3-check.html">Configuring Iperf3 Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dashboard-monitoring-charts.html">Dashboard Monitoring Charts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wifi-sessions.html">Monitoring WiFi Sessions</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">REST API Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="management-commands.html">Management Commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../developer/index.html">Developer Docs Index</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../network-topology/index.html">Network Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../firmware-upgrader/index.html">Firmware Upgrader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../radius/index.html">RADIUS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../wifi-login-pages/index.html">WiFi Login Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ipam/index.html">IPAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notifications/index.html">Notifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../openwrt-agents.html">OpenWrt Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../community.html">Community Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">Release Notes</a></li>
+</ul>
+
+</nav><div class="offline-docs">
+    <div class="heading">
+        <h6>OFFLINE DOCS</h6>
+    </div>
+    <p class="urls">
+        <a href="/docs/26.09/OpenWISP-26.09.pdf" target="_blank">
+            PDF</a>
+        |
+        <a href="/docs/26.09/OpenWISP-26.09.epub" target="_blank">
+            ePUB</a>
+    </p>
+</div>
+      </div>
+    </div>
+    <button type="button" @click="showSidebar = false"
+      class="absolute md:hidden right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" fill="currentColor"
+        stroke="none" class="h-4 w-4">
+        <path
+          d="M480 632 284 828q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536 576l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480 632Z" />
+      </svg>
+    </button>
+  </aside>
+          <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+<div class="w-full min-w-0 mx-auto">
+<nav aria-label="breadcrumbs"
+     class="flex items-center mb-4 space-x-1 text-sm text-muted-foreground">
+  <a class="overflow-hidden text-ellipsis whitespace-nowrap hover:text-foreground"
+     href="../../index.html">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         height="18"
+         width="18"
+         viewBox="0 96 960 960"
+         aria-label="Home"
+         fill="currentColor"
+         stroke="none">
+      <path d="M240 856h120V616h240v240h120V496L480 316 240 496v360Zm-80 80V456l320-240 320 240v480H520V696h-80v240H160Zm320-350Z" />
+    </svg>
+  </a>
+  
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../../modules.html">Modules</a>
+    
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../index.html">Monitoring</a>
+    
+<div class="mr-1">/</div><span aria-current="page"
+        class="font-medium text-foreground overflow-hidden whitespace-nowrap">REST API Reference</span>
+</nav>
+
+    <div id="content" role="main">
+      <section id="rest-api-reference">
+<h1>REST API Reference<a class="headerlink" href="#rest-api-reference" title="Link to this heading"></a></h1>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title"><strong>Table of contents</strong>:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#live-documentation" id="id2">Live Documentation</a></p></li>
+<li><p><a class="reference internal" href="#browsable-web-interface" id="id3">Browsable Web Interface</a></p></li>
+<li><p><a class="reference internal" href="#list-of-endpoints" id="id4">List of Endpoints</a></p></li>
+</ul>
+</nav>
+<section id="live-documentation">
+<span id="monitoring-live-documentation"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Live Documentation</a><a class="headerlink" href="#live-documentation" title="Link to this heading"></a></h2>
+<a class="reference external image-reference" href="https://raw.githubusercontent.com/openwisp/openwisp-monitoring/docs/docs/api-doc.png"><img alt="https://raw.githubusercontent.com/openwisp/openwisp-monitoring/docs/docs/api-doc.png" src="https://raw.githubusercontent.com/openwisp/openwisp-monitoring/docs/docs/api-doc.png" />
+</a>
+<p>A general live API documentation (following the OpenAPI specification) at
+<code class="docutils literal notranslate"><span class="pre">/api/v1/docs/</span></code>.</p>
+</section>
+<section id="browsable-web-interface">
+<span id="monitoring-browsable-web-interface"></span><h2><a class="toc-backref" href="#id3" role="doc-backlink">Browsable Web Interface</a><a class="headerlink" href="#browsable-web-interface" title="Link to this heading"></a></h2>
+<a class="reference external image-reference" href="https://raw.githubusercontent.com/openwisp/openwisp-monitoring/docs/docs/api-ui-1.png"><img alt="https://raw.githubusercontent.com/openwisp/openwisp-monitoring/docs/docs/api-ui-1.png" src="https://raw.githubusercontent.com/openwisp/openwisp-monitoring/docs/docs/api-ui-1.png" />
+</a>
+<a class="reference external image-reference" href="https://raw.githubusercontent.com/openwisp/openwisp-monitoring/docs/docs/api-ui-2.png"><img alt="https://raw.githubusercontent.com/openwisp/openwisp-monitoring/docs/docs/api-ui-2.png" src="https://raw.githubusercontent.com/openwisp/openwisp-monitoring/docs/docs/api-ui-2.png" />
+</a>
+<p>Additionally, opening any of the endpoints <a class="reference internal" href="#monitoring-rest-endpoints"><span class="std std-ref">listed below</span></a> directly in the browser will show the
+<a class="reference external" href="https://www.django-rest-framework.org/topics/browsable-api/">browsable API interface of Django-REST-Framework</a>, which
+makes it even easier to find out the details of each endpoint.</p>
+</section>
+<section id="list-of-endpoints">
+<span id="monitoring-rest-endpoints"></span><h2><a class="toc-backref" href="#id4" role="doc-backlink">List of Endpoints</a><a class="headerlink" href="#list-of-endpoints" title="Link to this heading"></a></h2>
+<p>Since the detailed explanation is contained in the
+<a class="reference internal" href="#monitoring-live-documentation"><span class="std std-ref">Live Documentation</span></a> and in the
+<a class="reference internal" href="#monitoring-browsable-web-interface"><span class="std std-ref">Browsable Web Interface</span></a> of each point, here we'll
+provide just a list of the available endpoints, for further information
+please open the URL of the endpoint in your browser.</p>
+<section id="list-locations-as-geojson">
+<h3>List Locations as GeoJSON<a class="headerlink" href="#list-locations-as-geojson" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/geojson/
+</span></code></pre></div>
+</div>
+<p>Returns locations with devices as GeoJSON features. Each feature includes
+the total device count and counts for the <code class="docutils literal notranslate"><span class="pre">ok</span></code>, <code class="docutils literal notranslate"><span class="pre">problem</span></code>,
+<code class="docutils literal notranslate"><span class="pre">critical</span></code>, <code class="docutils literal notranslate"><span class="pre">unknown</span></code>, and <code class="docutils literal notranslate"><span class="pre">deactivated</span></code> monitoring statuses.</p>
+</section>
+<section id="retrieve-general-monitoring-charts">
+<h3>Retrieve General Monitoring Charts<a class="headerlink" href="#retrieve-general-monitoring-charts" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/dashboard/
+</span></code></pre></div>
+</div>
+<p>This API endpoint is used to show dashboard monitoring charts. It supports
+multi-tenancy and allows filtering monitoring data by
+<code class="docutils literal notranslate"><span class="pre">organization_slug</span></code>, <code class="docutils literal notranslate"><span class="pre">location_id</span></code> and <code class="docutils literal notranslate"><span class="pre">floorplan_id</span></code> e.g.:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/dashboard/?organization_slug=&lt;org1-slug&gt;,&lt;org2-slug&gt;&amp;location_id=&lt;location1-id&gt;,&lt;location2-id&gt;&amp;floorplan_id=&lt;floorplan1-id&gt;,&lt;floorplan2-id&gt;
+</span></code></pre></div>
+</div>
+<ul class="simple">
+<li><p>When retrieving chart data, the <code class="docutils literal notranslate"><span class="pre">time</span></code> parameter allows to specify the
+time frame, e.g.:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">1d</span></code>: returns data of the last day</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">3d</span></code>: returns data of the last 3 days</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">7d</span></code>: returns data of the last 7 days</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">30d</span></code>: returns data of the last 30 days</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">365d</span></code>: returns data of the last 365 days</p></li>
+</ul>
+</li>
+<li><p>In alternative to <code class="docutils literal notranslate"><span class="pre">time</span></code> it is possible to request chart data for a
+custom date range by using the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> parameters, e.g.:</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/dashboard/?start={start_datetime}&amp;end={end_datetime}
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> parameters should be in the format
+<code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span> <span class="pre">H:M:S</span></code>, otherwise 400 Bad Response will be returned.</p>
+</div>
+</section>
+<section id="retrieve-device-charts-and-device-status-data">
+<h3>Retrieve Device Charts and Device Status Data<a class="headerlink" href="#retrieve-device-charts-and-device-status-data" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/device/{pk}/?key={key}&amp;status=true&amp;time={timeframe}
+</span></code></pre></div>
+</div>
+<p>The format used for Device Status is inspired by <a class="reference external" href="http://netjson.org/docs/what.html#devicemonitoring">NetJSON DeviceMonitoring</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>If the request is made without <code class="docutils literal notranslate"><span class="pre">?status=true</span></code> the response will
+contain only charts data and will not include any device status
+information (current load average, ARP table, DCHP leases, etc.).</p></li>
+<li><p>When retrieving chart data, the <code class="docutils literal notranslate"><span class="pre">time</span></code> parameter allows to specify
+the time frame, e.g.:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">1d</span></code>: returns data of the last day</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">3d</span></code>: returns data of the last 3 days</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">7d</span></code>: returns data of the last 7 days</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">30d</span></code>: returns data of the last 30 days</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">365d</span></code>: returns data of the last 365 days</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul class="simple">
+<li><p>In alternative to <code class="docutils literal notranslate"><span class="pre">time</span></code> it is possible to request chart data for a
+custom date range by using the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> parameters, e.g.:</p></li>
+<li><p>The response contains device information, monitoring status (health
+status), a list of metrics with their respective statuses, chart data
+and device status information (only if <code class="docutils literal notranslate"><span class="pre">?status=true</span></code>).</p></li>
+<li><p>This endpoint can be accessed with session authentication, token
+authentication, or alternatively with the device key passed as query
+string parameter as shown below (<code class="docutils literal notranslate"><span class="pre">?key={key}</span></code>); note: this method is
+meant to be used by the devices.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/device/{pk}/?key={key}&amp;status=true&amp;start={start_datetime}&amp;end={end_datetime}
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> parameters must be in the format
+<code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span> <span class="pre">H:M:S</span></code>, otherwise 400 Bad Response will be returned.</p>
+</div>
+</section>
+<section id="list-device-monitoring-information">
+<h3>List Device Monitoring Information<a class="headerlink" href="#list-device-monitoring-information" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/device/
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The response contains device information and monitoring status
+(health status), but it does not include the information and health
+status of the specific metrics, this information can be retrieved in
+the detail endpoint of each device.</p></li>
+<li><p>This endpoint can be accessed with session authentication and token
+authentication.</p></li>
+</ul>
+</div>
+<p><strong>Available filters</strong></p>
+<p>Data can be filtered by health status (e.g. <em>critical</em>, <em>ok</em>, <em>problem</em>,
+and <em>unknown</em>) to obtain the list of devices in the corresponding status,
+for example, to retrieve the list of devices which are in critical
+conditions (e.g.: unreachable), the following will work:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/device/?monitoring__status=critical
+</span></code></pre></div>
+</div>
+<p>To filter a list of device monitoring data based on their organization,
+you can use the <code class="docutils literal notranslate"><span class="pre">organization_id</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/device/?organization={organization_id}
+</span></code></pre></div>
+</div>
+<p>To filter a list of device monitoring data based on their organization
+slug, you can use the <code class="docutils literal notranslate"><span class="pre">organization_slug</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/device/?organization_slug={organization_slug}
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-device-metrics">
+<h3>List Device Metrics<a class="headerlink" href="#list-device-metrics" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/device/{pk}/metric/
+</span></code></pre></div>
+</div>
+<p>Returns a list of metrics for the specified device.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The response contains a list of metrics with their <code class="docutils literal notranslate"><span class="pre">name</span></code>,
+<code class="docutils literal notranslate"><span class="pre">key</span></code>, and <code class="docutils literal notranslate"><span class="pre">is_healthy</span></code> status.</p></li>
+<li><p>This endpoint can be accessed with session authentication and token
+authentication.</p></li>
+</ul>
+</div>
+<p><strong>Available filters</strong></p>
+<p>Data can be filtered by health status using the <code class="docutils literal notranslate"><span class="pre">is_healthy</span></code> filter, for
+example, to retrieve the list of unhealthy metrics:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/device/{pk}/metric/?is_healthy=false
+</span></code></pre></div>
+</div>
+</section>
+<section id="collect-device-metrics-and-status">
+<h3>Collect Device Metrics and Status<a class="headerlink" href="#collect-device-metrics-and-status" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/monitoring/device/{pk}/?key={key}&amp;time={datetime}
+</span></code></pre></div>
+</div>
+<p>If data is latest then an additional parameter current can also be passed.
+For e.g.:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/monitoring/device/{pk}/?key={key}&amp;time={datetime}&amp;current=true
+</span></code></pre></div>
+</div>
+<p>The format used for Device Status is inspired by <a class="reference external" href="http://netjson.org/docs/what.html#devicemonitoring">NetJSON DeviceMonitoring</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The device data will be saved in the timeseries database using the
+date time specified <code class="docutils literal notranslate"><span class="pre">time</span></code>, this should be in the format
+<code class="docutils literal notranslate"><span class="pre">%d-%m-%Y_%H:%M:%S.%f</span></code>, otherwise 400 Bad Response will be returned.</p>
+</div>
+<p>If the request is made without passing the <code class="docutils literal notranslate"><span class="pre">time</span></code> argument, the server
+local time will be used.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">time</span></code> parameter was added to support <a class="reference internal" href="../../openwrt-monitoring-agent/user/settings.html#monitoring-agent-collecting-vs-sending"><span class="std std-ref">resilient collection and
+sending of data by the OpenWISP Monitoring Agent</span></a>, this feature allows sending
+data collected while the device is offline.</p>
+</section>
+<section id="list-nearby-devices">
+<h3>List Nearby Devices<a class="headerlink" href="#list-nearby-devices" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/device/{pk}/nearby-devices/
+</span></code></pre></div>
+</div>
+<p>Returns list of nearby devices along with respective distance (in metres)
+and monitoring status.</p>
+<p><strong>Available filters</strong></p>
+<p>The list of nearby devices provides the following filters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">organization</span></code> (Organization ID of the device)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">organization__slug</span></code> (Organization slug of the device)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">monitoring__status</span></code> (Monitoring status (<code class="docutils literal notranslate"><span class="pre">unknown</span></code>, <code class="docutils literal notranslate"><span class="pre">ok</span></code>,
+<code class="docutils literal notranslate"><span class="pre">problem</span></code>, or <code class="docutils literal notranslate"><span class="pre">critical</span></code>))</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> (Pipe <cite>|</cite> separated list of device models)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">distance__lte</span></code> (Distance in metres)</p></li>
+</ul>
+<p>Here's a few examples:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/device/{pk}/nearby-devices/?organization={organization_id}
+</span><span id="line-2">GET /api/v1/monitoring/device/{pk}/nearby-devices/?organization__slug={organization_slug}
+</span><span id="line-3">GET /api/v1/monitoring/device/{pk}/nearby-devices/?monitoring__status={monitoring_status}
+</span><span id="line-4">GET /api/v1/monitoring/device/{pk}/nearby-devices/?model={model1,model2}
+</span><span id="line-5">GET /api/v1/monitoring/device/{pk}/nearby-devices/?distance__lte={distance}
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-devices-in-a-location">
+<h3>List Devices in a Location<a class="headerlink" href="#list-devices-in-a-location" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/location/{pk}/device/
+</span></code></pre></div>
+</div>
+<p>Returns a list of network devices deployed in the specified location.</p>
+<p><strong>Available filters</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">search</span></code> (search by device name or MAC address)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">status</span></code> (monitoring status of the device; multiple statuses can be
+provided and will be treated as OR filters)</p></li>
+</ul>
+<p>Here's a few examples:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"># search by device name
+</span><span id="line-2">GET /api/v1/monitoring/location/{pk}/device/?search=hall
+</span><span id="line-3"># status
+</span><span id="line-4">GET /api/v1/monitoring/location/{pk}/device/?status=ok
+</span><span id="line-5"># multiple statuses
+</span><span id="line-6">GET /api/v1/monitoring/location/{pk}/device/?status=ok&amp;status=problem
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-device-indoor-coordinates-in-a-location">
+<h3>List Device Indoor Coordinates in a Location<a class="headerlink" href="#list-device-indoor-coordinates-in-a-location" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/location/{pk}/indoor-coordinates/
+</span></code></pre></div>
+</div>
+<p>Returns a list of indoor coordinates of network devices deployed in the
+specified location, along with device details and available floors.</p>
+<p><strong>Available filters</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">floor</span></code> (floor number of the floor plan)</p></li>
+</ul>
+<p>Here's a few examples:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/location/{pk}/indoor-coordinates/?floor=2
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-wifi-session">
+<h3>List WiFi Session<a class="headerlink" href="#list-wifi-session" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/wifi-session/
+</span></code></pre></div>
+</div>
+<p><strong>Available filters</strong></p>
+<p>The list of wifi session provides the following filters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">device__organization</span></code> (Organization ID of the device)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">device</span></code> (Device ID)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">device__group</span></code> (Device group ID)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_time</span></code> (Start time of the wifi session)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop_time</span></code> (Stop time of the wifi session)</p></li>
+</ul>
+<p>Here's a few examples:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/wifi-session/?device__organization={organization_id}
+</span><span id="line-2">GET /api/v1/monitoring/wifi-session/?device={device_id}
+</span><span id="line-3">GET /api/v1/monitoring/wifi-session/?device__group={group_id}
+</span><span id="line-4">GET /api/v1/monitoring/wifi-session/?start_time={stop_time}
+</span><span id="line-5">GET /api/v1/monitoring/wifi-session/?stop_time={stop_time}
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">start_time</span></code> and <code class="docutils literal notranslate"><span class="pre">stop_time</span></code> support greater than or equal
+to, as well as less than or equal to, filter lookups.</p>
+</div>
+<p>For example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/wifi-session/?start_time__gt={start_time}
+</span><span id="line-2">GET /api/v1/monitoring/wifi-session/?start_time__gte={start_time}
+</span><span id="line-3">GET /api/v1/monitoring/wifi-session/?stop_time__lt={stop_time}
+</span><span id="line-4">GET /api/v1/monitoring/wifi-session/?stop_time__lte={stop_time}
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-wifi-session">
+<h3>Get WiFi Session<a class="headerlink" href="#get-wifi-session" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/wifi-session/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="pagination">
+<h3>Pagination<a class="headerlink" href="#pagination" title="Link to this heading"></a></h3>
+<p>WiFi session endpoint support the <code class="docutils literal notranslate"><span class="pre">page_size</span></code> parameter that allows
+paginating the results in conjunction with the page parameter.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/monitoring/wifi-session/?page_size=10
+</span><span id="line-2">GET /api/v1/monitoring/wifi-session/?page_size=10&amp;page=1
+</span></code></pre></div>
+</div>
+</section>
+</section>
+</section>
+
+    </div><div class="flex justify-between items-center pt-6 mt-12 border-t border-border gap-4">
+    <div class="mr-auto">
+      <a href="wifi-sessions.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="mr-2 h-4 w-4">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Monitoring WiFi Sessions
+      </a>
+    </div>
+    <div class="ml-auto">
+      <a href="settings.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        Settings
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="ml-2 h-4 w-4">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+</div></div><aside id="right-sidebar" class="hidden text-sm xl:block">
+  <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
+    <ul>
+<li><a class="reference internal" href="#live-documentation">Live Documentation</a></li>
+<li><a class="reference internal" href="#browsable-web-interface">Browsable Web Interface</a></li>
+<li><a class="reference internal" href="#list-of-endpoints">List of Endpoints</a><ul>
+<li><a class="reference internal" href="#list-locations-as-geojson">List Locations as GeoJSON</a></li>
+<li><a class="reference internal" href="#retrieve-general-monitoring-charts">Retrieve General Monitoring Charts</a></li>
+<li><a class="reference internal" href="#retrieve-device-charts-and-device-status-data">Retrieve Device Charts and Device Status Data</a></li>
+<li><a class="reference internal" href="#list-device-monitoring-information">List Device Monitoring Information</a></li>
+<li><a class="reference internal" href="#list-device-metrics">List Device Metrics</a></li>
+<li><a class="reference internal" href="#collect-device-metrics-and-status">Collect Device Metrics and Status</a></li>
+<li><a class="reference internal" href="#list-nearby-devices">List Nearby Devices</a></li>
+<li><a class="reference internal" href="#list-devices-in-a-location">List Devices in a Location</a></li>
+<li><a class="reference internal" href="#list-device-indoor-coordinates-in-a-location">List Device Indoor Coordinates in a Location</a></li>
+<li><a class="reference internal" href="#list-wifi-session">List WiFi Session</a></li>
+<li><a class="reference internal" href="#get-wifi-session">Get WiFi Session</a></li>
+<li><a class="reference internal" href="#pagination">Pagination</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside>
+          </main>
+        </div>
+      </div><footer class="py-6 border-t border-border md:py-0">
+    <div class="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+      <div class="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-6 md:px-0">
+        <a href="../../index.html">
+            <img src="../../_static/openwisp-logo.svg" alt="OpenWISP" width="125" height="72" class="hidden dark:block" />
+            <img src="../../_static/openwisp-logo-black.svg" alt="OpenWISP" width="125" height="72" class="dark:hidden" /></a>
+        <p class="text-sm leading-loose text-right text-muted-foreground md:text-center">© 2008-2026, OpenWISP&nbsp;</p>
+      </div>
+    </div>
+</footer>
+    </div><button id="scrolltop"
+        x-cloak
+        @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="fixed bottom-8 right-8 p-2 z-10 rounded-sm bg-gray-700 text-xs text-white transition-all duration-1000 hover:bg-gray-950 focus:bg-gray-950"
+        :class="{'opacity-0 invisible' : !showScrollTop}"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       height="14"
+       viewBox="0 96 960 960"
+       width="14"
+       class="inline fill-current mb-[2px]"
+       aria-hidden="true">
+    <path d="M450 896V370L202 618l-42-42 320-320 320 320-42 42-248-248v526h-60Z" />
+  </svg>
+  Back to top
+</button>
+    
+
+    <script src="../../_static/documentation_options.js?v=c6950507"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="../../_static/theme.js?v=5db23cf8"></script>
+    
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.openwisp.io/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '7']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript>
+  <p>
+    <img referrerpolicy="no-referrer-when-downgrade" src="//analytics.openwisp.io/matomo.php?idsite=7&amp;rec=1" style="border:0;" alt="" />
+  </p>
+</noscript>
+<!-- End Matomo Code -->
+
+<div id="lightbox" class="lightbox">
+  <span class="close">&times;</span>
+</div>
+<script src="../../_static/lightbox.js"></script>
+
+</body>
+
+</html>

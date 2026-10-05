@@ -1,0 +1,197 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="webhooks">Webhooks<a class="headerlink" href="#webhooks" title="Permanent link">¶</a></h1>
+<p>A webhook is a mechanism for notifying an external system when a change occurs in Nautobot. For example, you might want to alert a monitoring tool whenever a device's status is updated. This can be achieved by creating a webhook for the device model and specifying a receiver URL. When Nautobot detects a change, it sends an HTTP request with details about the event and the user who triggered it.</p>
+<p>Webhooks are managed via the web UI under <strong>Extensibility &gt; Webhooks</strong>.</p>
+<h2 id="configuring-a-webhook">Configuring a Webhook<a class="headerlink" href="#configuring-a-webhook" title="Permanent link">¶</a></h2>
+<p>When setting up a webhook, you need to define the following parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Name</strong></td>
+<td>A unique name for the webhook (not included in outgoing messages).</td>
+</tr>
+<tr>
+<td><strong>Object type(s)</strong></td>
+<td>The type(s) of Nautobot objects that trigger the webhook.</td>
+</tr>
+<tr>
+<td><strong>Enabled</strong></td>
+<td>Indicates whether the webhook is active.</td>
+</tr>
+<tr>
+<td><strong>Events</strong></td>
+<td>Select one or more events: <code>create</code>, <code>update</code>, or <code>delete</code>.</td>
+</tr>
+<tr>
+<td><strong>HTTP method</strong></td>
+<td>The type of HTTP request (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>).</td>
+</tr>
+<tr>
+<td><strong>URL</strong></td>
+<td>The fully qualified URL of the receiver. You can specify a port if needed.</td>
+</tr>
+<tr>
+<td><strong>HTTP content type</strong></td>
+<td>Sets the <code>Content-Type</code> header (default: <code>application/json</code>).</td>
+</tr>
+<tr>
+<td><strong>Additional headers</strong></td>
+<td>Custom headers, one per line (<code>Name: Value</code>). Supports Jinja2 templating.</td>
+</tr>
+<tr>
+<td><strong>Body template</strong></td>
+<td>Custom request body. Supports Jinja2 templating. If empty, Nautobot sends the default payload.</td>
+</tr>
+<tr>
+<td><strong>Secret</strong></td>
+<td>A secret string used for HMAC (SHA-512) authentication. The webhook request includes an <code>X-Hook-Signature</code> header.</td>
+</tr>
+<tr>
+<td><strong>SSL verification</strong></td>
+<td>If unchecked, Nautobot skips SSL certificate validation (use with caution).</td>
+</tr>
+<tr>
+<td><strong>CA file path</strong></td>
+<td>Specifies a custom CA file for SSL validation.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="jinja2-template-support">Jinja2 Template Support<a class="headerlink" href="#jinja2-template-support" title="Permanent link">¶</a></h2>
+<p><a href="https://jinja.palletsprojects.com/">Jinja2 templating</a> is supported for the <code>additional_headers</code> and <code>body_template</code> fields. It allows you to customize headers and request bodies dynamically. This is useful for formatting webhook payloads to match external system expectations.</p>
+<p>Example: Trigger a Slack message when a new IP address is created.</p>
+<p><strong>Webhook Configuration:</strong></p>
+<ul>
+<li><strong>Object type</strong>: IPAM &gt; IP address</li>
+<li><strong>HTTP method</strong>: <code>POST</code></li>
+<li><strong>URL</strong>: Slack incoming webhook URL</li>
+<li><strong>HTTP content type</strong>: <code>application/json</code></li>
+<li><strong>Body template</strong>:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="nt">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IP address {{ data['address'] }} was created by {{ username }}!"</span><span class="p">}</span>
+</code></pre></div>
+<h3 id="available-context-variables">Available Context Variables<a class="headerlink" href="#available-context-variables" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>event</code></td>
+<td>The event type (<code>created</code>, <code>updated</code>, <code>deleted</code>).</td>
+</tr>
+<tr>
+<td><code>model</code></td>
+<td>The Nautobot model triggering the event.</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>The event timestamp in <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> format.</td>
+</tr>
+<tr>
+<td><code>username</code></td>
+<td>The user who triggered the event.</td>
+</tr>
+<tr>
+<td><code>request_id</code></td>
+<td>A unique request ID for correlation of multiple changes associated with a single request.</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td>A serialized representation of the object <em>after</em> the change.</td>
+</tr>
+<tr>
+<td><code>snapshots</code></td>
+<td>Contains <code>prechange</code>, <code>postchange</code>, and <code>differences</code> snapshots.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="default-request-body">Default Request Body<a class="headerlink" href="#default-request-body" title="Permanent link">¶</a></h2>
+<p>If no body template is provided, Nautobot sends a default JSON payload:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nt">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"created"</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-02-14T12:34:56.000000+00:00"</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">"model"</span><span class="p">:</span><span class="w"> </span><span class="s2">"location"</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="nt">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin"</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="nt">"request_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"fab0a4fb-52ba-4cb4-9756-4e6a3ac05332"</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">        </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5e4f9a91-372b-46df-a50a-c26357475bee"</span><span class="p">,</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">        </span><span class="nt">"display"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Campus A"</span><span class="p">,</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/api/dcim/locations/5e4f9a91-372b-46df-a50a-c26357475bee/"</span><span class="p">,</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Campus A"</span><span class="p">,</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">        </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">            </span><span class="nt">"display"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Active"</span><span class="p">,</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">            </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"363a431c-c784-40b5-8513-758cafd174ad"</span><span class="p">,</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">            </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/api/extras/statuses/363a431c-c784-40b5-8513-758cafd174ad/"</span><span class="p">,</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Active"</span><span class="p">,</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">            </span><span class="nt">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-02-14T00:00:00Z"</span><span class="p">,</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">            </span><span class="nt">"last_updated"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-02-14T19:40:13.216150Z"</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">        </span><span class="p">},</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">        </span><span class="err">...</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="nt">"snapshots"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">        </span><span class="nt">"prechange"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">        </span><span class="nt">"postchange"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">            </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5e4f9a91-372b-46df-a50a-c26357475bee"</span><span class="p">,</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">            </span><span class="nt">"asn"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">            </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/api/dcim/locations/5e4f9a91-372b-46df-a50a-c26357475bee/"</span><span class="p">,</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Campus A"</span><span class="p">,</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">            </span><span class="err">...</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">        </span><span class="p">},</span>
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">        </span><span class="nt">"differences"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">            </span><span class="nt">"removed"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">            </span><span class="nt">"added"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">                </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5e4f9a91-372b-46df-a50a-c26357475bee"</span><span class="p">,</span>
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="w">                </span><span class="nt">"asn"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">                </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/api/dcim/locations/5e4f9a91-372b-46df-a50a-c26357475bee/"</span><span class="p">,</span>
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">                </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Campus A"</span><span class="p">,</span>
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="w">                </span><span class="err">...</span>
+<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a><span class="p">}</span>
+</code></pre></div>
+<h2 id="webhook-processing">Webhook Processing<a class="headerlink" href="#webhook-processing" title="Permanent link">¶</a></h2>
+<p>When Nautobot detects a relevant change, it queues the webhook in Redis. This ensures that webhook processing does not delay the original request. A Celery worker then dequeues and sends the HTTP request to the specified receiver.</p>
+<p>A webhook request is considered successful if the receiver responds with a <code>2XX</code> status code. Failed requests can be retried manually via the admin UI.</p>
+<h2 id="troubleshooting-webhooks">Troubleshooting Webhooks<a class="headerlink" href="#troubleshooting-webhooks" title="Permanent link">¶</a></h2>
+<p>You can test webhooks with external services like <a href="https://beeceptor.com/">Beeceptor</a> or <a href="https://pipedream.com/requestbin">Pipedream RequestBin</a>. These tools let you inspect webhook payloads and troubleshoot integration issues.</p>
+<p>If a webhook does not trigger as expected, ensure that the <strong>Celery worker</strong> process is running and check the Nautobot logs for errors.</p>
+<h2 id="webhook-administration-and-security">Webhook Administration and Security<a class="headerlink" href="#webhook-administration-and-security" title="Permanent link">¶</a></h2>
+<p>Because configured webhooks are sent automatically to another system, and because the data sent by a webhook contains information about the data stored in Nautobot, it's often necessary to restrict what users may configure webhooks, and what systems the webhooks may be sent to. The former is achieved by only granting webhook <code>add</code> and <code>change</code> <a href="users/objectpermission.html">permissions</a> to the users that have a legitimate need to manage webhooks, while the later is a bit more involved.</p>
+<p>To provide a baseline of security, Nautobot automatically disallows the configuration of webhooks that point to certain classes of IP addresses (link-local, loopback, multicast, and reserved addresses), and at webhook transmission time, webhooks configured to send to a hostname that resolves to such an IP is also automatically blocked. This restriction is built-in to Nautobot and cannot be disabled.</p>
+<p>An administrator can further restrict the range of IPs and hosts that webhooks can be sent to by configuring <a href="../administration/configuration/settings.html#webhook_additional_blocked_networks"><code>WEBHOOK_ADDITIONAL_BLOCKED_NETWORKS</code></a> and/or <a href="../administration/configuration/settings.html#webhook_allowed_hosts"><code>WEBHOOK_ALLOWED_HOSTS</code></a> in <code>nautobot_config.py</code>. The former defines additional IP networks that should be blocked, and the latter defines an allow-list of hosts or domains that are explicitly permitted <strong>despite falling within the <code>ADDITIONAL_BLOCKED_NETWORKS</code> networks</strong>. For example, to disallow webhooks to <strong>all</strong> hosts except for those within <code>example.com</code>, you could configure:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">WEBHOOK_ADDITIONAL_BLOCKED_NETWORKS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"0.0.0.0/0"</span><span class="p">,</span> <span class="s2">"::/0"</span><span class="p">]</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">WEBHOOK_ALLOWED_HOSTS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">".example.com"</span><span class="p">]</span>
+</code></pre></div>
+<p>A third administratively-definable setting is <a href="../administration/configuration/settings.html#webhook_allowed_schemes"><code>WEBHOOK_ALLOWED_SCHEMES</code></a>. This defaults to <code>["http", "https"]</code> but can be configured if desired, for example to disallow HTTP-only webhooks or to allow specific additional protocols.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

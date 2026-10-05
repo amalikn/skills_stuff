@@ -1,0 +1,86 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="computed-fields">Computed Fields<a class="headerlink" href="#computed-fields" title="Permanent link">¶</a></h1>
+<p>Computed fields are very similar in design and implementation to custom fields. See the overview of <a href="customfield.html">Custom Fields</a>. As the name suggests, computed fields serve the need for a custom field where the value is generated using data that Nautobot stores in its database and merging it into a Jinja2 template and associated filters.</p>
+<p>As an example, within your automation system, you may want to be able to have an automatically generated field on the Device model that combines the name of the device and the location name in uppercase. To do that, you would define a Jinja2 template for this field that looks like such:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>{{ obj.name }}_{{ obj.location.name | upper }}
+</code></pre></div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Every time an object with this computed field is loaded, the template gets re-rendered with the currently available data. These rendered values are not stored in the database; only the Jinja2 template is stored.</p>
+</div>
+<details class="version-changed">
+<summary>Changed in version 2.0.0</summary>
+<p>Computed field model's <code>label</code> attribute will be used exclusively for display purposes in the UI.</p>
+<p>Computed field model's <code>slug</code> attribute was renamed to <code>key</code> (unique for all Computed Field instances), which contains a GraphQL-safe string to be used in the API and GraphQL.</p>
+<p>These changes do not require users to do any manual work as they are properly handled by data migrations during the upgrade from Nautobot v1.x to v2.0.</p>
+</details>
+<h2 id="creating-computed-fields">Creating Computed Fields<a class="headerlink" href="#creating-computed-fields" title="Permanent link">¶</a></h2>
+<p>Computed fields can be created through the Nautobot UI under <strong>Extensibility &gt; Computed Fields</strong>.</p>
+<p>Each computed field must have a key and a label.</p>
+<ul>
+<li>Key must be a simple, database-friendly string, e.g. <code>device_with_location</code></li>
+<li>Label is used as the human-friendly display name for this field in the UI, for example, <code>Device With Location</code>.</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Because computed field data can be included in the REST API and in GraphQL, we strongly recommend that when defining a computed field, you provide a key that contains underscores rather than dashes (<code>my_field_key</code>, not <code>my-field-key</code>), as some features may not work optimally if dashes are included in the key.</p>
+</div>
+<p>Similar to custom fields, the weight value is used to order computed fields within a form. A description can also be provided, and will appear beneath the field in a form.</p>
+<p>Computed fields must define a template from which to render their values. The template field must contain a valid Jinja2 template string.</p>
+<p>A computed field must be assigned to an object type, or model, in Nautobot. Once created, a computed field will automatically appear as part of this model's display. See notes about viewing computed fields via the REST API below.</p>
+<p>When creating a computed field, if "Move to Advanced tab" is checked, this computed field won't appear on the object's main detail tab in the UI, but will appear in the "Advanced" tab. This is useful when the requirement is to hide this field from the main detail tab when, for instance, it is only required for machine-to-machine communication and not user consumption.</p>
+<h2 id="computed-field-template-context">Computed Field Template Context<a class="headerlink" href="#computed-field-template-context" title="Permanent link">¶</a></h2>
+<p>Computed field templates can utilize the context of the object the field is being rendered on. This context is available for use in templates via the <code>obj</code> keyword. As an example, for a computed field being rendered on a Device object, the name of the location that this Device belongs to can be accessed like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>{{ obj.location.name }}
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To access custom fields of an object within a template, use the <code>cf</code> attribute. For example, <code>{{ obj.cf.color }}</code> will return the value (if any) for the custom field with a key of <code>color</code> on <code>obj</code>.</p>
+</div>
+<h2 id="computed-field-template-filters">Computed Field Template Filters<a class="headerlink" href="#computed-field-template-filters" title="Permanent link">¶</a></h2>
+<p>Computed field templates can also utilize built-in Jinja2 filters or custom ones that have been registered via an App. These filters can be used by providing the name of the filter function. As an example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>{{ obj.location.name | leet_speak }}
+</code></pre></div>
+<p>See the documentation on <a href="template-filters.html">built-in filters</a> or <a href="../../development/apps/api/platform-features/jinja2-filters.html">registering custom Jinja2 filters</a> in Apps.</p>
+<h2 id="computed-fields-and-the-rest-api">Computed Fields and the REST API<a class="headerlink" href="#computed-fields-and-the-rest-api" title="Permanent link">¶</a></h2>
+<p>When retrieving an object via the REST API, computed field data is not included by default in order to prevent potentially computationally expensive rendering operations that degrade the user experience. In order to retrieve computed field data, you must use the <a href="rest-api/filtering.html#filtering-included-fields"><code>include</code> query parameter</a>.</p>
+<p>Take a look at an example URL that includes computed field data:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>http://localhost:8080/api/dcim/locations?include=computed_fields
+</code></pre></div>
+<p>When explicitly requested as such, computed field data will be included in the <code>computed_fields</code> attribute. For example, below is the partial output of a location with one computed field defined:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"9cd6092d-a4df-4708-94a5-349e845e2f79"</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080/api/dcim/locations/9cd6092d-a4df-4708-94a5-349e845e2f79/"</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Raleigh"</span><span class="p">,</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="err">...</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="nt">"computed_fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="nt">"location_name_uppercase"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RALEIGH"</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="err">...</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>key</code> value of each computed field is used as the key name for items in the <code>computed_fields</code> attribute.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

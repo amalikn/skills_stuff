@@ -1,0 +1,695 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="the-nautobot-server-command">The Nautobot Server Command<a class="headerlink" href="#the-nautobot-server-command" title="Permanent link">¶</a></h1>
+<p>Nautobot includes a command-line (CLI) management utility called <code>nautobot-server</code>, that is used as a single entrypoint for common administrative tasks.</p>
+<h2 id="background">Background<a class="headerlink" href="#background" title="Permanent link">¶</a></h2>
+<p>For those familiar with Django applications, this CLI utility works exactly as a project's <code>manage.py</code> script would, except that it comes bundled with the Nautobot code and therefore it gets automatically installed in the <code>bin</code> directory of your application environment.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Since Nautobot is a Django application, there are a number of built-in management commands that will not be covered in this document. Please see the <a href="https://docs.djangoproject.com/en/stable/ref/django-admin/#available-commands">official Django documentation on management commands</a> for more information.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Django does not recognize <code>nautobot-server</code>. Anywhere <code>python manage.py</code> is mentioned, it is safe to replace with <code>nautobot-server</code>.</p>
+</div>
+<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">¶</a></h2>
+<p>To see all available management commands as the Nautobot user:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>nautobot-server help
+</code></pre></div>
+<p>You can also provide a specific subcommand to list available arguments for that command, for example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nautobot-server help migrate
+</code></pre></div>
+<h2 id="available-commands">Available Commands<a class="headerlink" href="#available-commands" title="Permanent link">¶</a></h2>
+<h3 id="audit_dynamic_groups"><code>audit_dynamic_groups</code><a class="headerlink" href="#audit_dynamic_groups" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server audit_dynamic_groups</code></p>
+<p>After upgrading your Nautobot instance from v1.x to v2.x, breaking changes made to model filter fields will, in some cases, invalidate existing <code>DynamicGroup</code> instances' filter data. <code>nautobot-server audit_dynamic_groups</code> is a helper command to assist you in cleaning up <code>DynamicGroup</code> filter data by spotting invalid filters and outputting them to the command line interface.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>nautobot-server audit_dynamic_groups
+</code></pre></div>
+<p>Example output:</p>
+<p>If you have invalid filters in your <code>DynamicGroup</code> instances, the following output should be expected:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&gt;&gt;&gt; Auditing existing DynamicGroup data for invalid filters ...
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    DynamicGroup instance with name `Test DP` and content type `dcim | rack` has an invalid filter `site`
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    DynamicGroup instance with name `Test DP` and content type `dcim | rack` has an invalid filter `length`
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    DynamicGroup instance with name `Test DP` and content type `dcim | rack` has an invalid filter `region`
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    DynamicGroup instance with name `Test DP 1` and content type `ipam | IP address` has an invalid filter `site`
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    DynamicGroup instance with name `Test DP 1` and content type `ipam | IP address` has an invalid filter `length`
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    DynamicGroup instance with name `Test DP 2` and content type `dcim | device` has an invalid filter `site`
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    DynamicGroup instance with name `Test DP 2` and content type `dcim | device` has an invalid filter `region`
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    DynamicGroup instance with name `Test DP 3` and content type `dcim | device redundancy group` has an invalid filter `site`
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    DynamicGroup instance with name `Test DP 3` and content type `dcim | device redundancy group` has an invalid filter `length`
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    DynamicGroup instance with name `Test DP 3` and content type `dcim | device redundancy group` has an invalid filter `region`
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    DynamicGroup instance with name `Test DP 4` and content type `example_app | another example model` has an invalid filter `site`
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>&gt;&gt;&gt; Please fix the broken filters stated above according to the documentation available at:
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>https://docs.nautobot.com/projects/core/en/stable/user-guide/administration/upgrading/from-v1/upgrading-from-nautobot-v1/#ui-graphql-and-rest-api-filter-changes
+</code></pre></div>
+<p>If your filter data is valid, you should see a success message at the end of the output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&gt;&gt;&gt; Auditing existing DynamicGroup data for invalid filters ...
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>&gt;&gt;&gt; All DynamicGroup filters are validated successfully!
+</code></pre></div>
+<h3 id="audit_graphql_queries"><code>audit_graphql_queries</code><a class="headerlink" href="#audit_graphql_queries" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server audit_graphql_queries</code></p>
+<p>After upgrading your Nautobot instance from v1.x to v2.x, breaking changes made to model filter fields will, in some cases, invalidate existing <code>GraphQLQuery</code> instances' query data. <code>nautobot-server audit_graphql_queries</code> is a helper command to assist you in cleaning up <code>GraphQLQuery</code> query data by spotting invalid query filters and outputting them to the command line interface.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>nautobot-server audit_graphql_queries
+</code></pre></div>
+<p>Example output:</p>
+<p>If you have invalid query data in your <code>GraphQLQuery</code> instances, the following output should be expected:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&gt;&gt;&gt; Auditing existing GraphQLQuery data for invalid queries ...
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>&gt;&gt;&gt; The following GraphQLQuery instances have invalid query data:
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    GraphQLQuery with name `Wrong Query` has invalid query data: [{'message': 'Unknown argument "site" on field "racks" of type "Query".', 'locations': [{'line': 2, 'column': 19}]}]
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    GraphQLQuery with name `Wrong Query 1` has invalid query data: [{'message': 'Unknown argument "site" on field "device" of type "Query".', 'locations': [{'line': 2, 'column': 14}]}]
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    GraphQLQuery with name `Wrong Query 2` has invalid query data: [{'message': "{'location': ['Select a valid choice. Location 01 is not one of the available choices.']}", 'locations': [{'line': 5, 'column': 8}], 'path': ['devices']}]
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>&gt;&gt;&gt; Please fix the outdated query data stated above according to the documentation available at:
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>https://docs.nautobot.com/projects/core/en/stable/user-guide/administration/upgrading/from-v1/upgrading-from-nautobot-v1/#ui-graphql-and-rest-api-filter-changes
+</code></pre></div>
+<p>If your query data is valid, you should see a success message at the end of the output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&gt;&gt;&gt; Auditing existing GraphQLQuery data for invalid queries ...
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>&gt;&gt;&gt; All GraphQLQuery queries are validated successfully!
+</code></pre></div>
+<h3 id="celery"><code>celery</code><a class="headerlink" href="#celery" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server celery</code></p>
+<p>Celery command entrypoint which serves as a thin wrapper to the <code>celery</code> command that includes the Nautobot Celery application context. This allows us to execute Celery commands without having to worry about the chicken-and-egg problem with bootstrapping the Django settings.</p>
+<p>Most commonly you will be using this command to start the Celery worker process:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>nautobot-server celery worker --loglevel INFO --pidfile $(pwd)/nautobot-celery.pid -n worker1
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>celery@worker1 v5.1.1 (sun-harmonics)
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>[config]
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>.&gt; app:         nautobot:0x10c357eb0
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>.&gt; transport:   redis://localhost:6379/0
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>.&gt; results:     redis://localhost:6379/0
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>.&gt; concurrency: 8 (prefork)
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>.&gt; task events: OFF (enable -E to monitor tasks in this worker)
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>[queues]
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>.&gt; celery           exchange=celery(direct) key=celery
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>[tasks]
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>  . nautobot.core.tasks.get_releases
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>  . nautobot.extras.jobs.run_job
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>  . nautobot.extras.tasks.process_webhook
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>[2021-07-01 21:32:40,680: INFO/MainProcess] Connected to redis://localhost:6379/0
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>[2021-07-01 21:32:40,690: INFO/MainProcess] mingle: searching for neighbors
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a>[2021-07-01 21:32:41,713: INFO/MainProcess] mingle: all alone
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>[2021-07-01 21:32:41,730: INFO/MainProcess] celery@worker1 ready.
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The internals of this command are built into Celery. Please see the <a href="https://docs.celeryq.dev/en/stable/userguide/workers.html">official Celery workers guide</a> for more information.</p>
+</div>
+<h3 id="collectstatic"><code>collectstatic</code><a class="headerlink" href="#collectstatic" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server collectstatic</code></p>
+<p>Collect static files into <a href="../configuration/settings.html#static_root"><code>STATIC_ROOT</code></a>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>nautobot-server collectstatic
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>965 static files copied to '/opt/nautobot/static'.
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a built-in Django command. Please see the <a href="https://docs.djangoproject.com/en/stable/ref/django-admin/#collectstatic">official documentation on <code>collectstatic</code></a> for more information.</p>
+</div>
+<h3 id="check_job_approval_status"><code>check_job_approval_status</code><a class="headerlink" href="#check_job_approval_status" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server check_job_approval_status</code></p>
+<p>Checks for scheduled jobs and jobs that require approval.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>nautobot-server check_job_approval_status
+</code></pre></div>
+<p>Output (when failed):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>nautobot.core.management.commands.check_job_approval_status.ApprovalRequiredScheduledJobsError: These need to be approved (and run) or denied before upgrading to Nautobot v3, as the introduction of the approval workflows feature means that future scheduled-job approvals will be handled differently.
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Refer to the documentation: https://docs.nautobot.com/projects/core/en/stable/user-guide/platform-functionality/jobs/job-scheduling-and-approvals/#approval-via-the-ui
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>Below is a list of affected scheduled jobs:
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>    - ID: 0f8a0670-459b-430f-8c5e-a631888509d4, Name: test2
+</code></pre></div>
+<p>Output (with warning):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Following jobs still have `approval_required=True`.
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>These jobs will no longer trigger approval automatically.
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>After upgrading to Nautobot 3.x, you should add an approval workflow definition(s) covering these jobs.
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>Refer to the documentation: https://docs.nautobot.com/projects/core/en/next/user-guide/platform-functionality/approval-workflow/
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>Affected jobs (Names):
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>    - ExampleDryRunJob
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>    - Example Job of Everything
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>    - Export Object List
+</code></pre></div>
+<p>Output (when pass):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>No approval_required jobs or scheduled jobs found.
+</code></pre></div>
+<h3 id="create_breakout_demo_data"><code>create_breakout_demo_data</code><a class="headerlink" href="#create_breakout_demo_data" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server create_breakout_demo_data</code></p>
+<p>Creates some example data for demonstrating the breakout-cable modelling capabilities introduced in Nautobot v3.2.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>nautobot-server create_breakout_demo_data
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>Creating breakout cable demo data...
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>12:55:05.131 DEBUG   nautobot.dcim.models.cables cables.py       _materialize_initial_terminations() :
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>  Created CableToCableTermination A-side for Ethernet1/1 on cable DEMO-BKO-SPINE-LEAF-400G
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>12:55:05.135 DEBUG   nautobot.dcim.models.cables cables.py       _materialize_initial_terminations() :
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>  Created CableToCableTermination B-side for Ethernet1/1 on cable DEMO-BKO-SPINE-LEAF-400G
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>12:55:05.228 DEBUG   nautobot.dcim.models.cables cables.py       _materialize_initial_terminations() :
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>  Created CableToCableTermination A-side for Ethernet1/2 on cable DEMO-BKO-1x2-PARTIAL
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>12:55:05.231 DEBUG   nautobot.dcim.models.cables cables.py       _materialize_initial_terminations() :
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>  Created CableToCableTermination B-side for Ethernet1/2 on cable DEMO-BKO-1x2-PARTIAL
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>Demo data created successfully.
+<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>  Location: DEMO-DC1
+<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>  Devices: 5
+<a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>  Cable types: 2
+<a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>  Cables: 2
+</code></pre></div>
+<h3 id="createsuperuser"><code>createsuperuser</code><a class="headerlink" href="#createsuperuser" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server createsuperuser</code></p>
+<p>Creates a superuser account that has all permissions.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>nautobot-server createsuperuser
+</code></pre></div>
+<p>This provides the following output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>Username (leave blank to use 'jathan'): example
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>Email address: example@localhost
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>Password:
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>Password (again):
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>Superuser created successfully.
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a built-in Django command. Please see the <a href="https://docs.djangoproject.com/en/stable/ref/django-admin/#createsuperuser">official documentation on <code>createsuperuser</code></a> for more information.</p>
+</div>
+<h3 id="dbshell"><code>dbshell</code><a class="headerlink" href="#dbshell" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server dbshell</code></p>
+<p>A shell for your database. This can be very useful in troubleshooting raw database issues.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>This is an advanced feature that gives you direct access to run raw SQL queries. Use this very cautiously as you can cause irreparable damage to your Nautobot installation.</p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>nautobot-server dbshell
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>psql (12.6 (Ubuntu 12.6-0ubuntu0.20.04.1))
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>Type "help" for help.
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>nautobot=&gt; \conninfo
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>You are connected to database "nautobot" as user "nautobot" on host "localhost" (address "::1") at port "5432".
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>nautobot=&gt; \q
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a built-in Django command. Please see the <a href="https://docs.djangoproject.com/en/stable/ref/django-admin/#dbshell">official documentation on <code>dbshell</code></a> for more information.</p>
+</div>
+<h3 id="dumpdata"><code>dumpdata</code><a class="headerlink" href="#dumpdata" title="Permanent link">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<ul>
+<li>We do not recommend using <code>--natural-primary</code> as this can result in inconsistent or incorrect data for data models that use GenericForeignKeys, such as <code>Cable</code>, <code>Note</code>, <code>ObjectChange</code>, and <code>Tag</code>.</li>
+<li>We also do not recommend using <code>--natural-foreign</code> as it can potentially result in errors if any data models incorrectly implement their <code>natural_key()</code> and/or <code>get_by_natural_key()</code> API methods.</li>
+<li><code>contenttypes</code> must not be excluded from the dump (it could be excluded previously due to the use of <code>--natural-foreign</code>).</li>
+</ul>
+</div>
+<details class="version-changed">
+<summary>Changed in version 2.0.0</summary>
+<ul>
+<li><code>django_rq</code> is no longer part of Nautobot's dependencies and so no longer needs to be explicitly excluded.</li>
+</ul>
+</details>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>nautobot-server dumpdata \
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>  --exclude auth.permission \
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>  --format json \
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>  --indent 2 \
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>  --traceback \
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>  &gt; nautobot_dump.json
+</code></pre></div>
+<p>Use this command to generate a JSON dump of the database contents.</p>
+<p>One example of using this command would be to <a href="../migration/migrating-from-postgresql.html#export-data-from-postgresql">export data from PostgreSQL</a> and then <a href="../migration/migrating-from-postgresql.html#import-the-database-dump-into-mysql">import the data dump into MySQL</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>While this command <em>can</em> be used in combination with <code>nautobot-server loaddata</code> as a way to do database backup-and-restore, it's not generally the most efficient or straightforward way to do so. Refer to <a href="../upgrading/database-backup.html">Database Backup</a> for recommendations.</p>
+</div>
+<h3 id="fix_custom_fields"><code>fix_custom_fields</code><a class="headerlink" href="#fix_custom_fields" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server fix_custom_fields [app_label.ModelName [app_label.ModelName ...]]</code></p>
+<p>Adds/Removes any custom fields which should or should not exist on an object. This command should not be run unless a custom fields jobs has failed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>nautobot-server fix_custom_fields
+</code></pre></div>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>Processing ContentType dcim | device
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>Processing ContentType dcim | location
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>Processing ContentType dcim | rack
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>Processing ContentType dcim | cable
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>Processing ContentType dcim | power feed
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>Processing ContentType circuits | circuit
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>Processing ContentType ipam | prefix
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>... (truncated for brevity of documentation) ...
+</code></pre></div>
+<p>You may optionally specify one or more specific models (each prefixed with its app_label) to fix:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>nautobot-server fix_custom_fields circuits.Circuit dcim.Location
+</code></pre></div>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>Processing ContentType circuits | circuit
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>Processing ContentType dcim | location
+</code></pre></div>
+<h3 id="generate_secret_key"><code>generate_secret_key</code><a class="headerlink" href="#generate_secret_key" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server generate_secret_key</code></p>
+<p>Generates a new <a href="../configuration/settings.html#secret_key"><code>SECRET_KEY</code></a> that can be used in your <code>nautobot_config.py</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>nautobot-server generate_secret_key
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>e!j=vrlhz-!wl8p_3+q5s5cph29nzj$xm81eap-!&amp;n!_9^du09
+</code></pre></div>
+<h3 id="generate_test_data"><code>generate_test_data</code><a class="headerlink" href="#generate_test_data" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server generate_test_data [--flush] --seed SEED</code></p>
+<p>Populate the database with various data as a baseline for testing (automated or manual).</p>
+<p><code>--flush</code><br>
+Flush any existing data from the database before generating new data.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Running this command with the <code>--flush</code> argument will clear all existing data in your database. You have been warned.</p>
+</div>
+<p><code>--seed SEED</code><br>
+String to use as a random generator seed for reproducible results.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>nautobot-server generate_test_data --flush --seed "Nautobot"
+</code></pre></div>
+<p>Sample output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>Flushing all existing data from the database...
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>Seeding the pseudo-random number generator with seed "Nautobot"...
+<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>Creating Statuses...
+<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>Creating TenantGroups...
+<a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>Creating Tenants...
+<a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>Creating RIRs...
+<a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a>Creating RouteTargets...
+<a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a>Creating VRFs...
+<a id="__codelineno-30-9" name="__codelineno-30-9" href="#__codelineno-30-9"></a>Creating IP/VLAN Roles...
+<a id="__codelineno-30-10" name="__codelineno-30-10" href="#__codelineno-30-10"></a>Creating VLANGroups...
+<a id="__codelineno-30-11" name="__codelineno-30-11" href="#__codelineno-30-11"></a>Creating VLANs...
+<a id="__codelineno-30-12" name="__codelineno-30-12" href="#__codelineno-30-12"></a>Database populated successfully!
+</code></pre></div>
+<h3 id="health_check"><code>health_check</code><a class="headerlink" href="#health_check" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server health_check</code></p>
+<p>Run health checks and exit 0 if everything went well.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>nautobot-server health_check
+</code></pre></div>
+<p>Output</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>DatabaseBackend          ... working
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>DefaultFileStorageHealthCheck ... working
+<a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>RedisBackend             ... working
+</code></pre></div>
+<p>Please see the <a href="../guides/health-checks.html">health-checks documentation</a> for more information.</p>
+<h3 id="init"><code>init</code><a class="headerlink" href="#init" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server init [--disable-installation-metrics] [config_path]</code></p>
+<p>Generates a new configuration with all of the default settings provided for you, and will also generate a unique <a href="../configuration/settings.html#secret_key"><code>SECRET_KEY</code></a>.</p>
+<p>By default the file will be created at <code>$HOME/.nautobot/nautobot_config.py</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>nautobot-server init
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>Nautobot would like to send anonymized installation metrics to the project's maintainers.
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>These metrics include the installed Nautobot version, the Python version in use, an anonymous "deployment ID", and a list of one-way-hashed names of enabled Nautobot Apps and their versions.
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>Allow Nautobot to send these metrics? [y/n]: y
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>Installation metrics will be sent when running 'nautobot-server post_upgrade'. Thank you!
+<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a>Configuration file created at /home/example/.nautobot/nautobot_config.py
+</code></pre></div>
+<p>For more information on configuring Nautobot for the first time or on more advanced configuration patterns, please see the guide on <a href="../configuration/index.html">Nautobot Configuration</a>.</p>
+<h3 id="loaddata"><code>loaddata</code><a class="headerlink" href="#loaddata" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server loaddata --traceback nautobot_dump.json</code></p>
+<p>To import the data that was exported with <code>nautobot-server dumpdata ...</code> see the following documentation:</p>
+<ul>
+<li><a href="../migration/migrating-from-postgresql.html#remove-auto-populated-records-from-the-mysql-database">Remove auto-populated records from the database</a></li>
+<li><a href="../migration/migrating-from-postgresql.html#import-the-database-dump-into-mysql">Import the database dump</a></li>
+<li><a href="../migration/migrating-from-postgresql.html#rebuild-cached-cable-path-traces">Rebuild cached cable path traces</a></li>
+</ul>
+<h3 id="migrate"><code>migrate</code><a class="headerlink" href="#migrate" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server migrate [app_label] [migration_name]</code></p>
+<p>Initialize a new database or run any pending database migrations to an existing database.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>nautobot-server migrate
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>Wrapping model clean methods for custom validators failed because the ContentType table was not available or populated. This is normal during the execution of the migration command for the first time.
+<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>Operations to perform:
+<a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>  Apply all migrations: admin, auth, circuits, contenttypes, dcim, extras, ipam, sessions, taggit, tenancy, users, virtualization
+<a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>Running migrations:
+<a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>  Applying ipam.0050_vlangroup_range...                          OK    (   0.1s)
+<a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>    Affected ipam.vlangroup                               20 rows  0.003s/record
+<a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a>  Applying dcim.0063_interfacevdcassignment_virtualdevicecont... OK    (   0.2s)
+<a id="__codelineno-36-8" name="__codelineno-36-8" href="#__codelineno-36-8"></a>    Affected dcim.interfacevdcassignment                   0 rows
+<a id="__codelineno-36-9" name="__codelineno-36-9" href="#__codelineno-36-9"></a>    Affected dcim.virtualdevicecontext                     0 rows
+<a id="__codelineno-36-10" name="__codelineno-36-10" href="#__codelineno-36-10"></a>  Applying dcim.0064_virtualdevicecontext_status_data_migrati...
+<a id="__codelineno-36-11" name="__codelineno-36-11" href="#__codelineno-36-11"></a>... (truncated for brevity of documentation) ...
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a built-in Django command, although Nautobot has enhanced it to provide additional output when run. Please see the <a href="https://docs.djangoproject.com/en/stable/ref/django-admin/#migrate">official documentation on <code>migrate</code></a> for more information.</p>
+</div>
+<h3 id="nbshell"><code>nbshell</code><a class="headerlink" href="#nbshell" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server nbshell</code></p>
+<p>An interactive Python shell with all of the database models and various other utilities already imported for you. This is immensely useful for direct access to manipulating database objects.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>This is an advanced feature that gives you direct access to the Django database models. Use this very cautiously as you can cause irreparable damage to your Nautobot installation.</p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>nautobot-server nbshell
+</code></pre></div>
+<p>Prompt provided:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a># Shell Plus Model Imports
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>from constance.models import Constance
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>from django.contrib.admin.models import LogEntry
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>from django.contrib.auth.models import Group, Permission
+<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>...
+<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a># Shell Plus Django Imports
+<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a>from django.core.cache import cache
+<a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>from django.conf import settings
+<a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>from django.contrib.auth import get_user_model
+<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a>...
+<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a># Django version 4.2.15
+<a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a># Nautobot version 2.3.3b1
+<a id="__codelineno-38-13" name="__codelineno-38-13" href="#__codelineno-38-13"></a>...
+<a id="__codelineno-38-14" name="__codelineno-38-14" href="#__codelineno-38-14"></a>Python 3.12.6 (main, Sep 12 2024, 21:12:08) [GCC 12.2.0] on linux
+<a id="__codelineno-38-15" name="__codelineno-38-15" href="#__codelineno-38-15"></a>Type "help", "copyright", "credits" or "license" for more information.
+<a id="__codelineno-38-16" name="__codelineno-38-16" href="#__codelineno-38-16"></a>(InteractiveConsole)
+<a id="__codelineno-38-17" name="__codelineno-38-17" href="#__codelineno-38-17"></a>&gt;&gt;&gt;
+</code></pre></div>
+<p>Please see the dedicated guide on the <a href="nautobot-shell.html">Nautobot Shell</a> for more information.</p>
+<h3 id="pre_migrate"><code>pre_migrate</code><a class="headerlink" href="#pre_migrate" title="Permanent link">¶</a></h3>
+<details class="version-removed">
+<summary>Removed in version 2.0.0</summary>
+</details>
+<p><code>nautobot-server pre_migrate</code></p>
+<p>Performs pre-migration validation checks for Nautobot 2.0. Only available in Nautobot 1.5.23 and later versions of Nautobot 1.x.</p>
+<h3 id="post_upgrade"><code>post_upgrade</code><a class="headerlink" href="#post_upgrade" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server post_upgrade</code></p>
+<p>Performs common server post-upgrade operations using a single entrypoint.</p>
+<p>This will run the following management commands with default settings, in order:</p>
+<ul>
+<li><code>migrate</code></li>
+<li><code>clear_cache</code></li>
+<li><code>trace_paths</code></li>
+<li><code>collectstatic</code></li>
+<li><code>remove_stale_contenttypes</code></li>
+<li><code>clearsessions</code></li>
+<li><code>send_installation_metrics</code></li>
+<li><code>refresh_content_type_cache</code></li>
+<li><code>refresh_dynamic_group_member_caches</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Commands listed here that are not covered in this document here are Django built-in commands, with the exception of <code>clear_cache</code>, which is provided by Nautobot's dependency <code>django-extensions</code>.</p>
+</div>
+<details class="version-removed">
+<summary>Removed in version 2.0.0</summary>
+<p>With the removal of <code>django-cacheops</code> from Nautobot, this command no longer runs <code>invalidate all</code>.</p>
+</details>
+<details class="version-added">
+<summary>Added in version 2.0.0</summary>
+<p>Added <code>build_ui</code> to this command's default behavior.</p>
+</details>
+<details class="version-changed">
+<summary>Changed in version 2.0.3</summary>
+<p>Changed the <code>--build_ui</code> flag's value to be False by default.</p>
+</details>
+<details class="version-removed">
+<summary>Removed in version 2.1.1</summary>
+<p>Removed the <code>--build_ui</code> flag.</p>
+</details>
+<details class="version-added">
+<summary>Added in version 3.0.10</summary>
+<p>Added <code>clear_cache</code> to this command's default behavior.</p>
+</details>
+<p><code>--no-clear-cache</code>
+Do not automatically clear the cache.</p>
+<p><code>--no-clearsessions</code><br>
+Do not automatically clean out expired sessions.</p>
+<p><code>--no-collectstatic</code><br>
+Do not automatically collect static files into a single location.</p>
+<p><code>--no-migrate</code><br>
+Do not automatically perform any database migrations.</p>
+<p><code>--no-remove-stale-contenttypes</code><br>
+Do not automatically remove stale content types.</p>
+<p><code>--no-trace-paths</code><br>
+Do not automatically generate missing cable paths.</p>
+<details class="version-removed">
+<summary>Removed in version 2.0.0</summary>
+<p>With the removal of <code>django-cacheops</code> from Nautobot, the <code>--no-invalidate-all</code> flag was removed from this command.</p>
+</details>
+<p><code>--no-refresh-content-type-cache</code><br>
+Do not automatically refresh the content type cache.</p>
+<p><code>--no-refresh-dynamic-group-member-caches</code><br>
+Do not automatically refresh the dynamic group member lists.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>nautobot-server post_upgrade
+</code></pre></div>
+<p>Example Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>Performing database migrations...
+<a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>Operations to perform:
+<a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>  Apply all migrations: admin, auth, circuits, contenttypes, dcim, extras, ipam, sessions, taggit, tenancy, users, virtualization
+<a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>Running migrations:
+<a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>  No migrations to apply.
+<a id="__codelineno-40-6" name="__codelineno-40-6" href="#__codelineno-40-6"></a>
+<a id="__codelineno-40-7" name="__codelineno-40-7" href="#__codelineno-40-7"></a>Clearing cache...
+<a id="__codelineno-40-8" name="__codelineno-40-8" href="#__codelineno-40-8"></a>Cache "default" has been cleared!
+<a id="__codelineno-40-9" name="__codelineno-40-9" href="#__codelineno-40-9"></a>
+<a id="__codelineno-40-10" name="__codelineno-40-10" href="#__codelineno-40-10"></a>Generating cable paths...
+<a id="__codelineno-40-11" name="__codelineno-40-11" href="#__codelineno-40-11"></a>Found no missing circuit termination paths; skipping
+<a id="__codelineno-40-12" name="__codelineno-40-12" href="#__codelineno-40-12"></a>Found no missing console port paths; skipping
+<a id="__codelineno-40-13" name="__codelineno-40-13" href="#__codelineno-40-13"></a>Found no missing console server port paths; skipping
+<a id="__codelineno-40-14" name="__codelineno-40-14" href="#__codelineno-40-14"></a>Found no missing interface paths; skipping
+<a id="__codelineno-40-15" name="__codelineno-40-15" href="#__codelineno-40-15"></a>Found no missing power feed paths; skipping
+<a id="__codelineno-40-16" name="__codelineno-40-16" href="#__codelineno-40-16"></a>Found no missing power outlet paths; skipping
+<a id="__codelineno-40-17" name="__codelineno-40-17" href="#__codelineno-40-17"></a>Found no missing power port paths; skipping
+<a id="__codelineno-40-18" name="__codelineno-40-18" href="#__codelineno-40-18"></a>Finished.
+<a id="__codelineno-40-19" name="__codelineno-40-19" href="#__codelineno-40-19"></a>
+<a id="__codelineno-40-20" name="__codelineno-40-20" href="#__codelineno-40-20"></a>Collecting static files...
+<a id="__codelineno-40-21" name="__codelineno-40-21" href="#__codelineno-40-21"></a>
+<a id="__codelineno-40-22" name="__codelineno-40-22" href="#__codelineno-40-22"></a>0 static files copied to '/opt/nautobot/static', 965 unmodified.
+<a id="__codelineno-40-23" name="__codelineno-40-23" href="#__codelineno-40-23"></a>
+<a id="__codelineno-40-24" name="__codelineno-40-24" href="#__codelineno-40-24"></a>Removing stale content types...
+<a id="__codelineno-40-25" name="__codelineno-40-25" href="#__codelineno-40-25"></a>
+<a id="__codelineno-40-26" name="__codelineno-40-26" href="#__codelineno-40-26"></a>Removing expired sessions...
+<a id="__codelineno-40-27" name="__codelineno-40-27" href="#__codelineno-40-27"></a>
+<a id="__codelineno-40-28" name="__codelineno-40-28" href="#__codelineno-40-28"></a>Sending installation metrics...
+<a id="__codelineno-40-29" name="__codelineno-40-29" href="#__codelineno-40-29"></a>Installation metrics are disabled by INSTALLATION_METRICS_ENABLED setting, skipping.
+<a id="__codelineno-40-30" name="__codelineno-40-30" href="#__codelineno-40-30"></a>
+<a id="__codelineno-40-31" name="__codelineno-40-31" href="#__codelineno-40-31"></a>Refreshing _content_type cache
+<a id="__codelineno-40-32" name="__codelineno-40-32" href="#__codelineno-40-32"></a>
+<a id="__codelineno-40-33" name="__codelineno-40-33" href="#__codelineno-40-33"></a>Refreshing dynamic group member caches...
+</code></pre></div>
+<h3 id="refresh_dynamic_group_member_caches"><code>refresh_dynamic_group_member_caches</code><a class="headerlink" href="#refresh_dynamic_group_member_caches" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server refresh_dynamic_group_member_caches</code></p>
+<p>Refresh the cached members of all Dynamic Groups. This can also be achieved by running the <code>Refresh Dynamic Group Caches</code> system Job.</p>
+<h3 id="refresh_content_type_caches"><code>refresh_content_type_caches</code><a class="headerlink" href="#refresh_content_type_caches" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server refresh_content_type_caches</code></p>
+<p>Refresh the cached ContentType object property available via <code>Model._content_type_cached</code>. If content types are added or removed, this command will update the cache to reflect the current state of the database, but should already be done through the <code>post_upgrade</code> command.</p>
+<h3 id="remove_stale_scheduled_jobs"><code>remove_stale_scheduled_jobs</code><a class="headerlink" href="#remove_stale_scheduled_jobs" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server remove_stale_scheduled_jobs [max-age of days]</code></p>
+<p>Delete non-recurring scheduled jobs that were scheduled to run more than <code>max-age</code> days ago.</p>
+<h3 id="renaturalize"><code>renaturalize</code><a class="headerlink" href="#renaturalize" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server renaturalize [app_label.ModelName [app_label.ModelName ...]]</code></p>
+<p>Recalculate natural ordering values for the specified models.</p>
+<p>This defaults to recalculating natural ordering on all models which have one or more fields of type <code>NaturalOrderingField</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>nautobot-server renaturalize
+</code></pre></div>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>Renaturalizing 21 models.
+<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>dcim.ConsolePort.name (_name)... 196
+<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>dcim.ConsoleServerPort.name (_name)... 0
+<a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>dcim.PowerPort.name (_name)... 392
+<a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>dcim.PowerOutlet.name (_name)... 0
+<a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>dcim.Interface.name (_name)... 7161
+<a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a>dcim.FrontPort.name (_name)... 0
+<a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a>dcim.RearPort.name (_name)... 0
+<a id="__codelineno-42-9" name="__codelineno-42-9" href="#__codelineno-42-9"></a>dcim.DeviceBay.name (_name)... 0
+<a id="__codelineno-42-10" name="__codelineno-42-10" href="#__codelineno-42-10"></a>dcim.InventoryItem.name (_name)... 1
+<a id="__codelineno-42-11" name="__codelineno-42-11" href="#__codelineno-42-11"></a>dcim.Device.name (_name)... 208
+<a id="__codelineno-42-12" name="__codelineno-42-12" href="#__codelineno-42-12"></a>dcim.ConsolePortTemplate.name (_name)... 2
+<a id="__codelineno-42-13" name="__codelineno-42-13" href="#__codelineno-42-13"></a>dcim.ConsoleServerPortTemplate.name (_name)... 0
+<a id="__codelineno-42-14" name="__codelineno-42-14" href="#__codelineno-42-14"></a>dcim.PowerPortTemplate.name (_name)... 4
+<a id="__codelineno-42-15" name="__codelineno-42-15" href="#__codelineno-42-15"></a>dcim.PowerOutletTemplate.name (_name)... 0
+<a id="__codelineno-42-16" name="__codelineno-42-16" href="#__codelineno-42-16"></a>dcim.InterfaceTemplate.name (_name)... 221
+<a id="__codelineno-42-17" name="__codelineno-42-17" href="#__codelineno-42-17"></a>dcim.FrontPortTemplate.name (_name)... 0
+<a id="__codelineno-42-18" name="__codelineno-42-18" href="#__codelineno-42-18"></a>dcim.RearPortTemplate.name (_name)... 0
+<a id="__codelineno-42-19" name="__codelineno-42-19" href="#__codelineno-42-19"></a>dcim.DeviceBayTemplate.name (_name)... 0
+<a id="__codelineno-42-20" name="__codelineno-42-20" href="#__codelineno-42-20"></a>dcim.Rack.name (_name)... 156
+<a id="__codelineno-42-21" name="__codelineno-42-21" href="#__codelineno-42-21"></a>virtualization.VMInterface.name (_name)... 0
+<a id="__codelineno-42-22" name="__codelineno-42-22" href="#__codelineno-42-22"></a>Done.
+</code></pre></div>
+<p>You may optionally specify or more specific models (each prefixed with its <code>app_label</code>) to renaturalize:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>nautobot-server renaturalize dcim.Device
+</code></pre></div>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>Renaturalizing 1 models.
+<a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>dcim.Device.name (_name)... 208
+<a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>Done.
+</code></pre></div>
+<h3 id="runjob"><code>runjob</code><a class="headerlink" href="#runjob" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server runjob --username &lt;username&gt; [--local] [--data &lt;data&gt;] &lt;job&gt;</code></p>
+<p>Run a job (script, report) to validate or update data in Nautobot. The Job name must be in the Python module form: <code>&lt;module_name&gt;.&lt;JobClassName&gt;</code>. You can find this under the Job's detail view on the "Class Path" row.</p>
+<p><code>--username &lt;username&gt;</code><br>
+User account to impersonate as the requester of this job.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>nautobot-server runjob --username someuser example_app.jobs.MyJobWithNoVars
+</code></pre></div>
+<p><code>--local</code>
+Run the job on the local system and not on a worker.</p>
+<p><code>--data &lt;data&gt;</code>
+JSON string that populates the <code>data</code> variable of the job. Defaults to <code>{}</code> (an empty dict). Passing <code>null</code> will result in a validation error.</p>
+<details class="version-added">
+<summary>Added in version 3.2.0</summary>
+<p>The default value of <code>--data</code> is now <code>{}</code> instead of <code>None</code>. Job input validation is also stricter: passing <code>data=null</code> raises a <code>ValueError</code> rather than being silently treated as an empty input.</p>
+</details>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>nautobot-server runjob --username someuser --local --data '{"my_boolvar": false}' example_app.jobs.MyJobWithVars
+</code></pre></div>
+<p>Please see the <a href="../../platform-functionality/jobs/index.html">guide on Jobs</a> for more information on working with and running jobs.</p>
+<h3 id="send_installation_metrics"><code>send_installation_metrics</code><a class="headerlink" href="#send_installation_metrics" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server send_installation_metrics</code></p>
+<p>Send anonymized installation metrics to the Nautobot maintainers. This management command is called by <a href="#post_upgrade"><code>post_upgrade</code></a> and is not intended to be run manually.</p>
+<p>If the <a href="../configuration/settings.html#installation_metrics_enabled"><code>INSTALLATION_METRICS_ENABLED</code></a> setting is <code>True</code>, this command will send a list of all installed <a href="../../../development/apps/index.html">Apps</a> and their versions, as well as the currently installed Nautobot and Python versions, to the Nautobot maintainers. A randomized UUID will be generated and saved in the <a href="../configuration/settings.html#deployment_id"><code>DEPLOYMENT_ID</code></a> setting to anonymously but uniquely identify this installation. The App names will be one-way hashed with SHA256 to further anonymize the data sent. This enables tracking the installation metrics of publicly released apps without disclosing the names of any private apps.</p>
+<p>The following is an example of the data that is sent:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="p">{</span>
+<a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>    <span class="s2">"deployment_id"</span><span class="p">:</span> <span class="s2">"1de3dacf-f046-4a98-8d4a-17419080db79"</span><span class="p">,</span>
+<a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a>    <span class="s2">"nautobot_version"</span><span class="p">:</span> <span class="s2">"2.1.2"</span><span class="p">,</span>
+<a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a>    <span class="s2">"python_version"</span><span class="p">:</span> <span class="s2">"3.10.12"</span><span class="p">,</span>
+<a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a>    <span class="s2">"installed_apps"</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-47-6" name="__codelineno-47-6" href="#__codelineno-47-6"></a>        <span class="c1"># "example_app" hashed by sha256</span>
+<a id="__codelineno-47-7" name="__codelineno-47-7" href="#__codelineno-47-7"></a>        <span class="s2">"ded1fb19a53a47aa4fe26b72b4ab9297b631e4d4f852b03b3788d5dbc292ae8d"</span><span class="p">:</span> <span class="s2">"1.0.0"</span>
+<a id="__codelineno-47-8" name="__codelineno-47-8" href="#__codelineno-47-8"></a>    <span class="p">},</span>
+<a id="__codelineno-47-9" name="__codelineno-47-9" href="#__codelineno-47-9"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="start"><code>start</code><a class="headerlink" href="#start" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server start</code></p>
+<p>Directly invoke uWSGI to start a Nautobot server suitable for production use. This command behaves exactly as uWSGI does, but allows us to maintain a single entrypoint into the Nautobot application.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>uWSGI offers an overwhelming amount of command-line arguments that could not possibly be covered here. Please see the <a href="https://uwsgi-docs.readthedocs.io/en/latest/Options.html">official uWSGI Options guide</a> for more information.</p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>nautobot-server start --ini ./uwsgi.ini
+</code></pre></div>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>[uWSGI] getting INI configuration from ./uwsgi.ini
+<a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a>[uwsgi-static] added mapping for /static =&gt; /opt/nautobot/static
+<a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a>*** Starting uWSGI 2.0.19.1 (64bit) on [Thu Mar 11 21:13:22 2021] ***
+<a id="__codelineno-49-4" name="__codelineno-49-4" href="#__codelineno-49-4"></a>compiled with version: 8.3.1 20190311 (Red Hat 8.3.1-3) on 23 September 2020 02:39:40
+<a id="__codelineno-49-5" name="__codelineno-49-5" href="#__codelineno-49-5"></a>os: Linux-5.4.0-52-generic #57-Ubuntu SMP Thu Oct 15 10:57:00 UTC 2020
+<a id="__codelineno-49-6" name="__codelineno-49-6" href="#__codelineno-49-6"></a>nodename: jathan-nautobot-testing
+<a id="__codelineno-49-7" name="__codelineno-49-7" href="#__codelineno-49-7"></a>machine: x86_64
+<a id="__codelineno-49-8" name="__codelineno-49-8" href="#__codelineno-49-8"></a>clock source: unix
+<a id="__codelineno-49-9" name="__codelineno-49-9" href="#__codelineno-49-9"></a>pcre jit disabled
+<a id="__codelineno-49-10" name="__codelineno-49-10" href="#__codelineno-49-10"></a>detected number of CPU cores: 48
+<a id="__codelineno-49-11" name="__codelineno-49-11" href="#__codelineno-49-11"></a>current working directory: /opt/nautobot
+<a id="__codelineno-49-12" name="__codelineno-49-12" href="#__codelineno-49-12"></a>detected binary path: /usr/bin/python3.8
+<a id="__codelineno-49-13" name="__codelineno-49-13" href="#__codelineno-49-13"></a>your processes number limit is 256070
+<a id="__codelineno-49-14" name="__codelineno-49-14" href="#__codelineno-49-14"></a>your memory page size is 4096 bytes
+<a id="__codelineno-49-15" name="__codelineno-49-15" href="#__codelineno-49-15"></a>detected max file descriptor number: 1024
+<a id="__codelineno-49-16" name="__codelineno-49-16" href="#__codelineno-49-16"></a>building mime-types dictionary from file /etc/mime.types...567 entry found
+<a id="__codelineno-49-17" name="__codelineno-49-17" href="#__codelineno-49-17"></a>lock engine: pthread robust mutexes
+<a id="__codelineno-49-18" name="__codelineno-49-18" href="#__codelineno-49-18"></a>thunder lock: disabled (you can enable it with --thunder-lock)
+<a id="__codelineno-49-19" name="__codelineno-49-19" href="#__codelineno-49-19"></a>uwsgi socket 0 bound to TCP address 0.0.0.0:9191 fd 7
+<a id="__codelineno-49-20" name="__codelineno-49-20" href="#__codelineno-49-20"></a>Python version: 3.8.5 (default, Jan 27 2021, 15:41:15)  [GCC 9.3.0]
+<a id="__codelineno-49-21" name="__codelineno-49-21" href="#__codelineno-49-21"></a>--- Python VM already initialized ---
+<a id="__codelineno-49-22" name="__codelineno-49-22" href="#__codelineno-49-22"></a>Python main interpreter initialized at 0x2573e30
+<a id="__codelineno-49-23" name="__codelineno-49-23" href="#__codelineno-49-23"></a>python threads support enabled
+<a id="__codelineno-49-24" name="__codelineno-49-24" href="#__codelineno-49-24"></a>your server socket listen backlog is limited to 1024 connections
+<a id="__codelineno-49-25" name="__codelineno-49-25" href="#__codelineno-49-25"></a>your mercy for graceful operations on workers is 60 seconds
+<a id="__codelineno-49-26" name="__codelineno-49-26" href="#__codelineno-49-26"></a>mapped 636432 bytes (621 KB) for 15 cores
+<a id="__codelineno-49-27" name="__codelineno-49-27" href="#__codelineno-49-27"></a>*** Operational MODE: preforking+threaded ***
+<a id="__codelineno-49-28" name="__codelineno-49-28" href="#__codelineno-49-28"></a>WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x2573e30 pid: 112153 (default app)
+<a id="__codelineno-49-29" name="__codelineno-49-29" href="#__codelineno-49-29"></a>spawned uWSGI master process (pid: 112153)
+<a id="__codelineno-49-30" name="__codelineno-49-30" href="#__codelineno-49-30"></a>spawned uWSGI worker 1 (pid: 112159, cores: 3)
+<a id="__codelineno-49-31" name="__codelineno-49-31" href="#__codelineno-49-31"></a>spawned uWSGI worker 2 (pid: 112162, cores: 3)
+<a id="__codelineno-49-32" name="__codelineno-49-32" href="#__codelineno-49-32"></a>spawned uWSGI worker 3 (pid: 112165, cores: 3)
+<a id="__codelineno-49-33" name="__codelineno-49-33" href="#__codelineno-49-33"></a>spawned uWSGI worker 4 (pid: 112168, cores: 3)
+<a id="__codelineno-49-34" name="__codelineno-49-34" href="#__codelineno-49-34"></a>spawned uWSGI worker 5 (pid: 112171, cores: 3)
+</code></pre></div>
+<p>Please see the guide on <a href="../installation/services.html">Deploying Nautobot Services</a> for our recommended configuration for use with uWSGI.</p>
+<h3 id="trace_paths"><code>trace_paths</code><a class="headerlink" href="#trace_paths" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server trace_paths</code></p>
+<p>Generate any missing cable paths among all cable termination objects in Nautobot.</p>
+<p>After upgrading the database or working with Cables, Circuits, or other related objects, there may be a need to rebuild cached cable paths.</p>
+<p><code>--force</code><br>
+Force recalculation of all existing cable paths.</p>
+<p><code>--no-input</code><br>
+Do not prompt user for any input/confirmation.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>nautobot-server trace_paths
+</code></pre></div>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>Found no missing circuit termination paths; skipping
+<a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a>Found no missing console port paths; skipping
+<a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a>Found no missing console server port paths; skipping
+<a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a>Found no missing interface paths; skipping
+<a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a>Found no missing power feed paths; skipping
+<a id="__codelineno-51-6" name="__codelineno-51-6" href="#__codelineno-51-6"></a>Found no missing power outlet paths; skipping
+<a id="__codelineno-51-7" name="__codelineno-51-7" href="#__codelineno-51-7"></a>Found no missing power port paths; skipping
+<a id="__codelineno-51-8" name="__codelineno-51-8" href="#__codelineno-51-8"></a>Finished.
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This command is safe to run at any time. If it does not detect any changes, it will exit cleanly.</p>
+</div>
+<h3 id="validate_models"><code>validate_models</code><a class="headerlink" href="#validate_models" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server validate_models</code></p>
+<p>Validate all instances of a given model(s) by running a <code>full_clean()</code> or <code>validated_save()</code> on each object.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the number of records in your database, this may take a long time to run.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>In Nautobot v3.0.0 and later, there is a system <a href="../../platform-functionality/jobs/index.html">Job</a>, <code>ValidateModelData</code>, that can be run by Nautobot users to provide similar functionality to this command without requiring shell access.</p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>nautobot-server validate_models
+</code></pre></div>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>Validating 171 models.
+<a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>auth.Permission
+<a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a>circuits.ProviderNetwork
+<a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a>circuits.Provider
+<a id="__codelineno-53-5" name="__codelineno-53-5" href="#__codelineno-53-5"></a>circuits.CircuitType
+<a id="__codelineno-53-6" name="__codelineno-53-6" href="#__codelineno-53-6"></a>circuits.Circuit
+<a id="__codelineno-53-7" name="__codelineno-53-7" href="#__codelineno-53-7"></a>circuits.CircuitTermination
+<a id="__codelineno-53-8" name="__codelineno-53-8" href="#__codelineno-53-8"></a>dcim.Interface
+<a id="__codelineno-53-9" name="__codelineno-53-9" href="#__codelineno-53-9"></a>dcim.Manufacturer
+<a id="__codelineno-53-10" name="__codelineno-53-10" href="#__codelineno-53-10"></a>dcim.DeviceFamily
+<a id="__codelineno-53-11" name="__codelineno-53-11" href="#__codelineno-53-11"></a>dcim.DeviceTypeToSoftwareImageFile
+<a id="__codelineno-53-12" name="__codelineno-53-12" href="#__codelineno-53-12"></a>dcim.DeviceType
+<a id="__codelineno-53-13" name="__codelineno-53-13" href="#__codelineno-53-13"></a>dcim.Platform
+<a id="__codelineno-53-14" name="__codelineno-53-14" href="#__codelineno-53-14"></a>&lt;omitted for brevity&gt;
+</code></pre></div>
+<p>You can validate a specific subset of models by providing a space separated list of models as shown here:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>nautobot-server validate_models dcim.Manufacturer dcim.Device
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>Validating 2 models.
+<a id="__codelineno-55-2" name="__codelineno-55-2" href="#__codelineno-55-2"></a>dcim.Manufacturer
+<a id="__codelineno-55-3" name="__codelineno-55-3" href="#__codelineno-55-3"></a>dcim.Device
+</code></pre></div>
+<p><code>--save</code><br>
+Run <code>validated_save()</code> instead of <code>full_clean()</code> for slower but more thorough data validation.</p>
+<h3 id="version"><code>version</code><a class="headerlink" href="#version" title="Permanent link">¶</a></h3>
+<p><code>nautobot-server version</code></p>
+<p>Report the Nautobot version and Django version, as well as the current configuration file in use.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>nautobot-server version
+</code></pre></div>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a>Nautobot version: 2.2.0a1
+<a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a>Django version: 3.2.24
+<a id="__codelineno-57-3" name="__codelineno-57-3" href="#__codelineno-57-3"></a>Configuration file: /opt/nautobot/nautobot_config.py
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

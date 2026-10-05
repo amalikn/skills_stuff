@@ -1,0 +1,188 @@
+claims:
+  - id: O-C01
+    statement: "OpenWISP Controller documents registration settings whose effective behaviour must be verified in the target deployment."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [openwisp-release-26-09-docs]
+    environment_id: openwisp-release-26-09-docs
+    source_type: official_documentation
+    evidence: "https://openwisp.io/docs/26.09/controller/user/settings.html sections REGISTRATION_ENABLED/CONSISTENT_REGISTRATION; not proof of UNC 1.3 hardware_id REST behavior; reviewed 2026-10-01."
+    reference: references/identity-and-registration.md
+    test: O-S17
+  - id: O-C02
+    statement: "A stable logical monitoring identity can outlive physical hardware when replacement mapping is explicit."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness, replacement identity choice; USER_STATED version-independent policy."
+    reference: references/identity-and-registration.md
+    test: O-S16
+  - id: O-C03
+    statement: "HTTP/API acceptance is only the first monitoring evidence rung."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness, monitoring evidence gate; USER_STATED version-independent policy."
+    reference: references/verification-and-troubleshooting.md
+    test: O-S01
+  - id: O-C04
+    statement: "Observed images and module versions establish installation evidence but not end-to-end monitoring behaviour."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [openwisp-images-26-09-0, openwisp-modules-1-3]
+    environment_id: openwisp-images-26-09-0
+    source_type: observed_install
+    evidence: "Phase 3A readiness Observed baseline, read-only image and Python package metadata 2026-10-01; no end-to-end proof."
+    reference: references/customisation-and-upgrades.md
+    test: O-S06
+  - id: O-C05
+    statement: "A vendor-neutral observation records source, capture time, stable identity, units, freshness and explicit unknown states."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness neutral observation contract; USER_STATED design rule."
+    reference: references/passive-ingestion.md
+    test: O-S02
+  - id: O-C06
+    statement: "Observed health, policy, alert evaluation, suppression and notification transport are distinct controls."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness monitoring/control boundary; USER_STATED design rule."
+    reference: references/health-alerts-notifications.md
+    test: O-S05
+  - id: O-C07
+    statement: "An installed Network Topology module does not by itself prove a deployed topology integration."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness topology proof boundary; USER_STATED version-independent rule."
+    reference: references/topology-and-foss.md
+    test: O-S04
+  - id: O-C08
+    statement: "A supported extension search precedes a custom adapter recommendation."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness provider/FOSS search order; USER_STATED version-independent policy."
+    reference: references/capability-extension.md
+    test: O-S03
+  - id: O-C09
+    statement: "An upgrade is incomplete until effective settings and custom behaviour are reverified."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness upgrade-survival contract; USER_STATED version-independent policy."
+    reference: references/customisation-and-upgrades.md
+    test: O-S07
+  - id: O-C10
+    statement: "Each engagement requires a durable reusable-learning classification at closeout."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness automatic learning contract; USER_STATED version-independent policy."
+    reference: references/evolution-and-write-back.md
+    test: O-S10
+  - id: O-C11
+    statement: "The project OpenWISP registration implementation uses server-side model operations keyed by a dashless inventory UUID in hardware_id."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [openwisp-unc-inspected-20261001]
+    environment_id: openwisp-unc-inspected-20261001
+    source_type: implementation
+    evidence: "UNC wc-local/scripts/batch_push_devices.py to_openwisp_hardware_id(), OpenWispRegistry._SHELL/register(); Controller 1.3 observed; inspected 2026-10-01. The code's REST limitation comment needs a target API probe."
+    reference: references/identity-and-registration.md
+    test: O-S16
+  - id: O-C12
+    statement: "A persisted Metric object is not proof of a recent time-series point or a rendered graph."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [openwisp-unc-inspected-20261001]
+    environment_id: openwisp-unc-inspected-20261001
+    source_type: implementation_and_report
+    evidence: "UNC batch_push_devices.py count_metrics() versus eval_a6_coverage.py freshness gap; Step 2 reports corroborate, inspected 2026-10-01."
+    reference: references/verification-and-troubleshooting.md
+    test: O-S01
+  - id: O-C13
+    statement: "A passive adapter should omit unknown link state and represent an explicitly disabled interface as down only when the source semantics support it."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [openwisp-mapper-offline-20261001]
+    environment_id: openwisp-mapper-offline-20261001
+    source_type: implementation_and_test
+    evidence: "UNC adapters/shims/openwisp_netjson.py to_netjson()/backfill_timestamp() and tests/test_adapter_contracts.py; fixture-level proof, inspected 2026-10-01."
+    reference: references/passive-ingestion.md
+    test: O-S02
+  - id: O-C14
+    statement: "A collector or transport failure can create many downstream symptom alerts, so correlation must preserve the likely upstream cause."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [openwisp-unc-inspected-20261001]
+    environment_id: openwisp-unc-inspected-20261001
+    source_type: implementation_and_report
+    evidence: "UNC wc-local/scripts/alarms.py and docs/reports/monitoring/step2-monitoring-acceptance-20260926_1815.md; soak pending, inspected 2026-10-01."
+    reference: references/health-alerts-notifications.md
+    test: O-S05
+  - id: O-C15
+    statement: "An image tag and an installed Python module version are separate upgrade coordinates that must both be checked."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [openwisp-images-26-09-0, openwisp-modules-1-3]
+    environment_id: openwisp-images-26-09-0
+    source_type: observed_install
+    evidence: "Phase 3A readiness Observed baseline: dashboard/API image 26.09.0 and installed modules 1.3; not worker behavior, observed 2026-10-01."
+    reference: references/customisation-and-upgrades.md
+    test: O-S06
+  - id: O-C16
+    statement: "In the 26.09.0 images Celery workers run detached behind a tail process, so container status says nothing about whether a worker is alive."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [openwisp-images-26-09-0-modules-detail]
+    environment_id: openwisp-images-26-09-0-modules-detail
+    source_type: observed_install
+    evidence: "Image /opt/openwisp/init_command.sh lines 77-123 and a read-only probe that found no worker while containers showed Up; 2026-10-05."
+    reference: references/operations-cookbook.md
+    test: O-S20
+  - id: O-C17
+    statement: "Monitoring 1.3 backfill requires time in %d-%m-%Y_%H:%M:%S.%f, parsed as UTC; ISO 8601 is rejected with HTTP 400."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [openwisp-images-26-09-0-modules-detail]
+    environment_id: openwisp-images-26-09-0-modules-detail
+    source_type: observed_install
+    evidence: "Installed openwisp_monitoring/device/api/views.py lines 168-203 in the 26.09.0 image; versioned 26.09 monitoring REST docs; 2026-10-05."
+    reference: references/operations-cookbook.md
+    test: O-S22

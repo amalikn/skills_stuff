@@ -1,0 +1,108 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="job-buttons">Job Buttons<a class="headerlink" href="#job-buttons" title="Permanent link">¶</a></h1>
+<p>Job Buttons are predefined buttons that allow users to run jobs directly from within Nautobot object views. It uses the object where the button was pressed as the only input to the job. These are helpful when you want to start a job that requires minimal or no input without having to use the standard job form. For example, you may have a job that only requires a user to select a device. Instead, they can now go to that device in the web UI and click the associated Job Button instead.</p>
+<p>Job Buttons can be created in web UI located in the navbar under Jobs &gt; Job Buttons. Each button can be associated with multiple Nautobot object types (location, device, prefix, etc.) and will be displayed on all of the associated object detail views. The text displayed on the button supports Jinja2 templating which allows for using <a href="#context-data">context data</a> to dynamically update or <a href="#conditional-rendering">even be hidden under certain conditions</a>.</p>
+<p>The buttons appear at the top right corner of an object's individual detail page for each object type they are associated to. They can be either individual buttons or grouped together in a dropdown for better organization. Buttons will be sorted from left to right based on their <code>weight</code> with the lowest <code>weight</code> button on the left. Any groups of buttons will be displayed to the right of all ungrouped buttons. Group dropdown buttons will inherit the button class from the button with the lowest <code>weight</code> in the group and will be sorted from top to bottom with the lowest <code>weight</code> button on top.</p>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
+<ul>
+<li><strong>Name</strong> - A unique name for the Job Button.</li>
+<li><strong>Object type(s)</strong> - The type or types of Nautobot object that the button will be associated to.</li>
+<li><strong>Text</strong> - The text that will be displayed on the button.</li>
+<li><strong>Job</strong> - The <a href="../../../development/jobs/job-extensions.html#job-button-receivers">Job Button Receiver</a> that this button will run.</li>
+<li><strong>Enabled</strong> - Whether this Job Button will appear in relevant UI. A Job Button may be disabled if, for example, the underlying Job Button Receiver is uninstalled or temporarily disabled.</li>
+<li><strong>Weight</strong> - The number used for determining the order the buttons will appear.</li>
+<li><strong>Group</strong> - The name of the dropdown group to add this button into (optional).</li>
+<li><strong>Button Class</strong> - The button CSS class, which dictates the color.</li>
+<li><strong>Confirmation</strong> - Should the button pop up a confirmation dialog before running.</li>
+</ul>
+<details class="version-added">
+<summary>Added in version 2.2.6</summary>
+<p>The <code>enabled</code> field was added to Job Buttons to allow them to be temporarily disabled.</p>
+</details>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../media/models/ss_jobbutton_form_light.png#only-light" data-desc-position="bottom"><img alt="Job Button Form" class="on-glb" src="../../../media/models/ss_jobbutton_form_light.png#only-light" title="Job Button Form"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../media/models/ss_jobbutton_form_dark.png#only-dark" data-desc-position="bottom"><img alt="Job Button Form" class="on-glb" src="../../../media/models/ss_jobbutton_form_dark.png#only-dark" title="Job Button Form"></a></p>
+<p>For any Job that is loaded into Nautobot, the Job must be enabled to run. See <a href="managing-jobs.html#enabling-and-disabling-jobs">Enabling Jobs for Running</a> for more details.</p>
+<h2 id="required-permissions">Required Permissions<a class="headerlink" href="#required-permissions" title="Permanent link">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In order to run any job via a Job Button, a user must be assigned the <code>extras.run_job</code> permission. This is achieved by assigning the user (or group) a permission on the <code>extras &gt; job</code> objects and specifying the <code>run</code> action in the <strong>Additional actions</strong> section. Any user lacking this permissions may still see the button on the respective page(s) - if not using <a href="#conditional-rendering">conditional rendering</a> - but it will be disabled.</p>
+</div>
+<details class="version-changed">
+<summary>Changed in version 2.1.0</summary>
+<p>In prior versions, users also had to have <code>extras.run_jobbutton</code> permission as well. This requirement has been removed.</p>
+</details>
+<h2 id="context-data">Context Data<a class="headerlink" href="#context-data" title="Permanent link">¶</a></h2>
+<p>The following context data is available within the template when rendering a Job Button's text.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>obj</code></td>
+<td>The Nautobot object being displayed</td>
+</tr>
+<tr>
+<td><code>debug</code></td>
+<td>A boolean indicating whether debugging is enabled</td>
+</tr>
+<tr>
+<td><code>request</code></td>
+<td>The current WSGI request</td>
+</tr>
+<tr>
+<td><code>user</code></td>
+<td>The current user (if authenticated)</td>
+</tr>
+<tr>
+<td><code>perms</code></td>
+<td>The <a href="https://docs.djangoproject.com/en/stable/topics/auth/default/#permissions">permissions</a> assigned to the user</td>
+</tr>
+</tbody>
+</table>
+<p>All <a href="../template-filters.html">built-in Jinja2 filters</a> are available and it's also possible to <a href="../../../development/apps/api/platform-features/jinja2-filters.html">develop and register custom Jinja2 filters</a>.</p>
+<h2 id="conditional-rendering">Conditional Rendering<a class="headerlink" href="#conditional-rendering" title="Permanent link">¶</a></h2>
+<p>Only buttons which render with non-empty text are included on the page. You can employ conditional Jinja2 logic to control the conditions under which a button gets rendered.</p>
+<p>For example, if you only want to display a button for active devices, you could set the button text to</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>{% if obj.status.name == 'Active' %}Provision{% endif %}
+</code></pre></div>
+<p>The button will not appear when viewing a device with any status other than <code>Active</code>.</p>
+<p>As another example, if you wanted to show only devices belonging to a certain manufacturer, you could do something like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>{% if obj.device_type.manufacturer.name == 'Cisco' %}Provision{% endif %}
+</code></pre></div>
+<p>The button will only appear when viewing a device with a manufacturer name of <code>Cisco</code>.</p>
+<p>As a last example, you can hide the button for users that lack the proper permissions to run a job like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>{% if perms.extras.run_job %}Provision{% endif %}
+</code></pre></div>
+<p>The button will only appear if they have the permission to run jobs.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../media/models/ss_site_jobbuttons_light.png#only-light" data-desc-position="bottom"><img alt="Job Buttons on Location object" class="on-glb" src="../../../media/models/ss_site_jobbuttons_light.png#only-light" title="Job Buttons on Location object"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../media/models/ss_site_jobbuttons_dark.png#only-dark" data-desc-position="bottom"><img alt="Job Buttons on Location object" class="on-glb" src="../../../media/models/ss_site_jobbuttons_dark.png#only-dark" title="Job Buttons on Location object"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To access custom fields of an object within a template, use the <code>cf</code> attribute. For example, <code>{{ obj.cf.color }}</code> will return the value (if any) for the custom field with a key of <code>color</code> on <code>obj</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

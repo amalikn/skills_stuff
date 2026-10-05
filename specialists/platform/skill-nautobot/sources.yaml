@@ -1,0 +1,210 @@
+claims:
+  - id: N-C01
+    statement: "The UNC Nautobot implementation combines core intended inventory with project custom fields, relationships, validators and app models."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-unc-inspected-20261001]
+    environment_id: nautobot-unc-inspected-20261001
+    source_type: implementation
+    evidence: "UNC wc-local/nautobot/apps/wc-ownership/wc_ownership/{models.py,custom_validators.py}, catalog parts and field ownership model; inspected 2026-10-01."
+    reference: references/authority-and-modeling.md
+    test: N-S01
+  - id: N-C02
+    statement: "A Namespace is the Nautobot boundary for IPAM uniqueness and can model otherwise overlapping addresses."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-core-docs-3-2-2]
+    environment_id: nautobot-core-docs-3-2-2
+    source_type: official_documentation
+    evidence: "https://archive.docs.nautobot.com/projects/core/en/v3.2.2/user-guide/core-data-model/ipam/prefix/ states Prefix/address uniqueness per Namespace; current Namespace local snapshot is supplemental; verified 2026-10-01."
+    reference: references/authority-and-modeling.md
+    test: N-S01
+  - id: N-C03
+    statement: "Nautobot REST relationship representation is version-sensitive and must be verified before integration code relies on it."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-rest-3-2]
+    environment_id: nautobot-rest-3-2
+    source_type: official_documentation
+    evidence: "https://docs.nautobot.com/projects/core/en/stable/user-guide/platform-functionality/rest-api/overview/; precise relationship shape not asserted; verified 2026-10-01."
+    reference: references/api-and-writers.md
+    test: N-S17
+  - id: N-C04
+    statement: "The observed environment contains Nautobot core 3.2.3 and the listed application versions."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-core-3-2-3, nautobot-apps-2026-10-01]
+    environment_id: nautobot-core-3-2-3
+    source_type: observed_install
+    evidence: "Phase 3A readiness report, Observed 2026-10-01 baseline; image/package metadata read-only, not API behavior."
+    reference: references/upgrade-and-troubleshooting.md
+    test: N-S08
+  - id: N-C05
+    statement: "A discovery observation requires corroboration and approval before it becomes intended inventory."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness, automatic learning and onboarding boundary; USER_STATED, version-independent policy."
+    reference: references/staged-onboarding.md
+    test: N-S02
+  - id: N-C06
+    statement: "A physical label identifies an object but does not authenticate the actor handling it."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness, lifecycle and actor boundary; USER_STATED, version-independent policy."
+    reference: references/lifecycle-and-replacement.md
+    test: N-S05
+  - id: N-C07
+    statement: "Observed topology and accepted intended topology require separate provenance and conflict handling."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness, discovery/intent boundary; USER_STATED, version-independent policy."
+    reference: references/discovery-and-topology.md
+    test: N-S06
+  - id: N-C08
+    statement: "Nautobot 3.2 changed Job execution interfaces, so upgrade validation must exercise exact Job behaviour."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-job-upgrade-3-2]
+    environment_id: nautobot-job-upgrade-3-2
+    source_type: official_documentation
+    evidence: "https://archive.docs.nautobot.com/projects/core/en/v3.2.2/release-notes/version-3.2/ section Migrate Job Execution and Scheduled Jobs; verified 2026-10-01."
+    reference: references/apps-jobs-validation.md
+    test: N-S03
+  - id: N-C09
+    statement: "Configuration backup, compliance comparison, restore verification, and deployment are separate capabilities."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness, backup/deploy boundary; USER_STATED, version-independent policy."
+    reference: references/config-backup-compliance.md
+    test: N-S04
+  - id: N-C10
+    statement: "A provider and supported-extension search precedes a from-scratch implementation recommendation."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness, complementary FOSS search order; USER_STATED, version-independent policy."
+    reference: references/capability-extension.md
+    test: N-S07
+  - id: N-C11
+    statement: "Core patches require reviewed comparison and revalidation against each new upstream version."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness, upgrade-survival contract; USER_STATED, version-independent policy."
+    reference: references/upgrade-and-troubleshooting.md
+    test: N-S08
+  - id: N-C12
+    statement: "Each engagement requires a durable reusable-learning classification at closeout."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Phase 3A readiness, per-engagement learning contract; USER_STATED, version-independent policy."
+    reference: references/evolution-and-write-back.md
+    test: N-S09
+  - id: N-C13
+    statement: "The project pagination regression required stable ordering because unordered pages produced a distorted and incomplete object set."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-paging-offline-20261001]
+    environment_id: nautobot-paging-offline-20261001
+    source_type: implementation_and_test
+    evidence: "UNC wc-local/scripts/nautobot_paging.py listing() and tests/test_nautobot_paging.py OrderedPagesTest; 320 rows/251 distinct regression; inspected 2026-10-01."
+    reference: references/api-and-writers.md
+    test: N-S16
+  - id: N-C14
+    statement: "A project-derived address rule preserves the narrowest containing Prefix mask instead of defaulting every address to /32."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-unc-inspected-20261001]
+    environment_id: nautobot-unc-inspected-20261001
+    source_type: implementation
+    evidence: "UNC wc-local/scripts/address_mask.py, fix_address_masks.py and tests/test_fix_address_masks.py; narrowest network Prefix, placeholders excluded; inspected 2026-10-01."
+    reference: references/authority-and-modeling.md
+    test: N-S01
+  - id: N-C15
+    statement: "A custom relationship or model is justified only when native models cannot express durable domain semantics, as in the project Wireless Link worked case."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-unc-inspected-20261001]
+    environment_id: nautobot-unc-inspected-20261001
+    source_type: implementation_and_design
+    evidence: "UNC wc_ownership/models.py WirelessLink plus docs/architecture/wireless-links-design-20260928_2154.md; implemented model versus proposed feed; inspected 2026-10-01."
+    reference: references/discovery-and-topology.md
+    test: N-S06
+  - id: N-C16
+    statement: "A supported model is not a valid operational solution when its worker cannot reach the required network or device path."
+    kind: worked_example
+    evidence_status: VERIFIED_SECONDARY
+    lifecycle: current
+    applies_to: [nautobot-unc-inspected-20261001]
+    environment_id: nautobot-unc-inspected-20261001
+    source_type: report_synthesis
+    evidence: "UNC docs/reports/controller-option3/ntc-ecosystem-complementary-tools-20260929_1304.md Device Onboarding disposition; local research, not product limitation."
+    reference: references/apps-jobs-validation.md
+    test: N-S03
+  - id: N-C17
+    statement: "A generated catalog is changed at its declared source inputs and then rendered, rather than edited at the derived output."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-unc-inspected-20261001]
+    environment_id: nautobot-unc-inspected-20261001
+    source_type: implementation
+    evidence: "UNC wc-local/nautobot/catalog/master.yaml includes parts; catalog render/check path in scripts/check_governance.py; inspected 2026-10-01."
+    reference: references/capability-extension.md
+    test: N-S07
+  - id: N-C18
+    statement: "Default Statuses and Roles are created only by data migrations, so a deleted built-in is not recreated by migrate or post_upgrade; restore from the change log keeping the original id."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-core-docs-3-2-3]
+    environment_id: nautobot-core-docs-3-2-3
+    source_type: official_documentation
+    evidence: "Installed 3.2.3 source nautobot/extras/management/__init__.py lines 107-170, extras/models/roles.py line 37, core/api/serializers.py line 158; bundled change-logging docs; checked 2026-10-05."
+    reference: references/operations-cookbook.md
+    test: N-S19
+  - id: N-C19
+    statement: "From 3.2.0 Job invocation helpers require explicit job_kwargs, and a REST run returns 201 when queued, not when done."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [nautobot-core-docs-3-2-3]
+    environment_id: nautobot-core-docs-3-2-3
+    source_type: official_documentation
+    evidence: "Installed 3.2.3 source nautobot/extras/api/views.py lines 995-1022 and serializers.py lines 896-910; bundled job-execution and release-note docs; checked 2026-10-05."
+    reference: references/operations-cookbook.md
+    test: N-S20

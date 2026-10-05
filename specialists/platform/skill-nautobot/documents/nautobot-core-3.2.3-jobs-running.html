@@ -1,0 +1,129 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="jobs">Jobs<a class="headerlink" href="#jobs" title="Permanent link">¶</a></h1>
+<p>Jobs are a way for users to execute custom logic on demand from within the Nautobot UI. Jobs can interact directly with Nautobot data to accomplish various data creation, modification, and validation tasks, such as:</p>
+<ul>
+<li>Automatically populate new devices and cables in preparation for a new location deployment</li>
+<li>Create a range of new reserved prefixes or IP addresses</li>
+<li>Fetch data from an external source and import it to Nautobot</li>
+<li>Check and report whether all top-of-rack switches have a console connection</li>
+<li>Check and report whether every router has a loopback interface with an assigned IP address</li>
+<li>Check and report whether all IP addresses have a parent prefix</li>
+</ul>
+<p>...and so on. Jobs are Python code and exist outside of the official Nautobot code base, so they can be updated and changed without interfering with the core Nautobot installation. And because they're completely customizable, there's practically no limit to what a job can accomplish.</p>
+<p>The following pages provide detailed guides for managing and running Jobs:</p>
+<ul>
+<li><strong><a href="managing-jobs.html">Managing Jobs</a></strong>: Enable/disable Jobs, override metadata, delete Jobs.</li>
+<li><strong><a href="job-scheduling-and-approvals.html">Job Scheduling &amp; Approvals</a></strong>: Schedule Jobs to run in the future or regularly.</li>
+<li><strong><a href="jobqueue.html">Job Queues</a></strong>: Configure dedicated Celery or Kubernetes queues.</li>
+<li><strong><a href="jobbutton.html">Job Buttons</a></strong>: Run Jobs from detail views of Nautobot objects.</li>
+<li><strong><a href="jobhook.html">Job Hooks</a></strong>: Automatically trigger Jobs based on object changes.</li>
+<li><strong><a href="kubernetes-job-support.html">Kubernetes Job Support</a></strong>: Run Jobs within a Kubernetes cluster.</li>
+<li><strong><a href="../../../development/jobs/index.html">Developing Jobs</a></strong>: To write your own jobs or migrate them from previous Nautobot releases, check out the developer section.</li>
+</ul>
+<details class="version-changed">
+<summary>Changed in version 2.0.0</summary>
+<p>Backwards compatibility with NetBox scripts and reports has been removed. This includes removal of automatic calls to the <code>post_run()</code> and <code>test_*()</code> methods.</p>
+</details>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Jobs unify and supersede the functionality previously provided in NetBox by "custom scripts" and "reports". User input is supported via <a href="../../../development/jobs/job-structure.html#variables">job variables</a>.</p>
+</div>
+<h2 id="managing-jobs">Managing Jobs<a class="headerlink" href="#managing-jobs" title="Permanent link">¶</a></h2>
+<p>Each installed Job class has an associated database record controlling its availability and metadata.</p>
+<p>To enable or disable Jobs, override metadata, or remove obsolete Job records, see <a href="managing-jobs.html"><strong>Managing Jobs</strong></a>.</p>
+<h2 id="running-jobs">Running Jobs<a class="headerlink" href="#running-jobs" title="Permanent link">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To run any job, a user must be assigned the <code>extras.run_job</code> permission. This is achieved by assigning the user (or group) a permission on the <code>extras &gt; job</code> object and specifying the <code>run</code> action in the admin UI as shown below.</p>
+<p>Similarly, to <a href="job-scheduling-and-approvals.html">approve a job request by another user</a>, a user must be assigned both the <code>extras change_approvalworkflowstage</code> and <code>extras.view_approvalworkflowstage</code> permissions for approvals performed via the UI and API.
+In both cases job approvers also need the <code>extras.change_scheduledjob</code> permissions as job approvals are implemented via the <code>ScheduledJob</code> data model.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../media/admin_ui_run_permission_dark.png#only-dark" data-desc-position="bottom"><img alt="Adding the run action to a permission" class="on-glb" src="../../../media/admin_ui_run_permission_dark.png#only-dark"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../media/admin_ui_run_permission_light.png#only-light" data-desc-position="bottom"><img alt="Adding the run action to a permission" class="on-glb" src="../../../media/admin_ui_run_permission_light.png#only-light"></a>
+<em>Admin → Users → (Select user or group) → Object permissions → Add object permission</em></p>
+</div>
+<h3 id="via-the-web-ui">Via the Web UI<a class="headerlink" href="#via-the-web-ui" title="Permanent link">¶</a></h3>
+<p>Jobs can be run via the web UI by navigating to the job, completing any required form data (if any), and clicking the "Run Job" button.</p>
+<p>Once a job has been run, the latest <a href="models.html#job-results"><code>JobResult</code></a> for that job will be summarized in the job list view.</p>
+<h3 id="via-the-rest-api">Via the REST API<a class="headerlink" href="#via-the-rest-api" title="Permanent link">¶</a></h3>
+<details class="version-removed">
+<summary>Removed in version 2.0.0</summary>
+<p>The <code>commit</code> parameter was removed. All job input should be provided via the <code>data</code> parameter.</p>
+</details>
+<p>To run a job via the REST API, issue a POST request to the job's endpoint <code>/api/extras/jobs/&lt;uuid&gt;/run/</code> <strong>or</strong> <code>/api/extras/jobs/&lt;name&gt;/run/</code>. You can optionally provide JSON data to specify any required user input <code>data</code>, optional <code>task_queue</code>, and/or provide optional scheduling information as described in <a href="job-scheduling-and-approvals.html">the section on scheduling and approvals</a>.</p>
+<details class="version-added">
+<summary>Added in version 2.0.0</summary>
+<p>The <code>/api/extras/jobs/&lt;name&gt;/</code> REST API endpoints were added as an alternative to <code>/api/extras/jobs/&lt;uuid&gt;/</code>.</p>
+</details>
+<p>For example, to run a job, by UUID, with no user inputs:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl -X POST \
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>-H "Authorization: Token $TOKEN" \
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>-H "Content-Type: application/json" \
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>-H "Accept: application/json; version=1.3; indent=4" \
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>http://nautobot/api/extras/jobs/$JOB_ID/run/
+</code></pre></div>
+<p>Or to run a job, by name, that expects user inputs:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl -X POST \
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>-H "Authorization: Token $TOKEN" \
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>-H "Content-Type: application/json" \
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>-H "Accept: application/json; version=1.3; indent=4" \
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>http://nautobot/api/extras/jobs/$JOB_NAME/run/ \
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>--data '{"data": {"string_variable": "somevalue", "integer_variable": 123}}'
+</code></pre></div>
+<p>When providing input data, it is possible to specify complex values contained in <code>ObjectVar</code>s, <code>MultiObjectVar</code>s, and <code>IPAddressVar</code>s.</p>
+<ul>
+<li><code>ObjectVar</code>s can be specified by either using their primary key directly as the value, or as a dictionary containing a more complicated query that gets passed into the Django ORM as keyword arguments.</li>
+<li><code>MultiObjectVar</code>s can be specified as a list of primary keys.</li>
+<li><code>IPAddressVar</code>s can be provided as strings in CIDR notation.</li>
+</ul>
+<h4 id="jobs-with-files">Jobs with Files<a class="headerlink" href="#jobs-with-files" title="Permanent link">¶</a></h4>
+<p>To run a job that contains <code>FileVar</code> inputs via the REST API, you must use <code>multipart/form-data</code> content type requests instead of <code>application/json</code>. This also requires a slightly different request payload than the example above. The <code>task_queue</code> and <code>schedule</code> data are flattened and prefixed with underscore to differentiate them from job-specific data. Job specific data is also flattened and not located under the top-level <code>data</code> dictionary key.</p>
+<p>An example of running a job with both <code>FileVar</code> (named <code>myfile</code>) and <code>StringVar</code> (named <code>interval</code>) input:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl -X POST \
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>-H 'Authorization: Token $TOKEN' \
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>-H 'Content-Type: multipart/form-data' \
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>-H "Accept: application/json; version=1.3; indent=4" \
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>'http://nautobot/api/extras/jobs/$JOB_NAME/run/' \
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>-F '_schedule_interval="immediately"' \
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>-F '_schedule_start_time="2022-10-18T17:31:23.698Z"' \
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>-F 'interval="3"' \
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>-F 'myfile=@"/path/to/my/file.txt"' \
+</code></pre></div>
+<h3 id="via-the-cli">Via the CLI<a class="headerlink" href="#via-the-cli" title="Permanent link">¶</a></h3>
+<p>Jobs can be run from the CLI by invoking the management command:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>nautobot-server runjob [--username &lt;username&gt;] [--local] [--data &lt;data&gt;] &lt;class_path&gt;
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a href="models.html#understanding-job-class-paths">See above</a> for <code>class_path</code> definitions.</p>
+</div>
+<p>The <code>--data</code> parameter must be a JSON string, e.g. <code>--data='{"string_variable": "somevalue", "integer_variable": 123}'</code></p>
+<p>Using the same example shown in the API:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>nautobot-server runjob --username myusername example.MyJobWithNoVars
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code>--username &lt;username&gt;</code> must be supplied to specify the user that will be identified as the requester of the job.</p>
+<p>Note that <code>nautobot-server</code> commands, like all management commands and other direct interactions with the Django database, are not gated by the usual Nautobot user authentication flow. It is possible to specify any existing <code>--username</code> with the <code>nautobot-server runjob</code> command in order to impersonate any defined user in Nautobot. Use this power wisely and be cautious who you allow to access it.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

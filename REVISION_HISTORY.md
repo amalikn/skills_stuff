@@ -7,6 +7,16 @@ Change log for the `skills_stuff` parent repository.
 - Submodules must contain their own `REVISION_HISTORY.md`.
 - Pushes should use controlled workflows so rollback points are explicit.
 
+## 2026-10-05
+- Released `skill-nautobot` and `skill-openwisp` 0.3.0: version-matched operations cookbooks with summary tables, a standing write-back contract enforced by the contract test, promoted OpenWISP evidence, new trap scenarios and a paired fresh-context evaluation (4 of 4 pass with the skill, controls partial).
+- `skill-cambium` 0.6.28 and `skill-smc` 0.1.81 route platform questions to the two platform packs.
+
+## 2026-10-01
+- Revised both platform specialists to 0.2.0 with operational examples, source/compatibility distinctions, behavioral scenarios and corrected claim-to-scenario routing; runtime links unchanged.
+- Added the canonical platform specialist packages `skill-nautobot` and `skill-openwisp` under `specialists/platform/`.
+- Added their deterministic package/security contract tests, compatibility and provenance ledgers, routed references, evaluation procedures and root catalog entries.
+- v0.1 uses runtime directory symlinks only; no generated exports, legacy `.codex/skills` copies, or Hermes installation were added.
+
 ## 2026-08-31
 - Added `specialists/agent-stack/` as the canonical English-only pack for Auto Company-derived personas and skills.
 - Adopted symlink-only installation; Auto Company's autonomous loop, consensus mechanism, daemon, settings, and prompts remain outside this pack.

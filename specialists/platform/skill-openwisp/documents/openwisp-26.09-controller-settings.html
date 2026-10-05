@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en" data-content_root="../../"
+  x-data="{ darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches), activeSection: ''}"
+  :class="{ 'dark' : darkMode === true }">
+
+<head>
+  <script>
+    (function () {
+      // Set initial color scheme
+      if ((localStorage.getItem("_x_darkMode") === "true") || (window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      }
+
+      // Watch for media preference changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+        localStorage.setItem("_x_darkMode", event.matches);
+        document.documentElement.classList.toggle("dark", event.matches);
+      });
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030711" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Settings | OpenWISP 26.09 documentation</title>
+  <meta property="og:title" content="Settings | OpenWISP 26.09 documentation" />
+  <meta name="twitter:title" content="Settings | OpenWISP 26.09 documentation" />
+  <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e48b8583" />
+  <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../_static/pygments_dark.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/theme.css?v=d6d7c91b" />
+  <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=d3e37945" />
+  <link rel="icon" href="../../_static/favicon.svg" />
+
+  <link rel="search" title="Search" href="../../search.html" />
+  <link rel="next" title="Developer Docs" href="../developer/index.html" />
+  <link rel="prev" title="WebSocket API Reference" href="websocket-api.html" />
+<meta property="og:image" content="https://openwisp.io/docs/26.09/_static/docs-og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="480" />
+
+<link rel="canonical" href="https://openwisp.io/docs/stable/controller/user/settings.html" />
+
+
+</head>
+
+<body x-data="{ showSidebar: false, showScrollTop: false }"
+  class="min-h-screen font-sans antialiased bg-background text-foreground" :class="{ 'overflow-hidden': showSidebar }"@scroll.window="showScrollTop = pageYOffset > 100">
+  <div x-cloak x-show="showSidebar"
+    class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden"
+    @click.self="showSidebar = false"></div><div id="page" class="relative flex flex-col min-h-screen"><a href="#content"
+      class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100">
+      Skip to content
+    </a><header class="sticky top-0 z-40 w-full border-b shadow-xs border-border bg-background/90 backdrop-blur"><div class="container flex items-center h-14">
+    <div class="hidden mr-4 md:flex">
+      <a href="../../index.html" class="flex items-center mr-6">
+        <img width="24" height="24" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+          alt="Logo" />
+        <img width="24" height="24" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+          alt="Logo" /><span class="hidden font-bold sm:inline-block text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+      </a><nav class="flex items-center space-x-6 text-sm font-medium">
+    
+    <a href="https://openwisp.org/features/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Features</a>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/faq/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Blog</a>
+</nav></div><button
+      class="inline-flex items-center justify-center h-10 px-0 py-2 mr-2 text-base font-medium transition-colors rounded-md hover:text-accent-foreground hover:bg-transparent md:hidden"
+      type="button" @click="showSidebar = true">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" aria-hidden="true"
+        fill="currentColor">
+        <path
+          d="M152.587 825.087q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440Zm0-203.587q-19.152 0-32.326-13.174T107.087 576q0-19.152 13.174-32.326t32.326-13.174h320q19.152 0 32.326 13.174T518.087 576q0 19.152-13.174 32.326T472.587 621.5h-320Zm0-203.587q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440ZM708.913 576l112.174 112.174q12.674 12.674 12.674 31.826t-12.674 31.826Q808.413 764.5 789.261 764.5t-31.826-12.674l-144-144Q600 594.391 600 576t13.435-31.826l144-144q12.674-12.674 31.826-12.674t31.826 12.674q12.674 12.674 12.674 31.826t-12.674 31.826L708.913 576Z" />
+      </svg>
+      <span class="sr-only">Toggle navigation menu</span>
+    </button>
+    <div class="flex items-center justify-between flex-1 gap-2 sm:gap-4 md:justify-end">
+      <div class="flex-1 w-full md:w-auto md:flex-none"><form id="searchbox"
+      action="../../search.html"
+      method="get"
+      class="relative flex items-center group"
+      @keydown.k.window.meta="$refs.search.focus()">
+  <input x-ref="search"
+          name="q"
+          id="search-input"
+          type="search"
+          aria-label="Search the docs"
+          placeholder="Search ..."
+          class="inline-flex items-center font-medium transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background border border-input hover:bg-accent focus:bg-accent hover:text-accent-foreground focus:text-accent-foreground hover:placeholder-accent-foreground py-2 px-4 relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64" />
+  <kbd class="pointer-events-none absolute right-1.5 top-2 hidden h-5 select-none text-muted-foreground items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex group-hover:bg-accent group-hover:text-accent-foreground">
+    <span class="text-xs">⌘</span>
+    K
+  </kbd>
+</form>
+      </div>
+      <nav class="flex items-center gap-1">
+        <button @click="darkMode = !darkMode"
+          class="relative inline-flex items-center justify-center px-0 text-sm font-medium transition-colors rounded-md hover:bg-accent hover:text-accent-foreground h-9 w-9"
+          type="button"
+          title="Toggle color scheme">
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-100 rotate-0 dark:-rotate-90 dark:scale-0">
+            <path
+              d="M480 685q45.456 0 77.228-31.772Q589 621.456 589 576q0-45.456-31.772-77.228Q525.456 467 480 467q-45.456 0-77.228 31.772Q371 530.544 371 576q0 45.456 31.772 77.228Q434.544 685 480 685Zm0 91q-83 0-141.5-58.5T280 576q0-83 58.5-141.5T480 376q83 0 141.5 58.5T680 576q0 83-58.5 141.5T480 776ZM80 621.5q-19.152 0-32.326-13.174T34.5 576q0-19.152 13.174-32.326T80 530.5h80q19.152 0 32.326 13.174T205.5 576q0 19.152-13.174 32.326T160 621.5H80Zm720 0q-19.152 0-32.326-13.174T754.5 576q0-19.152 13.174-32.326T800 530.5h80q19.152 0 32.326 13.174T925.5 576q0 19.152-13.174 32.326T880 621.5h-80Zm-320-320q-19.152 0-32.326-13.174T434.5 256v-80q0-19.152 13.174-32.326T480 130.5q19.152 0 32.326 13.174T525.5 176v80q0 19.152-13.174 32.326T480 301.5Zm0 720q-19.152 0-32.326-13.17Q434.5 995.152 434.5 976v-80q0-19.152 13.174-32.326T480 850.5q19.152 0 32.326 13.174T525.5 896v80q0 19.152-13.174 32.33-13.174 13.17-32.326 13.17ZM222.174 382.065l-43-42Q165.5 327.391 166 308.239t13.174-33.065q13.435-13.674 32.587-13.674t32.065 13.674l42.239 43q12.674 13.435 12.555 31.706-.12 18.272-12.555 31.946-12.674 13.674-31.445 13.413-18.772-.261-32.446-13.174Zm494 494.761-42.239-43q-12.674-13.435-12.674-32.087t12.674-31.565Q686.609 756.5 705.38 757q18.772.5 32.446 13.174l43 41.761Q794.5 824.609 794 843.761t-13.174 33.065Q767.391 890.5 748.239 890.5t-32.065-13.674Zm-42-494.761Q660.5 369.391 661 350.62q.5-18.772 13.174-32.446l41.761-43Q728.609 261.5 747.761 262t33.065 13.174q13.674 13.435 13.674 32.587t-13.674 32.065l-43 42.239q-13.435 12.674-31.706 12.555-18.272-.12-31.946-12.555Zm-495 494.761Q165.5 863.391 165.5 844.239t13.674-32.065l43-42.239q13.435-12.674 32.087-12.674t31.565 12.674Q299.5 782.609 299 801.38q-.5 18.772-13.174 32.446l-41.761 43Q231.391 890.5 212.239 890t-33.065-13.174ZM480 576Z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-0 rotate-90 dark:rotate-0 dark:scale-100">
+            <path
+              d="M480 936q-151 0-255.5-104.5T120 576q0-138 90-239.5T440 218q25-3 39 18t-1 44q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q21-14 43-1.5t19 39.5q-14 138-117.5 229T480 936Zm0-80q88 0 158-48.5T740 681q-20 5-40 8t-40 3q-123 0-209.5-86.5T364 396q0-20 3-40t8-40q-78 32-126.5 102T200 576q0 116 82 198t198 82Zm-10-270Z" />
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+    <div class="flex-1"><div
+        class="container md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10"><aside id="left-sidebar"
+  class="fixed inset-y-0 left-0 md:top-14 z-50 md:z-30 bg-background md:bg-transparent transition-all duration-100 -translate-x-full md:translate-x-0 ml-0 p-6 md:p-0 md:-ml-2 md:h-[calc(100vh-3.5rem)] w-5/6 md:w-full overflow-y-auto border-r border-border md:sticky"
+  :aria-hidden="!showSidebar" :class="{ 'translate-x-0': showSidebar }">
+
+    <a href="../../index.html" class="justify-start text-sm md:!hidden bg-background">
+      <img width="16" height="16" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+        alt="Logo" />
+      <img width="16" height="16" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+        alt="Logo" /><span class="font-bold text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+    </a>
+
+    <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
+      <div class="overflow-y-auto h-full w-full relative pr-6"><div class="doc-versions">
+    <label>Version</label>
+    <div class="dropdown" x-data="{ showVersionSwitcher: false, buttonWidth: 0 }"
+        x-init="buttonWidth = $refs.button.offsetWidth">
+        <button type="button" x-ref="button" class="dropbtn "
+             @click="showVersionSwitcher = !showVersionSwitcher"
+            :class="{'active': showVersionSwitcher}" >
+            26.09
+            
+            <svg fill="currentColor" height="18px" stroke="none" viewBox="0 0 24 24" width="18px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+            
+        </button>
+        <div x-show="showVersionSwitcher" class="dropdown-content" :class="{'hidden': !showVersionSwitcher}"
+            @click.away="showVersionSwitcher = false" style="display: none;" :style="{ width: buttonWidth + 'px' }">
+            
+            
+            <a href="/docs/dev/controller/user/settings.html">dev</a>
+            
+            
+            
+            
+            
+            <a href="/docs/25.10/controller/user/settings.html">25.10</a>
+            
+            
+            
+            <a href="/docs/24.11/controller/user/settings.html">24.11</a>
+            
+            
+        </div>
+    </div>
+</div>
+<nav class="flex flex-col font-bold md:hidden">
+    
+    <a href="https://openwisp.org/features/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Features
+    </a>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/faq/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Blog
+    </a>
+</nav>
+<nav class="table w-full min-w-full my-6 lg:my-8 mt-4">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../first-steps.html">First Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project-overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installers.html">Installers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../users/index.html">Users</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Controller</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="intro.html">Controller: Structure &amp; Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device-config-status.html">Device Configuration Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="templates.html">Configuration Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="variables.html">Configuration Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device-groups.html">Device Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="push-operations.html">Configuring Push Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shell-commands.html">Sending Commands to Devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="import-export.html">Import/Export Device Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="organization-limits.html">Organization Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wireguard.html">Automating WireGuard Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vxlan-wireguard.html">Automating VXLAN over WireGuard Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zerotier.html">Automating ZeroTier Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openvpn.html">Automating OpenVPN Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whois.html">WHOIS Lookup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="estimated-location.html">Estimated Location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="subnet-division-rules.html">Automating Subnet and IP Address Provisioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rest-api.html">REST API Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="websocket-api.html">WebSocket API Reference</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../developer/index.html">Developer Docs Index</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../monitoring/index.html">Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../network-topology/index.html">Network Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../firmware-upgrader/index.html">Firmware Upgrader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../radius/index.html">RADIUS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../wifi-login-pages/index.html">WiFi Login Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ipam/index.html">IPAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notifications/index.html">Notifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../openwrt-agents.html">OpenWrt Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../community.html">Community Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">Release Notes</a></li>
+</ul>
+
+</nav><div class="offline-docs">
+    <div class="heading">
+        <h6>OFFLINE DOCS</h6>
+    </div>
+    <p class="urls">
+        <a href="/docs/26.09/OpenWISP-26.09.pdf" target="_blank">
+            PDF</a>
+        |
+        <a href="/docs/26.09/OpenWISP-26.09.epub" target="_blank">
+            ePUB</a>
+    </p>
+</div>
+      </div>
+    </div>
+    <button type="button" @click="showSidebar = false"
+      class="absolute md:hidden right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" fill="currentColor"
+        stroke="none" class="h-4 w-4">
+        <path
+          d="M480 632 284 828q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536 576l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480 632Z" />
+      </svg>
+    </button>
+  </aside>
+          <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+<div class="w-full min-w-0 mx-auto">
+<nav aria-label="breadcrumbs"
+     class="flex items-center mb-4 space-x-1 text-sm text-muted-foreground">
+  <a class="overflow-hidden text-ellipsis whitespace-nowrap hover:text-foreground"
+     href="../../index.html">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         height="18"
+         width="18"
+         viewBox="0 96 960 960"
+         aria-label="Home"
+         fill="currentColor"
+         stroke="none">
+      <path d="M240 856h120V616h240v240h120V496L480 316 240 496v360Zm-80 80V456l320-240 320 240v480H520V696h-80v240H160Zm320-350Z" />
+    </svg>
+  </a>
+  
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../../modules.html">Modules</a>
+    
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../index.html">Controller</a>
+    
+<div class="mr-1">/</div><span aria-current="page"
+        class="font-medium text-foreground overflow-hidden whitespace-nowrap">Settings</span>
+</nav>
+
+    <div id="content" role="main">
+      <section id="settings">
+<h1>Settings<a class="headerlink" href="#settings" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you're unsure about what <em>&quot;Django settings&quot;</em> are, you can refer to
+<a class="reference internal" href="../../user/django-settings.html"><span class="doc">How to Edit Django Settings in OpenWISP</span></a>
+for guidance.</p>
+</div>
+<section id="openwisp-ssh-auth-timeout">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_SSH_AUTH_TIMEOUT</span></code><a class="headerlink" href="#openwisp-ssh-auth-timeout" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>unit</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">seconds</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Configure timeout to wait for an authentication response when establishing
+a SSH connection.</p>
+</section>
+<section id="openwisp-ssh-banner-timeout">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_SSH_BANNER_TIMEOUT</span></code><a class="headerlink" href="#openwisp-ssh-banner-timeout" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">60</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>unit</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">seconds</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Configure timeout to wait for the banner to be presented when establishing
+a SSH connection.</p>
+</section>
+<section id="openwisp-ssh-command-timeout">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_SSH_COMMAND_TIMEOUT</span></code><a class="headerlink" href="#openwisp-ssh-command-timeout" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">30</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>unit</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">seconds</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Configure timeout on blocking read/write operations when executing a
+command in a SSH connection.</p>
+</section>
+<section id="openwisp-ssh-connection-timeout">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_SSH_CONNECTION_TIMEOUT</span></code><a class="headerlink" href="#openwisp-ssh-connection-timeout" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">5</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>unit</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">seconds</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Configure timeout for the TCP connect when establishing a SSH connection.</p>
+</section>
+<section id="openwisp-connectors">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONNECTORS</span></code><a class="headerlink" href="#openwisp-connectors" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tuple</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">(</span>
+</span><span id="line-2">    <span class="p">(</span><span class="s2">"openwisp_controller.connection.connectors.ssh.Ssh"</span><span class="p">,</span> <span class="s2">"SSH"</span><span class="p">),</span>
+</span><span id="line-3">    <span class="p">(</span>
+</span><span id="line-4">        <span class="s2">"openwisp_controller.connection.connectors.openwrt.snmp.OpenWRTSnmp"</span><span class="p">,</span>
+</span><span id="line-5">        <span class="s2">"OpenWRT SNMP"</span><span class="p">,</span>
+</span><span id="line-6">    <span class="p">),</span>
+</span><span id="line-7">    <span class="p">(</span>
+</span><span id="line-8">        <span class="s2">"openwisp_controller.connection.connectors.airos.snmp.AirOsSnmp"</span><span class="p">,</span>
+</span><span id="line-9">        <span class="s2">"Ubiquiti AirOS SNMP"</span><span class="p">,</span>
+</span><span id="line-10">    <span class="p">),</span>
+</span><span id="line-11"><span class="p">)</span>
+</span></code></pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Available connector classes. Connectors are python classes that specify
+ways in which OpenWISP can connect to devices in order to launch commands.</p>
+</section>
+<section id="openwisp-update-strategies">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_UPDATE_STRATEGIES</span></code><a class="headerlink" href="#openwisp-update-strategies" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tuple</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">(</span>
+</span><span id="line-2">    <span class="p">(</span>
+</span><span id="line-3">        <span class="s2">"openwisp_controller.connection.connectors.openwrt.ssh.OpenWrt"</span><span class="p">,</span>
+</span><span id="line-4">        <span class="s2">"OpenWRT SSH"</span><span class="p">,</span>
+</span><span id="line-5">    <span class="p">),</span>
+</span><span id="line-6">    <span class="p">(</span>
+</span><span id="line-7">        <span class="s2">"openwisp_controller.connection.connectors.openwrt.ssh.OpenWisp1"</span><span class="p">,</span>
+</span><span id="line-8">        <span class="s2">"OpenWISP 1.x SSH"</span><span class="p">,</span>
+</span><span id="line-9">    <span class="p">),</span>
+</span><span id="line-10"><span class="p">)</span>
+</span></code></pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Available update strategies. An update strategy is a subclass of a
+connector class which defines an <code class="docutils literal notranslate"><span class="pre">update_config</span></code> method which is in
+charge of updating the configuration of the device.</p>
+<p>This operation is launched in a background worker when the configuration
+of a device is changed.</p>
+<p>It's possible to write custom update strategies and add them to this
+setting to make them available in OpenWISP.</p>
+</section>
+<section id="openwisp-config-update-mapping">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONFIG_UPDATE_MAPPING</span></code><a class="headerlink" href="#openwisp-config-update-mapping" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2">    <span class="s2">"netjsonconfig.OpenWrt"</span><span class="p">:</span> <span class="n">OPENWISP_UPDATE_STRATEGIES</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+</span><span id="line-3"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>A dictionary that maps configuration backends to update strategies in
+order to automatically determine the update strategy of a device
+connection if the update strategy field is left blank by the user.</p>
+</section>
+<section id="openwisp-controller-backends">
+<span id="id1"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_BACKENDS</span></code><a class="headerlink" href="#openwisp-controller-backends" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tuple</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">(</span>
+</span><span id="line-2">    <span class="p">(</span><span class="s2">"netjsonconfig.OpenWrt"</span><span class="p">,</span> <span class="s2">"OpenWRT"</span><span class="p">),</span>
+</span><span id="line-3">    <span class="p">(</span><span class="s2">"netjsonconfig.OpenWisp"</span><span class="p">,</span> <span class="s2">"OpenWISP"</span><span class="p">),</span>
+</span><span id="line-4"><span class="p">)</span>
+</span></code></pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Available configuration backends. For more information, see <a class="reference external" href="http://netjsonconfig.openwisp.org/en/latest/general/basics.html#backend">netjsonconfig
+backends</a>.</p>
+</section>
+<section id="openwisp-controller-vpn-backends">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_VPN_BACKENDS</span></code><a class="headerlink" href="#openwisp-controller-vpn-backends" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tuple</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">(</span>
+</span><span id="line-2">    <span class="p">(</span><span class="s2">"openwisp_controller.vpn_backends.OpenVpn"</span><span class="p">,</span> <span class="s2">"OpenVPN"</span><span class="p">),</span>
+</span><span id="line-3">    <span class="p">(</span><span class="s2">"openwisp_controller.vpn_backends.Wireguard"</span><span class="p">,</span> <span class="s2">"WireGuard"</span><span class="p">),</span>
+</span><span id="line-4">    <span class="p">(</span>
+</span><span id="line-5">        <span class="s2">"openwisp_controller.vpn_backends.VxlanWireguard"</span><span class="p">,</span>
+</span><span id="line-6">        <span class="s2">"VXLAN over WireGuard"</span><span class="p">,</span>
+</span><span id="line-7">    <span class="p">),</span>
+</span><span id="line-8">    <span class="p">(</span><span class="s2">"openwisp_controller.vpn_backends.ZeroTier"</span><span class="p">,</span> <span class="s2">"ZeroTier"</span><span class="p">),</span>
+</span><span id="line-9"><span class="p">)</span>
+</span></code></pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Available VPN backends for VPN Server objects. For more information, see
+<a class="reference external" href="https://netjsonconfig.openwisp.org/en/latest/backends/vpn-backends.html">netjsonconfig VPN backends</a>.</p>
+<p>A VPN backend must follow some basic rules in order to be compatible with
+<em>openwisp-controller</em>:</p>
+<ul class="simple">
+<li><p>it MUST allow at minimum and at maximum one VPN instance</p></li>
+<li><p>the main <em>NetJSON</em> property MUST match the lowercase version of the
+class name, e.g.: when using the <code class="docutils literal notranslate"><span class="pre">OpenVpn</span></code> backend, the system will
+look into <code class="docutils literal notranslate"><span class="pre">config['openvpn']</span></code></p></li>
+<li><p>it SHOULD focus on the server capabilities of the VPN software being
+used</p></li>
+</ul>
+</section>
+<section id="openwisp-controller-default-backend">
+<span id="id2"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEFAULT_BACKEND</span></code><a class="headerlink" href="#openwisp-controller-default-backend" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_BACKENDS[0][0]</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The preferred backend that will be used as initial value when adding new
+<code class="docutils literal notranslate"><span class="pre">Config</span></code> or <code class="docutils literal notranslate"><span class="pre">Template</span></code> objects in the admin.</p>
+<p>This setting defaults to the raw value of the first item in the
+<code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_BACKENDS</span></code> setting, which is
+<code class="docutils literal notranslate"><span class="pre">netjsonconfig.OpenWrt</span></code>.</p>
+<p>Setting it to <code class="docutils literal notranslate"><span class="pre">None</span></code> will force the user to choose explicitly.</p>
+</section>
+<section id="openwisp-controller-default-vpn-backend">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEFAULT_VPN_BACKEND</span></code><a class="headerlink" href="#openwisp-controller-default-vpn-backend" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_VPN_BACKENDS[0][0]</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The preferred backend that will be used as initial value when adding new
+<code class="docutils literal notranslate"><span class="pre">Vpn</span></code> objects in the admin.</p>
+<p>This setting defaults to the raw value of the first item in the
+<code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_VPN_BACKENDS</span></code> setting, which is
+<code class="docutils literal notranslate"><span class="pre">openwisp_controller.vpn_backends.OpenVpn</span></code>.</p>
+<p>Setting it to <code class="docutils literal notranslate"><span class="pre">None</span></code> will force the user to choose explicitly.</p>
+</section>
+<section id="openwisp-controller-registration-enabled">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_REGISTRATION_ENABLED</span></code><a class="headerlink" href="#openwisp-controller-registration-enabled" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Whether devices can automatically register through the controller or not.</p>
+<p>This feature is enabled by default.</p>
+<p>Auto-registration must be supported on the devices in order to work, see
+<a class="reference internal" href="../../openwrt-config-agent/user/automatic-registration.html"><span class="doc">openwisp-config automatic registration</span></a> for more information.</p>
+</section>
+<section id="openwisp-controller-consistent-registration">
+<span id="id3"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_CONSISTENT_REGISTRATION</span></code><a class="headerlink" href="#openwisp-controller-consistent-registration" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Whether devices that are already registered are recognized when reflashed
+or reset, hence keeping the existing configuration without creating a new
+one.</p>
+<p>This feature is enabled by default.</p>
+<p>Auto-registration must be enabled also on the devices in order to work,
+see <a class="reference internal" href="../../openwrt-config-agent/user/automatic-registration.html#config-consistent-key-generation"><span class="std std-ref">openwisp-config consistent key generation</span></a> for more information.</p>
+</section>
+<section id="openwisp-controller-registration-self-creation">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_REGISTRATION_SELF_CREATION</span></code><a class="headerlink" href="#openwisp-controller-registration-self-creation" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Whether devices that are not already present in the system are allowed to
+register or not.</p>
+<p>Turn this off if you still want to use auto-registration to avoid having
+to manually set the device UUID and key in its configuration file but also
+want to avoid indiscriminate registration of new devices without explicit
+permission.</p>
+</section>
+<section id="openwisp-controller-context">
+<span id="context-setting"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_CONTEXT</span></code><a class="headerlink" href="#openwisp-controller-context" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Additional context that is passed to the default context of each device
+object.</p>
+<p><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_CONTEXT</span></code> can be used to define system-wide
+configuration variables.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>After modifying the system-defined variables in
+<code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_CONTEXT</span></code>, clear the cache to ensure that
+devices, templates, and VPN receive the updated configuration values:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="nb">cd</span><span class="w"> </span>/opt/openwisp2
+</span><span id="line-2">python<span class="w"> </span>manage.py<span class="w"> </span>clear_cache
+</span></code></pre></div>
+</div>
+<p>System-defined variables can be referenced in VPN, Template, and
+Config objects. When these variables are updated, existing cached
+configurations that depend on them do not automatically reflect the
+new values. Consequently, devices may continue using outdated
+configurations unless the cache is cleared.</p>
+</div>
+<p>For more information regarding how to use configuration variables in
+OpenWISP, refer to <a class="reference internal" href="variables.html"><span class="doc">Configuration Variables</span></a>.</p>
+<p>For technical information about how variables are handled in the lower
+levels of OpenWISP, see <a class="reference external" href="http://netjsonconfig.openwisp.org/en/latest/general/basics.html#context-configuration-variables">netjsonconfig context: configuration variables</a>.</p>
+</section>
+<section id="openwisp-controller-default-auto-cert">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEFAULT_AUTO_CERT</span></code><a class="headerlink" href="#openwisp-controller-default-auto-cert" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The default value of the <code class="docutils literal notranslate"><span class="pre">auto_cert</span></code> field for new <code class="docutils literal notranslate"><span class="pre">Template</span></code> objects.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">auto_cert</span></code> field is valid only for templates which have <code class="docutils literal notranslate"><span class="pre">type</span></code>
+set to <code class="docutils literal notranslate"><span class="pre">VPN</span></code> and indicates whether configuration regarding the VPN
+tunnel is provisioned automatically to each device using the template,
+e.g.:</p>
+<ul class="simple">
+<li><p>when using OpenVPN, new <a class="reference external" href="https://tools.ietf.org/html/rfc5280">x509</a>
+certificates will be generated automatically using the same CA assigned
+to the related VPN object</p></li>
+<li><p>when using WireGuard, new pair of private and public keys (using
+<a class="reference external" href="http://cr.yp.to/ecdh.html">Curve25519</a>) will be generated, as well as
+an IP address of the subnet assigned to the related VPN object</p></li>
+<li><p>when using <a class="reference external" href="https://tools.ietf.org/html/rfc7348">VXLAN</a> tunnels over
+Wireguard, in addition to the configuration generated for Wireguard, a
+new VID will be generated automatically for each device if the
+configuration option &quot;auto VNI&quot; is turned on in the VPN object</p></li>
+</ul>
+<p>All these auto generated configuration options will be available as
+template variables.</p>
+<p>The objects that are automatically created will also be removed when they
+are not needed anymore (e.g.: when the VPN template is removed from a
+configuration object).</p>
+</section>
+<section id="openwisp-controller-cert-path">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_CERT_PATH</span></code><a class="headerlink" href="#openwisp-controller-cert-path" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/etc/x509</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The file system path where x509 certificate will be installed when
+downloaded on routers when <code class="docutils literal notranslate"><span class="pre">auto_cert</span></code> is being used (enabled by
+default).</p>
+</section>
+<section id="openwisp-controller-common-name-format">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_COMMON_NAME_FORMAT</span></code><a class="headerlink" href="#openwisp-controller-common-name-format" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{mac_address}-{name}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Defines the format of the <code class="docutils literal notranslate"><span class="pre">common_name</span></code> attribute of VPN client
+certificates that are automatically created when using VPN templates which
+have <code class="docutils literal notranslate"><span class="pre">auto_cert</span></code> set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. A unique slug generated using
+<a class="reference external" href="https://github.com/skorokithakis/shortuuid/">shortuuid</a> is appended to
+the common name to introduce uniqueness. Therefore, resulting common names
+will have <code class="docutils literal notranslate"><span class="pre">{OPENWISP_CONTROLLER_COMMON_NAME_FORMAT}-{unique-slug}</span></code>
+format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">mac</span> <span class="pre">address</span></code> of the device are equal, the
+<code class="docutils literal notranslate"><span class="pre">name</span></code> of the device will be omitted from the common name to avoid
+redundancy.</p>
+</div>
+</section>
+<section id="openwisp-controller-management-ip-device-list">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_MANAGEMENT_IP_DEVICE_LIST</span></code><a class="headerlink" href="#openwisp-controller-management-ip-device-list" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>In the device list page, the column <code class="docutils literal notranslate"><span class="pre">IP</span></code> will show the <code class="docutils literal notranslate"><span class="pre">management_ip</span></code>
+if available, defaulting to <code class="docutils literal notranslate"><span class="pre">last_ip</span></code> otherwise.</p>
+<p>If this setting is set to <code class="docutils literal notranslate"><span class="pre">False</span></code> the <code class="docutils literal notranslate"><span class="pre">management_ip</span></code> won't be shown
+in the device list page even if present, it will be shown only in the
+device detail page.</p>
+<p>You may set this to <code class="docutils literal notranslate"><span class="pre">False</span></code> if for some reason the majority of your user
+doesn't care about the management ip address.</p>
+</section>
+<section id="openwisp-controller-config-backend-field-shown">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_CONFIG_BACKEND_FIELD_SHOWN</span></code><a class="headerlink" href="#openwisp-controller-config-backend-field-shown" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>This setting toggles the <code class="docutils literal notranslate"><span class="pre">backend</span></code> fields in add/edit pages in Device
+and Template configuration, as well as the <code class="docutils literal notranslate"><span class="pre">backend</span></code> field/filter in
+Device list and Template list.</p>
+<p>If this setting is set to <code class="docutils literal notranslate"><span class="pre">False</span></code> these items will be removed from the
+UI.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This setting affects only the configuration backend and NOT the VPN
+backend.</p>
+</div>
+</section>
+<section id="openwisp-controller-device-name-unique">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEVICE_NAME_UNIQUE</span></code><a class="headerlink" href="#openwisp-controller-device-name-unique" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>This setting conditionally enforces unique Device names in an
+Organization. The query to enforce this is case-insensitive.</p>
+<p>Note: For this constraint to be optional, it is enforced on an application
+level and not on database.</p>
+</section>
+<section id="openwisp-controller-hardware-id-enabled">
+<span id="id4"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_HARDWARE_ID_ENABLED</span></code><a class="headerlink" href="#openwisp-controller-hardware-id-enabled" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The field <code class="docutils literal notranslate"><span class="pre">hardware_id</span></code> can be used to store a unique hardware id, for
+example a serial number.</p>
+<p>If this setting is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> then this field will be shown first in
+the device list page and in the add/edit device page.</p>
+<p>This feature is disabled by default.</p>
+</section>
+<section id="openwisp-controller-hardware-id-options">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_HARDWARE_ID_OPTIONS</span></code><a class="headerlink" href="#openwisp-controller-hardware-id-options" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2">    <span class="s2">"blank"</span><span class="p">:</span> <span class="ow">not</span> <span class="n">OPENWISP_CONTROLLER_HARDWARE_ID_ENABLED</span><span class="p">,</span>
+</span><span id="line-3">    <span class="s2">"null"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="line-4">    <span class="s2">"max_length"</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+</span><span id="line-5">    <span class="s2">"unique"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="line-6">    <span class="s2">"verbose_name"</span><span class="p">:</span> <span class="n">_</span><span class="p">(</span><span class="s2">"Serial number"</span><span class="p">),</span>
+</span><span id="line-7">    <span class="s2">"help_text"</span><span class="p">:</span> <span class="n">_</span><span class="p">(</span><span class="s2">"Serial number of this device"</span><span class="p">),</span>
+</span><span id="line-8"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Options for the model field <code class="docutils literal notranslate"><span class="pre">hardware_id</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">blank</span></code>: whether the field is allowed to be blank</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">null</span></code>: whether an empty value will be stored as <code class="docutils literal notranslate"><span class="pre">NULL</span></code> in the
+database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_length</span></code>: maximum length of the field</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unique</span></code>: whether the value of the field must be unique</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_name</span></code>: text for the human readable label of the field</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help_text</span></code>: help text to be displayed with the field</p></li>
+</ul>
+</section>
+<section id="openwisp-controller-hardware-id-as-name">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_HARDWARE_ID_AS_NAME</span></code><a class="headerlink" href="#openwisp-controller-hardware-id-as-name" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>When the hardware ID feature is enabled, devices will be referenced with
+their hardware ID instead of their name.</p>
+<p>If you still want to reference devices by their name, set this to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</section>
+<section id="openwisp-controller-device-verbose-name">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEVICE_VERBOSE_NAME</span></code><a class="headerlink" href="#openwisp-controller-device-verbose-name" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tuple</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">('Device',</span> <span class="pre">'Devices')</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Defines the <code class="docutils literal notranslate"><span class="pre">verbose_name</span></code> attribute of the <code class="docutils literal notranslate"><span class="pre">Device</span></code> model, which is
+displayed in the admin site. The first and second element of the tuple
+represent the singular and plural forms.</p>
+<p>For example, if we want to change the verbose name to &quot;Hotspot&quot;, we could
+write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">OPENWISP_CONTROLLER_DEVICE_VERBOSE_NAME</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"Hotspot"</span><span class="p">,</span> <span class="s2">"Hotspots"</span><span class="p">)</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="openwisp-controller-hide-automatically-generated-subnets-and-ips">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_HIDE_AUTOMATICALLY_GENERATED_SUBNETS_AND_IPS</span></code><a class="headerlink" href="#openwisp-controller-hide-automatically-generated-subnets-and-ips" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Setting this to <code class="docutils literal notranslate"><span class="pre">True</span></code> will hide subnets and IP addresses generated by
+<a class="reference internal" href="subnet-division-rules.html"><span class="doc">subnet division rules</span></a> from being displayed
+in the list of Subnets and IP addresses in the admin dashboard.</p>
+</section>
+<section id="openwisp-controller-subnet-division-types">
+<span id="id5"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_SUBNET_DIVISION_TYPES</span></code><a class="headerlink" href="#openwisp-controller-subnet-division-types" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tuple</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">(</span>
+</span><span id="line-2">    <span class="p">(</span>
+</span><span id="line-3">        <span class="s2">"openwisp_controller.subnet_division.rule_types.device.DeviceSubnetDivisionRuleType"</span><span class="p">,</span>
+</span><span id="line-4">        <span class="s2">"Device"</span><span class="p">,</span>
+</span><span id="line-5">    <span class="p">),</span>
+</span><span id="line-6">    <span class="p">(</span>
+</span><span id="line-7">        <span class="s2">"openwisp_controller.subnet_division.rule_types.vpn.VpnSubnetDivisionRuleType"</span><span class="p">,</span>
+</span><span id="line-8">        <span class="s2">"VPN"</span><span class="p">,</span>
+</span><span id="line-9">    <span class="p">),</span>
+</span><span id="line-10"><span class="p">)</span>
+</span></code></pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Available types for <a class="reference internal" href="subnet-division-rules.html"><span class="doc">Subject Division Rule</span></a>
+objects.</p>
+<p>For more information on how to write your own types, please refer to:
+<a class="reference internal" href="../developer/extending.html#custom-subnet-division-rule-types"><span class="std std-ref">Custom Subnet Division Rule Types</span></a>.</p>
+</section>
+<section id="openwisp-controller-api">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_API</span></code><a class="headerlink" href="#openwisp-controller-api" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Indicates whether the API for Openwisp Controller is enabled or not. To
+disable the API by default add <code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_API</span> <span class="pre">=</span> <span class="pre">False</span></code> in your
+project <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file.</p>
+</section>
+<section id="openwisp-controller-api-host">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_API_HOST</span></code><a class="headerlink" href="#openwisp-controller-api-host" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Allows to specify backend URL for API requests, if the frontend is hosted
+separately.</p>
+</section>
+<section id="openwisp-controller-user-commands">
+<span id="id6"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_USER_COMMANDS</span></code><a class="headerlink" href="#openwisp-controller-user-commands" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">list</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[]</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Allows to specify a <code class="docutils literal notranslate"><span class="pre">list</span></code> of tuples for adding commands as described in
+the section: <a class="reference internal" href="shell-commands.html#defining-new-menu-options"><span class="std std-ref">Defining New Options in the Commands Menu</span></a>.</p>
+</section>
+<section id="openwisp-controller-organization-enabled-commands">
+<span id="id7"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_ORGANIZATION_ENABLED_COMMANDS</span></code><a class="headerlink" href="#openwisp-controller-organization-enabled-commands" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2">    <span class="c1"># By default all commands are allowed</span>
+</span><span id="line-3">    <span class="s2">"__all__"</span><span class="p">:</span> <span class="s2">"*"</span><span class="p">,</span>
+</span><span id="line-4"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This setting controls the command types that are enabled on the system By
+default, all command types are enabled to all the organizations, but it's
+possible to disable a specific command for a specific organization as
+shown in the following example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">OPENWISP_CONTROLLER_ORGANIZATION_ENABLED_COMMANDS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="line-2">    <span class="s2">"__all__"</span><span class="p">:</span> <span class="s2">"*"</span><span class="p">,</span>
+</span><span id="line-3">    <span class="c1"># Organization UUID: # Tuple of enabled commands</span>
+</span><span id="line-4">    <span class="s2">"7448a190-6e65-42bf-b8ea-bb6603e593a5"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"reboot"</span><span class="p">,</span> <span class="s2">"change_password"</span><span class="p">),</span>
+</span><span id="line-5"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+<p>In the example above, the organization with UUID
+<code class="docutils literal notranslate"><span class="pre">7448a190-6e65-42bf-b8ea-bb6603e593a5</span></code> will allow to send only commands
+of type <code class="docutils literal notranslate"><span class="pre">reboot</span></code> and <code class="docutils literal notranslate"><span class="pre">change_password</span></code>, while all the other
+organizations will have all command types enabled.</p>
+</section>
+<section id="openwisp-controller-device-group-schema">
+<span id="id8"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEVICE_GROUP_SCHEMA</span></code><a class="headerlink" href="#openwisp-controller-device-group-schema" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{'type':</span> <span class="pre">'object',</span> <span class="pre">'properties':</span> <span class="pre">{}}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Allows specifying JSONSchema used for validating the meta-data of
+<a class="reference internal" href="device-groups.html"><span class="doc">Device Groups</span></a>.</p>
+</section>
+<section id="openwisp-controller-shared-management-ip-address-space">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_SHARED_MANAGEMENT_IP_ADDRESS_SPACE</span></code><a class="headerlink" href="#openwisp-controller-shared-management-ip-address-space" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>By default, the system assumes that the address space of the management
+tunnel is shared among all the organizations using the system, that is,
+the system assumes there's only one management VPN, tunnel or other
+networking technology to reach the devices it controls.</p>
+<p>When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, any device belonging to any organization will never
+have the same <code class="docutils literal notranslate"><span class="pre">management_ip</span></code> as another device, the latest device
+declaring the management IP will take the IP and any other device who
+declared the same IP in the past will have the field reset to empty state
+to avoid potential conflicts.</p>
+<p>Set this to <code class="docutils literal notranslate"><span class="pre">False</span></code> if every organization has its dedicated management
+tunnel with a dedicated address space that is reachable by the OpenWISP
+server.</p>
+</section>
+<section id="openwisp-controller-management-ip-only">
+<span id="id9"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_MANAGEMENT_IP_ONLY</span></code><a class="headerlink" href="#openwisp-controller-management-ip-only" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>By default, only the management IP will be used to establish connection
+with the devices.</p>
+<p>If the devices are connecting to your OpenWISP instance using a shared
+layer2 network, hence the OpenWSP server can reach the devices using the
+<code class="docutils literal notranslate"><span class="pre">last_ip</span></code> field, you can set this to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</section>
+<section id="openwisp-controller-dsa-os-mapping">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DSA_OS_MAPPING</span></code><a class="headerlink" href="#openwisp-controller-dsa-os-mapping" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>OpenWISP Controller can figure out whether it should use the new OpenWrt
+syntax for DSA interfaces (Distributed Switch Architecture) introduced in
+OpenWrt 21 by reading the <code class="docutils literal notranslate"><span class="pre">os</span></code> field of the <code class="docutils literal notranslate"><span class="pre">Device</span></code> object. However,
+if the firmware you are using has a custom firmware identifier, the system
+will not be able to figure out whether it should use the new syntax and it
+will default to <a class="reference internal" href="#openwisp-controller-dsa-default-fallback"><span class="std std-ref">OPENWISP_CONTROLLER_DSA_DEFAULT_FALLBACK</span></a>.</p>
+<p>If you want to make sure the system can parse your custom firmware
+identifier properly, you can follow the example below.</p>
+<p>For the sake of the example, the OS identifier <code class="docutils literal notranslate"><span class="pre">MyCustomFirmware</span> <span class="pre">2.0</span></code>
+corresponds to <code class="docutils literal notranslate"><span class="pre">OpenWrt</span> <span class="pre">19.07</span></code>, while <code class="docutils literal notranslate"><span class="pre">MyCustomFirmware</span> <span class="pre">2.1</span></code>
+corresponds to <code class="docutils literal notranslate"><span class="pre">OpenWrt</span> <span class="pre">21.02</span></code>. Configuring this setting as indicated
+below will allow OpenWISP to supply the right syntax automatically.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">OPENWISP_CONTROLLER_DSA_OS_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="line-2">    <span class="s2">"netjsonconfig.OpenWrt"</span><span class="p">:</span> <span class="p">{</span>
+</span><span id="line-3">        <span class="c1"># OpenWrt &gt;=21.02 configuration syntax will be used for</span>
+</span><span id="line-4">        <span class="c1"># these OS identifiers.</span>
+</span><span id="line-5">        <span class="s2">"&gt;=21.02"</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s2">"MyCustomFirmware 2.1(.*)"</span><span class="p">],</span>
+</span><span id="line-6">        <span class="c1"># OpenWrt &lt;=21.02 configuration syntax will be used for</span>
+</span><span id="line-7">        <span class="c1"># these OS identifiers.</span>
+</span><span id="line-8">        <span class="s2">"&lt;21.02"</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s2">"MyCustomFirmware 2.0(.*)"</span><span class="p">],</span>
+</span><span id="line-9">    <span class="p">}</span>
+</span><span id="line-10"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The OS identifier should be a regular expression as shown in above
+example.</p>
+</div>
+</section>
+<section id="openwisp-controller-dsa-default-fallback">
+<span id="id10"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DSA_DEFAULT_FALLBACK</span></code><a class="headerlink" href="#openwisp-controller-dsa-default-fallback" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The value of this setting decides whether to use DSA syntax (OpenWrt &gt;=21
+configuration syntax) if openwisp-controller fails to make that decision
+automatically.</p>
+</section>
+<section id="openwisp-controller-group-pie-chart">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_GROUP_PIE_CHART</span></code><a class="headerlink" href="#openwisp-controller-group-pie-chart" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Allows to show a pie chart like the one in the screenshot.</p>
+<img alt="device groups piechart" src="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/devicegroups-piechart.png" />
+<p>Active groups are groups which have at least one device in them, while
+empty groups do not have any device assigned.</p>
+</section>
+<section id="openwisp-controller-api-task-retry-options">
+<h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_API_TASK_RETRY_OPTIONS</span></code><a class="headerlink" href="#openwisp-controller-api-task-retry-options" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p>see below</p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="c1"># default value of OPENWISP_CONTROLLER_API_TASK_RETRY_OPTIONS:</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="nb">dict</span><span class="p">(</span>
+</span><span id="line-4">    <span class="n">max_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>  <span class="c1"># total number of retries</span>
+</span><span id="line-5">    <span class="n">retry_backoff</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># exponential backoff</span>
+</span><span id="line-6">    <span class="n">retry_backoff_max</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>  <span class="c1"># 10 minutes</span>
+</span><span id="line-7">    <span class="n">retry_jitter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># randomness into exponential backoff</span>
+</span><span id="line-8"><span class="p">)</span>
+</span></code></pre></div>
+</div>
+<p>This setting is utilized by background API tasks executed by
+<a class="reference internal" href="zerotier.html"><span class="doc">ZeroTier VPN servers and ZeroTier VPN clients</span></a> to handle
+recoverable HTTP status codes such as 429, 500, 502, 503, and 504.</p>
+<p>These tasks are retried with a maximum of 5 attempts with an exponential
+backoff and jitter, with a maximum delay of 10 minutes.</p>
+<p>This feature ensures that ZeroTier Service API calls are resilient to
+recoverable failures, improving the reliability of the system.</p>
+<p>For more information on these settings, you can refer to the <a class="reference external" href="https://docs.celeryq.dev/en/stable/userguide/tasks.html#automatic-retry-for-known-exceptions">the celery
+documentation regarding automatic retries for known errors.</a></p>
+</section>
+<section id="openwisp-controller-whois-enabled">
+<span id="id11"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_WHOIS_ENABLED</span></code><a class="headerlink" href="#openwisp-controller-whois-enabled" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Allows enabling the optional <a class="reference internal" href="whois.html"><span class="doc">WHOIS Lookup feature</span></a>.</p>
+<a class="reference external image-reference" href="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/1.3/whois/admin-setting.png"><img alt="WHOIS admin setting" src="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/1.3/whois/admin-setting.png" />
+</a>
+<p>After enabling this feature, you have to set
+<a class="reference internal" href="#openwisp-controller-whois-geoip-account"><span class="std std-ref">OPENWISP_CONTROLLER_WHOIS_GEOIP_ACCOUNT</span></a> and
+<a class="reference internal" href="#openwisp-controller-whois-geoip-key"><span class="std std-ref">OPENWISP_CONTROLLER_WHOIS_GEOIP_KEY</span></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If these three settings are not configured as expected, an
+<code class="docutils literal notranslate"><span class="pre">ImproperlyConfigured</span></code> exception will be raised.</p>
+</div>
+</section>
+<section id="openwisp-controller-whois-geoip-account">
+<span id="id12"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_WHOIS_GEOIP_ACCOUNT</span></code><a class="headerlink" href="#openwisp-controller-whois-geoip-account" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>MaxMind Account ID required for the <a class="reference internal" href="whois.html"><span class="doc">WHOIS Lookup feature</span></a>.</p>
+</section>
+<section id="openwisp-controller-whois-geoip-key">
+<span id="id13"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_WHOIS_GEOIP_KEY</span></code><a class="headerlink" href="#openwisp-controller-whois-geoip-key" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>MaxMind License Key required for the <a class="reference internal" href="whois.html"><span class="doc">WHOIS Lookup feature</span></a>.</p>
+</section>
+<section id="openwisp-controller-whois-refresh-threshold-days">
+<span id="id14"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_WHOIS_REFRESH_THRESHOLD_DAYS</span></code><a class="headerlink" href="#openwisp-controller-whois-refresh-threshold-days" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">90</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Specifies the number of days after which WHOIS information is refreshed.
+It also determines how long a WHOIS record is kept after no active device
+uses its IP address.</p>
+<p>OpenWISP keeps unreferenced WHOIS records for some time to avoid frequent
+lookups and unnecessary notifications about <a class="reference internal" href="estimated-location.html"><span class="doc">estimated locations</span></a> when devices frequently change IP addresses, as can
+happen with connections provided by mobile ISPs.</p>
+</section>
+<section id="openwisp-controller-estimated-location-enabled">
+<span id="id15"></span><h2><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_ESTIMATED_LOCATION_ENABLED</span></code><a class="headerlink" href="#openwisp-controller-estimated-location-enabled" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>type</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>default</strong>:</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Allows enabling the optional <a class="reference internal" href="estimated-location.html"><span class="doc">Estimated Location feature</span></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a class="reference internal" href="#openwisp-controller-whois-enabled"><span class="std std-ref">OPENWISP_CONTROLLER_WHOIS_ENABLED</span></a> must be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> before
+enabling this feature. Enabling estimated locations while
+<code class="docutils literal notranslate"><span class="pre">WHOIS_ENABLED=False</span></code> will raise <code class="docutils literal notranslate"><span class="pre">ImproperlyConfigured</span></code> at startup
+time.</p>
+</div>
+<a class="reference external image-reference" href="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/1.3/estimated-locations/admin-setting.png"><img alt="Estimated Location setting" src="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/1.3/estimated-locations/admin-setting.png" />
+</a>
+</section>
+</section>
+
+    </div><div class="flex justify-between items-center pt-6 mt-12 border-t border-border gap-4">
+    <div class="mr-auto">
+      <a href="websocket-api.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="mr-2 h-4 w-4">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        WebSocket API Reference
+      </a>
+    </div>
+    <div class="ml-auto">
+      <a href="../developer/index.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        Developer Docs
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="ml-2 h-4 w-4">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+</div></div><aside id="right-sidebar" class="hidden text-sm xl:block">
+  <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
+    <ul>
+<li><a class="reference internal" href="#openwisp-ssh-auth-timeout"><code class="docutils literal notranslate"><span class="pre">OPENWISP_SSH_AUTH_TIMEOUT</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-ssh-banner-timeout"><code class="docutils literal notranslate"><span class="pre">OPENWISP_SSH_BANNER_TIMEOUT</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-ssh-command-timeout"><code class="docutils literal notranslate"><span class="pre">OPENWISP_SSH_COMMAND_TIMEOUT</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-ssh-connection-timeout"><code class="docutils literal notranslate"><span class="pre">OPENWISP_SSH_CONNECTION_TIMEOUT</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-connectors"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONNECTORS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-update-strategies"><code class="docutils literal notranslate"><span class="pre">OPENWISP_UPDATE_STRATEGIES</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-config-update-mapping"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONFIG_UPDATE_MAPPING</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-backends"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_BACKENDS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-vpn-backends"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_VPN_BACKENDS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-default-backend"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEFAULT_BACKEND</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-default-vpn-backend"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEFAULT_VPN_BACKEND</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-registration-enabled"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_REGISTRATION_ENABLED</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-consistent-registration"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_CONSISTENT_REGISTRATION</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-registration-self-creation"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_REGISTRATION_SELF_CREATION</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-context"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_CONTEXT</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-default-auto-cert"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEFAULT_AUTO_CERT</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-cert-path"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_CERT_PATH</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-common-name-format"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_COMMON_NAME_FORMAT</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-management-ip-device-list"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_MANAGEMENT_IP_DEVICE_LIST</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-config-backend-field-shown"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_CONFIG_BACKEND_FIELD_SHOWN</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-device-name-unique"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEVICE_NAME_UNIQUE</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-hardware-id-enabled"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_HARDWARE_ID_ENABLED</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-hardware-id-options"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_HARDWARE_ID_OPTIONS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-hardware-id-as-name"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_HARDWARE_ID_AS_NAME</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-device-verbose-name"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEVICE_VERBOSE_NAME</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-hide-automatically-generated-subnets-and-ips"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_HIDE_AUTOMATICALLY_GENERATED_SUBNETS_AND_IPS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-subnet-division-types"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_SUBNET_DIVISION_TYPES</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-api"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_API</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-api-host"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_API_HOST</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-user-commands"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_USER_COMMANDS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-organization-enabled-commands"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_ORGANIZATION_ENABLED_COMMANDS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-device-group-schema"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DEVICE_GROUP_SCHEMA</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-shared-management-ip-address-space"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_SHARED_MANAGEMENT_IP_ADDRESS_SPACE</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-management-ip-only"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_MANAGEMENT_IP_ONLY</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-dsa-os-mapping"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DSA_OS_MAPPING</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-dsa-default-fallback"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_DSA_DEFAULT_FALLBACK</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-group-pie-chart"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_GROUP_PIE_CHART</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-api-task-retry-options"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_API_TASK_RETRY_OPTIONS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-whois-enabled"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_WHOIS_ENABLED</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-whois-geoip-account"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_WHOIS_GEOIP_ACCOUNT</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-whois-geoip-key"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_WHOIS_GEOIP_KEY</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-whois-refresh-threshold-days"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_WHOIS_REFRESH_THRESHOLD_DAYS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-controller-estimated-location-enabled"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CONTROLLER_ESTIMATED_LOCATION_ENABLED</span></code></a></li>
+</ul>
+</div>
+</aside>
+          </main>
+        </div>
+      </div><footer class="py-6 border-t border-border md:py-0">
+    <div class="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+      <div class="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-6 md:px-0">
+        <a href="../../index.html">
+            <img src="../../_static/openwisp-logo.svg" alt="OpenWISP" width="125" height="72" class="hidden dark:block" />
+            <img src="../../_static/openwisp-logo-black.svg" alt="OpenWISP" width="125" height="72" class="dark:hidden" /></a>
+        <p class="text-sm leading-loose text-right text-muted-foreground md:text-center">© 2008-2026, OpenWISP&nbsp;</p>
+      </div>
+    </div>
+</footer>
+    </div><button id="scrolltop"
+        x-cloak
+        @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="fixed bottom-8 right-8 p-2 z-10 rounded-sm bg-gray-700 text-xs text-white transition-all duration-1000 hover:bg-gray-950 focus:bg-gray-950"
+        :class="{'opacity-0 invisible' : !showScrollTop}"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       height="14"
+       viewBox="0 96 960 960"
+       width="14"
+       class="inline fill-current mb-[2px]"
+       aria-hidden="true">
+    <path d="M450 896V370L202 618l-42-42 320-320 320 320-42 42-248-248v526h-60Z" />
+  </svg>
+  Back to top
+</button>
+    
+
+    <script src="../../_static/documentation_options.js?v=c6950507"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="../../_static/theme.js?v=5db23cf8"></script>
+    
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.openwisp.io/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '7']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript>
+  <p>
+    <img referrerpolicy="no-referrer-when-downgrade" src="//analytics.openwisp.io/matomo.php?idsite=7&amp;rec=1" style="border:0;" alt="" />
+  </p>
+</noscript>
+<!-- End Matomo Code -->
+
+<div id="lightbox" class="lightbox">
+  <span class="close">&times;</span>
+</div>
+<script src="../../_static/lightbox.js"></script>
+
+</body>
+
+</html>

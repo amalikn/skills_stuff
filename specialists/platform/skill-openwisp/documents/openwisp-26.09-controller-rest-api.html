@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="en" data-content_root="../../"
+  x-data="{ darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches), activeSection: ''}"
+  :class="{ 'dark' : darkMode === true }">
+
+<head>
+  <script>
+    (function () {
+      // Set initial color scheme
+      if ((localStorage.getItem("_x_darkMode") === "true") || (window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      }
+
+      // Watch for media preference changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+        localStorage.setItem("_x_darkMode", event.matches);
+        document.documentElement.classList.toggle("dark", event.matches);
+      });
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030711" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>REST API Reference | OpenWISP 26.09 documentation</title>
+  <meta property="og:title" content="REST API Reference | OpenWISP 26.09 documentation" />
+  <meta name="twitter:title" content="REST API Reference | OpenWISP 26.09 documentation" />
+  <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e48b8583" />
+  <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../_static/pygments_dark.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/theme.css?v=d6d7c91b" />
+  <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=d3e37945" />
+  <link rel="icon" href="../../_static/favicon.svg" />
+
+  <link rel="search" title="Search" href="../../search.html" />
+  <link rel="next" title="WebSocket API Reference" href="websocket-api.html" />
+  <link rel="prev" title="Automating Subnet and IP Address Provisioning" href="subnet-division-rules.html" />
+<meta property="og:image" content="https://openwisp.io/docs/26.09/_static/docs-og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="480" />
+
+<link rel="canonical" href="https://openwisp.io/docs/stable/controller/user/rest-api.html" />
+
+
+</head>
+
+<body x-data="{ showSidebar: false, showScrollTop: false }"
+  class="min-h-screen font-sans antialiased bg-background text-foreground" :class="{ 'overflow-hidden': showSidebar }"@scroll.window="showScrollTop = pageYOffset > 100">
+  <div x-cloak x-show="showSidebar"
+    class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden"
+    @click.self="showSidebar = false"></div><div id="page" class="relative flex flex-col min-h-screen"><a href="#content"
+      class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100">
+      Skip to content
+    </a><header class="sticky top-0 z-40 w-full border-b shadow-xs border-border bg-background/90 backdrop-blur"><div class="container flex items-center h-14">
+    <div class="hidden mr-4 md:flex">
+      <a href="../../index.html" class="flex items-center mr-6">
+        <img width="24" height="24" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+          alt="Logo" />
+        <img width="24" height="24" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+          alt="Logo" /><span class="hidden font-bold sm:inline-block text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+      </a><nav class="flex items-center space-x-6 text-sm font-medium">
+    
+    <a href="https://openwisp.org/features/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Features</a>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/faq/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Blog</a>
+</nav></div><button
+      class="inline-flex items-center justify-center h-10 px-0 py-2 mr-2 text-base font-medium transition-colors rounded-md hover:text-accent-foreground hover:bg-transparent md:hidden"
+      type="button" @click="showSidebar = true">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" aria-hidden="true"
+        fill="currentColor">
+        <path
+          d="M152.587 825.087q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440Zm0-203.587q-19.152 0-32.326-13.174T107.087 576q0-19.152 13.174-32.326t32.326-13.174h320q19.152 0 32.326 13.174T518.087 576q0 19.152-13.174 32.326T472.587 621.5h-320Zm0-203.587q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440ZM708.913 576l112.174 112.174q12.674 12.674 12.674 31.826t-12.674 31.826Q808.413 764.5 789.261 764.5t-31.826-12.674l-144-144Q600 594.391 600 576t13.435-31.826l144-144q12.674-12.674 31.826-12.674t31.826 12.674q12.674 12.674 12.674 31.826t-12.674 31.826L708.913 576Z" />
+      </svg>
+      <span class="sr-only">Toggle navigation menu</span>
+    </button>
+    <div class="flex items-center justify-between flex-1 gap-2 sm:gap-4 md:justify-end">
+      <div class="flex-1 w-full md:w-auto md:flex-none"><form id="searchbox"
+      action="../../search.html"
+      method="get"
+      class="relative flex items-center group"
+      @keydown.k.window.meta="$refs.search.focus()">
+  <input x-ref="search"
+          name="q"
+          id="search-input"
+          type="search"
+          aria-label="Search the docs"
+          placeholder="Search ..."
+          class="inline-flex items-center font-medium transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background border border-input hover:bg-accent focus:bg-accent hover:text-accent-foreground focus:text-accent-foreground hover:placeholder-accent-foreground py-2 px-4 relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64" />
+  <kbd class="pointer-events-none absolute right-1.5 top-2 hidden h-5 select-none text-muted-foreground items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex group-hover:bg-accent group-hover:text-accent-foreground">
+    <span class="text-xs">⌘</span>
+    K
+  </kbd>
+</form>
+      </div>
+      <nav class="flex items-center gap-1">
+        <button @click="darkMode = !darkMode"
+          class="relative inline-flex items-center justify-center px-0 text-sm font-medium transition-colors rounded-md hover:bg-accent hover:text-accent-foreground h-9 w-9"
+          type="button"
+          title="Toggle color scheme">
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-100 rotate-0 dark:-rotate-90 dark:scale-0">
+            <path
+              d="M480 685q45.456 0 77.228-31.772Q589 621.456 589 576q0-45.456-31.772-77.228Q525.456 467 480 467q-45.456 0-77.228 31.772Q371 530.544 371 576q0 45.456 31.772 77.228Q434.544 685 480 685Zm0 91q-83 0-141.5-58.5T280 576q0-83 58.5-141.5T480 376q83 0 141.5 58.5T680 576q0 83-58.5 141.5T480 776ZM80 621.5q-19.152 0-32.326-13.174T34.5 576q0-19.152 13.174-32.326T80 530.5h80q19.152 0 32.326 13.174T205.5 576q0 19.152-13.174 32.326T160 621.5H80Zm720 0q-19.152 0-32.326-13.174T754.5 576q0-19.152 13.174-32.326T800 530.5h80q19.152 0 32.326 13.174T925.5 576q0 19.152-13.174 32.326T880 621.5h-80Zm-320-320q-19.152 0-32.326-13.174T434.5 256v-80q0-19.152 13.174-32.326T480 130.5q19.152 0 32.326 13.174T525.5 176v80q0 19.152-13.174 32.326T480 301.5Zm0 720q-19.152 0-32.326-13.17Q434.5 995.152 434.5 976v-80q0-19.152 13.174-32.326T480 850.5q19.152 0 32.326 13.174T525.5 896v80q0 19.152-13.174 32.33-13.174 13.17-32.326 13.17ZM222.174 382.065l-43-42Q165.5 327.391 166 308.239t13.174-33.065q13.435-13.674 32.587-13.674t32.065 13.674l42.239 43q12.674 13.435 12.555 31.706-.12 18.272-12.555 31.946-12.674 13.674-31.445 13.413-18.772-.261-32.446-13.174Zm494 494.761-42.239-43q-12.674-13.435-12.674-32.087t12.674-31.565Q686.609 756.5 705.38 757q18.772.5 32.446 13.174l43 41.761Q794.5 824.609 794 843.761t-13.174 33.065Q767.391 890.5 748.239 890.5t-32.065-13.674Zm-42-494.761Q660.5 369.391 661 350.62q.5-18.772 13.174-32.446l41.761-43Q728.609 261.5 747.761 262t33.065 13.174q13.674 13.435 13.674 32.587t-13.674 32.065l-43 42.239q-13.435 12.674-31.706 12.555-18.272-.12-31.946-12.555Zm-495 494.761Q165.5 863.391 165.5 844.239t13.674-32.065l43-42.239q13.435-12.674 32.087-12.674t31.565 12.674Q299.5 782.609 299 801.38q-.5 18.772-13.174 32.446l-41.761 43Q231.391 890.5 212.239 890t-33.065-13.174ZM480 576Z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-0 rotate-90 dark:rotate-0 dark:scale-100">
+            <path
+              d="M480 936q-151 0-255.5-104.5T120 576q0-138 90-239.5T440 218q25-3 39 18t-1 44q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q21-14 43-1.5t19 39.5q-14 138-117.5 229T480 936Zm0-80q88 0 158-48.5T740 681q-20 5-40 8t-40 3q-123 0-209.5-86.5T364 396q0-20 3-40t8-40q-78 32-126.5 102T200 576q0 116 82 198t198 82Zm-10-270Z" />
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+    <div class="flex-1"><div
+        class="container md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10"><aside id="left-sidebar"
+  class="fixed inset-y-0 left-0 md:top-14 z-50 md:z-30 bg-background md:bg-transparent transition-all duration-100 -translate-x-full md:translate-x-0 ml-0 p-6 md:p-0 md:-ml-2 md:h-[calc(100vh-3.5rem)] w-5/6 md:w-full overflow-y-auto border-r border-border md:sticky"
+  :aria-hidden="!showSidebar" :class="{ 'translate-x-0': showSidebar }">
+
+    <a href="../../index.html" class="justify-start text-sm md:!hidden bg-background">
+      <img width="16" height="16" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+        alt="Logo" />
+      <img width="16" height="16" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+        alt="Logo" /><span class="font-bold text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+    </a>
+
+    <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
+      <div class="overflow-y-auto h-full w-full relative pr-6"><div class="doc-versions">
+    <label>Version</label>
+    <div class="dropdown" x-data="{ showVersionSwitcher: false, buttonWidth: 0 }"
+        x-init="buttonWidth = $refs.button.offsetWidth">
+        <button type="button" x-ref="button" class="dropbtn "
+             @click="showVersionSwitcher = !showVersionSwitcher"
+            :class="{'active': showVersionSwitcher}" >
+            26.09
+            
+            <svg fill="currentColor" height="18px" stroke="none" viewBox="0 0 24 24" width="18px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+            
+        </button>
+        <div x-show="showVersionSwitcher" class="dropdown-content" :class="{'hidden': !showVersionSwitcher}"
+            @click.away="showVersionSwitcher = false" style="display: none;" :style="{ width: buttonWidth + 'px' }">
+            
+            
+            <a href="/docs/dev/controller/user/rest-api.html">dev</a>
+            
+            
+            
+            
+            
+            <a href="/docs/25.10/controller/user/rest-api.html">25.10</a>
+            
+            
+            
+            <a href="/docs/24.11/controller/user/rest-api.html">24.11</a>
+            
+            
+        </div>
+    </div>
+</div>
+<nav class="flex flex-col font-bold md:hidden">
+    
+    <a href="https://openwisp.org/features/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Features
+    </a>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/faq/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Blog
+    </a>
+</nav>
+<nav class="table w-full min-w-full my-6 lg:my-8 mt-4">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../first-steps.html">First Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project-overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installers.html">Installers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../users/index.html">Users</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Controller</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="intro.html">Controller: Structure &amp; Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device-config-status.html">Device Configuration Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="templates.html">Configuration Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="variables.html">Configuration Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device-groups.html">Device Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="push-operations.html">Configuring Push Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shell-commands.html">Sending Commands to Devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="import-export.html">Import/Export Device Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="organization-limits.html">Organization Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wireguard.html">Automating WireGuard Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vxlan-wireguard.html">Automating VXLAN over WireGuard Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zerotier.html">Automating ZeroTier Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openvpn.html">Automating OpenVPN Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whois.html">WHOIS Lookup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="estimated-location.html">Estimated Location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="subnet-division-rules.html">Automating Subnet and IP Address Provisioning</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">REST API Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="websocket-api.html">WebSocket API Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../developer/index.html">Developer Docs Index</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../monitoring/index.html">Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../network-topology/index.html">Network Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../firmware-upgrader/index.html">Firmware Upgrader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../radius/index.html">RADIUS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../wifi-login-pages/index.html">WiFi Login Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ipam/index.html">IPAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notifications/index.html">Notifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../openwrt-agents.html">OpenWrt Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../community.html">Community Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">Release Notes</a></li>
+</ul>
+
+</nav><div class="offline-docs">
+    <div class="heading">
+        <h6>OFFLINE DOCS</h6>
+    </div>
+    <p class="urls">
+        <a href="/docs/26.09/OpenWISP-26.09.pdf" target="_blank">
+            PDF</a>
+        |
+        <a href="/docs/26.09/OpenWISP-26.09.epub" target="_blank">
+            ePUB</a>
+    </p>
+</div>
+      </div>
+    </div>
+    <button type="button" @click="showSidebar = false"
+      class="absolute md:hidden right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" fill="currentColor"
+        stroke="none" class="h-4 w-4">
+        <path
+          d="M480 632 284 828q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536 576l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480 632Z" />
+      </svg>
+    </button>
+  </aside>
+          <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+<div class="w-full min-w-0 mx-auto">
+<nav aria-label="breadcrumbs"
+     class="flex items-center mb-4 space-x-1 text-sm text-muted-foreground">
+  <a class="overflow-hidden text-ellipsis whitespace-nowrap hover:text-foreground"
+     href="../../index.html">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         height="18"
+         width="18"
+         viewBox="0 96 960 960"
+         aria-label="Home"
+         fill="currentColor"
+         stroke="none">
+      <path d="M240 856h120V616h240v240h120V496L480 316 240 496v360Zm-80 80V456l320-240 320 240v480H520V696h-80v240H160Zm320-350Z" />
+    </svg>
+  </a>
+  
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../../modules.html">Modules</a>
+    
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../index.html">Controller</a>
+    
+<div class="mr-1">/</div><span aria-current="page"
+        class="font-medium text-foreground overflow-hidden whitespace-nowrap">REST API Reference</span>
+</nav>
+
+    <div id="content" role="main">
+      <section id="rest-api-reference">
+<h1>REST API Reference<a class="headerlink" href="#rest-api-reference" title="Link to this heading"></a></h1>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title"><strong>Table of contents</strong>:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#live-documentation" id="id3">Live Documentation</a></p></li>
+<li><p><a class="reference internal" href="#browsable-web-interface" id="id4">Browsable Web Interface</a></p></li>
+<li><p><a class="reference internal" href="#authentication" id="id5">Authentication</a></p></li>
+<li><p><a class="reference internal" href="#pagination" id="id6">Pagination</a></p></li>
+<li><p><a class="reference internal" href="#list-of-endpoints" id="id7">List of Endpoints</a></p></li>
+</ul>
+</nav>
+<section id="live-documentation">
+<span id="controller-live-documentation"></span><h2><a class="toc-backref" href="#id3" role="doc-backlink">Live Documentation</a><a class="headerlink" href="#live-documentation" title="Link to this heading"></a></h2>
+<a class="reference external image-reference" href="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/live-docu-api.png"><img alt="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/live-docu-api.png" src="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/live-docu-api.png" />
+</a>
+<p>A general live API documentation (following the OpenAPI specification) at
+<code class="docutils literal notranslate"><span class="pre">/api/v1/docs/</span></code>.</p>
+</section>
+<section id="browsable-web-interface">
+<span id="controller-browsable-web-interface"></span><h2><a class="toc-backref" href="#id4" role="doc-backlink">Browsable Web Interface</a><a class="headerlink" href="#browsable-web-interface" title="Link to this heading"></a></h2>
+<a class="reference external image-reference" href="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/browsable-api-ui.png"><img alt="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/browsable-api-ui.png" src="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/browsable-api-ui.png" />
+</a>
+<p>Additionally, opening any of the endpoints <a class="reference internal" href="#controller-rest-endpoints"><span class="std std-ref">listed below</span></a> directly in the browser will show the
+<a class="reference external" href="https://www.django-rest-framework.org/topics/browsable-api/">browsable API interface of Django-REST-Framework</a>, which
+makes it even easier to find out the details of each endpoint.</p>
+</section>
+<section id="authentication">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Authentication</a><a class="headerlink" href="#authentication" title="Link to this heading"></a></h2>
+<p>See <a class="reference internal" href="../../users/user/rest-api.html#authenticating-rest-api"><span class="std std-ref">Authenticating with the User Token</span></a>.</p>
+<p>When browsing the API via the <a class="reference internal" href="#controller-live-documentation"><span class="std std-ref">Live Documentation</span></a> or the
+<a class="reference internal" href="#controller-browsable-web-interface"><span class="std std-ref">Browsable Web Interface</span></a>, you can also use the session
+authentication by logging in the django admin.</p>
+</section>
+<section id="pagination">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Pagination</a><a class="headerlink" href="#pagination" title="Link to this heading"></a></h2>
+<p>All <em>list</em> endpoints support the <code class="docutils literal notranslate"><span class="pre">page_size</span></code> parameter that allows
+paginating the results in conjunction with the <code class="docutils literal notranslate"><span class="pre">page</span></code> parameter.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/template/?page_size=10
+</span><span id="line-2">GET /api/v1/controller/template/?page_size=10&amp;page=2
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-of-endpoints">
+<span id="controller-rest-endpoints"></span><h2><a class="toc-backref" href="#id7" role="doc-backlink">List of Endpoints</a><a class="headerlink" href="#list-of-endpoints" title="Link to this heading"></a></h2>
+<p>Since the detailed explanation is contained in the
+<a class="reference internal" href="#controller-live-documentation"><span class="std std-ref">Live Documentation</span></a> and in the
+<a class="reference internal" href="#controller-browsable-web-interface"><span class="std std-ref">Browsable Web Interface</span></a> of each point, here we'll
+provide just a list of the available endpoints, for further information
+please open the URL of the endpoint in your browser.</p>
+<section id="list-devices">
+<h3>List Devices<a class="headerlink" href="#list-devices" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/
+</span></code></pre></div>
+</div>
+<p id="device-list-whois"><strong>WHOIS Details</strong></p>
+<p>If <a class="reference internal" href="whois.html"><span class="doc">WHOIS Lookup feature</span></a> is enabled, each device in the list
+response will also include a <code class="docutils literal notranslate"><span class="pre">whois_info</span></code> field with related brief WHOIS
+information.</p>
+<p id="device-list-estimated-filters"><strong>Estimated Location Filters</strong></p>
+<p>If <a class="reference internal" href="estimated-location.html"><span class="doc">Estimated Location feature</span></a> is enabled,
+devices can be filtered based on the estimated nature of their location
+using the <code class="docutils literal notranslate"><span class="pre">geo_is_estimated</span></code> filter.</p>
+<p><strong>Available filters</strong></p>
+<p>You can filter a list of devices based on their configuration status using
+the <code class="docutils literal notranslate"><span class="pre">status</span></code> (e.g modified, applied, or error).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/?config__status={status}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of devices based on their configuration backend
+using the <code class="docutils literal notranslate"><span class="pre">backend</span></code> (e.g <code class="docutils literal notranslate"><span class="pre">netjsonconfig.OpenWrt</span></code> or
+<code class="docutils literal notranslate"><span class="pre">netjsonconfig.OpenWisp</span></code>).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/?config__backend={backend}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of devices based on their organization using the
+<code class="docutils literal notranslate"><span class="pre">organization_id</span></code> or <code class="docutils literal notranslate"><span class="pre">organization_slug</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/?organization={organization_id}
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/?organization_slug={organization_slug}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of devices based on their configuration templates
+using the <code class="docutils literal notranslate"><span class="pre">template_id</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/?config__templates={template_id}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of devices based on their device group using the
+<code class="docutils literal notranslate"><span class="pre">group_id</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/?group={group_id}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of devices that have a device location object using
+the <code class="docutils literal notranslate"><span class="pre">with_geo</span></code> (e.g. true or false).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/?with_geo={with_geo}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of devices based on their creation time using the
+<code class="docutils literal notranslate"><span class="pre">creation_time</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"># Created exact
+</span><span id="line-2">GET /api/v1/controller/device/?created={creation_time}
+</span><span id="line-3">
+</span><span id="line-4"># Created greater than or equal to
+</span><span id="line-5">GET /api/v1/controller/device/?created__gte={creation_time}
+</span><span id="line-6">
+</span><span id="line-7"># Created is less than
+</span><span id="line-8">GET /api/v1/controller/device/?created__lt={creation_time}
+</span></code></pre></div>
+</div>
+</section>
+<section id="create-device">
+<h3>Create Device<a class="headerlink" href="#create-device" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/device/
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-device-detail">
+<h3>Get Device Detail<a class="headerlink" href="#get-device-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/{id}/
+</span></code></pre></div>
+</div>
+<p id="device-detail-whois"><strong>WHOIS Details</strong></p>
+<p>If <a class="reference internal" href="whois.html"><span class="doc">WHOIS Lookup feature</span></a> is enabled, the response will also
+include a <code class="docutils literal notranslate"><span class="pre">whois_info</span></code> field with related detailed WHOIS information.</p>
+</section>
+<section id="download-device-configuration">
+<h3>Download Device Configuration<a class="headerlink" href="#download-device-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/{id}/configuration/
+</span></code></pre></div>
+</div>
+<p>The above endpoint triggers the download of a <code class="docutils literal notranslate"><span class="pre">tar.gz</span></code> file containing
+the generated configuration for that specific device.</p>
+</section>
+<section id="change-details-of-device">
+<h3>Change Details of Device<a class="headerlink" href="#change-details-of-device" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/device/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="patch-details-of-device">
+<h3>Patch Details of Device<a class="headerlink" href="#patch-details-of-device" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PATCH /api/v1/controller/device/{id}/
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To assign, unassign, and change the order of the assigned templates
+add, remove, and change the order of the <code class="docutils literal notranslate"><span class="pre">{id}</span></code> of the templates
+under the <code class="docutils literal notranslate"><span class="pre">config</span></code> field in the JSON response respectively.
+Moreover, you can also select and unselect templates in the HTML Form
+of the Browsable API.</p>
+</div>
+<p>The required template(s) from the organization(s) of the device will added
+automatically to the <code class="docutils literal notranslate"><span class="pre">config</span></code> and cannot be removed.</p>
+<p><strong>Example usage</strong>: For assigning template(s) add the/their {id} to the
+config of a device,</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span><span class="se">\</span>
+</span><span id="line-2"><span class="w">    </span>http://127.0.0.1:8000/api/v1/controller/device/76b7d9cc-4ffd-4a43-b1b0-8f8befd1a7c0/<span class="w"> </span><span class="se">\</span>
+</span><span id="line-3"><span class="w">    </span>-H<span class="w"> </span><span class="s1">'authorization: Bearer dc8d497838d4914c9db9aad9b6ec66f6c36ff46b'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="line-4"><span class="w">    </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="line-5"><span class="w">    </span>-d<span class="w"> </span><span class="s1">'{</span>
+</span><span id="line-6"><span class="s1">            "config": {</span>
+</span><span id="line-7"><span class="s1">                "templates": ["4791fa4c-2cef-4f42-8bb4-c86018d71bd3"]</span>
+</span><span id="line-8"><span class="s1">            }</span>
+</span><span id="line-9"><span class="s1">        }'</span>
+</span></code></pre></div>
+</div>
+<p><strong>Example usage</strong>: For removing assigned templates, simply remove
+the/their {id} from the config of a device,</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span><span class="se">\</span>
+</span><span id="line-2"><span class="w">    </span>http://127.0.0.1:8000/api/v1/controller/device/76b7d9cc-4ffd-4a43-b1b0-8f8befd1a7c0/<span class="w"> </span><span class="se">\</span>
+</span><span id="line-3"><span class="w">    </span>-H<span class="w"> </span><span class="s1">'authorization: Bearer dc8d497838d4914c9db9aad9b6ec66f6c36ff46b'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="line-4"><span class="w">    </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="line-5"><span class="w">    </span>-d<span class="w"> </span><span class="s1">'{</span>
+</span><span id="line-6"><span class="s1">            "config": {</span>
+</span><span id="line-7"><span class="s1">                "templates": []</span>
+</span><span id="line-8"><span class="s1">            }</span>
+</span><span id="line-9"><span class="s1">        }'</span>
+</span></code></pre></div>
+</div>
+<p><strong>Example usage</strong>: For reordering the templates simply change their order
+from the config of a device,</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span><span class="se">\</span>
+</span><span id="line-2"><span class="w">    </span>http://127.0.0.1:8000/api/v1/controller/device/76b7d9cc-4ffd-4a43-b1b0-8f8befd1a7c0/<span class="w"> </span><span class="se">\</span>
+</span><span id="line-3"><span class="w">    </span>-H<span class="w"> </span><span class="s1">'authorization: Bearer dc8d497838d4914c9db9aad9b6ec66f6c36ff46b'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="line-4"><span class="w">    </span>-H<span class="w"> </span><span class="s1">'cache-control: no-cache'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="line-5"><span class="w">    </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="line-6"><span class="w">    </span>-H<span class="w"> </span><span class="s1">'postman-token: b3f6a1cc-ff13-5eba-e460-8f394e485801'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="line-7"><span class="w">    </span>-d<span class="w"> </span><span class="s1">'{</span>
+</span><span id="line-8"><span class="s1">            "config": {</span>
+</span><span id="line-9"><span class="s1">                "templates": [</span>
+</span><span id="line-10"><span class="s1">                    "c5bbc697-170e-44bc-8eb7-b944b55ee88f",</span>
+</span><span id="line-11"><span class="s1">                    "4791fa4c-2cef-4f42-8bb4-c86018d71bd3"</span>
+</span><span id="line-12"><span class="s1">                ]</span>
+</span><span id="line-13"><span class="s1">            }</span>
+</span><span id="line-14"><span class="s1">        }'</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="delete-device">
+<h3>Delete Device<a class="headerlink" href="#delete-device" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A device must be deactivated before it can be deleted. Otherwise, an
+<code class="docutils literal notranslate"><span class="pre">HTTP</span> <span class="pre">403</span> <span class="pre">Forbidden</span></code> response will be returned.</p>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">DELETE /api/v1/controller/device/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="deactivate-device">
+<h3>Deactivate Device<a class="headerlink" href="#deactivate-device" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/device/{id}/deactivate/
+</span></code></pre></div>
+</div>
+</section>
+<section id="activate-device">
+<h3>Activate Device<a class="headerlink" href="#activate-device" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/device/{id}/activate/
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-device-connections">
+<h3>List Device Connections<a class="headerlink" href="#list-device-connections" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/{id}/connection/
+</span></code></pre></div>
+</div>
+</section>
+<section id="create-device-connection">
+<h3>Create Device Connection<a class="headerlink" href="#create-device-connection" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/device/{id}/connection/
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-device-connection-detail">
+<h3>Get Device Connection Detail<a class="headerlink" href="#get-device-connection-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/{device_id}/connection/{connection_id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="change-device-connection-detail">
+<h3>Change Device Connection Detail<a class="headerlink" href="#change-device-connection-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/device/{device_id}/connection/{connection_id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="patch-device-connection-detail">
+<h3>Patch Device Connection Detail<a class="headerlink" href="#patch-device-connection-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PATCH /api/v1/controller/device/{device_id}/connection/{connection_id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="delete-device-connection">
+<h3>Delete Device Connection<a class="headerlink" href="#delete-device-connection" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">DELETE /api/v1/controller/device/{device_id}/connection/{connection_id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-credentials">
+<h3>List Credentials<a class="headerlink" href="#list-credentials" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/connection/credential/
+</span></code></pre></div>
+</div>
+</section>
+<section id="create-credential">
+<h3>Create Credential<a class="headerlink" href="#create-credential" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/connection/credential/
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-credential-detail">
+<h3>Get Credential Detail<a class="headerlink" href="#get-credential-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/connection/credential/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="change-credential-detail">
+<h3>Change Credential Detail<a class="headerlink" href="#change-credential-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/connection/credential/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="patch-credential-detail">
+<h3>Patch Credential Detail<a class="headerlink" href="#patch-credential-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PATCH /api/v1/connection/credential/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="delete-credential">
+<h3>Delete Credential<a class="headerlink" href="#delete-credential" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">DELETE /api/v1/connection/credential/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-commands-of-a-device">
+<h3>List Commands of a Device<a class="headerlink" href="#list-commands-of-a-device" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/{device_id}/command/
+</span></code></pre></div>
+</div>
+</section>
+<section id="execute-a-command-on-a-device">
+<span id="controller-execute-command-api"></span><h3>Execute a Command on a Device<a class="headerlink" href="#execute-a-command-on-a-device" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/device/{device_id}/command/
+</span></code></pre></div>
+</div>
+<p>This endpoint allows you to execute various types of commands on a device.</p>
+<p><strong>Request Parameters</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></td>
+<td><p>The type of command to execute (<strong>required</strong>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">input</span></code></p></td>
+<td><p>Input data for the command (format varies by type)
+(<strong>required</strong>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">connection</span></code></p></td>
+<td><p>UUID of specific device connection to use (<strong>optional</strong>)</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal notranslate"><span class="pre">input</span></code> field requires data in a specific format that depends on the
+command type being executed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following examples show payloads for the default commands shipped
+with OpenWISP. The available commands on a device depend on your
+configuration of <a class="reference internal" href="settings.html#openwisp-controller-user-commands"><span class="std std-ref">OPENWISP_CONTROLLER_USER_COMMANDS</span></a> and
+<a class="reference internal" href="settings.html#openwisp-controller-organization-enabled-commands"><span class="std std-ref">OPENWISP_CONTROLLER_ORGANIZATION_ENABLED_COMMANDS</span></a> settings. For
+detailed information about command execution, including how to add
+command types, and restrict available commands per organization, see
+<a class="reference internal" href="shell-commands.html"><span class="doc">Sending Commands to Devices</span></a>.</p>
+</div>
+<p><strong>Available Command Types</strong></p>
+<ol class="arabic">
+<li><p><strong>Custom Command</strong> (<code class="docutils literal notranslate"><span class="pre">custom</span></code>)</p>
+<p>Execute a custom command on the device.</p>
+<p><strong>Input format:</strong> <code class="docutils literal notranslate"><span class="pre">{&quot;command&quot;:</span> <span class="pre">&quot;shell_command&quot;}</span></code></p>
+<p><strong>Example payload:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom"</span><span class="p">,</span>
+</span><span id="line-3"><span class="w">    </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="line-4"><span class="w">        </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"iwinfo"</span>
+</span><span id="line-5"><span class="w">    </span><span class="p">}</span>
+</span><span id="line-6"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</li>
+<li><p><strong>Reboot</strong> (<code class="docutils literal notranslate"><span class="pre">reboot</span></code>)</p>
+<p>Reboot the device.</p>
+<p><strong>Input format:</strong> <code class="docutils literal notranslate"><span class="pre">null</span></code> (no input required)</p>
+<p><strong>Example payload:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"reboot"</span><span class="p">,</span>
+</span><span id="line-3"><span class="w">    </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+</span><span id="line-4"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</li>
+<li><p><strong>Change Password</strong> (<code class="docutils literal notranslate"><span class="pre">change_password</span></code>)</p>
+<p>Change the device's root password.</p>
+<p><strong>Input format:</strong> <code class="docutils literal notranslate"><span class="pre">{&quot;password&quot;:</span> <span class="pre">&quot;new_pass&quot;,</span> <span class="pre">&quot;confirm_password&quot;:</span>
+<span class="pre">&quot;new_pass&quot;}</span></code></p>
+<p><strong>Example payload:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"change_password"</span><span class="p">,</span>
+</span><span id="line-3"><span class="w">    </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="line-4"><span class="w">        </span><span class="nt">"password"</span><span class="p">:</span><span class="w"> </span><span class="s2">"newpassword123"</span><span class="p">,</span>
+</span><span id="line-5"><span class="w">        </span><span class="nt">"confirm_password"</span><span class="p">:</span><span class="w"> </span><span class="s2">"newpassword123"</span>
+</span><span id="line-6"><span class="w">    </span><span class="p">}</span>
+</span><span id="line-7"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</li>
+</ol>
+<p><strong>Example Request:</strong></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+</span><span id="line-2"><span class="w">    </span>http://127.0.0.1:8000/api/v1/controller/device/76b7d9cc-4ffd-4a43-b1b0-8f8befd1a7c0/command/<span class="w"> </span><span class="se">\</span>
+</span><span id="line-3"><span class="w">    </span>-H<span class="w"> </span><span class="s1">'authorization: Bearer yoursecretauthtoken'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="line-4"><span class="w">    </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="line-5"><span class="w">    </span>-d<span class="w"> </span><span class="s1">'{</span>
+</span><span id="line-6"><span class="s1">            "type": "custom",</span>
+</span><span id="line-7"><span class="s1">            "input": {</span>
+</span><span id="line-8"><span class="s1">                "command": "uptime"</span>
+</span><span id="line-9"><span class="s1">            }</span>
+</span><span id="line-10"><span class="s1">        }'</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-command-details">
+<h3>Get Command Details<a class="headerlink" href="#get-command-details" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/{device_id}/command/{command_id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-device-groups">
+<h3>List Device Groups<a class="headerlink" href="#list-device-groups" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/group/
+</span></code></pre></div>
+</div>
+<p><strong>Available filters</strong></p>
+<p>You can filter a list of device groups based on their organization using
+the <code class="docutils literal notranslate"><span class="pre">organization_id</span></code> or <code class="docutils literal notranslate"><span class="pre">organization_slug</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/group/?organization={organization_id}
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/group/?organization_slug={organization_slug}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of device groups that have a device object using the
+<code class="docutils literal notranslate"><span class="pre">empty</span></code> (e.g. true or false).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/group/?empty={empty}
+</span></code></pre></div>
+</div>
+</section>
+<section id="create-device-group">
+<h3>Create Device Group<a class="headerlink" href="#create-device-group" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/group/
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-device-group-detail">
+<h3>Get Device Group Detail<a class="headerlink" href="#get-device-group-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/group/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="change-device-group-detail">
+<span id="id1"></span><h3>Change Device Group Detail<a class="headerlink" href="#change-device-group-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/group/{id}/
+</span></code></pre></div>
+</div>
+<p>This endpoint allows to change the <a class="reference internal" href="device-groups.html#device-group-templates"><span class="std std-ref">Group Templates</span></a> too.</p>
+</section>
+<section id="get-device-group-from-certificate-common-name">
+<h3>Get Device Group from Certificate Common Name<a class="headerlink" href="#get-device-group-from-certificate-common-name" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/cert/{common_name}/group/
+</span></code></pre></div>
+</div>
+<p>This endpoint can be used to retrieve group information and metadata by
+the common name of a certificate used in a VPN client tunnel, this
+endpoint is used in layer 2 tunneling solutions for firewall/captive
+portals.</p>
+<p>It is also possible to filter device group by providing organization slug
+of certificate's organization as show in the example below:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/cert/{common_name}/group/?org={org1_slug},{org2_slug}
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-device-location">
+<h3>Get Device Location<a class="headerlink" href="#get-device-location" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/{id}/location/
+</span></code></pre></div>
+</div>
+<p id="device-location-estimated"><strong>Estimated Status</strong></p>
+<p>If <a class="reference external" href="estimated-location.html">Estimated Location feature</a> is enabled, the location
+response will also include <code class="docutils literal notranslate"><span class="pre">is_estimated</span></code> status field.</p>
+</section>
+<section id="create-device-location">
+<span id="id2"></span><h3>Create Device Location<a class="headerlink" href="#create-device-location" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/device/{id}/location/
+</span></code></pre></div>
+</div>
+<p>You can create <code class="docutils literal notranslate"><span class="pre">DeviceLocation</span></code> object by using primary keys of existing
+<code class="docutils literal notranslate"><span class="pre">Location</span></code> and <code class="docutils literal notranslate"><span class="pre">FloorPlan</span></code> objects as shown in the example below.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"f0cb5762-3711-4791-95b6-c2f6656249fa"</span><span class="p">,</span>
+</span><span id="line-3"><span class="w">    </span><span class="nt">"floorplan"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dfeb6724-aab4-4533-aeab-f7feb6648acd"</span><span class="p">,</span>
+</span><span id="line-4"><span class="w">    </span><span class="nt">"indoor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"-36,264"</span>
+</span><span id="line-5"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">indoor</span></code> field represents the coordinates of the point placed on
+the image from the top left corner. E.g. if you placed the pointer on
+the top left corner of the floor plan image, its indoor coordinates
+will be <code class="docutils literal notranslate"><span class="pre">0,0</span></code>.</p>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl -X PUT \
+</span><span id="line-2">    http://127.0.0.1:8000/api/v1/controller/device/8a85cc23-bad5-4c7e-b9f4-ffe298defb5c/location/ \
+</span><span id="line-3">    -H 'authorization: Bearer dc8d497838d4914c9db9aad9b6ec66f6c36ff46b' \
+</span><span id="line-4">    -H 'content-type: application/json' \
+</span><span id="line-5">    -d '{
+</span><span id="line-6">        "location": "f0cb5762-3711-4791-95b6-c2f6656249fa",
+</span><span id="line-7">        "floorplan": "dfeb6724-aab4-4533-aeab-f7feb6648acd",
+</span><span id="line-8">        "indoor": "-36,264"
+</span><span id="line-9">        }'
+</span></code></pre></div>
+</div>
+<p>You can also create related <code class="docutils literal notranslate"><span class="pre">Location</span></code> and <code class="docutils literal notranslate"><span class="pre">FloorPlan</span></code> objects for the
+device directly from this endpoint.</p>
+<p>The following example demonstrates creating related location object in a
+single request.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="line-3"><span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Via del Corso"</span><span class="p">,</span>
+</span><span id="line-4"><span class="w">        </span><span class="nt">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Via del Corso, Roma, Italia"</span><span class="p">,</span>
+</span><span id="line-5"><span class="w">        </span><span class="nt">"geometry"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="line-6"><span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Point"</span><span class="p">,</span>
+</span><span id="line-7"><span class="w">            </span><span class="nt">"coordinates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">12.512124</span><span class="p">,</span><span class="w"> </span><span class="mf">41.898903</span><span class="p">]</span>
+</span><span id="line-8"><span class="w">        </span><span class="p">},</span>
+</span><span id="line-9"><span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"outdoor"</span><span class="p">,</span>
+</span><span id="line-10"><span class="w">    </span><span class="p">}</span>
+</span><span id="line-11"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl -X PUT \
+</span><span id="line-2">    http://127.0.0.1:8000/api/v1/controller/device/8a85cc23-bad5-4c7e-b9f4-ffe298defb5c/location/ \
+</span><span id="line-3">    -H 'authorization: Bearer dc8d497838d4914c9db9aad9b6ec66f6c36ff46b' \
+</span><span id="line-4">    -H 'content-type: application/json' \
+</span><span id="line-5">    -d '{
+</span><span id="line-6">            "location": {
+</span><span id="line-7">                "name": "Via del Corso",
+</span><span id="line-8">                "address": "Via del Corso, Roma, Italia",
+</span><span id="line-9">                "geometry": {
+</span><span id="line-10">                    "type": "Point",
+</span><span id="line-11">                    "coordinates": [12.512124, 41.898903]
+</span><span id="line-12">                },
+</span><span id="line-13">                "type": "outdoor"
+</span><span id="line-14">            }
+</span><span id="line-15">        }'
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can also specify the <code class="docutils literal notranslate"><span class="pre">geometry</span></code> in <strong>Well-known text (WKT)</strong>
+format, like following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="line-3"><span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Via del Corso"</span><span class="p">,</span>
+</span><span id="line-4"><span class="w">        </span><span class="nt">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Via del Corso, Roma, Italia"</span><span class="p">,</span>
+</span><span id="line-5"><span class="w">        </span><span class="nt">"geometry"</span><span class="p">:</span><span class="w"> </span><span class="s2">"POINT (12.512124 41.898903)"</span><span class="p">,</span>
+</span><span id="line-6"><span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"outdoor"</span><span class="p">,</span>
+</span><span id="line-7"><span class="w">    </span><span class="p">}</span>
+</span><span id="line-8"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</div>
+<p>Similarly, you can create <code class="docutils literal notranslate"><span class="pre">Floorplan</span></code> object with the same request. But,
+note that a <code class="docutils literal notranslate"><span class="pre">FloorPlan</span></code> can be added to <code class="docutils literal notranslate"><span class="pre">DeviceLocation</span></code> only if the
+related <code class="docutils literal notranslate"><span class="pre">Location</span></code> object defines an indoor location. The example below
+demonstrates creating both <code class="docutils literal notranslate"><span class="pre">Location</span></code> and <code class="docutils literal notranslate"><span class="pre">FloorPlan</span></code> objects.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"location.name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Via del Corso"</span><span class="p">,</span>
+</span><span id="line-3"><span class="w">    </span><span class="nt">"location.address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Via del Corso, Roma, Italia"</span><span class="p">,</span>
+</span><span id="line-4"><span class="w">    </span><span class="nt">"location.geometry.type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Point"</span><span class="p">,</span>
+</span><span id="line-5"><span class="w">    </span><span class="nt">"location.geometry.coordinates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">12.512124</span><span class="p">,</span><span class="w"> </span><span class="mf">41.898903</span><span class="p">],</span>
+</span><span id="line-6"><span class="w">    </span><span class="nt">"location.type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"outdoor"</span><span class="p">,</span>
+</span><span id="line-7"><span class="w">    </span><span class="nt">"floorplan.floor"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span id="line-8"><span class="w">    </span><span class="nt">"floorplan.image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"floorplan.png"</span>
+</span><span id="line-9"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl -X PUT \
+</span><span id="line-2">    http://127.0.0.1:8000/api/v1/controller/device/8a85cc23-bad5-4c7e-b9f4-ffe298defb5c/location/ \
+</span><span id="line-3">    -H 'authorization: Bearer dc8d497838d4914c9db9aad9b6ec66f6c36ff46b' \
+</span><span id="line-4">    -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
+</span><span id="line-5">    -F 'location.name=Via del Corso' \
+</span><span id="line-6">    -F 'location.address=Via del Corso, Roma, Italia' \
+</span><span id="line-7">    -F location.geometry.type=Point \
+</span><span id="line-8">    -F 'location.geometry.coordinates=[12.512124, 41.898903]' \
+</span><span id="line-9">    -F location.type=indoor \
+</span><span id="line-10">    -F floorplan.floor=1 \
+</span><span id="line-11">    -F 'floorplan.image=@floorplan.png'
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The example above uses <code class="docutils literal notranslate"><span class="pre">multipart</span> <span class="pre">content-type</span></code> for uploading floor
+plan image.</p>
+</div>
+<p>You can also use an existing <code class="docutils literal notranslate"><span class="pre">Location</span></code> object and create a new floor
+plan for that location using this endpoint.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"f0cb5762-3711-4791-95b6-c2f6656249fa"</span><span class="p">,</span>
+</span><span id="line-3"><span class="w">    </span><span class="nt">"floorplan.floor"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span id="line-4"><span class="w">    </span><span class="nt">"floorplan.image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"floorplan.png"</span>
+</span><span id="line-5"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl -X PUT \
+</span><span id="line-2">    http://127.0.0.1:8000/api/v1/controller/device/8a85cc23-bad5-4c7e-b9f4-ffe298defb5c/location/ \
+</span><span id="line-3">    -H 'authorization: Bearer dc8d497838d4914c9db9aad9b6ec66f6c36ff46b' \
+</span><span id="line-4">    -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
+</span><span id="line-5">    -F location=f0cb5762-3711-4791-95b6-c2f6656249fa \
+</span><span id="line-6">    -F floorplan.floor=1 \
+</span><span id="line-7">    -F 'floorplan.image=@floorplan.png'
+</span></code></pre></div>
+</div>
+</section>
+<section id="change-details-of-device-location">
+<h3>Change Details of Device Location<a class="headerlink" href="#change-details-of-device-location" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/device/{id}/location/
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This endpoint can be used to update related <code class="docutils literal notranslate"><span class="pre">Location</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Floorplan</span></code> objects. Refer to the <a class="reference internal" href="#create-device-location"><span class="std std-ref">examples in the &quot;Create
+device location&quot; section</span></a> for information on
+payload format.</p>
+</div>
+</section>
+<section id="delete-device-location">
+<h3>Delete Device Location<a class="headerlink" href="#delete-device-location" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">DELETE /api/v1/controller/device/{id}/location/
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-device-coordinates">
+<h3>Get Device Coordinates<a class="headerlink" href="#get-device-coordinates" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/device/{id}/coordinates/
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This endpoint is intended to be used by devices.</p>
+</div>
+<p>This endpoint skips multi-tenancy and permission checks if the device
+<code class="docutils literal notranslate"><span class="pre">key</span></code> is passed as <code class="docutils literal notranslate"><span class="pre">query_param</span></code> because the system assumes that the
+device is updating it's position.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl -X GET \
+</span><span id="line-2">    'http://127.0.0.1:8000/api/v1/controller/device/8a85cc23-bad5-4c7e-b9f4-ffe298defb5c/coordinates/?key=10a0cb5a553c71099c0e4ef236435496'
+</span></code></pre></div>
+</div>
+</section>
+<section id="update-device-coordinates">
+<h3>Update Device Coordinates<a class="headerlink" href="#update-device-coordinates" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/device/{id}/coordinates/
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This endpoint is intended to be used by devices.</p>
+</div>
+<p>This endpoint skips multi-tenancy and permission checks if the device
+<code class="docutils literal notranslate"><span class="pre">key</span></code> is passed as <code class="docutils literal notranslate"><span class="pre">query_param</span></code> because the system assumes that the
+device is updating it's position.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Feature"</span><span class="p">,</span>
+</span><span id="line-3"><span class="w">    </span><span class="nt">"geometry"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="line-4"><span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Point"</span><span class="p">,</span>
+</span><span id="line-5"><span class="w">        </span><span class="nt">"coordinates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">12.512124</span><span class="p">,</span><span class="w"> </span><span class="mf">41.898903</span><span class="p">]</span>
+</span><span id="line-6"><span class="w">    </span><span class="p">},</span>
+</span><span id="line-7"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl -X PUT \
+</span><span id="line-2">    'http://127.0.0.1:8000/api/v1/controller/device/8a85cc23-bad5-4c7e-b9f4-ffe298defb5c/coordinates/?key=10a0cb5a553c71099c0e4ef236435496' \
+</span><span id="line-3">    -H 'content-type: application/json' \
+</span><span id="line-4">    -d '{
+</span><span id="line-5">            "type": "Feature",
+</span><span id="line-6">            "geometry": {
+</span><span id="line-7">                "type": "Point",
+</span><span id="line-8">                "coordinates": [12.512124, 41.898903]
+</span><span id="line-9">            },
+</span><span id="line-10">        }'
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-organization-geographic-settings">
+<h3>Get Organization Geographic Settings<a class="headerlink" href="#get-organization-geographic-settings" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/organization/{organization_pk}/geo-settings/
+</span></code></pre></div>
+</div>
+<p>This endpoint allows retrieving geographic settings for a specific
+organization.</p>
+</section>
+<section id="update-organization-geographic-settings">
+<h3>Update Organization Geographic Settings<a class="headerlink" href="#update-organization-geographic-settings" title="Link to this heading"></a></h3>
+<p>This endpoint allows updating geographic settings for a specific
+organization.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/organization/{organization_pk}/geo-settings/
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl -X PUT \
+</span><span id="line-2">    'http://127.0.0.1:8000/api/v1/controller/organization/8a85cc23-bad5-4c7e-b9f4-ffe298defb5c/geo-settings/' \
+</span><span id="line-3">    -H 'authorization: Bearer &lt;token&gt;' \
+</span><span id="line-4">    -H 'content-type: application/json' \
+</span><span id="line-5">    -d '{"estimated_location_enabled": true}'
+</span></code></pre></div>
+</div>
+</section>
+<section id="partially-update-organization-geographic-settings">
+<h3>Partially Update Organization Geographic Settings<a class="headerlink" href="#partially-update-organization-geographic-settings" title="Link to this heading"></a></h3>
+<p>This endpoint allows partial updates of Organization geographic settings
+using the PATCH method. PATCH accepts a subset of fields and applies a
+partial update to the resource at the same endpoint path.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PATCH /api/v1/controller/organization/{organization_pk}/geo-settings/
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl -X PATCH \
+</span><span id="line-2">    'http://127.0.0.1:8000/api/v1/controller/organization/8a85cc23-bad5-4c7e-b9f4-ffe298defb5c/geo-settings/' \
+</span><span id="line-3">    -H 'authorization: Bearer &lt;token&gt;' \
+</span><span id="line-4">    -H 'content-type: application/json' \
+</span><span id="line-5">    -d '{"estimated_location_enabled": true}'
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-locations">
+<h3>List Locations<a class="headerlink" href="#list-locations" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/location/
+</span></code></pre></div>
+</div>
+<p id="location-list-estimated"><strong>Estimated Status</strong></p>
+<p>If <a class="reference external" href="estimated-location.html">Estimated Location feature</a> is enabled, the location
+response will also include <code class="docutils literal notranslate"><span class="pre">is_estimated</span></code> status field.</p>
+<p>Locations can also be filtered using the <code class="docutils literal notranslate"><span class="pre">is_estimated</span></code> filter.</p>
+<p><strong>Available filters</strong></p>
+<p>You can filter using <code class="docutils literal notranslate"><span class="pre">organization_id</span></code> or <code class="docutils literal notranslate"><span class="pre">organization_slug</span></code> to get
+list locations that belongs to an organization.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/location/?organization={organization_id}
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/location/?organization_slug={organization_slug}
+</span></code></pre></div>
+</div>
+</section>
+<section id="create-location">
+<h3>Create Location<a class="headerlink" href="#create-location" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/location/
+</span></code></pre></div>
+</div>
+<p>If you are creating an <code class="docutils literal notranslate"><span class="pre">indoor</span></code> location, you can use this endpoint to
+create floor plan for the location.</p>
+<p>The following example demonstrates creating floor plan along with location
+in a single request.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Via del Corso"</span><span class="p">,</span>
+</span><span id="line-3"><span class="w">    </span><span class="nt">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Via del Corso, Roma, Italia"</span><span class="p">,</span>
+</span><span id="line-4"><span class="w">    </span><span class="nt">"geometry.type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Point"</span><span class="p">,</span>
+</span><span id="line-5"><span class="w">    </span><span class="nt">"geometry.location"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">12.512124</span><span class="p">,</span><span class="w"> </span><span class="mf">41.898903</span><span class="p">],</span>
+</span><span id="line-6"><span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"indoor"</span><span class="p">,</span>
+</span><span id="line-7"><span class="w">    </span><span class="nt">"is_mobile"</span><span class="p">:</span><span class="w"> </span><span class="s2">"false"</span><span class="p">,</span>
+</span><span id="line-8"><span class="w">    </span><span class="nt">"floorplan.floor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+</span><span id="line-9"><span class="w">    </span><span class="nt">"floorplan.image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"floorplan.png"</span><span class="p">,</span>
+</span><span id="line-10"><span class="w">    </span><span class="nt">"organization"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1f6c5666-1011-4f1d-bce9-fc6fcb4f3a05"</span>
+</span><span id="line-11"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">curl -X POST \
+</span><span id="line-2">    http://127.0.0.1:8000/api/v1/controller/location/ \
+</span><span id="line-3">    -H 'authorization: Bearer dc8d497838d4914c9db9aad9b6ec66f6c36ff46b' \
+</span><span id="line-4">    -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
+</span><span id="line-5">    -F 'name=Via del Corso' \
+</span><span id="line-6">    -F 'address=Via del Corso, Roma, Italia' \
+</span><span id="line-7">    -F geometry.type=Point \
+</span><span id="line-8">    -F 'geometry.coordinates=[12.512124, 41.898903]' \
+</span><span id="line-9">    -F type=indoor \
+</span><span id="line-10">    -F is_mobile=false \
+</span><span id="line-11">    -F floorplan.floor=1 \
+</span><span id="line-12">    -F 'floorplan.image=@floorplan.png' \
+</span><span id="line-13">    -F organization=1f6c5666-1011-4f1d-bce9-fc6fcb4f3a05
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can also specify the <code class="docutils literal notranslate"><span class="pre">geometry</span></code> in <strong>Well-known text (WKT)</strong>
+format, like following:</p>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="p">{</span>
+</span><span id="line-2"><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Via del Corso"</span><span class="p">,</span>
+</span><span id="line-3"><span class="w">    </span><span class="nt">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Via del Corso, Roma, Italia"</span><span class="p">,</span>
+</span><span id="line-4"><span class="w">    </span><span class="nt">"geometry"</span><span class="p">:</span><span class="w"> </span><span class="s2">"POINT (12.512124 41.898903)"</span><span class="p">,</span>
+</span><span id="line-5"><span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"indoor"</span><span class="p">,</span>
+</span><span id="line-6"><span class="w">    </span><span class="nt">"is_mobile"</span><span class="p">:</span><span class="w"> </span><span class="s2">"false"</span><span class="p">,</span>
+</span><span id="line-7"><span class="w">    </span><span class="nt">"floorplan.floor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+</span><span id="line-8"><span class="w">    </span><span class="nt">"floorplan.image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"floorplan.png"</span><span class="p">,</span>
+</span><span id="line-9"><span class="w">    </span><span class="nt">"organization"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1f6c5666-1011-4f1d-bce9-fc6fcb4f3a05"</span>
+</span><span id="line-10"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-location-details">
+<h3>Get Location Details<a class="headerlink" href="#get-location-details" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/location/{pk}/
+</span></code></pre></div>
+</div>
+<p id="location-detail-estimated"><strong>Estimated Status</strong></p>
+<p>If <a class="reference external" href="estimated-location.html">Estimated Location feature</a> is enabled, the location
+response will also include <code class="docutils literal notranslate"><span class="pre">is_estimated</span></code> status field.</p>
+</section>
+<section id="change-location-details">
+<h3>Change Location Details<a class="headerlink" href="#change-location-details" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/location/{pk}/
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only the first floor plan data present can be edited or changed.
+Setting the <code class="docutils literal notranslate"><span class="pre">type</span></code> of location to outdoor will remove all the floor
+plans associated with it.</p>
+</div>
+<p>Refer to the <a class="reference internal" href="#create-device-location"><span class="std std-ref">examples in the &quot;Create device location&quot; section</span></a> for information on payload format.</p>
+</section>
+<section id="delete-location">
+<h3>Delete Location<a class="headerlink" href="#delete-location" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">DELETE /api/v1/controller/location/{pk}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-devices-in-a-location">
+<h3>List Devices in a Location<a class="headerlink" href="#list-devices-in-a-location" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/location/{id}/device/
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-locations-with-devices-deployed-in-geojson-format">
+<h3>List Locations with Devices Deployed (in GeoJSON Format)<a class="headerlink" href="#list-locations-with-devices-deployed-in-geojson-format" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>this endpoint will only list locations that have been assigned to a
+device.</p>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/location/geojson/
+</span></code></pre></div>
+</div>
+<p id="location-geojson-estimated"><strong>Estimated Status</strong></p>
+<p>If <a class="reference external" href="estimated-location.html">Estimated Location feature</a> is enabled, the location
+response will also include <code class="docutils literal notranslate"><span class="pre">is_estimated</span></code> status field.</p>
+<p>Locations can also be filtered using the <code class="docutils literal notranslate"><span class="pre">is_estimated</span></code> filter.</p>
+<p><strong>Available filters</strong></p>
+<p>You can filter using <code class="docutils literal notranslate"><span class="pre">organization_id</span></code> or <code class="docutils literal notranslate"><span class="pre">organization_slug</span></code> to get
+list location of devices from that organization.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/location/geojson/?organization_id={organization_id}
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/location/geojson/?organization_slug={organization_slug}
+</span></code></pre></div>
+</div>
+</section>
+<section id="floor-plan-list">
+<h3>Floor Plan List<a class="headerlink" href="#floor-plan-list" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/floorplan/
+</span></code></pre></div>
+</div>
+<p><strong>Available filters</strong></p>
+<p>You can filter using <code class="docutils literal notranslate"><span class="pre">organization_id</span></code> or <code class="docutils literal notranslate"><span class="pre">organization_slug</span></code> to get
+list floor plans that belongs to an organization.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/floorplan/?organization={organization_id}
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/floorplan/?organization_slug={organization_slug}
+</span></code></pre></div>
+</div>
+</section>
+<section id="create-floor-plan">
+<h3>Create Floor Plan<a class="headerlink" href="#create-floor-plan" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/floorplan/
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-floor-plan-details">
+<h3>Get Floor Plan Details<a class="headerlink" href="#get-floor-plan-details" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/floorplan/{pk}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="change-floor-plan-details">
+<h3>Change Floor Plan Details<a class="headerlink" href="#change-floor-plan-details" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/floorplan/{pk}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="delete-floor-plan">
+<h3>Delete Floor Plan<a class="headerlink" href="#delete-floor-plan" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">DELETE /api/v1/controller/floorplan/{pk}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-indoor-coordinates-of-a-location">
+<h3>List Indoor Coordinates of a Location<a class="headerlink" href="#list-indoor-coordinates-of-a-location" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This endpoint returns device coordinates from the first floor above
+ground (lowest non-negative floors) by default. If a location only has
+negative floors (e.g. underground parking lot), then it will return
+the closest floor to the ground (greatest negative floor).</p>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/location/{id}/indoor-coordinates/
+</span></code></pre></div>
+</div>
+<p><strong>Available filters</strong></p>
+<p>You can filter using <code class="docutils literal notranslate"><span class="pre">floor</span></code> to get list of devices and their indoor
+coordinates for that floor.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/location/{id}/indoor-coordinates/?floor={floor}
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-templates">
+<h3>List Templates<a class="headerlink" href="#list-templates" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/template/
+</span></code></pre></div>
+</div>
+<p><strong>Available filters</strong></p>
+<p>You can filter a list of templates based on their organization using the
+<code class="docutils literal notranslate"><span class="pre">organization_id</span></code> or <code class="docutils literal notranslate"><span class="pre">organization_slug</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/template/?organization={organization_id}
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/template/?organization_slug={organization_slug}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of templates based on their backend using the
+<code class="docutils literal notranslate"><span class="pre">backend</span></code> (e.g <code class="docutils literal notranslate"><span class="pre">netjsonconfig.OpenWrt</span></code> or <code class="docutils literal notranslate"><span class="pre">netjsonconfig.OpenWisp</span></code>).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/template/?backend={backend}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of templates based on their type using the <code class="docutils literal notranslate"><span class="pre">type</span></code>
+(e.g. vpn or generic).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/template/?type={type}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of templates that are enabled by default or not
+using the <code class="docutils literal notranslate"><span class="pre">default</span></code> (e.g. true or false).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/template/?default={default}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of templates that are required or not using the
+<code class="docutils literal notranslate"><span class="pre">required</span></code> (e.g. true or false).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/template/?required={required}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of templates based on their creation time using the
+<code class="docutils literal notranslate"><span class="pre">creation_time</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"># Created exact
+</span><span id="line-2">
+</span><span id="line-3">GET /api/v1/controller/template/?created={creation_time}
+</span><span id="line-4">
+</span><span id="line-5"># Created greater than or equal to
+</span><span id="line-6">
+</span><span id="line-7">GET /api/v1/controller/template/?created__gte={creation_time}
+</span><span id="line-8">
+</span><span id="line-9"># Created is less than
+</span><span id="line-10">
+</span><span id="line-11">GET /api/v1/controller/template/?created__lt={creation_time}
+</span></code></pre></div>
+</div>
+</section>
+<section id="create-template">
+<h3>Create Template<a class="headerlink" href="#create-template" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/template/
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-template-detail">
+<h3>Get Template Detail<a class="headerlink" href="#get-template-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/template/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="download-template-configuration">
+<h3>Download Template Configuration<a class="headerlink" href="#download-template-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/template/{id}/configuration/
+</span></code></pre></div>
+</div>
+<p>The above endpoint triggers the download of a <code class="docutils literal notranslate"><span class="pre">tar.gz</span></code> file containing
+the generated configuration for that specific template.</p>
+</section>
+<section id="change-details-of-template">
+<h3>Change Details of Template<a class="headerlink" href="#change-details-of-template" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/template/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="patch-details-of-template">
+<h3>Patch Details of Template<a class="headerlink" href="#patch-details-of-template" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PATCH /api/v1/controller/template/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="delete-template">
+<h3>Delete Template<a class="headerlink" href="#delete-template" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">DELETE /api/v1/controller/template/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-vpns">
+<h3>List VPNs<a class="headerlink" href="#list-vpns" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/vpn/
+</span></code></pre></div>
+</div>
+<p><strong>Available filters</strong></p>
+<p>You can filter a list of vpns based on their backend using the <code class="docutils literal notranslate"><span class="pre">backend</span></code>
+(e.g <code class="docutils literal notranslate"><span class="pre">openwisp_controller.vpn_backends.OpenVpn</span></code> or
+<code class="docutils literal notranslate"><span class="pre">openwisp_controller.vpn_backends.Wireguard</span></code>).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/vpn/?backend={backend}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of vpns based on their subnet using the
+<code class="docutils literal notranslate"><span class="pre">subnet_id</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/vpn/?subnet={subnet_id}
+</span></code></pre></div>
+</div>
+<p>You can filter a list of vpns based on their organization using the
+<code class="docutils literal notranslate"><span class="pre">organization_id</span></code> or <code class="docutils literal notranslate"><span class="pre">organization_slug</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/vpn/?organization={organization_id}
+</span></code></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/vpn/?organization_slug={organization_slug}
+</span></code></pre></div>
+</div>
+</section>
+<section id="create-vpn">
+<h3>Create VPN<a class="headerlink" href="#create-vpn" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/vpn/
+</span></code></pre></div>
+</div>
+</section>
+<section id="get-vpn-detail">
+<h3>Get VPN detail<a class="headerlink" href="#get-vpn-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/vpn/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="download-vpn-configuration">
+<h3>Download VPN Configuration<a class="headerlink" href="#download-vpn-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/vpn/{id}/configuration/
+</span></code></pre></div>
+</div>
+<p>The above endpoint triggers the download of a <code class="docutils literal notranslate"><span class="pre">tar.gz</span></code> file containing
+the generated configuration for that specific VPN.</p>
+</section>
+<section id="change-details-of-vpn">
+<h3>Change Details of VPN<a class="headerlink" href="#change-details-of-vpn" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/vpn/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="patch-details-of-vpn">
+<h3>Patch Details of VPN<a class="headerlink" href="#patch-details-of-vpn" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PATCH /api/v1/controller/vpn/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="delete-vpn">
+<h3>Delete VPN<a class="headerlink" href="#delete-vpn" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">DELETE /api/v1/controller/vpn/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-ca">
+<h3>List CA<a class="headerlink" href="#list-ca" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/ca/
+</span></code></pre></div>
+</div>
+</section>
+<section id="create-new-ca">
+<h3>Create New CA<a class="headerlink" href="#create-new-ca" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/ca/
+</span></code></pre></div>
+</div>
+</section>
+<section id="import-existing-ca">
+<h3>Import Existing CA<a class="headerlink" href="#import-existing-ca" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/ca/
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To import an existing CA, only <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">certificate</span></code> and
+<code class="docutils literal notranslate"><span class="pre">private_key</span></code> fields have to be filled in the <code class="docutils literal notranslate"><span class="pre">HTML</span></code> form or
+included in the <code class="docutils literal notranslate"><span class="pre">JSON</span></code> format.</p>
+</div>
+</section>
+<section id="get-ca-detail">
+<h3>Get CA Detail<a class="headerlink" href="#get-ca-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/ca/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="change-details-of-ca">
+<h3>Change Details of CA<a class="headerlink" href="#change-details-of-ca" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/ca/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="patch-details-of-ca">
+<h3>Patch Details of CA<a class="headerlink" href="#patch-details-of-ca" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PATCH /api/v1/controller/ca/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="download-ca-crl">
+<h3>Download CA(crl)<a class="headerlink" href="#download-ca-crl" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/ca/{id}/crl/
+</span></code></pre></div>
+</div>
+<p>The above endpoint triggers the download of <code class="docutils literal notranslate"><span class="pre">{id}.crl</span></code> file containing
+up to date CRL of that specific CA.</p>
+</section>
+<section id="delete-ca">
+<h3>Delete CA<a class="headerlink" href="#delete-ca" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">DELETE /api/v1/controller/ca/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="renew-ca">
+<h3>Renew CA<a class="headerlink" href="#renew-ca" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/ca/{id}/renew/
+</span></code></pre></div>
+</div>
+</section>
+<section id="list-cert">
+<h3>List Cert<a class="headerlink" href="#list-cert" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/cert/
+</span></code></pre></div>
+</div>
+</section>
+<section id="create-new-cert">
+<h3>Create New Cert<a class="headerlink" href="#create-new-cert" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/cert/
+</span></code></pre></div>
+</div>
+</section>
+<section id="import-existing-cert">
+<h3>Import Existing Cert<a class="headerlink" href="#import-existing-cert" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/cert/
+</span></code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To import an existing Cert, only <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">ca</span></code>, <code class="docutils literal notranslate"><span class="pre">certificate</span></code> and
+<code class="docutils literal notranslate"><span class="pre">private_key</span></code> fields have to be filled in the <code class="docutils literal notranslate"><span class="pre">HTML</span></code> form or
+included in the <code class="docutils literal notranslate"><span class="pre">JSON</span></code> format.</p>
+</div>
+</section>
+<section id="get-cert-detail">
+<h3>Get Cert Detail<a class="headerlink" href="#get-cert-detail" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">GET /api/v1/controller/cert/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="change-details-of-cert">
+<h3>Change Details of Cert<a class="headerlink" href="#change-details-of-cert" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PUT /api/v1/controller/cert/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="patch-details-of-cert">
+<h3>Patch Details of Cert<a class="headerlink" href="#patch-details-of-cert" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">PATCH /api/v1/controller/cert/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="delete-cert">
+<h3>Delete Cert<a class="headerlink" href="#delete-cert" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">DELETE /api/v1/controller/cert/{id}/
+</span></code></pre></div>
+</div>
+</section>
+<section id="renew-cert">
+<h3>Renew Cert<a class="headerlink" href="#renew-cert" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/cert/{id}/renew/
+</span></code></pre></div>
+</div>
+</section>
+<section id="revoke-cert">
+<h3>Revoke Cert<a class="headerlink" href="#revoke-cert" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">POST /api/v1/controller/cert/{id}/revoke/
+</span></code></pre></div>
+</div>
+</section>
+</section>
+</section>
+
+    </div><div class="flex justify-between items-center pt-6 mt-12 border-t border-border gap-4">
+    <div class="mr-auto">
+      <a href="subnet-division-rules.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="mr-2 h-4 w-4">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Automating Subnet and IP Address Provisioning
+      </a>
+    </div>
+    <div class="ml-auto">
+      <a href="websocket-api.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        WebSocket API Reference
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="ml-2 h-4 w-4">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+</div></div><aside id="right-sidebar" class="hidden text-sm xl:block">
+  <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
+    <ul>
+<li><a class="reference internal" href="#live-documentation">Live Documentation</a></li>
+<li><a class="reference internal" href="#browsable-web-interface">Browsable Web Interface</a></li>
+<li><a class="reference internal" href="#authentication">Authentication</a></li>
+<li><a class="reference internal" href="#pagination">Pagination</a></li>
+<li><a class="reference internal" href="#list-of-endpoints">List of Endpoints</a><ul>
+<li><a class="reference internal" href="#list-devices">List Devices</a></li>
+<li><a class="reference internal" href="#create-device">Create Device</a></li>
+<li><a class="reference internal" href="#get-device-detail">Get Device Detail</a></li>
+<li><a class="reference internal" href="#download-device-configuration">Download Device Configuration</a></li>
+<li><a class="reference internal" href="#change-details-of-device">Change Details of Device</a></li>
+<li><a class="reference internal" href="#patch-details-of-device">Patch Details of Device</a></li>
+<li><a class="reference internal" href="#delete-device">Delete Device</a></li>
+<li><a class="reference internal" href="#deactivate-device">Deactivate Device</a></li>
+<li><a class="reference internal" href="#activate-device">Activate Device</a></li>
+<li><a class="reference internal" href="#list-device-connections">List Device Connections</a></li>
+<li><a class="reference internal" href="#create-device-connection">Create Device Connection</a></li>
+<li><a class="reference internal" href="#get-device-connection-detail">Get Device Connection Detail</a></li>
+<li><a class="reference internal" href="#change-device-connection-detail">Change Device Connection Detail</a></li>
+<li><a class="reference internal" href="#patch-device-connection-detail">Patch Device Connection Detail</a></li>
+<li><a class="reference internal" href="#delete-device-connection">Delete Device Connection</a></li>
+<li><a class="reference internal" href="#list-credentials">List Credentials</a></li>
+<li><a class="reference internal" href="#create-credential">Create Credential</a></li>
+<li><a class="reference internal" href="#get-credential-detail">Get Credential Detail</a></li>
+<li><a class="reference internal" href="#change-credential-detail">Change Credential Detail</a></li>
+<li><a class="reference internal" href="#patch-credential-detail">Patch Credential Detail</a></li>
+<li><a class="reference internal" href="#delete-credential">Delete Credential</a></li>
+<li><a class="reference internal" href="#list-commands-of-a-device">List Commands of a Device</a></li>
+<li><a class="reference internal" href="#execute-a-command-on-a-device">Execute a Command on a Device</a></li>
+<li><a class="reference internal" href="#get-command-details">Get Command Details</a></li>
+<li><a class="reference internal" href="#list-device-groups">List Device Groups</a></li>
+<li><a class="reference internal" href="#create-device-group">Create Device Group</a></li>
+<li><a class="reference internal" href="#get-device-group-detail">Get Device Group Detail</a></li>
+<li><a class="reference internal" href="#change-device-group-detail">Change Device Group Detail</a></li>
+<li><a class="reference internal" href="#get-device-group-from-certificate-common-name">Get Device Group from Certificate Common Name</a></li>
+<li><a class="reference internal" href="#get-device-location">Get Device Location</a></li>
+<li><a class="reference internal" href="#create-device-location">Create Device Location</a></li>
+<li><a class="reference internal" href="#change-details-of-device-location">Change Details of Device Location</a></li>
+<li><a class="reference internal" href="#delete-device-location">Delete Device Location</a></li>
+<li><a class="reference internal" href="#get-device-coordinates">Get Device Coordinates</a></li>
+<li><a class="reference internal" href="#update-device-coordinates">Update Device Coordinates</a></li>
+<li><a class="reference internal" href="#get-organization-geographic-settings">Get Organization Geographic Settings</a></li>
+<li><a class="reference internal" href="#update-organization-geographic-settings">Update Organization Geographic Settings</a></li>
+<li><a class="reference internal" href="#partially-update-organization-geographic-settings">Partially Update Organization Geographic Settings</a></li>
+<li><a class="reference internal" href="#list-locations">List Locations</a></li>
+<li><a class="reference internal" href="#create-location">Create Location</a></li>
+<li><a class="reference internal" href="#get-location-details">Get Location Details</a></li>
+<li><a class="reference internal" href="#change-location-details">Change Location Details</a></li>
+<li><a class="reference internal" href="#delete-location">Delete Location</a></li>
+<li><a class="reference internal" href="#list-devices-in-a-location">List Devices in a Location</a></li>
+<li><a class="reference internal" href="#list-locations-with-devices-deployed-in-geojson-format">List Locations with Devices Deployed (in GeoJSON Format)</a></li>
+<li><a class="reference internal" href="#floor-plan-list">Floor Plan List</a></li>
+<li><a class="reference internal" href="#create-floor-plan">Create Floor Plan</a></li>
+<li><a class="reference internal" href="#get-floor-plan-details">Get Floor Plan Details</a></li>
+<li><a class="reference internal" href="#change-floor-plan-details">Change Floor Plan Details</a></li>
+<li><a class="reference internal" href="#delete-floor-plan">Delete Floor Plan</a></li>
+<li><a class="reference internal" href="#list-indoor-coordinates-of-a-location">List Indoor Coordinates of a Location</a></li>
+<li><a class="reference internal" href="#list-templates">List Templates</a></li>
+<li><a class="reference internal" href="#create-template">Create Template</a></li>
+<li><a class="reference internal" href="#get-template-detail">Get Template Detail</a></li>
+<li><a class="reference internal" href="#download-template-configuration">Download Template Configuration</a></li>
+<li><a class="reference internal" href="#change-details-of-template">Change Details of Template</a></li>
+<li><a class="reference internal" href="#patch-details-of-template">Patch Details of Template</a></li>
+<li><a class="reference internal" href="#delete-template">Delete Template</a></li>
+<li><a class="reference internal" href="#list-vpns">List VPNs</a></li>
+<li><a class="reference internal" href="#create-vpn">Create VPN</a></li>
+<li><a class="reference internal" href="#get-vpn-detail">Get VPN detail</a></li>
+<li><a class="reference internal" href="#download-vpn-configuration">Download VPN Configuration</a></li>
+<li><a class="reference internal" href="#change-details-of-vpn">Change Details of VPN</a></li>
+<li><a class="reference internal" href="#patch-details-of-vpn">Patch Details of VPN</a></li>
+<li><a class="reference internal" href="#delete-vpn">Delete VPN</a></li>
+<li><a class="reference internal" href="#list-ca">List CA</a></li>
+<li><a class="reference internal" href="#create-new-ca">Create New CA</a></li>
+<li><a class="reference internal" href="#import-existing-ca">Import Existing CA</a></li>
+<li><a class="reference internal" href="#get-ca-detail">Get CA Detail</a></li>
+<li><a class="reference internal" href="#change-details-of-ca">Change Details of CA</a></li>
+<li><a class="reference internal" href="#patch-details-of-ca">Patch Details of CA</a></li>
+<li><a class="reference internal" href="#download-ca-crl">Download CA(crl)</a></li>
+<li><a class="reference internal" href="#delete-ca">Delete CA</a></li>
+<li><a class="reference internal" href="#renew-ca">Renew CA</a></li>
+<li><a class="reference internal" href="#list-cert">List Cert</a></li>
+<li><a class="reference internal" href="#create-new-cert">Create New Cert</a></li>
+<li><a class="reference internal" href="#import-existing-cert">Import Existing Cert</a></li>
+<li><a class="reference internal" href="#get-cert-detail">Get Cert Detail</a></li>
+<li><a class="reference internal" href="#change-details-of-cert">Change Details of Cert</a></li>
+<li><a class="reference internal" href="#patch-details-of-cert">Patch Details of Cert</a></li>
+<li><a class="reference internal" href="#delete-cert">Delete Cert</a></li>
+<li><a class="reference internal" href="#renew-cert">Renew Cert</a></li>
+<li><a class="reference internal" href="#revoke-cert">Revoke Cert</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside>
+          </main>
+        </div>
+      </div><footer class="py-6 border-t border-border md:py-0">
+    <div class="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+      <div class="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-6 md:px-0">
+        <a href="../../index.html">
+            <img src="../../_static/openwisp-logo.svg" alt="OpenWISP" width="125" height="72" class="hidden dark:block" />
+            <img src="../../_static/openwisp-logo-black.svg" alt="OpenWISP" width="125" height="72" class="dark:hidden" /></a>
+        <p class="text-sm leading-loose text-right text-muted-foreground md:text-center">© 2008-2026, OpenWISP&nbsp;</p>
+      </div>
+    </div>
+</footer>
+    </div><button id="scrolltop"
+        x-cloak
+        @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="fixed bottom-8 right-8 p-2 z-10 rounded-sm bg-gray-700 text-xs text-white transition-all duration-1000 hover:bg-gray-950 focus:bg-gray-950"
+        :class="{'opacity-0 invisible' : !showScrollTop}"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       height="14"
+       viewBox="0 96 960 960"
+       width="14"
+       class="inline fill-current mb-[2px]"
+       aria-hidden="true">
+    <path d="M450 896V370L202 618l-42-42 320-320 320 320-42 42-248-248v526h-60Z" />
+  </svg>
+  Back to top
+</button>
+    
+
+    <script src="../../_static/documentation_options.js?v=c6950507"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="../../_static/theme.js?v=5db23cf8"></script>
+    
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.openwisp.io/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '7']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript>
+  <p>
+    <img referrerpolicy="no-referrer-when-downgrade" src="//analytics.openwisp.io/matomo.php?idsite=7&amp;rec=1" style="border:0;" alt="" />
+  </p>
+</noscript>
+<!-- End Matomo Code -->
+
+<div id="lightbox" class="lightbox">
+  <span class="close">&times;</span>
+</div>
+<script src="../../_static/lightbox.js"></script>
+
+</body>
+
+</html>

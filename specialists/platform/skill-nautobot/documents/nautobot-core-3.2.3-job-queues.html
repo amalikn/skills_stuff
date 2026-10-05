@@ -1,0 +1,44 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="job-queues">Job Queues<a class="headerlink" href="#job-queues" title="Permanent link">¶</a></h1>
+<details class="version-added">
+<summary>Added in version 2.4.0</summary>
+</details>
+<p>JobQueue instances represent the queues that Nautobot <a href="index.html">jobs</a> can be run on. It is introduced as an alternative to <code>task_queues</code> attribute on the Job model to define the eligible queues for this job.</p>
+<p>The JobQueue model has <code>name</code> and <code>queue_type</code> as required attributes. The <code>name</code> attribute has to be unique on each Job Queue and there are currently two supported queue types: <code>"celery"</code> and <code>"kubernetes"</code>. The user can optionally assign a <a href="../../core-data-model/tenancy/tenant.html">tenant</a> instance to a Job Queue.</p>
+<p>You can access the Job instances that the Job Queue is assigned to through the <code>jobs</code> attribute from the Job Queue side.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">JobQueue</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="o">&lt;</span><span class="n">JobQueue</span><span class="p">:</span> <span class="n">celery</span><span class="p">:</span> <span class="n">celery</span> <span class="n">Job</span> <span class="n">Queue</span> <span class="o">-</span> <span class="mi">2</span><span class="o">&gt;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">job_queue</span> <span class="o">=</span> <span class="n">JobQueue</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">job_queue</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="o">&lt;</span><span class="n">JobQuerySet</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">Job</span><span class="p">:</span> <span class="n">Export</span> <span class="n">Object</span> <span class="n">List</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Job</span><span class="p">:</span> <span class="n">Git</span> <span class="n">Repository</span><span class="p">:</span> <span class="n">Dry</span><span class="o">-</span><span class="n">Run</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Job</span><span class="p">:</span> <span class="n">Git</span> <span class="n">Repository</span><span class="p">:</span> <span class="n">Sync</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Job</span><span class="p">:</span> <span class="n">Import</span> <span class="n">Objects</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Job</span><span class="p">:</span> <span class="n">Logs</span> <span class="n">Cleanup</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Job</span><span class="p">:</span> <span class="n">Refresh</span> <span class="n">Dynamic</span> <span class="n">Group</span> <span class="n">Caches</span><span class="o">&gt;</span><span class="p">]</span><span class="o">&gt;</span>
+</code></pre></div>
+<p>Conversely, you can access the Job Queues that a Job instance is assigned to through the <code>job_queues</code> attribute.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">Job</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">&lt;</span><span class="n">Job</span><span class="p">:</span> <span class="n">Custom</span> <span class="n">form</span><span class="o">.&gt;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">job</span><span class="o">.</span><span class="n">job_queues</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="o">&lt;</span><span class="n">RestrictedQuerySet</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">JobQueue</span><span class="p">:</span> <span class="n">celery</span><span class="p">:</span> <span class="n">celery</span> <span class="n">Job</span> <span class="n">Queue</span> <span class="o">-</span> <span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">JobQueue</span><span class="p">:</span> <span class="n">celery</span><span class="p">:</span> <span class="n">celery</span> <span class="n">Job</span> <span class="n">Queue</span> <span class="o">-</span> <span class="mi">6</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">JobQueue</span><span class="p">:</span> <span class="n">celery</span><span class="p">:</span> <span class="n">default</span><span class="o">&gt;</span><span class="p">]</span><span class="o">&gt;</span>
+</code></pre></div>
+<p>Job Queue Assignments represent the many-to-many relationships between <a href="index.html">Jobs</a> and <a href="jobqueue.html">Job Queues</a>. It has <code>job</code> and <code>job_queue</code> as required attributes and each Job Queue Assignment must have a unique combination of <code>job</code> and <code>job_queue</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

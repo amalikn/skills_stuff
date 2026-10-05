@@ -1,0 +1,157 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="programmatic-job-execution">Programmatic Job Execution<a class="headerlink" href="#programmatic-job-execution" title="Permanent link">¶</a></h1>
+<p>Most users run Jobs through the Nautobot UI or REST API, but there are situations where user need to trigger a Job from Python directly. Nautobot exposes two entry points for this:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>JobResult.enqueue_job()</code></td>
+<td>The primary entry point. Run a Job asynchronously (Celery), synchronously (in-process), or via a Kubernetes pod.</td>
+</tr>
+<tr>
+<td><code>JobResult.execute_job()</code></td>
+<td>Convenience wrapper around <code>enqueue_job(synchronous=True)</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>For testing, use <a href="testing.html"><code>run_job_for_testing()</code></a> instead — it's a thin wrapper around <code>execute_job()</code> that handles Job enablement and user setup for you.</p>
+<details class="version-added">
+<summary>Added in version 3.2.0</summary>
+</details>
+<p><code>job_kwargs</code> is a <strong>required</strong> parameter on <code>enqueue_job()</code>, <code>execute_job()</code>, and <code>run_job_for_testing()</code>. Previously optional, this argument is now mandatory to ensure consistent Job configuration and avoid implicit defaults.</p>
+<p>For Jobs that take no input variables, pass <code>job_kwargs={}</code> explicitly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    <span class="n">job_result</span> <span class="o">=</span> <span class="n">JobResult</span><span class="o">.</span><span class="n">enqueue_job</span><span class="p">(</span><span class="n">job_model</span><span class="o">=</span><span class="n">my_job</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">job_kwargs</span><span class="o">=</span><span class="p">{})</span>
+</code></pre></div>
+<p>A backward-compatibility layer accepts the old calling style (passing Job parameters as loose <code>**extra_kwargs</code>) but logs a warning. If neither <code>job_kwargs</code> nor any <code>**extra_kwargs</code> are provided, a <code>ValueError</code> is raised. This deprecated fallback will be removed in a future release.</p>
+<h2 id="jobresultenqueue_job"><code>JobResult.enqueue_job()</code><a class="headerlink" href="#jobresultenqueue_job" title="Permanent link">¶</a></h2>
+<p><code>JobResult.enqueue_job()</code> is the canonical entry point for running a Job. It creates (or reuses) a <code>JobResult</code> record and dispatches the Job to a Celery worker, a Kubernetes pod, or the current process depending on the queue configuration and the <code>synchronous</code> flag.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot.extras.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobResult</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">job_model</span> <span class="o">=</span> <span class="n">Job</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_class_path</span><span class="p">(</span><span class="s2">"pass_job.TestPassJob"</span><span class="p">)</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">job_result</span> <span class="o">=</span> <span class="n">JobResult</span><span class="o">.</span><span class="n">enqueue_job</span><span class="p">(</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">job_model</span><span class="o">=</span><span class="n">job_model</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">user</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">job_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"device_id"</span><span class="p">:</span> <span class="mi">42</span><span class="p">},</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">)</span>
+</code></pre></div>
+<h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>job_model</code></td>
+<td><code>Job</code></td>
+<td>The Job to be enqueued for execution. Required.</td>
+</tr>
+<tr>
+<td><code>user</code></td>
+<td><code>User</code></td>
+<td>User to link to the resulting <code>JobResult</code>. Required.</td>
+</tr>
+<tr>
+<td><code>job_kwargs</code></td>
+<td><code>dict</code></td>
+<td>Keyword arguments forwarded to the Job's <code>run()</code> method. <strong>Required</strong> — pass <code>{}</code> if the Job takes no parameters.</td>
+</tr>
+<tr>
+<td><code>celery_kwargs</code></td>
+<td><code>dict</code></td>
+<td>Keyword arguments forwarded to Celery's <code>apply_async()</code> / <code>apply()</code>. Useful for setting <code>queue</code>, priority, and other Celery options. Defaults to <code>None</code>.</td>
+</tr>
+<tr>
+<td><code>profile</code></td>
+<td><code>bool</code></td>
+<td>If <code>True</code>, dump cProfile stats on Job execution. Defaults to <code>False</code>.</td>
+</tr>
+<tr>
+<td><code>console_log</code></td>
+<td><code>bool</code></td>
+<td>Enable console logging during execution. Defaults to <code>False</code>.</td>
+</tr>
+<tr>
+<td><code>schedule</code></td>
+<td><code>ScheduledJob</code></td>
+<td>Optional <code>ScheduledJob</code> instance to associate with the result. Cannot be combined with <code>synchronous=True</code>.</td>
+</tr>
+<tr>
+<td><code>job_queue</code></td>
+<td><code>JobQueue</code></td>
+<td>Override the queue the Job is sent to. Defaults to the Job's configured default queue.</td>
+</tr>
+<tr>
+<td><code>task_queue</code></td>
+<td><code>str</code></td>
+<td>Celery queue name. <strong>Deprecated — prefer <code>job_queue</code> instead.</strong> Mutually exclusive with <code>job_queue</code> when both are set to different values.</td>
+</tr>
+<tr>
+<td><code>job_result</code></td>
+<td><code>JobResult</code></td>
+<td>Optional existing <code>JobResult</code> (status <code>PENDING</code>) to modify and reuse. Used by the Kubernetes execution path. The <code>user</code> and <code>job_model</code> must match.</td>
+</tr>
+<tr>
+<td><code>synchronous</code></td>
+<td><code>bool</code></td>
+<td>If <code>True</code>, run the Job in the current process and block until completion. Defaults to <code>False</code>.</td>
+</tr>
+<tr>
+<td><code>ignore_singleton_lock</code></td>
+<td><code>bool</code></td>
+<td>If <code>True</code>, invalidate any existing singleton lock before running. Useful for recovering from a previous run that didn't clean up its lock. Defaults to <code>False</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="synchronous-vs-asynchronous">Synchronous vs asynchronous<a class="headerlink" href="#synchronous-vs-asynchronous" title="Permanent link">¶</a></h3>
+<p>By default (<code>synchronous=False</code>), <code>enqueue_job()</code> returns immediately after dispatching the task. The returned <code>JobResult</code> will be in a <code>PENDING</code> state until the worker picks it up. Internally the dispatch happens via <code>transaction.on_commit()</code>, so the task is only enqueued once any surrounding database transaction commits successfully — this prevents workers from picking up Jobs that reference data that hasn't been saved yet.</p>
+<p>When <code>synchronous=True</code>, the Job runs in the current process via <code>run_job.apply()</code>. Stdout and stderr are redirected through Celery's logging proxy, and a <code>SIGALRM</code>-based soft time limit is enforced based on the Job's configured <code>soft_time_limit</code>.</p>
+<p><code>schedule</code> and <code>synchronous=True</code> are mutually exclusive — scheduled Jobs must always be queued, not run inline.</p>
+<h3 id="queue-resolution">Queue resolution<a class="headerlink" href="#queue-resolution" title="Permanent link">¶</a></h3>
+<p>Queue resolution follows this priority:</p>
+<ol>
+<li>If both <code>job_queue</code> and <code>task_queue</code> are provided, they must agree on the queue name.</li>
+<li>If only one is provided, the other is derived from it.</li>
+<li>If neither is provided, but <code>celery_kwargs["queue"]</code> is set, that queue name is used.</li>
+<li>Otherwise, the Job's <code>default_job_queue</code> is used.</li>
+</ol>
+<p>If the resolved queue is a Kubernetes queue and <code>synchronous=False</code>, <code>enqueue_job()</code> delegates to <code>run_kubernetes_job_and_return_job_result()</code> to spin up a pod. The pod itself re-enters <code>enqueue_job()</code> with <code>synchronous=True</code>, which short-circuits past the K8s branch and runs the Job locally inside the pod.</p>
+<h2 id="jobresultexecute_job"><code>JobResult.execute_job()</code><a class="headerlink" href="#jobresultexecute_job" title="Permanent link">¶</a></h2>
+<p><code>execute_job()</code> is a thin convenience wrapper that calls <code>enqueue_job()</code> with <code>synchronous=True</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">job_result</span> <span class="o">=</span> <span class="n">JobResult</span><span class="o">.</span><span class="n">execute_job</span><span class="p">(</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">job_model</span><span class="o">=</span><span class="n">job_model</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">user</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">job_kwargs</span><span class="o">=</span><span class="p">{},</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">)</span>
+</code></pre></div>
+<p>It accepts the same arguments as <code>enqueue_job()</code> and forwards them through. Practically it's only used by <code>run_job_for_testing()</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

@@ -1,0 +1,35 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="job-hooks">Job Hooks<a class="headerlink" href="#job-hooks" title="Permanent link">¶</a></h1>
+<p>A Job Hook is a mechanism for automatically starting a <a href="index.html">job</a> when an object is changed. Job Hooks are similar to <a href="../webhook.html">webhooks</a> except that an object change event initiates a <code>JobHookReceiver</code> job instead of a web request. Job hooks are configured in the web UI under <strong>Jobs &gt; Job Hooks</strong>.</p>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
+<ul>
+<li><strong>Name</strong> - A unique name for the job hook.</li>
+<li><strong>Content type(s)</strong> - The type or types of Nautobot object that will trigger the job hook.</li>
+<li><strong>Job</strong> - The <a href="../../../development/jobs/job-extensions.html#job-hook-receivers">job hook receiver</a> that this job hook will run.</li>
+<li><strong>Enabled</strong> - If unchecked, the job hook will be inactive.</li>
+<li><strong>Events</strong> - A job hook may trigger on any combination of create, update, and delete events. At least one event type must be selected.</li>
+</ul>
+<p>For any Job that is loaded into Nautobot, the Job must be enabled to run. See <a href="managing-jobs.html#enabling-and-disabling-jobs">Enabling Jobs for Running</a> for more details.</p>
+<p>A Job Hook only runs if the user whose change triggered it has permission to run the target Job — that is, the <code>run</code> action on that Job (via the <code>extras.run_job</code> permission or an equivalent object permission). If the responsible user lacks that permission, the Job Hook is skipped and a warning is logged, rather than the Job being run. Grant the run permission on the relevant Job to any user whose changes should be able to trigger the hook.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

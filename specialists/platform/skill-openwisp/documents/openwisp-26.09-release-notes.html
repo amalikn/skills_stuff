@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="en" data-content_root="../"
+  x-data="{ darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches), activeSection: ''}"
+  :class="{ 'dark' : darkMode === true }">
+
+<head>
+  <script>
+    (function () {
+      // Set initial color scheme
+      if ((localStorage.getItem("_x_darkMode") === "true") || (window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      }
+
+      // Watch for media preference changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+        localStorage.setItem("_x_darkMode", event.matches);
+        document.documentElement.classList.toggle("dark", event.matches);
+      });
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030711" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>OpenWISP 26.09 | OpenWISP dev documentation</title>
+  <meta property="og:title" content="OpenWISP 26.09 | OpenWISP dev documentation" />
+  <meta name="twitter:title" content="OpenWISP 26.09 | OpenWISP dev documentation" />
+  <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e48b8583" />
+  <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css" />
+  <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=d6d7c91b" />
+  <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d3e37945" />
+  <link rel="icon" href="../_static/favicon.svg" />
+
+  <link rel="search" title="Search" href="../search.html" />
+  <link rel="next" title="OpenWISP 25.10" href="25.10.html" />
+  <link rel="prev" title="Release Notes" href="index.html" />
+<meta property="og:image" content="https://openwisp.io/docs/dev/_static/docs-og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="480" />
+<link rel="canonical" href="https://openwisp.io/docs/dev/releases/26.09.html" />
+
+</head>
+
+<body x-data="{ showSidebar: false, showScrollTop: false }"
+  class="min-h-screen font-sans antialiased bg-background text-foreground" :class="{ 'overflow-hidden': showSidebar }"@scroll.window="showScrollTop = pageYOffset > 100">
+  <div x-cloak x-show="showSidebar"
+    class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden"
+    @click.self="showSidebar = false"></div><div id="page" class="relative flex flex-col min-h-screen"><a href="#content"
+      class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100">
+      Skip to content
+    </a><header class="sticky top-0 z-40 w-full border-b shadow-xs border-border bg-background/90 backdrop-blur"><div class="container flex items-center h-14">
+    <div class="hidden mr-4 md:flex">
+      <a href="../index.html" class="flex items-center mr-6">
+        <img width="24" height="24" class="mr-2 hidden dark:block" src="../_static/openwisp-logo.svg"
+          alt="Logo" />
+        <img width="24" height="24" class="mr-2 dark:hidden" src="../_static/openwisp-logo-black.svg"
+          alt="Logo" /><span class="hidden font-bold sm:inline-block text-clip whitespace-nowrap">OpenWISP dev documentation</span>
+      </a><nav class="flex items-center space-x-6 text-sm font-medium">
+    
+    <a href="https://openwisp.org/features/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Features</a>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/faq/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Blog</a>
+</nav></div><button
+      class="inline-flex items-center justify-center h-10 px-0 py-2 mr-2 text-base font-medium transition-colors rounded-md hover:text-accent-foreground hover:bg-transparent md:hidden"
+      type="button" @click="showSidebar = true">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" aria-hidden="true"
+        fill="currentColor">
+        <path
+          d="M152.587 825.087q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440Zm0-203.587q-19.152 0-32.326-13.174T107.087 576q0-19.152 13.174-32.326t32.326-13.174h320q19.152 0 32.326 13.174T518.087 576q0 19.152-13.174 32.326T472.587 621.5h-320Zm0-203.587q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440ZM708.913 576l112.174 112.174q12.674 12.674 12.674 31.826t-12.674 31.826Q808.413 764.5 789.261 764.5t-31.826-12.674l-144-144Q600 594.391 600 576t13.435-31.826l144-144q12.674-12.674 31.826-12.674t31.826 12.674q12.674 12.674 12.674 31.826t-12.674 31.826L708.913 576Z" />
+      </svg>
+      <span class="sr-only">Toggle navigation menu</span>
+    </button>
+    <div class="flex items-center justify-between flex-1 gap-2 sm:gap-4 md:justify-end">
+      <div class="flex-1 w-full md:w-auto md:flex-none"><form id="searchbox"
+      action="../search.html"
+      method="get"
+      class="relative flex items-center group"
+      @keydown.k.window.meta="$refs.search.focus()">
+  <input x-ref="search"
+          name="q"
+          id="search-input"
+          type="search"
+          aria-label="Search the docs"
+          placeholder="Search ..."
+          class="inline-flex items-center font-medium transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background border border-input hover:bg-accent focus:bg-accent hover:text-accent-foreground focus:text-accent-foreground hover:placeholder-accent-foreground py-2 px-4 relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64" />
+  <kbd class="pointer-events-none absolute right-1.5 top-2 hidden h-5 select-none text-muted-foreground items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex group-hover:bg-accent group-hover:text-accent-foreground">
+    <span class="text-xs">⌘</span>
+    K
+  </kbd>
+</form>
+      </div>
+      <nav class="flex items-center gap-1">
+        <button @click="darkMode = !darkMode"
+          class="relative inline-flex items-center justify-center px-0 text-sm font-medium transition-colors rounded-md hover:bg-accent hover:text-accent-foreground h-9 w-9"
+          type="button"
+          title="Toggle color scheme">
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-100 rotate-0 dark:-rotate-90 dark:scale-0">
+            <path
+              d="M480 685q45.456 0 77.228-31.772Q589 621.456 589 576q0-45.456-31.772-77.228Q525.456 467 480 467q-45.456 0-77.228 31.772Q371 530.544 371 576q0 45.456 31.772 77.228Q434.544 685 480 685Zm0 91q-83 0-141.5-58.5T280 576q0-83 58.5-141.5T480 376q83 0 141.5 58.5T680 576q0 83-58.5 141.5T480 776ZM80 621.5q-19.152 0-32.326-13.174T34.5 576q0-19.152 13.174-32.326T80 530.5h80q19.152 0 32.326 13.174T205.5 576q0 19.152-13.174 32.326T160 621.5H80Zm720 0q-19.152 0-32.326-13.174T754.5 576q0-19.152 13.174-32.326T800 530.5h80q19.152 0 32.326 13.174T925.5 576q0 19.152-13.174 32.326T880 621.5h-80Zm-320-320q-19.152 0-32.326-13.174T434.5 256v-80q0-19.152 13.174-32.326T480 130.5q19.152 0 32.326 13.174T525.5 176v80q0 19.152-13.174 32.326T480 301.5Zm0 720q-19.152 0-32.326-13.17Q434.5 995.152 434.5 976v-80q0-19.152 13.174-32.326T480 850.5q19.152 0 32.326 13.174T525.5 896v80q0 19.152-13.174 32.33-13.174 13.17-32.326 13.17ZM222.174 382.065l-43-42Q165.5 327.391 166 308.239t13.174-33.065q13.435-13.674 32.587-13.674t32.065 13.674l42.239 43q12.674 13.435 12.555 31.706-.12 18.272-12.555 31.946-12.674 13.674-31.445 13.413-18.772-.261-32.446-13.174Zm494 494.761-42.239-43q-12.674-13.435-12.674-32.087t12.674-31.565Q686.609 756.5 705.38 757q18.772.5 32.446 13.174l43 41.761Q794.5 824.609 794 843.761t-13.174 33.065Q767.391 890.5 748.239 890.5t-32.065-13.674Zm-42-494.761Q660.5 369.391 661 350.62q.5-18.772 13.174-32.446l41.761-43Q728.609 261.5 747.761 262t33.065 13.174q13.674 13.435 13.674 32.587t-13.674 32.065l-43 42.239q-13.435 12.674-31.706 12.555-18.272-.12-31.946-12.555Zm-495 494.761Q165.5 863.391 165.5 844.239t13.674-32.065l43-42.239q13.435-12.674 32.087-12.674t31.565 12.674Q299.5 782.609 299 801.38q-.5 18.772-13.174 32.446l-41.761 43Q231.391 890.5 212.239 890t-33.065-13.174ZM480 576Z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-0 rotate-90 dark:rotate-0 dark:scale-100">
+            <path
+              d="M480 936q-151 0-255.5-104.5T120 576q0-138 90-239.5T440 218q25-3 39 18t-1 44q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q21-14 43-1.5t19 39.5q-14 138-117.5 229T480 936Zm0-80q88 0 158-48.5T740 681q-20 5-40 8t-40 3q-123 0-209.5-86.5T364 396q0-20 3-40t8-40q-78 32-126.5 102T200 576q0 116 82 198t198 82Zm-10-270Z" />
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+    <div class="flex-1"><div
+        class="container md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10"><aside id="left-sidebar"
+  class="fixed inset-y-0 left-0 md:top-14 z-50 md:z-30 bg-background md:bg-transparent transition-all duration-100 -translate-x-full md:translate-x-0 ml-0 p-6 md:p-0 md:-ml-2 md:h-[calc(100vh-3.5rem)] w-5/6 md:w-full overflow-y-auto border-r border-border md:sticky"
+  :aria-hidden="!showSidebar" :class="{ 'translate-x-0': showSidebar }">
+
+    <a href="../index.html" class="justify-start text-sm md:!hidden bg-background">
+      <img width="16" height="16" class="mr-2 hidden dark:block" src="../_static/openwisp-logo.svg"
+        alt="Logo" />
+      <img width="16" height="16" class="mr-2 dark:hidden" src="../_static/openwisp-logo-black.svg"
+        alt="Logo" /><span class="font-bold text-clip whitespace-nowrap">OpenWISP dev documentation</span>
+    </a>
+
+    <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
+      <div class="overflow-y-auto h-full w-full relative pr-6"><div class="doc-versions">
+    <label>Version</label>
+    <div class="dropdown" x-data="{ showVersionSwitcher: false, buttonWidth: 0 }"
+        x-init="buttonWidth = $refs.button.offsetWidth">
+        <button type="button" x-ref="button" class="dropbtn "
+             @click="showVersionSwitcher = !showVersionSwitcher"
+            :class="{'active': showVersionSwitcher}" >
+            dev
+            
+            <svg fill="currentColor" height="18px" stroke="none" viewBox="0 0 24 24" width="18px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+            
+        </button>
+        <div x-show="showVersionSwitcher" class="dropdown-content" :class="{'hidden': !showVersionSwitcher}"
+            @click.away="showVersionSwitcher = false" style="display: none;" :style="{ width: buttonWidth + 'px' }">
+            
+            
+            
+            
+            <a href="/docs/26.09/releases/26.09.html">26.09</a>
+            
+            
+        </div>
+    </div>
+</div>
+<nav class="flex flex-col font-bold md:hidden">
+    
+    <a href="https://openwisp.org/features/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Features
+    </a>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/faq/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Blog
+    </a>
+</nav>
+<nav class="table w-full min-w-full my-6 lg:my-8 mt-4">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../first-steps.html">First Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project-overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installers.html">Installers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openwrt-agents.html">OpenWrt Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community.html">Community Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security/index.html">Security Policy</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Release Notes</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">OpenWISP 26.09</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25.10.html">OpenWISP 25.10</a></li>
+</ul>
+</li>
+</ul>
+
+</nav><div class="offline-docs">
+    <div class="heading">
+        <h6>OFFLINE DOCS</h6>
+    </div>
+    <p class="urls">
+        <a href="/docs/dev/OpenWISP-dev.pdf" target="_blank">
+            PDF</a>
+        |
+        <a href="/docs/dev/OpenWISP-dev.epub" target="_blank">
+            ePUB</a>
+    </p>
+</div>
+      </div>
+    </div>
+    <button type="button" @click="showSidebar = false"
+      class="absolute md:hidden right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" fill="currentColor"
+        stroke="none" class="h-4 w-4">
+        <path
+          d="M480 632 284 828q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536 576l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480 632Z" />
+      </svg>
+    </button>
+  </aside>
+          <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+<div class="w-full min-w-0 mx-auto">
+<nav aria-label="breadcrumbs"
+     class="flex items-center mb-4 space-x-1 text-sm text-muted-foreground">
+  <a class="overflow-hidden text-ellipsis whitespace-nowrap hover:text-foreground"
+     href="../index.html">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         height="18"
+         width="18"
+         viewBox="0 96 960 960"
+         aria-label="Home"
+         fill="currentColor"
+         stroke="none">
+      <path d="M240 856h120V616h240v240h120V496L480 316 240 496v360Zm-80 80V456l320-240 320 240v480H520V696h-80v240H160Zm320-350Z" />
+    </svg>
+  </a>
+  
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="index.html">Release Notes</a>
+    
+<div class="mr-1">/</div><span aria-current="page"
+        class="font-medium text-foreground overflow-hidden whitespace-nowrap">OpenWISP 26.09</span>
+</nav>
+
+    <div id="content" role="main">
+      <section id="openwisp-26-09">
+<h1>OpenWISP 26.09<a class="headerlink" href="#openwisp-26-09" title="Link to this heading"></a></h1>
+<p>This release brings major improvements to maps, firmware management,
+device location data, consistency, REST API endpoints, and bug fixes.</p>
+<section id="highlights">
+<h2>Highlights<a class="headerlink" href="#highlights" title="Link to this heading"></a></h2>
+<p><strong>Better geographic and indoor map experience</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://openwisp.org/blog/gsoc-2025-better-map-ux-indoor-mobile-linkable-urls/">Improved the map experience with indoor maps, real-time mobile device
+tracking, and shareable URLs</a>.</p></li>
+</ul>
+<p><strong>More flexible firmware upgrades</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://openwisp.org/blog/gsoc-2025-improve-ux-and-flexibility-of-the-firmware-upgrader-module/">Added real-time progress updates, upgrade cancellation, and targeted
+mass upgrades by device group or location</a>.</p></li>
+</ul>
+<p><strong>Richer device location data</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://openwisp.org/blog/gsoc-2025-whois-info-and-estimated-geographic-locations/">Added WHOIS information and estimated geographic locations based on
+device IP addresses</a>.</p></li>
+</ul>
+<hr class="docutils" />
+<p>Below you can find the detailed full change log for all the modules
+included in this release. Enjoy!</p>
+</section>
+<section id="openwisp-users-v1-3">
+<h2>openwisp-users (v1.3)<a class="headerlink" href="#openwisp-users-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-users">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-users/blob/1.3/CHANGES.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="features">
+<h3>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/499">user account expiration</a> with automatic
+deactivation and reminder emails.</p></li>
+<li><p>Allowed <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/511">customizing the password reset form</a>.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/511">password self-service REST API endpoints</a>.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/240">API key management to the user admin</a>. Authorized
+administrators can create and delete API keys for users, while users can
+always delete their own API keys. API keys belonging to other users are
+masked.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/497">extensible field serialization to the export_users command</a>, including
+custom serializers, related object extraction and relation traversal.</p>
+<p>This changes the structure of the generated CSV output and may require
+updates to scripts which parse it.</p>
+</li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">OPENWISP_USERS_SOCIALACCOUNT_ADMIN_NEEDED</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/501">support custom
+allauth OAuth/SAML providers</a> when automatic
+detection is not sufficient.</p></li>
+</ul>
+</section>
+<section id="changes">
+<h3>Changes<a class="headerlink" href="#changes" title="Link to this heading"></a></h3>
+<section id="other-changes">
+<h4>Other changes<a class="headerlink" href="#other-changes" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Improved <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/511">password expiration handling with SSO and REST API
+authentication</a>. Users
+authenticated through passwordless methods such as SAML, OAuth and
+sesame magic links are no longer prompted to update an expired local
+password. REST API clients now receive a JSON <code class="docutils literal notranslate"><span class="pre">403</span></code> response instead
+of an HTML redirect.</p></li>
+<li><p>Renamed the <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/540">&quot;Is admin&quot; label to &quot;Organization manager&quot;</a>.</p></li>
+<li><p>Improved <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/473">admin theme consistency</a> by using
+shared theme colors provided by OpenWISP Utils.</p></li>
+</ul>
+</section>
+<section id="dependencies">
+<h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Added <a class="reference external" href="https://github.com/iMerica/dj-rest-auth/releases/tag/7.2.0">dj-rest-auth&gt;=7.2.0,&lt;7.3</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-organizations</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=2.5.0,&lt;2.6.0</span></code> to
+<a class="reference external" href="https://github.com/bennylope/django-organizations/blob/master/HISTORY.rst">&gt;=2.7.0,&lt;2.8.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-extensions</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=3.2,&lt;4.2</span></code> to <a class="reference external" href="https://github.com/django-extensions/django-extensions/releases/tag/4.1">&gt;=4.1,&lt;4.2</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-allauth[socialaccount]</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=65.12.0,&lt;65.14.0</span></code> to
+<a class="reference external" href="https://docs.allauth.org/en/latest/release-notes/recent.html">&gt;=65.19.1,&lt;65.20.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-phonenumber-field</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=8.1.0,&lt;8.2.0</span></code> to
+<a class="reference external" href="https://github.com/django-phonenumber-field/django-phonenumber-field/releases/tag/8.5.0">&gt;=8.5.0,&lt;8.6.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">phonenumbers</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=9.0.10,&lt;9.1.0</span></code> to <a class="reference external" href="https://github.com/daviddrysdale/python-phonenumbers/releases/tag/v9.0.38">&gt;=9.0.38,&lt;9.1.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-reversion</span></code> from <code class="docutils literal notranslate"><span class="pre">~=6.0.0</span></code> to <a class="reference external" href="https://django-reversion.readthedocs.io/en/latest/changelog.html">~=6.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-redis</span></code> from <code class="docutils literal notranslate"><span class="pre">~=6.0.0</span></code> to <a class="reference external" href="https://github.com/jazzband/django-redis/releases/tag/7.0.0">~=7.0.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-utils[rest,celery]</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-utils/releases/tag/1.3.0">~=1.3.0</a>.</p></li>
+<li><p>Dropped support for Django <code class="docutils literal notranslate"><span class="pre">4.2.0</span></code>.</p></li>
+<li><p>Dropped support for Python <code class="docutils literal notranslate"><span class="pre">3.9</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="bugfixes">
+<h3>Bugfixes<a class="headerlink" href="#bugfixes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/553">custom REST API view overrides</a> so
+<code class="docutils literal notranslate"><span class="pre">get_api_urls()</span></code> correctly uses callbacks from custom view modules
+while falling back to the default views when an override is not
+provided.</p></li>
+<li><p>Fixed infinite recursion when custom API views subclass
+<code class="docutils literal notranslate"><span class="pre">ChangePasswordView</span></code>.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-users/issues/489">template loader ordering and template extensibility</a>.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp-notifications-v1-3">
+<h2>openwisp-notifications (v1.3)<a class="headerlink" href="#openwisp-notifications-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-notifications">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-notifications/blob/1.3/CHANGES.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id6">
+<h3>Features<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/issues/492">target URL suffix support</a> to the
+<code class="docutils literal notranslate"><span class="pre">notify</span></code> signal.</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>Changes<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="backward-incompatible-changes">
+<h4>Backward-incompatible changes<a class="headerlink" href="#backward-incompatible-changes" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Changed <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/issues/481">notification types to be mandatory</a>.
+<code class="docutils literal notranslate"><span class="pre">Notification.type</span></code> can no longer be null and <code class="docutils literal notranslate"><span class="pre">notify.send()</span></code> now
+requires the <code class="docutils literal notranslate"><span class="pre">type</span></code> argument.</p></li>
+</ul>
+</section>
+<section id="id8">
+<h4>Other changes<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Updated <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/issues/425">notification preference colors</a> to use
+OpenWISP theme colors, improving compatibility with customized themes.</p></li>
+<li><p>Updated <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/issues/312">notification preferences to respect Django permissions</a>,
+allowing users to modify other users' preferences only when they have
+the required permissions.</p></li>
+<li><p>Replaced the <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/issues/363">third-party JSONField with Django's built-in JSONField</a>.</p></li>
+</ul>
+</section>
+<section id="id9">
+<h4>Dependencies<a class="headerlink" href="#id9" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-users</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-users/releases/tag/1.3.0">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-utils[rest,celery,channels]</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to
+<a class="reference external" href="https://github.com/openwisp/openwisp-utils/releases/tag/1.3.0">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-redis</span></code> from <code class="docutils literal notranslate"><span class="pre">~=6.0.0</span></code> to <a class="reference external" href="https://github.com/jazzband/django-redis/releases/tag/7.0.0">~=7.0.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">markdown</span></code> from <code class="docutils literal notranslate"><span class="pre">~=3.9</span></code> to <a class="reference external" href="https://github.com/Python-Markdown/markdown/releases/tag/3.10.0">~=3.10</a>.</p></li>
+<li><p>Dropped support for Django <code class="docutils literal notranslate"><span class="pre">4.2</span></code>.</p></li>
+<li><p>Dropped support for Python <code class="docutils literal notranslate"><span class="pre">3.9</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id11">
+<h3>Bugfixes<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/issues/503">global notification setting integrity</a> by
+ensuring that each user can have only one global notification setting
+and resolving existing duplicates.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/issues/495">web notifications being received when disabled globally</a>.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/issues/491">fragment notifications remaining open when already on their
+target page</a>.</p></li>
+<li><p>Fixed support for swappable user models by removing a hard-coded
+dependency on <code class="docutils literal notranslate"><span class="pre">openwisp-users</span></code>.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/issues/467">database migration from the third-party JSONField to Django's
+JSONField</a> so
+PostgreSQL columns are correctly converted from text to <code class="docutils literal notranslate"><span class="pre">jsonb</span></code> during
+upgrades.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/issues/438">handling of lazy translated notification messages</a>.</p></li>
+<li><p>Fixed notification admin object ID extraction.</p></li>
+<li><p>Fixed an invalid escape sequence warning in <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp-controller-v1-3">
+<h2>openwisp-controller (v1.3)<a class="headerlink" href="#openwisp-controller-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/blob/1.3/CHANGES.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id12">
+<h3>Features<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/1034">WHOIS lookup and geographic location estimation</a> for
+devices, including WHOIS details in the admin UI, automatic refresh of
+stale WHOIS data, estimated-location notifications and warnings, and
+admin and API filters for estimated locations.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/1157">WebSocket support for broadcasting all location updates</a>.</p></li>
+<li><p>Added an <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/828">API endpoint for retrieving indoor device coordinates</a> for a
+location.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/1158">location and floor plan filters to the device list API</a>,
+allowing searches by location name and filtering by location or floor
+plan UUID.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/1095">generic cache invalidation for configuration models</a>. Models
+can declare cache dependencies using <code class="docutils literal notranslate"><span class="pre">CacheDependency</span></code>, and the new
+<code class="docutils literal notranslate"><span class="pre">print_cache_dependencies</span></code> management command can be used to inspect
+the dependency graph.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/1412">notes to configuration templates</a>.</p></li>
+<li><p>Allowed devices to update their name during re-registration.</p></li>
+</ul>
+</section>
+<section id="id13">
+<h3>Changes<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<section id="id14">
+<h4>Other changes<a class="headerlink" href="#id14" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Enforced the <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/1338">deactivated device state across OpenWISP Controller</a>.
+Deactivated devices can no longer register, receive configuration
+updates, run remote commands, or receive automatically assigned
+templates. Cleanup and security operations continue to work normally.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/1003">VPN subnet and IP address details to the REST API</a>.</p></li>
+<li><p>Allowed deleting organizations containing active devices while
+displaying a warning about the active devices that will be affected.</p></li>
+<li><p>Replaced the third-party <code class="docutils literal notranslate"><span class="pre">jsonfield</span></code> implementation with Django's
+built-in <code class="docutils literal notranslate"><span class="pre">JSONField</span></code> <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/1061">#1061</a>,
+including migration handling for databases upgraded from older OpenWISP
+Controller versions.</p></li>
+<li><p>Changed VPN synchronization errors and recovery events to use
+<code class="docutils literal notranslate"><span class="pre">generic_message</span></code> notifications <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/1049">#1049</a>.</p></li>
+<li><p>Improved command status visibility in the admin interface by
+highlighting statuses with different colors <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/812">#812</a>.</p></li>
+</ul>
+</section>
+<section id="id17">
+<h4>Dependencies<a class="headerlink" href="#id17" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-reversion</span></code> from <code class="docutils literal notranslate"><span class="pre">~=6.0.0</span></code> to <a class="reference external" href="https://github.com/etianen/django-reversion/blob/v6.3.0/CHANGELOG.rst">~=6.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">netjsonconfig</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/netjsonconfig/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-x509</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.3.0</span></code> to <a class="reference external" href="https://github.com/openwisp/django-x509/blob/master/CHANGES.rst">~=1.4.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-loci</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/django-loci/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-flat-json-widget</span></code> from <code class="docutils literal notranslate"><span class="pre">~=0.4.0</span></code> to <a class="reference external" href="https://github.com/openwisp/django-flat-json-widget/blob/master/CHANGES.rst">~=0.5.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-users</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-users/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-utils[celery,channels]</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-utils/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-notifications</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-ipam</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-ipam/blob/master/CHANGES.rst">~=1.3.1</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">djangorestframework-gis</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/django-rest-framework-gis/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">paramiko</span></code> from <code class="docutils literal notranslate"><span class="pre">~=4.0.0</span></code> to <a class="reference external" href="https://www.paramiko.org/changelog.html">~=5.0.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">scp</span></code> from <code class="docutils literal notranslate"><span class="pre">~=0.15.0</span></code> to <a class="reference external" href="https://github.com/jbardin/scp.py/releases/tag/v0.16.1">~=0.16.1</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-import-export</span></code> from <code class="docutils literal notranslate"><span class="pre">~=4.3.10</span></code> to <a class="reference external" href="https://django-import-export.readthedocs.io/en/latest/changelog.html">~=4.4.1</a>.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/maxmind/GeoIP2-python/releases/tag/v5.3.0">geoip2&gt;=5.3.0,&lt;6.0.0</a>.</p></li>
+<li><p>Dropped support for Django <code class="docutils literal notranslate"><span class="pre">4.2</span></code>.</p></li>
+<li><p>Dropped support for Python <code class="docutils literal notranslate"><span class="pre">3.9</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id23">
+<h3>Bugfixes<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/1464">subnet-division rules allocating addresses already in use</a> by
+respecting existing child prefixes and pre-allocated IP addresses.</p></li>
+<li><p>Fixed background command and connection operations potentially restoring
+objects that had been deleted concurrently or causing foreign key
+errors.</p></li>
+<li><p>Fixed VPN client synchronization when switching VPN templates,
+preventing inconsistent client state during repeated template updates.</p></li>
+<li><p>Fixed SSH connections remaining open when <code class="docutils literal notranslate"><span class="pre">update_config()</span></code> failed.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-controller/issues/682">malformed UUID URLs returning HTTP 500 instead of HTTP 404</a>.</p></li>
+<li><p>Fixed the Device admin delete confirmation page when OpenWISP Controller
+is extended by downstream applications.</p></li>
+<li><p>Fixed a typo in the <code class="docutils literal notranslate"><span class="pre">update_strategy</span></code> validation error message.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp-monitoring-v1-3">
+<h2>openwisp-monitoring (v1.3)<a class="headerlink" href="#openwisp-monitoring-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-monitoring">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/blob/1.3/CHANGES.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id24">
+<h3>Features<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/564">indoor maps</a>, allowing
+users to drill down from the geographic map to floor plans, retrieve
+indoor device information through the REST API, and filter locations by
+device status.</p></li>
+<li><p>Added a <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/561">dedicated geographic map page</a> with
+links from device pages and <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/562">bookmarkable map actions</a> for
+sharing specific map views.</p></li>
+<li><p>Allowed <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/664">moving devices to update their position in real time</a> on the
+dashboard map.</p></li>
+<li><p>Allowed <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/749">opening indoor floor maps directly from their URL</a>,
+including navigation between floors without first selecting a device.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/774">inspection and filtering of problematic metrics from the device
+list</a>,
+making it easier to identify unhealthy devices without leaving the list
+page.</p></li>
+</ul>
+</section>
+<section id="id25">
+<h3>Changes<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<section id="id26">
+<h4>Other changes<a class="headerlink" href="#id26" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Improved <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/849">location health status on the geographic map</a>. Location
+markers now represent the predominant active-device health status while
+handling deactivated devices separately.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/779">5G signal information and support for partial mobile signal
+metrics</a>,
+including 5G RSSI and additional signal information in the device admin
+status tab.</p></li>
+<li><p>Simplified <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/719">map world wrapping</a> using the
+functionality provided by <code class="docutils literal notranslate"><span class="pre">netjsongraph.js</span></code>.</p></li>
+<li><p>Replaced the third-party <code class="docutils literal notranslate"><span class="pre">JSONField</span></code> implementation with <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/673">Django's
+built-in JSONField</a>, while
+preserving existing PostgreSQL data correctly during upgrades.</p></li>
+</ul>
+</section>
+<section id="id27">
+<h4>Dependencies<a class="headerlink" href="#id27" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-controller</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-controller/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-nested-admin</span></code> from <code class="docutils literal notranslate"><span class="pre">~=4.1.4</span></code> to <a class="reference external" href="https://github.com/theatlantic/django-nested-admin/blob/master/CHANGELOG.rst">~=4.1.6</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">python-dateutil</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=2.7.0,&lt;3.0.0</span></code> to
+<a class="reference external" href="https://dateutil.readthedocs.io/en/stable/changelog.html">&gt;=2.9.0.post0,&lt;3.0.0</a>.</p></li>
+<li><p>Upgraded netjsongraph.js to <a class="reference external" href="https://github.com/openwisp/netjsongraph.js/releases/tag/0.4.0">0.4.0</a>.</p></li>
+<li><p>Updated the bundled <code class="docutils literal notranslate"><span class="pre">Plotly.js</span></code>, <code class="docutils literal notranslate"><span class="pre">Moment.js</span></code>, and <code class="docutils literal notranslate"><span class="pre">Leaflet</span>
+<span class="pre">Fullscreen</span></code> libraries.</p></li>
+<li><p>Dropped support for Django <code class="docutils literal notranslate"><span class="pre">4.2</span></code>.</p></li>
+<li><p>Dropped support for Python <code class="docutils literal notranslate"><span class="pre">3.9</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id29">
+<h3>Bugfixes<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/846">broken charts on metric admin pages</a>.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/issues/841">incorrect metric health after a device became unknown</a>, ensuring
+the correct health status is shown if the device is later reactivated.</p></li>
+<li><p>Fixed mobile signal attributes with zero values not being displayed.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp-firmware-upgrader-v1-3">
+<h2>openwisp-firmware-upgrader (v1.3)<a class="headerlink" href="#openwisp-firmware-upgrader-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/blob/1.3/CHANGES.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id30">
+<h3>Features<a class="headerlink" href="#id30" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/224">real-time progress updates for single and mass upgrade operations</a>.
+Mass upgrade details now use a paginated table which can be filtered by
+status and organization.</p></li>
+<li><p>Added mass upgrades by <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/213">device group</a> or
+<a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/225">location</a>.</p></li>
+<li><p>Allowed <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/208">cancelling upgrade operations</a>.</p></li>
+<li><p>Added several hardware models to the default firmware image list.</p></li>
+</ul>
+</section>
+<section id="id31">
+<h3>Changes<a class="headerlink" href="#id31" title="Link to this heading"></a></h3>
+<section id="id32">
+<h4>Other changes<a class="headerlink" href="#id32" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Allowed <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/145">deletion of completed upgrade operations</a>.
+Single and batch upgrade operations can now be deleted when they are no
+longer in progress.</p></li>
+<li><p>Improved <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/256">cascade deletion of upgrade operations</a>,
+allowing parent objects such as organizations to be deleted while still
+preventing direct deletion of in-progress operations.</p></li>
+<li><p>Improved <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/376">breadcrumbs and display names for upgrade operations</a>.</p></li>
+<li><p>Improved compatibility with OpenWISP admin themes by using shared theme
+color variables.</p></li>
+</ul>
+</section>
+<section id="id33">
+<h4>Dependencies<a class="headerlink" href="#id33" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-controller</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-controller/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-private-storage</span></code> from <code class="docutils literal notranslate"><span class="pre">~=3.1.0</span></code> to <a class="reference external" href="https://github.com/edoburu/django-private-storage/releases/tag/v3.1.3">~=3.1.3</a>.</p></li>
+<li><p>Dropped support for Django <code class="docutils literal notranslate"><span class="pre">4.2</span></code>.</p></li>
+<li><p>Dropped support for Python <code class="docutils literal notranslate"><span class="pre">3.9</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id35">
+<h3>Bugfixes<a class="headerlink" href="#id35" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/444">errors when OPENWISP_FIRMWARE_UPGRADER_API is disabled</a>.
+Upgrade operation pages no longer raise <code class="docutils literal notranslate"><span class="pre">NoReverseMatch</span></code> when the REST
+API is disabled.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/382">upgrade operations being allowed on deactivated devices</a>.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/250">HTTP 500 errors when device credentials are missing</a> by
+reporting a validation error instead.</p></li>
+<li><p>Fixed migration <code class="docutils literal notranslate"><span class="pre">0002</span></code> to correctly create permissions when using a
+custom group model.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/issues/338">HTTP 500 response in the device admin when submitting firmware
+without selecting an image</a>.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp-ipam-v1-3">
+<h2>openwisp-ipam (v1.3)<a class="headerlink" href="#openwisp-ipam-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-ipam">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-ipam/blob/1.3/CHANGES.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id36">
+<h3>Features<a class="headerlink" href="#id36" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-ipam/issues/114">support for reserved subnets in the address allocation graph</a>, including
+their visualization and a dedicated REST API endpoint for retrieving
+reserved subnet data.</p></li>
+</ul>
+</section>
+<section id="id37">
+<h3>Changes<a class="headerlink" href="#id37" title="Link to this heading"></a></h3>
+<section id="id38">
+<h4>Other changes<a class="headerlink" href="#id38" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Improved address allocation graph performance by loading graph data
+asynchronously.</p></li>
+</ul>
+</section>
+<section id="id39">
+<h4>Dependencies<a class="headerlink" href="#id39" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-users</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-users/blob/1.3.0/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-utils[rest]</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-utils/blob/1.3.0/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-reversion</span></code> from <code class="docutils literal notranslate"><span class="pre">~=6.0.0</span></code> to <a class="reference external" href="https://github.com/etianen/django-reversion/blob/v6.3.0/CHANGELOG.rst">~=6.3.0</a>.</p></li>
+<li><p>Dropped support for Django <code class="docutils literal notranslate"><span class="pre">4.2</span></code>.</p></li>
+<li><p>Dropped support for Python <code class="docutils literal notranslate"><span class="pre">3.9</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id41">
+<h3>Bugfixes<a class="headerlink" href="#id41" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-ipam/issues/116">duplicate IP address validation across related subnets</a> so IP addresses
+cannot be duplicated across parent and child subnets.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp-network-topology-v1-3">
+<h2>openwisp-network-topology (v1.3)<a class="headerlink" href="#openwisp-network-topology-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-network-topology">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-network-topology/blob/1.3/CHANGES.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id42">
+<h3>Changes<a class="headerlink" href="#id42" title="Link to this heading"></a></h3>
+<section id="id43">
+<h4>Other changes<a class="headerlink" href="#id43" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Migrated the <code class="docutils literal notranslate"><span class="pre">Node</span></code> and <code class="docutils literal notranslate"><span class="pre">Link</span></code> JSON fields to <a class="reference external" href="https://github.com/openwisp/openwisp-network-topology/issues/253">Django's built-in
+JSONField</a>,
+replacing the deprecated third-party <code class="docutils literal notranslate"><span class="pre">jsonfield</span></code> dependency.</p></li>
+<li><p>Migrated the network topology interface to the <a class="reference external" href="https://github.com/openwisp/openwisp-network-topology/issues/277">OpenWISP theme CSS
+variables</a>.</p></li>
+<li><p>Removed the <a class="reference external" href="https://github.com/openwisp/openwisp-network-topology/issues/319">obsolete django-netjsongraph upgrade command</a>.</p></li>
+</ul>
+</section>
+<section id="id44">
+<h4>Dependencies<a class="headerlink" href="#id44" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-users</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-users/blob/1.3.0/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">netdiff</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/netdiff/blob/1.3.0/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-flat-json-widget</span></code> from <code class="docutils literal notranslate"><span class="pre">~=0.4.0</span></code> to <a class="reference external" href="https://github.com/openwisp/django-flat-json-widget/blob/master/CHANGES.rst">~=0.5.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-utils[celery,channels]</span></code> from <code class="docutils literal notranslate"><span class="pre">~=1.2.0</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-utils/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Upgraded <code class="docutils literal notranslate"><span class="pre">netjsongraph.js</span></code> to <a class="reference external" href="https://github.com/openwisp/netjsongraph.js/blob/master/CHANGELOG.rst">0.4.0</a>.</p></li>
+<li><p>Dropped support for Django <code class="docutils literal notranslate"><span class="pre">4.2</span></code>.</p></li>
+<li><p>Dropped support for Python <code class="docutils literal notranslate"><span class="pre">3.9</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id45">
+<h3>Bugfixes<a class="headerlink" href="#id45" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed malformed UUIDs causing errors when accessing views that accept
+UUID parameters.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp-radius-v1-3">
+<h2>openwisp-radius (v1.3)<a class="headerlink" href="#openwisp-radius-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-radius">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-radius/blob/1.3/CHANGES.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id46">
+<h3>Features<a class="headerlink" href="#id46" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/692">multi-tenancy support for registered users</a>. Registered
+users can now join multiple organizations independently, using different
+identity verification methods and verification status for each
+organization. The <code class="docutils literal notranslate"><span class="pre">registered_users</span></code> CSV export now contains
+organization-specific registration data in a nested structure.</p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">radius_accounting_closed</span></code> signal for integrations which
+need to react when a RADIUS accounting session closes. OpenWISP
+Monitoring now uses this signal to reliably record traffic for all
+closed sessions, including <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/734">sessions closed in bulk</a>.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/771">REST API endpoints for reviewing RADIUS batch operations</a>, including
+filtering, pagination, detail views, and deletion of completed batches.</p></li>
+<li><p>Added an <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/676">API endpoint for managing the RADIUS groups assigned to users</a>.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/553">REST API endpoints for managing RADIUS groups</a>.</p></li>
+<li><p>Allowed <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/765">partial custom REST API view modules</a>, with
+automatic fallback to the default views when individual custom views are
+not provided.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/396">RADIUS group and notes fields to batch user creation</a>.</p></li>
+</ul>
+</section>
+<section id="id47">
+<h3>Changes<a class="headerlink" href="#id47" title="Link to this heading"></a></h3>
+<section id="id48">
+<h4>Backward-incompatible changes<a class="headerlink" href="#id48" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Moved <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/754">password reset functionality to openwisp-users</a>. The local
+<code class="docutils literal notranslate"><span class="pre">PasswordResetSerializer</span></code> is deprecated and password reset requests
+now always return HTTP 200 regardless of whether the supplied identifier
+belongs to an existing user.</p></li>
+<li><p>Moved <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/706">user account expiration handling to openwisp-users</a> and removed
+the corresponding OpenWISP RADIUS management command.</p></li>
+</ul>
+</section>
+<section id="id49">
+<h4>Other changes<a class="headerlink" href="#id49" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Improved <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/662">RADIUS session date and time display</a> by using the
+server timezone consistently with the Django admin.</p></li>
+<li><p>Removed the <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/740">obsolete upgrade_from_django_freeradius management command</a>.</p></li>
+<li><p>Replaced the third-party <code class="docutils literal notranslate"><span class="pre">jsonfield</span></code> package with Django's built-in
+<code class="docutils literal notranslate"><span class="pre">JSONField</span></code> for RADIUS batch credentials and SMS metadata.</p></li>
+</ul>
+</section>
+<section id="id50">
+<h4>Dependencies<a class="headerlink" href="#id50" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">dj-rest-auth</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=6.0,&lt;7.2</span></code> to <a class="reference external" href="https://github.com/iMerica/dj-rest-auth/releases#release-7.2.0">&gt;=6.0,&lt;7.3</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-redis</span></code> from <code class="docutils literal notranslate"><span class="pre">~=6.0.0</span></code> to <a class="reference external" href="https://github.com/jazzband/django-redis/blob/master/CHANGELOG.rst">~=7.0.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">weasyprint</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=65,&lt;68</span></code> to <a class="reference external" href="https://doc.courtbouillon.org/weasyprint/stable/changelog.html">&gt;=65,&lt;70</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-notifications</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-users</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-users/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">openwisp-utils[rest,celery]</span></code> to <a class="reference external" href="https://github.com/openwisp/openwisp-utils/blob/master/CHANGES.rst">~=1.3.0</a>.</p></li>
+<li><p>Replaced <cite>Exscript</cite> with <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/776">telnetlib3</a>.</p></li>
+<li><p>Dropped support for Django <code class="docutils literal notranslate"><span class="pre">4.2</span></code>.</p></li>
+<li><p>Dropped support for Python <code class="docutils literal notranslate"><span class="pre">3.9</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id53">
+<h3>Bugfixes<a class="headerlink" href="#id53" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/775">blank RADIUS check and reply admin pages for view-only users</a>.</p></li>
+<li><p>Fixed email lookups and SAML email synchronization being case-sensitive.</p></li>
+<li><p>Fixed the <a class="reference external" href="https://github.com/openwisp/openwisp-radius/issues/727">convert_called_station_id command failing to convert
+Called-Station-ID values</a>.</p></li>
+<li><p>Fixed WebSocket authorization for RADIUS batch status updates so staff
+users can only receive updates for organizations they manage.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp-utils-v1-3">
+<h2>openwisp-utils (v1.3)<a class="headerlink" href="#openwisp-utils-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-utils">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-utils/blob/1.3/CHANGES.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id54">
+<h3>Features<a class="headerlink" href="#id54" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Implemented sub-filter functionality in Django admin <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/700">#700</a></p>
+<p>Introduced <code class="docutils literal notranslate"><span class="pre">SubFilterMixin</span></code> to allow admin filters to be displayed and
+applied only when a parent filter has specific values. This enhances the
+admin interface by enabling hierarchical filtering.</p>
+<p>The filter rendering system has been updated to group parent filters
+with their sub-filters, displaying sub-filters vertically below their
+parents. Client-side JavaScript logic dynamically shows or hides
+sub-filters based on parent filter selections.</p>
+<p>Invalid sub-filter usage, such as providing a sub-filter value when its
+parent is inactive, will now raise <code class="docutils literal notranslate"><span class="pre">IncorrectLookupParameters</span></code>.
+Orphaned sub-filters with invalid configuration will be logged as errors
+and not rendered.</p>
+</li>
+<li><p>Add OpenWispPagination class with default values <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/586">#586</a></p>
+<p>Introduces the <code class="docutils literal notranslate"><span class="pre">OpenWispPagination</span></code> class, inheriting from DRF's
+<code class="docutils literal notranslate"><span class="pre">PageNumberPagination</span></code>. This class provides sensible default values
+for pagination across OpenWISP modules, configurable via settings.</p>
+<p>The default page size is set to 10 and the maximum page size to 100.
+These can be overridden by <code class="docutils literal notranslate"><span class="pre">OPENWISP_API_DEFAULT_PAGE_SIZE</span></code> and
+<code class="docutils literal notranslate"><span class="pre">OPENWISP_API_MAX_PAGE_SIZE</span></code> respectively. Views can also set a
+<code class="docutils literal notranslate"><span class="pre">pagination_page_size</span></code> attribute to override the default for specific
+endpoints.</p>
+</li>
+<li><p>Added changelog entry bot <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/523">#523</a></p></li>
+<li><p>Automated issue assignment and removal <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/571">#571</a></p>
+<p>Added auto-assignment bot with issue assignment, management of stale PR,
+reassignment on PR reopen and shared helpers in utils.py.</p>
+</li>
+<li><p>Added CI build failure bot <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/524">#524</a></p>
+<p>When a CI workflow fails, the bot examines the failure logs and
+repository context with AI to offer specific guidance for fixing QA
+check issues, test failures and other common bugs.</p>
+</li>
+<li><p>Added reusable backport workflow <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/501">#501</a></p>
+<p>Automates cherry-picking fixes to stable branches via <code class="docutils literal notranslate"><span class="pre">[backport</span> <span class="pre">X.Y]</span></code>
+in commit messages or <code class="docutils literal notranslate"><span class="pre">/backport</span> <span class="pre">X.Y</span></code> comments, with conflict
+notification.</p>
+</li>
+<li><p>Standardized commit messages using commitizen <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/110">#110</a></p>
+<p>Commitizen has been integrated in openwisp-utils to standardize how
+commit messages are written across the project. It introduces an
+interactive commit workflow that guides contributors to use the correct
+OpenWISP commit format, ensures commit titles are properly structured,
+and enforces the presence of an issue reference. The commit message
+footer is generated automatically using the provided issue number,
+improving consistency and making commits easier to review and track.</p>
+</li>
+<li><p>Releaser: added support for non-python packages <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/522">#522</a></p></li>
+</ul>
+</section>
+<section id="id63">
+<h3>Changes<a class="headerlink" href="#id63" title="Link to this heading"></a></h3>
+<section id="id64">
+<h4>Backward-incompatible changes<a class="headerlink" href="#id64" title="Link to this heading"></a></h4>
+<ul>
+<li><p>Removed deprecated <code class="docutils literal notranslate"><span class="pre">UUIDAdmin</span></code> class <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/328">#328</a></p>
+<p>The deprecated <code class="docutils literal notranslate"><span class="pre">UUIDAdmin</span></code> class has been removed. For equivalent
+functionality, use <code class="docutils literal notranslate"><span class="pre">CopyableFieldsAdmin</span></code> with <code class="docutils literal notranslate"><span class="pre">copyable_fields</span> <span class="pre">=</span>
+<span class="pre">('uuid',)</span></code>.</p>
+</li>
+</ul>
+</section>
+<section id="id66">
+<h4>Other changes<a class="headerlink" href="#id66" title="Link to this heading"></a></h4>
+<ul>
+<li><p>Included commit bodies in releaser changelog</p></li>
+<li><p>Allowed cascade deletions in <code class="docutils literal notranslate"><span class="pre">ReadOnlyAdmin</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">ReadOnlyAdmin.has_delete_permission</span></code> previously returned <code class="docutils literal notranslate"><span class="pre">False</span></code>
+unconditionally, which blocked cascade deletions from parent models
+(like <code class="docutils literal notranslate"><span class="pre">Organization</span></code>).</p>
+<p>Added <code class="docutils literal notranslate"><span class="pre">openwisp_utils.admin.BlockDeleteAllowCascadeMixin</span></code> to allow
+reusability of this logic in other OpenWISP modules.</p>
+</li>
+<li><p>Excluded local Python virtual environment directories from QA checks
+<a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/720">#720</a></p></li>
+<li><p>Made menu item registration idempotent <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/641">#641</a></p>
+<p>Previously, calling <code class="docutils literal notranslate"><span class="pre">register_menu_group</span></code> or <code class="docutils literal notranslate"><span class="pre">register_menu_subitem</span></code>
+twice with the same configuration at the same position would always
+raise an <code class="docutils literal notranslate"><span class="pre">ImproperlyConfigured</span></code> exception. This behavior prevented
+re-registration, even when an application registered the same menu items
+again during testing.</p>
+<p>This change modifies these functions to check if the configuration being
+registered is identical to the one already present at that position. If
+the configurations match, the function now logs an informational message
+and skips the re-registration instead of raising an error. This makes
+the menu item registration process idempotent and improves testability
+when applications start again.</p>
+</li>
+<li><p>Releaser: defined a generic package type to use as fallback</p>
+<p>The logic which detected OpenWrt packages has been generalized so that
+any file which doesn't fall under well defined categories like &quot;python
+package&quot;, &quot;npm package&quot;, &quot;ansible role&quot;, etc., can fall under the
+&quot;generic package&quot; type, as long as a VERSION file is defined in the top
+level directory of the repository, the releaser tool will be able to
+deal with it, regardless of the tech stack used.</p>
+</li>
+<li><p>Made changelog bot model configurable and quota-resilient</p>
+<p>The changelog bot kept failing with Gemini free-tier quota errors
+(<code class="docutils literal notranslate"><span class="pre">RequestsPerDayPerProjectPerModel</span></code>, 20/day) and marked the workflow
+as failed, while the CI failure bot stayed green because it swallows the
+same error. The changelog bot also had no way to switch models and could
+spend up to three requests per pull request.</p>
+<p>Forward <code class="docutils literal notranslate"><span class="pre">GEMINI_MODEL</span></code> through the action and reusable workflow so a
+single variable controls both bots, harden model resolution so an empty
+value falls back to the default, lower the generation retries from three
+to two, and exit cleanly on quota errors so the workflow no longer turns
+red on exhaustion.</p>
+<p>Also document the <code class="docutils literal notranslate"><span class="pre">GEMINI_MODEL</span></code> variable for both bots.</p>
+</li>
+<li><p>SeleniumTestMixin now requires two successful retries after an initial
+failure</p></li>
+<li><p>Added default <code class="docutils literal notranslate"><span class="pre">uuid</span></code> method to <code class="docutils literal notranslate"><span class="pre">CopyableFieldsAdmin</span></code> <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/328">#328</a></p>
+<p><code class="docutils literal notranslate"><span class="pre">CopyableFieldsAdmin</span></code> now ships with a default <code class="docutils literal notranslate"><span class="pre">uuid()</span></code> method that
+returns <code class="docutils literal notranslate"><span class="pre">obj.pk</span></code> and has <code class="docutils literal notranslate"><span class="pre">short_description</span></code> set to <code class="docutils literal notranslate"><span class="pre">'UUID'</span></code>. This
+allows subclasses to use <code class="docutils literal notranslate"><span class="pre">copyable_fields</span> <span class="pre">=</span> <span class="pre">('uuid',)</span></code> without
+defining their own <code class="docutils literal notranslate"><span class="pre">uuid</span></code> method when their model uses a UUID primary
+key.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">uuid</span></code> field is not automatically added to <code class="docutils literal notranslate"><span class="pre">copyable_fields</span></code>,
+that's still the developer's explicit decision.</p>
+</li>
+<li><p>Releaser: removed ChatGPT integration <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/645">#645</a></p></li>
+<li><p>Releaser: automated branch selection in changelog porting step <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/646">#646</a></p></li>
+</ul>
+</section>
+<section id="id72">
+<h4>Dependencies<a class="headerlink" href="#id72" title="Link to this heading"></a></h4>
+<ul>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">black</span></code> to 26.5.1 (<code class="docutils literal notranslate"><span class="pre">&gt;=25.1,&lt;26.6</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/psf/black">black</a> to
+permit the latest version. See the <a class="reference external" href="https://github.com/psf/black/releases">release notes</a>, <a class="reference external" href="https://github.com/psf/black/blob/main/CHANGES.md">changelog</a>, and <a class="reference external" href="https://github.com/psf/black/compare/25.1.0...26.5.1">commit
+comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">celery</span></code> to 5.6.1 (<code class="docutils literal notranslate"><span class="pre">~=5.6.1</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/celery/celery">celery</a> to permit the latest version. See
+the <a class="reference external" href="https://github.com/celery/celery/releases">release notes</a>,
+<a class="reference external" href="https://github.com/celery/celery/blob/main/Changelog.rst">changelog</a>, and
+<a class="reference external" href="https://github.com/celery/celery/compare/v5.5.3...v5.6.1">commit comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">djangorestframework</span></code> to 3.17.1 (<code class="docutils literal notranslate"><span class="pre">~=3.17.1</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/encode/django-rest-framework">djangorestframework</a> to permit the
+latest version. See the <a class="reference external" href="https://github.com/encode/django-rest-framework/releases">release notes</a> and
+<a class="reference external" href="https://github.com/encode/django-rest-framework/compare/3.16.0...3.17.1">commit comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">git-cliff</span></code> to 2.13.1 (<code class="docutils literal notranslate"><span class="pre">~=2.13.1</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/orhun/git-cliff">git-cliff</a> to permit the latest version.
+See the <a class="reference external" href="https://github.com/orhun/git-cliff/releases">release notes</a>,
+<a class="reference external" href="https://github.com/orhun/git-cliff/blob/main/CHANGELOG.md">changelog</a>, and
+<a class="reference external" href="https://github.com/orhun/git-cliff/compare/v2.10.0...v2.13.1">commit comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">isort</span></code> to 8.0.1 (<code class="docutils literal notranslate"><span class="pre">&gt;=6.0.1,&lt;8.1.0</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/PyCQA/isort">isort</a>
+to permit the latest version. See the <a class="reference external" href="https://github.com/PyCQA/isort/releases">release notes</a>, <a class="reference external" href="https://github.com/PyCQA/isort/blob/main/CHANGES.rst">changelog</a>, and <a class="reference external" href="https://github.com/PyCQA/isort/compare/6.0.1...8.0.1">commit
+comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">pytest-asyncio</span></code> to 1.4.0 (<code class="docutils literal notranslate"><span class="pre">&gt;=1.3.0,&lt;1.5.0</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/pytest-dev/pytest-asyncio">pytest-asyncio</a> to permit the latest
+version. See the <a class="reference external" href="https://github.com/pytest-dev/pytest-asyncio/releases">release notes</a> and <a class="reference external" href="https://github.com/pytest-dev/pytest-asyncio/compare/v0.24.0...v1.4.0">commit
+comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">selenium</span></code> to 4.46.0 (<code class="docutils literal notranslate"><span class="pre">&gt;=4.32,&lt;4.47</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/SeleniumHQ/Selenium">selenium</a> to permit the latest
+version. See the <a class="reference external" href="https://github.com/SeleniumHQ/Selenium/releases">release notes</a>, <a class="reference external" href="https://github.com/SeleniumHQ/Selenium/blob/main/Changelog.rst">changelog</a>, and
+<a class="reference external" href="https://github.com/SeleniumHQ/Selenium/compare/selenium-4.10.0...selenium-4.46.0">commit comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">tblib</span></code> to 3.2.2 (<code class="docutils literal notranslate"><span class="pre">~=3.2.2</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/ionelmc/python-tblib">tblib</a> to permit the latest
+version. See the <a class="reference external" href="https://github.com/ionelmc/python-tblib/releases">release notes</a>, <a class="reference external" href="https://github.com/ionelmc/python-tblib/blob/master/CHANGELOG.rst">changelog</a>,
+and <a class="reference external" href="https://github.com/ionelmc/python-tblib/compare/v3.1.0...v3.2.2">commit comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-filter</span></code> to 26.1 (<code class="docutils literal notranslate"><span class="pre">&gt;=25.1,&lt;27.0</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/carltongibson/django-filter">django-filter</a> to permit the latest
+version. See the <a class="reference external" href="https://github.com/django-filter/releases">release notes</a>, <a class="reference external" href="https://github.com/django-filter/blob/main/CHANGES.rst">changelog</a>, and <a class="reference external" href="https://github.com/django-filter/compare/25.1...26.1">commit
+comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">coverage</span></code> to 7.15.2 (<code class="docutils literal notranslate"><span class="pre">&gt;=7.10.0,&lt;7.16.0</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/coveragepy/coveragepy">coverage</a> to permit the latest
+version. See the <a class="reference external" href="https://github.com/coveragepy/coveragepy/releases">release notes</a>, <a class="reference external" href="https://github.com/coveragepy/coverage/blob/main/CHANGES.rst">changelog</a>, and
+<a class="reference external" href="https://github.com/coveragepy/coverage/compare/7.10.0...7.15.2">commit comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">docstrfmt</span></code> to 2.2.0 (<code class="docutils literal notranslate"><span class="pre">&gt;=2.0.0,&lt;2.3.0</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/LilSpazJoekp/docstrfmt">docstrfmt</a> to permit the latest
+version. See the <a class="reference external" href="https://github.com/LilSpazJoekp/docstrfmt/releases">release notes</a>, <a class="reference external" href="https://github.com/LilSpazJoekp/docstrfmt/blob/master/CHANGES.rst">changelog</a>,
+and <a class="reference external" href="https://github.com/LilSpazJoekp/docstrfmt/compare/v2.0.0...v2.2.0">commit comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">google-genai</span></code> to 2.7.0 (<code class="docutils literal notranslate"><span class="pre">&gt;=1.62.0,&lt;3.0.0</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/googleapis/python-genai">google-genai</a> to permit the latest
+version. See the <a class="reference external" href="https://github.com/googleapis/python-genai/releases">release notes</a>, <a class="reference external" href="https://github.com/googleapis/python-genai/blob/main/CHANGELOG.md">changelog</a>,
+and <a class="reference external" href="https://github.com/googleapis/python-genai/compare/v1.62.0...v2.7.0">commit comparison</a>.</p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-minify-compress-staticfiles</span></code> to 1.1.1</p>
+<p>See Release Notes:
+<a class="reference external" href="https://github.com/openwisp/django-minify-compress-staticfiles/releases/tag/1.1.1">https://github.com/openwisp/django-minify-compress-staticfiles/releases/tag/1.1.1</a></p>
+</li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">pytest-django</span></code> to 4.12.0 (<code class="docutils literal notranslate"><span class="pre">&gt;=4.10,&lt;4.13</span></code>)</p>
+<p>Updates the requirements on <a class="reference external" href="https://github.com/pytest-dev/pytest-django">pytest-django</a> to permit the latest
+version. See the <a class="reference external" href="https://github.com/pytest-dev/pytest-django/releases">release notes</a>, <a class="reference external" href="https://github.com/pytest-dev/pytest-django/blob/main/docs/changelog.rst">changelog</a>,
+and <a class="reference external" href="https://github.com/pytest-dev/pytest-django/compare/v4.10.0...v4.12.0">commit comparison</a>.</p>
+</li>
+</ul>
+</section>
+</section>
+<section id="id73">
+<h3>Bugfixes<a class="headerlink" href="#id73" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Reload DRF settings after configuring defaults</p>
+<p>Bug: <code class="docutils literal notranslate"><span class="pre">ApiAppConfig.configure_rest_framework_defaults</span></code> updated Django's
+<code class="docutils literal notranslate"><span class="pre">settings.REST_FRAMEWORK</span></code>, but DRF's <code class="docutils literal notranslate"><span class="pre">api_settings</span></code> had already
+loaded its own copy of the configuration. As a result, changes made by
+apps initialized after <code class="docutils literal notranslate"><span class="pre">rest_framework</span></code> were not reflected in the
+settings actually used by DRF.</p>
+<p>Fix: Reload <code class="docutils literal notranslate"><span class="pre">rest_framework.settings.api_settings</span></code> after updating
+<code class="docutils literal notranslate"><span class="pre">settings.REST_FRAMEWORK</span></code> so DRF uses the latest configuration.</p>
+</li>
+<li><p>Prevented capture decorators from polluting exceptions</p>
+<p>CaptureOutput previously tried injecting streams and retried any
+TypeError. A real failure in a no-argument decorated test retained the
+expected signature mismatch as exception context, obscuring the
+regression traceback.</p>
+<p>The decorator now selects the valid call signature before executing the
+test, while preserving support for explicit captured streams, variable
+arguments, and stacked <code class="docutils literal notranslate"><span class="pre">mock.patch</span></code> decorators.</p>
+</li>
+<li><p>Prevented FallbackMixin from generating spurious migrations <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/1231">#1231</a></p></li>
+<li><p>Collect Firefox console logs via WebDriver BiDi <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/696">#696</a></p>
+<p>Firefox &gt;= 135 no longer loads the Manifest v2 console-capture
+extension, and Manifest v3 content scripts are not granted host
+permissions for temporarily installed extensions, so the content script
+never runs. As a result <code class="docutils literal notranslate"><span class="pre">get_browser_logs()</span></code> returned <code class="docutils literal notranslate"><span class="pre">undefined</span></code>
+(which translated to <code class="docutils literal notranslate"><span class="pre">None</span></code> in Python) instead of the captured logs on
+modern Firefox versions, which in turn broke CI builds.</p>
+<p>The extension was replaced with WebDriver BiDi: a console message
+handler records every console entry, including those emitted during page
+load, and the log buffer is reset on each navigation to preserve the
+previous per-page semantics.</p>
+<p>This fixes console capture for every OpenWISP module that relies on
+<code class="docutils literal notranslate"><span class="pre">SeleniumTestMixin</span></code> without changing its public API.</p>
+</li>
+<li><p>Excluded <code class="docutils literal notranslate"><span class="pre">node_modules</span></code> dir and other hidden directories from the
+ReStructuredText QA check</p></li>
+<li><p>Fixed <code class="docutils literal notranslate"><span class="pre">ValidatedModelSerializer</span></code> validation of PUT/PATCH and
+relationships <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/633">#633</a></p>
+<p>Updated <code class="docutils literal notranslate"><span class="pre">ValidatedModelSerializer.validate()</span></code> to:</p>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">copy()</span></code> for existing instances to avoid mutating the original.</p></li>
+<li><p>Skip reverse relations (<code class="docutils literal notranslate"><span class="pre">ForeignObjectRel</span></code>) during <code class="docutils literal notranslate"><span class="pre">setattr</span></code>.</p></li>
+<li><p>Skip nested relationships.</p></li>
+<li><p>Convert Django <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code> to DRF <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code> so
+errors are properly serialized in API responses and work with the
+parallel test runner.</p></li>
+</ul>
+</li>
+<li><p>Triggered changelog bot for backward incompatible changes</p>
+<p>Accept <code class="docutils literal notranslate"><span class="pre">[change!]</span></code> entries in the changelog bot trigger and validation
+so backward incompatible PRs receive generated changelog suggestions.</p>
+</li>
+<li><p>Fixed double encoding of device model labels in dashboard <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/651">#651</a></p>
+<p>Fixed the double-encoding issue in admin dashboard charts where device
+models with special characters (like &amp;) generated malformed URLs.</p>
+</li>
+<li><p>Fixed broken skipped Selenium tests in Django parallel runner <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/619">#619</a></p></li>
+<li><p>Fixed Gemini call</p></li>
+<li><p>Switched to django-minify-compress-staticfiles <a class="reference external" href="https://github.com/openwisp/openwisp-utils/issues/565">#565</a></p>
+<p>Replaced the unmaintained django-compress-staticfiles with the new
+django-minify-compress-staticfiles package for static file minification
+and compression.</p>
+</li>
+<li><p>Releaser: perform <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span> <span class="pre">--tags</span></code> before changelog generation</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp-wifi-login-pages-v1-3">
+<h2>openwisp-wifi-login-pages (v1.3)<a class="headerlink" href="#openwisp-wifi-login-pages-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-wifi-login-pages">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-wifi-login-pages/blob/1.3/CHANGES.md">Module Change Log</a>.</p></li>
+</ul>
+<section id="id80">
+<h3>Features<a class="headerlink" href="#id80" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-wifi-login-pages/issues/1055">cross-organization login flow</a> to
+ensure organization-specific requirements are completed when users log
+in to a different organization.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-wifi-login-pages/issues/933">automatic logout when the RADIUS session is terminated</a>,
+keeping WiFi Login Pages synchronized with the active RADIUS session.</p></li>
+</ul>
+</section>
+<section id="id81">
+<h3>Changes<a class="headerlink" href="#id81" title="Link to this heading"></a></h3>
+<section id="id82">
+<h4>Other changes<a class="headerlink" href="#id82" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Removed Captive Portal API.</p></li>
+<li><p>Updated <a class="reference external" href="https://github.com/openwisp/openwisp-wifi-login-pages/issues/1043">references to Twitter to X</a>.</p></li>
+</ul>
+</section>
+<section id="id83">
+<h4>Dependencies<a class="headerlink" href="#id83" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">&#64;babel/runtime</span></code> <a class="reference external" href="https://github.com/babel/babel/releases/tag/v7.28.6">^7.28.6</a>.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">&#64;sentry/node</span></code> <a class="reference external" href="https://github.com/getsentry/sentry-javascript/releases/tag/10.40.0">^10.40.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">axios</span></code> from <code class="docutils literal notranslate"><span class="pre">^1.10.0</span></code> to <a class="reference external" href="https://github.com/axios/axios/blob/v1.x/CHANGELOG.md">^1.13.2</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">concurrently</span></code> from <code class="docutils literal notranslate"><span class="pre">^8.2.1</span></code> to <a class="reference external" href="https://github.com/open-cli-tools/concurrently/releases/tag/v10.0.5">^10.0.5</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">core-js</span></code> from <code class="docutils literal notranslate"><span class="pre">^3.19.0</span></code> to <a class="reference external" href="https://core-js.io/changelog">^3.47.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">deepmerge</span></code> from <code class="docutils literal notranslate"><span class="pre">^4.2.2</span></code> to <a class="reference external" href="https://github.com/TehShrike/deepmerge/blob/master/changelog.md">^4.3.1</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">dompurify</span></code> from <code class="docutils literal notranslate"><span class="pre">^3.0.6</span></code> to <a class="reference external" href="https://github.com/cure53/DOMPurify/releases/tag/3.3.3">^3.3.3</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">duration-formatter</span></code> from <code class="docutils literal notranslate"><span class="pre">^1.0.7</span></code> to <code class="docutils literal notranslate"><span class="pre">^1.1.1</span></code>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">express</span></code> from <code class="docutils literal notranslate"><span class="pre">^5.1.0</span></code> to <a class="reference external" href="https://github.com/expressjs/express/releases/tag/v5.2.1">^5.2.1</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">fs-extra</span></code> from <code class="docutils literal notranslate"><span class="pre">^11.1.0</span></code> to <a class="reference external" href="https://github.com/jprichardson/node-fs-extra/blob/master/CHANGELOG.md">^11.3.3</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">inquirer</span></code> from <code class="docutils literal notranslate"><span class="pre">^8.1.1</span></code> to <a class="reference external" href="https://github.com/SBoudrias/Inquirer.js/releases/tag/inquirer%4014.0.2">^14.0.2</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">jsdom</span></code> from <code class="docutils literal notranslate"><span class="pre">^22.1.0</span></code> to <a class="reference external" href="https://github.com/jsdom/jsdom/releases/tag/v30.0.1">^30.0.1</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">marked</span></code> from <code class="docutils literal notranslate"><span class="pre">^16.3.0</span></code> to <a class="reference external" href="https://github.com/markedjs/marked/releases/tag/v18.0.4">^18.0.4</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">node-plop</span></code> from <code class="docutils literal notranslate"><span class="pre">^0.32.0</span></code> to <a class="reference external" href="https://github.com/plopjs/plop/releases/tag/node-plop%400.32.3">^0.32.3</a>.</p></li>
+<li><p>Replaced <code class="docutils literal notranslate"><span class="pre">pretty-bytes</span></code> <code class="docutils literal notranslate"><span class="pre">^7.0.0</span></code> with <code class="docutils literal notranslate"><span class="pre">filesize</span></code> <a class="reference external" href="https://github.com/avoidwork/filesize.js/blob/master/CHANGELOG.md">^11.0.13</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">qs</span></code> from <code class="docutils literal notranslate"><span class="pre">^6.9.4</span></code> to <a class="reference external" href="https://github.com/ljharb/qs/blob/main/CHANGELOG.md">^6.14.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">ttag</span></code> from <code class="docutils literal notranslate"><span class="pre">^1.7.24</span></code> to <a class="reference external" href="https://ttag.js.org/docs/changelog.html">^1.8.12</a>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id84">
+<h3>Bugfixes<a class="headerlink" href="#id84" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed Social Login and SAML users being unable to change their password
+when it has expired.</p></li>
+<li><p>Improved <a class="reference external" href="https://github.com/openwisp/openwisp-wifi-login-pages/issues/1172">password reset error messages</a> so
+invalid reset URLs and password validation errors are clearly reported.</p></li>
+<li><p>Fixed organization-wide extra JavaScript files not being copied to the
+distribution build after upgrading <code class="docutils literal notranslate"><span class="pre">copy-webpack-plugin</span></code>.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/openwisp/openwisp-wifi-login-pages/issues/1071">JavaScript transpilation to ES5</a>,
+restoring compatibility with older browsers.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp-config-v1-3">
+<h2>openwisp-config (v1.3)<a class="headerlink" href="#openwisp-config-v1-3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-config">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-config/blob/1.3/CHANGELOG.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id85">
+<h3>Features<a class="headerlink" href="#id85" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added support for <a class="reference external" href="https://github.com/openwisp/openwisp-config/issues/181">forcing a configuration reload with SIGUSR2</a>.</p></li>
+</ul>
+</section>
+<section id="id86">
+<h3>Changes<a class="headerlink" href="#id86" title="Link to this heading"></a></h3>
+<section id="id87">
+<h4>Other changes<a class="headerlink" href="#id87" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Added support for removing the default 6 GHz SSID when OpenWrt uses
+<code class="docutils literal notranslate"><span class="pre">owe</span></code> encryption, which is the default for 6 GHz radios.</p></li>
+</ul>
+</section>
+</section>
+<section id="id88">
+<h3>Bugfixes<a class="headerlink" href="#id88" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Skipped <a class="reference external" href="https://github.com/openwisp/openwisp-config/issues/265">invalid file paths before applying configurations</a>.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/openwisp-config/issues/258">support for PPPoE management interfaces</a>.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwrt-openwisp-monitoring-v0-3-1">
+<h2>openwrt-openwisp-monitoring (v0.3.1)<a class="headerlink" href="#openwrt-openwisp-monitoring-v0-3-1" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwrt-openwisp-monitoring">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwrt-openwisp-monitoring/blob/0.3/CHANGELOG.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id89">
+<h3>Bugfixes<a class="headerlink" href="#id89" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Switch to portable <code class="docutils literal notranslate"><span class="pre">df</span></code> output (<code class="docutils literal notranslate"><span class="pre">df</span> <span class="pre">-P</span></code>) <a class="reference external" href="https://github.com/openwisp/openwrt-openwisp-monitoring/issues/153">#153</a>.</p></li>
+<li><p>Fixed issue where WiFi client data was sent even when no clients were
+connected.</p></li>
+<li><p>Added check to ensure data file exists before sending to prevent errors
+<a class="reference external" href="https://github.com/openwisp/openwrt-openwisp-monitoring/issues/102">#102</a>.</p></li>
+<li><p>Ignored duplicate IP addresses in network configuration.</p></li>
+</ul>
+</section>
+</section>
+<section id="ansible-openwisp2-v26-09">
+<h2>ansible-openwisp2 (v26.09)<a class="headerlink" href="#ansible-openwisp2-v26-09" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/ansible-openwisp2">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/ansible-openwisp2/blob/26.09/CHANGES.md">Module Change Log</a>.</p></li>
+</ul>
+<section id="id92">
+<h3>Features<a class="headerlink" href="#id92" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added WHOIS and Estimated Location configuration variables.</p></li>
+<li><p>Configured nginx to <a class="reference external" href="https://github.com/openwisp/ansible-openwisp2/issues/599">serve precompressed gzip and Brotli files</a>, improving
+static file delivery by serving precompressed files when available
+instead of compressing them on the fly.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/ansible-openwisp2/issues/534">Firmware Upgrader WebSocket routes</a> to support
+real-time firmware upgrade progress updates.</p></li>
+<li><p>Added support for <a class="reference external" href="https://github.com/openwisp/ansible-openwisp2/issues/608">user expiration reminder emails</a>, including
+configuration of the reminder schedule.</p></li>
+</ul>
+</section>
+<section id="id93">
+<h3>Changes<a class="headerlink" href="#id93" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Separated the Redis database used for sessions from the cache database.
+Deployments with a custom Redis cache URL should verify that it does not
+conflict with the updated Redis database assignments.</p></li>
+</ul>
+<section id="id94">
+<h4>Other changes<a class="headerlink" href="#id94" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">--upgrade</span></code> to the default <code class="docutils literal notranslate"><span class="pre">openwisp2_pip_extra_args</span></code> value to
+<a class="reference external" href="https://github.com/openwisp/ansible-openwisp2/issues/572">upgrade dependencies when installing OpenWISP modules</a>.</p></li>
+<li><p>Added support for Ubuntu 26.04.</p></li>
+<li><p>Dropped support for Debian 11.</p></li>
+</ul>
+</section>
+<section id="id95">
+<h4>Dependencies<a class="headerlink" href="#id95" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Upgraded to OpenWISP Users 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-users/releases/tag/1.3.0">change log</a>).</p></li>
+<li><p>Upgraded to OpenWISP Controller 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-controller/releases/tag/1.3.0">change log</a>).</p></li>
+<li><p>Upgraded to OpenWISP Monitoring 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/releases/tag/1.3.0">change log</a>).</p></li>
+<li><p>Upgraded to OpenWISP Network Topology 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-network-topology/releases/tag/1.3.0">change log</a>).</p></li>
+<li><p>Upgraded to OpenWISP Firmware Upgrader 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/releases/tag/1.3.0">change log</a>).</p></li>
+<li><p>Upgraded to OpenWISP RADIUS 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-radius/releases/tag/1.3.0">change log</a>).</p></li>
+<li><p>Upgraded to OpenWISP Notifications 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/releases/tag/1.3.0">change log</a>).</p></li>
+<li><p>Upgraded to Netjsonconfig 1.3.x (see <a class="reference external" href="https://github.com/openwisp/netjsonconfig/releases/tag/1.3.0">change log</a>).</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">ansible-core</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=2.15,&lt;2.19</span></code> to <a class="reference external" href="https://github.com/ansible/ansible/releases/tag/v2.20.5">&gt;=2.20.5,&lt;2.22</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-redis</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=6.0.0,&lt;6.1.0</span></code> to <a class="reference external" href="https://github.com/jazzband/django-redis/releases/tag/7.0.0">&gt;=7.0.0,&lt;7.1.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">mysqlclient</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=2.2,&lt;2.3</span></code> to <a class="reference external" href="https://github.com/PyMySQL/mysqlclient/releases/tag/v2.2.8">&gt;=2.2.8,&lt;2.3</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">psycopg2</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=2.9,&lt;2.10</span></code> to <a class="reference external" href="https://www.psycopg.org/docs/news.html">&gt;=2.9.12,&lt;2.10</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">uwsgi</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=2.0.30,&lt;2.1.0</span></code> to <a class="reference external" href="https://uwsgi-docs.readthedocs.io/en/latest/Changelog-2.0.31.html">&gt;=2.0.31,&lt;2.1.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">django-celery-email-reboot</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=4.1,&lt;4.2</span></code> to <a class="reference external" href="https://github.com/panevo/django-celery-email-reboot/blob/master/CHANGELOGS.md">4.2.1</a>.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="docker-openwisp-v26-09">
+<h2>docker-openwisp (v26.09)<a class="headerlink" href="#docker-openwisp-v26-09" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/docker-openwisp">Module Git Repository</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/docker-openwisp/blob/26.09/CHANGES.rst">Module Change Log</a>.</p></li>
+</ul>
+<section id="id96">
+<h3>Features<a class="headerlink" href="#id96" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added support for <a class="reference external" href="https://github.com/openwisp/docker-openwisp/issues/560">serving pre-compressed static files with Nginx</a>.</p></li>
+<li><p>Allowed customizing the <a class="reference external" href="https://github.com/openwisp/docker-openwisp/issues/514">installation and upgrade path</a> used by
+<code class="docutils literal notranslate"><span class="pre">auto-install.sh</span></code>.</p></li>
+<li><p>Added the <a class="reference external" href="https://github.com/openwisp/docker-openwisp/issues/635">DEV_MODE setting</a> to simplify
+development deployments by relaxing SSL, HSTS, and related security
+settings.</p></li>
+<li><p>Added support for <a class="reference external" href="https://github.com/openwisp/docker-openwisp/issues/587">user expiration reminders</a>.</p></li>
+<li><p>Added <a class="reference external" href="https://github.com/openwisp/docker-openwisp/issues/484">WebSocket routes for the firmware upgrader</a>.</p></li>
+</ul>
+</section>
+<section id="id97">
+<h3>Changes<a class="headerlink" href="#id97" title="Link to this heading"></a></h3>
+<section id="id98">
+<h4>Other changes<a class="headerlink" href="#id98" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Separated Redis databases used for sessions and cache.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/docker-openwisp/issues/526">Changed admin XHR requests to use same-origin URLs</a>, removing the
+need for dashboard API base URL overrides.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/docker-openwisp/issues/589">Improved OpenVPN CRL reloading</a> to avoid
+restarting OpenVPN every day when the CRL has not changed.</p></li>
+<li><p>Changed the default locale, timezone, and related settings to neutral
+values.</p></li>
+</ul>
+</section>
+<section id="id99">
+<h4>Dependencies<a class="headerlink" href="#id99" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Upgraded to OpenWISP Users 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-users/releases/tag/1.3.0">changelog</a>).</p></li>
+<li><p>Upgraded to OpenWISP Controller 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-controller/releases/tag/1.3.0">changelog</a>).</p></li>
+<li><p>Upgraded to OpenWISP Monitoring 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-monitoring/releases/tag/1.3.0">changelog</a>).</p></li>
+<li><p>Upgraded to OpenWISP Network Topology 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-network-topology/releases/tag/1.3.0">changelog</a>).</p></li>
+<li><p>Upgraded to OpenWISP Firmware Upgrader 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-firmware-upgrader/releases/tag/1.3.0">changelog</a>).</p></li>
+<li><p>Upgraded to OpenWISP RADIUS 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-radius/releases/tag/1.3.0">changelog</a>).</p></li>
+<li><p>Upgraded to OpenWISP Notifications 1.3.x (see <a class="reference external" href="https://github.com/openwisp/openwisp-notifications/releases/tag/1.3.0">changelog</a>).</p></li>
+<li><p>Upgraded to Netjsonconfig 1.3.x (see <a class="reference external" href="https://github.com/openwisp/netjsonconfig/releases/tag/1.3.0">changelog</a>).</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">docker</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=7.1.0,&lt;7.2.0</span></code> to <a class="reference external" href="https://github.com/docker/docker-py/releases/tag/7.2.0">&gt;=7.2.0,&lt;7.3.0</a>.</p></li>
+<li><p>Bumped the Nginx image from <code class="docutils literal notranslate"><span class="pre">1.31.1-alpine</span></code> to <code class="docutils literal notranslate"><span class="pre">1.31.5-alpine</span></code>.</p></li>
+<li><p>Bumped the OpenVPN image from <code class="docutils literal notranslate"><span class="pre">lisenet/openvpn:2.7.3</span></code> to
+<code class="docutils literal notranslate"><span class="pre">lisenet/openvpn:2.7.5</span></code>.</p></li>
+<li><p>Bumped the Postfix and NFS Alpine base images from <code class="docutils literal notranslate"><span class="pre">3.23</span></code> to <code class="docutils literal notranslate"><span class="pre">3.24</span></code>.</p></li>
+<li><p>Bumped the FreeRADIUS image from <code class="docutils literal notranslate"><span class="pre">3.2.8-alpine</span></code> to <code class="docutils literal notranslate"><span class="pre">3.2.10-alpine</span></code>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">tldextract</span></code> from <code class="docutils literal notranslate"><span class="pre">&gt;=5.3.1,&lt;5.4.0</span></code> to <a class="reference external" href="https://github.com/john-kurkowski/tldextract/releases/tag/5.3.2">&gt;=5.3.2,&lt;5.4.0</a>.</p></li>
+<li><p>Bumped <code class="docutils literal notranslate"><span class="pre">boto3</span></code> to <code class="docutils literal notranslate"><span class="pre">&gt;=1.43.84,&lt;1.44.0</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id102">
+<h3>Bugfixes<a class="headerlink" href="#id102" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/docker-openwisp/issues/572">Fixed OpenVPN startup and default-object handling</a> when
+<code class="docutils literal notranslate"><span class="pre">VPN_NAME</span></code> contains white space, configuration names differ, or
+administrators rename system-managed default objects.</p></li>
+<li><p>Fixed Django Channels Redis connections being configured with timeouts.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/docker-openwisp/issues/588">Fixed edge cases in auto-install script</a>, including
+environment variable lookup, configuration rewriting, and validation of
+the OpenWISP RADIUS setting.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/docker-openwisp/issues/669">Fixed Docker Hub image pulls</a>.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+    </div><div class="flex justify-between items-center pt-6 mt-12 border-t border-border gap-4">
+    <div class="mr-auto">
+      <a href="index.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="mr-2 h-4 w-4">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Release Notes
+      </a>
+    </div>
+    <div class="ml-auto">
+      <a href="25.10.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        OpenWISP 25.10
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="ml-2 h-4 w-4">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+</div></div><aside id="right-sidebar" class="hidden text-sm xl:block">
+  <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
+    <ul>
+<li><a class="reference internal" href="#highlights">Highlights</a></li>
+<li><a class="reference internal" href="#openwisp-users-v1-3">openwisp-users (v1.3)</a><ul>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#changes">Changes</a><ul>
+<li><a class="reference internal" href="#other-changes">Other changes</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp-notifications-v1-3">openwisp-notifications (v1.3)</a><ul>
+<li><a class="reference internal" href="#id6">Features</a></li>
+<li><a class="reference internal" href="#id7">Changes</a><ul>
+<li><a class="reference internal" href="#backward-incompatible-changes">Backward-incompatible changes</a></li>
+<li><a class="reference internal" href="#id8">Other changes</a></li>
+<li><a class="reference internal" href="#id9">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id11">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp-controller-v1-3">openwisp-controller (v1.3)</a><ul>
+<li><a class="reference internal" href="#id12">Features</a></li>
+<li><a class="reference internal" href="#id13">Changes</a><ul>
+<li><a class="reference internal" href="#id14">Other changes</a></li>
+<li><a class="reference internal" href="#id17">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id23">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp-monitoring-v1-3">openwisp-monitoring (v1.3)</a><ul>
+<li><a class="reference internal" href="#id24">Features</a></li>
+<li><a class="reference internal" href="#id25">Changes</a><ul>
+<li><a class="reference internal" href="#id26">Other changes</a></li>
+<li><a class="reference internal" href="#id27">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id29">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp-firmware-upgrader-v1-3">openwisp-firmware-upgrader (v1.3)</a><ul>
+<li><a class="reference internal" href="#id30">Features</a></li>
+<li><a class="reference internal" href="#id31">Changes</a><ul>
+<li><a class="reference internal" href="#id32">Other changes</a></li>
+<li><a class="reference internal" href="#id33">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id35">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp-ipam-v1-3">openwisp-ipam (v1.3)</a><ul>
+<li><a class="reference internal" href="#id36">Features</a></li>
+<li><a class="reference internal" href="#id37">Changes</a><ul>
+<li><a class="reference internal" href="#id38">Other changes</a></li>
+<li><a class="reference internal" href="#id39">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id41">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp-network-topology-v1-3">openwisp-network-topology (v1.3)</a><ul>
+<li><a class="reference internal" href="#id42">Changes</a><ul>
+<li><a class="reference internal" href="#id43">Other changes</a></li>
+<li><a class="reference internal" href="#id44">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id45">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp-radius-v1-3">openwisp-radius (v1.3)</a><ul>
+<li><a class="reference internal" href="#id46">Features</a></li>
+<li><a class="reference internal" href="#id47">Changes</a><ul>
+<li><a class="reference internal" href="#id48">Backward-incompatible changes</a></li>
+<li><a class="reference internal" href="#id49">Other changes</a></li>
+<li><a class="reference internal" href="#id50">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id53">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp-utils-v1-3">openwisp-utils (v1.3)</a><ul>
+<li><a class="reference internal" href="#id54">Features</a></li>
+<li><a class="reference internal" href="#id63">Changes</a><ul>
+<li><a class="reference internal" href="#id64">Backward-incompatible changes</a></li>
+<li><a class="reference internal" href="#id66">Other changes</a></li>
+<li><a class="reference internal" href="#id72">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id73">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp-wifi-login-pages-v1-3">openwisp-wifi-login-pages (v1.3)</a><ul>
+<li><a class="reference internal" href="#id80">Features</a></li>
+<li><a class="reference internal" href="#id81">Changes</a><ul>
+<li><a class="reference internal" href="#id82">Other changes</a></li>
+<li><a class="reference internal" href="#id83">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id84">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp-config-v1-3">openwisp-config (v1.3)</a><ul>
+<li><a class="reference internal" href="#id85">Features</a></li>
+<li><a class="reference internal" href="#id86">Changes</a><ul>
+<li><a class="reference internal" href="#id87">Other changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id88">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwrt-openwisp-monitoring-v0-3-1">openwrt-openwisp-monitoring (v0.3.1)</a><ul>
+<li><a class="reference internal" href="#id89">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ansible-openwisp2-v26-09">ansible-openwisp2 (v26.09)</a><ul>
+<li><a class="reference internal" href="#id92">Features</a></li>
+<li><a class="reference internal" href="#id93">Changes</a><ul>
+<li><a class="reference internal" href="#id94">Other changes</a></li>
+<li><a class="reference internal" href="#id95">Dependencies</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#docker-openwisp-v26-09">docker-openwisp (v26.09)</a><ul>
+<li><a class="reference internal" href="#id96">Features</a></li>
+<li><a class="reference internal" href="#id97">Changes</a><ul>
+<li><a class="reference internal" href="#id98">Other changes</a></li>
+<li><a class="reference internal" href="#id99">Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id102">Bugfixes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside>
+          </main>
+        </div>
+      </div><footer class="py-6 border-t border-border md:py-0">
+    <div class="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+      <div class="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-6 md:px-0">
+        <a href="../index.html">
+            <img src="../_static/openwisp-logo.svg" alt="OpenWISP" width="125" height="72" class="hidden dark:block" />
+            <img src="../_static/openwisp-logo-black.svg" alt="OpenWISP" width="125" height="72" class="dark:hidden" /></a>
+        <p class="text-sm leading-loose text-right text-muted-foreground md:text-center">© 2008-2026, OpenWISP&nbsp;</p>
+      </div>
+    </div>
+</footer>
+    </div><button id="scrolltop"
+        x-cloak
+        @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="fixed bottom-8 right-8 p-2 z-10 rounded-sm bg-gray-700 text-xs text-white transition-all duration-1000 hover:bg-gray-950 focus:bg-gray-950"
+        :class="{'opacity-0 invisible' : !showScrollTop}"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       height="14"
+       viewBox="0 96 960 960"
+       width="14"
+       class="inline fill-current mb-[2px]"
+       aria-hidden="true">
+    <path d="M450 896V370L202 618l-42-42 320-320 320 320-42 42-248-248v526h-60Z" />
+  </svg>
+  Back to top
+</button>
+    
+
+    <script src="../_static/documentation_options.js?v=81f007b9"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="../_static/theme.js?v=5db23cf8"></script>
+    
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.openwisp.io/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '7']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript>
+  <p>
+    <img referrerpolicy="no-referrer-when-downgrade" src="//analytics.openwisp.io/matomo.php?idsite=7&amp;rec=1" style="border:0;" alt="" />
+  </p>
+</noscript>
+<!-- End Matomo Code -->
+
+<div id="lightbox" class="lightbox">
+  <span class="close">&times;</span>
+</div>
+<script src="../_static/lightbox.js"></script>
+
+</body>
+
+</html>

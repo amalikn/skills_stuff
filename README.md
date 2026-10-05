@@ -23,6 +23,13 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 | `skill-cambium`        | `specialists/project/skill-cambium/`        | Active — bootstrapped 2026-09-17, cross-referenced with `skill-smc` |
 | `skill-mx02-migration` | `specialists/project/skill-mx02-migration/` | Active                                                              |
 
+## Specialist Packs — Platform
+
+| Pack | Path | Status |
+| --- | --- | --- |
+| `skill-nautobot` | `specialists/platform/skill-nautobot/` | 0.3.0 — source-of-truth decisions plus a version-matched operations cookbook (Nautobot 3.2.3) |
+| `skill-openwisp` | `specialists/platform/skill-openwisp/` | 0.3.0 — passive monitoring decisions plus a version-matched operations cookbook (OpenWISP 26.09.0) |
+
 ## Current Focus
 - Project specialist coverage now includes:
   - `skill-eml-to-md`

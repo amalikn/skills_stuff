@@ -1,0 +1,490 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="approval-workflows">Approval Workflows<a class="headerlink" href="#approval-workflows" title="Permanent link">¶</a></h1>
+<p>Approval Workflows allows for a multi-stage review and approval of processes before making changes, running or creating specific objects in the system. They are defined in advance and attached to specific models based on certain constraints.</p>
+<h2 id="use-cases">Use cases<a class="headerlink" href="#use-cases" title="Permanent link">¶</a></h2>
+<ul>
+<li>Preventing accidental deletion of critical data by requiring manager approval before deletion jobs run.</li>
+<li>Requiring security team sign-off before enabling network changes in production.</li>
+<li>Ensuring multiple stakeholders approve large-scale bulk edits.</li>
+<li>Mandating peer review for scheduled jobs that affect multiple systems.</li>
+</ul>
+<h3 id="involving-scheduled-job-approval">Involving Scheduled Job Approval<a class="headerlink" href="#involving-scheduled-job-approval" title="Permanent link">¶</a></h3>
+<ol>
+<li>The <a href="#workflow-architect">Workflow Architect</a> defines the <a href="#create-an-approval-workflow-definition-with-stages">workflow definition</a>.</li>
+<li>An <a href="#object-operator">Object Operator</a> submits a job for approval. See <a href="jobs/index.html#via-the-web-ui">Running Jobs Via the Web UI</a> or <a href="jobs/job-scheduling-and-approvals.html#scheduling-via-the-ui">Scheduling via the UI</a>. If an approval workflow definition exists, the approval workflow is created automatically.</li>
+<li>The <a href="#approver">Approver(s)</a> review and <a href="#approve-or-deny-a-stage">approve the job</a>.</li>
+<li>Once all required approvals are obtained, the job is automatically placed in the execution queue.</li>
+</ol>
+<h2 id="model-reference">Model Reference<a class="headerlink" href="#model-reference" title="Permanent link">¶</a></h2>
+<pre class="mermaid"><code>---
+title: Approval Workflow Entity Relationship Diagram
+---
+erDiagram
+    "extras.ApprovalWorkflowDefinition" {
+        string name
+        ContentType model_content_type FK
+        json model_constraints
+        int weight
+    }
+    "extras.ApprovalWorkflowStageDefinition" {
+        ApprovalWorkflowDefinition approval_workflow_definition FK
+        int sequence
+        string name
+        int min_approvers
+        string denial_message
+        Group approver_group FK
+    }
+    "extras.ApprovalWorkflow" {
+        ApprovalWorkflowDefinition approval_workflow_definition FK
+        GenericForeignKey object_under_review FK
+        ContentType object_under_review_content_type FK
+        uuid object_under_review_object_id
+        choices current_state
+        datetime decision_date
+        User user FK
+        string user_name
+    }
+    "extras.ApprovalWorkflowStage" {
+        ApprovalWorkflow approval_workflow FK
+        ApprovalWorkflowStageDefinition approval_workflow_stage_definition FK
+        choices state
+        datetime decision_date
+    }
+    "extras.ApprovalWorkflowStageResponse" {
+        ApprovalWorkflowStage approval_workflow_stage FK
+        User user FK
+        string comments
+        choices state
+    }
+
+    "contenttypes.ContentType"[ContentType] {}
+    "users.User"[User] {}
+    "users.Group"[Group] {}
+    "models.GenericForeignKey"[GenericForeignKey] {}
+
+    "extras.ApprovalWorkflowDefinition" }o--|| "contenttypes.ContentType": "applies to model"
+    "extras.ApprovalWorkflowDefinition" ||--o{ "extras.ApprovalWorkflowStageDefinition": "defines stages"
+    "extras.ApprovalWorkflowStageDefinition" }o--|| "users.Group": "approver group"
+    "extras.ApprovalWorkflowDefinition" ||--o{ "extras.ApprovalWorkflow": "creates instances"
+    "extras.ApprovalWorkflow" }o--|| "models.GenericForeignKey": "object under review"
+    "extras.ApprovalWorkflow" ||--o{ "extras.ApprovalWorkflowStage": "has stages"
+    "extras.ApprovalWorkflowStage" ||--o{ "extras.ApprovalWorkflowStageResponse": "has responses"
+    "extras.ApprovalWorkflowStageResponse" }o--|| "users.User": "submitted by"</code></pre>
+<h3 id="approvalworkflowdefinition">ApprovalWorkflowDefinition<a class="headerlink" href="#approvalworkflowdefinition" title="Permanent link">¶</a></h3>
+<p>The template for a workflow, specifying which model(s) it applies to, any constraints, and the ordered list of stages. Represents a reusable definition of an approval workflow.</p>
+<h4 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">¶</a></h4>
+<p>Constraints define when a workflow definition should apply to a particular model instance.</p>
+<ul>
+<li>Constraints are stored as a dictionary of <strong>field lookups → values</strong> (e.g. <code>{"approval_required": True}</code>).</li>
+<li>Any valid Django ORM lookup can be used (e.g. <code>{"job_model__name__in": ["ExampleDryRunJob", "Example Job of Everything", "Export Object List"]}</code>, <code>{"job_model__name__icontains": "Export"}</code>, <code>{"total_run_count__gte": 10}</code>), since constraints are passed directly into <code>.filter(**constraints)</code>.</li>
+<li>If the instance matches the constraints, the workflow applies.</li>
+<li>If no constraints are defined, the workflow applies to all instances of the model.</li>
+</ul>
+<h4 id="weight">Weight<a class="headerlink" href="#weight" title="Permanent link">¶</a></h4>
+<p>When multiple workflow definitions exist for the same model, only <strong>one</strong> will apply to any given object under review.
+The workflow with the <strong>highest weight value</strong> that matches the object’s constraints is selected.</p>
+<h5 id="example-1-specific-scheduled-job">Example 1: Specific scheduled job<a class="headerlink" href="#example-1-specific-scheduled-job" title="Permanent link">¶</a></h5>
+<ul>
+<li>Workflow Definition A:<ul>
+<li>Model: <code>Scheduled Job</code></li>
+<li>Constraints: <code>{"job_model__name": "Bulk Delete Objects"}</code></li>
+<li>Weight: <strong>20</strong></li>
+</ul>
+</li>
+<li>Workflow Definition B:<ul>
+<li>Model: <code>Scheduled Job</code></li>
+<li>Constraints: none (applies to all scheduled jobs)</li>
+<li>Weight: <strong>10</strong></li>
+</ul>
+</li>
+</ul>
+<p>Result:
+If the object under review is the <em>Bulk Delete Objects Scheduled Job</em>, Workflow A applies (weight 20 wins).
+For all other scheduled jobs, Workflow B applies (weight 10).</p>
+<h3 id="approvalworkflowstagedefinition">ApprovalWorkflowStageDefinition<a class="headerlink" href="#approvalworkflowstagedefinition" title="Permanent link">¶</a></h3>
+<p>A single approval stage within a workflow definition, specifying the approver group and required number of approvers.</p>
+<h3 id="approvalworkflow">ApprovalWorkflow<a class="headerlink" href="#approvalworkflow" title="Permanent link">¶</a></h3>
+<p>A concrete instance of a workflow triggered for a specific object under review.</p>
+<ul>
+<li>Automatically changes to <code>Denied</code> if any stage is denied.</li>
+<li>Automatically changes to <code>Approved</code> if all stages are approved.</li>
+<li>Automatically changes to <code>Canceled</code> if Approval was canceled directly.</li>
+<li>Calls object’s <code>on_workflow_approved()</code>, <code>on_workflow_denied()</code> or <code>on_workflow_canceled()</code> when final state is reached.</li>
+</ul>
+<h3 id="approvalworkflowstage">ApprovalWorkflowStage<a class="headerlink" href="#approvalworkflowstage" title="Permanent link">¶</a></h3>
+<p>A concrete instance of stage within a workflow execution. Progresses from <code>Pending</code> → <code>Approved</code>/<code>Denied</code>.</p>
+<ul>
+<li>Approves automatically when minimum approvals are met.</li>
+<li>Denies immediately if any denial is submitted.</li>
+<li>Triggers parent workflow state updates.</li>
+</ul>
+<h3 id="approvalworkflowstageresponse">ApprovalWorkflowStageResponse<a class="headerlink" href="#approvalworkflowstageresponse" title="Permanent link">¶</a></h3>
+<p>A single user's input on a specific stage - this may be an explicit decision (<code>approve</code>/<code>deny</code>) or simply a comment without a decision.</p>
+<ul>
+<li>Saving a response can trigger stage and workflow state updates.</li>
+</ul>
+<h2 id="how-to-guides">How-To Guides<a class="headerlink" href="#how-to-guides" title="Permanent link">¶</a></h2>
+<h3 id="attach-workflow-to-a-model-instance">Attach Workflow to a Model Instance<a class="headerlink" href="#attach-workflow-to-a-model-instance" title="Permanent link">¶</a></h3>
+<p>Workflows are automatically attached after creating, running, or updating an object that complies with the workflow model and constraints. Manual attachment is not available.</p>
+<h3 id="using-approval-workflow-via-ui">Using Approval Workflow via UI<a class="headerlink" href="#using-approval-workflow-via-ui" title="Permanent link">¶</a></h3>
+<h4 id="create-an-approval-workflow-definition-with-stages">Create an Approval Workflow Definition with stages<a class="headerlink" href="#create-an-approval-workflow-definition-with-stages" title="Permanent link">¶</a></h4>
+<!-- pyml disable-num-lines 7 no-inline-html -->
+<ol>
+<li>
+<p>Go to <code>Approvals &gt; Workflow Definitions &gt; Add Approval Workflow Definition</code>.
+    </p><div class="grid cards example-images" markdown=""><p></p>
+<ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_nav-approval-workflow-definition_light.png#only-light" data-desc-position="bottom"><img alt="Navigate to Approval Workflow Definition" class="on-glb" src="../../media/development/approval-workflows/ss_nav-approval-workflow-definition_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_nav-approval-workflow-definition_dark.png#only-dark" data-desc-position="bottom"><img alt="Navigate to Approval Workflow Definition" class="on-glb" src="../../media/development/approval-workflows/ss_nav-approval-workflow-definition_dark.png#only-dark"></a></li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-workflow-definition_light.png#only-light" data-desc-position="bottom"><img alt="Approval Workflow Definition" class="on-glb" src="../../media/development/approval-workflows/ss_approval-workflow-definition_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-workflow-definition_dark.png#only-dark" data-desc-position="bottom"><img alt="Approval Workflow Definition" class="on-glb" src="../../media/development/approval-workflows/ss_approval-workflow-definition_dark.png#only-dark"></a></li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_add-approval-workflow-definition_light.png#only-light" data-desc-position="bottom"><img alt="Add Approval Workflow Definition" class="on-glb" src="../../media/development/approval-workflows/ss_add-approval-workflow-definition_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_add-approval-workflow-definition_dark.png#only-dark" data-desc-position="bottom"><img alt="Add Approval Workflow Definition" class="on-glb" src="../../media/development/approval-workflows/ss_add-approval-workflow-definition_dark.png#only-dark"></a></li>
+</ul>
+</div>
+</li>
+<li>
+<p>Enter:</p>
+<ul>
+<li><strong>Name</strong> (e.g., "Scheduled Job Run Workflow").</li>
+<li><strong>Model</strong> (e.g., <code>extras|scheduled job</code>).</li>
+<li><strong>Constraints</strong> (optional JSON filter, e.g., <code>{"job_model__name": "Bulk Delete Objects"}</code>, see <a href="#constraints">Contraints</a>).</li>
+<li><strong>Weight</strong> (only one workflow definition (with the highest weight) will apply to any given object under review, see <a href="#weight">Weight</a>).</li>
+</ul>
+</li>
+<li>In the <strong>Approval Workflow Stage Definitions</strong> section, define one or more stages:<ul>
+<li><strong>Stage Name</strong> (a descriptive name for the approval step (e.g., "Finance Approval", "Security Review", "Management Approval")).</li>
+<li><strong>Sequence</strong> (order in which the stage is executed).</li>
+<li><strong>Minimum Approvers</strong> (number of approvals required).</li>
+<li><strong>Approver Group</strong> (group of users eligible to approve)</li>
+<li><strong>Denial Message</strong> (optional message shown if denied).</li>
+</ul>
+</li>
+</ol>
+<h4 id="approve-or-deny-a-stage">Approve or Deny a Stage<a class="headerlink" href="#approve-or-deny-a-stage" title="Permanent link">¶</a></h4>
+<!-- pyml disable-num-lines 24 no-inline-html -->
+<ol>
+<li>
+<p>Go to <code>Approvals &gt; Approval Dashboard</code> or on the right <code>User dropdown menu &gt; Approval Dashboard</code> and select the <strong>My Approvals</strong> tab.
+    </p><div class="grid cards example-images" markdown=""><p></p>
+<ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_nav-approval-dashboard1_light.png#only-light" data-desc-position="bottom"><img alt="Navigate to Approval Workflow Dashboard1" class="on-glb" src="../../media/development/approval-workflows/ss_nav-approval-dashboard1_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_nav-approval-dashboard1_dark.png#only-dark" data-desc-position="bottom"><img alt="Navigate to Approval Workflow Dashboard1" class="on-glb" src="../../media/development/approval-workflows/ss_nav-approval-dashboard1_dark.png#only-dark"></a></li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_nav-approval-dashboard2_light.png#only-light" data-desc-position="bottom"><img alt="Navigate to Approval Workflow Dashboard2" class="on-glb" src="../../media/development/approval-workflows/ss_nav-approval-dashboard2_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_nav-approval-dashboard2_dark.png#only-dark" data-desc-position="bottom"><img alt="Navigate to Approval Workflow Dashboard2" class="on-glb" src="../../media/development/approval-workflows/ss_nav-approval-dashboard2_dark.png#only-dark"></a></li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-dashboard-approvals_light.png#only-light" data-desc-position="bottom"><img alt="Approval Workflow Dashboard Approvals" class="on-glb" src="../../media/development/approval-workflows/ss_approval-dashboard-approvals_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-dashboard-approvals_dark.png#only-dark" data-desc-position="bottom"><img alt="Approval Workflow Dashboard Approvals" class="on-glb" src="../../media/development/approval-workflows/ss_approval-dashboard-approvals_dark.png#only-dark"></a></li>
+</ul>
+</div>
+</li>
+<li>
+<p>Locate the relevant object under review in the table. The table displays:</p>
+<ul>
+<li><strong>Object under review</strong> - Linked to the object’s detail view.</li>
+<li><strong>Workflow</strong> - Name of the workflow definition (linked to the workflow detail view).</li>
+<li><strong>Current Stage</strong> - Stage awaiting action.</li>
+<li><strong>Actions Needed</strong> - Remaining approvals required.</li>
+<li><strong>State</strong> - Current workflow state.</li>
+</ul>
+</li>
+<li>To approve the stage, select the <img alt="Approve button" src="../../media/development/approval-workflows/ss_approve-icon_light.png#only-light"><img alt="Approve button" src="../../media/development/approval-workflows/ss_approve-icon_dark.png#only-dark"> button.</li>
+<li>To deny the stage, select the <img alt="Deny button" src="../../media/development/approval-workflows/ss_deny-icon_light.png#only-light"><img alt="Deny button" src="../../media/development/approval-workflows/ss_deny-icon_dark.png#only-dark"> button.</li>
+<li>
+<p>After the decision action, a confirmation window appears where a comment can be added before confirming the action.
+    </p><div class="grid cards example-images" markdown=""><p></p>
+<ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approve-window_light.png#only-light" data-desc-position="bottom"><img alt="Approval Workflow Approve" class="on-glb" src="../../media/development/approval-workflows/ss_approve-window_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approve-window_dark.png#only-dark" data-desc-position="bottom"><img alt="Approval Workflow Approve" class="on-glb" src="../../media/development/approval-workflows/ss_approve-window_dark.png#only-dark"></a></li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_deny-window_light.png#only-light" data-desc-position="bottom"><img alt="Approval Workflow Deny" class="on-glb" src="../../media/development/approval-workflows/ss_deny-window_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_deny-window_dark.png#only-dark" data-desc-position="bottom"><img alt="Approval Workflow Deny" class="on-glb" src="../../media/development/approval-workflows/ss_deny-window_dark.png#only-dark"></a></li>
+</ul>
+</div>
+</li>
+</ol>
+<h4 id="view-my-requests">View My Requests<a class="headerlink" href="#view-my-requests" title="Permanent link">¶</a></h4>
+<!-- pyml disable-num-lines 5 no-inline-html -->
+<ol>
+<li>
+<p>Open the <strong>Approval Dashboard</strong> and select the <strong>My Requests</strong> tab.
+    </p><div class="grid cards example-images" markdown=""><p></p>
+<ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-dashboard-requests_light.png#only-light" data-desc-position="bottom"><img alt="Approval Dashboard Requests" class="on-glb" src="../../media/development/approval-workflows/ss_approval-dashboard-requests_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-dashboard-requests_dark.png#only-dark" data-desc-position="bottom"><img alt="Approval Dashboard Requests" class="on-glb" src="../../media/development/approval-workflows/ss_approval-dashboard-requests_dark.png#only-dark"></a></li>
+</ul>
+</div>
+</li>
+<li>
+<p>The table lists all workflows initiated by the current user. The columns include:</p>
+<ul>
+<li><strong>Approval Workflow Definition</strong> - Linked to the workflow definition.</li>
+<li><strong>Object Type Under Review</strong> - Model and object type for the request.</li>
+<li><strong>Object Under Review</strong> - Linked to the specific object awaiting or having received approval.</li>
+<li><strong>Current State</strong> - State of the workflow (e.g., <code>Pending</code>, <code>Approved</code>, <code>Denied</code>).</li>
+<li><strong>User</strong> - Requesting user.</li>
+</ul>
+</li>
+</ol>
+<h4 id="check-workflow-state">Check Workflow State<a class="headerlink" href="#check-workflow-state" title="Permanent link">¶</a></h4>
+<p>There are 2 ways to check the state of a workflow, depending on whether user is a object operator/approver or a workflow architect.</p>
+<h5 id="check-state-as-object-operatorapprover">Check State as Object Operator/Approver**<a class="headerlink" href="#check-state-as-object-operatorapprover" title="Permanent link">¶</a></h5>
+<!-- pyml disable-num-lines 9 no-inline-html -->
+<ol>
+<li>Go to <code>Approvals &gt; Approval Dashboard</code> or on the right <code>User dropdown menu &gt; Approval Dashboard</code></li>
+<li>Select <strong>My Approvals</strong> or <strong>My Requests</strong> tab.</li>
+<li>
+<p>Click the workflow (in My Approvals view) or details button (in My Requests view) for specific workflow.
+    </p><div class="grid cards example-images" markdown=""><p></p>
+<ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_my-approvals-workflow_light.png#only-light" data-desc-position="bottom"><img alt="My Approvals Workflow" class="on-glb" src="../../media/development/approval-workflows/ss_my-approvals-workflow_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_my-approvals-workflow_dark.png#only-dark" data-desc-position="bottom"><img alt="My Approvals Workflow" class="on-glb" src="../../media/development/approval-workflows/ss_my-approvals-workflow_dark.png#only-dark"></a></li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_my-requests-workflow_light.png#only-light" data-desc-position="bottom"><img alt="My Requests Workflow" class="on-glb" src="../../media/development/approval-workflows/ss_my-requests-workflow_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_my-requests-workflow_dark.png#only-dark" data-desc-position="bottom"><img alt="My Requests Workflow" class="on-glb" src="../../media/development/approval-workflows/ss_my-requests-workflow_dark.png#only-dark"></a></li>
+</ul>
+</div>
+</li>
+</ol>
+<h5 id="check-state-as-workflow-architect">Check State as Workflow Architect**<a class="headerlink" href="#check-state-as-workflow-architect" title="Permanent link">¶</a></h5>
+<!-- pyml disable-num-lines 38 no-inline-html -->
+<ol>
+<li>Go to <code>Approvals &gt; Approval Workflow Definition</code></li>
+<li>
+<p>Select the required workflow definition.
+    </p><div class="grid cards example-images" markdown=""><p></p>
+<ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_select-approval-workflow-definition_light.png#only-light" data-desc-position="bottom"><img alt="Select Approval Workflow Definition" class="on-glb" src="../../media/development/approval-workflows/ss_select-approval-workflow-definition_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_select-approval-workflow-definition_dark.png#only-dark" data-desc-position="bottom"><img alt="Select Approval Workflow Definition" class="on-glb" src="../../media/development/approval-workflows/ss_select-approval-workflow-definition_dark.png#only-dark"></a></li>
+</ul>
+</div>
+</li>
+<li>
+<p>In the <strong>Workflows</strong> list, all workflows for this definition are displayed.</p>
+</li>
+<li>
+<p>Select the details button for a specific workflow.
+    </p><div class="grid cards example-images" markdown=""><p></p>
+<ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-workflow-definition-details_light.png#only-light" data-desc-position="bottom"><img alt="Approval Workflow Definition details" class="on-glb" src="../../media/development/approval-workflows/ss_approval-workflow-definition-details_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-workflow-definition-details_dark.png#only-dark" data-desc-position="bottom"><img alt="Approval Workflow Definition details" class="on-glb" src="../../media/development/approval-workflows/ss_approval-workflow-definition-details_dark.png#only-dark"></a></li>
+</ul>
+</div>
+</li>
+<li>
+<p>View <strong>Approval Workflow</strong> details view contains:</p>
+<ul>
+<li><strong>Approval Workflow</strong> panel:<ul>
+<li><strong>Approval Workflow Definition</strong> - Linked definition for the workflow.</li>
+<li><strong>Object Under Review</strong> - Object subject to approval.</li>
+<li><strong>Current State</strong> - Workflow status.</li>
+<li><strong>Approval Date</strong> - Date of final decision.</li>
+<li><strong>Requesting User</strong> - User who initiated the workflow.</li>
+</ul>
+</li>
+<li><strong>Stages</strong> panel:<ul>
+<li><strong>Stage</strong> - Stage name.</li>
+<li><strong>Actions Needed</strong> - Remaining approvals required.</li>
+<li><strong>State</strong> - Current stage status.</li>
+<li><strong>Decision Date</strong> - Date of stage decision.</li>
+</ul>
+</li>
+<li><strong>Responses</strong> panel:<ul>
+<li><strong>Stage</strong> - Stage name.</li>
+<li><strong>User</strong> - Responding user.</li>
+<li><strong>Comments</strong> - Submitted comment.</li>
+<li><strong>State</strong> - Decision state (<code>Pending</code>, <code>Approved</code>, <code>Denied</code>).</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<div class="grid cards example-images">
+<ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-workflow-details_light.png#only-light" data-desc-position="bottom"><img alt="Approval Workflow details" class="on-glb" src="../../media/development/approval-workflows/ss_approval-workflow-details_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-workflow-details_dark.png#only-dark" data-desc-position="bottom"><img alt="Approval Workflow details" class="on-glb" src="../../media/development/approval-workflows/ss_approval-workflow-details_dark.png#only-dark"></a></li>
+</ul>
+</div>
+<h4 id="cancel-approval-workflow">Cancel Approval Workflow<a class="headerlink" href="#cancel-approval-workflow" title="Permanent link">¶</a></h4>
+<p>User can cancel his own Approval Workflow.</p>
+<ol>
+<li>Go to Approval Workflow view <a href="#check-state-as-object-operatorapprover">see</a></li>
+<li>Use Actions button dropdown and select <code>Cancel Approval Workflow</code><ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_cancel-approval-workflow_light.png#only-light" data-desc-position="bottom"><img alt="Approval Workflow cancel" class="on-glb" src="../../media/development/approval-workflows/ss_cancel-approval-workflow_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_cancel-approval_workflow_dark.png#only-dark" data-desc-position="bottom"><img alt="Approval Workflow cancel" class="on-glb" src="../../media/development/approval-workflows/ss_cancel-approval_workflow_dark.png#only-dark"></a></li>
+</ul>
+</li>
+<li>Confirm using confirmation form<ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-workflow-cancellation-form_light.png#only-light" data-desc-position="bottom"><img alt="Approval Workflow cancellation form" class="on-glb" src="../../media/development/approval-workflows/ss_approval-workflow-cancellation-form_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/development/approval-workflows/ss_approval-workflow-cancellation-form_dark.png#only-dark" data-desc-position="bottom"><img alt="Approval Workflow cancellation form" class="on-glb" src="../../media/development/approval-workflows/ss_approval-workflow-cancellation-form_dark.png#only-dark"></a></li>
+</ul>
+</li>
+</ol>
+<h3 id="using-approval-workflow-via-api">Using Approval Workflow via API<a class="headerlink" href="#using-approval-workflow-via-api" title="Permanent link">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unlike the UI, which handles both the Approval Workflow Definition and its stages in a single form submission, the API requires <strong>two separate requests</strong>:</p>
+<ol>
+<li>First, create the <code>ApprovalWorkflowDefinition</code></li>
+<li>Then, create one or more <code>ApprovalWorkflowStageDefinition</code> records referencing the definition created in step 1</li>
+</ol>
+<p>An <code>ApprovalWorkflowDefinition</code> with no stages will still trigger when matching objects are acted upon, but the approval process cannot proceed. There are no stages to approve or deny. Always create at least one stage before the workflow is put into use.</p>
+</div>
+<h4 id="approvedeny-a-stage">Approve/Deny a Stage<a class="headerlink" href="#approvedeny-a-stage" title="Permanent link">¶</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl -X POST \
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>-H "Authorization: Token $TOKEN" \
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>-H "Content-Type: application/json" \
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>-H "Accept: application/json; version=3.0; indent=4" \
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>-d '{"comment": "Approved for deployment"}' \
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>http://nautobot/api/extras/approval-workflow-stages/$APPROVAL_WORKFLOW_STAGE_ID/approve
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl -X POST \
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>-H "Authorization: Token $TOKEN" \
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>-H "Content-Type: application/json" \
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>-H "Accept: application/json; version=3.0; indent=4" \
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>-d '{"comment": "Deny reason"}' \
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>http://nautobot/api/extras/approval-workflow-stages/$APPROVAL_WORKFLOW_STAGE_ID/deny
+</code></pre></div>
+<h4 id="list-pendingdone-approvals">List Pending/Done Approvals<a class="headerlink" href="#list-pendingdone-approvals" title="Permanent link">¶</a></h4>
+<p>Retrieves a list of approval workflow stages filtered by their status relative to the current user using the <code>pending_my_approvals</code> query parameter on the standard list endpoint:</p>
+<ul>
+<li><code>?pending_my_approvals=true</code> — Returns stages pending approval by the current user.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl -X GET \
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>-H "Authorization: Token $TOKEN" \
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>-H "Accept: application/json; version=3.0; indent=4" \
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>http://nautobot/api/extras/approval-workflow-stages/?pending_my_approvals=true
+</code></pre></div>
+<ul>
+<li><code>?pending_my_approvals=false</code> — Returns stages the current user has already approved/denied.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl -X GET \
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>-H "Authorization: Token $TOKEN" \
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>-H "Accept: application/json; version=3.0; indent=4" \
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>http://nautobot/api/extras/approval-workflow-stages/?pending_my_approvals=false
+</code></pre></div>
+<p>If the parameter is omitted, all stages are returned regardless of approval status.</p>
+<h4 id="view-stage-responses">View Stage Responses<a class="headerlink" href="#view-stage-responses" title="Permanent link">¶</a></h4>
+<p>Responses (approvals, denials, and comments) are not a separately routable resource. They are returned as read-only nested data on the approval workflow
+stage, and are only included for users who hold the <code>extras.view_approvalworkflowstageresponse</code> permission (subject to any object-level constraints).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl -X GET \
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>-H "Authorization: Token $TOKEN" \
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>-H "Accept: application/json; version=3.0; indent=4" \
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>http://nautobot/api/extras/approval-workflow-stages/$APPROVAL_WORKFLOW_STAGE_ID/
+</code></pre></div>
+<p>The <code>responses</code> field in the returned stage contains the list of responses the user is permitted to see.</p>
+<h4 id="cancel-workflow">Cancel Workflow<a class="headerlink" href="#cancel-workflow" title="Permanent link">¶</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl -X POST \
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>-H "Authorization: Token $TOKEN" \
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>-H "Content-Type: application/json" \
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>-H "Accept: application/json; version=3.0; indent=4" \
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>-d '{"comment": "Cancel reason"}' \
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>http://nautobot/api/extras/approval-workflow/$APPROVAL_WORKFLOW_ID/cancel
+</code></pre></div>
+<h2 id="permissions-by-persona">Permissions by Persona<a class="headerlink" href="#permissions-by-persona" title="Permanent link">¶</a></h2>
+<p>The permissions below include the required permissions to run everything in approval workflows, your Jobs and Scheduled Jobs permissions <a href="jobs/managing-jobs.html#permissions-checklist">remain unchanged</a>.</p>
+<h3 id="object-operator">Object Operator<a class="headerlink" href="#object-operator" title="Permanent link">¶</a></h3>
+<p>Responsible for creating, updating, or running objects, which may trigger an approval workflow. Cannot approve workflows.</p>
+<p><strong>Required permissions:</strong></p>
+<ul>
+<li><code>extras.view_approvalworkflow</code> - to view created approval workflows after creating, updating, or running an object.</li>
+<li><code>extras.view_approvalworkflowstage</code> - to view the <strong>My Requests</strong> tab on the Dashboard.</li>
+<li><code>extras.view_approvalworkflowstageresponse</code> - to view responses for each stage.</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Provided by object-permission <code>nautobot-default-scheduledjobs-approver-permissions</code> and assigned to group <code>nautobot-default-scheduledjobs-approver</code> by default.</p>
+</div>
+<h3 id="approver">Approver<a class="headerlink" href="#approver" title="Permanent link">¶</a></h3>
+<p>Responsible for reviewing and making decisions on approval workflow stages assigned to them. Must be a member of one or more approver groups (see <a href="#approver-groups">Approval Groups</a>).</p>
+<p><strong>Required permissions:</strong></p>
+<ul>
+<li>All permissions required by the <strong>Object Operator</strong> role.</li>
+<li><code>extras.view_approvalworkflowstage</code></li>
+<li><code>extras.change_approvalworkflowstage</code> - to view the <strong>My Approvals</strong> tab on the Dashboard and take actions such as approve or deny.</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Provided by object-permission <code>nautobot-default-scheduledjobs-operator-permissions</code> and assigned to group <code>nautobot-default-scheduledjobs-operator</code> by default.</p>
+</div>
+<h3 id="workflow-architect">Workflow Architect<a class="headerlink" href="#workflow-architect" title="Permanent link">¶</a></h3>
+<p>Responsible for designing, managing, and configuring approval workflow definitions and their stages.</p>
+<p><strong>Required permissions:</strong></p>
+<ul>
+<li>All permissions required by the <strong>Object Operator</strong> role.</li>
+<li><code>extras.view/add/change/delete_approvalworkflowdefinition</code></li>
+<li><code>extras.view/add/change/delete_approvalworkflowstagedefinition</code></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Provided by object-permission <code>nautobot-default-scheduledjobs-architect-permissions</code> and assigned to group <code>nautobot-default-scheduledjobs-architect</code> by default.</p>
+</div>
+<h3 id="approver-groups">Approver Groups<a class="headerlink" href="#approver-groups" title="Permanent link">¶</a></h3>
+<p>Approval actions are controlled not only by permissions but also by <strong>approver group membership</strong> defined in each workflow definition:</p>
+<ul>
+<li>Each <strong>Approval Workflow Stage Definition</strong> specifies an <strong>Approver Group</strong> (user group authorized to act on that stage, how to create user group via the admin UI check <a href="users/groups.html">here</a>).</li>
+<li>A user must belong to the stage’s approver group or be a super user to:<ul>
+<li>See the stage in the <strong>My Approvals</strong> tab.</li>
+<li>Perform approval or denial actions.</li>
+</ul>
+</li>
+<li>If the user has the required permissions but is <strong>not</strong> either a member of the approver group or a super user, the stage will not appear in their dashboard and no actions will be available.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A Nautobot super user is considered to be members of all Approval Groups.</p>
+</div>
+<h2 id="upgrade-considerations">Upgrade Considerations<a class="headerlink" href="#upgrade-considerations" title="Permanent link">¶</a></h2>
+<h3 id="from-nautobot-2x">From Nautobot 2.x<a class="headerlink" href="#from-nautobot-2x" title="Permanent link">¶</a></h3>
+<p>If upgrading from Nautobot 2.x, the management command <code>check_job_approval_status</code> is available in Nautobot 2.4.15+ to identify Jobs and Scheduled Jobs that have <code>approval_required=True</code>.</p>
+<ul>
+<li>Running the command doesn't approve/run/deny jobs, it just identifies the ones that need such action to be performed as a separate step.</li>
+<li>After running this command to identify the impacted Jobs, and completing the upgrade to Nautobot 3.x, you'll want to define appropriate approval workflows to apply to those jobs.</li>
+</ul>
+<p><strong>Example</strong>: Running the command <code>check_job_approval_status</code> will provide similar output to:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Following jobs still have `approval_required=True`.
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>These jobs will no longer trigger approval automatically.
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>After upgrading to Nautobot 3.x, you should add an approval workflow definition(s) covering these jobs.
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>Refer to the documentation: https://docs.nautobot.com/projects/core/en/next/user-guide/platform-functionality/approval-workflow/
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>Affected jobs (Names):
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    - ExampleDryRunJob
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    - Example Job of Everything
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    - Export Object List
+</code></pre></div>
+<ul>
+<li>User can create an <code>ApprovalWorkflowDefinition</code> using constraints such as <code>{"job_model__name__in": ["ExampleDryRunJob", "Example Job of Everything", "Export Object List"]}</code>. See <a href="#create-an-approval-workflow-definition-with-stages">Create an Approval Workflow Definition with stages</a></li>
+<li>However, constraints today are limited to what can be expressed as a single dictionary of field lookups. More complex logic (e.g., <code>name=A OR (name=B AND status=active)</code>) is not possible yet.</li>
+</ul>
+<h3 id="predefined-approval-workflow">Predefined Approval Workflow<a class="headerlink" href="#predefined-approval-workflow" title="Permanent link">¶</a></h3>
+<p>When installing or upgrading to Nautobot v3.0, the following seed data is automatically provisioned:</p>
+<ul>
+<li>Permissions for the three approval workflow personas.</li>
+<li>Groups for each persona, with permissions assigned (no initial group members).</li>
+<li>An Approval Workflow definition that references these personas but does not apply to any specific jobs by default.</li>
+</ul>
+<p>In order to get like for like workflow, you should do the following:</p>
+<ol>
+<li>Update the Approval Workflow <strong>Model Constraints</strong> to match the jobs you want to control. By default, a placeholder value (<code>JobThatDoesNotExist</code>) is set, replace this with the name of your job (e.g., <code>BackupJob</code> or <code>LogsCleanup</code>) or any other valid constraint.</li>
+<li>Add users who will run jobs requiring approval to the <code>nautobot-default-scheduledjobs-operator</code> group.</li>
+<li>Add users who can approve these jobs to the <code>nautobot-default-scheduledjobs-approver</code> group.</li>
+</ol>
+<p>New users should review the <a href="jobs/managing-jobs.html#permissions-checklist">Jobs permission checklist</a> to ensure all necessary permissions are in place.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

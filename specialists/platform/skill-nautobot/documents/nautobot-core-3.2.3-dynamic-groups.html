@@ -1,0 +1,529 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="dynamic-groups">Dynamic Groups<a class="headerlink" href="#dynamic-groups" title="Permanent link">¶</a></h1>
+<p>Dynamic Groups provide a general-purpose way to collect related objects of a given Content Type, such as Devices associated with a given Location(s) and Status(es), Circuits attached to a given set of Devices, and so forth. A given Dynamic Group may contain any number of objects of the appropriate type as members, and an object may belong to any number of Dynamic Groups of the appropriate content-type as a member of each. It is possible both to query the members of a given Dynamic Group, and also to query which Dynamic Groups a given object is a member of.</p>
+<p>There are currently three ways to define the object members of a Dynamic group:</p>
+<ol>
+<li>Filter-based assignment (for example, "All Devices with Location X and Status Y")</li>
+<li>Set-based assignment from other defined groups (for example, "All devices in Group A or Group B but not Group C")</li>
+<li>Static assignment directly to the group (for example, "Device XYZ01, Device XYZ02, and Device XYZ04")</li>
+</ol>
+<details class="version-added">
+<summary>Added in version 2.3.0 — Static group assignment</summary>
+<p>Support for static assignment to groups was added, and the distinction between filter-based and set-based assignment was formally established.</p>
+</details>
+<p>The members of each Dynamic Group are cached and tracked by <a href="staticgroupassociation.html">Static Group Association</a> database records.</p>
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">¶</a></h2>
+<h3 id="creating-dynamic-groups-in-the-ui">Creating Dynamic Groups in the UI<a class="headerlink" href="#creating-dynamic-groups-in-the-ui" title="Permanent link">¶</a></h3>
+<p>Dynamic Groups can be created through the UI under <em>Organization &gt; Groups &gt; Dynamic Groups</em> and clicking the "Add" button.</p>
+<p>When creating a Dynamic Group, you must provide a unique <strong>Name</strong> for the group, select an <strong>Object Type</strong> (also known as content-type) of the objects that it will contain as members, for example <code>dcim.device</code>, and also select a <strong>Group Type</strong>, specifying which of the supported member assignment patterns will apply to this group. (Any given Dynamic Group can only use one such pattern; mixing assignment types within a single group is not permitted at this time.) You can also optionally provide a <strong>Description</strong> for the group, select a <a href="../core-data-model/tenancy/tenant.html"><strong>Tenant</strong></a> that the group applies to, and/or apply <a href="tag.html"><strong>Tags</strong></a> to it.</p>
+<details class="version-added">
+<summary>Added in version 2.3.0 — Tenant and tags</summary>
+<p>Support for assigning a tenant and/or tags to a Dynamic Group was added.</p>
+</details>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>After initial creation, the Content Type for a Dynamic Group may not be modified, as doing so would invalidate the filter, set definition, or static assignments of members for this group. Similarly, the Group Type also generally may not be modified, except in a few specific cases that are permitted for backwards compatibility with the behavior of Dynamic Groups before an explicit Group Type field was added to the model. All other fields may be updated at any time.</p>
+</div>
+<p>Once a new Dynamic Group is created, the group membership can be configured by clicking the "Edit" button to specify <strong>Filter Fields</strong> or <strong>Child Groups</strong> as appropriate to the Group Type, or, for static membership, by navigating to the object list view and selecting the objects to add to the group. More on these options below.</p>
+<h3 id="working-with-dynamic-groups-in-the-ui">Working with Dynamic Groups in the UI<a class="headerlink" href="#working-with-dynamic-groups-in-the-ui" title="Permanent link">¶</a></h3>
+<p>Once created and configured, Dynamic Groups can be accessed from the primary Dynamic Groups landing page in the web interface under the <em>Organization &gt; Groups &gt; Dynamic Groups</em> menu. From there you may view the list of available groups, search or filter the list, view or edit an individual group, or bulk delete groups. Additionally if a group has any members, you can click on the members count in the Dynamic Groups list view to display the full list of members for that Dynamic Group.</p>
+<p>Dynamic Groups cannot be imported nor can they be updated in bulk, as these operations would be complex and do not make sense in most cases.</p>
+<p>From an individual object's detail page, if it is a member of any groups, a "Dynamic Groups" tab will display in the navigation tabs. Clicking that tab will display all Dynamic Groups of which this object is a member.</p>
+<h2 id="about-membership-caching">About Membership Caching<a class="headerlink" href="#about-membership-caching" title="Permanent link">¶</a></h2>
+<p>Since looking up the members of a filter-based or set-based Dynamic Group can potentially involve an expensive set of database queries depending on the complexity of the group definition, Nautobot internally caches the members of these group types using the same <a href="staticgroupassociation.html">Static Group Association</a> database table that also records the members of statically-defined Dynamic Groups. In particular, this implementation greatly speeds up the "reverse lookup" pattern where, given an individual object, the user needs to identify all Dynamic Groups that it is a member of.</p>
+<p>Creating, updating, or deleting a Dynamic Group will automatically refresh the cache with the new membership information for this group, as will viewing the "detail view" of any given Dynamic Group.</p>
+<p>If you need to refresh the membership cache for all Dynamic Groups, you can do so by running the management command <code>nautobot-server refresh_dynamic_group_member_caches</code>. This will clear and repopulate the cache for all Dynamic Groups.</p>
+<p>You can also refresh the cache for one or all Dynamic Groups by running the <code>Refresh Dynamic Group Caches</code> system <a href="jobs/index.html">Job</a>. You may find it useful to define a schedule for this job such that it automatically refreshes these caches periodically, such as every 15 minutes or every day, depending on your needs.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Creating or updating other objects (candidate group members and/or objects that are referenced by a Dynamic Group's filters) will <strong>not</strong> automatically refresh these caches.</p>
+</div>
+<h2 id="dynamic-group-types">Dynamic Group Types<a class="headerlink" href="#dynamic-group-types" title="Permanent link">¶</a></h2>
+<h3 id="filter-based-dynamic-groups">Filter-Based Dynamic Groups<a class="headerlink" href="#filter-based-dynamic-groups" title="Permanent link">¶</a></h3>
+<p>Assignment of objects to a filter-based Dynamic Group is powered by Nautobot <strong>FilterSet</strong> classes underneath the hood. The <a href="https://django-filter.readthedocs.io/en/stable/"><code>django-filter</code></a> documentation may be a useful reference for users wanting to develop an in-depth understanding of FilterSets, but is by no means required to understand Dynamic Groups.</p>
+<p>A filter-based Dynamic Group defines a <code>filter</code> field, which is stored in the database as a JSON dict. An object is considered to be a member of such a Dynamic Group if it has the correct Content Type and it is not excluded by the filter criteria defined by the group. By default, a freshly created Dynamic Group has an empty filter (<code>{}</code>), which means that all objects of the matching Content Type are members of this group, just as a default list view of these objects would display all such objects prior to any filter fields being selected in the web UI.</p>
+<p>For example, for a Dynamic Group with Content Type of <code>dcim.device</code> and an empty filter, the list of members would be equivalent to the default Device list view, which in turn is equivalent to the queryset for <code>Device.objects.all()</code> from the database ORM.</p>
+<p>When editing a filter-based Dynamic Group, under the <strong>Filter Options</strong> section, you will find a <strong>Filter Fields</strong> tab that allows you to select filter criteria. The filter fields available for a given Content Type are backed and validated by underlying FilterSet classes (for example <code>nautobot.dcim.filters.DeviceFilterSet</code>) and are represented in the web interface as a dynamically-generated filter form that corresponds to each eligible filter field.</p>
+<h3 id="set-based-dynamic-groups">Set-Based Dynamic Groups<a class="headerlink" href="#set-based-dynamic-groups" title="Permanent link">¶</a></h3>
+<p>Set-based Dynamic Groups do not directly define a filter for identifying member objects; instead, they define their members based on set operations (AND, OR, and NOT, or Union, Intersection, and Difference if you prefer) involving <em>other</em> Dynamic Groups.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>At this time, a set-based Dynamic Group may include filter-based Dynamic Groups and other set-based Dynamic Groups in its members definition, but set-based Dynamic Groups <em>may not</em> currently include static-assignment-based Dynamic Groups. This restriction may be removed in a future Nautobot release.</p>
+</div>
+<p>An object is considered a member of an set-based Dynamic Group if it matches the aggregated filter criteria derived from the "child" or "descendant" groups included in this group definition. The immediate descendants of a Dynamic Group are accessible through its <code>.children</code> attribute, but if the children are also set-based Dynamic Groups, then they may have their own descendants as well, and so forth. The many-to-many mapping of "parent" to "child" Dynamic Groups is implemented via a "through table" of <code>DynamicGroupMembership</code> records.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The name "Dynamic Group Membership" is potentially confusing -- it does <em>not</em> describe the member objects (devices, IP addresses, etc.) of a Dynamic Group (that's the "Static Group Association" table, described below, used for static-assignment-based groups and caching); rather, this table defines the association between each set-based Dynamic Group and the other Dynamic Groups that are its "children".</p>
+</div>
+<p>When editing a set-based Dynamic Group, under the <strong>Filter Options</strong> section, you will find a <strong>Child Groups</strong> tab that allows you to select other Dynamic Groups of the same Content Type to be "children" of this "parent" group and how they will be used to select or exclude candidate objects from the "parent" group's members.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_filtering_01_light.png#only-light" data-desc-position="bottom"><img alt="Child Groups" class="on-glb" src="../../media/models/ss_dynamicgroup_filtering_01_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_filtering_01_dark.png#only-dark" data-desc-position="bottom"><img alt="Child Groups" class="on-glb" src="../../media/models/ss_dynamicgroup_filtering_01_dark.png#only-dark"></a></p>
+<h3 id="static-assignment-based-dynamic-groups">Static-Assignment-Based Dynamic Groups<a class="headerlink" href="#static-assignment-based-dynamic-groups" title="Permanent link">¶</a></h3>
+<details class="version-added">
+<summary>Added in version 2.3.0</summary>
+</details>
+<p>Unlike the other types of Dynamic Groups, the members of a static-assignment-based Dynamic Group are not automatically derived by Nautobot, but instead are each explicitly assigned to such a group. Each association of a given object into a given static-assignment-based Dynamic Group is recorded by a <a href="staticgroupassociation.html">Static Group Association</a> database record. Individual objects can be associated to these Dynamic Groups in the object's create/edit form, but in most cases it's easier and quicker to bulk-update a set of objects from their appropriate list/table view via the "Update Group Assignment" button.</p>
+<h2 id="example-workflow">Example Workflow<a class="headerlink" href="#example-workflow" title="Permanent link">¶</a></h2>
+<p>Dynamic Groups are a complex topic and are perhaps best understood through a series of worked examples.</p>
+<h3 id="basic-filtering-with-a-single-filter-based-dynamic-group">Basic Filtering with a single Filter-Based Dynamic Group<a class="headerlink" href="#basic-filtering-with-a-single-filter-based-dynamic-group" title="Permanent link">¶</a></h3>
+<p>Let's say you want to create a Dynamic Group that contains all production Devices at your first two Locations. You can create a Dynamic Group named "Devices at Locations A and B", for Content Type <code>dcim | device</code>, with Group Type "Filter-based membership", then edit it and set the <strong>Filter Fields</strong> to match:</p>
+<ol>
+<li>a Location of either "AMS01" or "BKK01"</li>
+<li>a Status of "Active" or "Offline"</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_basic_01_light.png#only-light" data-desc-position="bottom"><img alt="Setting Filter Fields for a Basic Dynamic Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_basic_01_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_basic_01_dark.png#only-dark" data-desc-position="bottom"><img alt="Setting Filter Fields for a Basic Dynamic Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_basic_01_dark.png#only-dark"></a></p>
+<p>After clicking "Update", you will be returned to the detail view for this Dynamic Group, where you can verify the filter logic that results, and click the "Members" tab to see the set of Devices that it contains.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_basic_02_light.png#only-light" data-desc-position="bottom"><img alt="Resulting Basic Dynamic Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_basic_02_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_basic_02_dark.png#only-dark" data-desc-position="bottom"><img alt="Resulting Basic Dynamic Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_basic_02_dark.png#only-dark"></a></p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_basic_03_light.png#only-light" data-desc-position="bottom"><img alt="Basic Group Members" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_basic_03_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_basic_03_dark.png#only-dark" data-desc-position="bottom"><img alt="Basic Group Members" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_basic_03_dark.png#only-dark"></a></p>
+<p>A key to understand here is that generally, within a single Dynamic Group, additional values specified for the <em>same</em> filter field (here, "Location") will <em>broaden</em> the group to <em>include</em> additional objects that match those additional values, while specifying values for <em>additional filter fields</em> (here, "Status") will <em>narrow</em> the group to match only the objects that match this additional filter. This is expressed in the "Filter Query Logic" panel by the use of <code>OR</code> and <code>AND</code> operators - the logic for this Dynamic Group is:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>(
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  (
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    location='fa823577-08f3-46b0-92a7-8ad42ba3071d' OR location='df1fa32c-3b34-4d24-9fbd-a0f3eed28f12' OR location='9e39051b-e968-4016-b0cf-63a5607375de' OR location='d1e20b8e-759e-4c20-a65d-a0f3eed28f12'
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  ) AND (
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    status__name='Offline'
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  )
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>)
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Keep in mind that the <code>Filter Query Logic</code> will also contain any descendants of the selected model instance.  As we can see above the <code>Filter Query Logic</code> uses both location "BKK01" and "AMSO1" and their descendants.</p>
+</div>
+<h3 id="advanced-filtering-defining-a-set-based-dynamic-group-to-combine-two-others">Advanced Filtering: Defining a Set-Based Dynamic Group to Combine Two Others<a class="headerlink" href="#advanced-filtering-defining-a-set-based-dynamic-group-to-combine-two-others" title="Permanent link">¶</a></h3>
+<p>Now, let's say that you add a third location to your network. This location is currently being built out, and you don't care about Devices from this location that are Offline status at present. What you want for your "Devices of Interest" Dynamic Group is logic similar to:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>(
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  (
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    (
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>      location__name='ams01' OR location__name='bkk01'
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    ) AND (
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>      status__name='Active' OR status__name='Offline'
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    )
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  ) OR (
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    location__name='can01' AND status__name='Active'
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>  )
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>)
+</code></pre></div>
+<p>This logic is too complex to express directly via a single Dynamic Group, but fear not! This is what combining Dynamic Groups via a set-based group allows you to do.</p>
+<p>First, create a new "Devices of Interest" group, again of Content Type "dcim | device", but this time select "Set-based membership" as the Group Type. Edit this group, and instead of specifying <strong>Filter Fields</strong>, you will instead use the <strong>Child Groups</strong> tab of the editor, select the operator "Include (OR)" and the group "Devices at Locations A and B", and update the group.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_1_01_light.png#only-light" data-desc-position="bottom"><img alt="Creating a Parent Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_1_01_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_1_01_dark.png#only-dark" data-desc-position="bottom"><img alt="Creating a Parent Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_1_01_dark.png#only-dark"></a></p>
+<p>In the new group's detail view, you can see that it now contains one child group, "Devices at Locations A and B", and its members are exactly the same as those of that group. But we're not done yet!</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_1_02_light.png#only-light" data-desc-position="bottom"><img alt="Resulting Parent Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_1_02_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_1_02_dark.png#only-dark" data-desc-position="bottom"><img alt="Resulting Parent Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_1_02_dark.png#only-dark"></a></p>
+<p>Next, you'll create another group to represent the other part of your desired logic. Call this group "Location C So Far", and set its <strong>Filter Fields</strong> to match Location "CAN01" and Status "Active". Verify that it contains the expected set of Devices from Location C.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_1_03_light.png#only-light" data-desc-position="bottom"><img alt="Another Child Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_1_03_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_1_03_dark.png#only-dark" data-desc-position="bottom"><img alt="Another Child Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_1_03_dark.png#only-dark"></a></p>
+<p>Now, we'll add this group into the "Devices of Interest" parent group. Navigate back to the <strong>Dynamic Groups</strong> list view, and edit this group. Under the <strong>Child Groups</strong> tab, add another "Include (OR)" operator and select group "Location C So Far":</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_1_04_light.png#only-light" data-desc-position="bottom"><img alt="Adding Another Child Group to Parent Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_1_04_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_1_04_dark.png#only-dark" data-desc-position="bottom"><img alt="Adding Another Child Group to Parent Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_1_04_dark.png#only-dark"></a></p>
+<p>Now things are getting interesting!</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_1_05_light.png#only-light" data-desc-position="bottom"><img alt="Updated Parent Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_1_05_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_1_05_dark.png#only-dark" data-desc-position="bottom"><img alt="Updated Parent Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_1_05_dark.png#only-dark"></a></p>
+<p>The "Devices of Interest" Dynamic Group now contains the filtered Devices from both of its child groups, and the "Filter Query Logic" matches our intent as we stated it earlier:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>(
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  (
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    (
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>      location__name='ams01' OR location__name='bkk01'
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    ) AND (
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>      status__name'Active' OR status__name='Offline'
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    )
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  ) OR (
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    location__name='can01' AND status__name='Active'
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  )
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>)
+</code></pre></div>
+<h3 id="advanced-filtering-nested-groups-and-negation">Advanced Filtering: Nested Groups and Negation<a class="headerlink" href="#advanced-filtering-nested-groups-and-negation" title="Permanent link">¶</a></h3>
+<p>Next, let's say you add a fourth location to your network. This location is in bad shape, and has Devices in a wide range of statuses. You want your "Devices of Interest" group to include all Devices from this location, <em>except for those in Decommissioning status</em>. To express this logic and add these devices to our parent group, we will need to use a combination of groups and the "Exclude (NOT)" operator.</p>
+<p>First, you will create an "Location D All Devices" group. This will simply match Devices at Location "DEL01", regardless of their status.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_01_light.png#only-light" data-desc-position="bottom"><img alt="Another Child Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_01_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_01_dark.png#only-dark" data-desc-position="bottom"><img alt="Another Child Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_01_dark.png#only-dark"></a></p>
+<p>Then create a "Location D Decommissioning Devices" group, which matches Location "DEL01" and Status "Decommissioning".</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_02_light.png#only-light" data-desc-position="bottom"><img alt="A Child Group To Negate" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_02_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_02_dark.png#only-dark" data-desc-position="bottom"><img alt="A Child Group To Negate" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_02_dark.png#only-dark"></a></p>
+<p>Next create a "Location D Devices of Interest" group, and set its <strong>Child Groups</strong> to:</p>
+<ol>
+<li>Operator "Include (OR)", group "Location D All Devices"</li>
+<li>Operator "Exclude (NOT)", group "Location D Decommissioning Devices"</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_03_light.png#only-light" data-desc-position="bottom"><img alt="Defining a Group With Negation" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_03_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_03_dark.png#only-dark" data-desc-position="bottom"><img alt="Defining a Group With Negation" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_03_dark.png#only-dark"></a></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In general, but especially when using the AND and NOT operators, you must pay close attention to the order of the child groups. In this example, if you were to reverse the order of these two child groups, you would <strong>not</strong> get the desired final result!</p>
+</div>
+<p>You can check this group and confirm that it contains the expected restricted subset of Devices.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_04_light.png#only-light" data-desc-position="bottom"><img alt="The Resulting Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_04_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_04_dark.png#only-dark" data-desc-position="bottom"><img alt="The Resulting Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_04_dark.png#only-dark"></a></p>
+<p>Finally, you can edit the parent "Devices of Interest" group and add a third <strong>Child Groups</strong> entry, "Include (OR)" on "Location D Devices of Interest". The final result is a Dynamic Group that contains the desired set of Devices across all four of your Locations.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_05_light.png#only-light" data-desc-position="bottom"><img alt="The Final Combined Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_05_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_05_dark.png#only-dark" data-desc-position="bottom"><img alt="The Final Combined Group" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_05_dark.png#only-dark"></a></p>
+<p>You can see the filter logic that this combination of groups results in:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>(
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  (
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    (
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>      location__name='ams01' OR location__name='bkk01'
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    ) AND (
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>      status__name='Active' OR status__name='Offline'
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    )
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>  ) OR (
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    location__name='can01' AND status__name'Active'
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>  ) OR (
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    location__name='del01' AND (
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>      NOT (location__name='del01' AND status__name='Decommissioning')
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    )
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>  )
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>)
+</code></pre></div>
+<p>You can also see the hierarchy of nested groups that are being used to derive the "Devices of Interest" group:</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_06_light.png#only-light" data-desc-position="bottom"><img alt="Nested Group Hierarchy" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_06_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_06_dark.png#only-dark" data-desc-position="bottom"><img alt="Nested Group Hierarchy" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_06_dark.png#only-dark"></a></p>
+<p>Most importantly, you now have a Dynamic Group that contains exactly the set of Devices you need!</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_07_light.png#only-light" data-desc-position="bottom"><img alt="Final Group Members" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_07_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/models/ss_dynamicgroup_workflow_advanced_2_07_dark.png#only-dark" data-desc-position="bottom"><img alt="Final Group Members" class="on-glb" src="../../media/models/ss_dynamicgroup_workflow_advanced_2_07_dark.png#only-dark"></a></p>
+<h2 id="technical-details">Technical Details<a class="headerlink" href="#technical-details" title="Permanent link">¶</a></h2>
+<h3 id="filter-generation">Filter Generation<a class="headerlink" href="#filter-generation" title="Permanent link">¶</a></h3>
+<p>Filters are always processed hierarchically from the top down starting from the parent group and descending recursively to the last nested child group in order by the <code>weight</code> value assigned to that group when it was associated to its parent.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For the purpose illustration, we will use "left to right" terminology since when verbally describing precedence in English, we read from left to right, so that following it will be more intuitive.</p>
+</div>
+<p>The nesting of Dynamic Groups is performed using two advanced patterns: Sets and graphs. Rules for each child group are processed using a set <code>operator</code>, and groups are sorted hierarchically as a directed acyclic graph (DAG), where the <code>weight</code> is used for sorting child groups topologically.</p>
+<p>In both cases, the ordering of the tree of descendants from a parent group to its nested children is significant and critically important to how each subsequent filter or group of filters are processed to result in a final set of member objects.</p>
+<p>Consider an example where there is a graph from the parent group to three direct child groups, the third of which has its own nested child group:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>parent
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>- first-child
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>- second-child
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>- third-child
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>  - nested-child
+</code></pre></div>
+<p>The filter generation would walk the graph: starting from the base (match-all) filter of <code>parent</code>, the filter of <code>first-child</code> would be applied, then <code>second-child</code>, as ordered by their <code>weight</code>. In the case of <code>third-child</code>, all of its children (only <code>nested-child</code> in this case) would be processed in order in the same way and the resultant filter from all of the child groups for <code>third-child</code> would be applied to the filter resulting from <code>first-child</code> and <code>second-child</code>, resulting in the final filter for <code>parent</code>.</p>
+<h3 id="weights">Weights<a class="headerlink" href="#weights" title="Permanent link">¶</a></h3>
+<p>Weights are used to define the order in which a parent group's child group filters are processed. Because this ordering is significant, care must be taken when constructing nested Dynamic Groups to result in filter parameters that have the desired outcome.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unique weights are only considered for directly-related child groups. In other words, the weights for each child group of a parent group are unique to that parent and only affect the sorting of the children for that parent.</p>
+</div>
+<p>In practice, weights are automatically assigned in increments of <code>10</code> when associating child groups in the web UI, and child groups may be dragged and dropped to re-order them and re-assign their weights accordingly. When using the REST API, the weights must be explicitly provided as a part of your request payload.</p>
+<p>Using the example group hierarchy above, the weights would be as follows:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>parent
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>- first-child {weight: 10}
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>- second-child {weight: 20}
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>- third-child {weight: 30}
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  - nested-child {weight: 10}
+</code></pre></div>
+<h3 id="operators">Operators<a class="headerlink" href="#operators" title="Permanent link">¶</a></h3>
+<p>Set theory is applied when a new group is added as a child group. Three key concepts are at play: Intersections, Unions, and Differences.</p>
+<p>We have attempted to simplify working with these operators by giving them both human-readable and Boolean name mappings. They are as follows:</p>
+<ul>
+<li><strong>Restrict (Boolean <code>AND</code>)</strong> - The <strong>Restrict</strong> operator performs a set <em>intersection</em> on the queryset, and is equivalent to a Boolean <code>AND</code>. The preceding filter is <em>restricted</em> (aka <em>intersected</em>) by the objects matching the child filter. All filter criteria must match between the filters for a member object to be included in the resultant filter.</li>
+<li><strong>Include (Boolean <code>OR</code>)</strong> - The <strong>Include</strong> operator performs a set <em>union</em> on the queryset, and is equivalent to a Boolean <code>OR</code>. The preceding filter is <em>extended to include</em> (aka <em>unioned with</em>) any objects matching the child filter. Any filter criteria may match between the filters for member objects to be included in the resultant filter.</li>
+<li><strong>Exclude (Boolean <code>NOT</code>)</strong> - The <strong>Exclude</strong> operator performs a set <em>difference</em> on the queryset, and is equivalent to a Boolean <code>NOT</code>. The preceding filter <em>excludes</em> (aka <em>differences</em>) any objects matching the child filter. Any matching objects from the child filter will be negated from the members of the resultant filter.</li>
+</ul>
+<p>The following table maps the Nautobot <strong>operator</strong> to the corresponding set operations:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Set Operation</th>
+<th>Boolean</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Restrict</td>
+<td>Intersection</td>
+<td>AND</td>
+<td>Objects <em>must</em> match this child filter to be included in the parent group</td>
+</tr>
+<tr>
+<td>Include</td>
+<td>Union</td>
+<td>OR</td>
+<td>Objects <em>may</em> match the child filter to be included in the parent group</td>
+</tr>
+<tr>
+<td>Exclude</td>
+<td>Difference</td>
+<td>NOT</td>
+<td>Objects <em>must not</em> match this child filter to be included in the parent group</td>
+</tr>
+</tbody>
+</table>
+<p>Any filters provided by the child groups are used to filter the members from the parent group using one of the three operators: <strong>Restrict (AND)</strong>, <strong>Include (OR)</strong>, or <strong>Exclude (NOT)</strong>.</p>
+<p>Using the example group hierarchy from above, let's apply operators and explain how it would work:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>parent {filter: None}
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>- first-child {weight: 10, operator: intersection (AND), filter: location=ams01}
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>- second-child {weight: 20, operator: union (OR), filter: location=ang01}
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>- third-child {weight: 30, operator: difference (NOT), filter: None}
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  - nested-child {weight: 10, operator: intersectio (AND), filter: status=active}
+</code></pre></div>
+<p>Logically, the filter will be expressed like so using the hierarchy above:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>((first-child OR second-child) AND (NOT nested-child))
+</code></pre></div>
+<p>Which in turn would map to the object filter:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>((location=ams01 OR location=ang01) AND (NOT status=active))
+</code></pre></div>
+<h4 id="how-does-this-work">How does this work?<a class="headerlink" href="#how-does-this-work" title="Permanent link">¶</a></h4>
+<p>First, the filters for direct children for a group will always be included in a parenthetical grouping, separated by the operator. Parent groups always start from their base filter containing "all objects" (equivalent to an empty filter or <code>{}</code>). Therefore the filter of <code>parent</code> and the filter of <code>third-child</code> are not directly used for generating the filter and are instead passed through from <code>parent</code> left to right as the "base" filter.</p>
+<p>Similarly, by the time we get to <code>third-child</code>, the filter at that node in the graph will have already had the filter from <code>first-child</code> and <code>second-child</code> applied, and will merely be passed through to the filter generated from the children of <code>third-child</code>.</p>
+<p>Because <code>first-child</code> and <code>second-child</code> are "included" by way of the <code>union</code> set operator (Boolean <code>OR</code>), but because the filter for <code>third-child</code> is empty as explained above, its filter condition is not directly included, resulting in <code>(first-child OR second-child)</code> as the first group, representing all <em>direct</em> filters for the group <code>parent</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>But what about the <code>AND</code> coming from the association of <code>first-child</code>, you might be asking?</p>
+<p>Well, that <code>AND</code> is also passed through because the default behavior when performing queryset filtering is to join all filter statements together with <code>AND</code>. For example, consider when you perform this from the Django ORM <code>Device.objects.filter(location__name="ams01")</code> the outcome is in fact equivalent to <code>AND location__name="ams01"</code>. Therefore, for the first child group (literally <code>first-child</code> in this case), initial <code>AND</code> will be omitted.</p>
+</div>
+<p>Continuing on to the children of <code>third-child</code>, the same iteration rules apply. The filter from <code>nested-child</code> gets applied to the filter being passed through from its parent, <code>third-child</code>, except that the "exclude" (boolean <code>NOT</code>) operator is still applied from the association of <code>third-child</code> to parent resulting in <code>(NOT nested-child</code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You'll see <code>NOT</code> emitted as an <code>AND NOT</code> because <code>NOT</code> is actually just shorthand for this. They are in fact interchangeable as Boolean operators. While it's technically possible to perform an <code>OR NOT</code> query from a database perspective, it is not supported by Dynamic Groups because the <code>NOT</code> operator maps directly to the "difference" set operation which is distinctly an <code>AND NOT</code> Boolean operation when performing underlying SQL queries at the database.</p>
+</div>
+<p>Piecing the rules together, we ended up with two filters and by wrapping them in their own set of parentheses we get our final generated filter:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>(
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  (
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    [ALL OBJECTS]
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    AND first-child
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>  )
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>  OR second-child
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>)
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>AND NOT (
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>  [ALL OBJECTS]
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>  AND nested-child
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>)
+</code></pre></div>
+<h2 id="dynamic-groups-and-the-rest-api">Dynamic Groups and the REST API<a class="headerlink" href="#dynamic-groups-and-the-rest-api" title="Permanent link">¶</a></h2>
+<p>Dynamic Groups are fully supported by the API. There are several distinct endpoints for accessing different aspects of this feature</p>
+<p>The REST API endpints under <code>/api/extras/dynamic-groups/</code> are used to perform standard CRUD (Create/Retrieve/Update/Delete) operations on Dynamic Group definitions. There is also a special read-only endpoint <code>/api/extras/dynamic-groups/&lt;group UUID&gt;/members/</code> that returns a serialized list of a group's member objects; for example, for a Dynamic Group of Prefixes, this endpoint would return the list of Prefix objects contained in this group.</p>
+<p>A second set of endpoints, <code>/api/extras/dynamic-group-memberships/</code>, provides CRUD functionality for the Dynamic Group Membership through table that manages the definition of a set-based Dynamic Group.</p>
+<p>A third set of endpoints, <code>/api/extras/static-group-associations/</code>, provides CRUD functionality for the <a href="staticgroupassociation.html">Static Group Association</a> through table that manages the assignment of members to a static-membership Dynamic Group.</p>
+<h3 id="specifying-filter-conditions">Specifying Filter Conditions<a class="headerlink" href="#specifying-filter-conditions" title="Permanent link">¶</a></h3>
+<p>Dynamic Groups are fairly straightforward however it is important to understand how the <code>filter</code> field works before digging in.</p>
+<p>The <code>filter</code> is a JSON field and it must be able to be used as valid query parameters for filtering objects of the corresponding Content Type.</p>
+<p>It is an error to provide any value other than a JSON object (<code>{}</code> or a Python dictionary) for the <code>filter</code> field.</p>
+<h4 id="multiple-values">Multiple Values<a class="headerlink" href="#multiple-values" title="Permanent link">¶</a></h4>
+<p>Most fields within the <code>filter</code> accept multiple values and must be represented as a JSON array (Python list), for example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">{</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"ams01"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ang01"</span><span class="p">]</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="single-values">Single Values<a class="headerlink" href="#single-values" title="Permanent link">¶</a></h4>
+<p>Certain fields take Boolean values (JSON <code>true</code>/<code>false</code>) or single numeric integers or character strings.</p>
+<p>For example, consider this boolean filter that requires a single <code>true</code>/<code>false</code> and would result in a Dynamic Group of devices that have interfaces:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">{</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">"has_interfaces"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="p">}</span>
+</code></pre></div>
+<p>Or this character filter that requires a single string and would result in a Dynamic Group with only one member matching this <code>name</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ams01-edge-01"</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="field-validation">Field Validation<a class="headerlink" href="#field-validation" title="Permanent link">¶</a></h4>
+<p>Any invalid field values for valid field names will also result in a <code>ValidationError</code>, for example providing an integer to the <code>name</code> filter is invalid:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">{</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="mi">-42</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="p">}</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please refer to either the source code definition of the <code>{model_name}FilterSet</code> (e.g. for <code>Device</code> it would be <code>nautobot.dcim.filters.DeviceFilterSet</code>) or the API documentation for the list endpoint (e.g. <code>/api/dcim/devices/</code>) for a given model object, to view the available filter fields and their expectations.</p>
+</div>
+<h3 id="managing-dynamic-groups-in-the-rest-api">Managing Dynamic Groups in the REST API<a class="headerlink" href="#managing-dynamic-groups-in-the-rest-api" title="Permanent link">¶</a></h3>
+<h4 id="creating-a-dynamic-group-via-rest">Creating a Dynamic Group via REST<a class="headerlink" href="#creating-a-dynamic-group-via-rest" title="Permanent link">¶</a></h4>
+<p>A Dynamic Group may be created by performing a <code>POST</code> to the Dynamic Groups list endpoint at <code>/api/extras/dynamic-groups/</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>group_type</code> field defaults to <code>dynamic-filter</code> (i.e., filter-based membership) if unspecified, and similarly the <code>filter</code> field will default to an empty filter (<code>{}</code>) if not provided.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>It is not possible to perform a nested assignment of <code>children</code> when creating a new Dynamic Group. You must first create the new group and then use the endpoint for creating Dynamic Group Memberships as explained below under <a href="#assigning-child-groups-via-rest">Assigning Child Groups via REST</a>.</p>
+</div>
+<p>Request:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="err">POST</span><span class="w"> </span><span class="err">/api/ex</span><span class="kc">tras</span><span class="err">/dy</span><span class="kc">na</span><span class="err">mic</span><span class="mi">-</span><span class="err">groups/</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="p">{</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent"</span><span class="p">,</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"I am a parent group with nested children."</span><span class="p">,</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="nt">"content-type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dcim.device"</span><span class="p">,</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="nt">"group-type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dynamic-filter"</span><span class="p">,</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="p">}</span>
+</code></pre></div>
+<p>Response:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="p">{</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1f825078-b6dc-4b12-9463-be5a9189b03f"</span><span class="p">,</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span><span class="nt">"display"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent"</span><span class="p">,</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">    </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:6789/api/extras/dynamic-groups/1f825078-b6dc-4b12-9463-be5a9189b03f/"</span><span class="p">,</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent"</span><span class="p">,</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"I am the parent group with nested children."</span><span class="p">,</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="nt">"content_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dcim.device"</span><span class="p">,</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">    </span><span class="nt">"group_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dynamic-filter"</span><span class="p">,</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="w">    </span><span class="nt">"filter"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">    </span><span class="nt">"children"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="w">    </span><span class="nt">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2022-07-06T20:17:04.305663Z"</span><span class="p">,</span>
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="w">    </span><span class="nt">"last_updated"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2022-07-06T20:17:04.305663Z"</span><span class="p">,</span>
+<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="w">    </span><span class="nt">"custom_fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="w">    </span><span class="nt">"computed_fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a><span class="w">    </span><span class="nt">"relationships"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="updating-or-deleting-a-dynamic-group-via-rest">Updating or Deleting a Dynamic Group via REST<a class="headerlink" href="#updating-or-deleting-a-dynamic-group-via-rest" title="Permanent link">¶</a></h4>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>It is not possible to perform a nested update of <code>children</code> when updating a Dynamic Group. You must use the endpoint for creating Dynamic Group Memberships as explained below under <a href="#updating-or-deleting-child-groups-via-rest">Updating or Deleting Child Groups via REST</a>.</p>
+</div>
+<p>Updating or deleting a Dynamic Group is done by sending a request to the detail endpoint for that object.</p>
+<p>A Dynamic Group may be updated using <code>PUT</code> or <code>PATCH</code> requests. As usual for REST, a <code>PUT</code> request requires the entire object to be described, while a <code>PATCH</code> allows for individual fields to be updated without affecting the other fields. For example if you wanted to update the <code>name</code> and the <code>description</code> together, leaving every other field with their current values as provided:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="err">PATCH</span><span class="w"> </span><span class="err">/api/ex</span><span class="kc">tras</span><span class="err">/dy</span><span class="kc">na</span><span class="err">mic</span><span class="mi">-</span><span class="err">groups/</span><span class="p">{</span><span class="err">uuid</span><span class="p">}</span><span class="err">/</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="p">{</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"I am the best parent group"</span><span class="p">,</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"I am the best parent group with nested children."</span><span class="p">,</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="p">}</span>
+</code></pre></div>
+<p>To delete a Dynamic Group you would send a <code>DELETE</code> request to the detail endpoint:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="err">DELETE</span><span class="w"> </span><span class="err">/api/ex</span><span class="kc">tras</span><span class="err">/dy</span><span class="kc">na</span><span class="err">mic</span><span class="mi">-</span><span class="err">groups/</span><span class="p">{</span><span class="err">uuid</span><span class="p">}</span><span class="err">/</span>
+</code></pre></div>
+<h3 id="managing-child-groups-via-rest">Managing Child Groups via REST<a class="headerlink" href="#managing-child-groups-via-rest" title="Permanent link">¶</a></h3>
+<p>Dynamic Groups may be added to a set-based group by creating a new Dynamic Group Membership. The act of assigning a Dynamic Group as a child to a parent group creates a Dynamic Group Membership.</p>
+<p>This can be done at the list endpoint found at <code>/api/extras/dynamic-group-memberships/</code>.</p>
+<h4 id="assigning-child-groups-via-rest">Assigning Child Groups via REST<a class="headerlink" href="#assigning-child-groups-via-rest" title="Permanent link">¶</a></h4>
+<p>Dynamic Group Membership objects may be created, updated, or deleted just like any other object and are represented as <code>children</code> on the parent group.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When interacting with the REST API, the <code>operator</code> must be provided using the string representation that is stored in the database. The human-readable operator names (such as "Exclude (AND)" for "intersection") are not accepted.</p>
+</div>
+<p>Request:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="err">POST</span><span class="w"> </span><span class="err">/api/ex</span><span class="kc">tras</span><span class="err">/dy</span><span class="kc">na</span><span class="err">mic</span><span class="mi">-</span><span class="err">group</span><span class="mi">-</span><span class="err">memberships/</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="p">{</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">    </span><span class="nt">"group"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"first-child"</span><span class="p">},</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">    </span><span class="nt">"parent_group"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent"</span><span class="p">},</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">    </span><span class="nt">"operator"</span><span class="p">:</span><span class="w"> </span><span class="s2">"intersection"</span><span class="p">,</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">    </span><span class="nt">"weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="p">}</span>
+</code></pre></div>
+<p>Response:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="p">{</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4c8296de-42bc-49a6-8fed-fc1b1f6b93ca"</span><span class="p">,</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">    </span><span class="nt">"display"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent &gt; intersection (10) &gt; first-child"</span><span class="p">,</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">    </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:6789/api/extras/dynamic-group-memberships/4c8296de-42bc-49a6-8fed-fc1b1f6b93ca/"</span><span class="p">,</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">    </span><span class="nt">"group"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">        </span><span class="nt">"display"</span><span class="p">:</span><span class="w"> </span><span class="s2">"first-child"</span><span class="p">,</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">        </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"97188a74-eddd-46d8-be41-909c1ece1d43"</span><span class="p">,</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">        </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:6789/api/extras/dynamic-groups/97188a74-eddd-46d8-be41-909c1ece1d43/"</span><span class="p">,</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"first-child"</span><span class="p">,</span>
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="w">        </span><span class="nt">"content_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dcim.device"</span>
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="w">    </span><span class="nt">"parent_group"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="w">        </span><span class="nt">"display"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent"</span><span class="p">,</span>
+<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="w">        </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1f825078-b6dc-4b12-9463-be5a9189b03f"</span><span class="p">,</span>
+<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="w">        </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:6789/api/extras/dynamic-groups/1f825078-b6dc-4b12-9463-be5a9189b03f/"</span><span class="p">,</span>
+<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent"</span><span class="p">,</span>
+<a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="w">        </span><span class="nt">"content_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dcim.device"</span>
+<a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a><span class="w">    </span><span class="nt">"operator"</span><span class="p">:</span><span class="w"> </span><span class="s2">"intersection"</span><span class="p">,</span>
+<a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="w">    </span><span class="nt">"weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
+<a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a><span class="p">}</span>
+</code></pre></div>
+<p>Observe that after adding this new membership object, the parent group now reflects this in its <code>children</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="err">GET</span><span class="w"> </span><span class="err">/api/ex</span><span class="kc">tras</span><span class="err">/dy</span><span class="kc">na</span><span class="err">mic</span><span class="mi">-</span><span class="err">groups/</span><span class="mi">1</span><span class="kc">f</span><span class="mi">825078-</span><span class="err">b</span><span class="mi">6</span><span class="err">dc</span><span class="mi">-4</span><span class="err">b</span><span class="mi">12-9463-</span><span class="err">be</span><span class="mi">5</span><span class="err">a</span><span class="mi">9189</span><span class="err">b</span><span class="mi">03</span><span class="kc">f</span><span class="err">/</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="p">{</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1f825078-b6dc-4b12-9463-be5a9189b03f"</span><span class="p">,</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">    </span><span class="nt">"display"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent"</span><span class="p">,</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">    </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:6789/api/extras/dynamic-groups/1f825078-b6dc-4b12-9463-be5a9189b03f/"</span><span class="p">,</span>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent"</span><span class="p">,</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="w">    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="w">    </span><span class="nt">"content_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dcim.device"</span><span class="p">,</span>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="w">    </span><span class="nt">"group_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dynamic-set"</span><span class="p">,</span>
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="w">    </span><span class="nt">"filter"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="w">    </span><span class="nt">"children"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="w">        </span><span class="p">{</span>
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="w">            </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4c8296de-42bc-49a6-8fed-fc1b1f6b93ca"</span><span class="p">,</span>
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a><span class="w">            </span><span class="nt">"display"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent &gt; intersection (10) &gt; first-child"</span><span class="p">,</span>
+<a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a><span class="w">            </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:6789/api/extras/dynamic-group-memberships/4c8296de-42bc-49a6-8fed-fc1b1f6b93ca/"</span><span class="p">,</span>
+<a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a><span class="w">            </span><span class="nt">"group"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a><span class="w">                </span><span class="nt">"display"</span><span class="p">:</span><span class="w"> </span><span class="s2">"first-child"</span><span class="p">,</span>
+<a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a><span class="w">                </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"97188a74-eddd-46d8-be41-909c1ece1d43"</span><span class="p">,</span>
+<a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a><span class="w">                </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:6789/api/extras/dynamic-groups/97188a74-eddd-46d8-be41-909c1ece1d43/"</span><span class="p">,</span>
+<a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a><span class="w">                </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"first-child"</span><span class="p">,</span>
+<a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a><span class="w">                </span><span class="nt">"content_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dcim.device"</span>
+<a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a><span class="w">            </span><span class="p">},</span>
+<a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a><span class="w">            </span><span class="nt">"parent_group"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-25" name="__codelineno-20-25" href="#__codelineno-20-25"></a><span class="w">                </span><span class="nt">"display"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent"</span><span class="p">,</span>
+<a id="__codelineno-20-26" name="__codelineno-20-26" href="#__codelineno-20-26"></a><span class="w">                </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1f825078-b6dc-4b12-9463-be5a9189b03f"</span><span class="p">,</span>
+<a id="__codelineno-20-27" name="__codelineno-20-27" href="#__codelineno-20-27"></a><span class="w">                </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:6789/api/extras/dynamic-groups/1f825078-b6dc-4b12-9463-be5a9189b03f/"</span><span class="p">,</span>
+<a id="__codelineno-20-28" name="__codelineno-20-28" href="#__codelineno-20-28"></a><span class="w">                </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"parent"</span><span class="p">,</span>
+<a id="__codelineno-20-29" name="__codelineno-20-29" href="#__codelineno-20-29"></a><span class="w">                </span><span class="nt">"content_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dcim.device"</span>
+<a id="__codelineno-20-30" name="__codelineno-20-30" href="#__codelineno-20-30"></a><span class="w">            </span><span class="p">},</span>
+<a id="__codelineno-20-31" name="__codelineno-20-31" href="#__codelineno-20-31"></a><span class="w">            </span><span class="nt">"operator"</span><span class="p">:</span><span class="w"> </span><span class="s2">"intersection"</span><span class="p">,</span>
+<a id="__codelineno-20-32" name="__codelineno-20-32" href="#__codelineno-20-32"></a><span class="w">            </span><span class="nt">"weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
+<a id="__codelineno-20-33" name="__codelineno-20-33" href="#__codelineno-20-33"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-20-34" name="__codelineno-20-34" href="#__codelineno-20-34"></a><span class="w">    </span><span class="p">],</span>
+<a id="__codelineno-20-35" name="__codelineno-20-35" href="#__codelineno-20-35"></a><span class="w">    </span><span class="nt">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2022-07-15T00:00:00Z"</span><span class="p">,</span>
+<a id="__codelineno-20-36" name="__codelineno-20-36" href="#__codelineno-20-36"></a><span class="w">    </span><span class="nt">"last_updated"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2022-07-15T16:50:45.453965Z"</span><span class="p">,</span>
+<a id="__codelineno-20-37" name="__codelineno-20-37" href="#__codelineno-20-37"></a><span class="w">    </span><span class="nt">"notes_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:6789/api/extras/dynamic-groups/1f825078-b6dc-4b12-9463-be5a9189b03f/notes/"</span><span class="p">,</span>
+<a id="__codelineno-20-38" name="__codelineno-20-38" href="#__codelineno-20-38"></a><span class="w">    </span><span class="nt">"custom_fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<a id="__codelineno-20-39" name="__codelineno-20-39" href="#__codelineno-20-39"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="updating-or-deleting-child-groups-via-rest">Updating or Deleting Child Groups via REST<a class="headerlink" href="#updating-or-deleting-child-groups-via-rest" title="Permanent link">¶</a></h4>
+<p>Updating or deleting Dynamic Group Membership is done by sending a request to the detail endpoint for that membership object.</p>
+<p>A Dynamic Group Membership may be updated using <code>PUT</code> or <code>PATCH</code> requests. Again, a <code>PUT</code> request requires the entire object to be described, while performing a partial update using a <code>PATCH</code> request can allow any single field to be updated without affecting the other fields. For example, if we only wanted to update the <code>weight</code> for a membership:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="err">PATCH</span><span class="w"> </span><span class="err">/api/ex</span><span class="kc">tras</span><span class="err">/dy</span><span class="kc">na</span><span class="err">mic</span><span class="mi">-</span><span class="err">group</span><span class="mi">-</span><span class="err">memberships/</span><span class="p">{</span><span class="err">uuid</span><span class="p">}</span><span class="err">/</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="p">{</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">    </span><span class="nt">"weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="p">}</span>
+</code></pre></div>
+<p>To delete a Dynamic Group Membership you would send a <code>DELETE</code> request to the detail endpoint:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="err">DELETE</span><span class="w"> </span><span class="err">/api/ex</span><span class="kc">tras</span><span class="err">/dy</span><span class="kc">na</span><span class="err">mic</span><span class="mi">-</span><span class="err">group</span><span class="mi">-</span><span class="err">memberships/</span><span class="p">{</span><span class="err">uuid</span><span class="p">}</span><span class="err">/</span>
+</code></pre></div>
+<h2 id="dynamic-groups-and-the-python-api-django-orm">Dynamic Groups and the Python API (Django ORM)<a class="headerlink" href="#dynamic-groups-and-the-python-api-django-orm" title="Permanent link">¶</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>By default, all models inheriting from Nautobot's <code>OrganizationalModel</code> or <code>PrimaryModel</code> classes are assumed to be a viable object type for Dynamic Groups to be defined for. Individual models that do not wish to be assignable to Dynamic Groups can declare the flag <code>is_dynamic_group_associable_model = False</code> on their model definition. Conversely, models that inherit directly from Nautobot's <code>BaseModel</code> default to <em>not</em> supporting Dynamic Groups, but can include the <code>nautobot.apps.models.DynamicGroupsModelMixin</code> class as a part of their class definition in order to enable Dynamic Group support.</p>
+</div>
+<h3 id="working-with-a-dynamic-groups-members">Working with a Dynamic Group's Members<a class="headerlink" href="#working-with-a-dynamic-groups-members" title="Permanent link">¶</a></h3>
+<p>Any Dynamic Group object in the ORM has a simple property, <code>.members</code>, for retrieving the QuerySet of (cached) members of that group. Because this data is cached in the database, even for a complex filter-based or set-based group definition, no expensive queries are required here; evaluating the QuerySet will perform a single efficient database query. You can of course perform further <code>.filter()</code> and other QuerySet operations, but (as always with QuerySets) this will incur additional database queries to re-evaluate the modified QuerySet.</p>
+<p>Additionally, a Dynamic Group has the method <code>.has_member(obj)</code> for checking whether a single given database object is a (cached) member of this group. This too is a very efficient query.</p>
+<p>Neither of the above attributes provide a way to directly bypass the cache used by this Dynamic Group; if it's important to your use case to guarantee up-to-the-minute accurate membership information, you can call a Dynamic Group's <code>.update_cached_members()</code> method, which will refresh its cache and return the resulting member QuerySet. Because refreshing the cache involves evaluating the Dynamic Group's defined filter(s), this is necessarily a more expensive database query(s) than either of the above access patterns, so it should only be done if required.</p>
+<details class="version-changed">
+<summary>Changed in version 2.3.0 — Simpler, always-on caching</summary>
+<p>In prior versions of Nautobot, <code>.members</code> did not use a cache (and so would always re-evaluate the Dynamic Group), and a separate <code>.members_cached</code> property used a configurable Redis cache to temporarily store the evaluated QuerySet. For performance reasons, the behavior of <code>.members</code> has been changed to behave as described above. <code>.members_cached</code> should be considered deprecated and will likely be removed in a future major release.</p>
+<p>Similarly, <code>.has_member(obj)</code> was previously non-cached by default, but the Redis cache could be used by invoking it as <code>.has_member(obj, use_cache=True)</code>; this too has been changed in this release, and the <code>use_cache</code> flag should be considered deprecated as well.</p>
+</details>
+<p>For static-assignment-based Dynamic groups (only!) you can update its member list by assigning directly to its <code>.members</code> or calling its <code>.add_members()</code> or <code>.remove_members()</code> methods as desired. Invoking any of these APIs for a filter-based or set-based Dynamic Group is an error and will raise an exception.</p>
+<h3 id="working-with-an-objects-containing-dynamic-groups">Working with an Object's Containing Dynamic Groups<a class="headerlink" href="#working-with-an-objects-containing-dynamic-groups" title="Permanent link">¶</a></h3>
+<p>Conversely, any model instance that supports Dynamic Groups will expose the property <code>.dynamic_groups</code>, which returns the QuerySet of (cached) Dynamic Groups that contain the model instance. As above, there's no direct way to bypass caching; if it's critically important to your use case to have up-to-the-minute accuracy, your only recourse is to call <code>DynamicGroup.update_cached_members()</code> for <em>each and every potentially relevant DynamicGroup record</em>, which obviously has the potential to be a very expensive operation if many Dynamic Groups are defined.</p>
+<details class="version-changed">
+<summary>Changed in version 2.3.0 — Simpler, always-on caching</summary>
+<p>In prior versions of Nautobot, <code>.dynamic_groups</code> did not use a cache (and so had the potential to be a very expensive lookup every time it was accessed), and a separate <code>.dynamic_groups_cached</code> property used a configurable Redis cache to temporarily store the evaluated QuerySet. For performance reasons, the behavior of <code>.dynamic_groups</code> has been changed to behave as described above. <code>.dynamic_groups_cached</code> should be considered deprecated and will likely be removed in a future major release.</p>
+<p>Additionally, prior versions of Nautobot exposed two additional model properties, <code>.dynamic_groups_list</code> and <code>.dynamic_groups_cached</code>, which provided a (very slight) performance improvement over the previous two properties. With the introduction of the database cache implementation, these properties no longer provide any relevant performance improvement, and should be considered deprecated as well.</p>
+</details>
+<h3 id="refreshing-the-cache">Refreshing the Cache<a class="headerlink" href="#refreshing-the-cache" title="Permanent link">¶</a></h3>
+<p>In addition to the UI, management command, and Job based mechanisms for refreshing a group's members cache, described earlier in this document, from an App or Job, you can also directly call <code>group.update_cached_members()</code> as described above.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

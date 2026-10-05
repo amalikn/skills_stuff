@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="en" data-content_root="../../"
+  x-data="{ darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches), activeSection: ''}"
+  :class="{ 'dark' : darkMode === true }">
+
+<head>
+  <script>
+    (function () {
+      // Set initial color scheme
+      if ((localStorage.getItem("_x_darkMode") === "true") || (window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      }
+
+      // Watch for media preference changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+        localStorage.setItem("_x_darkMode", event.matches);
+        document.documentElement.classList.toggle("dark", event.matches);
+      });
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030711" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Settings | OpenWISP 26.09 documentation</title>
+  <meta property="og:title" content="Settings | OpenWISP 26.09 documentation" />
+  <meta name="twitter:title" content="Settings | OpenWISP 26.09 documentation" />
+  <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e48b8583" />
+  <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../_static/pygments_dark.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/theme.css?v=d6d7c91b" />
+  <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=d3e37945" />
+  <link rel="icon" href="../../_static/favicon.svg" />
+
+  <link rel="search" title="Search" href="../../search.html" />
+  <link rel="next" title="Advanced Customization" href="customization.html" />
+  <link rel="prev" title="Architecture" href="architecture.html" />
+<meta property="og:image" content="https://openwisp.io/docs/26.09/_static/docs-og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="480" />
+
+<link rel="canonical" href="https://openwisp.io/docs/stable/docker/user/settings.html" />
+
+
+</head>
+
+<body x-data="{ showSidebar: false, showScrollTop: false }"
+  class="min-h-screen font-sans antialiased bg-background text-foreground" :class="{ 'overflow-hidden': showSidebar }"@scroll.window="showScrollTop = pageYOffset > 100">
+  <div x-cloak x-show="showSidebar"
+    class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden"
+    @click.self="showSidebar = false"></div><div id="page" class="relative flex flex-col min-h-screen"><a href="#content"
+      class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100">
+      Skip to content
+    </a><header class="sticky top-0 z-40 w-full border-b shadow-xs border-border bg-background/90 backdrop-blur"><div class="container flex items-center h-14">
+    <div class="hidden mr-4 md:flex">
+      <a href="../../index.html" class="flex items-center mr-6">
+        <img width="24" height="24" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+          alt="Logo" />
+        <img width="24" height="24" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+          alt="Logo" /><span class="hidden font-bold sm:inline-block text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+      </a><nav class="flex items-center space-x-6 text-sm font-medium">
+    
+    <a href="https://openwisp.org/features/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Features</a>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/faq/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Blog</a>
+</nav></div><button
+      class="inline-flex items-center justify-center h-10 px-0 py-2 mr-2 text-base font-medium transition-colors rounded-md hover:text-accent-foreground hover:bg-transparent md:hidden"
+      type="button" @click="showSidebar = true">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" aria-hidden="true"
+        fill="currentColor">
+        <path
+          d="M152.587 825.087q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440Zm0-203.587q-19.152 0-32.326-13.174T107.087 576q0-19.152 13.174-32.326t32.326-13.174h320q19.152 0 32.326 13.174T518.087 576q0 19.152-13.174 32.326T472.587 621.5h-320Zm0-203.587q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440ZM708.913 576l112.174 112.174q12.674 12.674 12.674 31.826t-12.674 31.826Q808.413 764.5 789.261 764.5t-31.826-12.674l-144-144Q600 594.391 600 576t13.435-31.826l144-144q12.674-12.674 31.826-12.674t31.826 12.674q12.674 12.674 12.674 31.826t-12.674 31.826L708.913 576Z" />
+      </svg>
+      <span class="sr-only">Toggle navigation menu</span>
+    </button>
+    <div class="flex items-center justify-between flex-1 gap-2 sm:gap-4 md:justify-end">
+      <div class="flex-1 w-full md:w-auto md:flex-none"><form id="searchbox"
+      action="../../search.html"
+      method="get"
+      class="relative flex items-center group"
+      @keydown.k.window.meta="$refs.search.focus()">
+  <input x-ref="search"
+          name="q"
+          id="search-input"
+          type="search"
+          aria-label="Search the docs"
+          placeholder="Search ..."
+          class="inline-flex items-center font-medium transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background border border-input hover:bg-accent focus:bg-accent hover:text-accent-foreground focus:text-accent-foreground hover:placeholder-accent-foreground py-2 px-4 relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64" />
+  <kbd class="pointer-events-none absolute right-1.5 top-2 hidden h-5 select-none text-muted-foreground items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex group-hover:bg-accent group-hover:text-accent-foreground">
+    <span class="text-xs">⌘</span>
+    K
+  </kbd>
+</form>
+      </div>
+      <nav class="flex items-center gap-1">
+        <button @click="darkMode = !darkMode"
+          class="relative inline-flex items-center justify-center px-0 text-sm font-medium transition-colors rounded-md hover:bg-accent hover:text-accent-foreground h-9 w-9"
+          type="button"
+          title="Toggle color scheme">
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-100 rotate-0 dark:-rotate-90 dark:scale-0">
+            <path
+              d="M480 685q45.456 0 77.228-31.772Q589 621.456 589 576q0-45.456-31.772-77.228Q525.456 467 480 467q-45.456 0-77.228 31.772Q371 530.544 371 576q0 45.456 31.772 77.228Q434.544 685 480 685Zm0 91q-83 0-141.5-58.5T280 576q0-83 58.5-141.5T480 376q83 0 141.5 58.5T680 576q0 83-58.5 141.5T480 776ZM80 621.5q-19.152 0-32.326-13.174T34.5 576q0-19.152 13.174-32.326T80 530.5h80q19.152 0 32.326 13.174T205.5 576q0 19.152-13.174 32.326T160 621.5H80Zm720 0q-19.152 0-32.326-13.174T754.5 576q0-19.152 13.174-32.326T800 530.5h80q19.152 0 32.326 13.174T925.5 576q0 19.152-13.174 32.326T880 621.5h-80Zm-320-320q-19.152 0-32.326-13.174T434.5 256v-80q0-19.152 13.174-32.326T480 130.5q19.152 0 32.326 13.174T525.5 176v80q0 19.152-13.174 32.326T480 301.5Zm0 720q-19.152 0-32.326-13.17Q434.5 995.152 434.5 976v-80q0-19.152 13.174-32.326T480 850.5q19.152 0 32.326 13.174T525.5 896v80q0 19.152-13.174 32.33-13.174 13.17-32.326 13.17ZM222.174 382.065l-43-42Q165.5 327.391 166 308.239t13.174-33.065q13.435-13.674 32.587-13.674t32.065 13.674l42.239 43q12.674 13.435 12.555 31.706-.12 18.272-12.555 31.946-12.674 13.674-31.445 13.413-18.772-.261-32.446-13.174Zm494 494.761-42.239-43q-12.674-13.435-12.674-32.087t12.674-31.565Q686.609 756.5 705.38 757q18.772.5 32.446 13.174l43 41.761Q794.5 824.609 794 843.761t-13.174 33.065Q767.391 890.5 748.239 890.5t-32.065-13.674Zm-42-494.761Q660.5 369.391 661 350.62q.5-18.772 13.174-32.446l41.761-43Q728.609 261.5 747.761 262t33.065 13.174q13.674 13.435 13.674 32.587t-13.674 32.065l-43 42.239q-13.435 12.674-31.706 12.555-18.272-.12-31.946-12.555Zm-495 494.761Q165.5 863.391 165.5 844.239t13.674-32.065l43-42.239q13.435-12.674 32.087-12.674t31.565 12.674Q299.5 782.609 299 801.38q-.5 18.772-13.174 32.446l-41.761 43Q231.391 890.5 212.239 890t-33.065-13.174ZM480 576Z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-0 rotate-90 dark:rotate-0 dark:scale-100">
+            <path
+              d="M480 936q-151 0-255.5-104.5T120 576q0-138 90-239.5T440 218q25-3 39 18t-1 44q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q21-14 43-1.5t19 39.5q-14 138-117.5 229T480 936Zm0-80q88 0 158-48.5T740 681q-20 5-40 8t-40 3q-123 0-209.5-86.5T364 396q0-20 3-40t8-40q-78 32-126.5 102T200 576q0 116 82 198t198 82Zm-10-270Z" />
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+    <div class="flex-1"><div
+        class="container md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10"><aside id="left-sidebar"
+  class="fixed inset-y-0 left-0 md:top-14 z-50 md:z-30 bg-background md:bg-transparent transition-all duration-100 -translate-x-full md:translate-x-0 ml-0 p-6 md:p-0 md:-ml-2 md:h-[calc(100vh-3.5rem)] w-5/6 md:w-full overflow-y-auto border-r border-border md:sticky"
+  :aria-hidden="!showSidebar" :class="{ 'translate-x-0': showSidebar }">
+
+    <a href="../../index.html" class="justify-start text-sm md:!hidden bg-background">
+      <img width="16" height="16" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+        alt="Logo" />
+      <img width="16" height="16" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+        alt="Logo" /><span class="font-bold text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+    </a>
+
+    <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
+      <div class="overflow-y-auto h-full w-full relative pr-6"><div class="doc-versions">
+    <label>Version</label>
+    <div class="dropdown" x-data="{ showVersionSwitcher: false, buttonWidth: 0 }"
+        x-init="buttonWidth = $refs.button.offsetWidth">
+        <button type="button" x-ref="button" class="dropbtn "
+             @click="showVersionSwitcher = !showVersionSwitcher"
+            :class="{'active': showVersionSwitcher}" >
+            26.09
+            
+            <svg fill="currentColor" height="18px" stroke="none" viewBox="0 0 24 24" width="18px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+            
+        </button>
+        <div x-show="showVersionSwitcher" class="dropdown-content" :class="{'hidden': !showVersionSwitcher}"
+            @click.away="showVersionSwitcher = false" style="display: none;" :style="{ width: buttonWidth + 'px' }">
+            
+            
+            <a href="/docs/dev/docker/user/settings.html">dev</a>
+            
+            
+            
+            
+            
+            <a href="/docs/25.10/docker/user/settings.html">25.10</a>
+            
+            
+            
+            <a href="/docs/24.11/docker/user/settings.html">24.11</a>
+            
+            
+        </div>
+    </div>
+</div>
+<nav class="flex flex-col font-bold md:hidden">
+    
+    <a href="https://openwisp.org/features/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Features
+    </a>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/faq/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Blog
+    </a>
+</nav>
+<nav class="table w-full min-w-full my-6 lg:my-8 mt-4">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../first-steps.html">First Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project-overview.html">Project Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../installers.html">Installers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../ansible/index.html">Ansible OpenWISP</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Docker OpenWISP</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="customization.html">Advanced Customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html">Docker OpenWISP FAQs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../developer/instructions.html">Developer Docs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../openwrt-agents.html">OpenWrt Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../community.html">Community Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">Release Notes</a></li>
+</ul>
+
+</nav><div class="offline-docs">
+    <div class="heading">
+        <h6>OFFLINE DOCS</h6>
+    </div>
+    <p class="urls">
+        <a href="/docs/26.09/OpenWISP-26.09.pdf" target="_blank">
+            PDF</a>
+        |
+        <a href="/docs/26.09/OpenWISP-26.09.epub" target="_blank">
+            ePUB</a>
+    </p>
+</div>
+      </div>
+    </div>
+    <button type="button" @click="showSidebar = false"
+      class="absolute md:hidden right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" fill="currentColor"
+        stroke="none" class="h-4 w-4">
+        <path
+          d="M480 632 284 828q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536 576l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480 632Z" />
+      </svg>
+    </button>
+  </aside>
+          <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+<div class="w-full min-w-0 mx-auto">
+<nav aria-label="breadcrumbs"
+     class="flex items-center mb-4 space-x-1 text-sm text-muted-foreground">
+  <a class="overflow-hidden text-ellipsis whitespace-nowrap hover:text-foreground"
+     href="../../index.html">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         height="18"
+         width="18"
+         viewBox="0 96 960 960"
+         aria-label="Home"
+         fill="currentColor"
+         stroke="none">
+      <path d="M240 856h120V616h240v240h120V496L480 316 240 496v360Zm-80 80V456l320-240 320 240v480H520V696h-80v240H160Zm320-350Z" />
+    </svg>
+  </a>
+  
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../../installers.html">Installers</a>
+    
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../index.html">Docker OpenWISP</a>
+    
+<div class="mr-1">/</div><span aria-current="page"
+        class="font-medium text-foreground overflow-hidden whitespace-nowrap">Settings</span>
+</nav>
+
+    <div id="content" role="main">
+      <section id="settings">
+<h1>Settings<a class="headerlink" href="#settings" title="Link to this heading"></a></h1>
+<p>The OpenWISP Docker images are designed for customization. You can easily
+modify environment variables to tailor the containers to your needs.</p>
+<ul class="simple">
+<li><p><strong>Docker Compose:</strong> Simply change the values in the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p></li>
+</ul>
+<p>Below are listed the available configuration options divided by section:</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#essential" id="id7">Essential</a></p></li>
+<li><p><a class="reference internal" href="#security" id="id8">Security</a></p></li>
+<li><p><a class="reference internal" href="#openwisp" id="id9">OpenWISP</a></p></li>
+<li><p><a class="reference internal" href="#enabled-openwisp-modules" id="id10">Enabled OpenWISP Modules</a></p></li>
+<li><p><a class="reference internal" href="#postgresql-database" id="id11">PostgreSQL Database</a></p></li>
+<li><p><a class="reference internal" href="#influxdb" id="id12">InfluxDB</a></p></li>
+<li><p><a class="reference internal" href="#postfix" id="id13">Postfix</a></p></li>
+<li><p><a class="reference internal" href="#uwsgi" id="id14">uWSGI</a></p></li>
+<li><p><a class="reference internal" href="#nginx" id="id15">Nginx</a></p></li>
+<li><p><a class="reference internal" href="#openvpn" id="id16">OpenVPN</a></p></li>
+<li><p><a class="reference internal" href="#topology" id="id17">Topology</a></p></li>
+<li><p><a class="reference internal" href="#x509-certificates" id="id18">X509 Certificates</a></p></li>
+<li><p><a class="reference internal" href="#misc-services" id="id19">Misc Services</a></p></li>
+<li><p><a class="reference internal" href="#nfs-server" id="id20">NFS Server</a></p></li>
+</ul>
+</nav>
+<p>Additionally, you can search for the following prefixes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">OPENWISP_</span></code>: OpenWISP application settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DB_</span></code>: PostgreSQL Database settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">INFLUXDB_</span></code>: InfluxDB settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DJANGO_</span></code>: Django settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMAIL_</span></code>: Email settings (see also <code class="docutils literal notranslate"><span class="pre">POSTFIX_</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POSTFIX_</span></code>: Postfix settings (see also <code class="docutils literal notranslate"><span class="pre">EMAIL_</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NGINX_</span></code>: Nginx web server settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UWSGI_</span></code>: uWSGI application server settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DASHBOARD_</span></code>: Settings specific to the OpenWISP dashboard.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">API_</span></code>: Settings specific to the OpenWISP API.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">X509_</span></code>: Configurations related to x509 CA and certificates.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VPN_</span></code>: Default VPN and VPN template configurations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FREERADIUS_</span></code>: FreeRADIUS server settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CRON_</span></code>: Periodic task configurations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EXPORT_</span></code>: NFS server configurations.</p></li>
+</ul>
+<section id="essential">
+<span id="docker-essential-env"></span><h2><a class="toc-backref" href="#id7" role="doc-backlink">Essential</a><a class="headerlink" href="#essential" title="Link to this heading"></a></h2>
+<p>You will need to adapt these values to get the docker images working
+properly on your system.</p>
+<section id="openwisp-version">
+<span id="id1"></span><h3><code class="docutils literal notranslate"><span class="pre">OPENWISP_VERSION</span></code><a class="headerlink" href="#openwisp-version" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> The version of OpenWISP to use. It can be set to a
+specific version (e.g. <code class="docutils literal notranslate"><span class="pre">25.10.0</span></code>) or to <code class="docutils literal notranslate"><span class="pre">edge</span></code> to always use the
+latest development version.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">edge</span></code>, <code class="docutils literal notranslate"><span class="pre">latest</span></code>, or a semantic version string
+(e.g., <code class="docutils literal notranslate"><span class="pre">25.10.0</span></code>)</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">edge</span></code></p></li>
+</ul>
+</section>
+<section id="dashboard-domain">
+<span id="id2"></span><h3><code class="docutils literal notranslate"><span class="pre">DASHBOARD_DOMAIN</span></code><a class="headerlink" href="#dashboard-domain" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Domain on which you want to access OpenWISP dashboard.</p></li>
+<li><p><strong>Valid Values:</strong> Any valid domain.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">dashboard.example.com</span></code>.</p></li>
+</ul>
+</section>
+<section id="api-domain">
+<span id="id3"></span><h3><code class="docutils literal notranslate"><span class="pre">API_DOMAIN</span></code><a class="headerlink" href="#api-domain" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Domain on which you want to access OpenWISP APIs.</p></li>
+<li><p><strong>Valid Values:</strong> Any valid domain.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">api.example.com</span></code>.</p></li>
+</ul>
+</section>
+<section id="vpn-domain">
+<span id="id4"></span><h3><code class="docutils literal notranslate"><span class="pre">VPN_DOMAIN</span></code><a class="headerlink" href="#vpn-domain" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Valid domain / IP address to reach the OpenVPN server.</p></li>
+<li><p><strong>Valid Values:</strong> Any valid domain or IP address.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">openvpn.example.com</span></code>.</p></li>
+</ul>
+</section>
+<section id="tz">
+<h3><code class="docutils literal notranslate"><span class="pre">TZ</span></code><a class="headerlink" href="#tz" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Sets the timezone for the OpenWISP containers.</p></li>
+<li><p><strong>Valid Values:</strong> Find list of timezone database <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">here</a>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">UTC</span></code>.</p></li>
+</ul>
+</section>
+<section id="dev-mode">
+<h3><code class="docutils literal notranslate"><span class="pre">DEV_MODE</span></code><a class="headerlink" href="#dev-mode" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Enables the development profile, which makes local
+development easier by enabling debugging and HTTP access, printing email
+to the console, and disabling metrics collection, the geocoding startup
+check, and Nginx security headers. Production deployments must set this
+option to <code class="docutils literal notranslate"><span class="pre">False</span></code>. Explicit feature settings override their
+development-profile defaults.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code> in the repository <code class="docutils literal notranslate"><span class="pre">.env</span></code> and <code class="docutils literal notranslate"><span class="pre">False</span></code> for
+Docker images and auto-install deployments.</p></li>
+</ul>
+</section>
+<section id="ssl-cert-mode">
+<h3><code class="docutils literal notranslate"><span class="pre">SSL_CERT_MODE</span></code><a class="headerlink" href="#ssl-cert-mode" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Flag to enable or disable HTTPS. If it is set to
+<code class="docutils literal notranslate"><span class="pre">Yes</span></code>, letsencrypt certificates are automatically fetched with the
+help of certbot and a cronjob to ensure they stay updated is added. If
+it is set to <code class="docutils literal notranslate"><span class="pre">SelfSigned</span></code>, self-signed certificates are used and a
+cronjob for the certificates is set. If set to <code class="docutils literal notranslate"><span class="pre">No</span></code>, the site is
+accessible via HTTP. If set to <code class="docutils literal notranslate"><span class="pre">External</span></code>, it tells HTTPS is used but
+managed by an external tool like a loadbalancer/provider. Setting this
+option as <code class="docutils literal notranslate"><span class="pre">No</span></code> is not recommended and might break some features, only
+do it when you know what you are doing.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">External</span></code>, <code class="docutils literal notranslate"><span class="pre">Yes</span></code>, <code class="docutils literal notranslate"><span class="pre">SelfSigned</span></code>, <code class="docutils literal notranslate"><span class="pre">No</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">Yes</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="security">
+<span id="docker-security-env"></span><h2><a class="toc-backref" href="#id8" role="doc-backlink">Security</a><a class="headerlink" href="#security" title="Link to this heading"></a></h2>
+<p>Tune these options to strengthen the security of your instance.</p>
+<section id="django-secret-key">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_SECRET_KEY</span></code><a class="headerlink" href="#django-secret-key" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> A random unique string that must be kept secret for
+security reasons. You can generate it with the command: <code class="docutils literal notranslate"><span class="pre">python</span>
+<span class="pre">build.py</span> <span class="pre">get-secret-key</span></code> at the root of the repository to get a key or
+make a random key yourself.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">default_secret_key</span></code></p></li>
+</ul>
+</section>
+<section id="django-allowed-hosts">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_ALLOWED_HOSTS</span></code><a class="headerlink" href="#django-allowed-hosts" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Used to validate a request's HTTP Host header. The
+default value <code class="docutils literal notranslate"><span class="pre">*</span></code> allows all domains. For security, it is recommended
+to specify only trusted domains, such as <code class="docutils literal notranslate"><span class="pre">.mydomain.com</span></code>. If left
+blank, it defaults to your dashboard's root domain.</p></li>
+<li><p><strong>Valid Values:</strong> Refer to the <a class="reference external" href="https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-ALLOWED_HOSTS">Django documentation for ALLOWED_HOSTS</a>.</p></li>
+<li><p><strong>Default:</strong> Root domain extracted from <a class="reference internal" href="#dashboard-domain"><span class="std std-ref">DASHBOARD_DOMAIN</span></a>.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">.openwisp.org,.example.org,www.example.com</span></code>.</p></li>
+</ul>
+</section>
+<section id="openwisp-radius-freeradius-allowed-hosts">
+<h3><code class="docutils literal notranslate"><span class="pre">OPENWISP_RADIUS_FREERADIUS_ALLOWED_HOSTS</span></code><a class="headerlink" href="#openwisp-radius-freeradius-allowed-hosts" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Default IP address or subnet of your freeradius
+instance.</p></li>
+<li><p><strong>Valid Values:</strong> A comma separated string of valid IP address or IP
+Networks.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">172.18.0.0/16</span></code>.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">127.0.0.1,192.0.2.20,172.18.0.0/16</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="openwisp">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">OpenWISP</a><a class="headerlink" href="#openwisp" title="Link to this heading"></a></h2>
+<p>Settings for the OpenWISP application and the underlying Django web
+framework.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Any OpenWISP Configuration of type <code class="docutils literal notranslate"><span class="pre">string</span></code>. <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">bool</span></code> or
+<code class="docutils literal notranslate"><span class="pre">json</span></code> is supported and can be used as per the documentation in the
+module.</p>
+<p>If you need to change a Django setting that has a more complex
+datatype, please refer to <a class="reference internal" href="customization.html#docker-custom-django-settings"><span class="std std-ref">Supplying Custom Django Settings</span></a>.</p>
+</div>
+<section id="email-host">
+<span id="id5"></span><h3><code class="docutils literal notranslate"><span class="pre">EMAIL_HOST</span></code><a class="headerlink" href="#email-host" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Host to be used when connecting to the STMP.
+<code class="docutils literal notranslate"><span class="pre">localhost</span></code> or empty string are not allowed.</p></li>
+<li><p><strong>Valid Values:</strong> A valid hostname or IP address.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">smtp.gmail.com</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">postfix</span></code>.</p></li>
+</ul>
+</section>
+<section id="email-django-default">
+<h3><code class="docutils literal notranslate"><span class="pre">EMAIL_DJANGO_DEFAULT</span></code><a class="headerlink" href="#email-django-default" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> It is the email address to use for various automated
+correspondence from the site manager(s).</p></li>
+<li><p><strong>Valid Values:</strong> Any valid email address.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">example&#64;example.com</span></code>.</p></li>
+</ul>
+</section>
+<section id="email-host-port">
+<h3><code class="docutils literal notranslate"><span class="pre">EMAIL_HOST_PORT</span></code><a class="headerlink" href="#email-host-port" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Port to use for the SMTP server defined in
+<a class="reference internal" href="#email-host"><span class="std std-ref">EMAIL_HOST</span></a>.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">25</span></code>.</p></li>
+</ul>
+</section>
+<section id="email-host-user">
+<h3><code class="docutils literal notranslate"><span class="pre">EMAIL_HOST_USER</span></code><a class="headerlink" href="#email-host-user" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Username to use for the SMTP server defined in
+<a class="reference internal" href="#email-host"><span class="std std-ref">EMAIL_HOST</span></a>. If empty, Django won't attempt authentication.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty string).</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">example&#64;example.com</span></code></p></li>
+</ul>
+</section>
+<section id="email-host-password">
+<h3><code class="docutils literal notranslate"><span class="pre">EMAIL_HOST_PASSWORD</span></code><a class="headerlink" href="#email-host-password" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Password to use for the SMTP server defined in
+<a class="reference internal" href="#email-host"><span class="std std-ref">EMAIL_HOST</span></a>.. If empty, Django won't attempt authentication.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty string)</p></li>
+</ul>
+</section>
+<section id="email-host-tls">
+<h3><code class="docutils literal notranslate"><span class="pre">EMAIL_HOST_TLS</span></code><a class="headerlink" href="#email-host-tls" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether to use a TLS (secure) connection when talking
+to the SMTP server. This is used for explicit TLS connections, generally
+on port 587.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</section>
+<section id="email-timeout">
+<h3><code class="docutils literal notranslate"><span class="pre">EMAIL_TIMEOUT</span></code><a class="headerlink" href="#email-timeout" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Specifies a timeout in seconds used by Django for
+blocking operations like the connection attempt.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
+</ul>
+</section>
+<section id="email-backend">
+<h3><code class="docutils literal notranslate"><span class="pre">EMAIL_BACKEND</span></code><a class="headerlink" href="#email-backend" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Email will be sent using this backend.</p></li>
+<li><p><strong>Valid Values:</strong> <a class="reference external" href="https://docs.djangoproject.com/en/4.2/topics/email/#email-backends">Refer to the &quot;Email backends&quot; section on the Django
+documentation</a>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">django.core.mail.backends.console.EmailBackend</span></code> in
+development mode and <code class="docutils literal notranslate"><span class="pre">djcelery_email.backends.CeleryEmailBackend</span></code> in
+production.</p></li>
+</ul>
+</section>
+<section id="django-x509-default-cert-validity">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_X509_DEFAULT_CERT_VALIDITY</span></code><a class="headerlink" href="#django-x509-default-cert-validity" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Validity of your x509 cert in days.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">1825</span></code></p></li>
+</ul>
+</section>
+<section id="django-x509-default-ca-validity">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_X509_DEFAULT_CA_VALIDITY</span></code><a class="headerlink" href="#django-x509-default-ca-validity" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Validity of your x509 CA in days.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">3650</span></code>.</p></li>
+</ul>
+</section>
+<section id="django-cors-hosts">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_CORS_HOSTS</span></code><a class="headerlink" href="#django-cors-hosts" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Hosts for which <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS</a>. is
+whitelisted.</p></li>
+<li><p><strong>Valid Values:</strong> Comma separated list of CORS domains.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">http://localhost</span></code></p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">https://www.openwisp.org,openwisp.example.org</span></code></p></li>
+</ul>
+</section>
+<section id="django-language-code">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_LANGUAGE_CODE</span></code><a class="headerlink" href="#django-language-code" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Language for your OpenWISP application.</p></li>
+<li><p><strong>Valid Values:</strong> Refer to the <a class="reference external" href="https://docs.djangoproject.com/en/4.2/ref/settings/#language-code">related Django documentation section</a>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">en-gb</span></code>.</p></li>
+</ul>
+</section>
+<section id="django-sentry-dsn">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_SENTRY_DSN</span></code><a class="headerlink" href="#django-sentry-dsn" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> <a class="reference external" href="https://sentry.io/for/django/">Sentry DSN</a>.</p></li>
+<li><p><strong>Valid Values:</strong> Your DSN value provided by sentry.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">https://example&#64;sentry.io/example</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty string).</p></li>
+</ul>
+</section>
+<section id="django-leafet-center-x-axis">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_LEAFET_CENTER_X_AXIS</span></code><a class="headerlink" href="#django-leafet-center-x-axis" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> X-axis coordinate of the leaflet default center
+property. <a class="reference external" href="https://django-leaflet.readthedocs.io/en/latest/templates.html#configuration">Refer to the django-leaflet docs for more information</a>.</p></li>
+<li><p><strong>Valid Values:</strong> FLOAT.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">26.357896</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+</ul>
+</section>
+<section id="django-leafet-center-y-axis">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_LEAFET_CENTER_Y_AXIS</span></code><a class="headerlink" href="#django-leafet-center-y-axis" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Y-axis coordinate of the leaflet default center
+property. <a class="reference external" href="https://django-leaflet.readthedocs.io/en/latest/templates.html#configuration">Refer to the django-leaflet docs for more information</a>.</p></li>
+<li><p><strong>Valid Values:</strong> FLOAT.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">127.783809</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+</ul>
+</section>
+<section id="django-leafet-zoom">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_LEAFET_ZOOM</span></code><a class="headerlink" href="#django-leafet-zoom" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Default zoom for leaflet. <a class="reference external" href="https://django-leaflet.readthedocs.io/en/latest/templates.html#configuration">Refer to the django-leaflet
+docs for more information</a>.</p></li>
+<li><p><strong>Valid Values:</strong> INT (1-16).</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+</ul>
+</section>
+<section id="django-websocket-host">
+<h3><code class="docutils literal notranslate"><span class="pre">DJANGO_WEBSOCKET_HOST</span></code><a class="headerlink" href="#django-websocket-host" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Host on which Daphne should listen for websocket
+connections.</p></li>
+<li><p><strong>Valid Values:</strong> Any valid domain or IP Address.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code>.</p></li>
+</ul>
+</section>
+<section id="openwisp-geocoding-check">
+<h3><code class="docutils literal notranslate"><span class="pre">OPENWISP_GEOCODING_CHECK</span></code><a class="headerlink" href="#openwisp-geocoding-check" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Used to check if geocoding is working as expected or
+not.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">False</span></code> in development mode and <code class="docutils literal notranslate"><span class="pre">True</span></code> in production.</p></li>
+</ul>
+</section>
+<section id="use-openwisp-celery-task-routes-defaults">
+<h3><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_CELERY_TASK_ROUTES_DEFAULTS</span></code><a class="headerlink" href="#use-openwisp-celery-task-routes-defaults" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether the default celery task routes should be used
+by celery. Turn this off if you're defining custom task routing rules.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</section>
+<section id="openwisp-celery-command-flags">
+<h3><code class="docutils literal notranslate"><span class="pre">OPENWISP_CELERY_COMMAND_FLAGS</span></code><a class="headerlink" href="#openwisp-celery-command-flags" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Additional flags passed to the command that starts the
+celery worker for the <code class="docutils literal notranslate"><span class="pre">default</span></code> queue. It can be used to configure
+different attributes of the celery worker (e.g. auto-scaling,
+concurrency, etc.). Refer to the <a class="reference external" href="https://docs.celeryq.dev/en/stable/userguide/workers.html#workers-guide">celery worker documentation</a>
+for more information on configurable properties.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">--concurrency=1</span></code>.</p></li>
+</ul>
+</section>
+<section id="use-openwisp-celery-network">
+<h3><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_CELERY_NETWORK</span></code><a class="headerlink" href="#use-openwisp-celery-network" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether the dedicated worker for the celery &quot;network&quot;
+queue is enabled. Must be turned on unless there's another server
+running a worker for this queue.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</section>
+<section id="openwisp-celery-network-command-flags">
+<h3><code class="docutils literal notranslate"><span class="pre">OPENWISP_CELERY_NETWORK_COMMAND_FLAGS</span></code><a class="headerlink" href="#openwisp-celery-network-command-flags" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Additional flags passed to the command that starts the
+celery worker for the <code class="docutils literal notranslate"><span class="pre">network</span></code> queue. It can be used to configure
+different attributes of the celery worker (e.g. auto-scaling,
+concurrency, etc.). Refer to the <a class="reference external" href="https://docs.celeryq.dev/en/stable/userguide/workers.html#workers-guide">celery worker documentation</a>
+for more information on configurable properties.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">--concurrency=1</span></code></p></li>
+</ul>
+</section>
+<section id="use-openwisp-celery-firmware">
+<h3><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_CELERY_FIRMWARE</span></code><a class="headerlink" href="#use-openwisp-celery-firmware" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether the dedicated worker for the celery
+<code class="docutils literal notranslate"><span class="pre">firmware_upgrader</span></code> queue is enabled. Must be turned on unless there's
+another server running a worker for this queue.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</section>
+<section id="openwisp-celery-firmware-command-flags">
+<h3><code class="docutils literal notranslate"><span class="pre">OPENWISP_CELERY_FIRMWARE_COMMAND_FLAGS</span></code><a class="headerlink" href="#openwisp-celery-firmware-command-flags" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Additional flags passed to the command that starts the
+celery worker for the <code class="docutils literal notranslate"><span class="pre">firmware_upgrader</span></code> queue. It can be used to
+configure different attributes of the celery worker (e.g. auto-scaling,
+concurrency, etc.). Refer to the <a class="reference external" href="https://docs.celeryq.dev/en/stable/userguide/workers.html#workers-guide">celery worker documentation</a>
+for more information on configurable properties.</p></li>
+<li><p><strong>Valid Values:</strong> STRING</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">--concurrency=1</span></code></p></li>
+</ul>
+</section>
+<section id="use-openwisp-celery-monitoring">
+<h3><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_CELERY_MONITORING</span></code><a class="headerlink" href="#use-openwisp-celery-monitoring" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether the dedicated worker for the celery
+<code class="docutils literal notranslate"><span class="pre">monitoring</span></code> queue is enabled. Must be turned on unless there's
+another server running a worker for this queue.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</section>
+<section id="openwisp-celery-monitoring-command-flags">
+<h3><code class="docutils literal notranslate"><span class="pre">OPENWISP_CELERY_MONITORING_COMMAND_FLAGS</span></code><a class="headerlink" href="#openwisp-celery-monitoring-command-flags" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Additional flags passed to the command that starts the
+celery worker for the <code class="docutils literal notranslate"><span class="pre">monitoring</span></code> queue. It can be used to configure
+different attributes of the celery worker (e.g. auto-scaling,
+concurrency, etc.). Refer to the <a class="reference external" href="https://docs.celeryq.dev/en/stable/userguide/workers.html#workers-guide">celery worker documentation</a>
+for more information on configurable properties.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">--concurrency=1</span></code>.</p></li>
+</ul>
+</section>
+<section id="openwisp-celery-monitoring-checks-command-flags">
+<h3><code class="docutils literal notranslate"><span class="pre">OPENWISP_CELERY_MONITORING_CHECKS_COMMAND_FLAGS</span></code><a class="headerlink" href="#openwisp-celery-monitoring-checks-command-flags" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Additional flags passed to the command that starts the
+celery worker for the <code class="docutils literal notranslate"><span class="pre">monitoring_checks</span></code> queue. It can be used to
+configure different attributes of the celery worker (e.g. auto-scaling,
+concurrency, etc.). Refer to the <a class="reference external" href="https://docs.celeryq.dev/en/stable/userguide/workers.html#workers-guide">celery worker documentation</a>
+for more information on configurable properties.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">--concurrency=1</span></code>.</p></li>
+</ul>
+</section>
+<section id="celery-service-network-mode">
+<h3><code class="docutils literal notranslate"><span class="pre">CELERY_SERVICE_NETWORK_MODE</span></code><a class="headerlink" href="#celery-service-network-mode" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Controls the Docker network mode for <cite>celery</cite> and
+<cite>celery_monitoring</cite> workers. Default <code class="docutils literal notranslate"><span class="pre">service:openvpn</span></code> shares the
+OpenVPN container's network namespace so workers can reach VPN-connected
+devices. Set to an empty string <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> to use the default bridge network
+when you need direct LAN access to devices (the auto-install script sets
+this to <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> if OpenVPN is disabled).</p></li>
+<li><p><strong>Valid Values:</strong> Docker network mode (e.g. <code class="docutils literal notranslate"><span class="pre">service:&lt;name&gt;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">host</span></code>) or empty string (<code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>).</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">service:openvpn</span></code></p></li>
+</ul>
+</section>
+<section id="openwisp-custom-openwrt-images">
+<h3><code class="docutils literal notranslate"><span class="pre">OPENWISP_CUSTOM_OPENWRT_IMAGES</span></code><a class="headerlink" href="#openwisp-custom-openwrt-images" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> JSON representation of the <a class="reference internal" href="../../firmware-upgrader/user/settings.html#openwisp-custom-openwrt-images"><span class="std std-ref">related Firmware
+Upgrader setting</span></a>.</p></li>
+<li><p><strong>Valid Values:</strong> JSON</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">[{&quot;name&quot;:</span> <span class="pre">&quot;Name1&quot;,&quot;label&quot;:</span> <span class="pre">&quot;Label1&quot;,&quot;boards&quot;:</span> <span class="pre">[&quot;TestA&quot;,</span>
+<span class="pre">&quot;TestB&quot;]},</span> <span class="pre">{&quot;name&quot;:</span> <span class="pre">&quot;Name2&quot;,&quot;label&quot;:</span> <span class="pre">&quot;Label2&quot;,&quot;boards&quot;:</span> <span class="pre">[&quot;TestC&quot;,</span>
+<span class="pre">&quot;TestD&quot;]}]</span></code></p></li>
+</ul>
+</section>
+<section id="metric-collection">
+<h3><code class="docutils literal notranslate"><span class="pre">METRIC_COLLECTION</span></code><a class="headerlink" href="#metric-collection" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether <a class="reference internal" href="../../utils/user/metric-collection.html"><span class="doc">Collection of Usage Metrics</span></a> is enabled
+or not.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code> in production and <code class="docutils literal notranslate"><span class="pre">False</span></code> in development mode.</p></li>
+</ul>
+</section>
+<section id="cron-delete-old-radacct">
+<h3><code class="docutils literal notranslate"><span class="pre">CRON_DELETE_OLD_RADACCT</span></code><a class="headerlink" href="#cron-delete-old-radacct" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> (Value in days) Deletes RADIUS accounting sessions
+older than given number of days.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">365</span></code>.</p></li>
+</ul>
+</section>
+<section id="cron-delete-old-postauth">
+<h3><code class="docutils literal notranslate"><span class="pre">CRON_DELETE_OLD_POSTAUTH</span></code><a class="headerlink" href="#cron-delete-old-postauth" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> (Value in days) Deletes RADIUS <em>post-auth</em> logs older
+than given number of days.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">365</span></code>.</p></li>
+</ul>
+</section>
+<section id="cron-cleanup-stale-radacct">
+<h3><code class="docutils literal notranslate"><span class="pre">CRON_CLEANUP_STALE_RADACCT</span></code><a class="headerlink" href="#cron-cleanup-stale-radacct" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> (Value in days) Closes stale RADIUS sessions that have
+remained open for the number of specified days.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">365</span></code>.</p></li>
+</ul>
+</section>
+<section id="cron-delete-old-radiusbatch-users">
+<h3><code class="docutils literal notranslate"><span class="pre">CRON_DELETE_OLD_RADIUSBATCH_USERS</span></code><a class="headerlink" href="#cron-delete-old-radiusbatch-users" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> (Value in days) Deletes users created by RADIUS batch
+operations whose accounts have been expired for longer than the given
+number of days.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">365</span></code>.</p></li>
+</ul>
+</section>
+<section id="debug-mode">
+<h3><code class="docutils literal notranslate"><span class="pre">DEBUG_MODE</span></code><a class="headerlink" href="#debug-mode" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Enable Django Debugging. Refer to the <a class="reference external" href="https://docs.djangoproject.com/en/4.2/ref/settings/#debug">related Django
+documentation section</a> for
+details.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code> in development mode and <code class="docutils literal notranslate"><span class="pre">False</span></code> in production.</p></li>
+</ul>
+</section>
+<section id="freeradius-debug-mode">
+<h3><code class="docutils literal notranslate"><span class="pre">FREERADIUS_DEBUG_MODE</span></code><a class="headerlink" href="#freeradius-debug-mode" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Starts FreeRADIUS in verbose debugging mode. This is
+independent from Django's <code class="docutils literal notranslate"><span class="pre">DEBUG_MODE</span></code> setting.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</section>
+<section id="redis-cache-url">
+<h3><code class="docutils literal notranslate"><span class="pre">REDIS_CACHE_URL</span></code><a class="headerlink" href="#redis-cache-url" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>All default Redis URLs use <code class="docutils literal notranslate"><span class="pre">rediss://</span></code> when <code class="docutils literal notranslate"><span class="pre">REDIS_USE_TLS</span></code> is
+<code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">redis://</span></code> otherwise.</p></li>
+<li><p><strong>Explanation:</strong> Allows freely redefining the Redis database URL for the
+Django cache.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong>
+<code class="docutils literal notranslate"><span class="pre">&lt;REDIS_SCHEME&gt;://&lt;REDIS_USER&gt;:&lt;REDIS_PASS&gt;&#64;&lt;REDIS_HOST&gt;:&lt;REDIS_PORT&gt;/0</span></code>.</p></li>
+</ul>
+</section>
+<section id="redis-sessions-url">
+<h3><code class="docutils literal notranslate"><span class="pre">REDIS_SESSIONS_URL</span></code><a class="headerlink" href="#redis-sessions-url" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Allows freely redefining the Redis database URL for
+Django sessions.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong>
+<code class="docutils literal notranslate"><span class="pre">&lt;REDIS_SCHEME&gt;://&lt;REDIS_USER&gt;:&lt;REDIS_PASS&gt;&#64;&lt;REDIS_HOST&gt;:&lt;REDIS_PORT&gt;/1</span></code>.</p></li>
+</ul>
+</section>
+<section id="channel-redis-url">
+<h3><code class="docutils literal notranslate"><span class="pre">CHANNEL_REDIS_URL</span></code><a class="headerlink" href="#channel-redis-url" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Allows freely redefining the Redis database URL for
+Django Channels' layer.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong>
+<code class="docutils literal notranslate"><span class="pre">&lt;REDIS_SCHEME&gt;://&lt;REDIS_USER&gt;:&lt;REDIS_PASS&gt;&#64;&lt;REDIS_HOST&gt;:&lt;REDIS_PORT&gt;/3</span></code>.</p></li>
+</ul>
+</section>
+<section id="celery-broker-url">
+<h3><code class="docutils literal notranslate"><span class="pre">CELERY_BROKER_URL</span></code><a class="headerlink" href="#celery-broker-url" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Allows freely redefining the Redis database URL for the
+Celery broker.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong>
+<code class="docutils literal notranslate"><span class="pre">&lt;REDIS_SCHEME&gt;://&lt;REDIS_USER&gt;:&lt;REDIS_PASS&gt;&#64;&lt;REDIS_HOST&gt;:&lt;REDIS_PORT&gt;/2</span></code>.</p></li>
+</ul>
+</section>
+<section id="django-log-level">
+<h3>DJANGO_LOG_LEVEL<a class="headerlink" href="#django-log-level" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Logging level for Django. Refer to the <a class="reference external" href="https://docs.djangoproject.com/en/4.2/topics/logging/#topic-logging-parts-loggers">related Django
+documentation section</a>
+for details.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">ERROR</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="enabled-openwisp-modules">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Enabled OpenWISP Modules</a><a class="headerlink" href="#enabled-openwisp-modules" title="Link to this heading"></a></h2>
+<p>These options allow to disable the optional OpenWISP modules.</p>
+<section id="use-openwisp-topology">
+<h3><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_TOPOLOGY</span></code><a class="headerlink" href="#use-openwisp-topology" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether the <a class="reference internal" href="../../network-topology/index.html"><span class="doc">Network Topology</span></a> module is enabled or not.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</section>
+<section id="use-openwisp-radius">
+<h3><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_RADIUS</span></code><a class="headerlink" href="#use-openwisp-radius" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether the <a class="reference internal" href="../../radius/index.html"><span class="doc">RADIUS</span></a> module is
+enabled or not.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</section>
+<section id="use-openwisp-firmware">
+<h3><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_FIRMWARE</span></code><a class="headerlink" href="#use-openwisp-firmware" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether the <a class="reference internal" href="../../firmware-upgrader/index.html"><span class="doc">Firmware Upgrader</span></a> module is enabled or not.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</section>
+<section id="use-openwisp-monitoring">
+<h3><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_MONITORING</span></code><a class="headerlink" href="#use-openwisp-monitoring" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether the <a class="reference internal" href="../../monitoring/index.html"><span class="doc">Monitoring</span></a>
+module is enabled or not.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="postgresql-database">
+<span id="docker-postgresql-db-settings"></span><h2><a class="toc-backref" href="#id11" role="doc-backlink">PostgreSQL Database</a><a class="headerlink" href="#postgresql-database" title="Link to this heading"></a></h2>
+<section id="db-name">
+<h3><code class="docutils literal notranslate"><span class="pre">DB_NAME</span></code><a class="headerlink" href="#db-name" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> The name of the database to use.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">openwisp_db</span></code>.</p></li>
+</ul>
+</section>
+<section id="db-user">
+<h3><code class="docutils literal notranslate"><span class="pre">DB_USER</span></code><a class="headerlink" href="#db-user" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> The username to use when connecting to the database.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">admin</span></code>.</p></li>
+</ul>
+</section>
+<section id="db-pass">
+<h3><code class="docutils literal notranslate"><span class="pre">DB_PASS</span></code><a class="headerlink" href="#db-pass" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> The password to use when connecting to the database.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">admin</span></code>.</p></li>
+</ul>
+</section>
+<section id="db-host">
+<span id="db-engine"></span><h3><code class="docutils literal notranslate"><span class="pre">DB_HOST</span></code><a class="headerlink" href="#db-host" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Host to be used when connecting to the database.
+<code class="docutils literal notranslate"><span class="pre">localhost</span></code> or empty string are not allowed.</p></li>
+<li><p><strong>Valid Values:</strong> A hostname or an IP address.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">postgres</span></code>.</p></li>
+</ul>
+</section>
+<section id="db-port">
+<h3><code class="docutils literal notranslate"><span class="pre">DB_PORT</span></code><a class="headerlink" href="#db-port" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> The port to use when connecting to the database.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">5432</span></code>.</p></li>
+</ul>
+</section>
+<section id="db-sslmode">
+<h3><code class="docutils literal notranslate"><span class="pre">DB_SSLMODE</span></code><a class="headerlink" href="#db-sslmode" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Postgresql SSLMode option.</p></li>
+<li><p><strong>Valid Values:</strong> Consult the related <a class="reference external" href="https://www.postgresql.org/docs/14/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS">PostgreSQL documentation</a>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">disable</span></code>.</p></li>
+</ul>
+</section>
+<section id="db-sslcert">
+<h3><code class="docutils literal notranslate"><span class="pre">DB_SSLCERT</span></code><a class="headerlink" href="#db-sslcert" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Path inside container to a valid client certificate.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</section>
+<section id="db-sslkey">
+<h3><code class="docutils literal notranslate"><span class="pre">DB_SSLKEY</span></code><a class="headerlink" href="#db-sslkey" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Path inside container to valid client private key.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</section>
+<section id="db-sslrootcert">
+<h3><code class="docutils literal notranslate"><span class="pre">DB_SSLROOTCERT</span></code><a class="headerlink" href="#db-sslrootcert" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Path inside container to a valid server certificate for
+the database.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</section>
+<section id="db-options">
+<h3><code class="docutils literal notranslate"><span class="pre">DB_OPTIONS</span></code><a class="headerlink" href="#db-options" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Additional database options to connect to the database.
+These options must be supported by your <a class="reference internal" href="#db-engine"><span class="std std-ref">DB_HOST</span></a>.</p></li>
+<li><p><strong>Valid Values:</strong> JSON.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code>.</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3><code class="docutils literal notranslate"><span class="pre">DB_ENGINE</span></code><a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> <a class="reference external" href="https://docs.djangoproject.com/en/4.2/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends">Django spatial database backend</a>
+to use.</p></li>
+<li><p><strong>Valid Values:</strong> Refer to <a class="reference external" href="https://docs.djangoproject.com/en/4.2/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends">Spatial Backends on the Django documentation</a>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">django.contrib.gis.db.backends.postgis</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="influxdb">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">InfluxDB</a><a class="headerlink" href="#influxdb" title="Link to this heading"></a></h2>
+<p>InfluxDB is the default time series database used by the <a class="reference internal" href="../../monitoring/index.html"><span class="doc">Monitoring
+module</span></a>.</p>
+<section id="influxdb-user">
+<h3><code class="docutils literal notranslate"><span class="pre">INFLUXDB_USER</span></code><a class="headerlink" href="#influxdb-user" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Username of InfluxDB user.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">admin</span></code>.</p></li>
+</ul>
+</section>
+<section id="influxdb-pass">
+<h3><code class="docutils literal notranslate"><span class="pre">INFLUXDB_PASS</span></code><a class="headerlink" href="#influxdb-pass" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Password for InfluxDB user.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">admin</span></code>.</p></li>
+</ul>
+</section>
+<section id="influxdb-name">
+<h3><code class="docutils literal notranslate"><span class="pre">INFLUXDB_NAME</span></code><a class="headerlink" href="#influxdb-name" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Name of InfluxDB database.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">openwisp</span></code>.</p></li>
+</ul>
+</section>
+<section id="influxdb-host">
+<h3><code class="docutils literal notranslate"><span class="pre">INFLUXDB_HOST</span></code><a class="headerlink" href="#influxdb-host" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Host to be used when connecting to influxDB. Values as
+<code class="docutils literal notranslate"><span class="pre">localhost</span></code> or empty string are not allowed.</p></li>
+<li><p><strong>Valid Values:</strong> any valid hostname or IP address.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">influxdb</span></code>.</p></li>
+</ul>
+</section>
+<section id="influxdb-port">
+<h3><code class="docutils literal notranslate"><span class="pre">INFLUXDB_PORT</span></code><a class="headerlink" href="#influxdb-port" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Port on which InfluxDB is listening to.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">8086</span></code>.</p></li>
+</ul>
+</section>
+<section id="influxdb-default-retention-policy">
+<h3><code class="docutils literal notranslate"><span class="pre">INFLUXDB_DEFAULT_RETENTION_POLICY</span></code><a class="headerlink" href="#influxdb-default-retention-policy" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> The default retention policy that applies to the time
+series data.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">26280h0m0s</span></code> (3 years).</p></li>
+</ul>
+</section>
+</section>
+<section id="postfix">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Postfix</a><a class="headerlink" href="#postfix" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Keep in mind that Postfix is optional. You can avoid running the
+Postfix container if you already have an external SMTP server
+available.</p>
+</div>
+<section id="postfix-allowed-sender-domains">
+<h3><code class="docutils literal notranslate"><span class="pre">POSTFIX_ALLOWED_SENDER_DOMAINS</span></code><a class="headerlink" href="#postfix-allowed-sender-domains" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Due to in-built spam protection in Postfix you will
+need to specify sender domains.</p></li>
+<li><p><strong>Valid Values:</strong> Any valid domain name.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">example.org</span></code>.</p></li>
+</ul>
+</section>
+<section id="postfix-myhostname">
+<h3><code class="docutils literal notranslate"><span class="pre">POSTFIX_MYHOSTNAME</span></code><a class="headerlink" href="#postfix-myhostname" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> You may configure a specific hostname that the SMTP
+server will use to identify itself.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">example.org</span></code>.</p></li>
+</ul>
+</section>
+<section id="postfix-destination">
+<h3><code class="docutils literal notranslate"><span class="pre">POSTFIX_DESTINATION</span></code><a class="headerlink" href="#postfix-destination" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Destinations of the postfix service.</p></li>
+<li><p><strong>Valid Values:</strong> Any valid domain name.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">$mydomain,</span> <span class="pre">$myhostname</span></code>.</p></li>
+</ul>
+</section>
+<section id="postfix-message-size-limit">
+<h3><code class="docutils literal notranslate"><span class="pre">POSTFIX_MESSAGE_SIZE_LIMIT</span></code><a class="headerlink" href="#postfix-message-size-limit" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> By default, this limit is set to 0 (zero), which means
+unlimited. Why would you want to set this? Well, this is especially
+useful in relation with <code class="docutils literal notranslate"><span class="pre">RELAYHOST</span></code> setting.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">26214400</span></code></p></li>
+</ul>
+</section>
+<section id="postfix-mynetworks">
+<h3><code class="docutils literal notranslate"><span class="pre">POSTFIX_MYNETWORKS</span></code><a class="headerlink" href="#postfix-mynetworks" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Postfix is exposed only in <code class="docutils literal notranslate"><span class="pre">mynetworks</span></code> to prevent
+any issues with this postfix being inadvertently exposed on the
+internet.</p></li>
+<li><p><strong>Valid Values:</strong> space separated IP Networks.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">127.0.0.0/8</span> <span class="pre">[::ffff:127.0.0.0]/104</span> <span class="pre">[::1]/128</span></code>.</p></li>
+</ul>
+</section>
+<section id="postfix-relayhost-tls-level">
+<h3><code class="docutils literal notranslate"><span class="pre">POSTFIX_RELAYHOST_TLS_LEVEL</span></code><a class="headerlink" href="#postfix-relayhost-tls-level" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Define relay host TLS connection level.</p></li>
+<li><p><strong>Valid Values:</strong> <a class="reference external" href="http://www.postfix.org/postconf.5.html#smtp_tls_security_level">See list</a>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">may</span></code>.</p></li>
+</ul>
+</section>
+<section id="postfix-relayhost">
+<h3><code class="docutils literal notranslate"><span class="pre">POSTFIX_RELAYHOST</span></code><a class="headerlink" href="#postfix-relayhost" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Host that relays your mails.</p></li>
+<li><p><strong>Valid Values:</strong> any valid IP address or domain name.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">[smtp.gmail.com]:587</span></code>.</p></li>
+</ul>
+</section>
+<section id="postfix-relayhost-username">
+<h3><code class="docutils literal notranslate"><span class="pre">POSTFIX_RELAYHOST_USERNAME</span></code><a class="headerlink" href="#postfix-relayhost-username" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Username for the relay server.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">example&#64;example.com</span></code>.</p></li>
+</ul>
+</section>
+<section id="postfix-relayhost-password">
+<h3><code class="docutils literal notranslate"><span class="pre">POSTFIX_RELAYHOST_PASSWORD</span></code><a class="headerlink" href="#postfix-relayhost-password" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Login password for the relay server.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">example</span></code>.</p></li>
+</ul>
+</section>
+<section id="postfix-debug-mynetworks">
+<h3><code class="docutils literal notranslate"><span class="pre">POSTFIX_DEBUG_MYNETWORKS</span></code><a class="headerlink" href="#postfix-debug-mynetworks" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Set debug_peer_list for given list of networks.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">127.0.0.0/8</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="uwsgi">
+<span id="docker-uwsgi-env"></span><h2><a class="toc-backref" href="#id14" role="doc-backlink">uWSGI</a><a class="headerlink" href="#uwsgi" title="Link to this heading"></a></h2>
+<section id="uwsgi-processes">
+<h3><code class="docutils literal notranslate"><span class="pre">UWSGI_PROCESSES</span></code><a class="headerlink" href="#uwsgi-processes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Number of uWSGI process to spawn.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
+</ul>
+</section>
+<section id="uwsgi-threads">
+<h3><code class="docutils literal notranslate"><span class="pre">UWSGI_THREADS</span></code><a class="headerlink" href="#uwsgi-threads" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Number of threads each uWSGI process will have.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
+</ul>
+</section>
+<section id="uwsgi-listen">
+<h3><code class="docutils literal notranslate"><span class="pre">UWSGI_LISTEN</span></code><a class="headerlink" href="#uwsgi-listen" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Value of the listen queue of uWSGI.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="nginx">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Nginx</a><a class="headerlink" href="#nginx" title="Link to this heading"></a></h2>
+<section id="nginx-http2">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_HTTP2</span></code><a class="headerlink" href="#nginx-http2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Used by nginx to enable http2. Refer to the <a class="reference external" href="https://www.nginx.com/blog/http2-module-nginx/#overview">related
+Nginx documentation section</a> for
+details.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">http2</span></code> or empty string.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">http2</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-client-body-size">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_CLIENT_BODY_SIZE</span></code><a class="headerlink" href="#nginx-client-body-size" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Client body size. Refer to the <a class="reference external" href="http://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size">related Nginx
+documentation section</a>
+for details.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">30</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-ip6-string">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_IP6_STRING</span></code><a class="headerlink" href="#nginx-ip6-string" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Nginx listen on IPv6 for SSL connection. You can either
+enter a valid nginx statement or leave this value empty.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">listen</span> <span class="pre">[::]:443</span> <span class="pre">ssl</span> <span class="pre">http2;</span></code> or empty string.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty string).</p></li>
+</ul>
+</section>
+<section id="nginx-ip6-80-string">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_IP6_80_STRING</span></code><a class="headerlink" href="#nginx-ip6-80-string" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Nginx listen on IPv6 connection. You can either enter a
+valid nginx statement or leave this value empty.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">listen</span> <span class="pre">[::]:80;</span></code> or empty string.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty string).</p></li>
+</ul>
+</section>
+<section id="nginx-admin-allow-network">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_ADMIN_ALLOW_NETWORK</span></code><a class="headerlink" href="#nginx-admin-allow-network" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> IP address allowed to access OpenWISP services.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">all</span></code>, IP network.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">12.213.43.54/16</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">all</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-server-name-hash-bucket">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_SERVER_NAME_HASH_BUCKET</span></code><a class="headerlink" href="#nginx-server-name-hash-bucket" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Define the <a class="reference external" href="http://nginx.org/en/docs/hash.html">Nginx domain hash bucket size</a>. Values should be only in powers
+of 2.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">32</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-ssl-config">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_SSL_CONFIG</span></code><a class="headerlink" href="#nginx-ssl-config" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Additional nginx configurations. You can add any valid
+server block element here. As an example <code class="docutils literal notranslate"><span class="pre">index</span></code> option is configured.
+You may add options to this string or leave this variable blank. This
+variable is only applicable when <code class="docutils literal notranslate"><span class="pre">SSL_CERT_MODE</span></code> is <code class="docutils literal notranslate"><span class="pre">Yes</span></code> or
+<code class="docutils literal notranslate"><span class="pre">SelfSigned</span></code>.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">index</span> <span class="pre">index.html</span> <span class="pre">index.htm;</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty string).</p></li>
+</ul>
+</section>
+<section id="nginx-80-config">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_80_CONFIG</span></code><a class="headerlink" href="#nginx-80-config" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Additional nginx configurations. You can add any valid
+server block element here. As an example <code class="docutils literal notranslate"><span class="pre">index</span></code> option is configured.
+You may add options to this string or leave this variable blank. This
+variable is only applicable when <code class="docutils literal notranslate"><span class="pre">SSL_CERT_MODE</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">index</span> <span class="pre">index.html</span> <span class="pre">index.htm;</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty string).</p></li>
+</ul>
+</section>
+<section id="nginx-ssl-port">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_SSL_PORT</span></code><a class="headerlink" href="#nginx-ssl-port" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Nginx container external HTTPS port. Change if, for
+example, OpenWISP runs behind a reverse proxy listening on port 443 on
+the same host. Non-default ports are incompatible with
+<code class="docutils literal notranslate"><span class="pre">SSL_CERT_MODE=Yes</span></code>.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">INTEGER</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">443</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-port">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_PORT</span></code><a class="headerlink" href="#nginx-port" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Nginx container external HTTP port. Change if, for
+example, OpenWISP runs behind a reverse proxy listening on port 80 on
+the same host. Non-default ports are incompatible with
+<code class="docutils literal notranslate"><span class="pre">SSL_CERT_MODE=Yes</span></code>.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">INTEGER</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">80</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-gzip-switch">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_GZIP_SWITCH</span></code><a class="headerlink" href="#nginx-gzip-switch" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Turn on/off Nginx GZIP.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">on</span></code>, <code class="docutils literal notranslate"><span class="pre">off</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">on</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-gzip-level">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_GZIP_LEVEL</span></code><a class="headerlink" href="#nginx-gzip-level" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Sets a gzip compression level of a response. Acceptable
+values are in the range from 1 to 9.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">INTEGER</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">6</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-gzip-proxied">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_GZIP_PROXIED</span></code><a class="headerlink" href="#nginx-gzip-proxied" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Enables or disables gzipping of responses for proxied
+requests depending on the request and response.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">off</span></code>, <code class="docutils literal notranslate"><span class="pre">expired</span></code>, <code class="docutils literal notranslate"><span class="pre">no-cache</span></code>, <code class="docutils literal notranslate"><span class="pre">no-store</span></code> |
+<code class="docutils literal notranslate"><span class="pre">private</span></code>, <code class="docutils literal notranslate"><span class="pre">no_last_modified</span></code>, <code class="docutils literal notranslate"><span class="pre">no_etag</span></code>, <code class="docutils literal notranslate"><span class="pre">auth</span></code>, <code class="docutils literal notranslate"><span class="pre">any</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">any</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-gzip-min-length">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_GZIP_MIN_LENGTH</span></code><a class="headerlink" href="#nginx-gzip-min-length" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Sets the minimum length of a response that will be
+gzipped. The length is determined only from the &quot;Content-Length&quot;
+response header field.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">1000</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-gzip-types">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_GZIP_TYPES</span></code><a class="headerlink" href="#nginx-gzip-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Enables gzipping of responses for the specified MIME
+types in addition to &quot;text/html&quot;. The special value &quot;*&quot; matches any
+MIME type. Responses with the &quot;text/html&quot; type are always compressed.</p></li>
+<li><p><strong>Valid Values:</strong> MIME type</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">text/plain</span> <span class="pre">image/svg+xml</span> <span class="pre">application/json</span>
+<span class="pre">application/javascript</span> <span class="pre">text/xml</span> <span class="pre">text/css</span> <span class="pre">application/xml</span>
+<span class="pre">application/x-font-ttf</span> <span class="pre">font/opentype</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">\*</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-brotli-switch">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_BROTLI_SWITCH</span></code><a class="headerlink" href="#nginx-brotli-switch" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Enables or disables serving pre-compressed django
+static files using <code class="docutils literal notranslate"><span class="pre">Brotli</span></code> algorithm.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">on</span></code>, <code class="docutils literal notranslate"><span class="pre">off</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">on</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-https-allowed-ips">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_HTTPS_ALLOWED_IPS</span></code><a class="headerlink" href="#nginx-https-allowed-ips" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Allow these IP addresses to access the website over
+http when <code class="docutils literal notranslate"><span class="pre">SSL_CERT_MODE</span></code> is set to <code class="docutils literal notranslate"><span class="pre">Yes</span></code> .</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">all</span></code>, any valid IP address.</p></li>
+<li><p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">12.213.43.54/16</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">all</span></code>.</p></li>
+</ul>
+</section>
+<section id="nginx-http-allow">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_HTTP_ALLOW</span></code><a class="headerlink" href="#nginx-http-allow" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Controls whether Nginx serves the applications directly
+over unencrypted HTTP in addition to HTTPS. When set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, HTTP
+requests are redirected to HTTPS. When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, Nginx serves the
+applications over HTTP, subject to <code class="docutils literal notranslate"><span class="pre">NGINX_HTTPS_ALLOWED_IPS</span></code>. This
+setting applies only when <code class="docutils literal notranslate"><span class="pre">SSL_CERT_MODE</span></code> is <code class="docutils literal notranslate"><span class="pre">Yes</span></code> or
+<code class="docutils literal notranslate"><span class="pre">SelfSigned</span></code>. When <code class="docutils literal notranslate"><span class="pre">SSL_CERT_MODE</span></code> is <code class="docutils literal notranslate"><span class="pre">No</span></code> or <code class="docutils literal notranslate"><span class="pre">External</span></code>, Nginx
+serves the HTTP configuration regardless of this setting's value.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code> in development mode and <code class="docutils literal notranslate"><span class="pre">False</span></code> in production.</p></li>
+</ul>
+</section>
+<section id="nginx-custom-file">
+<h3><code class="docutils literal notranslate"><span class="pre">NGINX_CUSTOM_FILE</span></code><a class="headerlink" href="#nginx-custom-file" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> If you have a custom configuration file mounted, set
+this to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</section>
+<section id="ningx-real-remote-addr">
+<h3><code class="docutils literal notranslate"><span class="pre">NINGX_REAL_REMOTE_ADDR</span></code><a class="headerlink" href="#ningx-real-remote-addr" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> The nginx header to get the value of the real IP
+address of Access points. Example if a reverse proxy is used in your
+cluster (Example if you are using an Ingress), then the real IP of the
+AP is most likely the <code class="docutils literal notranslate"><span class="pre">$http_x_forwarded_for</span></code>. If
+<code class="docutils literal notranslate"><span class="pre">$http_x_forwarded_for</span></code> returns a list, you can use <code class="docutils literal notranslate"><span class="pre">$real_ip</span></code> for
+getting first element of the list.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">$remote_addr</span></code>, <code class="docutils literal notranslate"><span class="pre">$http_x_forwarded_for</span></code>,
+<code class="docutils literal notranslate"><span class="pre">$realip_remote_addr</span></code>, <code class="docutils literal notranslate"><span class="pre">$real_ip</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">$real_ip</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="openvpn">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">OpenVPN</a><a class="headerlink" href="#openvpn" title="Link to this heading"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">VPN_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">VPN_CLIENT_NAME</span></code> are deprecated. New installations
+without these variables create a VPN named <code class="docutils literal notranslate"><span class="pre">default</span></code> and a VPN
+client template named <code class="docutils literal notranslate"><span class="pre">default-management-vpn</span></code>.</p>
+</div>
+<section id="vpn-name">
+<h3><code class="docutils literal notranslate"><span class="pre">VPN_NAME</span></code><a class="headerlink" href="#vpn-name" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Compatibility:</strong> When set during initial setup, this variable names
+the created VPN. It is ignored when an existing VPN is selected.</p></li>
+</ul>
+</section>
+<section id="vpn-client-name">
+<h3><code class="docutils literal notranslate"><span class="pre">VPN_CLIENT_NAME</span></code><a class="headerlink" href="#vpn-client-name" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Compatibility:</strong> When set during initial setup, this variable names
+the created template. Existing templates are identified by a persisted
+UUID, so changing this variable later has no effect.</p></li>
+</ul>
+</section>
+</section>
+<section id="topology">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Topology</a><a class="headerlink" href="#topology" title="Link to this heading"></a></h2>
+<section id="topology-update-interval">
+<h3><code class="docutils literal notranslate"><span class="pre">TOPOLOGY_UPDATE_INTERVAL</span></code><a class="headerlink" href="#topology-update-interval" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Interval in minutes to upload the topology data to the
+OpenWISP,</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">3</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="x509-certificates">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">X509 Certificates</a><a class="headerlink" href="#x509-certificates" title="Link to this heading"></a></h2>
+<section id="x509-name-ca">
+<h3><code class="docutils literal notranslate"><span class="pre">X509_NAME_CA</span></code><a class="headerlink" href="#x509-name-ca" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Name of the default certificate authority visible on
+the OpenWISP dashboard.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">default</span></code>.</p></li>
+</ul>
+</section>
+<section id="x509-name-cert">
+<h3><code class="docutils literal notranslate"><span class="pre">X509_NAME_CERT</span></code><a class="headerlink" href="#x509-name-cert" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Name of the default certificate visible on the OpenWISP
+dashboard.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">default</span></code>.</p></li>
+</ul>
+</section>
+<section id="x509-country-code">
+<h3><code class="docutils literal notranslate"><span class="pre">X509_COUNTRY_CODE</span></code><a class="headerlink" href="#x509-country-code" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> ISO code of the country of issuance of the certificate.</p></li>
+<li><p><strong>Valid Values:</strong> Country code, see list <a class="reference external" href="https://countrycode.org/">here</a>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">CH</span></code>.</p></li>
+</ul>
+</section>
+<section id="x509-state">
+<h3><code class="docutils literal notranslate"><span class="pre">X509_STATE</span></code><a class="headerlink" href="#x509-state" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Name of the state / province of issuance of the
+certificate.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">Geneva</span></code>.</p></li>
+</ul>
+</section>
+<section id="x509-city">
+<h3><code class="docutils literal notranslate"><span class="pre">X509_CITY</span></code><a class="headerlink" href="#x509-city" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Name of the city of issuance of the certificate.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">Geneva</span></code>.</p></li>
+</ul>
+</section>
+<section id="x509-organization-name">
+<h3><code class="docutils literal notranslate"><span class="pre">X509_ORGANIZATION_NAME</span></code><a class="headerlink" href="#x509-organization-name" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Name of the organization issuing the certificate.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">OpenWISP</span></code>.</p></li>
+</ul>
+</section>
+<section id="x509-organization-unit-name">
+<h3><code class="docutils literal notranslate"><span class="pre">X509_ORGANIZATION_UNIT_NAME</span></code><a class="headerlink" href="#x509-organization-unit-name" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Name of the unit of the organization issuing the
+certificate.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">OpenWISP</span></code>.</p></li>
+</ul>
+</section>
+<section id="x509-email">
+<h3><code class="docutils literal notranslate"><span class="pre">X509_EMAIL</span></code><a class="headerlink" href="#x509-email" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Organization email address that'll be available to view
+in the certificate.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">certificate&#64;example.com</span></code>.</p></li>
+</ul>
+</section>
+<section id="x509-common-name">
+<h3><code class="docutils literal notranslate"><span class="pre">X509_COMMON_NAME</span></code><a class="headerlink" href="#x509-common-name" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Common name for the CA and certificate.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">OpenWISP</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="misc-services">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">Misc Services</a><a class="headerlink" href="#misc-services" title="Link to this heading"></a></h2>
+<section id="image-owner">
+<h3><code class="docutils literal notranslate"><span class="pre">IMAGE_OWNER</span></code><a class="headerlink" href="#image-owner" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Docker registry namespace for OpenWISP images. Change
+this only if you are using custom-built images or a private registry.</p></li>
+<li><p><strong>Valid Values:</strong> A valid Docker registry namespace.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">openwisp</span></code></p></li>
+</ul>
+</section>
+<section id="redis-host">
+<h3><code class="docutils literal notranslate"><span class="pre">REDIS_HOST</span></code><a class="headerlink" href="#redis-host" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Host to establish redis connection.</p></li>
+<li><p><strong>Valid Values:</strong> A valid hostname or IP address.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">redis</span></code>.</p></li>
+</ul>
+</section>
+<section id="redis-port">
+<h3><code class="docutils literal notranslate"><span class="pre">REDIS_PORT</span></code><a class="headerlink" href="#redis-port" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Port to establish redis connection.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">6379</span></code>.</p></li>
+</ul>
+</section>
+<section id="redis-user">
+<h3><code class="docutils literal notranslate"><span class="pre">REDIS_USER</span></code><a class="headerlink" href="#redis-user" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Redis username, optional.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty string).</p></li>
+</ul>
+</section>
+<section id="redis-pass">
+<h3><code class="docutils literal notranslate"><span class="pre">REDIS_PASS</span></code><a class="headerlink" href="#redis-pass" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Redis password, optional.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</section>
+<section id="redis-use-tls">
+<h3><code class="docutils literal notranslate"><span class="pre">REDIS_USE_TLS</span></code><a class="headerlink" href="#redis-use-tls" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Whether to use TLS for redis connection.</p></li>
+<li><p><strong>Valid Values:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</section>
+<section id="dashboard-app-service">
+<h3><code class="docutils literal notranslate"><span class="pre">DASHBOARD_APP_SERVICE</span></code><a class="headerlink" href="#dashboard-app-service" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Host to establish OpenWISP dashboard connection.</p></li>
+<li><p><strong>Valid Values:</strong> Any hostname or IP address.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">dashboard</span></code>.</p></li>
+</ul>
+</section>
+<section id="api-app-service">
+<h3><code class="docutils literal notranslate"><span class="pre">API_APP_SERVICE</span></code><a class="headerlink" href="#api-app-service" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Host to establish OpenWISP api connection.</p></li>
+<li><p><strong>Valid Values:</strong> Any hostname or IP address.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">api</span></code>.</p></li>
+</ul>
+</section>
+<section id="dashboard-app-port">
+<h3><code class="docutils literal notranslate"><span class="pre">DASHBOARD_APP_PORT</span></code><a class="headerlink" href="#dashboard-app-port" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> The port on which nginx tries to get the OpenWISP
+dashboard container. Don't Change unless you know what you are doing.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">8000</span></code>.</p></li>
+</ul>
+</section>
+<section id="api-app-port">
+<h3><code class="docutils literal notranslate"><span class="pre">API_APP_PORT</span></code><a class="headerlink" href="#api-app-port" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> The port on which nginx tries to get the OpenWISP api
+container. Don't Change unless you know what you are doing.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">8001</span></code>.</p></li>
+</ul>
+</section>
+<section id="websocket-app-port">
+<h3><code class="docutils literal notranslate"><span class="pre">WEBSOCKET_APP_PORT</span></code><a class="headerlink" href="#websocket-app-port" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> The port on which nginx tries to get the OpenWISP
+websocket container. Don't Change unless you know what you are doing.</p></li>
+<li><p><strong>Valid Values:</strong> INTEGER.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">8002</span></code>.</p></li>
+</ul>
+</section>
+<section id="dashboard-internal">
+<h3><code class="docutils literal notranslate"><span class="pre">DASHBOARD_INTERNAL</span></code><a class="headerlink" href="#dashboard-internal" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Internal dashboard domain to reach dashboard from other
+containers.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">dashboard.internal</span></code>.</p></li>
+</ul>
+</section>
+<section id="api-internal">
+<h3><code class="docutils literal notranslate"><span class="pre">API_INTERNAL</span></code><a class="headerlink" href="#api-internal" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Internal api domain to reach api from other containers.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">api.internal</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="nfs-server">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">NFS Server</a><a class="headerlink" href="#nfs-server" title="Link to this heading"></a></h2>
+<section id="export-dir">
+<h3><code class="docutils literal notranslate"><span class="pre">EXPORT_DIR</span></code><a class="headerlink" href="#export-dir" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> Directory to be exported by the NFS server. Don't
+change this unless you know what you are doing.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">/exports</span></code>.</p></li>
+</ul>
+</section>
+<section id="export-opts">
+<h3><code class="docutils literal notranslate"><span class="pre">EXPORT_OPTS</span></code><a class="headerlink" href="#export-opts" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Explanation:</strong> NFS export options for the directory in <code class="docutils literal notranslate"><span class="pre">EXPORT_DIR</span></code>
+variable.</p></li>
+<li><p><strong>Valid Values:</strong> STRING.</p></li>
+<li><p><strong>Default:</strong>
+<code class="docutils literal notranslate"><span class="pre">10.0.0.0/8(rw,fsid=0,insecure,no_root_squash,no_subtree_check,sync)</span></code>.</p></li>
+</ul>
+</section>
+<section id="collectstatic-when-deps-change">
+<h3><code class="docutils literal notranslate"><span class="pre">COLLECTSTATIC_WHEN_DEPS_CHANGE</span></code><a class="headerlink" href="#collectstatic-when-deps-change" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Description:</strong> Runs <code class="docutils literal notranslate"><span class="pre">collectstatic</span></code> at container startup only if
+Python dependencies have changed. Set to <code class="docutils literal notranslate"><span class="pre">false</span></code> if you're using the
+development version of the OpenWISP python modules.</p></li>
+<li><p><strong>Accepted Values:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code>, <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+    </div><div class="flex justify-between items-center pt-6 mt-12 border-t border-border gap-4">
+    <div class="mr-auto">
+      <a href="architecture.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="mr-2 h-4 w-4">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Architecture
+      </a>
+    </div>
+    <div class="ml-auto">
+      <a href="customization.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        Advanced Customization
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="ml-2 h-4 w-4">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+</div></div><aside id="right-sidebar" class="hidden text-sm xl:block">
+  <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
+    <ul>
+<li><a class="reference internal" href="#essential">Essential</a><ul>
+<li><a class="reference internal" href="#openwisp-version"><code class="docutils literal notranslate"><span class="pre">OPENWISP_VERSION</span></code></a></li>
+<li><a class="reference internal" href="#dashboard-domain"><code class="docutils literal notranslate"><span class="pre">DASHBOARD_DOMAIN</span></code></a></li>
+<li><a class="reference internal" href="#api-domain"><code class="docutils literal notranslate"><span class="pre">API_DOMAIN</span></code></a></li>
+<li><a class="reference internal" href="#vpn-domain"><code class="docutils literal notranslate"><span class="pre">VPN_DOMAIN</span></code></a></li>
+<li><a class="reference internal" href="#tz"><code class="docutils literal notranslate"><span class="pre">TZ</span></code></a></li>
+<li><a class="reference internal" href="#dev-mode"><code class="docutils literal notranslate"><span class="pre">DEV_MODE</span></code></a></li>
+<li><a class="reference internal" href="#ssl-cert-mode"><code class="docutils literal notranslate"><span class="pre">SSL_CERT_MODE</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security">Security</a><ul>
+<li><a class="reference internal" href="#django-secret-key"><code class="docutils literal notranslate"><span class="pre">DJANGO_SECRET_KEY</span></code></a></li>
+<li><a class="reference internal" href="#django-allowed-hosts"><code class="docutils literal notranslate"><span class="pre">DJANGO_ALLOWED_HOSTS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-radius-freeradius-allowed-hosts"><code class="docutils literal notranslate"><span class="pre">OPENWISP_RADIUS_FREERADIUS_ALLOWED_HOSTS</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openwisp">OpenWISP</a><ul>
+<li><a class="reference internal" href="#email-host"><code class="docutils literal notranslate"><span class="pre">EMAIL_HOST</span></code></a></li>
+<li><a class="reference internal" href="#email-django-default"><code class="docutils literal notranslate"><span class="pre">EMAIL_DJANGO_DEFAULT</span></code></a></li>
+<li><a class="reference internal" href="#email-host-port"><code class="docutils literal notranslate"><span class="pre">EMAIL_HOST_PORT</span></code></a></li>
+<li><a class="reference internal" href="#email-host-user"><code class="docutils literal notranslate"><span class="pre">EMAIL_HOST_USER</span></code></a></li>
+<li><a class="reference internal" href="#email-host-password"><code class="docutils literal notranslate"><span class="pre">EMAIL_HOST_PASSWORD</span></code></a></li>
+<li><a class="reference internal" href="#email-host-tls"><code class="docutils literal notranslate"><span class="pre">EMAIL_HOST_TLS</span></code></a></li>
+<li><a class="reference internal" href="#email-timeout"><code class="docutils literal notranslate"><span class="pre">EMAIL_TIMEOUT</span></code></a></li>
+<li><a class="reference internal" href="#email-backend"><code class="docutils literal notranslate"><span class="pre">EMAIL_BACKEND</span></code></a></li>
+<li><a class="reference internal" href="#django-x509-default-cert-validity"><code class="docutils literal notranslate"><span class="pre">DJANGO_X509_DEFAULT_CERT_VALIDITY</span></code></a></li>
+<li><a class="reference internal" href="#django-x509-default-ca-validity"><code class="docutils literal notranslate"><span class="pre">DJANGO_X509_DEFAULT_CA_VALIDITY</span></code></a></li>
+<li><a class="reference internal" href="#django-cors-hosts"><code class="docutils literal notranslate"><span class="pre">DJANGO_CORS_HOSTS</span></code></a></li>
+<li><a class="reference internal" href="#django-language-code"><code class="docutils literal notranslate"><span class="pre">DJANGO_LANGUAGE_CODE</span></code></a></li>
+<li><a class="reference internal" href="#django-sentry-dsn"><code class="docutils literal notranslate"><span class="pre">DJANGO_SENTRY_DSN</span></code></a></li>
+<li><a class="reference internal" href="#django-leafet-center-x-axis"><code class="docutils literal notranslate"><span class="pre">DJANGO_LEAFET_CENTER_X_AXIS</span></code></a></li>
+<li><a class="reference internal" href="#django-leafet-center-y-axis"><code class="docutils literal notranslate"><span class="pre">DJANGO_LEAFET_CENTER_Y_AXIS</span></code></a></li>
+<li><a class="reference internal" href="#django-leafet-zoom"><code class="docutils literal notranslate"><span class="pre">DJANGO_LEAFET_ZOOM</span></code></a></li>
+<li><a class="reference internal" href="#django-websocket-host"><code class="docutils literal notranslate"><span class="pre">DJANGO_WEBSOCKET_HOST</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-geocoding-check"><code class="docutils literal notranslate"><span class="pre">OPENWISP_GEOCODING_CHECK</span></code></a></li>
+<li><a class="reference internal" href="#use-openwisp-celery-task-routes-defaults"><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_CELERY_TASK_ROUTES_DEFAULTS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-celery-command-flags"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CELERY_COMMAND_FLAGS</span></code></a></li>
+<li><a class="reference internal" href="#use-openwisp-celery-network"><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_CELERY_NETWORK</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-celery-network-command-flags"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CELERY_NETWORK_COMMAND_FLAGS</span></code></a></li>
+<li><a class="reference internal" href="#use-openwisp-celery-firmware"><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_CELERY_FIRMWARE</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-celery-firmware-command-flags"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CELERY_FIRMWARE_COMMAND_FLAGS</span></code></a></li>
+<li><a class="reference internal" href="#use-openwisp-celery-monitoring"><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_CELERY_MONITORING</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-celery-monitoring-command-flags"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CELERY_MONITORING_COMMAND_FLAGS</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-celery-monitoring-checks-command-flags"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CELERY_MONITORING_CHECKS_COMMAND_FLAGS</span></code></a></li>
+<li><a class="reference internal" href="#celery-service-network-mode"><code class="docutils literal notranslate"><span class="pre">CELERY_SERVICE_NETWORK_MODE</span></code></a></li>
+<li><a class="reference internal" href="#openwisp-custom-openwrt-images"><code class="docutils literal notranslate"><span class="pre">OPENWISP_CUSTOM_OPENWRT_IMAGES</span></code></a></li>
+<li><a class="reference internal" href="#metric-collection"><code class="docutils literal notranslate"><span class="pre">METRIC_COLLECTION</span></code></a></li>
+<li><a class="reference internal" href="#cron-delete-old-radacct"><code class="docutils literal notranslate"><span class="pre">CRON_DELETE_OLD_RADACCT</span></code></a></li>
+<li><a class="reference internal" href="#cron-delete-old-postauth"><code class="docutils literal notranslate"><span class="pre">CRON_DELETE_OLD_POSTAUTH</span></code></a></li>
+<li><a class="reference internal" href="#cron-cleanup-stale-radacct"><code class="docutils literal notranslate"><span class="pre">CRON_CLEANUP_STALE_RADACCT</span></code></a></li>
+<li><a class="reference internal" href="#cron-delete-old-radiusbatch-users"><code class="docutils literal notranslate"><span class="pre">CRON_DELETE_OLD_RADIUSBATCH_USERS</span></code></a></li>
+<li><a class="reference internal" href="#debug-mode"><code class="docutils literal notranslate"><span class="pre">DEBUG_MODE</span></code></a></li>
+<li><a class="reference internal" href="#freeradius-debug-mode"><code class="docutils literal notranslate"><span class="pre">FREERADIUS_DEBUG_MODE</span></code></a></li>
+<li><a class="reference internal" href="#redis-cache-url"><code class="docutils literal notranslate"><span class="pre">REDIS_CACHE_URL</span></code></a></li>
+<li><a class="reference internal" href="#redis-sessions-url"><code class="docutils literal notranslate"><span class="pre">REDIS_SESSIONS_URL</span></code></a></li>
+<li><a class="reference internal" href="#channel-redis-url"><code class="docutils literal notranslate"><span class="pre">CHANNEL_REDIS_URL</span></code></a></li>
+<li><a class="reference internal" href="#celery-broker-url"><code class="docutils literal notranslate"><span class="pre">CELERY_BROKER_URL</span></code></a></li>
+<li><a class="reference internal" href="#django-log-level">DJANGO_LOG_LEVEL</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#enabled-openwisp-modules">Enabled OpenWISP Modules</a><ul>
+<li><a class="reference internal" href="#use-openwisp-topology"><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_TOPOLOGY</span></code></a></li>
+<li><a class="reference internal" href="#use-openwisp-radius"><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_RADIUS</span></code></a></li>
+<li><a class="reference internal" href="#use-openwisp-firmware"><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_FIRMWARE</span></code></a></li>
+<li><a class="reference internal" href="#use-openwisp-monitoring"><code class="docutils literal notranslate"><span class="pre">USE_OPENWISP_MONITORING</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#postgresql-database">PostgreSQL Database</a><ul>
+<li><a class="reference internal" href="#db-name"><code class="docutils literal notranslate"><span class="pre">DB_NAME</span></code></a></li>
+<li><a class="reference internal" href="#db-user"><code class="docutils literal notranslate"><span class="pre">DB_USER</span></code></a></li>
+<li><a class="reference internal" href="#db-pass"><code class="docutils literal notranslate"><span class="pre">DB_PASS</span></code></a></li>
+<li><a class="reference internal" href="#db-host"><code class="docutils literal notranslate"><span class="pre">DB_HOST</span></code></a></li>
+<li><a class="reference internal" href="#db-port"><code class="docutils literal notranslate"><span class="pre">DB_PORT</span></code></a></li>
+<li><a class="reference internal" href="#db-sslmode"><code class="docutils literal notranslate"><span class="pre">DB_SSLMODE</span></code></a></li>
+<li><a class="reference internal" href="#db-sslcert"><code class="docutils literal notranslate"><span class="pre">DB_SSLCERT</span></code></a></li>
+<li><a class="reference internal" href="#db-sslkey"><code class="docutils literal notranslate"><span class="pre">DB_SSLKEY</span></code></a></li>
+<li><a class="reference internal" href="#db-sslrootcert"><code class="docutils literal notranslate"><span class="pre">DB_SSLROOTCERT</span></code></a></li>
+<li><a class="reference internal" href="#db-options"><code class="docutils literal notranslate"><span class="pre">DB_OPTIONS</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">DB_ENGINE</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#influxdb">InfluxDB</a><ul>
+<li><a class="reference internal" href="#influxdb-user"><code class="docutils literal notranslate"><span class="pre">INFLUXDB_USER</span></code></a></li>
+<li><a class="reference internal" href="#influxdb-pass"><code class="docutils literal notranslate"><span class="pre">INFLUXDB_PASS</span></code></a></li>
+<li><a class="reference internal" href="#influxdb-name"><code class="docutils literal notranslate"><span class="pre">INFLUXDB_NAME</span></code></a></li>
+<li><a class="reference internal" href="#influxdb-host"><code class="docutils literal notranslate"><span class="pre">INFLUXDB_HOST</span></code></a></li>
+<li><a class="reference internal" href="#influxdb-port"><code class="docutils literal notranslate"><span class="pre">INFLUXDB_PORT</span></code></a></li>
+<li><a class="reference internal" href="#influxdb-default-retention-policy"><code class="docutils literal notranslate"><span class="pre">INFLUXDB_DEFAULT_RETENTION_POLICY</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#postfix">Postfix</a><ul>
+<li><a class="reference internal" href="#postfix-allowed-sender-domains"><code class="docutils literal notranslate"><span class="pre">POSTFIX_ALLOWED_SENDER_DOMAINS</span></code></a></li>
+<li><a class="reference internal" href="#postfix-myhostname"><code class="docutils literal notranslate"><span class="pre">POSTFIX_MYHOSTNAME</span></code></a></li>
+<li><a class="reference internal" href="#postfix-destination"><code class="docutils literal notranslate"><span class="pre">POSTFIX_DESTINATION</span></code></a></li>
+<li><a class="reference internal" href="#postfix-message-size-limit"><code class="docutils literal notranslate"><span class="pre">POSTFIX_MESSAGE_SIZE_LIMIT</span></code></a></li>
+<li><a class="reference internal" href="#postfix-mynetworks"><code class="docutils literal notranslate"><span class="pre">POSTFIX_MYNETWORKS</span></code></a></li>
+<li><a class="reference internal" href="#postfix-relayhost-tls-level"><code class="docutils literal notranslate"><span class="pre">POSTFIX_RELAYHOST_TLS_LEVEL</span></code></a></li>
+<li><a class="reference internal" href="#postfix-relayhost"><code class="docutils literal notranslate"><span class="pre">POSTFIX_RELAYHOST</span></code></a></li>
+<li><a class="reference internal" href="#postfix-relayhost-username"><code class="docutils literal notranslate"><span class="pre">POSTFIX_RELAYHOST_USERNAME</span></code></a></li>
+<li><a class="reference internal" href="#postfix-relayhost-password"><code class="docutils literal notranslate"><span class="pre">POSTFIX_RELAYHOST_PASSWORD</span></code></a></li>
+<li><a class="reference internal" href="#postfix-debug-mynetworks"><code class="docutils literal notranslate"><span class="pre">POSTFIX_DEBUG_MYNETWORKS</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#uwsgi">uWSGI</a><ul>
+<li><a class="reference internal" href="#uwsgi-processes"><code class="docutils literal notranslate"><span class="pre">UWSGI_PROCESSES</span></code></a></li>
+<li><a class="reference internal" href="#uwsgi-threads"><code class="docutils literal notranslate"><span class="pre">UWSGI_THREADS</span></code></a></li>
+<li><a class="reference internal" href="#uwsgi-listen"><code class="docutils literal notranslate"><span class="pre">UWSGI_LISTEN</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nginx">Nginx</a><ul>
+<li><a class="reference internal" href="#nginx-http2"><code class="docutils literal notranslate"><span class="pre">NGINX_HTTP2</span></code></a></li>
+<li><a class="reference internal" href="#nginx-client-body-size"><code class="docutils literal notranslate"><span class="pre">NGINX_CLIENT_BODY_SIZE</span></code></a></li>
+<li><a class="reference internal" href="#nginx-ip6-string"><code class="docutils literal notranslate"><span class="pre">NGINX_IP6_STRING</span></code></a></li>
+<li><a class="reference internal" href="#nginx-ip6-80-string"><code class="docutils literal notranslate"><span class="pre">NGINX_IP6_80_STRING</span></code></a></li>
+<li><a class="reference internal" href="#nginx-admin-allow-network"><code class="docutils literal notranslate"><span class="pre">NGINX_ADMIN_ALLOW_NETWORK</span></code></a></li>
+<li><a class="reference internal" href="#nginx-server-name-hash-bucket"><code class="docutils literal notranslate"><span class="pre">NGINX_SERVER_NAME_HASH_BUCKET</span></code></a></li>
+<li><a class="reference internal" href="#nginx-ssl-config"><code class="docutils literal notranslate"><span class="pre">NGINX_SSL_CONFIG</span></code></a></li>
+<li><a class="reference internal" href="#nginx-80-config"><code class="docutils literal notranslate"><span class="pre">NGINX_80_CONFIG</span></code></a></li>
+<li><a class="reference internal" href="#nginx-ssl-port"><code class="docutils literal notranslate"><span class="pre">NGINX_SSL_PORT</span></code></a></li>
+<li><a class="reference internal" href="#nginx-port"><code class="docutils literal notranslate"><span class="pre">NGINX_PORT</span></code></a></li>
+<li><a class="reference internal" href="#nginx-gzip-switch"><code class="docutils literal notranslate"><span class="pre">NGINX_GZIP_SWITCH</span></code></a></li>
+<li><a class="reference internal" href="#nginx-gzip-level"><code class="docutils literal notranslate"><span class="pre">NGINX_GZIP_LEVEL</span></code></a></li>
+<li><a class="reference internal" href="#nginx-gzip-proxied"><code class="docutils literal notranslate"><span class="pre">NGINX_GZIP_PROXIED</span></code></a></li>
+<li><a class="reference internal" href="#nginx-gzip-min-length"><code class="docutils literal notranslate"><span class="pre">NGINX_GZIP_MIN_LENGTH</span></code></a></li>
+<li><a class="reference internal" href="#nginx-gzip-types"><code class="docutils literal notranslate"><span class="pre">NGINX_GZIP_TYPES</span></code></a></li>
+<li><a class="reference internal" href="#nginx-brotli-switch"><code class="docutils literal notranslate"><span class="pre">NGINX_BROTLI_SWITCH</span></code></a></li>
+<li><a class="reference internal" href="#nginx-https-allowed-ips"><code class="docutils literal notranslate"><span class="pre">NGINX_HTTPS_ALLOWED_IPS</span></code></a></li>
+<li><a class="reference internal" href="#nginx-http-allow"><code class="docutils literal notranslate"><span class="pre">NGINX_HTTP_ALLOW</span></code></a></li>
+<li><a class="reference internal" href="#nginx-custom-file"><code class="docutils literal notranslate"><span class="pre">NGINX_CUSTOM_FILE</span></code></a></li>
+<li><a class="reference internal" href="#ningx-real-remote-addr"><code class="docutils literal notranslate"><span class="pre">NINGX_REAL_REMOTE_ADDR</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openvpn">OpenVPN</a><ul>
+<li><a class="reference internal" href="#vpn-name"><code class="docutils literal notranslate"><span class="pre">VPN_NAME</span></code></a></li>
+<li><a class="reference internal" href="#vpn-client-name"><code class="docutils literal notranslate"><span class="pre">VPN_CLIENT_NAME</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#topology">Topology</a><ul>
+<li><a class="reference internal" href="#topology-update-interval"><code class="docutils literal notranslate"><span class="pre">TOPOLOGY_UPDATE_INTERVAL</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#x509-certificates">X509 Certificates</a><ul>
+<li><a class="reference internal" href="#x509-name-ca"><code class="docutils literal notranslate"><span class="pre">X509_NAME_CA</span></code></a></li>
+<li><a class="reference internal" href="#x509-name-cert"><code class="docutils literal notranslate"><span class="pre">X509_NAME_CERT</span></code></a></li>
+<li><a class="reference internal" href="#x509-country-code"><code class="docutils literal notranslate"><span class="pre">X509_COUNTRY_CODE</span></code></a></li>
+<li><a class="reference internal" href="#x509-state"><code class="docutils literal notranslate"><span class="pre">X509_STATE</span></code></a></li>
+<li><a class="reference internal" href="#x509-city"><code class="docutils literal notranslate"><span class="pre">X509_CITY</span></code></a></li>
+<li><a class="reference internal" href="#x509-organization-name"><code class="docutils literal notranslate"><span class="pre">X509_ORGANIZATION_NAME</span></code></a></li>
+<li><a class="reference internal" href="#x509-organization-unit-name"><code class="docutils literal notranslate"><span class="pre">X509_ORGANIZATION_UNIT_NAME</span></code></a></li>
+<li><a class="reference internal" href="#x509-email"><code class="docutils literal notranslate"><span class="pre">X509_EMAIL</span></code></a></li>
+<li><a class="reference internal" href="#x509-common-name"><code class="docutils literal notranslate"><span class="pre">X509_COMMON_NAME</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#misc-services">Misc Services</a><ul>
+<li><a class="reference internal" href="#image-owner"><code class="docutils literal notranslate"><span class="pre">IMAGE_OWNER</span></code></a></li>
+<li><a class="reference internal" href="#redis-host"><code class="docutils literal notranslate"><span class="pre">REDIS_HOST</span></code></a></li>
+<li><a class="reference internal" href="#redis-port"><code class="docutils literal notranslate"><span class="pre">REDIS_PORT</span></code></a></li>
+<li><a class="reference internal" href="#redis-user"><code class="docutils literal notranslate"><span class="pre">REDIS_USER</span></code></a></li>
+<li><a class="reference internal" href="#redis-pass"><code class="docutils literal notranslate"><span class="pre">REDIS_PASS</span></code></a></li>
+<li><a class="reference internal" href="#redis-use-tls"><code class="docutils literal notranslate"><span class="pre">REDIS_USE_TLS</span></code></a></li>
+<li><a class="reference internal" href="#dashboard-app-service"><code class="docutils literal notranslate"><span class="pre">DASHBOARD_APP_SERVICE</span></code></a></li>
+<li><a class="reference internal" href="#api-app-service"><code class="docutils literal notranslate"><span class="pre">API_APP_SERVICE</span></code></a></li>
+<li><a class="reference internal" href="#dashboard-app-port"><code class="docutils literal notranslate"><span class="pre">DASHBOARD_APP_PORT</span></code></a></li>
+<li><a class="reference internal" href="#api-app-port"><code class="docutils literal notranslate"><span class="pre">API_APP_PORT</span></code></a></li>
+<li><a class="reference internal" href="#websocket-app-port"><code class="docutils literal notranslate"><span class="pre">WEBSOCKET_APP_PORT</span></code></a></li>
+<li><a class="reference internal" href="#dashboard-internal"><code class="docutils literal notranslate"><span class="pre">DASHBOARD_INTERNAL</span></code></a></li>
+<li><a class="reference internal" href="#api-internal"><code class="docutils literal notranslate"><span class="pre">API_INTERNAL</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nfs-server">NFS Server</a><ul>
+<li><a class="reference internal" href="#export-dir"><code class="docutils literal notranslate"><span class="pre">EXPORT_DIR</span></code></a></li>
+<li><a class="reference internal" href="#export-opts"><code class="docutils literal notranslate"><span class="pre">EXPORT_OPTS</span></code></a></li>
+<li><a class="reference internal" href="#collectstatic-when-deps-change"><code class="docutils literal notranslate"><span class="pre">COLLECTSTATIC_WHEN_DEPS_CHANGE</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside>
+          </main>
+        </div>
+      </div><footer class="py-6 border-t border-border md:py-0">
+    <div class="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+      <div class="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-6 md:px-0">
+        <a href="../../index.html">
+            <img src="../../_static/openwisp-logo.svg" alt="OpenWISP" width="125" height="72" class="hidden dark:block" />
+            <img src="../../_static/openwisp-logo-black.svg" alt="OpenWISP" width="125" height="72" class="dark:hidden" /></a>
+        <p class="text-sm leading-loose text-right text-muted-foreground md:text-center">© 2008-2026, OpenWISP&nbsp;</p>
+      </div>
+    </div>
+</footer>
+    </div><button id="scrolltop"
+        x-cloak
+        @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="fixed bottom-8 right-8 p-2 z-10 rounded-sm bg-gray-700 text-xs text-white transition-all duration-1000 hover:bg-gray-950 focus:bg-gray-950"
+        :class="{'opacity-0 invisible' : !showScrollTop}"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       height="14"
+       viewBox="0 96 960 960"
+       width="14"
+       class="inline fill-current mb-[2px]"
+       aria-hidden="true">
+    <path d="M450 896V370L202 618l-42-42 320-320 320 320-42 42-248-248v526h-60Z" />
+  </svg>
+  Back to top
+</button>
+    
+
+    <script src="../../_static/documentation_options.js?v=c6950507"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="../../_static/theme.js?v=5db23cf8"></script>
+    
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.openwisp.io/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '7']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript>
+  <p>
+    <img referrerpolicy="no-referrer-when-downgrade" src="//analytics.openwisp.io/matomo.php?idsite=7&amp;rec=1" style="border:0;" alt="" />
+  </p>
+</noscript>
+<!-- End Matomo Code -->
+
+<div id="lightbox" class="lightbox">
+  <span class="close">&times;</span>
+</div>
+<script src="../../_static/lightbox.js"></script>
+
+</body>
+
+</html>

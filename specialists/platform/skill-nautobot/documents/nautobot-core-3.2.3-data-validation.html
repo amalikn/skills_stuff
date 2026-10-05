@@ -1,0 +1,119 @@
+<article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="data-validation-engine">Data Validation Engine<a class="headerlink" href="#data-validation-engine" title="Permanent link">¶</a></h1>
+<details class="version-added">
+<summary>Added in version 3.0.0</summary>
+</details>
+<p>The data validation engine offers a set of user definable rules which are used to enforce business constraints on the data in Nautobot. These rules are tied to particular models and each rule is meant to enforce one aspect of a business use case.</p>
+<p>Supported rule types include:</p>
+<ul>
+<li>Regular expression</li>
+<li>Min/max value</li>
+<li>Required fields</li>
+<li>Unique values</li>
+</ul>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_dropdown_light.png#only-light" data-desc-position="bottom"><img alt="Dropdown" class="on-glb" src="../../media/data-validation-engine/ss_dropdown_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_dropdown_dark.png#only-dark" data-desc-position="bottom"><img alt="Dropdown" class="on-glb" src="../../media/data-validation-engine/ss_dropdown_dark.png#only-dark"></a></p>
+<h2 id="use-cases-and-common-workflows">Use-cases and common workflows<a class="headerlink" href="#use-cases-and-common-workflows" title="Permanent link">¶</a></h2>
+<h3 id="minmax-rules">Min/Max Rules<a class="headerlink" href="#minmax-rules" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_min-max-rules-list_light.png#only-light" data-desc-position="bottom"><img alt="Min/Max Rules List" class="on-glb" src="../../media/data-validation-engine/ss_min-max-rules-list_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_min-max-rules-list_dark.png#only-dark" data-desc-position="bottom"><img alt="Min/Max Rules List" class="on-glb" src="../../media/data-validation-engine/ss_min-max-rules-list_dark.png#only-dark"></a></p>
+<p>Each rule is defined with these fields:</p>
+<ul>
+<li>name - A unique name for the rule.</li>
+<li>enabled - A boolean to toggle enforcement of the rule on and off.</li>
+<li>content type - The Nautobot model to which the rule should apply (e.g. device, location, etc.).</li>
+<li>field - The name of the numeric based field on the model to which the min/max value is validated.</li>
+<li>min - The min value to validate value against (greater than or equal).</li>
+<li>max - The max value to validate value against (less than or equal).</li>
+<li>error message - An optional error message to display to the user when validation fails. By default, a message indicating validation against the defined min/max value has failed is shown.</li>
+</ul>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_min-max-rules-edit_light.png#only-light" data-desc-position="bottom"><img alt="Min/Max Rules Edit" class="on-glb" src="../../media/data-validation-engine/ss_min-max-rules-edit_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_min-max-rules-edit_dark.png#only-dark" data-desc-position="bottom"><img alt="Min/Max Rules Edit" class="on-glb" src="../../media/data-validation-engine/ss_min-max-rules-edit_dark.png#only-dark"></a></p>
+<p>In this example, a max value for VLAN IDs has been configured, preventing VLANs greater than 3999 from being created.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_min-max-rules-enforcement_light.png#only-light" data-desc-position="bottom"><img alt="Min/Max Rules Enforcement" class="on-glb" src="../../media/data-validation-engine/ss_min-max-rules-enforcement_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_min-max-rules-enforcement_dark.png#only-dark" data-desc-position="bottom"><img alt="Min/Max Rules Enforcement" class="on-glb" src="../../media/data-validation-engine/ss_min-max-rules-enforcement_dark.png#only-dark"></a></p>
+<h3 id="regular-expression-rules">Regular Expression Rules<a class="headerlink" href="#regular-expression-rules" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_regex-rules-list_light.png#only-light" data-desc-position="bottom"><img alt="Regex Rules List" class="on-glb" src="../../media/data-validation-engine/ss_regex-rules-list_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_regex-rules-list_dark.png#only-dark" data-desc-position="bottom"><img alt="Regex Rules List" class="on-glb" src="../../media/data-validation-engine/ss_regex-rules-list_dark.png#only-dark"></a></p>
+<p>Each rule is defined with these fields:</p>
+<ul>
+<li>name - A unique name for the rule.</li>
+<li>enabled - A boolean to toggle enforcement of the rule on and off.</li>
+<li>content type - The Nautobot model to which the rule should apply (e.g. device, location, etc.).</li>
+<li>field - The name of the character based field on the model to which the regular expression is validated.</li>
+<li>regular expression - The body of the regular expression used for validation.</li>
+<li>context processing - A boolean to toggle Jinja2 context processing of the regular expression prior to evaluation</li>
+<li>error message - An optional error message to display to the use when validation fails. By default, a message indicating validation against the defined regular expression has failed is shown.</li>
+</ul>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_regex-rules-edit_light.png#only-light" data-desc-position="bottom"><img alt="Regex Rules Edit" class="on-glb" src="../../media/data-validation-engine/ss_regex-rules-edit_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_regex-rules-edit_dark.png#only-dark" data-desc-position="bottom"><img alt="Regex Rules Edit" class="on-glb" src="../../media/data-validation-engine/ss_regex-rules-edit_dark.png#only-dark"></a></p>
+<p>In this example, a device hostname validation rule has been created and prevents device records from being created or updated that do not conform to the naming standard.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_regex-rules-enforcement_light.png#only-light" data-desc-position="bottom"><img alt="Regex Rules Enforcement" class="on-glb" src="../../media/data-validation-engine/ss_regex-rules-enforcement_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_regex-rules-enforcement_dark.png#only-dark" data-desc-position="bottom"><img alt="Regex Rules Enforcement" class="on-glb" src="../../media/data-validation-engine/ss_regex-rules-enforcement_dark.png#only-dark"></a></p>
+<p>Regex rules may also support complex Jinja2 rendering called context processing which allows for the regular expression itself to by dynamically generated based on the context of the data it is validating. The object being validated is available in the template as the <code>obj</code> variable (e.g. <code>{{ obj.name }}</code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>obj</code> variable was previously named <code>object</code>. The <code>object</code> variable is still available but is deprecated and will be removed in Nautobot 4.0.</p>
+</div>
+<p>In this example the name of a device must start with the first three characters of the name of the location to which the device belongs. The dynamic nature of the Jinja2 rendering means that the location name can be anything, the enforcement action is simply that the given device name matches its assigned location.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_regex-rules-jinja2-context-processing_light.png#only-light" data-desc-position="bottom"><img alt="Regex Rules Jinja2 Context Processing" class="on-glb" src="../../media/data-validation-engine/ss_regex-rules-jinja2-context-processing_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_regex-rules-jinja2-context-processing_dark.png#only-dark" data-desc-position="bottom"><img alt="Regex Rules Jinja2 Context Processing" class="on-glb" src="../../media/data-validation-engine/ss_regex-rules-jinja2-context-processing_dark.png#only-dark"></a></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If there is an exception while rendering the Jinja2 template or the resulting regular expression string is invalid, data validation against the rule will fail and users will be instructed to either fix the rule or disable it before the data may be saved.</p>
+</div>
+<h3 id="required-rules">Required Rules<a class="headerlink" href="#required-rules" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_required-rules-list_light.png#only-light" data-desc-position="bottom"><img alt="Required List" class="on-glb" src="../../media/data-validation-engine/ss_required-rules-list_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_required-rules-list_dark.png#only-dark" data-desc-position="bottom"><img alt="Required List" class="on-glb" src="../../media/data-validation-engine/ss_required-rules-list_dark.png#only-dark"></a></p>
+<p>Each rule is defined with these fields:</p>
+<ul>
+<li>name - A unique name for the rule.</li>
+<li>enabled - A boolean to toggle enforcement of the rule on and off.</li>
+<li>content type - The Nautobot model to which the rule should apply (e.g. device, location, etc.).</li>
+<li>field - The name of the field on the Nautobot model which should always be required.</li>
+<li>error message - An optional error message to display to the user when validation fails. By default, a message indicating the field may not be left blank is shown.</li>
+</ul>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_required-rules-edit_light.png#only-light" data-desc-position="bottom"><img alt="Required Rules Edit" class="on-glb" src="../../media/data-validation-engine/ss_required-rules-edit_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_required-rules-edit_dark.png#only-dark" data-desc-position="bottom"><img alt="Required Rules Edit" class="on-glb" src="../../media/data-validation-engine/ss_required-rules-edit_dark.png#only-dark"></a></p>
+<p>In this example, a rule is enforcing that location objects must always have a description populated.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_required-rules-enforcement_light.png#only-light" data-desc-position="bottom"><img alt="Required Rules Enforcement" class="on-glb" src="../../media/data-validation-engine/ss_required-rules-enforcement_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_required-rules-enforcement_dark.png#only-dark" data-desc-position="bottom"><img alt="Required Rules Enforcement" class="on-glb" src="../../media/data-validation-engine/ss_required-rules-enforcement_dark.png#only-dark"></a></p>
+<h3 id="unique-rules">Unique Rules<a class="headerlink" href="#unique-rules" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_unique-rules-list_light.png#only-light" data-desc-position="bottom"><img alt="Unique List" class="on-glb" src="../../media/data-validation-engine/ss_unique-rules-list_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_unique-rules-list_dark.png#only-dark" data-desc-position="bottom"><img alt="Unique List" class="on-glb" src="../../media/data-validation-engine/ss_unique-rules-list_dark.png#only-dark"></a></p>
+<p>Each rule is defined with these fields:</p>
+<ul>
+<li>name - A unique name for the rule.</li>
+<li>enabled - A boolean to toggle enforcement of the rule on and off.</li>
+<li>content type - The Nautobot model to which the rule should apply (e.g. device, location, etc.).</li>
+<li>field - The name of the field on the Nautobot model which should always be required.</li>
+<li>max instances - The total number of records that may have the same unique value for the given field. Default of 1.</li>
+<li>error message - An optional error message to display to the user when validation fails. By default, a message indicating the value already exists on another record or set of records, as determined by max instances.</li>
+</ul>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_unique-rules-edit_light.png#only-light" data-desc-position="bottom"><img alt="Unique Rules Edit" class="on-glb" src="../../media/data-validation-engine/ss_unique-rules-edit_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_unique-rules-edit_dark.png#only-dark" data-desc-position="bottom"><img alt="Unique Rules Edit" class="on-glb" src="../../media/data-validation-engine/ss_unique-rules-edit_dark.png#only-dark"></a></p>
+<p>In this example, the rule enforces that the assigned ASN for a location is unique across all other locations.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_unique-rules-enforcement_light.png#only-light" data-desc-position="bottom"><img alt="Unique Rules Enforcement" class="on-glb" src="../../media/data-validation-engine/ss_unique-rules-enforcement_light.png#only-light"></a>
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../media/data-validation-engine/ss_unique-rules-enforcement_dark.png#only-dark" data-desc-position="bottom"><img alt="Unique Rules Enforcement" class="on-glb" src="../../media/data-validation-engine/ss_unique-rules-enforcement_dark.png#only-dark"></a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>

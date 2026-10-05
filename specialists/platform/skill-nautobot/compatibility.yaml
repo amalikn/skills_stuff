@@ -1,0 +1,67 @@
+environments:
+  - id: nautobot-core-docs-3-2-2
+    product: Nautobot core documentation
+    product_version: 3.2.2
+    components: [data model, IPAM, extensions]
+    observed_at: "2026-10-01"
+    evidence_locator: "Official Nautobot 3.2.2 archive and local checksummed release snapshot; observed runtime 3.2.3 differs by patch"
+    validation_layer: official_documented
+    result: pass
+  - id: nautobot-unc-inspected-20261001
+    product: UNC Nautobot integration
+    product_version: "local source on 2026-10-01"
+    components: [ownership, onboarding, Wireless Link, catalog]
+    observed_at: "2026-10-01"
+    evidence_locator: "UNC wc_ownership app, catalog parts, onboarding scripts and selected tests; project implementation, not generic product compatibility"
+    validation_layer: implementation_inspected
+    result: pass
+  - id: nautobot-core-3-2-3
+    product: Nautobot core
+    product_version: 3.2.3
+    components: [core]
+    observed_at: "2026-10-01"
+    evidence_locator: "Phase 3A read-only local image/package observation"
+    validation_layer: observed_install
+    result: pass
+    image_identity: "sha256:179ef88effc3c740e8740505f4ad5c7d6dc28198560f421192c3314b1924dd31"
+  - id: nautobot-apps-2026-10-01
+    product: Nautobot applications
+    product_version: "Golden Config 3.0.7; Secrets Providers 4.0.1; DNS Models 2.3.0; Design Builder 3.1.2; Nornir 3.2.4"
+    components: [Golden Config, Secrets Providers, DNS Models, Design Builder, Nornir]
+    observed_at: "2026-10-01"
+    evidence_locator: "Phase 3A read-only local package observation"
+    validation_layer: observed_install
+    result: pass
+  - id: nautobot-rest-3-2
+    product: Nautobot REST API
+    product_version: 3.2
+    components: [REST API, relationships]
+    observed_at: "2026-10-01"
+    evidence_locator: "https://archive.docs.nautobot.com/projects/core/en/v3.2.2/user-guide/platform-functionality/rest-api/overview/; docs 3.2.2 versus observed 3.2.3; exact relationship response not verified"
+    validation_layer: official_documented
+    result: pass
+  - id: nautobot-paging-offline-20261001
+    product: UNC Nautobot client contract
+    product_version: "Nautobot core observed 3.2.3; local reader test"
+    components: [ordered-first-request, next-traversal]
+    observed_at: "2026-10-01"
+    evidence_locator: "UNC wc-local/scripts/nautobot_paging.py and tests/test_nautobot_paging.py; does not prove snapshot completeness"
+    validation_layer: offline_contract
+    result: pass
+    test_id: N-S16
+  - id: nautobot-job-upgrade-3-2
+    product: Nautobot Jobs
+    product_version: 3.2
+    components: [Jobs, scheduled Jobs]
+    observed_at: "2026-10-01"
+    evidence_locator: "https://archive.docs.nautobot.com/projects/core/en/v3.2.2/release-notes/version-3.2/"
+    validation_layer: official_documented
+    result: pass
+  - id: nautobot-core-docs-3-2-3
+    product: Nautobot core documentation
+    product_version: 3.2.3
+    components: [GraphQL, REST, Dynamic Groups, computed fields, Secrets, webhooks, events, approvals, data validation, permissions, change log, nautobot-server, Jobs, Circuits]
+    observed_at: "2026-10-05"
+    evidence_locator: "Docs build shipped inside the installed 3.2.3 package, matched to archive.docs.nautobot.com v3.2.3; 27 local snapshots in documents/; cookbook sections cite installed source lines"
+    validation_layer: official_documented
+    result: pass

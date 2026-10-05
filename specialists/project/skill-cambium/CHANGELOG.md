@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.6.27 -> v0.6.28)](#20261005_1350--related-skills-platform-packs-skill-nautobot-and-skill-openwisp-v0627---v0628)
 - [20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)](#20260930_1221--terminology-paid-pin-corrected-to-access-mark-v0626---v0627)
 - [20260930_1209 — Dashboard bots poll AP reachability by ping from the SMC over Teleport (v0.6.25 -> v0.6.26)](#20260930_1209--dashboard-bots-poll-ap-reachability-by-ping-from-the-smc-over-teleport-v0625---v0626)
 - [20260930_1200 — R195P SNMP communities: Get/Set plaintext equal the programme vault, Error `error`, Trap not the short name (v0.6.24 -> v0.6.25)](#20260930_1200--r195p-snmp-communities-getset-plaintext-equal-the-programme-vault-error-error-trap-not-the-short-name-v0624---v0625)
@@ -75,6 +76,11 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.6.27 -> v0.6.28)
+
+- `SKILL.md` Related Skills: routes Nautobot and OpenWISP platform questions to the two platform packs, and platform-generic learnings to their
+  write-back contract, so they are not filed here.
 
 ## 20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)
 

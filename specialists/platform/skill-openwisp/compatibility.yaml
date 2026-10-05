@@ -1,0 +1,104 @@
+environments:
+  - id: openwisp-unc-inspected-20261001
+    product: UNC OpenWISP integration
+    product_version: "local source with Controller/Monitoring 1.3 observation"
+    components: [registration, alerting, Metric checks]
+    observed_at: "2026-10-01"
+    evidence_locator: "UNC batch_push_devices.py, alarms.py, settings and selected reports; project implementation, not generic product compatibility"
+    validation_layer: implementation_inspected
+    result: pass
+  - id: openwisp-images-26-09-0
+    product: OpenWISP images
+    product_version: 26.09.0
+    components: [dashboard, API]
+    observed_at: "2026-10-01"
+    evidence_locator: "Phase 3A read-only local image observation"
+    validation_layer: observed_install
+    result: pass
+  - id: openwisp-modules-1-3
+    product: OpenWISP modules
+    product_version: "Monitoring 1.3; Controller 1.3; Notifications 1.3; Users 1.3.0; Network Topology 1.3"
+    components: [Monitoring, Controller, Notifications, Users, Network Topology]
+    observed_at: "2026-10-01"
+    evidence_locator: "Phase 3A read-only local package observation"
+    validation_layer: observed_install
+    result: pass
+  - id: openwisp-release-26-09-docs
+    product: OpenWISP release documentation
+    product_version: 26.09
+    components: [Monitoring, Controller, Notifications, Network Topology]
+    observed_at: "2026-10-01"
+    evidence_locator: "https://openwisp.io/docs/26.09/controller/user/settings.html and https://openwisp.io/docs/26.09/monitoring/user/rest-api.html; not 1.3 runtime proof"
+    validation_layer: official_documented
+    result: pass
+  - id: openwisp-mapper-offline-20261001
+    product: UNC DeviceMonitoring mapper
+    product_version: "Monitoring 1.3 observed; local fixture contract"
+    components: [NetJSON shape, metric-producing fields, backfill formatting]
+    observed_at: "2026-10-01"
+    evidence_locator: "UNC adapters/shims/openwisp_netjson.py and tests/test_adapter_contracts.py; no worker/storage/UI proof"
+    validation_layer: offline_contract
+    result: pass
+    test_id: O-S02
+  - id: openwisp-monitoring-api-accepted-20260921
+    product: OpenWISP Monitoring
+    product_version: "1.3"
+    components: [DeviceMonitoring POST]
+    observed_at: "2026-09-21"
+    evidence_locator: "UNC CHANGELOG 20260921_1833 (line 4279): one device per family pushed, HTTP 200"
+    validation_layer: api_accepted
+    result: pass
+    test_id: O-S01
+  - id: openwisp-monitoring-worker-processed-20260921
+    product: OpenWISP Monitoring
+    product_version: "1.3"
+    components: [write_device_metrics worker]
+    observed_at: "2026-09-21"
+    evidence_locator: "UNC CHANGELOG 20260921_2008 (lines 4195, 4230): first ValidationError in the task, fixed; 4 of 4 devices then held 7 stored metrics"
+    validation_layer: worker_processed
+    result: pass
+    test_id: O-S01
+  - id: openwisp-monitoring-metric-persisted-20260922
+    product: OpenWISP Monitoring
+    product_version: "1.3"
+    components: [Metric, custom metric registration]
+    observed_at: "2026-09-22"
+    evidence_locator: "UNC CHANGELOG 20260922_2045 (lines 3909-3912): custom metric registered and stored for six APs; 20260927_2130 (line 2354): 2,427 stored"
+    validation_layer: metric_persisted
+    result: pass
+    test_id: O-S01
+  - id: openwisp-monitoring-recent-point-20260922
+    product: OpenWISP Monitoring with InfluxDB 1.8
+    product_version: "1.3"
+    components: [time-series write, ping metric]
+    observed_at: "2026-09-22"
+    evidence_locator: "UNC CHANGELOG 20260922_1750 (lines 3980-3985): ping points read back newest-first from InfluxDB"
+    validation_layer: recent_point
+    result: pass
+    test_id: O-S18
+  - id: openwisp-monitoring-recent-point-20261005
+    product: OpenWISP Monitoring with InfluxDB 1.8
+    product_version: "1.3"
+    components: [Celery workers, time-series write]
+    observed_at: "2026-10-05"
+    evidence_locator: "Read-only probe: no Celery worker process in either worker container, inspect returned no nodes, newest InfluxDB point 2026-09-28T07:35Z; the stack ran a week without storing data while every container showed Up"
+    validation_layer: recent_point
+    result: stale
+    test_id: O-S20
+  - id: openwisp-monitoring-operator-visible-pending
+    product: OpenWISP Monitoring
+    product_version: "1.3"
+    components: [chart view]
+    observed_at: "2026-10-05"
+    evidence_locator: "UNC CHANGELOG line 3911 shows chart queries returning data; a chart rendered in an operator's browser is not recorded"
+    validation_layer: operator_visible
+    result: pending_live_test
+    test_id: O-S01
+  - id: openwisp-images-26-09-0-modules-detail
+    product: OpenWISP images
+    product_version: "26.09.0"
+    components: [controller 1.3, monitoring 1.3, notifications 1.3, users 1.3.0, network-topology 1.3, utils 1.3, InfluxDB 1.8.10, Django 5.2.17, celery 5.6.3]
+    observed_at: "2026-10-05"
+    evidence_locator: "pip show and image VERSION file in the dashboard container; InfluxDB server version"
+    validation_layer: observed_install
+    result: pass
