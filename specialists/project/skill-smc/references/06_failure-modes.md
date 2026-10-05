@@ -418,9 +418,9 @@ collector log and nothing naming the certificate. The same week, "Aurukun polls 
 two boxes were fine.
 
 - **Check first, before any device diagnosis:** `tsh status` for each cluster you will cross (`teleport.apn.au`, `teleport.communitywifi.net.au`: separate logins, separate expiries); the controller
-  now refuses to poll a cluster whose certificate has lapsed and raises one alarm for it instead of one per device (`unified-network-controller/wc-local/scripts/run_collector.py`).
+  now refuses to poll a cluster whose certificate has lapsed and raises one alarm for it instead of one per device (`unified-network-controller/wc-local/scripts/collector/run_collector.py`).
 - **At a multi-SMC site, fall back to the other boxes** before calling the site down: `01_overview.md`'s "any box is a valid jump host" is now implemented for the controller's pushes
-  (`unified-network-controller/wc-local/scripts/batch_push_devices.py`, 2026-09-26) and holds for hand diagnosis too.
+  (`unified-network-controller/wc-local/scripts/collector/batch_push_devices.py`, 2026-09-26) and holds for hand diagnosis too.
 - Related earlier trap, same shape (the tool's error reads as the fleet's): `--cluster=` instead of `--proxy=` on `teleport.communitywifi.net.au`, `01_overview.md` "Remote Access".
 
 ## A full `netplan apply` leaves isc-dhcp-server in systemd's start limit (2026-09-27)
@@ -433,7 +433,7 @@ serves no DHCP until someone runs `systemctl reset-failed isc-dhcp-server; syste
 
 What avoids it: the apply surface ansible-wifi's own handler uses, `netplan generate` then `networkctl reload`, which reconfigures only the links whose config changed; and, after any apply or
 rollback, `systemctl reset-failed` plus `restart` of the services that bind to the bridges (`isc-dhcp-server`, `named`) before judging health. A rollback that restores the network and leaves DHCP dead
-is not a rollback (unified-network-controller `wc-local/scripts/smc_intent.py`, report `docs/reports/controller-option3/step7-smc-intent-rehearsal-20260927_0226.md`).
+is not a rollback (unified-network-controller `wc-local/scripts/smc/smc_intent.py`, report `docs/reports/controller-option3/step7-smc-intent-rehearsal-20260927_0226.md`).
 
 Same hook, same risk anywhere many links become routable together: a reboot with many VLANs, an `ansible-playbook` run whose `networkctl reload` touches many links at once, a cable event on the trunk
 port. Worth checking on a production box after any of those: `systemctl is-active isc-dhcp-server`. The hook's own guard (`systemctl status` before `restart`) does not stop the storm; a

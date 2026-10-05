@@ -9,7 +9,7 @@
 # their config captures, seed_switch_devices.py); a switch collector reads here first. Update it in the same session as any new live SNMP result on a
 # switch, per this pack's Standing Write-Back Contract.
 #
-# Access: from the site's SMC only (UNC wc-local/scripts/smc_snmp.py), v2c, community SNMP-<sysLocation>, read-write, not in the vault
+# Access: from the site's SMC only (UNC wc-local/scripts/smc/smc_snmp.py), v2c, community SNMP-<sysLocation>, read-write, not in the vault
 # (16_tplink-site-switches.md "SNMP"). Use -t 5 -r 3: with -t 2 -r 1 about half the subtrees timed out after a large walk and looked absent.
 # Vendor MIBs and manuals: unified-network-controller docs/reports/monitoring/tplink-sg2428p-snmp-sources-20260930_1244/.
 # Table OIDs are COLUMN OIDs: a row reads <column>.<index>. Scalars answer at instance .0.

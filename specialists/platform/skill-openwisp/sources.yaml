@@ -117,7 +117,7 @@ claims:
     applies_to: [openwisp-unc-inspected-20261001]
     environment_id: openwisp-unc-inspected-20261001
     source_type: implementation
-    evidence: "UNC wc-local/scripts/batch_push_devices.py to_openwisp_hardware_id(), OpenWispRegistry._SHELL/register(); Controller 1.3 observed; inspected 2026-10-01. The code's REST limitation comment needs a target API probe."
+    evidence: "UNC wc-local/scripts/collector/batch_push_devices.py to_openwisp_hardware_id(), OpenWispRegistry._SHELL/register(); Controller 1.3 observed; inspected 2026-10-01. The code's REST limitation comment needs a target API probe."
     reference: references/identity-and-registration.md
     test: O-S16
   - id: O-C12
@@ -150,7 +150,7 @@ claims:
     applies_to: [openwisp-unc-inspected-20261001]
     environment_id: openwisp-unc-inspected-20261001
     source_type: implementation_and_report
-    evidence: "UNC wc-local/scripts/alarms.py and docs/reports/monitoring/step2-monitoring-acceptance-20260926_1815.md; soak pending, inspected 2026-10-01."
+    evidence: "UNC wc-local/scripts/alarming/alarms.py and docs/reports/monitoring/step2-monitoring-acceptance-20260926_1815.md; soak pending, inspected 2026-10-01."
     reference: references/health-alerts-notifications.md
     test: O-S05
   - id: O-C15

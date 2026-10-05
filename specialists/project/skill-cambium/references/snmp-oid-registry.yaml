@@ -6,7 +6,7 @@
 # proof for XV2-2T0, E500 or E430 (06_device-api-cli-reference.md). `access: rw` means a SET was made and read back on that
 # type; `ro` means read only (a SET was never tried, not that it is refused). Prose, provenance and gotchas stay in
 # 06_device-api-cli-reference.md; this file is the list tools read. Consumers: unified-network-controller
-# `adapters/cambium/snmp.py` (reads), `wc-local/scripts/snmp_write_check.py` (write canary). Update it in the same session as
+# `adapters/cambium/snmp.py` (reads), `wc-local/scripts/device_config/snmp_write_check.py` (write canary). Update it in the same session as
 # any new live SNMP result, per this pack's Standing Write-Back Contract.
 #
 # Communities (vault): cambium-devices/apn-snmp-ro|rw (teleport.apn.au sites), nbn-snmp-ro|rw (teleport.communitywifi.net.au).
@@ -126,7 +126,7 @@ device_types:
 
   # No verified SNMP surface yet (live walk not done): epmp-force300 (SM; SM-side scalars .17713.21.1.2.3/.18 exist on the SM, not walked here), e500, e430h, xv2-2t0.
 
-  # Added 2026-09-23 from unified-network-controller's Kalumburu discovery test (wc-local/scripts/discover_site.py): one snmpget of the
+  # Added 2026-09-23 from unified-network-controller's Kalumburu discovery test (wc-local/scripts/site_onboarding/discover_site.py): one snmpget of the
   # MIB-II identity triple per Cambium candidate from kalumburu-smc01 with apn-snmp-ro. Model-level sysObjectID is what a sweep
   # identifies a unit by before any login. Read-only: no SET was tried on these types.
   force-300-16:

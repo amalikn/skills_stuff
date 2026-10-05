@@ -3,7 +3,9 @@ Title: Nautobot operations cookbook
 Category: skill-reference
 Status: current
 Authority: Installed Nautobot 3.2.3 source and version-matched official documentation; the cited lines win over this summary
-Scope: Exact, version-matched syntax for Nautobot GraphQL, REST, Dynamic Groups, computed and custom fields, Config Contexts, Secrets, webhooks and events, approvals, data validation, permissions and change log, nautobot-server, Jobs and Circuits
+Scope: >-
+  Exact, version-matched syntax for Nautobot GraphQL, REST, Dynamic Groups, computed and custom fields, Config Contexts, Secrets, webhooks and events, approvals, data validation, permissions
+  and change log, nautobot-server, Jobs and Circuits
 Last reviewed: 2026-10-05
 Summary: Twelve verified recipes with a gotcha and a source line each, cited to the installed 3.2.3 source and its bundled docs; re-verify on any version change.
 ---

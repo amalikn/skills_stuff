@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.1.80 -> v0.1.81)](#20261005_1350--related-skills-platform-packs-skill-nautobot-and-skill-openwisp-v0180---v0181)
+- [Generic topology authoring and inventory integration](#20261002_1641--generic-topology-authoring-and-inventory-integration-v0179---v0180)
 - [20260930_1959 — Never push ansible-wifi from a git worktree; which ref unified-network-controller reads (v0.1.78 -> v0.1.79)](#20260930_1959--never-push-ansible-wifi-from-a-git-worktree-which-ref-unified-network-controller-reads-v0178---v0179)
 - [20260930_1424 — TP-Link VLAN parsing and drift; live SMC services and interface MACs (v0.1.77 -> v0.1.78)](#20260930_1424--tp-link-vlan-parsing-and-drift-live-smc-services-and-interface-macs-v0177---v0178)
 - [20260930_1307 — TP-Link switches at six sites: SNMP community, the OIDs the controller uses, backup redaction fixed, Nautobot canary (v0.1.76 -> v0.1.77)](#20260930_1307--tp-link-switches-at-six-sites-snmp-community-the-oids-the-controller-uses-backup-redaction-fixed-nautobot-canary-v0176---v0177)
@@ -93,6 +95,18 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.1.80 -> v0.1.81)
+
+- `SKILL.md` Related Skills: routes Nautobot and OpenWISP platform questions to the two platform packs, and platform-generic learnings to their
+  write-back contract, so they are not filed here.
+
+## 20261002_1641 — Generic topology authoring and inventory integration (v0.1.79 -> v0.1.80)
+
+- Revised `references/08_ansible-authoring.md` to distinguish generated YAML, in-memory reuse of `Topology.flatten()`, and direct inventory JSON.
+- Captured the `wan_pair_count` definition, dictionary/parent/name contract, plugin responsibilities and inventory/group/flavor safeguards.
+- Qualified prior CUE preference and Jsonnet rankings; linked the consolidated local plan. No implementation, cache refresh or live deployment.
+- Evidence branch: `unc-virtual-smc-malik-rcp01`; production tree clean at update start. Intended big-profile DHCP baseline remains unresolved.
 
 ## 20260930_1959 — Never push ansible-wifi from a git worktree; which ref unified-network-controller reads (v0.1.78 -> v0.1.79)
 

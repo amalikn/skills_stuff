@@ -45,7 +45,7 @@ environments:
     product_version: "Nautobot core observed 3.2.3; local reader test"
     components: [ordered-first-request, next-traversal]
     observed_at: "2026-10-01"
-    evidence_locator: "UNC wc-local/scripts/nautobot_paging.py and tests/test_nautobot_paging.py; does not prove snapshot completeness"
+    evidence_locator: "UNC wc-local/scripts/common/nautobot_paging.py and tests/test_nautobot_paging.py; does not prove snapshot completeness"
     validation_layer: offline_contract
     result: pass
     test_id: N-S16

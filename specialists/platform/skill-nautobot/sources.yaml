@@ -139,7 +139,7 @@ claims:
     applies_to: [nautobot-paging-offline-20261001]
     environment_id: nautobot-paging-offline-20261001
     source_type: implementation_and_test
-    evidence: "UNC wc-local/scripts/nautobot_paging.py listing() and tests/test_nautobot_paging.py OrderedPagesTest; 320 rows/251 distinct regression; inspected 2026-10-01."
+    evidence: "UNC wc-local/scripts/common/nautobot_paging.py listing() and tests/test_nautobot_paging.py OrderedPagesTest; 320 rows/251 distinct regression; inspected 2026-10-01."
     reference: references/api-and-writers.md
     test: N-S16
   - id: N-C14
@@ -150,7 +150,7 @@ claims:
     applies_to: [nautobot-unc-inspected-20261001]
     environment_id: nautobot-unc-inspected-20261001
     source_type: implementation
-    evidence: "UNC wc-local/scripts/address_mask.py, fix_address_masks.py and tests/test_fix_address_masks.py; narrowest network Prefix, placeholders excluded; inspected 2026-10-01."
+    evidence: "UNC wc-local/scripts/common/address_mask.py, fix_address_masks.py and tests/test_fix_address_masks.py; narrowest network Prefix, placeholders excluded; inspected 2026-10-01."
     reference: references/authority-and-modeling.md
     test: N-S01
   - id: N-C15

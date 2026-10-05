@@ -85,7 +85,7 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
   - **At a multi-SMC site, any box is a valid jump host for the whole site** (`USER_STATED`, operator, 2026-09-21). The boxes share one management address space as a VRRP-style redundant set (aurukun:
     three boxes); if one fails, traffic moves to the others through the switching layer and the wireless network. A fixed `ProxyJump` does not fail over by itself — pick another box by hand, or use a
     `ProxyCommand` that tries each in turn (untested). Device host keys stay keyed by site, not by box, because the device is the same whichever box you enter through. Implemented for
-    the controller's device pushes on 2026-09-26 (`unified-network-controller/wc-local/scripts/batch_push_devices.py` tries the site's other SMC boxes); see `06_failure-modes.md`.
+    the controller's device pushes on 2026-09-26 (`unified-network-controller/wc-local/scripts/collector/batch_push_devices.py` tries the site's other SMC boxes); see `06_failure-modes.md`.
 - **`--proxy` goes before the host (verified 2026-09-30).** `tsh ssh --proxy=teleport.communitywifi.net.au root@<node>` works; `tsh ssh root@<node>
   --proxy=...` passes the flag to the node as a command and uses the default profile, failing with `dial tcp: lookup <node> ... server misbehaving`.
 - **Always name the proxy; never try one and then the other (operator, 2026-09-29).** A node name can exist on both clusters: `mungkarta-smc01` is a

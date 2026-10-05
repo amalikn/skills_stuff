@@ -474,7 +474,7 @@ Use `/run` (systemd's tmpfs) for throwaway files and check it with `stat -f -c %
 `/var/lib/node_exporter/textfile_collector`, `/var/lib/prometheus` and `/var/log/smc-groups` (the last from `/etc/tmpfiles.d/smc-log-groups.conf`).
 
 **fping** (2026-09-22): not in any ansible-wifi role. Installed by hand with apt (5.1-1, jammy) on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability
-pre-check (`wc-local/scripts/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That script
+pre-check (`wc-local/scripts/collector/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That script
 falls back to `ping`, and a fleet install belongs in an ansible-wifi role.
 
 **fping fleet install (2026-09-23, operator: "install fping where needed").** A survey of all 36 `<site>-smc01` nodes in Nautobot found fping on only those three; `apt-get install -y fping` (5.1-1,
@@ -485,7 +485,7 @@ with the command passed as separate ssh arguments is re-joined on the box, so `c
 ansible-wifi role, so a reimaged box loses it: the durable fix is a package entry in the base role.
 
 **fping approval per flavour, and the install guard (2026-09-27, operator: "I am fine with installing fping to rcp and nbn_accelerate flavors when needed").** fping may be installed wherever it is
-missing on any `rcp` or `nbn_accelerate` box; any other package, or any other flavour, needs the box chosen one by one. unified-network-controller's `wc-local/scripts/smc_package_check.py` builds its
+missing on any `rcp` or `nbn_accelerate` box; any other package, or any other flavour, needs the box chosen one by one. unified-network-controller's `wc-local/scripts/smc/smc_package_check.py` builds its
 node list from every Nautobot Location with a programme tenant, so seeding the nine `smc_ltp` Locations that day had silently widened `--install` to nine more production boxes; its `install_targets`
 guard now installs only on a node whose package is approved for its flavour (`APPROVED_INSTALLS`), whose SMC Device exists in Nautobot, or that was named with `--nodes`. Both approved flavours are x86
 with a plain ext4 root, so the approval never meets an overlayroot (those are the RPi and WH flavours: `rct`, `wh`, `nbn_wh`); `nbn_wh` stays skipped.

@@ -3,7 +3,7 @@
 #
 # Rule, as in skill-cambium: an OID enters a box type ONLY after a live exchange against a unit of that type, recorded with date,
 # unit, OS and method. `access: ro` means read only here; no SET has been tried on an SMC (the agent is configured read-only).
-# Consumers: unified-network-controller `wc-local/scripts/smc_collect.py` (reads from the box against 127.0.0.1). Update it in the
+# Consumers: unified-network-controller `wc-local/scripts/collector/smc_collect.py` (reads from the box against 127.0.0.1). Update it in the
 # same session as any new live SNMP result on an SMC, per this pack's Standing Write-Back Contract.
 #
 # Agent: net-snmp `snmpd` 5.9 (jammy), installed by hand on the canaries 2026-09-24 (02_service-map.md "snmpd on the SMC"); bound to

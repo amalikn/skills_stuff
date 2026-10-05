@@ -42,6 +42,10 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 
 ## Current state
 
+**2026-10-02 16:41 KEEP, scoped topology-design update:** the local RCP plan covers Kapitan/CUE/Jsonnet and three inventory integration paths; the corrected design summary is in
+`references/08_ansible-authoring.md`. Metadata version: 0.1.80. Evidence branch: `unc-virtual-smc-malik-rcp01`, clean production tree at start. No implementation or live changes. Open decisions:
+authoritative `generic-big01` DHCP baseline, integration path and runnable tool comparison. Prior KEEP entries below remain historical; this entry does not resolve unrelated open items.
+
 **2026-09-24 (12:25) `KEEP` — v0.1.54: TP-Link site switches and the SMC neighbour table.** New `references/16_tplink-site-switches.md` and `scripts/tplink-switch.sh` +
 `tplink_cli_driver.py` (kalumburu switches reached; read-only default, fping discovery on `bridge_500` only, redacted `--backup`). `13_known-issues.md` records `gc_thresh` 1/512/1024 on the SMCs
 and mornington's 2,230 `table_fulls`, with a 16384/4096/1024 proposal (not applied). Commits `d5566c2`, `8db6d56` not pushed. Two pre-existing governance failures remain (SKILL.md

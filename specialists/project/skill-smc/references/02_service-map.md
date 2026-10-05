@@ -73,7 +73,7 @@ common source of confusion when debugging DNS delays reported from the box itsel
 `enp4s0.50N` (or `enp1s0.50N` on a BOXER-6641) are members of `bridge_50N` and share their parent's MAC, while the internet uplinks are standalone VLAN interfaces (`vlan521`…`vlan538`, and
 `vlan621`/`vlan631` on the 6641 sites) with `72:77:77` MACs derived as above. 10 VLAN interfaces on the 6404 at kalumburu, 16 on each
 6641. `ip -d -j link show type vlan` (iproute2 5.15 here) returns each one's parent (`link`), VLAN ID and bridge (`master`) as JSON in one call; `ip -j link show type bridge`
-lists the bridges. unified-network-controller's `wc-local/scripts/seed_smc_devices.py` records them per box in Nautobot as `virtual` interfaces with parent, bridge and site VLAN (bridges per device,
+lists the bridges. unified-network-controller's `wc-local/scripts/smc/seed_smc_devices.py` records them per box in Nautobot as `virtual` interfaces with parent, bridge and site VLAN (bridges per device,
 never in the device-type template) and reports drift against the box and `topology_vars`. That box read is the retrofit: the operator's target (2026-09-24) is Nautobot as the source each SMC syncs its
 network setup from and applies, with rollback.
 

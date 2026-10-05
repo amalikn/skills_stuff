@@ -67,6 +67,7 @@ references/
   13_known-issues.md
   14_pin-activation-diagnosis.md
   15_cambium-asset-registers.md
+  16_tplink-site-switches.md
 scripts/
   README.md
 AGENTS.md
@@ -525,6 +526,9 @@ All remote access routes through **Teleport** via a persistent `autossh` reverse
 
 All 7 inventory flavors are covered by this split. The operator runs `tsh login` manually against whichever cluster matches the project/site being worked on before any `tsh ssh` session — do not
 hardcode a single domain in tooling or scripts; use this table to pick the right one instead.
+- **Teleport server hosting region: AWS `ap-southeast-2` (Sydney)** — `REPO`, read 2026-09-24 from `roles/teleport_core/ec2-bootstrap.sh` and `roles/teleport_letsencrypt/tasks/main.yml` (both set
+  `region = ap-southeast-2`). Only Teleport is confirmed; the central Prometheus, Graylog and Eclipse hosting regions are not recorded in the repo. Relevant wherever a customer contract restricts data
+  location (first raised by the NTG26-0134 tender, which limits personal information to the NT and customer data to Australia).
 - Direct SSH to port 22 is not reachable externally
 - **SSH only** — Teleport DB/Kubernetes/app access features not in use
 - **Access is exclusively `tsh ssh root@<hostname>` (Teleport CLI) — there is no SSH-wrapping MCP in use and no plain-`ssh` path to an SMC.** A `ssh root@<hostname>.teleport.<domain>` form only works
@@ -534,6 +538,46 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
   "Unable to connect to ssh proxy" and shell-quoting errors); with `--proxy` named explicitly it connected reliably first try. Verified live 2026-09-17: `tsh ssh --proxy teleport.communitywifi.net.au
   -L 10000:10.255.3.1:443 root@hope-vale-smc01` tunnelled a real device's HTTPS web UI to `localhost:10000` (HTTP 200). Device port convention (see `skill-cambium` for the device side): `443` for
   current Cambium web UIs, `80` for older ones (operator-stated: ePMP 1000 uses HTTP not HTTPS).
+- **Plain-OpenSSH `ProxyJump` to a device behind an SMC box — verified live 2026-09-21 12:21.** `ssh`, `scp`, `-L` and Ansible can all reach a device directly from the operator Mac, with the SMC box
+  as jump host and no software added to the box. Hop 1 uses `tsh proxy ssh` as `ProxyCommand`; hop 2 is an ordinary OpenSSH `-W` channel through the box, which needs the `permit-port-forwarding` role
+  extension (present on both clusters). Verified against `galiwinku-smc01` (`nbn_accelerate`) → `GAL_XV2_AP32_IP3_32` (`10.255.3.32`, dropbear), `show version` returned cleanly. Working stanza:
+
+  ```sshconfig
+  Host gal-smc
+      HostName galiwinku-smc01
+      HostKeyAlias galiwinku-smc01.teleport.communitywifi.net.au
+      User root
+      Port 3022
+      ProxyCommand /usr/local/bin/tsh proxy ssh --proxy=teleport.communitywifi.net.au %r@%h:%p
+      UserKnownHostsFile ~/.tsh/known_hosts
+      IdentityFile ~/.tsh/keys/teleport.communitywifi.net.au/<user>
+      CertificateFile ~/.tsh/keys/teleport.communitywifi.net.au/<user>-ssh/teleport.communitywifi.net.au-cert.pub
+      IdentitiesOnly yes
+  Host gal-xv2-32
+      HostName 10.255.3.32
+      User admin
+      ProxyJump gal-smc
+  ```
+
+  - `~/.tsh/known_hosts` trusts the host CA only for `*.teleport.<domain>`; with a bare node name as `HostName` the hop fails `Host key verification failed` — `HostKeyAlias` to the FQDN form fixes it
+    without changing what tsh routes to.
+  - A `Host *.teleport.communitywifi.net.au !teleport.communitywifi.net.au` wildcard block (mirroring the `tsh config`-generated APN one, but `--proxy=` only) was added to the operator's
+    `~/.ssh/config` 2026-09-21 and verified live: `ssh -J root@galiwinku-smc01.teleport.communitywifi.net.au admin@10.255.3.32 'show version'` works with no per-site stanza. With the FQDN as host
+    name, `HostKeyAlias` is not needed.
+  - **Device host keys collide across sites.** Site management subnets overlap, so `10.255.3.32` at one site and at another are different devices with different keys; a shared `~/.ssh/known_hosts`
+    will raise `REMOTE HOST IDENTIFICATION HAS CHANGED` on the second site. Key per site instead, e.g. `-o HostKeyAlias=<site>-<device-ip>` or a per-site `UserKnownHostsFile`. Never answer the
+    mismatch by deleting the old key blindly.
+  - The device password never touches the SMC box: feed it with `SSHPASS="$(kp show -s -a Password ...)" sshpass -e` (env var, not `-p`, which exposes it in argv).
+  - One unexplained first-attempt failure (`Connection closed`, askpass exec error) preceded two clean runs.
+  - **At a multi-SMC site, any box is a valid jump host for the whole site** (`USER_STATED`, operator, 2026-09-21). The boxes share one management address space as a VRRP-style redundant set (aurukun:
+    three boxes); if one fails, traffic moves to the others through the switching layer and the wireless network. A fixed `ProxyJump` does not fail over by itself — pick another box by hand, or use a
+    `ProxyCommand` that tries each in turn (untested). Device host keys stay keyed by site, not by box, because the device is the same whichever box you enter through. Implemented for
+    the controller's device pushes on 2026-09-26 (`unified-network-controller/wc-local/scripts/batch_push_devices.py` tries the site's other SMC boxes); see `06_failure-modes.md`.
+- **`--proxy` goes before the host (verified 2026-09-30).** `tsh ssh --proxy=teleport.communitywifi.net.au root@<node>` works; `tsh ssh root@<node>
+  --proxy=...` passes the flag to the node as a command and uses the default profile, failing with `dial tcp: lookup <node> ... server misbehaving`.
+- **Always name the proxy; never try one and then the other (operator, 2026-09-29).** A node name can exist on both clusters: `mungkarta-smc01` is a
+  BOXER-6404 on `teleport.communitywifi.net.au` and a Raspberry Pi (kernel `5.15.0-1078-raspi`) on `teleport.apn.au`. A loop that tries apn first and
+  keeps the first answer reads the wrong box without any error. Take the proxy from the box's flavour (inventory folder) or its Nautobot SMC Device.
 - **`--cluster=` is NOT a substitute for `--proxy=` on `teleport.communitywifi.net.au`, for ANY command — not just `-L` tunnels — and getting this wrong produces an error that convincingly fakes a
   real outage (incident 2026-09-18).** Two independent agent sessions in `cambium-swap` ran `tsh ls --cluster=teleport.communitywifi.net.au` / `tsh ssh --cluster=teleport.communitywifi.net.au
   root@hope-vale-smc01` and got `ERROR: connection error: desc = "transport: authentication handshake failed: EOF"` on every attempt, while `tsh status` showed a fully valid cached session (hours
@@ -579,7 +623,7 @@ and has real functional differences beyond the SSH endpoint — do not assume "c
 |                         |                                                                    |   **hosts, but `clamav-freshclam` failing on 26/26 — root cause confirmed: fleet-wide `clamav 0.103.x`** |
 |                         |                                                                    |   **is past its 2025-09-14 database-update end-of-life, CDN now hard-blocks it (HTTP 403)**, fix is a |
 |                         |                                                                    |   version upgrade to 1.0/1.4 LTS, not a retry. See `13_known-issues.md`.                              |
-| `smc_ltp` sub-group     | `rcp`-only static group (`inventories/rcp/prod`), 7 sites (all     | Not present — no cw-cluster equivalent                                                                |
+| `smc_ltp` sub-group     | `rcp`-only static group (`inventories/rcp/prod`), 9 sites (all     | No prod site; big_push stage only (daniel-test-nbn, 08)                                               |
 |                         |   "low touch"-onboarded) — dual purpose: (1) CNMaestro-managed     |                                                                                                       |
 |                         |   Cambium ePMP/cnPilot wireless backhaul provisioning, (2)         |                                                                                                       |
 |                         |   switches DNS resolver from unbound+stubby to bind9+RPZ. See      |                                                                                                       |
@@ -691,6 +735,9 @@ different* circuits as access-VLANs.
 ## Contents
 
 - [2. Service Architecture Map](#2-service-architecture-map)
+- [Live services and listeners, hope-vale-smc01 (2026-09-30)](#live-services-and-listeners-hope-vale-smc01-2026-09-30)
+- [snmpd on the SMC (canary, 2026-09-24)](#snmpd-on-the-smc-canary-2026-09-24)
+
 - Core networking
 - Netplan internet interface behavior
 - Remote access and tunneling
@@ -723,7 +770,7 @@ different* circuits as access-VLANs.
 |                   |   (non-`smc_ltp`      |                     |                              |   (`-L 60853:127.0.0.1:853`, not a reverse tunnel) to `teleport.apn.au:853` — not a public DoT      |
 |                   |   hosts)              |                     |                              |   resolver                                                                                          |
 | bind/named        | DNS resolver + RPZ    | `named`             | `/etc/bind/`                 | Gated `hosts: smc_ltp` — a static group defined in `inventories/rcp/prod` (INI inventory, not       |
-|   (`smc_dns_mgmt` |   content filter,     |                     |                              |   topology_vars-generated), **7** `rcp` sites: `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`,  |
+|   (`smc_dns_mgmt` |   content filter,     |                     |                              |   topology_vars-generated), **9** `rcp` sites: `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`,  |
 |   role)           |   replaces unbound    |                     |                              |   `warburton`, `beagle-bay`, `umoona` (all "low touch"-onboarded sites — see                        |
 |                   |   entirely            |                     |                              |   `08_ansible-authoring.md` "'Low Touch' Onboarding Method"). **Corrected 2026-08-03, twice same day**: |
 |                   |                       |                     |                              |   first found as "only `rcp`/guda-guda" (stale `.yml`-scoped grep missing the INI-format `prod`     |
@@ -743,15 +790,30 @@ different* circuits as access-VLANs.
 **Corrected 2026-07-03** (garimba-smc01 DNS RCA): the original "unbound = RCT flavor / bind = non-RCT flavors" framing above was a generalization from the initial single-host (`malik-rct01`, RCT)
 validation that turned out to be wrong once checked against the full repo. The real architecture split is: **unbound+stubby serves every flavor's DHCP/LAN clients** except hosts in the `smc_ltp`
 inventory group (which get bind9/RPZ instead via `smc_dns_mgmt`); this is orthogonal to flavor and currently coincides with 7 `rcp` sites (`guda-guda`, `pandanus-park`, `old-looma`, `new-looma`,
-`warburton`, `beagle-bay`, `umoona` — corrected 2026-08-03, see the row above). Separately, **the SMC's own DNS queries never go through unbound/stubby/bind at all** — they go through
-`systemd-resolved`/glibc directly to the same upstream servers, because the client-facing PREROUTING DNS redirect (`roles/smc_iptables/templates/iptables.smp.j2`) is scoped to the LAN-facing bridge
-interface, not the host's own OUTPUT traffic. Conflating "host DNS" and "client DNS" is a common source of confusion when debugging DNS delays reported from the box itself vs. from a connected client.
+`warburton`, `beagle-bay`, `umoona` — corrected 2026-08-03, see the row above) `pia` and `yakanarra` are members too (nine sites on `big_push`, re-read 2026-09-27); the row above predates them..
+Separately, **the SMC's own DNS queries never go through unbound/stubby/bind at all** — they go through `systemd-resolved`/glibc directly to the same upstream servers, because the client-facing
+PREROUTING DNS redirect (`roles/smc_iptables/templates/iptables.smp.j2`) is scoped to the LAN-facing bridge interface, not the host's own OUTPUT traffic. Conflating "host DNS" and "client DNS" is a
+common source of confusion when debugging DNS delays reported from the box itself vs. from a connected client.
 
 **Live-verified network layout (RCT):**
 - `eth1.500` → `bridge_500` (management VLAN, 10.255.0.0/24, DHCP .100-.110)
 - `eth1.501` → `bridge_501` (client VLAN, 10.0.0.0/23, DHCP .10-.254)
 
 **eth1 has no IP by design** — it is the VLAN trunk interface. IPs live only on VLANs (vlan521, vlan522) and bridges above it. This is correct even if `ip addr show eth1` shows no inet address.
+
+**x86 layout and its Nautobot record (2026-09-24, unified-network-controller canaries mornington, kalumburu, hope-vale).** The x86 boxes follow the same pattern on two trunk ports: `enp3s0.50N` and
+`enp4s0.50N` (or `enp1s0.50N` on a BOXER-6641) are members of `bridge_50N` and share their parent's MAC, while the internet uplinks are standalone VLAN interfaces (`vlan521`…`vlan538`, and
+`vlan621`/`vlan631` on the 6641 sites) with `72:77:77` MACs derived as above. 10 VLAN interfaces on the 6404 at kalumburu, 16 on each
+6641. `ip -d -j link show type vlan` (iproute2 5.15 here) returns each one's parent (`link`), VLAN ID and bridge (`master`) as JSON in one call; `ip -j link show type bridge`
+lists the bridges. unified-network-controller's `wc-local/scripts/seed_smc_devices.py` records them per box in Nautobot as `virtual` interfaces with parent, bridge and site VLAN (bridges per device,
+never in the device-type template) and reports drift against the box and `topology_vars`. That box read is the retrofit: the operator's target (2026-09-24) is Nautobot as the source each SMC syncs its
+network setup from and applies, with rollback.
+
+**Physical port order and the usual cabling (operator, 2026-09-24; confirmed on the same three canaries).** Left to right as the box is faced: BOXER-6404 `enp1s0`, `enp2s0`, `enp3s0`, `enp4s0`;
+BOXER-6641 `eno1`, `enp3s0`, `enp2s0`, `enp1s0` (so the 6641's lowest-MAC port, `enp1s0`, is physical port 4). Usual use: ports 1 and 2 are the first and second internet connections (each its own
+`/30` address), port 3 the trunk to switch 1 and port 4 the trunk to switch 2 (each carrying `.500/.501/.502` into the bridges). The standalone internet uplink VLANs also ride the trunks, split
+between them: 521/523/525/527/621 on switch 1's trunk, 532/534/536/538/631 on switch 2's. `vlan621` and `vlan631` held no address on either 6641 site that day. unified-network-controller records
+position as the interface label (`Port N`, from its catalog) and the role (Internet, Switch trunk) from what each interface carries on the box, noting any port that breaks this convention.
 
 ### Netplan Internet Interface Behavior (Critical)
 
@@ -948,6 +1010,31 @@ pending vs. offline is distinguished by whether the watchdog series has ever exi
 | mosquitto | MQTT broker | `mosquitto` | `/etc/mosquitto/` | IoT device telemetry |
 
 ---
+
+## Live services and listeners, hope-vale-smc01 (2026-09-30)
+
+Read-only (`systemctl list-units --type=service --state=running`, `ss -lntup`) on nbn_accelerate, BOXER-6641, Ubuntu 22.04.3: 60 running services.
+Listeners: sshd tcp/22, postfix tcp/25 on 0.0.0.0 (not in this map's intended set; open question), apache2 tcp/80 and 443, unbound tcp+udp/53
+(control 127.0.0.1:8953), squid tcp/3128-3131, iperf3 tcp/55200-55209 (ten `iperf552NN` units), prometheus tcp/9090, node_exporter tcp/9100,
+mosquitto tcp/1883 on the management address only, snmpd udp/161 on 10.255.0.1 and 127.0.0.1, ntpd udp/123 on every address, rsyslogd udp/514,
+dhcpd udp/67, stubby 127.0.0.1:60053, speedtest_exporter 127.0.0.1:9798, and the tsh forwards 127.0.0.1:50007, 59090, 60007, 60853. One
+`dhclient@<iface>` per DHCP uplink (eno1, enp3s0, vlan521-538, vlan621, vlan631). Also running: snapd, packagekit, ModemManager.
+
+The internet VLAN interfaces (`vlan5NN`, not bridged) carry their own locally administered MACs (`72:77:77:...`), not their parent port's; the
+bridged `enpXs0.50N` sub-interfaces and the starlink ones carry the port's MAC; bridge_500 and bridge_501 share the set MAC 72:77:77:00:00:01.
+unified-network-controller's proposal for which of these Nautobot records:
+[smc-services-in-nautobot-proposal-20260930_1421.md](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/architecture/smc-services-in-nautobot-proposal-20260930_1421.md).
+
+## snmpd on the SMC (canary, 2026-09-24)
+
+Until 2026-09-24 no SMC ran an SNMP agent: `snmpd` was absent everywhere, only the net-snmp client tools and `/etc/snmp/snmp.conf` (unified-network-controller's collector runs its
+`snmpget`/`snmpbulkwalk` against radios from the box). Operator, 2026-09-24: the SMCs become Nautobot Devices (x86 only) and the controller reads them over SNMP too. Canary on mornington-smc01,
+kalumburu-smc01 (apn) and hope-vale-smc01 (nbn): `apt-get install snmpd` (net-snmp 5.9, jammy), `/etc/snmp/snmpd.conf` rewritten (the distribution file kept as `snmpd.conf.dist`, mode 600):
+`agentaddress udp:<bridge_500 address>:161,udp:127.0.0.1:161`, `rocommunity <cluster read-only community> 10.255.0.0/19`, the same for 127.0.0.1, `sysLocation <site>`, `sysContact noc`. The community
+is the cluster's existing read-only one from the vault (`cambium-devices/apn-snmp-ro` / `nbn-snmp-ro`), never a new secret. Verified: `snmpget sysName` answers the box's hostname from its own
+management address on all three. Still a hand install, not an ansible-wifi role; a reimaged box loses it, and the fleet rollout belongs in the role with the community from the vault. **Pitfall
+recorded:** feeding the community as the first stdin line to `ssh host sh -s` executes it as a command and echoes it in stderr; carry it inside the script body (a quoted here-doc) instead. That
+mistake printed both read-only communities into one agent session's transcript on 2026-09-24 01:20; rotation of the two RO communities is recommended.
 ````
 
 ## File: references/03_communication-flows.md
@@ -1229,18 +1316,18 @@ communication, and formal stakeholder sign-off for deployment-specific decisions
 mornington. Useful when judging whether an unexpected VLAN is a new uplink or a typo.
 
 - **Every rcp site is wired with both VLAN blocks, but switch02 (`53x`) is cold standby by design at every site except Horn Island.** *(live-verified 2026-07-29, Grafana `rate()` on
-  `node_network_receive_bytes_total`, all seven sites)* Horn Island is the transition site — built at the point the fleet moved from two switches to one, with too many Starlink services to fit on a
-  single switch, so it's the only site actually using both. Every site built after it (all six others) shows exactly **0 bps** on every `53x` VLAN, live, right now — netplan/the hook still define
-  those VLANs (so they count toward a "missing N" hook-coverage gap), but nothing is physically plugged into switch02 there. **Do not size customer impact directly from a hook-coverage gap without
-  splitting switch01 from switch02 first** — on the four sites checked during the 2026-07-29 routing investigation, roughly half of each site's "missing" count was switch02, cold and harmless; only
-  the switch01 half was costing anything. A second refinement on the switch01 half itself: `ip -br link` showing an interface `UP` does not mean it's **leased** — `ip -br addr` (a real CGNAT address
-  present) is what distinguishes a genuine orphaned uplink (costing bandwidth right now) from an empty, never-provisioned slot (present in netplan, no dish behind it yet, costing nothing). **Caveat:**
-  this assumes switch02 stays unplugged — if it's ever wired up at a site whose `dhclient-enter-hooks` case list is stale, the hook's ignorance of those VLANs reproduces the exact same
-  stray-route/missing-route symptom the moment they go live.
+  `node_network_receive_bytes_total`, all seven sites)* **As at 2026-07-29, when rcp had seven production sites; not re-verified since the fleet grew.** Horn Island is the transition site — built at
+  the point the fleet moved from two switches to one, with too many Starlink services to fit on a single switch, so it's the only site actually using both. Every site built after it (all six others)
+  shows exactly **0 bps** on every `53x` VLAN, live, right now — netplan/the hook still define those VLANs (so they count toward a "missing N" hook-coverage gap), but nothing is physically plugged
+  into switch02 there. **Do not size customer impact directly from a hook-coverage gap without splitting switch01 from switch02 first** — on the four sites checked during the 2026-07-29 routing
+  investigation, roughly half of each site's "missing" count was switch02, cold and harmless; only the switch01 half was costing anything. A second refinement on the switch01 half itself: `ip -br
+  link` showing an interface `UP` does not mean it's **leased** — `ip -br addr` (a real CGNAT address present) is what distinguishes a genuine orphaned uplink (costing bandwidth right now) from an
+  empty, never-provisioned slot (present in netplan, no dish behind it yet, costing nothing). **Caveat:** this assumes switch02 stays unplugged — if it's ever wired up at a site whose
+  `dhclient-enter-hooks` case list is stale, the hook's ignorance of those VLANs reproduces the exact same stray-route/missing-route symptom the moment they go live.
 - **`LAN1`/`LAN2` (Testra-managed, residential-plan Starlink, 50 Mbps unlimited) are a separate uplink pair, outside the `Swp1/9`–`1/18` VLAN scheme entirely and not yet correlated to any
-  `topology_vars` interface key.** *(operator-reported provisioning table, 2026-07-29)* Present at six of seven sites (two lines each); Horn Island has only `LAN1`. Distinct from the direct-Starlink
-  enterprise-plan VLANs (`521`–`52N`/`531`–`53N`, 2 TB cap) this section otherwise describes — if a site-specific WAN count doesn't add up against `topology_vars`, check whether `LAN1`/`LAN2` are the
-  unaccounted-for difference before assuming a topology drift.
+  `topology_vars` interface key.** *(operator-reported provisioning table, 2026-07-29)* Present at six of the seven sites as at 2026-07-29 (two lines each); Horn Island has only `LAN1`. Distinct from
+  the direct-Starlink enterprise-plan VLANs (`521`–`52N`/`531`–`53N`, 2 TB cap) this section otherwise describes — if a site-specific WAN count doesn't add up against `topology_vars`, check whether
+  `LAN1`/`LAN2` are the unaccounted-for difference before assuming a topology drift.
 
 WAN interfaces are *not* managed by systemd-networkd. `netplan.yml.j2` renders every interface with `role: internet` or `role: starlink` as `activation-mode: manual` with **no `dhcp4` key**;
 `00-interface-activation.sh.j2` brings them up, and a per-interface `dhclient@<iface>.service` does DHCP using `ubuntu-dhclient-script.j2` (an APN fork of the CentOS dhclient script).
@@ -1285,9 +1372,9 @@ Consequences worth knowing before diagnosing any WAN routing question:
   VLAN that's since been removed from `topology_vars` (see `smc_network`'s idempotency gap below) has no running unit behind it and is currently inert — `systemctl list-units 'dhclient@*' --all` only
   ever shows real, live interfaces, never orphaned conf-file names. Useful when auditing whether a conf file on disk implies an active interface: it doesn't, check `dhclient@<name>.service` state
   directly rather than inferring from file presence.
-- **The deployed commit is a per-host fact, not a fleet-wide one.** Two of seven sites were found running a hook rendered from a *different branch* than the one believed deployed. Where a site's
-  topology differs between two candidate commits, the hook's case list identifies which one it came from — a cheap, reliable way to pin per-host deploy state. Where the commits define a site
-  identically the hook cannot discriminate, and that must be stated rather than assumed away.
+- **The deployed commit is a per-host fact, not a fleet-wide one.** Two of the seven sites as at 2026-07-29 were found running a hook rendered from a *different branch* than the one believed deployed.
+  Where a site's topology differs between two candidate commits, the hook's case list identifies which one it came from — a cheap, reliable way to pin per-host deploy state. Where the commits define a
+  site identically the hook cannot discriminate, and that must be stated rather than assumed away.
 - **A topology file can shrink.** One site's `internetNN` definitions went from 16 to 6 on a branch, and the shrunken render reached `smc_application` while netplan still held all 16. The failure
   looks identical to a site outgrowing its topology file; only the direction differs. **Stale `ip rule` entries are the forensic marker** — a rule with no matching hook entry is residue from an
   earlier render, since rules persist until deleted or reboot. An interface holding *both* a stale rule and a `metric 100` default is two renders coexisting, not a contradiction.
@@ -1409,9 +1496,9 @@ Consistent with shaping being rolled out per-site by hand rather than fleet-wide
 **Corrected 2026-07-30 — not "planned, not started".** A `smc_qos` role already exists in the repo, but it is gated `when: inventory_dir.split('/')|last == 'rct'` — it silently no-ops on every
 `rcp`/`nbn_accelerate` deploy. `--tags qos` ran clean during all three 2026-07-30 canary deploys and never fired. Manual TBF/`ifb` shaping (above) remains the only active mechanism on rcp, and it has
 NOT been extended to VLANs that were only newly fixed by the routing-drift remediation: 2 VLANs missing shaping at Pandanus Park, 10 at Umoona, 8 at Old Looma (as of 2026-07-30). Two open design
-questions if `smc_qos` is regated for rcp/nbn_accelerate: (1) the rate-variable shape needs to support Horn Island's per-VLAN split, not just a single per-host rate — six of seven sites use one rate,
-Horn Island needs two; (2) role placement/name relative to `smc_network`/`smc_application` in `smc_bases.yml`'s run order is unconfirmed. Source: `local-knowledge-ansible/ansible-wifi/
-issues/apn/routing-issue/docs/ingress-shaping-not-managed-or-extended-20260730_1245.md`.
+questions if `smc_qos` is regated for rcp/nbn_accelerate: (1) the rate-variable shape needs to support Horn Island's per-VLAN split, not just a single per-host rate — six of the seven sites as at
+2026-07-30 use one rate, Horn Island needs two; (2) role placement/name relative to `smc_network`/`smc_application` in `smc_bases.yml`'s run order is unconfirmed. Source:
+`local-knowledge-ansible/ansible-wifi/ issues/apn/routing-issue/docs/ingress-shaping-not-managed-or-extended-20260730_1245.md`.
 
 ### WAN-Path Diagnostic Techniques (from the 2026-07-30 dark-VLAN investigation)
 
@@ -1584,7 +1671,7 @@ Level 4 — Optional / Flavor-Specific
   apache2             → web app access (RCT: Kohana + Tstik)
   clamav-daemon / clamav-freshclam → antivirus hardening (nbn_accelerate only, apn-cluster-exclusive-absent)
   lynis               → security-audit CLI, on-demand only, no daemon (nbn_accelerate only)
-  smc_ltp (7 rcp sites — see 08_ansible-authoring.md) → bind9/named replaces unbound+stubby;
+  smc_ltp (9 rcp sites on big_push, 2026-09-21 — see 08_ansible-authoring.md) → bind9/named replaces unbound+stubby;
                          CNMaestro Cambium ePMP/cnPilot backhaul provisioning via a SEPARATE
                          smc_cnmaestro_provisioning role/playbook (smc_ltp.yml) — distinct
                          mechanism from the "cnmaestro-provisioning" service two rows above; do
@@ -1592,12 +1679,22 @@ Level 4 — Optional / Flavor-Specific
 ```
 
 **smc_ltp vs the generic `cnmaestro-provisioning` service — a naming collision risk, not yet fully resolved.** The Level 4 `cnmaestro-provisioning`/`redis` row above (WiFi AP cloud provisioning,
-`systemctl status cnmaestro-provisioning`, `redis-cli ping` — see `05_troubleshooting.md` Tier 4) predates the 2026-08-03 `smc_ltp` exploration and appears to describe a different mechanism:
-the `smc_ltp`-only path found 2026-08-03 uses `roles/smc_cnmaestro_provisioning` (a Python script + static YAML config, no Redis dependency observed) invoked by the standalone `smc_ltp.yml`
-playbook, not a `cnmaestro-provisioning` systemd service. Both provision Cambium/CNMaestro-managed wireless gear, so the naming overlap could be: (a) two genuinely separate provisioning paths
-for different hardware roles, (b) the same underlying mechanism described two different ways by different sessions, or (c) the Level 4 row above being written from a different flavor's
-architecture (RCT) than `smc_ltp` (`rcp`-only). Not resolved — check which flavor/host a given "cnmaestro-provisioning" troubleshooting reference actually applies to before assuming it's the
-same thing as `smc_ltp`'s CNMaestro provisioning. See `08_ansible-authoring.md` "smc_ltp Sub-Group" for the `smc_ltp` mechanism in full.
+`systemctl status cnmaestro-provisioning`, `redis-cli ping` — see `05_troubleshooting.md` Tier 4) predates the 2026-08-03 `smc_ltp` exploration and appears to describe a different mechanism: the
+`smc_ltp`-only path found 2026-08-03 uses `roles/smc_cnmaestro_provisioning` (a Python script + static YAML config, no Redis dependency observed) invoked by the standalone `smc_ltp.yml` playbook, not
+a `cnmaestro-provisioning` systemd service. Both provision Cambium/CNMaestro-managed wireless gear, so the naming overlap could be: (a) two genuinely separate provisioning paths for different hardware
+roles, (b) the same underlying mechanism described two different ways by different sessions, or (c) the Level 4 row above being written from a different flavor's architecture (RCT) than `smc_ltp`
+(`rcp`-only). Not resolved — check which flavor/host a given "cnmaestro-provisioning" troubleshooting reference actually applies to before assuming it's the same thing as `smc_ltp`'s CNMaestro
+provisioning. See `08_ansible-authoring.md` "smc_ltp Sub-Group" for the `smc_ltp` mechanism in full.
+
+**Resolved 2026-09-21 — answer (b): one mechanism, two versions on two branches.** The 2026-08-03 reading came from `master`, whose `cnmaestro-provisioning.py` is 3,222 lines with no Redis. The
+ansible-wifi `big_push` branch (36 commits by Daniel Gravolin, last 2026-08-25, not merged into `master`) grows the same script to 4,514 lines and adds Redis, from commit `5b415d9b` (2025-10-15):
+automatic location IDs and lot numbers. Verified live, read-only, the same day: `umoona-smc01` runs a 4,509-line copy byte-identical to `big_push` commit `40c283b6`, with `redis-server` active;
+`pandanus-park-smc01` runs a 4,509-line copy that matches no commit on any branch, i.e. it was deployed from uncommitted changes. So the Redis-dependent service is the `smc_ltp` low-touch script as
+the fleet actually runs it, and `master` is behind the fleet. `big_push` also routes cnMaestro calls through the internal Wi-Fi
+dashboard (`wifi.prod.apn-services.com.au`) — the NOC's own dashboard (there are two, one for APN and one for CW), which also serves as the API proxy between SMCs and cnMaestro (operator, 2026-09-21),
+and `big_push` will be merged into `master`
+later (operator, same day) — handles replacement
+devices, and sends WhatsApp installer and Teams NOC alerts. Recorded by the unified-network-controller architecture brief (point 3), which pins `big_push` as the low-touch source until it is merged.
 
 ---
 ````
@@ -1709,9 +1806,10 @@ same thing as `smc_ltp`'s CNMaestro provisioning. See `08_ansible-authoring.md` 
 ### Tier 3b: DNS Not Serving Clients (non-`smc_ltp` hosts — Unbound + Stubby)
 
 **Corrected 2026-07-03, membership count corrected twice 2026-08-03**: this is gated by `smc_ltp` inventory-group membership, not flavor — applies to every flavor's hosts except those in `smc_ltp` (a
-static `rcp`-only group, 7 sites — `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona`, all "low touch"-onboarded — see `08_ansible-authoring.md` "smc_ltp
-Sub-Group" for the full picture, including its unrelated CNMaestro backhaul-provisioning role). This tier only covers DHCP/LAN client DNS; the SMC's own DNS resolution is a separate
-`systemd-resolved`/glibc path — see `02_service-map.md` and `06_failure-modes.md` if the box itself (not a client) is slow to resolve names.
+static `rcp`-only group, 9 sites — `guda-guda`, `pia`, `umoona`, `warburton`, `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra` (nine on `big_push`, re-read 2026-09-27: `pia` and
+`yakanarra` had been missing from this list), all "low touch"-onboarded — see `08_ansible-authoring.md` "smc_ltp Sub-Group" for the full picture, including its unrelated CNMaestro
+backhaul-provisioning role). This tier only covers DHCP/LAN client DNS; the SMC's own DNS resolution is a separate `systemd-resolved`/glibc path — see `02_service-map.md` and `06_failure-modes.md` if
+the box itself (not a client) is slow to resolve names.
 
 ```
 1. Check Unbound:
@@ -1735,10 +1833,10 @@ Sub-Group" for the full picture, including its unrelated CNMaestro backhaul-prov
 
 ### Tier 3c: DNS Not Serving Clients (`smc_ltp` hosts only — BIND/named)
 
-Applies to the 7 static `smc_ltp` member sites only: `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona` (`rcp`-exclusive, all "low touch"-onboarded —
-`warburton`/`beagle-bay`/`umoona` added 2026-08-03 after the operator confirmed every low-touch site should be a member). These hosts also run CNMaestro-managed Cambium ePMP/cnPilot backhaul
-provisioning via a separate `smc_ltp.yml` playbook — if DNS is fine but backhaul radios aren't provisioning, check `roles/smc_cnmaestro_provisioning` and CNMaestro cloud connectivity instead, not this
-tier. See `08_ansible-authoring.md` "smc_ltp Sub-Group" for the full mechanism.
+Applies to the 9 static `smc_ltp` member sites only: `guda-guda`, `pia`, `umoona`, `warburton`, `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra` (nine on `big_push`, re-read
+2026-09-27: `pia` and `yakanarra` had been missing from this list) (`rcp`-exclusive, all "low touch"-onboarded — `warburton`/`beagle-bay`/`umoona` added 2026-08-03 after the operator confirmed every
+low-touch site should be a member). These hosts also run CNMaestro-managed Cambium ePMP/cnPilot backhaul provisioning via a separate `smc_ltp.yml` playbook — if DNS is fine but backhaul radios aren't
+provisioning, check `roles/smc_cnmaestro_provisioning` and CNMaestro cloud connectivity instead, not this tier. See `08_ansible-authoring.md` "smc_ltp Sub-Group" for the full mechanism.
 
 ```
 1. Check named:
@@ -2058,6 +2156,7 @@ instantly is almost always something answering, not something missing.
 ## Contents
 
 - [6. Failure Mode Reference](#6-failure-mode-reference)
+- [A full `netplan apply` leaves isc-dhcp-server in systemd's start limit (2026-09-27)](#a-full-netplan-apply-leaves-isc-dhcp-server-in-systemds-start-limit-2026-09-27)
 
 ---
 
@@ -2463,6 +2562,39 @@ VIP" first for the ownership correction that makes this an internal escalation.
 **Prevention**: nothing today audits site public egress IPs against the expected pool. See `03_communication-flows.md` "Per-Site Public Egress IP" for the `curl -sS https://api.ipify.org` check, the
 known per-site values, and the recommended fleet-wide audit. For the method used to prove the rejection was generated at the far end rather than by a nearby middlebox, see `05_troubleshooting.md`
 "Cross-Tier: Reject vs Drop, Where a Rejection Was Generated, and On-Box Tooling Gotchas".
+
+### Expired `tsh` Certificate Masquerades as a Fleet-Wide Device Failure (2026-09-25/26); a Refusing Box Masquerades as a Site Failure (aurukun, 2026-09-22/23)
+
+Found by unified-network-controller while building its alarm engine (its CHANGELOG 20260926_1810). Any automation that reaches devices through `tsh` (SSH to the SMC, `-L` tunnels) fails every call the
+moment the cluster's certificate lapses, and each failure looks like the device's own fault: 94 of 156 monitored devices went `critical` on 2026-09-25 with 17,309 `cert has expired` lines in the
+collector log and nothing naming the certificate. The same week, "Aurukun polls failing since 2026-09-22" was `aurukun-smc01` refusing SSH on the 22nd and 23rd, then the certificate; the site's other
+two boxes were fine.
+
+- **Check first, before any device diagnosis:** `tsh status` for each cluster you will cross (`teleport.apn.au`, `teleport.communitywifi.net.au`: separate logins, separate expiries); the controller
+  now refuses to poll a cluster whose certificate has lapsed and raises one alarm for it instead of one per device (`unified-network-controller/wc-local/scripts/run_collector.py`).
+- **At a multi-SMC site, fall back to the other boxes** before calling the site down: `01_overview.md`'s "any box is a valid jump host" is now implemented for the controller's pushes
+  (`unified-network-controller/wc-local/scripts/batch_push_devices.py`, 2026-09-26) and holds for hand diagnosis too.
+- Related earlier trap, same shape (the tool's error reads as the fleet's): `--cluster=` instead of `--proxy=` on `teleport.communitywifi.net.au`, `01_overview.md` "Remote Access".
+
+## A full `netplan apply` leaves isc-dhcp-server in systemd's start limit (2026-09-27)
+
+Seen on the virtual SMC `malik-rcp01` (Ubuntu 22.04, ansible-wifi `smc_bases.yml` shape) during unified-network-controller's Step 7 rehearsal, on an unchanged config. Mechanism: the `smc_dhcpd` role
+installs `/etc/networkd-dispatcher/routable.d/00-isc-dhcp-server-restart.sh`, which restarts `isc-dhcp-server` whenever a link becomes routable; `netplan apply` bounces every managed link at once
+(twelve on that box: three bridges, nine VLAN sub-interfaces), dhcpd restarts on each of them within seconds, and systemd stops it with `start-limit-hit`. The unit then shows `failed` and the site
+serves no DHCP until someone runs `systemctl reset-failed isc-dhcp-server; systemctl restart isc-dhcp-server`. A health check taken a few seconds after the apply can pass one second before it happens
+(02:07:39 ok, 02:07:40 failed).
+
+What avoids it: the apply surface ansible-wifi's own handler uses, `netplan generate` then `networkctl reload`, which reconfigures only the links whose config changed; and, after any apply or
+rollback, `systemctl reset-failed` plus `restart` of the services that bind to the bridges (`isc-dhcp-server`, `named`) before judging health. A rollback that restores the network and leaves DHCP dead
+is not a rollback (unified-network-controller `wc-local/scripts/smc_intent.py`, report `docs/reports/controller-option3/step7-smc-intent-rehearsal-20260927_0226.md`).
+
+Same hook, same risk anywhere many links become routable together: a reboot with many VLANs, an `ansible-playbook` run whose `networkctl reload` touches many links at once, a cable event on the trunk
+port. Worth checking on a production box after any of those: `systemctl is-active isc-dhcp-server`. The hook's own guard (`systemctl status` before `restart`) does not stop the storm; a
+`StartLimitIntervalSec`/`StartLimitBurst` override on the unit, or a debounce in the hook, would. **Proved on the virtual SMC 2026-09-27 02:48 to 02:51:** a drop-in with `StartLimitIntervalSec=60` and
+`StartLimitBurst=20` kept the unit active through a full `netplan apply` (6 restarts) and a simultaneous bounce of the three bridges (3 restarts); a debounced hook (`systemd-run --on-active=5 --unit
+unc-dhcpd-debounce --collect systemctl restart isc-dhcp-server`, re-armed per event) kept it active with 1 restart in each case. The drop-in survives the storm, the debounce removes it; both together
+cover a handler restart landing inside a burst. Recorded, with the box restored, in local-knowledge-ansible issues/rcp-fleet/rcp-dhcpd-start-limit-on-link-flap-20260927_0238.md. `UNVERIFIED` on a
+physical SMC: the count of links that flap under a real reload there.
 ````
 
 ## File: references/07_hardware-overlay.md
@@ -2472,14 +2604,59 @@ known per-site values, and the recommended fleet-wide audit. For the method used
 ## Contents
 
 - [7. Hardware Differences: x86 vs Raspberry Pi](#7-hardware-differences-x86-vs-raspberry-pi)
-- [Ubuntu Core suitability assessment (2026-09-17)](#ubuntu-core-suitability-assessment-2026-09-17)
-- [Other OS alternatives assessment (2026-09-17)](#other-os-alternatives-assessment-2026-09-17)
+  - [Ubuntu Core suitability assessment (2026-09-17)](#ubuntu-core-suitability-assessment-2026-09-17)
+  - [Other OS alternatives assessment (2026-09-17)](#other-os-alternatives-assessment-2026-09-17)
+  - [Storage health monitoring — two different tools, clarified 2026-07-13](#storage-health-monitoring--two-different-tools-clarified-2026-07-13)
+  - [Transcend SSD wear metric — firmware limitation, fixed fleet-wide (found 2026-06-02, root-caused 2026-07-13, Part 1 shipped + confirmed live 2026-07-17)](#transcend-ssd-wear-metric--firmware-limitation-fixed-fleet-wide-found-2026-06-02-root-caused-2026-07-13-part-1-shipped--confirmed-live-2026-07-17)
+  - [RPi/Swissbit microSD wear metrics — genuinely low fleet-wide usage, not a bug (investigated 2026-07-13)](#rpiswissbit-microsd-wear-metrics--genuinely-low-fleet-wide-usage-not-a-bug-investigated-2026-07-13)
+  - [Mismatched Transcend SSD pairs on BOXER-6641 — now a recurring pattern (3 nodes confirmed 2026-07-17→2026-07-21)](#mismatched-transcend-ssd-pairs-on-boxer-6641--now-a-recurring-pattern-3-nodes-confirmed-2026-07-172026-07-21)
+  - [Same 3 nodes: `smartmon.py`'s `remaining_lifetime_perc` didn't publish — fixed 2026-07-21 (attribute-169 name-resolution gap, not a hardware limitation)](#same-3-nodes-smartmonpys-remaining_lifetime_perc-didnt-publish--fixed-2026-07-21-attribute-169-name-resolution-gap-not-a-hardware-limitation)
+  - [`fatrace` not installed on ungoverned nodes — audit-methodology gotcha (found 2026-07-21, old-looma-smc01) — standing fix: install it, don't just substitute](#fatrace-not-installed-on-ungoverned-nodes--audit-methodology-gotcha-found-2026-07-21-old-looma-smc01--standing-fix-install-it-dont-just-substitute)
+  - [Verifying 12-fix parity on-box — two probe gotchas + what "healthy" looks like (2026-07-22)](#verifying-12-fix-parity-on-box--two-probe-gotchas--what-healthy-looks-like-2026-07-22)
+  - [NBN Accelerate / NBN WH Hardware Inventory (first live fleet sweep, 2026-08-03)](#nbn-accelerate--nbn-wh-hardware-inventory-first-live-fleet-sweep-2026-08-03)
 - [8. Overlay Filesystem (Critical Concept)](#8-overlay-filesystem-critical-concept)
+  - [Structure](#structure)
+  - [Runtime Behavior](#runtime-behavior)
+  - [The copy_up cost model — size at first write, not write rate (established 2026-08-18)](#the-copy_up-cost-model--size-at-first-write-not-write-rate-established-2026-08-18)
+  - [`overlay.size_ratio` is inert — the budget is always 50% of RAM (verified at source 2026-08-18)](#overlaysize_ratio-is-inert--the-budget-is-always-50-of-ram-verified-at-source-2026-08-18)
+  - [`recurse=0` — the escape hatch that is already unlocked (verified at source 2026-08-18)](#recurse0--the-escape-hatch-that-is-already-unlocked-verified-at-source-2026-08-18)
+  - [Bounding writes instead: `roles/smc_rise_logcaps` (added 2026-08-18)](#bounding-writes-instead-rolessmc_rise_logcaps-added-2026-08-18)
+  - [x86 boxes: no overlayroot; which paths are tmpfs (verified 2026-09-22)](#x86-boxes-no-overlayroot-which-paths-are-tmpfs-verified-2026-09-22)
+  - [Checking Overlayroot Status](#checking-overlayroot-status)
+  - [Configuration](#configuration)
+  - [Ansible + Overlayroot](#ansible--overlayroot)
+  - [Disable Sequence (when needed)](#disable-sequence-when-needed)
+  - [Read-Only Migration Status (per flavor)](#read-only-migration-status-per-flavor)
+  - [`smc_disk_failover` role — EFI BootNext mechanism, not a guaranteed live-corruption failover](#smc_disk_failover-role--efi-bootnext-mechanism-not-a-guaranteed-live-corruption-failover)
+  - [rcp Disk Write Profile (confirmed jigalong-smc01, 2026-04-20; re-confirmed 3 more nodes 2026-07-20)](#rcp-disk-write-profile-confirmed-jigalong-smc01-2026-04-20-re-confirmed-3-more-nodes-2026-07-20)
+  - [url_capture DNS Monitoring Service (rcp only)](#url_capture-dns-monitoring-service-rcp-only)
+  - [fatrace write-rate audits: filter bug — RO/RC/RCO counted as writes (2026-07-09)](#fatrace-write-rate-audits-filter-bug--rorcrco-counted-as-writes-2026-07-09)
+  - [fatrace write counts measure syscalls, not physical disk I/O (2026-07-15)](#fatrace-write-counts-measure-syscalls-not-physical-disk-io-2026-07-15)
+  - [fatrace excludes tmpfs entirely — every sweep in this project is real-disk-only (confirmed 2026-07-24)](#fatrace-excludes-tmpfs-entirely--every-sweep-in-this-project-is-real-disk-only-confirmed-2026-07-24)
 - [Orphaned persistent journal after the volatile conversion (~44 GB fleet-wide, reclaimed 2026-07-28)](#orphaned-persistent-journal-after-the-volatile-conversion-44-gb-fleet-wide-reclaimed-2026-07-28)
+  - [`journalctl --vacuum-*` cannot do this job](#journalctl---vacuum--cannot-do-this-job)
+  - [Safe reclaim procedure](#safe-reclaim-procedure)
 - [Fleet status-probe gotchas — three checks that read as fleet-wide failures but are wrong paths (verified 2026-08-25)](#fleet-status-probe-gotchas--three-checks-that-read-as-fleet-wide-failures-but-are-wrong-paths-verified-2026-08-25)
+  - [Teleport node name can differ from hostname and inventory name](#teleport-node-name-can-differ-from-hostname-and-inventory-name)
+  - [Inventory group membership proves eligibility, not application](#inventory-group-membership-proves-eligibility-not-application)
 - [Write-rate sweeps are blind to burst writers (2026-08-26)](#write-rate-sweeps-are-blind-to-burst-writers-2026-08-26)
+  - [Events are not bytes](#events-are-not-bytes)
+  - [Windows miss burst writers entirely — this is the bigger problem](#windows-miss-burst-writers-entirely--this-is-the-bigger-problem)
+  - [snapd is a read-only-root blocker, not just a wear problem](#snapd-is-a-read-only-root-blocker-not-just-a-wear-problem)
+  - [Lifetime counters are contaminated by pre-remediation history — do not use them](#lifetime-counters-are-contaminated-by-pre-remediation-history--do-not-use-them)
+  - [What the continuous writers actually are (2026-08-26, 9 nodes)](#what-the-continuous-writers-actually-are-2026-08-26-9-nodes)
+  - [Tooling](#tooling)
 - [The 24 h write baseline, and what two attribution passes buy you (2026-08-27/28 capture)](#the-24-h-write-baseline-and-what-two-attribution-passes-buy-you-2026-08-2728-capture)
+  - [The collector runs two passes that share no mechanism — compare them per node](#the-collector-runs-two-passes-that-share-no-mechanism--compare-them-per-node)
+  - [Rewrite-in-place bytes are an UPPER bound — the direction matters and has been got wrong](#rewrite-in-place-bytes-are-an-upper-bound--the-direction-matters-and-has-been-got-wrong)
+  - [Process-sum figures are a floor, not a total — 30–42% of device bytes are unattributed](#process-sum-figures-are-a-floor-not-a-total--3042-of-device-bytes-are-unattributed)
+  - [squidguard is the largest single writer at ~440 MB/node/day](#squidguard-is-the-largest-single-writer-at-440-mbnodeday)
+  - [A single window never gives an event-driven writer's daily rate — snapd is the worked example](#a-single-window-never-gives-an-event-driven-writers-daily-rate--snapd-is-the-worked-example)
+  - [squidguard is silently dead on mornington and bidyadanga](#squidguard-is-silently-dead-on-mornington-and-bidyadanga)
+  - [rsyslogd spread is 6.7× and unexplained](#rsyslogd-spread-is-67-and-unexplained)
+- [AAEON DMI serials follow the BIOS build, not the OS (fleet survey 2026-09-29)](#aaeon-dmi-serials-follow-the-bios-build-not-the-os-fleet-survey-2026-09-29)
 - [Cambium radio and AP estate by flavour (operator-stated 2026-09-14)](#cambium-radio-and-ap-estate-by-flavour-operator-stated-2026-09-14)
+
 - Hardware differences: x86 vs Raspberry Pi
 - NBN Accelerate / NBN WH hardware inventory (first live fleet sweep)
 - Overlay filesystem structure and runtime behavior
@@ -2544,8 +2721,8 @@ Conditional Branching" for the full selector-mechanism reference.
 
 ### Ubuntu Core suitability assessment (2026-09-17)
 
-**Design recommendation — not implemented or canary-tested:** retain Ubuntu Server LTS as the standard OS for new Raspberry Pi SMCs; do not introduce Ubuntu Core into the current SMC appliance
-fleet. This is an SMC-workload conclusion, not a claim that Ubuntu Core is unsuitable for embedded devices generally.
+**Design recommendation — not implemented or canary-tested:** retain Ubuntu Server LTS as the standard OS for new Raspberry Pi SMCs; do not introduce Ubuntu Core into the current SMC appliance fleet.
+This is an SMC-workload conclusion, not a claim that Ubuntu Core is unsuitable for embedded devices generally.
 
 The existing `smc_bases.yml` design assumes a conventional Ubuntu host that Ansible manages as `root`: it runs APT/package tasks and directly manages `/etc`, `/usr/local`, `/var`, systemd units,
 netplan/systemd-networkd, DHCP/DNS, hostapd, iptables/netfilter-persistent, Teleport/autossh, Prometheus and application services. RISE already makes the normal Server root filesystem disposable with
@@ -2559,8 +2736,9 @@ Before reconsidering Core, create a separate greenfield appliance design and can
 model/gadget/image and refresh policy, and prove on a Pi under realistic constrained-link conditions: hostapd/AP mode, DHCP/DNS, netfilter/traffic control, routing/failover, Teleport reverse access,
 telemetry, storage-health collection, updates and recovery. Treat an existing SMC migration as out of scope until that canary has passed; it should not be used as an SD-card reliability shortcut.
 
-**Sources:** Canonical, [Ubuntu Core documentation](https://documentation.ubuntu.com/core/) (last updated 2026-04-21); [Using Ubuntu Core](https://documentation.ubuntu.com/core/how-to-guides/using-ubuntu-core/)
-(last updated 2026-08-21); [Snap confinement](https://documentation.ubuntu.com/security/security-features/privilege-restriction/snap-confinement/) (retrieved 2026-09-17).
+**Sources:** Canonical, [Ubuntu Core documentation](https://documentation.ubuntu.com/core/) (last updated 2026-04-21); [Using Ubuntu
+Core](https://documentation.ubuntu.com/core/how-to-guides/using-ubuntu-core/) (last updated 2026-08-21); [Snap
+confinement](https://documentation.ubuntu.com/security/security-features/privilege-restriction/snap-confinement/) (retrieved 2026-09-17).
 
 ### Other OS alternatives assessment (2026-09-17)
 
@@ -2577,8 +2755,8 @@ the same Server release that has been ARM-canary-qualified for the fleet; OS rel
 **VERIFIED_PRIMARY (retrieved 2026-09-17):** Raspberry Pi OS is Debian-based and supports APT-managed packages, including Pi kernel and firmware updates; OpenWrt is a Linux distribution for embedded
 devices, typically wireless routers. The suitability decisions above are an inference from those models and the verified SMC workload, not claims of general-purpose superiority.
 
-**Sources:** Raspberry Pi, [Raspberry Pi OS documentation](https://www.raspberrypi.com/documentation/computers/os.html) (retrieved 2026-09-17); OpenWrt, [Documentation overview](https://openwrt.org/docs/start)
-(retrieved 2026-09-17).
+**Sources:** Raspberry Pi, [Raspberry Pi OS documentation](https://www.raspberrypi.com/documentation/computers/os.html) (retrieved 2026-09-17); OpenWrt, [Documentation
+overview](https://openwrt.org/docs/start) (retrieved 2026-09-17).
 
 ### Storage health monitoring — two different tools, clarified 2026-07-13
 
@@ -2879,6 +3057,39 @@ Mechanics that are easy to get wrong, all of them learned the hard way:
   fluent-bit ships one malformed record.
 
 The scan is `-xdev`, so it is forward-compatible with the structural fix: anything later moved onto its own filesystem drops out of scope automatically and correctly.
+
+### x86 boxes: no overlayroot; which paths are tmpfs (verified 2026-09-22)
+
+Operator, 2026-09-22: only RPi and WH boxes run overlayroot. x86 SMCs have a plain LVM/ext4 root (`overlayroot=""` in `/etc/overlayroot.conf`), so an `apt install` survives a reboot there. Scratch
+data that must not touch disk goes on a tmpfs mount, and those mounts differ box to box:
+
+| Box (x86)          | `/`  | `/tmp` | `/run` | `/dev/shm` |
+| ------------------ | ---- | ------ | ------ | ---------- |
+| mowanjum-smc01     | ext4 | tmpfs  | tmpfs  | tmpfs      |
+| hope-vale-smc01    | ext4 | ext4   | tmpfs  | tmpfs      |
+| horn-island-smc01  | ext4 | —      | tmpfs  | —          |
+
+`—` = not checked.
+
+Use `/run` (systemd's tmpfs) for throwaway files and check it with `stat -f -c %T /run` first. mowanjum-smc01 also mounts tmpfs on `/run/url_capture`, `/var/lib/fluent-bit/pos`,
+`/var/lib/node_exporter/textfile_collector`, `/var/lib/prometheus` and `/var/log/smc-groups` (the last from `/etc/tmpfiles.d/smc-log-groups.conf`).
+
+**fping** (2026-09-22): not in any ansible-wifi role. Installed by hand with apt (5.1-1, jammy) on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability
+pre-check (`wc-local/scripts/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That script
+falls back to `ping`, and a fleet install belongs in an ansible-wifi role.
+
+**fping fleet install (2026-09-23, operator: "install fping where needed").** A survey of all 36 `<site>-smc01` nodes in Nautobot found fping on only those three; `apt-get install -y fping` (5.1-1,
+jammy) then ran on the other 32 reachable boxes plus aurukun-smc02 and aurukun-smc03, all x86 22.04 with an ext4 root except bungardi and darlngunaya (aarch64, no overlay mounted, so the install
+persists there too). mungkarta-smc01 was unreachable and still lacks it. **bungardi and darlngunaya are `nbn_wh` sites and the operator's rule is not to touch `nbn_wh`**; the install there predated
+the instruction and was removed the same evening (`apt-get remove --purge fping`, 21:27) on the operator's call; both boxes are back as found. The one-shot survey pitfall: an `ssh host sh -c 'cmd'`
+with the command passed as separate ssh arguments is re-joined on the box, so `command -v` tested nothing and reported yes everywhere; pass the whole remote command as one string. Still not in any
+ansible-wifi role, so a reimaged box loses it: the durable fix is a package entry in the base role.
+
+**fping approval per flavour, and the install guard (2026-09-27, operator: "I am fine with installing fping to rcp and nbn_accelerate flavors when needed").** fping may be installed wherever it is
+missing on any `rcp` or `nbn_accelerate` box; any other package, or any other flavour, needs the box chosen one by one. unified-network-controller's `wc-local/scripts/smc_package_check.py` builds its
+node list from every Nautobot Location with a programme tenant, so seeding the nine `smc_ltp` Locations that day had silently widened `--install` to nine more production boxes; its `install_targets`
+guard now installs only on a node whose package is approved for its flavour (`APPROVED_INSTALLS`), whose SMC Device exists in Nautobot, or that was named with `--nodes`. Both approved flavours are x86
+with a plain ext4 root, so the approval never meets an overlayroot (those are the RPi and WH flavours: `rct`, `wh`, `nbn_wh`); `nbn_wh` stays skipped.
 
 ### Checking Overlayroot Status
 
@@ -3219,6 +3430,24 @@ restored, not suppressed. Textbook RULE-008 — low write volume as the visible 
 mornington 672.8 MB/day against umoona's 100.9 — the largest single line item in the dataset, 2.1× the fleet median, not explained by site size. mornington also carries the known 64 MB `auth.log` and
 the unremediated auth-filter.
 
+
+## AAEON DMI serials follow the BIOS build, not the OS (fleet survey 2026-09-29)
+
+Read-only `dmidecode` over every reachable x86 SMC (unified-network-controller `captures/smc-dmi-serial-survey-20260929_1829.tsv`). The system serial is a
+placeholder on every box; the baseboard serial is real or a placeholder by BIOS build, which marks the factory batch:
+
+| Model | BIOS | Baseboard serial | Boxes |
+|---|---|---|---|
+| BOXER-6404 | B404BM16 (2022-05-18) | real (`2401…`, `2302…`, `2600…`) | 14 of 14 |
+| BOXER-6404 | B404BM14 (2019-02-19), B404BM10 (2015-07-16, kalumburu) | `To be filled by O.E.M.` | 10 of 10 |
+| BOXER-6641 | B641HM17 (2021-09-08) | real (`24A0…`, `2400…`, `2302…`) | 12 of 13 (doomadgee: `Default string`) |
+| BOXER-6641 | B641HM20 (2024-09-19) | `Default string` | 3 of 3 (beagle-bay, old-looma, warburton) |
+
+Ubuntu 22.04.1, .3 and .4 appear on both sides, so the OS does not decide it; `dmidecode` only reads the SMBIOS table the factory wrote. For the 14 boxes with
+no real serial, unified-network-controller's SMC seed records the identity anchor (lowest port MAC) as the serial: hex, upper case, no separators, leading
+zeros dropped (`00:07:32:92:3F:E7` -> `732923FE7`; operator, 2026-09-29). Two boxes answer to `mungkarta-smc01`: the nbn one is a BOXER-6404, the apn one a
+Raspberry Pi (kernel `5.15.0-1078-raspi`, no DMI), so a read by name must name the proxy.
+
 ## Cambium radio and AP estate by flavour (operator-stated 2026-09-14)
 
 Recorded while bootstrapping the Cambium/cnMaestro continuity project (`/Volumes/Data/_ai/_project/project_stuff/apn/cambium-swap/`), after Cambium Networks, Ltd was reported to have filed a Notice of
@@ -3242,6 +3471,9 @@ SMC facts that matter to cnMaestro continuity:
   DHCP change unless the Elastic IP is kept.
 - The `smc_ltp` flavour points at the On-Premises instance `lt-cnmaestro.apn.au` and runs `smc_cnmaestro_provisioning` against its local REST API.
 - The r195P router template hard-codes `cns_static_url=https://cloud.cambiumnetworks.com`, so those routers are managed by the Cambium-hosted cnMaestro Cloud, not by APN's On-Prem instances.
+  **Corrected 2026-09-27 (read-only capture, unified-network-controller `captures/r195-tftp-wangkatjungka-smc01-20260927_1947`):** that is true of the template in git, not of every box.
+  wangkatjungka-smc01's 200 live configs (26 Sep) carry `cns_static_url=https://apn-cnmaestro01.apn.au/`, rendered from a template that is in no ansible-wifi branch; a re-run of
+  `smc_router_provisioning` from git would point them back at Cloud. The server is a per-era value (Cloud, `lt-cnmaestro`, `apn-cnmaestro01`, then unified-network-controller; operator).
 - `smc_dns_mgmt` deploys an empty `cambium-rpz` response-policy zone (`force: no`); its live contents are node-managed and unrecorded.
 - The cnMaestro On-Premises 6.0.0 User Guide documents a 90-day grace period after the instance loses subscription sync with the Cambium Cloud Anchor. At expiry "all the devices will be moved to the
   onboarding queue", so new low-touch onboarding and device approval stop once the Anchor is gone.
@@ -3259,12 +3491,15 @@ Full analysis, evidence and tests live in the cambium-swap project; do not dupli
 - [tmpfs relocations need `tmpfiles.d`, not just a `file:` task (2026-07-28)](#tmpfs-relocations-need-tmpfilesd-not-just-a-file-task-2026-07-28)
 - [Reclaiming state that a role's own tooling can't see (`smc_system` journal reclaim, 2026-07-28)](#reclaiming-state-that-a-roles-own-tooling-cant-see-smc_system-journal-reclaim-2026-07-28)
 - [Narrowing tags: ask what the tag EXCLUDES (2026-07-28)](#narrowing-tags-ask-what-the-tag-excludes-2026-07-28)
-- [`smc_network` VRF template requires netplan ≥ 0.106 — the whole fleet runs 0.104 (2026-08-25)](#smc_network-vrf-template-requires-netplan-0106-the-whole-fleet-runs-0104-2026-08-25)
-- [`smc_rsyslog`'s squid stop fails on squid's own drain window — fixed 2026-08-26](#smc_rsyslogs-squid-stop-fails-on-squids-own-drain-window-fixed-2026-08-26)
+- [`smc_network` VRF template requires netplan ≥ 0.106 — the whole fleet runs 0.104 (2026-08-25)](#smc_network-vrf-template-requires-netplan--0106--the-whole-fleet-runs-0104-2026-08-25)
+- [`smc_rsyslog`'s squid stop fails on squid's own drain window — fixed 2026-08-26](#smc_rsyslogs-squid-stop-fails-on-squids-own-drain-window--fixed-2026-08-26)
 - [Guarded pre-split syslog reclaim in `smc_rsyslog` (added 2026-08-26)](#guarded-pre-split-syslog-reclaim-in-smc_rsyslog-added-2026-08-26)
 - [Code notes: where the long explanation goes, and what it can and cannot survive (2026-08-27)](#code-notes-where-the-long-explanation-goes-and-what-it-can-and-cannot-survive-2026-08-27)
 - [`smc_squid`'s blocklist refresh: how it actually works, and the transport nobody checked (2026-09-01)](#smc_squids-blocklist-refresh-how-it-actually-works-and-the-transport-nobody-checked-2026-09-01)
 - [Two silent-failure gotchas found in `smc_system`/`smc_update_kernel` (2026-09-01/03)](#two-silent-failure-gotchas-found-in-smc_systemsmc_update_kernel-2026-09-0103)
+- [`smc_dhcpd` on branch `unc-virtual-smc-malik-rcp01`: debounced restart hook and a start limit (2026-09-27)](#smc_dhcpd-on-branch-unc-virtual-smc-malik-rcp01-debounced-restart-hook-and-a-start-limit-2026-09-27)
+- [What a low-touch SMC keeps per device, and where it comes from (read 2026-09-27, branch `unc-virtual-smc-malik-rcp01`)](#what-a-low-touch-smc-keeps-per-device-and-where-it-comes-from-read-2026-09-27-branch-unc-virtual-smc-malik-rcp01)
+
 - Operational learning capture
 - Task key order (`when:` last, `tags:` after it) — and why ansible-lint disagrees
 - Code notes: RULE-006 split, note provenance, and what survives a branch switch
@@ -3388,8 +3623,8 @@ folder name:
 | `smc_qos` role | `inventory_dir.split('/') | last == 'rct'` | QoS role exists but silently no-ops on |
 |  |  |  |   `rcp`/`nbn_accelerate`/`wh` — |
 |  |  |  |   see `13_known-issues.md` |
-| `smc_ltp` sub-group (CNMaestro backhaul + DNS switch —   | `'smc_ltp' in group_names`; group membership from `inventories/rcp/prod` (static INI),     | `rcp`-only (apn-cluster), no                 |
-|   see below)                                             |   vars from `inventories/rcp/group_vars/smc_ltp.yml`                                       |   cw-cluster equivalent                      |
+| `smc_ltp` sub-group (CNMaestro backhaul + DNS switch —   | `'smc_ltp' in group_names`; group membership from `inventories/rcp/prod` (static INI),     | `rcp`; nbn only on big_push                  |
+|   see below)                                             |   vars from `inventories/rcp/group_vars/smc_ltp.yml`                                       |   (2026-09-29, see below)                    |
 
 **`smc_autossh` cluster/Teleport-endpoint selection.** `roles/smc_autossh/tasks/main.yml` copies pem/key files from `roles/smc_autossh/files/{{ teleport_fqdn }}/...`. `teleport_fqdn` is set in
 `smc_bases.yml` from the per-inventory group_var `smc_bases_teleport_fqdn` (`inventories/{rcp,rct,wh}/group_vars/smc_bases.yml` → `teleport.apn.au`;
@@ -3410,12 +3645,13 @@ mDNS-related at all. Direct read of `smc_ltp.yml`, `inventories/rcp/group_vars/s
 the full picture:
 
 **Membership.** `smc_ltp` is a **static** Ansible group defined in `inventories/rcp/prod` (INI inventory — not generated by `topology_vars.py`, so it will not show up in a `topology_vars/*.yml`
-review). 7 `rcp` sites are members, each via a per-site `<site>_smc_ltp` child group: `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona`. `rcp`-exclusive — no
-other flavor (`apn`, `rct`, `wh`, `cw`, `nbn_accelerate`, `nbn_wh`) defines an `smc_ltp` group or any `smc_ltp_*` var. **Corrected 2026-08-03 (same day, twice)**: first found 4 members from direct
-`inventories/rcp/prod` read; operator then confirmed the group is meant to track every "low touch" onboarding site (see below) and directed adding the 3 that were missing (`warburton`, `beagle-bay`,
-`umoona`) — a real inventory gap, not a re-read miss. Verified via `ansible-inventory -i inventories/rcp/prod --playbook-dir . --list` (`smc_ltp:children` lists all 7) and `ansible-playbook -i
-inventories/rcp/prod --syntax-check smc_ltp.yml` (clean). File-level Ansible inventory change, uncommitted as of this edit — not yet run against any live SMC; adding a host here makes it *eligible*
-for the `dns_mgmt` play and `smc_ltp.yml` on the next real run, it does not trigger anything itself.
+review). 9 `rcp` sites are members, each via a per-site `<site>_smc_ltp` child group: `guda-guda`, `pia`, `umoona`, `warburton`, `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra`
+(nine on `big_push`, re-read 2026-09-27: `pia` and `yakanarra` had been missing from this list). `rcp`-exclusive — no other flavor (`apn`, `rct`, `wh`, `cw`, `nbn_accelerate`, `nbn_wh`) defines an
+`smc_ltp` group or any `smc_ltp_*` var. **Corrected 2026-08-03 (same day, twice)**: first found 4 members from direct `inventories/rcp/prod` read; operator then confirmed the group is meant to track
+every "low touch" onboarding site (see below) and directed adding the 3 that were missing (`warburton`, `beagle-bay`, `umoona`) — a real inventory gap, not a re-read miss. Verified via
+`ansible-inventory -i inventories/rcp/prod --playbook-dir . --list` (`smc_ltp:children` lists all 7) and `ansible-playbook -i inventories/rcp/prod --syntax-check smc_ltp.yml` (clean). File-level
+Ansible inventory change, uncommitted as of this edit — not yet run against any live SMC; adding a host here makes it *eligible* for the `dns_mgmt` play and `smc_ltp.yml` on the next real run, it does
+not trigger anything itself.
 
 **Purpose 1 — CNMaestro wireless backhaul/CPE provisioning.** A standalone top-level playbook, `smc_ltp.yml` (separate entry point from `smc_bases.yml`), targets `hosts: smc_ltp` and runs the
 `smc_cnmaestro_provisioning` role (`roles/smc_cnmaestro_provisioning/files/cnmaestro-provisioning.py`) against `smc_ltp_cnmaestro_provisioning` (defined in `inventories/rcp/group_vars/smc_ltp.yml`).
@@ -3432,10 +3668,66 @@ other host gets — see `02_service-map.md` for the full DNS-resolver comparison
 **`smc_dhcpd` LTP-specific fix.** `roles/smc_dhcpd/tasks/ubuntu.yml` has an apparmor-profile-removal + service-user block gated `when: "'smc_ltp' in group_names"` — runs `isc-dhcp-server` as root
 instead of the default `dhcpd` user on LTP hosts, unrelated to the DNS or CNMaestro purposes above.
 
+**How the provisioning script is driven and decides (read from `origin/big_push`, 2026-09-23).** `roles/smc_dhcpd/templates/dhcpd.conf.j2` line 169 runs it on every lease commit as
+`execute("/usr/bin/python3", "/usr/local/lib/cnmaestro-provisioning/cnmaestro-provisioning.py", clhw, clip, clvci, clrid)`: the device MAC, leased IP, DHCP Vendor Class Identifier and DHCP Option 82
+Remote ID. The script daemonises and holds a per-MAC lock under `/var/local/cnmaestro-provisioning/`. Family comes from the Vendor Class Identifier (`Cambium-cnPilot R…` home CPE, `Cambium-WiFi-AP`
+enterprise AP, `Cambium` ePMP). Before acting it requires the device to be claimed and online in cnMaestro, its upstream device (from Option 82) fully onboarded, and for ePMP the technician's Sidekick
+step done. A device in `WAITING_FOR_APPROVAL` is a replacement when a replaced MAC is recorded (cnMaestro description first, else on the device), otherwise new: new devices are pre-provisioned and
+approved in cnMaestro with a location ID from a Redis counter and the model's template; replacements require the old unit onboarded, offline and in the same managed account and network. Outcomes go to
+Teams and WhatsApp. Every gate and action is a cnMaestro call, so the method stops without cnMaestro. unified-network-controller documents a Nautobot-first equivalent in its
+`docs/inventory/inventory-rebuild-without-cnmaestro-20260923_1830.md`.
+
 **Open question — the acronym.** "LTP" is not expanded anywhere in the codebase (no comment, no README, no commit message found). Functional purpose is well-evidenced from code; the literal meaning of
 the letters is not — do not guess/state one as fact without an operator confirmation.
 
 ---
+
+**Low-touch is per box, and visible from the box (verified read-only 2026-09-28, unified-network-controller).** A box that is not low-touch has none of it: junjuwa-smc01 and arawerr-smc01
+(`nbn_accelerate`) have no `/etc/bind/db.cambium-rpz`, BIND inactive, and no `cnmaestro-provisioning` line in `/etc/dhcp/dhcpd.conf`. So a missing zone file means "not low-touch", not a failed read;
+unified-network-controller's onboarding reads it with `test -e` and treats absence as nothing to import. The test box **daniel-test-nbn-smc01** (cw, `teleport.communitywifi.net.au`) carries the
+machinery (zone file of 355 bytes dated 16 Sep, header only; BIND and `isc-dhcp-server` active; the `on commit` provisioning line) but is in no `smc_ltp` group; the operator approved converting it to
+low-touch through the stage inventory and testing freely on it (keep connectivity; back up its R195 at 10.255.11.1 and XV2 at 10.255.0.212 first).
+
+**Corrected 2026-09-29 (unified-network-controller, CHANGELOG 20260929_1819): nbn low-touch exists, on `big_push` only.** Daniel's `7cfb7a38` puts
+daniel-test-nbn-smc01 in `[daniel-test-nbn_smc_ltp]` under `smc_ltp:children` in `inventories/nbn_accelerate/stage`, and `9e60b1c9` (with later edits to
+`338f90cf`) adds `inventories/nbn_accelerate/group_vars/smc_ltp.yml`: host `nbn.prod.apn-services.com.au`, address 52.63.121.56 (the address in the test box's
+option 43; `lt-cnmaestro.communitywifi.net.au` in `9e60b1c9`, renamed by `4431e2dc` on 2026-01-19, when rcp's big_push host became
+`wifi.prod.apn-services.com.au`, 3.105.84.178; the working tree's rcp file still names `lt-cnmaestro.apn.au`). Unlike rcp's static `client_secret`, big_push's `smc_ltp.yml` play first POSTs `/wifi-dashboard/smc/v1/sites/<site_eclipse_siteid>/access-keys`
+on that host with a master `ltp_api_token` and registers `client_secret` from the reply, and the `smc_cnmaestro_provisioning` role differs there too; on a
+branch without that play, `smc_ltp.yml --check` fails with `'client_secret' is undefined`. The test box has the `on commit` line but no
+`/usr/local/lib/cnmaestro-provisioning/`, so the hook has nothing to run. Its stage inventory (siteid 9001, tunnel port 59001; topology read from the box:
+521/522/621 on `enp3s0`, 531/532/631 on `enp4s0`, WAN `enp1s0`) is on `unc-virtual-smc-malik-rcp01`, uncommitted; `smc_bases.yml --check` renders its
+`dhcpd.conf` identical and netplan four blank lines apart. Conversion not pursued (operator, 2026-09-29).
+
+**The low-touch contract, read end to end (2026-09-30, unified-network-controller
+`docs/reports/controller-option3/cnmaestro-low-touch-contract-20260930_0319.md`).** `cnmaestro-provisioning.py` (big_push, 4,514 lines) runs on every
+20 s provisioning-VLAN lease as a daemon, one per MAC. It calls `https://<fqdn>/wifi-dashboard/smc/v1/cnmaestro<cnMaestro v2 resource>` with the
+site access key as bearer: `GET /devices/<mac>` (state, product, mode, parent), `GET /devices?managed_account=&network=` (the site snapshot every
+allocation is made against), `PUT /devices/<mac>` to approve (name, account, network, `approved`, description JSON with `us`, auto variables,
+`locid`, `name`; AP group or template; variables as strings; overrides; software version) or to reconfigure (a `job_id`, polled on `/jobs/<id>`),
+`DELETE` for a replacement. Order per unit: vendor class -> family (`Cambium-cnPilot R`, `Cambium-WiFi-AP`, `Cambium`); wait for registered,
+online, upstream fully onboarded, Sidekick done; new (configuration from description, then the unit, then the model default; variables likewise;
+lowest free auto values skipping .0/.255), replacement (the unit's replaced MAC: R195P SNMP `.1.3.6.1.4.1.41010.1.13.3.0`, XV2 `location`, ePMP
+Sidekick JSON at `.1.3.6.1.4.1.17713.21.3.5.4.0`) or reset (onboarded but not at `mgmt_ip`); then `_update_dns` rebuilds `db.cambium-rpz`
+(`<name>` and `<name>-public` A records) and reloads named. It logs in to factory units with defaults hardcoded in the script. UNC's
+replacement is `unc_provision.py` (same project).
+
+**Verified on umoona-smc01, read-only, 2026-09-26 (unified-network-controller supplement Step 4 baseline).** The `on commit` block in the live `/etc/dhcp/dhcpd.conf` is byte-for-byte the
+`dhcpd.conf.j2` block on `master`, and `git diff master origin/big_push -- roles/smc_dhcpd/templates/dhcpd.conf.j2` is empty: the hook did not change between the branches, only the script did (the box
+runs the 4,509-line `big_push` build, `redis-server` active; `big_push` also adds `python3-redis`, `redis-server` and a WiFi Dashboard access-key call to the role). The provisioning shared-network is
+`192.168.11.0/24` (ranges .3-.99 and .101-.254, 20-second leases for Cambium vendor classes); Option 43 still serves `https://3.105.84.178` (lt-cnmaestro). `dhcpd.leases` persists the hook's `set`
+variables per lease (`clhw`, `clip`, `clvci`, plus `vendor-class-identifier`): 1,338 lease blocks, 811 with a vendor class, so the leases file is itself a durable record of every device the hook saw.
+`/var/local/cnmaestro-provisioning/` holds one `log.<MAC>` per device (19, dated the April 2026 install) and the account lock `umoona.default.lock`. Aurukun's `aurukun-smc02` and `aurukun-smc03` are
+registered Teleport nodes (nbn cluster) but not Nautobot Devices. Operator, 2026-09-26 (USER_STATED): every apn and nbn device is now managed by on-prem `apn-cnmaestro01` (Teleport node
+`apn-cnmaestro01`, env=prod site=aws); its hostname is `apn-cnmaestro01.apn.au` (operator, corrected 2026-09-27; resolves to 52.64.230.196). Capture: unified-network-controller
+`captures/dhcp-hook-umoona-smc01-20260926_1722.txt`.
+
+**The controller's proposed second line on the same hook (unified-network-controller supplement Step 4, 2026-09-26; not applied to any production box).** One added
+`execute("/usr/local/lib/unc-device-seen/hook", clhw, clip, clvci, clrid);` after the cnMaestro line, gated by a template variable (`unc_device_seen_enabled`) and installed by a new role; Option 43
+unchanged (operator decision Q9). The hook spools one JSON event per plug-in under `/var/local/unc-device-seen/` and the controller pulls it over the SSH path it already has. Rehearsed on the stage
+box `malik-rcp01` (an OrbStack machine placed in a stage-only `[malik_smc_ltp]` group so this block renders; `11_vagrant-lab.md` §12.6): on the real dhcpd 4.4.1 both `execute()` lines ran, the pull
+over SSH created Staged records, and a 30-minute WAN cut with the device still leasing yielded exactly one event (2026-09-26 21:36 to 22:09). Design, evidence and the rollback:
+`unified-network-controller/docs/onboarding/device-seen-events-step4-20260926_1838.md`.
 
 ### "Low Touch" Onboarding Method and Site Deployment History (operator-confirmed 2026-08-03)
 
@@ -3766,9 +4058,9 @@ node_exporter's filesystem collector **excludes tmpfs by default in this fleet**
 tmpfs the *only* published fstype, dropping the real root-disk `/` metrics. Removing it from the exclude is the correct "include tmpfs" mechanism.
 
 Why this is cleanly scoped (verified live on mornington, `findmnt -t tmpfs` = 9 mounts): the **existing** `--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|run)($|/)` already drops
-`/dev/shm` and every `/run/*` tmpfs, so removing the fs-type exclusion surfaces **exactly** the four `/tmp`/`/var/...` mounts and nothing noisy (no `/dev/shm`, no `/run/*`, no PrivateTmp — those
-aren't separate mounts in the host namespace). systemd note: **do not** add `#` comment lines inside the `\`-continued `ExecStart` block — systemd does not support comments mid-continuation and it  <!-- path:example -->
-breaks unit parsing (keep the rationale in this doc instead).
+`/dev/shm` and every `/run/*` tmpfs, so removing the fs-type exclusion surfaces **exactly** the four `/tmp`/`/var/...` mounts and nothing noisy (no `/dev/shm`, no `/run/*`, no PrivateTmp — those <!--
+path:example --> aren't separate mounts in the host namespace). systemd note: **do not** add `#` comment lines inside the `\`-continued `ExecStart` block — systemd does not support comments
+mid-continuation and it breaks unit parsing (keep the rationale in this doc instead).
 
 Deploy: `smc_prometheus.yml --tags node_exporter` (copies the unit, restarts node_exporter — brief scrape gap only). Verified 2026-07-23 across 15/16 nodes (new-looma offline at the time): all four
 mounts publish `node_filesystem_size_bytes{fstype="tmpfs"}` in central Prometheus; fbpos %-used reads 6–9%, matching live `findmnt`. Alert query: `100*(1 -
@@ -4183,6 +4475,49 @@ When executing validation commands from this reference, prefer invoking tools fr
 2. `inventories/*/topology_vars/.<site>.yml` — generated cache (mtime-gated). Never edit.
 3. `roles/smc_generate_smc_files/templates/` — future-site generator templates. Changes here must stay consistent with manual edits to existing sites.
 
+### Design Assessment: Do Not Use Helm for `generic_big.yml` (2026-10-02)
+
+**Status: analysis/recommendation only — not implemented or canary-tested.** Helm can render arbitrary YAML, but it is a Kubernetes package and release-management tool; this inventory has no
+Kubernetes consumption path. `vars_plugins/topology_vars.py` uses `yaml.safe_load` directly, processes every `topology_vars/*.yml`, and does not render Helm or Jinja first. Adopting Helm would
+therefore add a separate values/chart/render/CI lifecycle while retaining the plugin's schema and the need to verify the rendered result. It would not simplify runtime consumption.
+
+**Immediate finding — resolve the duplicate source before any templating.** Both `inventories/rcp/topology_vars/generic-big01.yml` and
+`inventories/rcp/topology_vars/generic_big.yml` define `inventory.hosts.smc01.name: generic-big01`. They are otherwise equivalent after flattening, except for DHCP ranges:
+
+| Source | Management DHCP range | Public DHCP range |
+| --- | --- | --- |
+| `generic-big01.yml` | `10.255.0.250`–`10.255.0.255` | `10.0.2.0`–`10.0.63.254` |
+| `generic_big.yml` | `10.255.10.0`–`10.255.10.254` | `10.0.32.0`–`10.0.63.254` |
+
+The plugin iterates a raw `glob.glob('*.yml')` and calls `topology_host_vars.update(topology_host_var)` for each file. The later same-host entry wins. The observed current glob order was
+`generic-big01.yml`, then `generic_big.yml`, but the plugin does not impose or validate an ordering or reject duplicate host names. Treat the effective topology as unsafe/ambiguous until one canonical
+definition remains.
+
+**Recommendation, revised 2026-10-02.** Resolve the duplicate-host baseline and validate duplicate hostnames, references and DHCP bounds. Preserve canonical YAML until an approved migration chooses
+one source of truth. Separate profile authoring from integration: (A) generate YAML and retain the plugin; (B) generate topology data in memory and retain `Topology.flatten()` through an inventory
+adapter; or (C) reproduce the transformations in a compiler and emit final inventory JSON. Options B/C can avoid per-site topology delivery files and hidden YAML caches; option B retains Python
+transformations and their dependencies.
+
+**Generic RCP profile design (not implemented).** On branch `unc-virtual-smc-malik-rcp01`, `generic-big01` defines two VLAN-backed pairs and `generic-small01` four. Shared profiles can derive
+`internet03+` and default-VRF attachments from `wan_pair_count` (earlier called `wan_services`): 521/532, 523/534, 525/536, 527/538. Two fixed physical internet interfaces remain outside the count;
+the generic total is `2 + 2 × wan_pair_count` internet-role interfaces. The count does not infer live connectivity, NIC names or exceptional policy.
+
+**Runtime contract and comparison.** Interfaces, bridges, VRFs and DHCP scopes are dictionaries, not the lists shown in the supplied example. A WAN VLAN keeps `interface: switch01`,
+`name: vlan521` and `sub: false`; LAN subinterface naming follows the physical parent. A replacement must preserve address arithmetic, nested DHCP expansion, bridge/VRF references, host attributes and
+virtual gateways where relevant. CUE can export inventory JSON; materialized YAML was a migration choice. Jsonnet is another candidate; Kapitan can orchestrate either. No tested comparison proves a
+winner. CUE unification does not provide last-write-wins override semantics.
+
+**Integration safeguards.** Inventory output needs host declarations/group membership alongside `_meta.hostvars`. Preserve prod/stage, host/group variables and `inventory_dir`-based flavor
+selectors; isolate competing old-plugin outputs only for migrated fixtures/sites. A controller-side adapter needs argument handling, stable paths, failure propagation and JSON-only stdout.
+Compare complete variables and rendered network/DHCP/firewall/monitoring outputs, not only four maps or serialized bytes. Two generic profiles do not prove fleet-wide compatibility. The related
+Nautobot controller workspace exists; its current rollout state was not assessed.
+
+**Consolidated design.** [RCP topology authoring and integration plan](/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/plans/20261002_1115_topology-authoring-kapitan-vs-cue-plan.md).
+Status: proposal/documentation only; no adapter implemented, topology/cache mutation or live deployment.
+
+**Validation evidence.** `ANSIBLE_LOCAL_TEMP=/tmp/ansible-wifi-topology-check /opt/homebrew/Cellar/ansible/14.4.0_1/libexec/bin/python` instantiated `Topology(...).flatten()` separately for each
+file; `glob.glob` confirmed the observed order. No inventory run was used, so generated cache files were not refreshed during the assessment.
+
 ### Design Recommendation (Not Yet Implemented): Bond Doubled RCP/NBN-Accelerate Internet Circuits
 
 **Status: design recommendation, 2026-07-31 — not implemented, not canary-tested.** Scoped to RCP and NBN-Accelerate flavor sites only, where internet circuits terminate on two independent L2 switches
@@ -4419,6 +4754,32 @@ Properties worth knowing before you fight it:
 - **Order matters.** Fix findings on your own lines first, refresh the baseline second, do whitespace last. A blanket whitespace pass early expands the changed-line set and drags hundreds of inherited
   findings into the blocking set — that mistake turned a 43-finding job into a 404-finding one.
 - yamllint has no baseline, so inherited whitespace defects in a file you touch block the push even though they predate you. That cleanup is unavoidable; keep it whitespace-only and in its own commit.
+
+**Fixed 2026-09-27 (unified-network-controller session; ansible-wifi's hook is untracked, `.git/hooks/pre-push`, old copy kept as `pre-push.bak-20260927`):** three defects made stacked or
+non-checked-out branches unpushable without `--no-verify`. (1) The gate linted `HEAD`, not the pushed commit: the hook now lints each pushed commit, in a temporary detached worktree when it is not the
+checked-out `HEAD`. (2) A new branch was compared with `origin/master` (1,066 files for `unc-virtual-smc-malik-rcp01`, stacked on `internet-label-rename`): the base is now the merge-base with the
+remote branch that has the fewest commits between it and the pushed commit, passed to the gate as `DELTA_BASE` (both gate copies honour it and find the baseline through `git rev-parse
+--git-common-dir`, so a worktree run still sees `.ansible-lint-ignore`). (3) shellcheck ran on Jinja templates: `.sh` files under `templates/` or containing `{{`, `{%` or `{#` are skipped with a log
+line. Tested by feeding the hook `git push`'s stdin lines (stacked branch: 12 files, no new violations; a local-only commit: base is its stacked branch, not master; `fix/routing-issue` pushed while
+another branch is checked out: its own 23 inherited `main.yml` findings, not the checked-out branch's). Other clones still carry the old hook.
+
+**Never push ansible-wifi from a linked git worktree (2026-09-30, unified-network-controller session).** The hook's first step, the knowledge
+capture (skill-repo-knowledge-capture's `repo_knowledge_capture.sh`), runs `git -C <history dir>` without clearing `GIT_DIR`, and git sets
+`GIT_DIR` for a hook run from a linked worktree. So its git commands acted on ansible-wifi itself: it wrote `user.name` and `user.email`
+(`repo-knowledge-capture`, `repo-knowledge-capture@local.invalid`) into ansible-wifi's local config, and committed the snapshot tree onto the
+worktree's checked-out branch (one commit, 4,704 files changed, local only; the push itself sent the right commit). Seen when a commit was
+cherry-picked onto big_push in a scratch worktree and pushed from there. Recovery: reset that local branch to the pushed commit, remove the
+worktree, and unset the two local config keys (check with `git config --local --get user.name`; empty is right, the global identity then
+applies). The snapshot folder is still written, but its history commit does not land in the local-knowledge repo. Push from the main checkout;
+to push a branch that is not checked out, `git push origin <branch>` from there works, and the hook lints it in its own temporary worktree.
+The helper was fixed the same evening (skill-repo-knowledge-capture, its 2026-09-30 release: it clears git's repo-locating variables first; reproduced and
+retested in a throwaway repo), but not retested with a real ansible-wifi push from a worktree, so the rule stands.
+
+**Which ref unified-network-controller reads (2026-09-30).** Its tools read ansible-wifi at `origin/big_push` with `git show` and `git ls-tree`,
+whatever branch is checked out, so a site whose inventory is only on a working branch does not exist for them (wangkatjungka, until its
+inventory commit was cherry-picked onto big_push as `756e86b6`). `UNC_ANSIBLE_WIFI_REF=<ref>` overrides the ref for one command; the
+project's governance check has its own pin with no override. big_push and `unc-virtual-smc-malik-rcp01` have diverged (36 and 95 commits; 30
+sites' topology_vars differ), so the override is for one site's commands, not a way to move the project to another branch.
 
 ### The hook's ansible venv is under-provisioned (corrected 2026-08-18)
 
@@ -5058,6 +5419,57 @@ undefined, which Ansible treats as truthy-failed, so the task is marked failed r
 `roles/smc_update_kernel`: fifteen consecutive successful reboots were each disbelieved and reissued. **Fix: delete the `failed_when` wrapper entirely and rely on `reboot`'s own built-in
 success/timeout detection** — match the working pattern already used by the `smc_rise_common` handler's `reboot` task (same module, same options, no `failed_when`). General lesson: never write
 `failed_when` against a field a plugin doesn't populate — check the module's actual return-value docs, not the convention used by `command`/`shell` tasks.
+
+## `smc_dhcpd` on branch `unc-virtual-smc-malik-rcp01`: debounced restart hook and a start limit (2026-09-27)
+
+The role's `templates/00-isc-dhcp-server-restart.sh` re-arms one transient unit (`systemd-run --on-active=5 --unit isc-dhcp-server-debounce --collect systemctl restart isc-dhcp-server`) instead of
+restarting dhcpd on every routable event, and `files/isc-dhcp-server.service` carries `StartLimitIntervalSec=60` and `StartLimitBurst=20`. Proved on the stage box `malik-rcp01`: a full `netplan apply`
+and a simultaneous three-bridge bounce each cost 1 restart with the unit active (as shipped: `failed`, `start-limit-hit`). On the branch only, not on `master`; the operator decides the push. Applying
+the two tasks alone on the stage box needs the topology variables by hand (`-e @` a JSON of `topology_dhcp_scopes` and `topology_interfaces` from `inventories/rcp/topology_vars/.malik.yml`), because a
+play outside the repo does not get the vars plugin's injection; and a full `smc_dhcpd` run there would regenerate `dhcpd.conf` without the Step 4 device-seen `execute()` line until Q10's template
+variable lands in `dhcpd.conf.j2`. Failure mode and proof: `06_failure-modes.md`, "A full `netplan apply` leaves isc-dhcp-server in systemd's start limit".
+
+## What a low-touch SMC keeps per device, and where it comes from (read 2026-09-27, branch `unc-virtual-smc-malik-rcp01`)
+
+The per-device records an `rcp` low-touch box holds are projections of two sources, the extension arithmetic and cnMaestro's device variables; none is hand-kept on the box.
+
+- **`/usr/local/share/<SITE>-extensions.csv`** (`roles/smc_generate_extensions`, template `extensions.csv.j2`): columns `extension,password,mgmt_ip,public_ip[,did]`, generated from
+  `extension_start`/`extension_count` (and `did_range`): `mgmt_ip = 10.255.<ext//1000 + 10>.<ext % 1000>`, `public_ip = 10.0.<same>.<same>`, `password = x<ext>x`, extension numbers rolling over at 200
+  per thousand block. A premises unit's management and public addresses follow from its extension number alone.
+- **`/var/lib/tftpboot/<extension>.cfg`** (`roles/smc_router_provisioning`): one flat nvram `key=value` file per extension from `r195_template.cfg.j2` (`r195_tjuntjun_template.cfg.j2` for `TJUN`), fed
+  by `item.extension/mgmt_ip/public_ip/password` plus site vars (`HostName=<SITE>-R195P-<ext>`, `mwan_ipaddr`, SIP account and password, `SNMPTrapCommunity`, TR-069 ACS credentials in clear). The
+  directory is emptied and regenerated on every run and served by `tftpd-hpa`. How a unit learns its file name is `UNVERIFIED`: nothing in `smc_dhcpd` sets option 66. **Added 2026-09-27
+  (unified-network-controller Step 8 report `docs/reports/controller-option3/step8-extensions-tftp-intent-20260927_1949.md`):** the role never creates `/var/lib/tftpboot`; Ubuntu 22.04's `tftpd-hpa`
+  (5.2+20150808-1.2build2) creates `/srv/tftp`, so on a fresh box the unarchive fails ("must be an existing dir"), and production boxes have the directory only from older images. The files are a pure
+  function of the CSV row plus the site short name (seven per-extension keys: `DBID_SIP_ACCOUNT`, `DBID_SIP_DIS_NAME`, `DBID_SIP_PASSWORD`, `DBID_SIP_PHONE_NUM`, `HostName`, `SNMPTrapCommunity`,
+  `mwan_ipaddr`); 260 lines separate per-port values with tabs, which must stay tabs. wangkatjungka-smc01's live set was rendered from an uncommitted variant of the template (lines reordered,
+  `cns_static_url=https://apn-cnmaestro01.apn.au/`, `DBID_RANDOM_NUM=23552`; one variant explains all 200 files). `smc_generate_extensions` reads
+  `smc_bases_extension_start`/`_count`/`_site_short_name`: mowanjum-smc01, generic-rcp01 and generic-rcp02 set `smc_bases_extension_end` instead, so the role cannot render them. Low-touch sites start
+  their CSV at 1000 while `smc_ltp.yml`'s cnMaestro auto-extension ranges start at x001. Kalumburu, mowanjum, horn-island and mornington R195Ps sit on an older 10.255.1.x/22 layout the arithmetic
+  never produced. unified-network-controller's `wc-local/scripts/smc_extensions_intent.py` renders both file sets from a Nautobot extension plan, byte-identical to ansible-wifi (30 rcp plans; all 400
+  malik configs against real Ansible).
+- **No DHCP reservations.** `/etc/dhcp/dhcpd.conf` carries no `host`/`fixed-address` entries; a device's static `mgmt_ip` is pushed by cnMaestro as a template variable at onboarding.
+- **DNS A records for devices** live in `/etc/bind/db.cambium-rpz`, rebuilt by `cnmaestro-provisioning.py` `_update_dns()` (`roles/smc_cnmaestro_provisioning/files/cnmaestro-provisioning.py` line 2855
+  on `big_push`, called at line 3258; an earlier "2407 to 2431" was wrong, corrected 2026-09-27): copy `db.rpz.template`, append `<name> IN A <mgmt_ip>` and `<name>-public IN A <public_ip>` for every
+  MAC in the cnMaestro snapshot plus the device being provisioned, move into place, `systemctl reload named`. The zone is therefore a projection of cnMaestro's `name`, `mgmt_ip` and `public_ip`
+  variables and stops being maintained without cnMaestro. `named` forwards everything else to 8.8.8.8 and 8.8.4.4 (`named.conf.options`); `bridge_501` clients are handed the gateway address as DNS,
+  which is this `named`; management and provisioning scopes hand out 8.8.8.8 directly where their topology `name_servers` say so (operator, 2026-09-27).
+- **A production zone, read once (umoona-smc01, 2026-09-27, operator-approved, read-only; capture in unified-network-controller `captures/rpz-umoona-smc01-20260927_1616.txt`):** 21 A records named by
+  cnMaestro, not by site convention (`home-1` .. `home-4` with `-public`, `ap-1` .. `ap-5`, `3000L-ap-1`/`-2`, `sm-1` .. `sm-4`, `ap-ep2p-1`, `sm-ep2p-1`), management addresses in 10.255.1.x and
+  public ones in 10.0.1.x; file last written 2026-04-16, so the script had not provisioned a device there for five months. `/etc/bind/db.rpz.template` has md5 `c700aa2e3118a4d97c5598d674f7953b` on
+  umoona and on the virtual SMC `malik-rcp01`, so the header is the same fleet-wide. The names are unique only within a site, and the 10.255.x addresses repeat across sites: a lookup outside the
+  site's own Nautobot Namespace matches other sites' devices. None of the nine `smc_ltp` sites (guda-guda, pia, umoona, warburton, beagle-bay, pandanus-park, new-looma, old-looma, yakanarra) had a
+  Location, Namespace or device in unified-network-controller's Nautobot, or a row in cambium-swap's device inventory, when checked on 2026-09-27; they were seeded the same day (next bullet).
+- **`topology_vars` layout, as read by unified-network-controller's `seed_ltp_site.py` (2026-09-27):** three top-level keys: `inventory.hosts`, `switching.bridges`, `layer3.links` / `layer3.vrfs`. A
+  link's `role` is `management`, `user`, `provisioning`, `internet` or `starlink`, with `subnets` a string or a list. Every `smc_ltp` site read that day carries the same three: management
+  10.255.0.0/19, user 10.0.0.0/18, provisioning 192.168.11.0/24, so they differ only by Namespace. All nine are now Locations and Namespaces in that project's Nautobot, each with a DNS view and a
+  `cambium-rpz` zone; umoona's zone records are mirrored there from its live zone.
+- **Redis**: the script's counter for cnMaestro location IDs; per-MAC locks under `/var/local/cnmaestro-provisioning/`; `dhcpd.leases` persists the hook's `clhw/clip/clvci/clrid`.
+- **`/etc/hosts`**: only the Teleport FQDN (`smc_dns_mgmt`).
+
+For a source of truth outside cnMaestro (unified-network-controller): the address is the Nautobot `IPAddress` (management as `primary_ip4`, public on the WAN interface, both in the site Namespace),
+the A-record name is `IPAddress.dns_name`, the extension and DID are Device fields, secrets stay in OpenBao; `extensions.csv`, the TFTP files and `db.cambium-rpz` then become renders. Recorded there
+as a proposal, not a decision.
 ````
 
 ## File: references/09_url-capture-pcap.md
@@ -5695,6 +6107,7 @@ broader live-validation gap this note is part of.
 - Key Vagrant nuances and known issues
 - Bring-up procedure
 - Useful commands
+- OrbStack virtual SMC (malik-rcp01): container-style host adaptations
 
 ## 12. Vagrant Lab — family-friendly-vsmc01
 
@@ -5849,6 +6262,35 @@ vagrant ssh family-friendly-vsmc01 -- cat /var/lib/dhcp/dhcpd.leases | grep -A5 
 ```
 
 ---
+
+### 12.6 OrbStack virtual SMC (`malik-rcp01`): container-style host adaptations
+
+Recorded 2026-09-26 from the unified-network-controller Step 4 rehearsal (its log:
+`unified-network-controller/docs/onboarding/device-seen-events-step4-20260926_1838.md`, "Rehearsal log"). The stage host `malik-rcp01`
+(`inventories/rcp/stage`, group `malik_smc_bases`, topology `malik.yml`) is no longer a Vagrant VM: it is an OrbStack amd64 Ubuntu 22.04
+machine (`systemd-detect-virt` = `lxc`, 192.168.139.15 on the Mac's OrbStack network, dummy NICs `eth1`..`eth3` for the topology). Ansible
+reaches it as root over plain SSH (`ansible_host`, `ansible_ssh_private_key_file`, `-o IdentitiesOnly=yes` in its host_vars); out-of-band
+access is `orb -m malik-rcp01 -u root sh -c '...'`, the console to use when a network change cuts SSH.
+
+`smc_bases.yml` runs against it with `--skip-tags autossh,teleport,asterisk,generate_extensions,application,squid,url_capture,disk_failover,
+latlon,tstiklatlon,mqtt,router_provisioning,clamav,lynis`; the skipped plays register a box with production Teleport, SIP and the portal.
+Everything a container-style host makes false is guarded by one stage host var, `smc_bases_container: true`, so a Vagrant VM or a real box
+renders exactly as before:
+
+| Real-box assumption                                    | Where                                                      | Under the guard                                                   |
+| ------------------------------------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------------- |
+| A bootloader: edit `/etc/default/grub`, reboot         | `roles/smc_network/tasks/ubuntu.yml`, "Disable ipv6 for vagrant" | Block skipped (no GRUB, no kernel to reboot into)           |
+| The management NIC is not the WAN (`use-routes: false`) | `roles/smc_network/templates/vagrant-netplan.yml.j2`       | `use-routes: true` (eth0 is the only uplink; the box had no default route) |
+| DHCP client id does not matter                          | same template                                              | `dhcp-identifier: mac`: networkd's DUID took a second lease and `.15` became `.16`, and the run lost the host at the `Reload systemd-networkd` handler |
+| `/etc/cloud` exists                                     | `smc_system` cloud-init file                               | Already `ignore_errors`; nothing to do                            |
+| AppArmor in the kernel (`apparmor_parser -R` dhcpd profile) | `roles/smc_dhcpd/tasks/ubuntu.yml`, `smc_ltp` block        | Unload task skipped (exit 2 with no AppArmor; the disable symlink and root-user unit still apply) |
+| The topology has a provisioning DHCP scope              | `inventories/rcp/topology_vars/malik.yml`                  | Stage topology gains umoona's `gateways` and `dhcp_scopes` on the provisioning link; without them there is no `provisioning` shared-network and no `on commit` block. Delete `.malik.yml` after editing |
+| `on commit` block only for `smc_ltp`                    | `roles/smc_dhcpd/templates/dhcpd.conf.j2`                  | Stage inventory: `[malik_smc_ltp]` with the one host under `[smc_ltp:children]`, the same shape as `nocprov_smc_ltp` and `whprov_smc_ltp`. Never run `smc_ltp.yml` against it (its provisioning script talks to production cnMaestro); the controller repo's `wc-local/smc/ansible/virtual_smc_lab_stubs.yml` installs a logging stand-in instead |
+
+Two Mac-side facts from the same run: `setsid` does not exist on macOS, so a playbook started from an agent tool shell dies with that
+shell unless the tool's own background mode is used; and `ntp`'s postinst takes about a minute in the container before `ntpd` comes up
+(not a hang). The roles' package tasks retry until success (`retries: 60`, `delay: 60`), so a package that cannot install shows as up to
+an hour of silence, not an error.
 ````
 
 ## File: references/12_content-filtering.md
@@ -5983,6 +6425,8 @@ curl -sv http://1.1.1.1/ 2>&1 | grep -E "Location|302|wifi"
 - [2026-08-18 — plaintext secrets in `group_vars`, and a copied Graylog config that shared them](#2026-08-18--plaintext-secrets-in-group_vars-and-a-copied-graylog-config-that-shared-them)
 - [2026-09-08 — upstream keepalived VIP config bug: `lb_algo rr` silently ignores the lweb03 drain intent (`202.171.100.138`)](#2026-09-08--upstream-keepalived-vip-config-bug-lb_algo-rr-silently-ignores-the-lweb03-drain-intent-202171100138)
 - [2026-09-11 — portal-FQDN regression: two separate incidents, one still live on 2 sites](#2026-09-11--portal-fqdn-regression-two-separate-incidents-one-still-live-on-2-sites)
+- [2026-09-24 — neighbour table: mornington hits the 1024 hard cap (2,230 table-fulls); proposed `gc_thresh` standard (PROPOSAL, not applied)](#2026-09-24--neighbour-table-mornington-hits-the-1024-hard-cap-2230-table-fulls-proposed-gc_thresh-standard-proposal-not-applied)
+- [2026-09-30 — `bot-cw-dashboard` restarts netfilter-persistent on koonibba and amata, wiping every device's access mark (OPEN, owner outside this repo)](#2026-09-30--bot-cw-dashboard-restarts-netfilter-persistent-on-koonibba-and-amata-wiping-every-devices-access-mark-open-owner-outside-this-repo)
 
 ---
 
@@ -6853,6 +7297,111 @@ ran) inside the bad window keeps serving the broken redirect indefinitely afterw
 
 **Process lesson:** the `nbn_wh` fix landing inside an unrelated commit (headline: blocklist-feed transport, not portal FQDN) is exactly the kind of change where a targeted write-back audit misses
 things — `git show --stat` on every commit that touches a shared vars file, not just commits whose headline names the file, should be part of any future sweep for this class of regression.
+
+## 2026-09-24 — neighbour table: mornington hits the 1024 hard cap (2,230 table-fulls); proposed `gc_thresh` standard (PROPOSAL, not applied)
+
+**Found** (read-only, 2026-09-24, kernel 5.15.0-84; hope-vale-smc01 was offline in Teleport and is unchecked). Counters are cumulative since boot, from `ip -s ntable show name arp_cache`:
+
+| Box | Uptime | `gc_thresh1/2/3` | Entries | `bridge_500` / `bridge_501` | `forced_gc_runs` | `table_fulls` | `res_failed` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| kalumburu-smc01 | 9 weeks | 1 / 512 / 1024 | 169-171 | 123 / 42 | 145 | 0 | 2.9 M |
+| mornington-smc01 | 48 weeks | 1 / 512 / 1024 | 757-795 | 501 / 246 | 5,666,597 | **2,230** | 50 M |
+
+`table_fulls` counts allocations the kernel refused because a forced collection could not bring the table under `gc_thresh3`: each is a packet to a neighbour with no entry that was dropped. When
+mornington's 2,230 happened is unknown; `journalctl -k` for the last 30 days holds no `neighbor table overflow!` line on either box, so they are older or the journal keeps less.
+
+**What each threshold does here** (kernel semantics from `Documentation/networking/ip-sysctl.rst` v5.15, VERIFIED_PRIMARY):
+
+- `gc_thresh1` (minimum kept; SMCs run **1**, kernel default 128, `net/ipv4/arp.c`): below it nothing is purged; above it the periodic collector removes entries unused for `gc_stale_time` (60 s).
+  Both boxes hold far more than 128 entries, so the default would behave the same: the 1 is **not** why quiet devices such as the TP-Link switches leave ARP (`16_tplink-site-switches.md`). It
+  only matters on a small site under 128 entries, where an idle device costs one extra ARP broadcast and a few milliseconds on its next first packet. Nothing is dropped. The source of the 1 is
+  UNVERIFIED: no `sysctl.conf`, `/etc/sysctl.d`, `/usr/lib/sysctl.d`, `/run/sysctl.d`, `/etc`, `/usr/local`, `/opt` or ansible-wifi setting found.
+- `gc_thresh2` (512): above it every new entry may force a collection that evicts anything not refreshed in the last 5 s. Mornington lives here (a forced run about every 7 s on average over 48 weeks):
+  busy flows keep their entries, idle devices are re-resolved more often, and each re-resolution is a broadcast, over the air on `bridge_501`. CPU and memory cost on the SMC is negligible (392 bytes
+  an entry).
+- `gc_thresh3` (1024, hard cap): when a forced collection cannot free room, the new entry is refused and the packet dropped. Customer effect: return traffic to a client whose entry has lapsed fails
+  (stalled sessions, portal and login retries). Monitoring effect: SNMP and ping from the SMC to an AP, SM or switch fail, so healthy devices read as down (false alarms, wrong `unreachable` labels in
+  the collector). WAN `/30` gateways are low risk: a busy gateway entry is refreshed constantly.
+
+**Sweeps make it worse.** A whole-subnet sweep of the management /19 (unified-network-controller's reachability pre-check and `discover_site.py`, `tplink-switch.sh --discover`), up to 8,190
+addresses, creates thousands of unresolved entries in seconds. On a box already near 800 that crosses 1024: the sweep can starve customer traffic and report live hosts as dead. Never sweep the
+client /18 on `bridge_501`.
+
+**Proposed standard** (operator asked for a recommendation only, 2026-09-24; nothing changed):
+
+| Setting | Proposed | Reason |
+| --- | --- | --- |
+| `net.ipv4.neigh.default.gc_thresh3` | 16384 | The fix for the drops: hard cap above a full management sweep plus a busy client bridge; about 16k entries is about 6 MB |
+| `net.ipv4.neigh.default.gc_thresh2` | 4096 | Forced collection only during sweeps or client surges, not all day as on mornington now |
+| `net.ipv4.neigh.default.gc_thresh1` | 1024 | Nice to have: management devices stay cached instead of being evicted after 60 s idle; stale entries are harmless, NUD re-validates before use |
+
+Same values for `net.ipv6.neigh.default.*` where IPv6 runs on the bridges; `gc_stale_time` 60 and `base_reachable_time_ms` 30000 unchanged. Before rollout: a read-only `table_fulls` survey across the
+fleet to find the other overflowing sites; find what sets `gc_thresh1` to 1 so an ansible-managed `/etc/sysctl.d/` file is not overridden; canary on mornington-smc01 and watch `table_fulls` stop
+growing.
+
+## 2026-09-30 — `bot-cw-dashboard` restarts netfilter-persistent on koonibba and amata, wiping every device's access mark (OPEN, owner outside this repo)
+
+**Symptom:** Koonibba's usage fell ~90% (Mar 1233.8 GB → Aug 114.5 GB) while connected-device counts stayed flat. The dashboard showed the
+same-time "bursts" on every WAN link.
+
+**How access works at these sites (operator, 2026-09-30):** users never buy a PIN. They accept a terms-and-conditions page, and a PIN/mark is issued in the background (Eclipse free-PIN flow), which becomes the device's `ECLIPSE_MARK` entry. "Access mark" below means that mark.
+
+**Cause (caught live 2026-09-30 11:48:42):** Teleport user `bot-cw-dashboard` (remote `54.66.73.128`) runs `systemctl restart
+netfilter-persistent` on the box. The process ancestry is `systemctl restart` ← `teleport exec` ← `teleport start`. The restart reloads
+`/etc/iptables/rules.v4` (Koonibba's is dated 2026-07-01 and holds 0 `ECLIPSE_MARK` rules), so every T&C-accepted device's access mark is removed. FORWARD then
+rejects their new connections until the portal re-adds the marks 3-5 minutes later. Koonibba had **0 marks in 13 of 29 sampled minutes (45%)**;
+Pukatja had 0 of 29.
+
+**The bot runs two jobs.** Only the second one does harm:
+
+| Job | Commands | Sites (24h to 2026-09-30) |
+|---|---|---|
+| AP ping monitoring | `ping -c 1 10.255.x.x`, `df -h /` | koonibba, indulkana, warakurna, ampilatwatja, aurukun-smc03, hope-vale, arawerr, galiwinku, doomadgee |
+| "Usage fix" | `ps ... status:update:usage` → `kohana status:update:usage` → `systemctl restart netfilter-persistent` | **koonibba (137), amata (45) only** |
+
+- Every "usage fix" run ends in a restart (ps-check count = restart count).
+- Severity follows restart frequency.
+- The trigger is a dashboard-side condition or site list, not box state. Usage-updater run time was tested and does not separate targeted sites
+  from untouched ones.
+- It is probably self-sustaining: each wipe makes usage look low again.
+
+**Ruled out:**
+- Carrier throttling: `speedtest_exporter` shows ~100 Mbps per link Mar-Sep.
+- Portal code drift: `status.php` md5 `0b4d8da993` fleet-wide, app commit a50bdb7.
+- ansible-wifi changes: none in the Apr-May onset window.
+- Other on-box causes: `fqdn2ip` is disabled, `iptables.service` is masked, `url_capturev1.sh` and `apn-mqtt-client` have no firewall calls,
+  and the dhcpd dispatcher hook fires only on bridge_500/501.
+
+**Still unknown:**
+- When the bot started (box journals only reach 2026-09-22/25).
+- Whether ampilatwatja, mungkarta, pipalyatjara and indulkana (-55-65% from Apr-May, no "usage fix" runs in journals from late Aug) were
+  targeted earlier.
+
+Both need the central Teleport audit log or the dashboard's own logs. **Fix:** the dashboard owner stops the restart step. The alternative is
+making the restart non-destructive; this is not applied.
+
+**Detection:** see [14_pin-activation-diagnosis.md](14_pin-activation-diagnosis.md). Sample the `ECLIPSE_MARK` count per minute; repeated
+drops to zero mean a wipe. Then run `journalctl -u teleport | grep "teleportUser:bot-cw-dashboard"`. Full RCA and evidence:
+`local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/koonibba-usage-drop/`.
+
+**Side findings (same session):**
+- The hourly WAN bursts in Grafana are `speedtest_exporter`'s own tests, roughly 1.2 GB/hour of WAN data (5-minute-rate estimate).
+- `scripts/correlate-pin-activation.sh` has two bugs:
+  - It exits 0 when every `tsh ssh` fails. It uses the active Teleport profile; pass `TELEPORT_PROXY=teleport.communitywifi.net.au`.
+  - It reported "no 302 activations" on Koonibba, where the Apache log has 6-112 a day. Its log parser misses them.
+- **Usage totals from Prometheus need a `> 0` filter.** amata-smc01's node_exporter counters contain spurious samples of exactly `0` between normal values (e.g. bridge_501 tx 639.5 GB -> 0 -> 639.8 GB at 2026-08-20 06:30Z). `rate()`/`increase()` read each 0 as a counter reset and count the whole counter as new traffic, so Amata's raw August total came out at 62,830 GB (true: 598 GB) and a 30-day window at ~3 PB. Use `rate((metric > 0)[5m:1m])` when summing usage. It looked like an L2 loop; it was not.
+- Koonibba's 4 dead VLANs (522/524/531/533) restart dhclient every few seconds via networkd-dispatcher. This is log noise, not the cause.
+
+**RCP check (2026-09-30 ~12:08):** RCP has its own bot, `bot-apn-dashboard` on `teleport.apn.au`. It only runs `ping -c 1 <AP IP>`, on 8 of the
+18 `flavor=rcp` SMCs. Across all 18 there were no firewall restarts by any Teleport user and 0 `netfilter-persistent` restarts, and `ECLIPSE_MARK`
+was non-zero everywhere (80-1541). The mark wipe is nbn-only as far as visible. Caveat: RCP journals only reach 2026-09-28/29.
+
+Two gotchas from the check:
+- `tsh ls` in table form truncates labels, so grepping it for `flavor=rcp` finds 4 nodes. Use `tsh ls --proxy=teleport.apn.au flavor=rcp
+  --format=names`, which returns 18.
+- `new-looma-smc01` is in the inventory but has no `flavor=rcp` label and was unreachable on Teleport.
+
+The AP-ping monitoring path of both bots is recorded in skill-cambium `references/05_known-issues.md` (2026-09-30).
 ````
 
 ## File: references/14_pin-activation-diagnosis.md
@@ -7020,11 +7569,13 @@ This is why the two mechanisms normally track each other tightly (9-second gap, 
 - **Marks ≠ activations.** On `hope-vale-smc01` (2026-09), one of the currently-valid marks (MAC `ea:7c:...` → `10.0.37.250`) had **no** corresponding `wifi/access` POST anywhere in the retained log
   window. The pin was generated Eclipse-side and pushed to the box by its periodic sync (roughly every 5 minutes) — the local box never ran the activation flow for it. Do not assume every mark implies
   a local activation event; do not assume every activation implies the reverse either without checking.
-- **A near-empty `ECLIPSE_MARK` chain does not mean a dead site.** Confirmed live 2026-09-11 on `amata-smc01` (a healthy control site): the mangle snapshot read **0 currently-valid marks** at the
-  exact moment it was sampled, on a box whose `wifi/access` log showed **628 successful activations** in the same window (dozens that same morning, minutes apart). Marks evidently don't sit around
-  long enough on this fleet for a point-in-time sample to reliably catch a nonzero count even on a thriving site — whatever expires/reissues them cycles faster than the snapshot interval. **Never call
-  a site dead on mark count alone; the `wifi/access` log's 302 count over a real time window is the more trustworthy signal, and the two should always be read together, not the mangle table in
-  isolation.** This is the mirror-image failure mode of the previous bullet: that one is "mark present, no activation logged"; this one is "activation-rich, mark snapshot reads zero."
+- **A zero `ECLIPSE_MARK` count is NOT normal — CORRECTED 2026-09-30.** The 2026-09-11 note here read `amata-smc01`'s **0 marks** beside **628 activations** as "marks cycle faster than a snapshot, so
+  a zero is fine on a healthy site". That was wrong. Healthy sites hold a steady non-zero count every minute (per-minute sampling 2026-09-30: `pukatja` 491 and `kowanyama` ~639, never zero). A zero is
+  the signature of the chain being **wiped**. The confirmed cause on `koonibba-smc01` and `amata-smc01` is the Teleport bot `bot-cw-dashboard` running `systemctl restart netfilter-persistent`, which
+  reloads a `rules.v4` holding no marks; see [13_known-issues.md](13_known-issues.md) § 2026-09-30. Amata's 09-11 zero is very likely the same event, but that is unverified: amata's journal only
+  starts 2026-09-22. **Diagnose by sampling the mark count once a minute for 30+ minutes.** Repeated drops to 0 followed by a refill mean the chain is being wiped; then check `journalctl -u
+  netfilter-persistent` for restarts and the teleport journal for who ran them. Count marks with `iptables -t mangle -S ECLIPSE_MARK | grep -c -- '-A'`, not `grep -c ECLIPSE` over the whole mangle
+  table, which also counts the ~35 `ECLIPSE_*` chain definitions. Still read the `wifi/access` 302 count alongside, because a site can be activation-rich and still mark-starved.
 - **Pin-generation timestamps and numbers are Eclipse-side only** — not queryable from the SMC appliance or from Grafana (confirmed no captive-portal/pin-issuance Prometheus metric exists anywhere in
   this fleet's monitoring — see [13_known-issues.md](13_known-issues.md)). **The operator does have a separate Eclipse admin report** ("PIN Last Issued" per site, by site ID/community name) outside
   this fleet's own tooling entirely — confirmed 2026-09-11 as a third, independent corroborating source: it flagged `bungardi` at 10 days stale (last issued 2026-09-01) while every healthy site showed
@@ -7092,6 +7643,170 @@ Full asset-register naming-convention, per-site drift, site-name convention, and
 One fact genuinely belongs to this pack, not `skill-cambium`: any Cambium asset-register work must use ansible-wifi's own `site_name` (`inventories/<flavour>/group_vars/<site>.yml`) as the canonical
 site identifier — e.g. `hope-vale`, `burringurrah` — not a register's own display name. That's the ansible-wifi join point, which is this pack's concern. See `01_overview.md` for how ansible-wifi
 organizes its site inventories.
+````
+
+## File: references/16_tplink-site-switches.md
+````markdown
+# TP-Link Site Switches — Access, Quirks and Config Capture
+
+The on-site TP-Link switches that sit on a site's management network behind the SMC box. They carry the SMC's VLAN trunks (management, client Wi-Fi, R195P provisioning and the `internetNN` WAN VLANs),
+so they are the "switching layer" that `01_overview.md` refers to. First reached 2026-09-24 at kalumburu. Tooling: `scripts/tplink-switch.sh` and `scripts/tplink_cli_driver.py` (see
+`scripts/README.md`).
+
+## Contents
+
+- [Where they are](#where-they-are)
+- [Credentials](#credentials)
+- [Access path and SSH quirks](#access-path-and-ssh-quirks)
+- [Privilege: enable with and without a password](#privilege-enable-with-and-without-a-password)
+- [Discovery: why ARP is not enough](#discovery-why-arp-is-not-enough)
+- [Config capture](#config-capture)
+- [SNMP](#snmp)
+- [In Nautobot](#in-nautobot)
+- [VLANs: parsing and drift against topology_vars](#vlans-parsing-and-drift-against-topology_vars)
+- [Kalumburu as found (2026-09-24)](#kalumburu-as-found-2026-09-24)
+- [Bidyadanga as found (2026-09-30)](#bidyadanga-as-found-2026-09-30)
+- [Pitfalls](#pitfalls)
+
+## Where they are
+
+Candidates from unified-network-controller's discovery sweeps (`docs/reports/inventory/*-discovery-sweep-*.md`), by TP-Link OUI only; a TP-Link OUI is not proof of a switch until `--discover` shows
+the `TPSSH` banner or a login confirms it:
+
+| Site         | TP-Link addresses in the sweep           | Confirmed 2026-09-30 (`--discover` TPSSH, then a login)                  |
+| ------------ | ---------------------------------------- | ------------------------------------------------------------------------ |
+| kalumburu    | 10.255.0.2, 10.255.0.3                   | Both (first reached 2026-09-24)                                          |
+| bidyadanga   | 10.255.0.2-4                             | 10.255.0.2 only; .3 and .4 are TP-Link OUIs but not switches             |
+| burringurrah | 10.255.0.2-3                             | 10.255.0.3 only (named Switch2)                                          |
+| hope-vale    | 10.255.0.2-4                             | All three                                                                |
+| kowanyama    | 10.255.0.2-3                             | Both                                                                     |
+| pukatja      | 10.255.0.2-3                             | Both                                                                     |
+| aurukun      | 10.255.1.1-2, 10.255.2.1-2, 10.255.3.1-2 | None answered as TPSSH on the management subnet                          |
+| doomadgee    | 10.255.0.2-3                             | None answered as TPSSH                                                   |
+| galiwinku    | 10.255.0.2-4                             | None answered as TPSSH                                                   |
+
+All 11 are SG2428P hardware 5.30; ten run firmware 5.30.1 Build 20240202, bidyadanga 5.30.5 Build 20250117. Every one enables with no password.
+
+The pattern at most sites is `10.255.0.2` upward, directly after the SMC's own `bridge_500` address `10.255.0.1`. Galiwinku's WAN trunks name their switches `switch01`/`switch02` in topology_vars
+(`01_overview.md` "WAN Uplink Topology Pattern").
+
+## Credentials
+
+KeePass entry `/Network/tplink switch`, user `admin`; its Notes list `10.255.0.2` and `10.255.0.3`. Read with the `kp` wrapper, never printed: the script pipes the password over stdin to the SMC, so
+it never appears in a command line, process list or transcript. Verified on all 11 switches at six sites, both Teleport clusters (2026-09-30). Whether the same password holds at other sites is unknown
+until each is tried; the script allows one password attempt per run (`NumberOfPasswordPrompts=1`) so a wrong entry cannot build up failures against a lockout. Override the entry with
+`TPLINK_KP_ENTRY`, and name a separate enable password with `TPLINK_KP_ENABLE_ENTRY`.
+
+## Access path and SSH quirks
+
+Workstation -> `tsh ssh --proxy=<cluster> root@<site>-smc01` -> `ssh admin@<switch>` from the SMC. Found on SG2428P firmware 5.30.1 Build 20240202 (SSH server `TPSSH-1.0.0`):
+
+| Quirk           | Symptom without the fix                                                                                                | Fix                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| MAC list        | `Unable to negotiate ... no matching MAC found. Their offer: hmac-sha1-160,hmac-sha2-256,hmac-sha2-512,hmac-ripemd160` | `-o MACs=hmac-sha2-256`                   |
+| Host key        | Session closes straight after `SSH2_MSG_SERVICE_ACCEPT`, before any auth method is offered                             | `-o HostKeyAlgorithms=+ssh-rsa`           |
+| Pubkey          | Root's key is offered first (`sign_and_send_pubkey: no mutual signature supported`) and the switch drops the session   | `-o PubkeyAuthentication=no`              |
+| No exec channel | `ssh switch "show ..."` and a piped stdin both log in and close at once (`ssh_tty_make_modes: no fd or tio`)           | A real pty: the driver uses `pty.fork()`  |
+| Enter           | LF does nothing; commands run together (`show system-infoexit`)                                                        | Send CR (`\r`)                            |
+| First keystroke | The first command after login is swallowed                                                                             | Send a blank CR first                     |
+| Banner order    | The server sends its version banner only after the client's                                                            | Send `SSH-2.0-...\r\n` first when probing |
+
+Kex and cipher are not an issue: `diffie-hellman-group16-sha512` and `aes128-ctr` negotiate by default. Telnet (tcp/23) is refused; HTTPS (tcp/443) is open for the web UI, reachable with
+`scripts/teleport-tunnel.sh <site> <switch_ip> <port> 443`. Plain HTTP on 80 gave no answer.
+
+## Privilege: enable with and without a password
+
+After login the prompt is `>` (for example `Switch1>`), and `show system-info` returns `Error: Bad command` there, so `enable` comes first. Three cases, handled by the driver and reported on stderr as
+`privilege: ...`:
+
+- `enable-no-password`: `enable` goes straight to `#`. Both kalumburu switches.
+- `enable-password`: `enable` asks for a password. The driver sends the `TPLINK_KP_ENABLE_ENTRY` password, or the login password when none is set; one attempt only, exit 6 on failure. Not yet seen
+  live.
+- `already-privileged`: the login lands on `#`, so no `enable` is sent. Not yet seen live.
+
+The driver also answers an in-CLI `User:`/`Username:` prompt, in case a firmware asks for a CLI login after SSH. Not yet seen live.
+
+## Discovery: why ARP is not enough
+
+The SMC's ARP table cannot be used as the host list. Once a table holds more than `gc_thresh1` entries, the kernel purges any entry unused for
+`gc_stale_time` (60 s); the SMCs hold 169-795 entries, above both their `gc_thresh1` of 1 and the kernel default of 128, and the switches rarely talk to the SMC, so they vanish between runs
+(`13_known-issues.md`, neighbour table 2026-09-24). `--discover` therefore runs `fping -a` over the management subnet only (routes on `bridge_500` or in `10.255.x`) and probes each
+live host's SSH banner for `TPSSH` (about 30 s at kalumburu's /19).
+
+**Never sweep the client bridges.** A first version swept every connected `10.x` route, which included `bridge_501`, a /18 of public Wi-Fi clients: it pinged customer devices, took 4.5 minutes, and
+flooded the neighbour table with thousands of `INCOMPLETE` entries. Without `fping` the script falls back to ARP and warns that quiet switches can be missed.
+
+## Config capture
+
+`scripts/tplink-switch.sh <site> <ip> --backup <dir>` runs `show system-info` and `show running-config`, redacts every `password`/`secret`/`community`/`key`/`passphrase`/`psk` value, refuses to write
+if the known login or enable password survives, and writes `<dir>/<site>/<system-name>_<ip>_<YYYYMMDD_hhmm>.cfg` with the system-info as a `!` comment header. The paging prompt (`Press any key to
+continue`) is answered automatically. Unified-network-controller keeps these as durable, git-tracked samples under `captures/tplink-switch-configs/` (operator, 2026-09-24): capture each switch's
+config as each site is visited. The trap host's community name is redacted with the community line (2026-09-30).
+
+## SNMP
+
+Every switch has one v2c community, **read-write**, on the default view `viewDefault`, and one trap host, the SMC (`snmp-server host 10.255.0.1 162 "<community>" smode v2c`). The community is `SNMP-`
+followed by the switch's `location` string (`show system-info` "System Location", sysLocation), typed by hand per site, so its case varies (`HopeVale`, `BURRINGURRAH`). Checked on six switches at six
+sites (2026-09-30) by comparing in memory, never printed, then confirmed on all 11 by an SNMP read ([survey](tplink-snmp-enablement-survey-20260930.csv)). It is in no vault entry: not
+`cambium-devices/*-snmp-*`, not the login password, not `public`/`private`. Two consequences:
+
+- It is guessable from the site name and grants write. Changing it, and whether it goes into the vault, is the operator's decision.
+- The trap host line carries it in the clear. `--backup` redacted only `snmp-server community` until 2026-09-30, so the 2026-09-24 kalumburu captures
+  held it (committed in unified-network-controller `3b54e4c`); since then the trap host name is redacted too and every community value found is
+  leak-checked before a file is written.
+
+Query from the SMC, as for any device behind it (UNC `smc_snmp`), with `-t 5 -r 3`: the agent is slow after a large walk, and the default `-t 2 -r 1`
+turned half the subtrees into timeouts that looked like missing MIBs. Which OIDs the project uses, and which are absent, is in
+[snmp-oid-registry-tplink.yaml](snmp-oid-registry-tplink.yaml); one record per switch is in [tplink-site-switches.yaml](tplink-site-switches.yaml).
+
+## In Nautobot
+
+Unified-network-controller carries the model in its catalog (`vendors/tp-link/`: manufacturer TP-Link, device type SG2428P with its 28 ports named as ifName reports them, platform `TP-Link Omada
+switch`, role `Switch`) and seeds a switch from its redacted capture with `wc-local/scripts/seed_switch_devices.py`: name `<site>-<sysName>`, Staged, serial, firmware, management VLAN interface with
+its address as primary. Since 2026-09-30 switches are onboarded through UNC's sweep, identify and land stages like Cambium units: the sweep reads each pinged non-Cambium host's SSH banner from the SMC
+(this script's `--discover` probe) and a `TPSSH` banner marks it a switch; identify runs `--backup` once per switch; land knows a switch by the base MAC on its management-only VLAN interface. Canary
+on 2026-09-30, all Staged: nbn_accelerate `hope-vale-Switch1`, `kowanyama-Switch1`, `pukatja-Switch1`; rcp `bidyadanga-Switch1`, `burringurrah-Switch2`, `kalumburu-Switch1`. The management mask is per
+site (37 sites /19, six /22 in topology_vars, 2026-09-30): the address takes its site's Prefix, which must equal topology_vars, and a switch configured otherwise (kalumburu and kowanyama Switch1, /22
+on /19 sites) keeps the site's mask in Nautobot with the difference noted as drift.
+
+## VLANs: parsing and drift against topology_vars
+
+No FOSS project parses this config (unified-network-controller research, 2026-09-30). netutils' `linux` config parser nests it correctly (the Cisco
+IOS parser fails on the bare `#` lines), and `netutils.vlan.vlanconfig_to_list` expands `500-501,503` and `vlan 621-626` ranges; UNC's
+`seed_switch_devices.parse_config` maps the result. Ports run in general mode: tagged members, untagged members and a PVID; a port starts untagged in
+VLAN 1 until `no switchport general allowed vlan 1`. A PVID outside a port's untagged members is a fault to report (bidyadanga 1/0/17 and 1/0/18:
+untagged 623/624, PVID 621/622, both shut down).
+
+topology_vars assigns VLANs per SMC port (`switch01`, `switch02`), so the switch that is `switch01` is found by exact MAC: an SMC port's MAC, or one
+of its VLAN interfaces' own MACs, in the switch's MAC table (dot1qTpFdbPort). Drift found on 2026-09-30: hope-vale Switch1 defines 503, 522, 524,
+526, 528 and trunks 521-528 to the SMC where topology_vars splits odd and even internets between two switches; bidyadanga Switch1 (`switch01`, SMC
+enp2s0 on 1/0/1) defines 522, 524-528 and 622-626 beyond topology_vars.
+
+## Kalumburu as found (2026-09-24)
+
+|             | 10.255.0.2                                                 | 10.255.0.3        |
+| ----------- | ---------------------------------------------------------- | ----------------- |
+| System name | Switch1                                                    | Switch 2          |
+| Model       | SG2428P 5.30 (Omada 28-port Gigabit Smart Switch, 24 PoE+) | SG2428P 5.30      |
+| Firmware    | 5.30.1 Build 20240202 Rel.61907                            | same              |
+| Serial      | 22480S0000948                                              | 22480S0000014     |
+| MAC         | B0-19-21-EA-92-3B                                          | B0-19-21-EA-8E-95 |
+
+Switch1's VLANs: 1 System-VLAN, 500 Management, 501 Public Wifi, 502 R195 Prov, 503 Private Wifi, 521-528 Internet 1-8 (each on its own access port, Gi1/0/9-16, and tagged on the Gi1/0/1 uplink).
+Ports 25-28 are SFP, all down.
+
+## Bidyadanga as found (2026-09-30)
+
+`--discover` found one TPSSH host, 10.255.0.2; the sweep's 10.255.0.3-4 TP-Link OUIs did not answer as switches. Login with the same KeePass entry, `enable` with no password. Switch1, location
+`Bidyadanga`, SG2428P 5.30, firmware 5.30.5 Build 20250117 Rel.60446 (newer than kalumburu's 5.30.1; the driver's quirk handling still worked), serial 225605X001920, MAC 8C-86-DD-33-A5-0F, up 232
+days.
+
+## Pitfalls
+
+- On 2026-09-24 the login password was sent after an `enable` that asked for none; the CLI took it as a command (`Error: Event not found`), so it may sit in Switch1's CLI history. Never send a
+  password unless a password prompt is on screen; the driver waits for one.
+- Stale host keys: every connection uses `UserKnownHostsFile=/dev/null`, because multi-SMC sites and swapped units change keys (`01_overview.md`).
+- Writes: the script is read-only by default (`show`, `ping`, `tracert` only). `--write` sends config commands to a production switch and needs the operator's explicit go-ahead.
 ````
 
 ## File: scripts/README.md
@@ -7543,6 +8258,34 @@ fixed `local_port` so tunnels never collide and a stale leftover on a shared por
 | `teleport-tunnel.sh` | `tsh` (Teleport session), ansible-wifi                  | `external-network`,             | Opens a real tunnel to a live device; never writes anything, never                |
 |                      |   inventories (read-only)                               |   `requires-credentials`        |   touches ansible-wifi                                                            |
 
+### `tplink-switch.sh` and `tplink_cli_driver.py`
+
+Reach a TP-Link site switch (SG2428P and kin) through the site's SMC box, written 2026-09-24 at kalumburu. The wrapper resolves site -> SMC host -> Teleport cluster exactly as `teleport-tunnel.sh`
+does, reads the password from KeePass (`/Network/tplink switch`, override `TPLINK_KP_ENTRY`; separate enable password `TPLINK_KP_ENABLE_ENTRY`), and streams the password lines plus the driver to
+the SMC over stdin, so no secret reaches a command line or transcript. The driver runs on the SMC and drives the switch CLI through a pty, handling every quirk in
+`../references/16_tplink-site-switches.md` (legacy host-key and MAC algorithms, no exec channel, CR for Enter, the swallowed first keystroke, `enable` with or without a password, paging).
+
+```bash
+./tplink-switch.sh kalumburu --discover                                  # live TPSSH hosts on the management subnet
+./tplink-switch.sh kalumburu 10.255.0.2                                  # show system-info
+./tplink-switch.sh kalumburu 10.255.0.3 "show interface status" "show vlan brief"
+./tplink-switch.sh kalumburu 10.255.0.2 --backup <unc>/captures/tplink-switch-configs   # redacted running-config
+./tplink-switch.sh kalumburu 10.255.0.2 --shell                          # interactive; password on the clipboard
+```
+
+Read-only by default: only `show`, `ping` and `tracert` are sent unless `--write` is given, which needs operator approval. One password attempt per run. Driver exit codes: 3 auth failed, 4
+connect/timeout, 5 no prompt, 6 enable failed. Requires an active `tsh login` for the site's cluster and `kp` on PATH.
+
+`--backup` redacts the `snmp-server host` community name as well as `snmp-server community` (2026-09-30: on these switches the trap host names the
+read-write community), and refuses to write if the login or enable password or any community value found in the config survives.
+
+| Script                  | Touches                                                 | Safety                          | Notes                                                                             |
+| ----------------------- | ------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
+| `tplink-switch.sh`      | `tsh`, KeePass (`kp`), ansible-wifi inventories         | `external-network`,             | Logs into production switches; read-only unless `--write`. `--backup` writes      |
+|                         |   (read-only), live switches                            |   `requires-credentials`        |   redacted configs to the given directory; `--discover` pings bridge_500 only     |
+| `tplink_cli_driver.py`  | Runs on the SMC; SSH to one switch                      | `external-network`,             | Never run directly from the workstation; fed by `tplink-switch.sh`                |
+|                         |                                                         |   `requires-credentials`        |                                                                                   |
+
 ## Usage
 
 ```bash
@@ -7853,6 +8596,7 @@ When sources conflict:
 | Coverage gaps, staleness risk, unvalidated assumptions                                                               | `references/13_known-issues.md`             |
 | Pin validity (mangle) vs pin issuance (Apache access log) diagnosis, marks-≠-activations pitfalls                    | `references/14_pin-activation-diagnosis.md` |
 | Cambium asset-register — ansible-wifi site_name join point (full content moved to skill-cambium)                     | `references/15_cambium-asset-registers.md`  |
+| TP-Link site switches: access, SSH quirks, enable cases, discovery, config capture, SNMP community, Nautobot        | `references/16_tplink-site-switches.md`     |
 | SMC box definition, inventory flavors, Teleport access pattern, APN vs NBN Accelerate cluster differences            | `references/01_overview.md`                 |
 
 ## Project context files
@@ -7883,6 +8627,10 @@ When sources conflict:
 | `references/13_known-issues.md`                    | Known gaps and staleness                                                | Content     |
 | `references/14_pin-activation-diagnosis.md`        | Pin validity vs pin issuance diagnosis, fleet case study                | Content     |
 | `references/15_cambium-asset-registers.md`         | Pointer only — full content in skill-cambium; site_name join point here | Content     |
+| `references/16_tplink-site-switches.md`            | TP-Link switches behind the SMC; `tplink-switch.sh`                     | Content     |
+| `references/snmp-oid-registry-tplink.yaml`         | Verified TP-Link switch OIDs the controller uses (machine-readable)     | Content     |
+| `references/tplink-site-switches.yaml`             | One record per TP-Link switch, with structured evidence                 | Content     |
+| `references/tplink-snmp-enablement-survey-*.csv`   | TP-Link SNMP enablement per switch                                      | Content     |
 | `exports/claude_code/project/skill-smc/adapter.md` | Claude Code source→install mapping                                      | Adapter     |
 | `exports/claude_code/project/skill-smc/install.md` | Claude Code installation steps                                          | Adapter     |
 | `CHANGELOG.md`                                     | Pack version history and governance changes                             | Medium-high |
@@ -8014,6 +8762,39 @@ Everything else (PROFILE.md, SYSTEM_PROMPT.md, manifest.json, exports/, .archcor
 
 ## Contents
 
+- [Generic topology authoring and inventory integration](#20261002_1641--generic-topology-authoring-and-inventory-integration-v0179---v0180)
+- [20260930_1959 — Never push ansible-wifi from a git worktree; which ref unified-network-controller reads (v0.1.78 -> v0.1.79)](#20260930_1959--never-push-ansible-wifi-from-a-git-worktree-which-ref-unified-network-controller-reads-v0178---v0179)
+- [20260930_1424 — TP-Link VLAN parsing and drift; live SMC services and interface MACs (v0.1.77 -> v0.1.78)](#20260930_1424--tp-link-vlan-parsing-and-drift-live-smc-services-and-interface-macs-v0177---v0178)
+- [20260930_1307 — TP-Link switches at six sites: SNMP community, the OIDs the controller uses, backup redaction fixed, Nautobot canary (v0.1.76 -> v0.1.77)](#20260930_1307--tp-link-switches-at-six-sites-snmp-community-the-oids-the-controller-uses-backup-redaction-fixed-nautobot-canary-v0176---v0177)
+- [20260930_1803 — Prometheus usage sums need a `> 0` filter (spurious zero samples) (v0.1.76 -> v0.1.77)](#20260930_1803--prometheus-usage-sums-need-a--0-filter-spurious-zero-samples-v0176---v0177)
+- [20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)](#20260930_1221--terminology-access-is-free-via-tc-acceptance-not-a-paid-pin-v0175---v0176)
+- [20260930_1210 — RCP has its own bot (bot-apn-dashboard), ping-only, no mark wipe; skill-cambium now co-invoked (v0.1.74 -> v0.1.75)](#20260930_1210--rcp-has-its-own-bot-bot-apn-dashboard-ping-only-no-mark-wipe-skill-cambium-now-co-invoked-v0174---v0175)
+- [20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)](#20260930_1202--bot-cw-dashboard-wipes-pin-marks-on-koonibbaamata-a-zero-eclipse_mark-count-is-not-normal-v0173---v0174)
+- [20260930_0326 — The low-touch script's contract with cnMaestro, read end to end (v0.1.72 -> v0.1.73)](#20260930_0326--the-low-touch-scripts-contract-with-cnmaestro-read-end-to-end-v0172---v0173)
+- [20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)](#20260929_1821--nbn-low-touch-lives-on-big_push-with-an-access-key-play-the-test-smcs-stage-inventory-v0171---v0172)
+- [20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)](#20260928_2206--low-touch-is-visible-per-box-the-test-box-daniel-test-nbn-smc01-v0170---v0171)
+- [20260927_2024 — pre-push gate: lint the pushed commit, compare a new branch with its nearest remote branch, skip Jinja for shellcheck (v0.1.69 -> v0.1.70)](#20260927_2024--pre-push-gate-lint-the-pushed-commit-compare-a-new-branch-with-its-nearest-remote-branch-skip-jinja-for-shellcheck-v0169---v0170)
+- [20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)](#20260927_1954--r195-tftp-files-varlibtftpboot-missing-on-fresh-2204-wangkatjungka-runs-an-uncommitted-template-with-apn-cnmaestro01-v0168---v0169)
+- [20260927_1752 — the rcp "seven sites" observations are dated as at 2026-07-29/30 (v0.1.67 -> v0.1.68)](#20260927_1752--the-rcp-seven-sites-observations-are-dated-as-at-2026-07-2930-v0167---v0168)
+- [20260927_1704 — fping approved per flavour (rcp, nbn_accelerate); the package-install guard that followed a Location-driven widening (v0.1.66 -> v0.1.67)](#20260927_1704--fping-approved-per-flavour-rcp-nbn_accelerate-the-package-install-guard-that-followed-a-location-driven-widening-v0166---v0167)
+- [20260927_1632 — smc_ltp has nine sites, not seven (pia and yakanarra were missing); topology_vars layout; the nine seeded into unified-network-controller's Nautobot (v0.1.65 -> v0.1.66)](#20260927_1632--smc_ltp-has-nine-sites-not-seven-pia-and-yakanarra-were-missing-topology_vars-layout-the-nine-seeded-into-unified-network-controllers-nautobot-v0165---v0166)
+- [20260927_1617 — _update_dns() location corrected (line 2855, not 2407); one production RPZ zone read: cnMaestro names, a fleet-wide template, low-touch sites absent from Nautobot (v0.1.64 -> v0.1.65)](#20260927_1617--_update_dns-location-corrected-line-2855-not-2407-one-production-rpz-zone-read-cnmaestro-names-a-fleet-wide-template-low-touch-sites-absent-from-nautobot-v0164---v0165)
+- [20260927_0322 — what a low-touch SMC keeps per device: extensions CSV, TFTP configs, the cnMaestro-fed RPZ zone, no DHCP reservations (v0.1.63 -> v0.1.64)](#20260927_0322--what-a-low-touch-smc-keeps-per-device-extensions-csv-tftp-configs-the-cnmaestro-fed-rpz-zone-no-dhcp-reservations-v0163---v0164)
+- [20260927_0308 — smc_dhcpd: debounced hook and StartLimit adopted on the rehearsal branch; the vars-plugin and dhcpd.conf.j2 cautions recorded (v0.1.62 -> v0.1.63)](#20260927_0308--smc_dhcpd-debounced-hook-and-startlimit-adopted-on-the-rehearsal-branch-the-vars-plugin-and-dhcpdconfj2-cautions-recorded-v0162---v0163)
+- [20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator) (v0.1.61 -> v0.1.62)](#20260927_0258--apn-cnmaestro01-hostname-corrected-to-apn-cnmaestro01apnau-operator-v0161---v0162)
+- [20260927_0252 — dhcpd start-limit: both fixes proved on the virtual SMC; the issue is filed in local-knowledge-ansible (v0.1.60 -> v0.1.61)](#20260927_0252--dhcpd-start-limit-both-fixes-proved-on-the-virtual-smc-the-issue-is-filed-in-local-knowledge-ansible-v0160---v0161)
+- [20260927_0230 — netplan apply vs the dhcpd restart hook: isc-dhcp-server start-limit-hit recorded, reload surface named (v0.1.59 -> v0.1.60)](#20260927_0230--netplan-apply-vs-the-dhcpd-restart-hook-isc-dhcp-server-start-limit-hit-recorded-reload-surface-named-v0159---v0160)
+- [20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)](#20260926_2121--orbstack-virtual-smc-malik-rcp01-container-style-host-adaptations-recorded-working-cache-venvs-absent-v0158---v0159)
+- [20260926_1815 — Low-touch hook verified live on umoona-smc01; leases persist the hook variables; all devices on apn-cnmaestro01 (v0.1.57 -> v0.1.58)](#20260926_1815--low-touch-hook-verified-live-on-umoona-smc01-leases-persist-the-hook-variables-all-devices-on-apn-cnmaestro01-v0157---v0158)
+- [20260924_1957 — SMC physical port order and usual cabling recorded (v0.1.56 -> v0.1.57)](#20260924_1957--smc-physical-port-order-and-usual-cabling-recorded-v0156---v0157)
+- [20260924_1945 — x86 VLAN interface layout recorded with its Nautobot mirror; `ip -j` read confirmed (v0.1.55 -> v0.1.56)](#20260924_1945--x86-vlan-interface-layout-recorded-with-its-nautobot-mirror-ip--j-read-confirmed-v0155---v0156)
+- [20260924_1522 — `ifPhysAddress` verified on all three snmpd canaries; the identity anchor is now confirmed over SNMP every collector cycle (v0.1.54 -> v0.1.55)](#20260924_1522--ifphysaddress-verified-on-all-three-snmpd-canaries-the-identity-anchor-is-now-confirmed-over-snmp-every-collector-cycle-v0154---v0155)
+- [20260924_1222 — Neighbour table: mornington has refused 2,230 allocations at the 1024 cap; `gc_thresh1` = 1 corrected as not the cause of ARP loss (v0.1.53 -> v0.1.54)](#20260924_1222--neighbour-table-mornington-has-refused-2230-allocations-at-the-1024-cap-gc_thresh1--1-corrected-as-not-the-cause-of-arp-loss-v0153---v0154)
+- [20260924_1205 — TP-Link site switches reached behind the SMC; `tplink-switch.sh` access, discovery and redacted config capture (v0.1.52 -> v0.1.53)](#20260924_1205--tp-link-site-switches-reached-behind-the-smc-tplink-switchsh-access-discovery-and-redacted-config-capture-v0152---v0153)
+- [20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)](#20260922_1750--overlayroot-is-rpi-and-wh-only-x86-tmpfs-paths-differ-per-box-fping-on-three-x86-smcs-v0151---v0152)
+- [20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)](#20260921_2242--low-touch-provisioning-the-redis-backed-script-is-the-fleets-version-from-ansible-wifis-big_push-branch-not-master-v0150---v0151)
+- [20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)](#20260921_1310--multi-smc-sites-any-box-reaches-the-whole-management-address-space-jump-host-and-host-key-consequences-v0149---v0150)
+- [20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)](#20260921_1237--plain-openssh-proxyjump-to-devices-behind-an-smc-box-verified-nbn_accelerate-sshconfig-block-per-site-device-host-keys-v0148---v0149)
 - [20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)](#20260920_2342--path-checking-widened-past-five-files-20-split-filenames-joined-ansible-wifi-declared-as-a-sibling-root-v0147---v0148)
 - [20260920_1846 — `snmpget` installed across rcp/nbn_accelerate; two fleet assumptions disproved (v0.1.46 -> v0.1.47)](#20260920_1846--snmpget-installed-across-rcpnbn_accelerate-two-fleet-assumptions-disproved-v0146---v0147)
 - [20260918_1700 — teleport-tunnel.sh port convention for concurrent dispatch (v0.1.45 -> v0.1.46)](#20260918_1700--teleport-tunnelsh-port-convention-for-concurrent-dispatch-v0145---v0146)
@@ -8074,27 +8855,292 @@ Everything else (PROFILE.md, SYSTEM_PROMPT.md, manifest.json, exports/, .archcor
 
 ---
 
+## 20261002_1641 — Generic topology authoring and inventory integration (v0.1.79 -> v0.1.80)
+
+- Revised `references/08_ansible-authoring.md` to distinguish generated YAML, in-memory reuse of `Topology.flatten()`, and direct inventory JSON.
+- Captured the `wan_pair_count` definition, dictionary/parent/name contract, plugin responsibilities and inventory/group/flavor safeguards.
+- Qualified prior CUE preference and Jsonnet rankings; linked the consolidated local plan. No implementation, cache refresh or live deployment.
+- Evidence branch: `unc-virtual-smc-malik-rcp01`; production tree clean at update start. Intended big-profile DHCP baseline remains unresolved.
+
+## 20260930_1959 — Never push ansible-wifi from a git worktree; which ref unified-network-controller reads (v0.1.78 -> v0.1.79)
+
+- `references/08_ansible-authoring.md` (pre-push hook): pushing from a linked worktree makes the knowledge-capture step act on ansible-wifi itself
+  (local `user.name`/`user.email` overwritten, a snapshot commit on the worktree's branch); recovery steps; push from the main checkout. Met and
+  cleaned up 2026-09-30 while cherry-picking wangkatjungka's inventory onto big_push (`756e86b6`). The helper was fixed the same evening
+  (skill-repo-knowledge-capture 0.1.1).
+- Same file: unified-network-controller reads `origin/big_push` whatever is checked out; `UNC_ANSIBLE_WIFI_REF` overrides it per command.
+
+## 20260930_1424 — TP-Link VLAN parsing and drift; live SMC services and interface MACs (v0.1.77 -> v0.1.78)
+
+- `16_tplink-site-switches.md`: new section on parsing the switch config with netutils' `linux` parser (no FOSS TP-Link parser exists), general-mode
+  port semantics, finding which topology `switchNN` a switch is by exact MAC, and the VLAN drift found at hope-vale and bidyadanga.
+- `02_service-map.md`: the live services and listeners of hope-vale-smc01 (60 running; postfix on 0.0.0.0:25, snapd, packagekit, ModemManager
+  noted), and which SMC interfaces carry which MACs (internet VLAN interfaces have their own locally administered ones).
+- `16_tplink-site-switches.md` "In Nautobot": switches are onboarded through UNC's sweep (the `--discover` banner probe), identify (`--backup`) and
+  land stages.
+
+## 20260930_1307 — TP-Link switches at six sites: SNMP community, the OIDs the controller uses, backup redaction fixed, Nautobot canary (v0.1.76 -> v0.1.77)
+
+- **Where they are** (`16_tplink-site-switches.md`): `--discover` over nine candidate sites found 11 SG2428P switches at six (kalumburu 2, bidyadanga 1,
+  burringurrah 1, hope-vale 3, kowanyama 2, pukatja 2); aurukun, doomadgee and galiwinku answered no TPSSH. The KeePass login worked on all 11, both
+  clusters, one attempt each; every one enables with no password. Firmware 5.30.1 on ten, 5.30.5 on bidyadanga.
+- **SNMP community**: one v2c community per switch, read-write, equal to `SNMP-<location>` and also the v2c trap community to the SMC; in no vault
+  entry. Identified by comparing in memory, never printed. Recorded as a risk for the operator (guessable, grants write).
+- **Redaction fix** (`scripts/tplink-switch.sh`): `--backup` now redacts the `snmp-server host` community name and leak-checks every community value
+  found. Before this, the trap host line carried the community in clear text; the 2026-09-24 kalumburu captures in unified-network-controller held it
+  (redacted in place there; still in that repo's history at `3b54e4c`).
+- **OIDs** (new `snmp-oid-registry-tplink.yaml`, in skill-cambium's registry shape; operator: keep TP-Link's list as Cambium's is kept): 32 OIDs
+  read live on bidyadanga and hope-vale Switch1, each naming the unit that proved it and the use the controller has for it (identity, health, interfaces, MAC table, LLDP, TP-Link VLAN MIB, TP-Link PoE MIB), and the MIBs checked and absent
+  (POWER-ETHERNET, ENTITY, HOST-RESOURCES, RMON, Q-BRIDGE VLAN tables; DDM empty without an SFP). The agent needs `-t 5 -r 3`.
+- **Per-switch record and survey** (new `tplink-site-switches.yaml`, `tplink-snmp-enablement-survey-20260930.csv`, the counterparts of
+  skill-cambium's site-addressing.yaml and SNMP survey): all 11 switches answered SNMP with `SNMP-<location>`, and each serial read over SNMP
+  equals its capture. JSON schemas and observations, the third Cambium kind, wait for a switch adapter whose output they are derived from.
+- **Nautobot**: unified-network-controller seeds switches from their captures (`seed_switch_devices.py`, catalog `vendors/tp-link/`); canary of six,
+  Staged: nbn_accelerate hope-vale, kowanyama, pukatja; rcp bidyadanga, burringurrah, kalumburu. Management masks differ per site (37 /19, six /22):
+  each address takes its site's Prefix, checked against topology_vars; kalumburu and kowanyama Switch1 configure /22 on /19 sites (drift).
+
+## 20260930_1803 — Prometheus usage sums need a `> 0` filter (spurious zero samples) (v0.1.76 -> v0.1.77)
+
+- `references/13_known-issues.md` (2026-09-30 side findings): amata-smc01 counters contain spurious 0 samples. `rate()` reads each as a reset, which
+  inflated Amata's August to 62,830 GB (true: 598 GB). The fix is to filter `(metric > 0)` before `rate`. The result had initially been misread as an
+  L2 loop.
+
+## 20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)
+
+- `references/13_known-issues.md` (2026-09-30 section): "paid PIN" / "paid device" wording replaced with "access mark" / "T&C-accepted device". Per the
+  operator, users at these sites never buy a PIN: they accept a terms-and-conditions page and a PIN/mark is issued in the background (Eclipse
+  free-PIN flow). A note saying so was added. The heading changed, so its anchor changed too. The v0.1.74 CHANGELOG entry keeps its original wording
+  (append-only).
+
+## 20260930_1210 — RCP has its own bot (bot-apn-dashboard), ping-only, no mark wipe; skill-cambium now co-invoked (v0.1.74 -> v0.1.75)
+
+- `references/13_known-issues.md` (2026-09-30 section): RCP check across 18 `flavor=rcp` SMCs. `bot-apn-dashboard` only pings APs (8 sites). There
+  were 0 firewall or `netfilter-persistent` restarts and non-zero `ECLIPSE_MARK` everywhere. Two gotchas recorded: `tsh ls` label truncation
+  (use `flavor=rcp --format=names`) and `new-looma-smc01` being unlabelled and unreachable.
+- Operator rule (2026-09-30), recorded in ansible-wifi AGENTS.md: invoke skill-cambium alongside skill-smc for ansible-wifi analysis that touches
+  Cambium devices or AP monitoring, and feed findings back to both packs. The AP-ping monitoring path now lives in skill-cambium 05_known-issues.
+
+## 20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)
+
+- `references/13_known-issues.md`: new 2026-09-30 section. Teleport user `bot-cw-dashboard` (54.66.73.128) restarts netfilter-persistent on koonibba (137/24h) and amata (45/24h) through a "usage fix"
+  routine. Each restart reloads a mark-less `rules.v4` and removes every paid PIN, leaving koonibba with 0 authorised devices for 45% of sampled minutes. This is the root cause of koonibba's ~90%
+  usage drop. The 2026-09-15 carrier-throttling conclusion is withdrawn. Fleet survey of 31 SMCs included; side findings and 2 `correlate-pin-activation.sh` bugs recorded.
+- `references/14_pin-activation-diagnosis.md`: CORRECTED the 2026-09-11 bullet that called a 0-mark snapshot normal on a healthy site (amata). Healthy sites hold a steady non-zero count; a zero means
+  the chain was wiped. Added per-minute sampling as the detection method and the correct mark-count command.
+
+## 20260930_0326 — The low-touch script's contract with cnMaestro, read end to end (v0.1.72 -> v0.1.73)
+
+- Write-back from unified-network-controller (CHANGELOG 20260930_0325): `references/08_ansible-authoring.md` gains the cnmaestro-provisioning.py contract (calls through the wifi-dashboard proxy, what
+  each expects, new/replacement/reset, the replaced-MAC sources per family, the RPZ rewrite).
+- `references/01_overview.md` (coherence, 2026-09-30): the flavour table no longer says `smc_ltp` has no cw-cluster equivalent; nbn low-touch is on big_push's stage inventory only (daniel-test-nbn),
+  no production site.
+- `references/01_overview.md`: `--proxy` must precede the host in `tsh ssh` (after it, tsh uses the default profile; verified 2026-09-30).
+
+## 20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)
+
+- Write-back from unified-network-controller (its CHANGELOG 20260929_1819): `references/08_ansible-authoring.md` corrects "rcp-only, no cw-cluster equivalent" for `smc_ltp`: big_push carries nbn
+  low-touch (daniel-test-nbn in `smc_ltp`, `inventories/nbn_accelerate/group_vars/smc_ltp.yml`, `lt-cnmaestro.communitywifi.net.au`) and a play that creates a per-site access key before the
+  provisioning role; the test box's hook script is absent.
+- `references/07_hardware-overlay.md`: AAEON DMI serials follow the BIOS build (fleet survey), the MAC-serial rule, and the two `mungkarta-smc01` boxes.
+- `references/01_overview.md`: always name the proxy, never try both (operator, 2026-09-29): `mungkarta-smc01` exists on both clusters as different boxes.
+- Corrected the same day: big_push's nbn low-touch host is `nbn.prod.apn-services.com.au` (52.63.121.56) since `4431e2dc`; rcp's is `wifi.prod.apn-services.com.au`; `lt-cnmaestro.communitywifi.net.au`
+  was its name in `9e60b1c9`.
+
+## 20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)
+
+`references/08_ansible-authoring.md`: boxes that are not low-touch have no RPZ zone file, BIND inactive and no provisioning hook (junjuwa-smc01, arawerr-smc01, read-only 2026-09-28), so an absent zone
+means "not low-touch"; daniel-test-nbn-smc01 on the cw cluster carries the machinery with a header-only zone and is in no `smc_ltp` group; the operator approved converting it and testing on it.
+Written back from unified-network-controller. Read back after writing.
+
+## 20260927_2024 — pre-push gate: lint the pushed commit, compare a new branch with its nearest remote branch, skip Jinja for shellcheck (v0.1.69 -> v0.1.70)
+
+`scripts/ansible-lint-delta-gate.sh` honours `DELTA_BASE` (set by the hook) before `@{upstream}`/`origin/master`, and reads the baseline from the git common dir so it works from a linked worktree. The
+same patch went into the copy the ansible-wifi hook calls (local-knowledge-ansible). The hook itself was fixed in the ansible-wifi clone (untracked); `references/08_ansible-authoring.md` records the
+three defects, the fix and the tests. Read back after writing.
+
+## 20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)
+
+Found by unified-network-controller Step 8 (report `docs/reports/controller-option3/step8-extensions-tftp-intent-20260927_1949.md` there). `references/08_ansible-authoring.md`, the TFTP bullet of
+"What a low-touch SMC keeps per device": the role never creates `/var/lib/tftpboot` (22.04's `tftpd-hpa` makes `/srv/tftp`), the seven per-extension keys and the tab-separated lines,
+wangkatjungka-smc01's configs from an uncommitted template variant, the `extension_end` hosts the role cannot render, low-touch CSVs starting at 1000 against cnMaestro ranges at x001, and the older
+10.255.1.x layout. `references/07_hardware-overlay.md`: the "template hard-codes Cloud" line corrected for what boxes actually serve. Read back after writing.
+
+## 20260927_1752 — the rcp "seven sites" observations are dated as at 2026-07-29/30 (v0.1.67 -> v0.1.68)
+
+`references/03_communication-flows.md`: four statements about the rcp fleet ("all seven sites", "six of seven", "two of seven") read as current, though `inventories/rcp/host_vars` now holds many more
+host files (production group membership not recounted here). They were live-verified or operator-reported on 2026-07-29/30 and are now framed as at those dates, with a note that the switch02
+cold-standby observation was not re-verified since. No claim was changed; re-verifying them needs Grafana against today's fleet. Found by skill-project-coherence's new `stale_refs.py` sweep; these
+lines are about rcp, not the `smc_ltp` group (whose count was corrected to nine in v0.1.66). Documentation only.
+
+## 20260927_1704 — fping approved per flavour (rcp, nbn_accelerate); the package-install guard that followed a Location-driven widening (v0.1.66 -> v0.1.67)
+
+From unified-network-controller's seventh staleness audit (its CHANGELOG `20260927_1659`). `references/07_hardware-overlay.md` fping section: the operator's approval of fping installs on every `rcp`
+and `nbn_accelerate` box, and the guard in that project's package checker, added after seeding the nine `smc_ltp` Locations silently widened its install reach. Documentation only.
+
+## 20260927_1632 — smc_ltp has nine sites, not seven (pia and yakanarra were missing); topology_vars layout; the nine seeded into unified-network-controller's Nautobot (v0.1.65 -> v0.1.66)
+
+Operator (2026-09-27) named yakanarra; re-reading `inventories/rcp/prod` on `big_push` shows `smc_ltp:children` has nine members: guda-guda, pia, umoona, warburton, beagle-bay, pandanus-park,
+new-looma, old-looma, yakanarra. The seven-site list is corrected where it states current membership (SKILL.md, `references/01_overview.md` and `02_service-map.md` counts with a note under the table,
+`05_troubleshooting.md`, `08_ansible-authoring.md`); dated history (the 2026-08-03 "now lists all 7") is left as written. `08_ansible-authoring.md` also gains the `topology_vars` layout
+(`inventory.hosts`, `switching.bridges`, `layer3.links` / `layer3.vrfs`) and the fact that all nine `smc_ltp` sites share the same three link subnets; the umoona bullet now says the sites had no
+Nautobot records when checked and were seeded the same day. Documentation only.
+
+## 20260927_1617 — _update_dns() location corrected (line 2855, not 2407); one production RPZ zone read: cnMaestro names, a fleet-wide template, low-touch sites absent from Nautobot (v0.1.64 -> v0.1.65)
+
+From unified-network-controller's Step 8 RPZ work (its CHANGELOG `20260927_1555` and `20260927_1611`). `references/08_ansible-authoring.md`: the `_update_dns()` line numbers were wrong (the function
+is at line 2855 of `roles/smc_cnmaestro_provisioning/files/cnmaestro-provisioning.py` on `big_push`, called at 3258); new bullet on umoona-smc01's live `db.cambium-rpz` (one operator-approved
+read-only look): 21 records under cnMaestro's names, last written 2026-04-16, template md5 identical to the virtual SMC's, names unique only per site, and none of the seven `smc_ltp` sites modelled in
+Nautobot or in cambium-swap's inventory. Documentation only.
+
+## 20260927_0322 — what a low-touch SMC keeps per device: extensions CSV, TFTP configs, the cnMaestro-fed RPZ zone, no DHCP reservations (v0.1.63 -> v0.1.64)
+
+`references/08_ansible-authoring.md`: new section answering "what does the SMC maintain for low-touch device provisioning" from the roles on the rehearsal branch: the extension arithmetic behind
+`<SITE>-extensions.csv` (`mgmt_ip`/`public_ip` from the extension number), the per-extension R195P files on TFTP, the absence of DHCP reservations (static `mgmt_ip` comes from cnMaestro template
+variables), and `db.cambium-rpz` rebuilt by the provisioning script's `_update_dns()` from cnMaestro's `name`/`mgmt_ip`/`public_ip` variables. Operator correction folded in: 8.8.8.8/8.8.4.4 are the
+box's forwarders; user clients get the gateway as DNS. Asked by the operator for the Nautobot SSOT design; the mapping is recorded as a proposal in unified-network-controller.
+
+## 20260927_0308 — smc_dhcpd: debounced hook and StartLimit adopted on the rehearsal branch; the vars-plugin and dhcpd.conf.j2 cautions recorded (v0.1.62 -> v0.1.63)
+
+`references/08_ansible-authoring.md`: new section on the `smc_dhcpd` change committed on ansible-wifi branch `unc-virtual-smc-malik-rcp01` (operator's yes, 2026-09-27): the dispatcher hook debounced
+through one re-armed transient unit, `StartLimitIntervalSec=60`/`StartLimitBurst=20` in the role's unit file; 1 restart under a full apply and a bridge bounce on the stage box. Two cautions learnt
+applying it: a play outside the repo gets no topology variables from the vars plugin (pass them with `-e @`), and a full `smc_dhcpd` run on the stage box would drop the Step 4 device-seen `execute()`
+line from `dhcpd.conf` until Q10's template variable exists in `dhcpd.conf.j2`.
+
+## 20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator) (v0.1.61 -> v0.1.62)
+
+`references/08_ansible-authoring.md`: the on-prem cnMaestro hostname read `apn-cnmaestro01.apn.net.au` (2026-09-26 write-back); the operator corrected it to `apn-cnmaestro01.apn.au` on 2026-09-27, and
+it resolves (52.64.230.196). One-word fix; `USER_STATED`.
+
+## 20260927_0252 — dhcpd start-limit: both fixes proved on the virtual SMC; the issue is filed in local-knowledge-ansible (v0.1.60 -> v0.1.61)
+
+`references/06_failure-modes.md`: the 2026-09-27 section now carries the proof — on `malik-rcp01` a `StartLimitIntervalSec=60`/`StartLimitBurst=20` drop-in kept `isc-dhcp-server` active through a full
+`netplan apply` (6 restarts) and a three-bridge bounce (3 restarts); a debounced hook (`systemd-run --on-active=5`, re-armed per event) did the same with 1 restart each. The issue with the hook's
+source, the unit file and the options lives in local-knowledge-ansible issues/rcp-fleet/rcp-dhcpd-start-limit-on-link-flap-20260927_0238.md (commit `8a43a95`, proof section added the same night). No
+playbook changed; physical hardware still `UNVERIFIED`.
+
+## 20260927_0230 — netplan apply vs the dhcpd restart hook: isc-dhcp-server start-limit-hit recorded, reload surface named (v0.1.59 -> v0.1.60)
+
+`references/06_failure-modes.md`: new section on the `smc_dhcpd` role's networkd-dispatcher `routable.d` hook restarting `isc-dhcp-server` for every link that becomes routable, so a full `netplan
+apply` (twelve links bouncing at once on `malik-rcp01`) drives the unit into systemd's `start-limit-hit` even on an unchanged config; the reload surface the role's own handler uses (`netplan generate`
+then `networkctl reload`) touches only changed links, and a reset-failed plus restart of the bridge-bound services belongs after any apply or rollback. Found 2026-09-27 during
+unified-network-controller's Step 7 rehearsal (its `wc-local/scripts/smc_intent.py`), on the virtual SMC only; the physical-box link count under a real reload is marked `UNVERIFIED`. No change to any
+playbook.
+
+## 20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)
+
+From the unified-network-controller supplement Step 4 rehearsal (2026-09-26 evening).
+
+- `references/11_vagrant-lab.md` §12.6 (new): the stage host `malik-rcp01` is an OrbStack amd64 Ubuntu 22.04 machine (`lxc`), not a Vagrant VM. Every real-box assumption `smc_bases.yml` made false
+  there and its one adaptation, all behind the stage host var `smc_bases_container: true`: no bootloader (GRUB block skipped), the management NIC is also the WAN (`use-routes: true`), networkd's DUID
+  moved the DHCP lease (`dhcp-identifier: mac`), `/etc/cloud` absent (already ignored), and the `on commit` block only for `smc_ltp` (stage-only `[malik_smc_ltp]` group; never `smc_ltp.yml` against
+  it, a logging stand-in replaces the cnMaestro script). Also: `setsid` is not on macOS; `ntp`'s postinst takes a minute in the container; package retries hide a failure for an hour.
+- `SKILL.md` Runtime Environments: both working-cache venvs the section named are absent on this Mac (verified); Homebrew `ansible-playbook` core 2.21.4, `ansible-lint` and `yamllint` are what run
+  ansible-wifi until a venv is created.
+- `references/06_failure-modes.md` (new subsection) and `references/01_overview.md`: an expired `tsh` certificate makes every device look failed (94 of 156 critical on 2026-09-25, 17,309 `cert has
+  expired` lines, no alarm); `aurukun-smc01` refusing SSH on 2026-09-22/23 read as a site failure while smc02 and smc03 were fine. Check `tsh status` per cluster first; the multi-SMC fallback recorded
+  as `USER_STATED` on 2026-09-21 is now implemented in the controller's pushes.
+- `references/08_ansible-authoring.md`: the controller's proposed second `execute()` line on the low-touch hook (gated, Option 43 unchanged per Q9), where the spool lives, and the stage rehearsal
+  pointer.
+
+## 20260926_1815 — Low-touch hook verified live on umoona-smc01; leases persist the hook variables; all devices on apn-cnmaestro01 (v0.1.57 -> v0.1.58)
+
+`references/08_ansible-authoring.md`: read-only verification on umoona-smc01 for the unified-network-controller's Step 4 baseline. The live `on commit` block equals the `master` template and
+`big_push` does not change it (only the script: the box runs the 4,509-line build with redis-server active); provisioning shared-network `192.168.11.0/24`, 20-second Cambium leases, Option 43 still
+`https://3.105.84.178`; `dhcpd.leases` persists `clhw`, `clip`, `clvci` per lease (811 Cambium blocks of 1,338); one `log.<MAC>` per device under `/var/local/cnmaestro-provisioning/`. Aurukun's smc02
+and smc03 are Teleport nodes but not Nautobot Devices. Operator statement, 2026-09-26: every apn and nbn device is managed by on-prem `apn-cnmaestro01` (Teleport node present; the stated hostname
+`apn-cnmaestro01.apn.net.au` did not resolve publicly). Capture kept in unified-network-controller `captures/`.
+
+## 20260924_1957 — SMC physical port order and usual cabling recorded (v0.1.56 -> v0.1.57)
+
+`references/02_service-map.md`: left-to-right port order for the BOXER-6404 and BOXER-6641 as the operator stated it, the usual cabling (ports 1-2 internet, port 3 trunk to switch 1, port 4 trunk to
+switch 2) confirmed on mornington, kalumburu and hope-vale, how the uplink VLANs split across the two trunks, and that `vlan621`/`vlan631` held no address on either 6641 site.
+
+## 20260924_1945 — x86 VLAN interface layout recorded with its Nautobot mirror; `ip -j` read confirmed (v0.1.55 -> v0.1.56)
+
+`references/02_service-map.md`: the x86 boxes' bridge-member sub-interfaces and standalone internet VLAN interfaces, counted on the three canaries (10 on the BOXER-6404, 16 on each 6641), the one-call
+JSON read (`ip -d -j link show type vlan`, iproute2 5.15), and unified-network-controller's per-box Nautobot record of them (`virtual` interfaces with parent, bridge and site VLAN; bridges per device,
+not in the device-type template; drift reported against the box and `topology_vars`). Also recorded there: the operator's target (2026-09-24), Nautobot as the source each SMC syncs its network setup
+from and applies, with rollback; the box read is the retrofit.
+
+## 20260924_1522 — `ifPhysAddress` verified on all three snmpd canaries; the identity anchor is now confirmed over SNMP every collector cycle (v0.1.54 -> v0.1.55)
+
+`references/snmp-oid-registry.yaml`: `.1.3.6.1.2.1.2.2.1.6` ifPhysAddress moves from `not_yet_read` to the verified set, walked on kalumburu-smc01, mornington-smc01 (apn) and hope-vale-smc01 (nbn).
+The physical `enp*` ports report their burned-in MACs, equal to what Nautobot holds; the lowest (the identity anchor) is `enp1s0` on all three. Consumer: unified-network-controller
+`wc-local/scripts/smc_collect.py`, now run by the 20-minute collector cycle, which reports anchor drift and never writes it. Also recorded: `sysUpTime` is the snmpd agent's uptime, not the host's (0
+days on all three, snmpd installed today), so the SMC uptime OpenWISP shows is agent uptime; `hrSystemUptime` is added to `not_yet_read`. Two governance failures that predated this entry are fixed:
+`SKILL.md` now names the consumer by its full path under the `apn-projects` sibling root, and the example marker in `references/08_ansible-authoring.md` is back on the line it exempts (a rewrap had
+moved it down one).
+
+## 20260924_1222 — Neighbour table: mornington has refused 2,230 allocations at the 1024 cap; `gc_thresh1` = 1 corrected as not the cause of ARP loss (v0.1.53 -> v0.1.54)
+
+`ip -s ntable show name arp_cache` (read-only): mornington-smc01, 48 weeks up at 795 entries, shows `forced_gc_runs` 5,666,597 and `table_fulls` 2,230, so it has hit the 1024 hard cap and dropped
+packets; kalumburu-smc01 shows 145 and 0. `13_known-issues.md`'s neighbour-table section now carries the counters, what each threshold does to customer traffic, monitoring and the SMC, why
+whole-subnet sweeps make it worse, and the proposal reordered (`gc_thresh3` is the fix, `gc_thresh1` a nice-to-have) with a fleet `table_fulls` survey as the first rollout step. Correction to v0.1.53:
+the `gc_thresh1` of 1 is not why quiet devices leave ARP; both tables exceed the kernel default of 128 too. `16_tplink-site-switches.md` and `scripts/tplink-switch.sh` say so now.
+
+## 20260924_1205 — TP-Link site switches reached behind the SMC; `tplink-switch.sh` access, discovery and redacted config capture (v0.1.52 -> v0.1.53)
+
+Both kalumburu switches (10.255.0.2 Switch1, 10.255.0.3 Switch 2, SG2428P firmware 5.30.1) logged into with KeePass `/Network/tplink switch` from kalumburu-smc01. New
+`references/16_tplink-site-switches.md`: the per-site candidates from unified-network-controller's sweeps, the credential, the SSH quirks (`HostKeyAlgorithms=+ssh-rsa`, `MACs=hmac-sha2-256`, no exec
+channel, CR for Enter, swallowed first keystroke, client-first banner), the three `enable` cases, why discovery cannot use ARP (`gc_thresh1` is 1 on the SMCs, not the kernel's 128), and the rule never
+to sweep `bridge_501`. New `scripts/tplink-switch.sh` with `tplink_cli_driver.py`: read-only commands, `--discover`, `--shell` and `--backup` (redacted running-config, leak-checked against the known
+passwords). Telnet is refused on both switches. The login password was once typed into Switch1's CLI after an `enable` that needed none; the driver now sends a password only when a prompt asks for
+one. RUNBOOK routing, SKILL.md references and `scripts/README.md` updated. `13_known-issues.md` gains a neighbour-table finding and a proposed `gc_thresh1/2/3` standard of 1024/4096/16384 (proposal
+only; the SMCs run 1/512/1024 and mornington holds 757 entries).
+
+## 20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)
+
+SKILL.md said "All SMC boxes run overlayroot". Wrong, per the operator (2026-09-22): only RPi and WH boxes do. It now says so, matching what `references/07_hardware-overlay.md` already recorded per
+flavour. `07_hardware-overlay.md` gains an x86 section: plain ext4 root (an apt install persists), and the tmpfs mounts, which differ per box. `/tmp` is tmpfs on mowanjum-smc01 but ext4 on
+hope-vale-smc01, so use `/run`. fping 5.1 was installed by apt on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability pre-check. No ansible-wifi role
+installs it yet.
+
+## 20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)
+
+`references/04_dependency-tree.md` resolves its open "naming collision" item: the Redis-dependent `cnmaestro-provisioning` service and the `smc_ltp` low-touch script are one mechanism at two versions.
+`master` holds the older 3,222-line script with no Redis; the unmerged `big_push` branch (Daniel Gravolin, 36 commits) holds the 4,514-line Redis version. Checked live, read-only: `umoona-smc01` runs
+`big_push` commit `40c283b6`; `pandanus-park-smc01` runs a copy matching no commit (deployed from uncommitted changes). Consumer: `unified-network-controller`'s architecture brief, point 3.
+
+## 20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)
+
+`references/01_overview.md` "Remote Access": at a multi-SMC site the boxes share one management address space as a VRRP-style set, and failover runs through the switching layer and the wireless
+network, so any box is a valid jump host for every device at the site (operator-stated, 2026-09-21, aurukun as the example). A fixed `ProxyJump` does not fail over on its own; device host keys stay
+keyed by site. Consumer: `unified-network-controller`'s options register, D3.6 sketch — one site agent and one Nautobot Namespace per site, not per box.
+
+## 20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)
+
+`references/01_overview.md` "Remote Access" gains a verified path from the operator Mac straight to a device behind an SMC box: OpenSSH `ProxyJump`, with `tsh proxy ssh` as the first hop's
+`ProxyCommand` and an ordinary `-W` channel through the box. Nothing is installed on the box and the device credential stays on the Mac. Verified 2026-09-21 against `galiwinku-smc01` →
+`GAL_XV2_AP32_IP3_32` (`10.255.3.32`).
+
+- `~/.tsh/known_hosts` trusts the host CA only for `*.teleport.<domain>`; a bare node name as `HostName` fails host-key verification. `HostKeyAlias` to the FQDN form, or using the FQDN, fixes it.
+- An `nbn_accelerate` wildcard block (`*.teleport.communitywifi.net.au`, `--proxy=` only) now sits in the operator's `~/.ssh/config` beside the `tsh config`-generated APN one, verified live.
+- Device host keys collide across sites because management subnets overlap: key them per site (`HostKeyAlias=<site>-<ip>` or a per-site `UserKnownHostsFile`).
+- Device password via `sshpass -e` from an env var, never `-p` (argv exposure).
+
+Consumer: `unified-network-controller` `docs/inventory/device-access-via-proxyjump-and-tbot-20260921_1232.md`, which also records the tbot (production) form and its open checks.
+
 ## 20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)
 
 Ported from `unified-network-controller`'s staleness audit of the same evening, which found the same defects there and promoted the underlying rule to
 `unified-network-controller/.archcore/rules/govern-a-derived-population-never-a-hand-list.rule.md`.
 
-**Nineteen split filenames, the most of any package in this family.** A wide table cell wraps mid-filename and leaves the token ending in a backslash with its tail on the next row — unfollowable
-for a reader, and invisible to `check_referenced_paths`, which skips anything that does not look like a path. So the defect hid from the very check that should have caught it. All joined across
-`SKILL.md`, `references/07_hardware-overlay.md`, `references/13_known-issues.md` and `scripts/README.md`; one was a THREE-row split. `check_split_path_tokens()` now asserts the shape directly and
-scans every markdown file in the package, not only the governance surfaces.
+**Nineteen split filenames, the most of any package in this family.** A wide table cell wraps mid-filename and leaves the token ending in a backslash with its tail on the next row — unfollowable for a
+reader, and invisible to `check_referenced_paths`, which skips anything that does not look like a path. So the defect hid from the very check that should have caught it. All joined across `SKILL.md`,
+`references/07_hardware-overlay.md`, `references/13_known-issues.md` and `scripts/README.md`; one was a THREE-row split. `check_split_path_tokens()` now asserts the shape directly and scans every
+markdown file in the package, not only the governance surfaces.
 
-**`SURFACES` was a hand-list of five files**, so `ARCHITECTURE.md`, `PROFILE.md`, `SYSTEM_PROMPT.md` and anything added later were outside every path check. Now derived from the tree.
-`CHANGELOG.md` and `SCRATCHPAD.md` are excluded with the reason stated in the code: both are append-only history, and SCRATCHPAD's 2026-06-26 entry recording that a dead `references/PROFILE.md`
-pointer was *removed* reads to a path check as a live broken reference. Exempt history by marker, never by rewriting it. `references/**` is excluded for a different stated reason — its slash
-notation is mostly device paths, CIDR blocks and systemd units rather than repo paths.
+**`SURFACES` was a hand-list of five files**, so `ARCHITECTURE.md`, `PROFILE.md`, `SYSTEM_PROMPT.md` and anything added later were outside every path check. Now derived from the tree. `CHANGELOG.md`
+and `SCRATCHPAD.md` are excluded with the reason stated in the code: both are append-only history, and SCRATCHPAD's 2026-06-26 entry recording that a dead `references/PROFILE.md` pointer was *removed*
+reads to a path check as a live broken reference. Exempt history by marker, never by rewriting it. `references/**` is excluded for a different stated reason — its slash notation is mostly device
+paths, CIDR blocks and systemd units rather than repo paths.
 
 **`SIBLING_ROOTS` added, with `ansible-wifi` as the important one.** This package's entire subject is that repository, and its prose names roles, inventories and flavour files by their path there.
 Those references are now *verified* rather than merely unchecked: if ansible-wifi renames a role, this package's routing into it fails loudly. An absent root prints SKIPPED, never passed.
 
-**Bare basenames resolve on a unique match only.** `01_overview.md` unambiguously means `references/01_overview.md` within one package, so it resolves; a name carried by more than one file is
-reported as ambiguous rather than silently accepted, and a rename still fails. Evidence-collector OUTPUT filenames (`MANIFEST.txt`, `SUMMARY.txt`, the numbered capture files), git refs
-(`origin/main`) and the Apache log name `wifi/access` are registered as conditional paths with per-entry reasons — they are not repo paths despite the shape.
+**Bare basenames resolve on a unique match only.** `01_overview.md` unambiguously means `references/01_overview.md` within one package, so it resolves; a name carried by more than one file is reported
+as ambiguous rather than silently accepted, and a rename still fails. Evidence-collector OUTPUT filenames (`MANIFEST.txt`, `SUMMARY.txt`, the numbered capture files), git refs (`origin/main`) and the
+Apache log name `wifi/access` are registered as conditional paths with per-entry reasons — they are not repo paths despite the shape.
 
 Both new check behaviours negative-tested in both directions. Checks **184 -> 286**.
 
@@ -9536,6 +10582,16 @@ routing:
       register. Full naming-convention/extraction knowledge lives in skill-cambium.
     read:
     - references/15_cambium-asset-registers.md
+  tplink_site_switches:
+    description: TP-Link site switches behind the SMC -- KeePass entry, SSH quirks, enable
+      with and without a password, fping discovery (not ARP), redacted config capture, the
+      SNMP-<location> community, the OIDs the controller uses, one record per switch.
+    read:
+    - references/16_tplink-site-switches.md
+    - references/snmp-oid-registry-tplink.yaml
+    - references/tplink-site-switches.yaml
+    - references/tplink-snmp-enablement-survey-20260930.csv
+    - scripts/tplink-switch.sh
   smcbox_basics:
     description: SMC box definition, inventory flavors, Teleport access pattern, satellite
       constraints, APN vs NBN Accelerate cluster structural comparison.
@@ -9673,8 +10729,8 @@ update_rules:
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "20260920_2342",
-  "version": "0.1.48",
+  "updated_at": "20261002_1641",
+  "version": "0.1.80",
   "dependencies": [],
   "known_constraints": [
     "SMC boxes run overlayroot \u2014 changes do not persist across reboot unless lower dir is remounted rw",
@@ -9993,7 +11049,13 @@ practical.
 | Local Vagrant lab bring-up and known virtualization issues                                                                                          | `references/11_vagrant-lab.md`                 |
 | Family-friendly VLAN 501 access, filtering stack, MAC randomization, CAKE                                                                           | `references/12_content-filtering.md`           |
 | Coverage gaps, live-validation limits, stale assumptions                                                                                            | `references/13_known-issues.md`                |
+| Verified SNMP OIDs on the SMC box itself (net-snmp agent, canary 2026-09-24), the machine-readable list the controller reads                         | `references/snmp-oid-registry.yaml`          |
 | Pin validity (mangle) vs pin issuance (Apache access log) — two mechanisms, marks-≠-activations pitfalls, fleet case study                          | `references/14_pin-activation-diagnosis.md`    |
+| TP-Link site switches: where they are, KeePass entry, SSH quirks (ssh-rsa host key, MAC, pty, CR), enable with/without password,                    | `references/16_tplink-site-switches.md`        |
+|   discovery (fping, not ARP: gc_thresh1), redacted config capture; `scripts/tplink-switch.sh`                                                       |                                                |
+| Verified SNMP OIDs on the TP-Link switches, each with the controller's use for it, and the MIBs checked and absent                                   | `references/snmp-oid-registry-tplink.yaml`     |
+| TP-Link switches one record each: identity, management address, VLANs, port descriptions, SNMP state, evidence                                       | `references/tplink-site-switches.yaml`         |
+| TP-Link SNMP enablement per switch (community pattern, answered or not), 2026-09-30                                                                  | `references/tplink-snmp-enablement-survey-20260930.csv` |
 | Reusable read-only scripts: WAN-routing/topology-drift investigation tooling (evidence capture, drift analyser, topology/hardware cross-check),     | `scripts/README.md`                            |
 |   plus ansible-lint pre-push/CI gate scripts, fleet hardware/service-health + portal-FQDN-status audit, and pin-activation diagnosis                |                                                |
 | Cambium asset-register naming grammar, per-site drift, `rcp`-vs-`nbn_accelerate` R195P rule, R195P IP-derivation formula, extraction gotchas        | `references/15_cambium-asset-registers.md`     |
@@ -10053,6 +11115,15 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 
 ## Current state
 
+**2026-10-02 16:41 KEEP, scoped topology-design update:** the local RCP plan covers Kapitan/CUE/Jsonnet and three inventory integration paths; the corrected design summary is in
+`references/08_ansible-authoring.md`. Metadata version: 0.1.80. Evidence branch: `unc-virtual-smc-malik-rcp01`, clean production tree at start. No implementation or live changes. Open decisions:
+authoritative `generic-big01` DHCP baseline, integration path and runnable tool comparison. Prior KEEP entries below remain historical; this entry does not resolve unrelated open items.
+
+**2026-09-24 (12:25) `KEEP` — v0.1.54: TP-Link site switches and the SMC neighbour table.** New `references/16_tplink-site-switches.md` and `scripts/tplink-switch.sh` +
+`tplink_cli_driver.py` (kalumburu switches reached; read-only default, fping discovery on `bridge_500` only, redacted `--backup`). `13_known-issues.md` records `gc_thresh` 1/512/1024 on the SMCs
+and mornington's 2,230 `table_fulls`, with a 16384/4096/1024 proposal (not applied). Commits `d5566c2`, `8db6d56` not pushed. Two pre-existing governance failures remain (SKILL.md
+`smc_collect.py` path, `08_ansible-authoring.md:526` split path).
+
 **Phase:** Stable — v0.1.34. skill-ai-it refresh completed 2026-09-08 (CHANGELOG 20260908_1955): `scripts/check_governance.py` adopted for the first time and now gates on this pack's own stated
 reference-routing and version-discipline rules; `AI_NAVIGATION.md` declared project-managed to protect its 13-file routing table from generic overwrite; `AGENTS.md` navigation block upgraded.
 `validate_navigation_control_layer.py` reports a clean PASS. Prior: Backdoor SSH Access documented 2026-09-08 (CHANGELOG 20260908_1330): new section in `03_communication-flows.md`, plus a terminology
@@ -10086,6 +11157,9 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 ---
 
 ## Open items
+
+- [ ] **2026-09-24 `KEEP`:** push `d5566c2` + `8db6d56`; fleet read-only `table_fulls` survey (offered); find the `gc_thresh1` = 1 setter; live-test the enable-password, already-privileged,
+  `--shell` and `--write` paths of `tplink-switch.sh` when a suitable switch appears; fix the two pre-existing governance failures.
 
 - [ ] Install v0.1.15 to `~/.claude/skills/skill-smc/` — run steps in `exports/claude_code/project/skill-smc/install.md` (now also copies `scripts/` and documents tsh-ssh-only access)
 - [x] ~~Investigate root cause of the `clamav-freshclam` CDN-block~~ — resolved 2026-08-03: **ClamAV 0.103.x reached end-of-life for database updates on 2025-09-14; the CDN now hard-blocks any 0.103.x
@@ -10256,6 +11330,9 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 ---
 
 ## Session history (summaries)
+
+- **2026-09-24 (10:44–12:25) — TP-Link switches + neighbour table** (from unified-network-controller). Switch access worked out and scripted; neighbour-table overflow found on mornington;
+  gc_thresh1 attribution corrected in v0.1.54. Detail: memory-keeper channel `unc`, keys `unc.tplink-*`, `unc.neighbour-table.20260924`. `KEEP`
 
 ### 2026-09-17 — Other OS alternatives assessed for Raspberry Pi SMCs (v0.1.42 -> v0.1.43)
 
@@ -10492,6 +11569,9 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Memory pointers (navigation only)
 
+- 2026-09-24 12:25: memory-keeper `unc` keys `unc.tplink-switch-access.20260924`, `unc.tplink-tooling.20260924`, `unc.neighbour-table.20260924`, `unc.errors.20260924-tplink`; project-context
+  `0bf38158` note; checkpoint `slurp-20260924-tplink-switches-neigh-table` (`98c3a99e`). `KEEP`
+
 - memory-keeper channel: `skill-smc` / keys added 2026-09-08 (skill-ai-it refresh slurp): `skill-smc.decision.skill-ai-it-refresh-mode-correction-20260908`,
   `skill-smc.decision.ai-navigation-declared-manual-20260908`, `skill-smc.note.check-governance-adopted-and-tuning-20260908`, `skill-smc.progress.v0134-refresh-20260908`,
   `skill-smc.note.mk-pc-backend-divergence-20260908`. Checkpoint: `slurp-20260908-skill-ai-it-refresh` (both backends).
@@ -10587,8 +11667,10 @@ An SMC box is an **x86 PC** or **ARM64 Raspberry Pi** running **Ubuntu 20.04+ (2
 {{inventory_hostname}}.teleport.<project>.au` — the domain splits by **project** (APN, nbn_accelerate), not by flavor; each project has multiple flavors nested under it (see `01_overview.md` "Remote
 Access").
 
-**Critical — Overlayroot:** All SMC boxes run overlayroot. Writes go to tmpfs (`/media/root-rw/overlay`) and are **lost on reboot**. Ansible changes only persist if the lower dir (`/media/root-ro`) is
-remounted read-write first. Always check overlayroot status before assuming a change persisted.
+**Critical — Overlayroot (RPi and WH boxes only; operator, 2026-09-22):** overlayroot runs on the Raspberry Pi and WH boxes (`rct`, `wh`, and `nbn_wh` once rolled out), not on x86. On those, writes go
+to tmpfs (`/media/root-rw/overlay`) and are **lost on reboot**; Ansible changes only persist if the lower dir (`/media/root-ro`) is remounted read-write first, so check overlayroot status before
+assuming a change persisted. x86 boxes (e.g. `rcp`, `nbn_accelerate`) have a plain ext4 root, where an `apt install` persists, and keep volatile data on tmpfs mounts instead. Which paths are tmpfs
+varies by box: `/tmp` is tmpfs on mowanjum-smc01 but ext4 on hope-vale-smc01; `/run` is tmpfs everywhere (see `references/07_hardware-overlay.md`).
 
 ## Related Workspaces
 
@@ -10630,8 +11712,9 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
 - DHCP: `dhcpd -t -cf /etc/dhcp/dhcpd.conf` (config test); `grep -i error /var/log/syslog`
 - DNS, non-`smc_ltp` hosts (all flavors — Unbound + Stubby, client path only): `unbound-checkconf`; `unbound-control status`; `systemctl status stubby`; config at `/etc/unbound/`, DoT upstream config
   at `/etc/stubby/stubby.yml` (Stubby listens on `127.0.0.1@60053`, single upstream `127.0.0.1@60853` via autossh local forward, no failover)
-- DNS, `smc_ltp` hosts only (static `rcp` group, 7 sites — `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona` — all "low touch"-onboarded sites; also runs
-  CNMaestro Cambium backhaul provisioning, see `references/08_ansible-authoring.md`): `named-checkconf`; `rndc status`; verify zones loaded in `/etc/bind/`
+- DNS, `smc_ltp` hosts only (static `rcp` group, 9 sites — `guda-guda`, `pia`, `umoona`, `warburton`, `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra` (nine on `big_push`, re-read
+  2026-09-27: `pia` and `yakanarra` had been missing from this list) — all "low touch"-onboarded sites; also runs CNMaestro Cambium backhaul provisioning, see `references/08_ansible-authoring.md`):
+  `named-checkconf`; `rndc status`; verify zones loaded in `/etc/bind/`
 - DNS, host's own resolution (separate from the two rows above — see `references/02_service-map.md`): `resolvectl status`; `systemctl status systemd-resolved`; `DNSStubListener=no` by default means
   the box's own `getaddrinfo()` bypasses Unbound/Stubby/BIND entirely
 
@@ -10707,8 +11790,9 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 ---
 
 ## Runtime Environments
-- ansible-wifi tooling venv: `/Volumes/Data/_ai/_skills/skills-working-cache/ansible-wifi/venv`
-- skill-smc specialist venv: `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/venv`
+- **Neither working-cache venv exists on this Mac (verified 2026-09-26)**: the ansible-wifi and skill-smc venvs this section used to name under the skills working cache are absent, and the
+  ansible-wifi checkout has no venv of its own. What runs ansible-wifi here is Homebrew: `/opt/homebrew/bin/ansible-playbook` (core 2.21.4), `ansible-lint`, `yamllint`. Create the working-cache venv
+  before relying on it; until then, use the Homebrew tools.
 - Ephemeral logs, pid files, and sockets belong under `/Volumes/Data/_ai/_skills/skills-runtime/<skill>/`.
 - Prefer the working-cache venvs when running SMC validation tooling (`ansible-lint`, `yamllint`, `ansible-inventory`, `ansible-playbook`) to keep versions stable across sessions.
 
@@ -10729,8 +11813,14 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - `references/13_known-issues.md` — coverage gaps, live-validation limits, and staleness risks.
 - `references/14_pin-activation-diagnosis.md` — pin validity (mangle) vs pin issuance (Apache access log): two independent mechanisms, marks-≠-activations pitfalls, and the 2026-09-11 fleet case
   study.
+- `references/snmp-oid-registry.yaml` — verified SNMP OIDs on the SMC box itself (net-snmp agent; canary 2026-09-24), the list `unified-network-controller/wc-local/scripts/smc_collect.py` reads.
+- `references/snmp-oid-registry-tplink.yaml` — verified SNMP OIDs on the TP-Link site switches (SG2428P, 2026-09-30), kept like skill-cambium's registry: each
+  with the controller's use for it, plus the MIBs checked and absent. `references/tplink-site-switches.yaml` holds one record per switch (identity, address,
+  VLANs, port descriptions, SNMP state, evidence) and `references/tplink-snmp-enablement-survey-20260930.csv` the SNMP survey, as skill-cambium keeps them.
 - `references/15_cambium-asset-registers.md` — pointer only: the ansible-wifi `site_name` join point for a Cambium asset register. Full asset-register naming-convention/extraction knowledge now lives
   in `skill-cambium` — see Related Skills below.
+- `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture, the
+  `SNMP-<location>` read-write community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/tplink-switch.sh`.
 - `scripts/` — reusable read-only diagnostic tooling for WAN-routing/topology-drift investigations (evidence capture, the "hook covers netplan" drift analyser, and a topology_vars-vs-live-hardware
   cross-check), fleet hardware/service-health + portal-FQDN-status audit, captive-portal pin-activation diagnosis, plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate);
   see `scripts/README.md`.

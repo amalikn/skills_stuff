@@ -113,7 +113,7 @@ turned half the subtrees into timeouts that looked like missing MIBs. Which OIDs
 ## In Nautobot
 
 Unified-network-controller carries the model in its catalog (`vendors/tp-link/`: manufacturer TP-Link, device type SG2428P with its 28 ports named as ifName reports them, platform `TP-Link Omada
-switch`, role `Switch`) and seeds a switch from its redacted capture with `wc-local/scripts/seed_switch_devices.py`: name `<site>-<sysName>`, Staged, serial, firmware, management VLAN interface with
+switch`, role `Switch`) and seeds a switch from its redacted capture with `wc-local/scripts/smc/seed_switch_devices.py`: name `<site>-<sysName>`, Staged, serial, firmware, management VLAN interface with
 its address as primary. Since 2026-09-30 switches are onboarded through UNC's sweep, identify and land stages like Cambium units: the sweep reads each pinged non-Cambium host's SSH banner from the SMC
 (this script's `--discover` probe) and a `TPSSH` banner marks it a switch; identify runs `--backup` once per switch; land knows a switch by the base MAC on its management-only VLAN interface. Canary
 on 2026-09-30, all Staged: nbn_accelerate `hope-vale-Switch1`, `kowanyama-Switch1`, `pukatja-Switch1`; rcp `bidyadanga-Switch1`, `burringurrah-Switch2`, `kalumburu-Switch1`. The management mask is per

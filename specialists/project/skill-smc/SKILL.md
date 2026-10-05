@@ -202,7 +202,7 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - `references/13_known-issues.md` — coverage gaps, live-validation limits, and staleness risks.
 - `references/14_pin-activation-diagnosis.md` — pin validity (mangle) vs pin issuance (Apache access log): two independent mechanisms, marks-≠-activations pitfalls, and the 2026-09-11 fleet case
   study.
-- `references/snmp-oid-registry.yaml` — verified SNMP OIDs on the SMC box itself (net-snmp agent; canary 2026-09-24), the list `unified-network-controller/wc-local/scripts/smc_collect.py` reads.
+- `references/snmp-oid-registry.yaml` — verified SNMP OIDs on the SMC box itself (net-snmp agent; canary 2026-09-24), the list `unified-network-controller/wc-local/scripts/collector/smc_collect.py` reads.
 - `references/snmp-oid-registry-tplink.yaml` — verified SNMP OIDs on the TP-Link site switches (SG2428P, 2026-09-30), kept like skill-cambium's registry: each
   with the controller's use for it, plus the MIBs checked and absent. `references/tplink-site-switches.yaml` holds one record per switch (identity, address,
   VLANs, port descriptions, SNMP state, evidence) and `references/tplink-snmp-enablement-survey-20260930.csv` the SNMP survey, as skill-cambium keeps them.
@@ -219,6 +219,9 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - **`skill-cambium`** — the Cambium device/hardware layer this fleet's boxes provision and manage: device families/firmware, local-admin credential vault, cnMaestro estate, asset-register conventions,
   device-inventory schema. Call it for anything about the radios/APs themselves rather than the SMC box or Ansible. It calls back here for: SMC service troubleshooting, Ansible topology/role
   questions, `smc_cnmaestro_provisioning` behaviour, Teleport access. Neither pack duplicates the other's content — cross-reference, don't copy.
+- **`skill-nautobot`** and **`skill-openwisp`** (canonical under `specialists/platform/`) — the platform layer this fleet's inventory and monitoring run on. Call them for
+  Nautobot models, APIs, Jobs and onboarding mechanics, or OpenWISP registration, metrics, workers and storage. A SMC box or Ansible fact stays here; a fact true of any
+  Nautobot or OpenWISP deployment goes to them as a dated Learned entry.
 
 ## Source
 - specialist_type: project

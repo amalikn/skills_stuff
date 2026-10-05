@@ -43,7 +43,7 @@ cnMaestro exports and most asset registers say only "XV2", and a device name say
 Seen on 15 units at six sites across both Teleport clusters (unified-network-controller canaries of 2026-09-22 and 2026-09-27). The six of 2026-09-27 were identified by `device-summary.serial_number` equal to the Nautobot serial; the nine
 earlier captures are serial-redacted and are matched by device name.
 On all 15, a serial starting `WL` (WLZA, WLYM, WLZE, WLYB, WLXL) was an XV2-2T0 and one starting `W4ZA` or `W6YJ` an XV2-22H. That is an observation, not a documented Cambium rule: use it to order
-work, never instead of the read. unified-network-controller's `wc-local/scripts/resolve_xv2_variants.py` does the read per site and never retypes.
+work, never instead of the read. unified-network-controller's `wc-local/scripts/nautobot_tools/resolve_xv2_variants.py` does the read per site and never retypes.
 
 ## DHCP Vendor Class (Option 60) per Family
 

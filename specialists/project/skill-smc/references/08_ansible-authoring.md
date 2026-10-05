@@ -990,6 +990,49 @@ When executing validation commands from this reference, prefer invoking tools fr
 2. `inventories/*/topology_vars/.<site>.yml` — generated cache (mtime-gated). Never edit.
 3. `roles/smc_generate_smc_files/templates/` — future-site generator templates. Changes here must stay consistent with manual edits to existing sites.
 
+### Design Assessment: Do Not Use Helm for `generic_big.yml` (2026-10-02)
+
+**Status: analysis/recommendation only — not implemented or canary-tested.** Helm can render arbitrary YAML, but it is a Kubernetes package and release-management tool; this inventory has no
+Kubernetes consumption path. `vars_plugins/topology_vars.py` uses `yaml.safe_load` directly, processes every `topology_vars/*.yml`, and does not render Helm or Jinja first. Adopting Helm would
+therefore add a separate values/chart/render/CI lifecycle while retaining the plugin's schema and the need to verify the rendered result. It would not simplify runtime consumption.
+
+**Immediate finding — resolve the duplicate source before any templating.** Both `inventories/rcp/topology_vars/generic-big01.yml` and
+`inventories/rcp/topology_vars/generic_big.yml` define `inventory.hosts.smc01.name: generic-big01`. They are otherwise equivalent after flattening, except for DHCP ranges:
+
+| Source | Management DHCP range | Public DHCP range |
+| --- | --- | --- |
+| `generic-big01.yml` | `10.255.0.250`–`10.255.0.255` | `10.0.2.0`–`10.0.63.254` |
+| `generic_big.yml` | `10.255.10.0`–`10.255.10.254` | `10.0.32.0`–`10.0.63.254` |
+
+The plugin iterates a raw `glob.glob('*.yml')` and calls `topology_host_vars.update(topology_host_var)` for each file. The later same-host entry wins. The observed current glob order was
+`generic-big01.yml`, then `generic_big.yml`, but the plugin does not impose or validate an ordering or reject duplicate host names. Treat the effective topology as unsafe/ambiguous until one canonical
+definition remains.
+
+**Recommendation, revised 2026-10-02.** Resolve the duplicate-host baseline and validate duplicate hostnames, references and DHCP bounds. Preserve canonical YAML until an approved migration chooses
+one source of truth. Separate profile authoring from integration: (A) generate YAML and retain the plugin; (B) generate topology data in memory and retain `Topology.flatten()` through an inventory
+adapter; or (C) reproduce the transformations in a compiler and emit final inventory JSON. Options B/C can avoid per-site topology delivery files and hidden YAML caches; option B retains Python
+transformations and their dependencies.
+
+**Generic RCP profile design (not implemented).** On branch `unc-virtual-smc-malik-rcp01`, `generic-big01` defines two VLAN-backed pairs and `generic-small01` four. Shared profiles can derive
+`internet03+` and default-VRF attachments from `wan_pair_count` (earlier called `wan_services`): 521/532, 523/534, 525/536, 527/538. Two fixed physical internet interfaces remain outside the count;
+the generic total is `2 + 2 × wan_pair_count` internet-role interfaces. The count does not infer live connectivity, NIC names or exceptional policy.
+
+**Runtime contract and comparison.** Interfaces, bridges, VRFs and DHCP scopes are dictionaries, not the lists shown in the supplied example. A WAN VLAN keeps `interface: switch01`,
+`name: vlan521` and `sub: false`; LAN subinterface naming follows the physical parent. A replacement must preserve address arithmetic, nested DHCP expansion, bridge/VRF references, host attributes and
+virtual gateways where relevant. CUE can export inventory JSON; materialized YAML was a migration choice. Jsonnet is another candidate; Kapitan can orchestrate either. No tested comparison proves a
+winner. CUE unification does not provide last-write-wins override semantics.
+
+**Integration safeguards.** Inventory output needs host declarations/group membership alongside `_meta.hostvars`. Preserve prod/stage, host/group variables and `inventory_dir`-based flavor
+selectors; isolate competing old-plugin outputs only for migrated fixtures/sites. A controller-side adapter needs argument handling, stable paths, failure propagation and JSON-only stdout.
+Compare complete variables and rendered network/DHCP/firewall/monitoring outputs, not only four maps or serialized bytes. Two generic profiles do not prove fleet-wide compatibility. The related
+Nautobot controller workspace exists; its current rollout state was not assessed.
+
+**Consolidated design.** [RCP topology authoring and integration plan](/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/plans/20261002_1115_topology-authoring-kapitan-vs-cue-plan.md).
+Status: proposal/documentation only; no adapter implemented, topology/cache mutation or live deployment.
+
+**Validation evidence.** `ANSIBLE_LOCAL_TEMP=/tmp/ansible-wifi-topology-check /opt/homebrew/Cellar/ansible/14.4.0_1/libexec/bin/python` instantiated `Topology(...).flatten()` separately for each
+file; `glob.glob` confirmed the observed order. No inventory run was used, so generated cache files were not refreshed during the assessment.
+
 ### Design Recommendation (Not Yet Implemented): Bond Doubled RCP/NBN-Accelerate Internet Circuits
 
 **Status: design recommendation, 2026-07-31 — not implemented, not canary-tested.** Scoped to RCP and NBN-Accelerate flavor sites only, where internet circuits terminate on two independent L2 switches
@@ -1918,7 +1961,7 @@ The per-device records an `rcp` low-touch box holds are projections of two sourc
   `cns_static_url=https://apn-cnmaestro01.apn.au/`, `DBID_RANDOM_NUM=23552`; one variant explains all 200 files). `smc_generate_extensions` reads
   `smc_bases_extension_start`/`_count`/`_site_short_name`: mowanjum-smc01, generic-rcp01 and generic-rcp02 set `smc_bases_extension_end` instead, so the role cannot render them. Low-touch sites start
   their CSV at 1000 while `smc_ltp.yml`'s cnMaestro auto-extension ranges start at x001. Kalumburu, mowanjum, horn-island and mornington R195Ps sit on an older 10.255.1.x/22 layout the arithmetic
-  never produced. unified-network-controller's `wc-local/scripts/smc_extensions_intent.py` renders both file sets from a Nautobot extension plan, byte-identical to ansible-wifi (30 rcp plans; all 400
+  never produced. unified-network-controller's `wc-local/scripts/smc/smc_extensions_intent.py` renders both file sets from a Nautobot extension plan, byte-identical to ansible-wifi (30 rcp plans; all 400
   malik configs against real Ansible).
 - **No DHCP reservations.** `/etc/dhcp/dhcpd.conf` carries no `host`/`fixed-address` entries; a device's static `mgmt_ip` is pushed by cnMaestro as a template variable at onboarding.
 - **DNS A records for devices** live in `/etc/bind/db.cambium-rpz`, rebuilt by `cnmaestro-provisioning.py` `_update_dns()` (`roles/smc_cnmaestro_provisioning/files/cnmaestro-provisioning.py` line 2855
@@ -1942,4 +1985,3 @@ The per-device records an `rcp` low-touch box holds are projections of two sourc
 For a source of truth outside cnMaestro (unified-network-controller): the address is the Nautobot `IPAddress` (management as `primary_ip4`, public on the WAN interface, both in the site Namespace),
 the A-record name is `IPAddress.dns_name`, the extension and DID are Device fields, secrets stay in OpenBao; `extensions.csv`, the TFTP files and `db.cambium-rpz` then become renders. Recorded there
 as a proposal, not a decision.
-
