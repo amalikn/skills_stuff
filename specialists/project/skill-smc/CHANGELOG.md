@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20261005_1505 — cnMaestro 0.0.0.0 client IPs: SMC DHCP verified healthy; dhcpd unexpected-ICMP log line explained (v0.1.82 -> v0.1.83)](#20261005_1505--cnmaestro-0000-client-ips-smc-dhcp-verified-healthy-dhcpd-unexpected-icmp-log-line-explained-v0182---v0183)
+- [20261005_1442 — IPSSH banner hosts recorded as unverified switch candidates (v0.1.81 -> v0.1.82)](#20261005_1442--ipssh-banner-hosts-recorded-as-unverified-switch-candidates-v0181---v0182)
 - [20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.1.80 -> v0.1.81)](#20261005_1350--related-skills-platform-packs-skill-nautobot-and-skill-openwisp-v0180---v0181)
 - [Generic topology authoring and inventory integration](#20261002_1641--generic-topology-authoring-and-inventory-integration-v0179---v0180)
 - [20260930_1959 — Never push ansible-wifi from a git worktree; which ref unified-network-controller reads (v0.1.78 -> v0.1.79)](#20260930_1959--never-push-ansible-wifi-from-a-git-worktree-which-ref-unified-network-controller-reads-v0178---v0179)
@@ -95,6 +97,16 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261005_1505 — cnMaestro 0.0.0.0 client IPs: SMC DHCP verified healthy; dhcpd unexpected-ICMP log line explained (v0.1.82 -> v0.1.83)
+
+- `references/13_known-issues.md`: new section. DHCP healthy at 10 sites while cnMaestro shows `0.0.0.0`; benign dhcpd "unexpected ICMP Echo Reply";
+  unexplained kalumburu dhcpd restart 2026-10-05 14:54 AEDT. AP-side cause cross-referenced to skill-cambium v0.6.30. Source: ansible-wifi session
+  2026-10-05.
+
+## 20261005_1442 — IPSSH banner hosts recorded as unverified switch candidates (v0.1.81 -> v0.1.82)
+
+- `references/16_tplink-site-switches.md`: new section. 52 hosts at 25 sites answer `IPSSH`; not yet confirmed as TP-Link; keep them in an unmatched-banner bucket.
 
 ## 20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.1.80 -> v0.1.81)
 

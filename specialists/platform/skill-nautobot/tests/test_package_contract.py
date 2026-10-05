@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import re
+import sys
 import unittest
 from pathlib import Path
 
@@ -18,13 +20,15 @@ REQUIRED = {
     "references/discovery-and-topology.md", "references/apps-jobs-validation.md",
     "references/config-backup-compliance.md", "references/capability-extension.md",
     "references/upgrade-and-troubleshooting.md", "references/evolution-and-write-back.md", "references/operations-cookbook.md",
+    "references/data-model.md", "references/app-development.md",
+    "references/integrations.md", "references/operations-and-recovery.md",
     "documents/readme.md", "documents/nautobot-core-3.2.2-release-notes.html", "documents/nautobot-namespace-current-docs.html",
     "tests/requirements.txt", "tests/test_package_contract.py", "tests/scenarios.md",
     "tests/eval-procedure.md",
 }
 FORBIDDEN_NAMES = {
     "manifest.json", "RUNBOOK.md", "upstream-links.md", "paginate.py", "fingerprint.py",
-    "netjson_mapping.py", "agents", "scripts",
+    "netjson_mapping.py", "agents",
 }
 CLAIM_FIELDS = {"id", "statement", "kind", "evidence_status", "lifecycle", "applies_to", "environment_id", "evidence", "source_type", "reference", "test"}
 CLAIM_KINDS = {"generic_invariant", "tested_pattern", "worked_example"}
@@ -207,6 +211,16 @@ class PackageContractTests(unittest.TestCase):
                     "> **Disputed 2026-10-05** · Product 1.2.3 · UNVERIFIED · Source: x · Falsifier: y"):
             with self.assertRaises(AssertionError):
                 _learned_entries(bad)
+
+    def test_every_helper_is_tested_and_stdlib_only(self) -> None:
+        tests = (ROOT / "tests/test_helpers.py").read_text(encoding="utf-8")
+        allowed = set(sys.stdlib_module_names) | {p.stem for p in (ROOT / "scripts").glob("*.py")}
+        for helper in sorted((ROOT / "scripts").glob("*.py")):
+            self.assertIn(f'"{helper.stem}"', tests, f"{helper.name} has no tests in tests/test_helpers.py")
+            for node in ast.walk(ast.parse(helper.read_text(encoding="utf-8"))):
+                names = [a.name for a in node.names] if isinstance(node, ast.Import) else [node.module or ""] if isinstance(node, ast.ImportFrom) else []
+                for name in names:
+                    self.assertIn(name.split(".")[0], allowed | {"__future__"}, f"{helper.name} imports {name}: helpers stay stdlib-only")
 
     def test_negative_fixtures_prove_sensitive_content_checks(self) -> None:
         self.assertIsNone(_assert_safe_text("## 10. Management commands"))

@@ -44,3 +44,12 @@ independent evidence; the importer cannot resolve it by first match. For promoti
 dependent links, a fresh dry-run diff, authorized actor and a visible postcondition (the right Device and links, not just an API response). The UNC site-prefix and
 operator batch rules are **project policy examples**, not Nautobot defaults. Read [authority and modeling](authority-and-modeling.md) for writer ownership and
 [lifecycle and replacement](lifecycle-and-replacement.md) for swaps.
+
+> **Learned 2026-10-05** · Nautobot 3.2.3 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: a second fleet export in which register status predicts liveness
+> A controller or asset register is not a liveness source: of about 3,300 live units, 28% were missing from the exported register, and 28% of rows it marked inactive were still answering. Onboard from a fresh sweep, and treat the register as one corroborating source.
+
+> **Learned 2026-10-05** · Nautobot 3.2.3 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: a fleet where an address-only match is usually the same unit
+> Never adopt a record on its IP address alone: in 46 of 47 address-only matches another unit now held the address. Require serial, an exact MAC (or a family's documented MAC offset) or the unit's own self-report to agree.
+
+> **Learned 2026-10-05** · Nautobot 3.2.3 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: a serial disagreement between two independent reads of one unit
+> Serial was the only identity signal that never conflicted (93 of 93 units read two ways agreed); MAC needed a ±1 tolerance for one radio family, and device names differed from SNMP sysName in 56 of 122 cases. Rank serial > exact MAC > offset MAC > name, and record which signal matched. MAC notation also differed by source (colon upper, dash, lower), so normalise at the seam before any comparison.

@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en" data-content_root="../../"
+  x-data="{ darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches), activeSection: ''}"
+  :class="{ 'dark' : darkMode === true }">
+
+<head>
+  <script>
+    (function () {
+      // Set initial color scheme
+      if ((localStorage.getItem("_x_darkMode") === "true") || (window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      }
+
+      // Watch for media preference changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+        localStorage.setItem("_x_darkMode", event.matches);
+        document.documentElement.classList.toggle("dark", event.matches);
+      });
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030711" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Extending OpenWISP Controller | OpenWISP 26.09 documentation</title>
+  <meta property="og:title" content="Extending OpenWISP Controller | OpenWISP 26.09 documentation" />
+  <meta name="twitter:title" content="Extending OpenWISP Controller | OpenWISP 26.09 documentation" />
+  <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e48b8583" />
+  <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../_static/pygments_dark.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/theme.css?v=d6d7c91b" />
+  <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=d3e37945" />
+  <link rel="icon" href="../../_static/favicon.svg" />
+
+  <link rel="search" title="Search" href="../../search.html" />
+  <link rel="next" title="Monitoring" href="../../monitoring/index.html" />
+  <link rel="prev" title="Code Utilities" href="utils.html" />
+<meta property="og:image" content="https://openwisp.io/docs/26.09/_static/docs-og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="480" />
+
+<link rel="canonical" href="https://openwisp.io/docs/stable/controller/developer/extending.html" />
+
+
+</head>
+
+<body x-data="{ showSidebar: false, showScrollTop: false }"
+  class="min-h-screen font-sans antialiased bg-background text-foreground" :class="{ 'overflow-hidden': showSidebar }"@scroll.window="showScrollTop = pageYOffset > 100">
+  <div x-cloak x-show="showSidebar"
+    class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden"
+    @click.self="showSidebar = false"></div><div id="page" class="relative flex flex-col min-h-screen"><a href="#content"
+      class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100">
+      Skip to content
+    </a><header class="sticky top-0 z-40 w-full border-b shadow-xs border-border bg-background/90 backdrop-blur"><div class="container flex items-center h-14">
+    <div class="hidden mr-4 md:flex">
+      <a href="../../index.html" class="flex items-center mr-6">
+        <img width="24" height="24" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+          alt="Logo" />
+        <img width="24" height="24" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+          alt="Logo" /><span class="hidden font-bold sm:inline-block text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+      </a><nav class="flex items-center space-x-6 text-sm font-medium">
+    
+    <a href="https://openwisp.org/features/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Features</a>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/faq/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Blog</a>
+</nav></div><button
+      class="inline-flex items-center justify-center h-10 px-0 py-2 mr-2 text-base font-medium transition-colors rounded-md hover:text-accent-foreground hover:bg-transparent md:hidden"
+      type="button" @click="showSidebar = true">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" aria-hidden="true"
+        fill="currentColor">
+        <path
+          d="M152.587 825.087q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440Zm0-203.587q-19.152 0-32.326-13.174T107.087 576q0-19.152 13.174-32.326t32.326-13.174h320q19.152 0 32.326 13.174T518.087 576q0 19.152-13.174 32.326T472.587 621.5h-320Zm0-203.587q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440ZM708.913 576l112.174 112.174q12.674 12.674 12.674 31.826t-12.674 31.826Q808.413 764.5 789.261 764.5t-31.826-12.674l-144-144Q600 594.391 600 576t13.435-31.826l144-144q12.674-12.674 31.826-12.674t31.826 12.674q12.674 12.674 12.674 31.826t-12.674 31.826L708.913 576Z" />
+      </svg>
+      <span class="sr-only">Toggle navigation menu</span>
+    </button>
+    <div class="flex items-center justify-between flex-1 gap-2 sm:gap-4 md:justify-end">
+      <div class="flex-1 w-full md:w-auto md:flex-none"><form id="searchbox"
+      action="../../search.html"
+      method="get"
+      class="relative flex items-center group"
+      @keydown.k.window.meta="$refs.search.focus()">
+  <input x-ref="search"
+          name="q"
+          id="search-input"
+          type="search"
+          aria-label="Search the docs"
+          placeholder="Search ..."
+          class="inline-flex items-center font-medium transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background border border-input hover:bg-accent focus:bg-accent hover:text-accent-foreground focus:text-accent-foreground hover:placeholder-accent-foreground py-2 px-4 relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64" />
+  <kbd class="pointer-events-none absolute right-1.5 top-2 hidden h-5 select-none text-muted-foreground items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex group-hover:bg-accent group-hover:text-accent-foreground">
+    <span class="text-xs">⌘</span>
+    K
+  </kbd>
+</form>
+      </div>
+      <nav class="flex items-center gap-1">
+        <button @click="darkMode = !darkMode"
+          class="relative inline-flex items-center justify-center px-0 text-sm font-medium transition-colors rounded-md hover:bg-accent hover:text-accent-foreground h-9 w-9"
+          type="button"
+          title="Toggle color scheme">
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-100 rotate-0 dark:-rotate-90 dark:scale-0">
+            <path
+              d="M480 685q45.456 0 77.228-31.772Q589 621.456 589 576q0-45.456-31.772-77.228Q525.456 467 480 467q-45.456 0-77.228 31.772Q371 530.544 371 576q0 45.456 31.772 77.228Q434.544 685 480 685Zm0 91q-83 0-141.5-58.5T280 576q0-83 58.5-141.5T480 376q83 0 141.5 58.5T680 576q0 83-58.5 141.5T480 776ZM80 621.5q-19.152 0-32.326-13.174T34.5 576q0-19.152 13.174-32.326T80 530.5h80q19.152 0 32.326 13.174T205.5 576q0 19.152-13.174 32.326T160 621.5H80Zm720 0q-19.152 0-32.326-13.174T754.5 576q0-19.152 13.174-32.326T800 530.5h80q19.152 0 32.326 13.174T925.5 576q0 19.152-13.174 32.326T880 621.5h-80Zm-320-320q-19.152 0-32.326-13.174T434.5 256v-80q0-19.152 13.174-32.326T480 130.5q19.152 0 32.326 13.174T525.5 176v80q0 19.152-13.174 32.326T480 301.5Zm0 720q-19.152 0-32.326-13.17Q434.5 995.152 434.5 976v-80q0-19.152 13.174-32.326T480 850.5q19.152 0 32.326 13.174T525.5 896v80q0 19.152-13.174 32.33-13.174 13.17-32.326 13.17ZM222.174 382.065l-43-42Q165.5 327.391 166 308.239t13.174-33.065q13.435-13.674 32.587-13.674t32.065 13.674l42.239 43q12.674 13.435 12.555 31.706-.12 18.272-12.555 31.946-12.674 13.674-31.445 13.413-18.772-.261-32.446-13.174Zm494 494.761-42.239-43q-12.674-13.435-12.674-32.087t12.674-31.565Q686.609 756.5 705.38 757q18.772.5 32.446 13.174l43 41.761Q794.5 824.609 794 843.761t-13.174 33.065Q767.391 890.5 748.239 890.5t-32.065-13.674Zm-42-494.761Q660.5 369.391 661 350.62q.5-18.772 13.174-32.446l41.761-43Q728.609 261.5 747.761 262t33.065 13.174q13.674 13.435 13.674 32.587t-13.674 32.065l-43 42.239q-13.435 12.674-31.706 12.555-18.272-.12-31.946-12.555Zm-495 494.761Q165.5 863.391 165.5 844.239t13.674-32.065l43-42.239q13.435-12.674 32.087-12.674t31.565 12.674Q299.5 782.609 299 801.38q-.5 18.772-13.174 32.446l-41.761 43Q231.391 890.5 212.239 890t-33.065-13.174ZM480 576Z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-0 rotate-90 dark:rotate-0 dark:scale-100">
+            <path
+              d="M480 936q-151 0-255.5-104.5T120 576q0-138 90-239.5T440 218q25-3 39 18t-1 44q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q21-14 43-1.5t19 39.5q-14 138-117.5 229T480 936Zm0-80q88 0 158-48.5T740 681q-20 5-40 8t-40 3q-123 0-209.5-86.5T364 396q0-20 3-40t8-40q-78 32-126.5 102T200 576q0 116 82 198t198 82Zm-10-270Z" />
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+    <div class="flex-1"><div
+        class="container md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10"><aside id="left-sidebar"
+  class="fixed inset-y-0 left-0 md:top-14 z-50 md:z-30 bg-background md:bg-transparent transition-all duration-100 -translate-x-full md:translate-x-0 ml-0 p-6 md:p-0 md:-ml-2 md:h-[calc(100vh-3.5rem)] w-5/6 md:w-full overflow-y-auto border-r border-border md:sticky"
+  :aria-hidden="!showSidebar" :class="{ 'translate-x-0': showSidebar }">
+
+    <a href="../../index.html" class="justify-start text-sm md:!hidden bg-background">
+      <img width="16" height="16" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+        alt="Logo" />
+      <img width="16" height="16" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+        alt="Logo" /><span class="font-bold text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+    </a>
+
+    <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
+      <div class="overflow-y-auto h-full w-full relative pr-6"><div class="doc-versions">
+    <label>Version</label>
+    <div class="dropdown" x-data="{ showVersionSwitcher: false, buttonWidth: 0 }"
+        x-init="buttonWidth = $refs.button.offsetWidth">
+        <button type="button" x-ref="button" class="dropbtn "
+             @click="showVersionSwitcher = !showVersionSwitcher"
+            :class="{'active': showVersionSwitcher}" >
+            26.09
+            
+            <svg fill="currentColor" height="18px" stroke="none" viewBox="0 0 24 24" width="18px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+            
+        </button>
+        <div x-show="showVersionSwitcher" class="dropdown-content" :class="{'hidden': !showVersionSwitcher}"
+            @click.away="showVersionSwitcher = false" style="display: none;" :style="{ width: buttonWidth + 'px' }">
+            
+            
+            <a href="/docs/dev/controller/developer/extending.html">dev</a>
+            
+            
+            
+            
+            
+            <a href="/docs/25.10/controller/developer/extending.html">25.10</a>
+            
+            
+            
+            <a href="/docs/24.11/controller/developer/extending.html">24.11</a>
+            
+            
+        </div>
+    </div>
+</div>
+<nav class="flex flex-col font-bold md:hidden">
+    
+    <a href="https://openwisp.org/features/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Features
+    </a>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/faq/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Blog
+    </a>
+</nav>
+<nav class="table w-full min-w-full my-6 lg:my-8 mt-4">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../first-steps.html">First Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project-overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installers.html">Installers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../users/index.html">Users</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Controller</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../user/intro.html">Controller: Structure &amp; Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/device-config-status.html">Device Configuration Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/templates.html">Configuration Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/variables.html">Configuration Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/device-groups.html">Device Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/push-operations.html">Configuring Push Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/shell-commands.html">Sending Commands to Devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/import-export.html">Import/Export Device Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/organization-limits.html">Organization Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/wireguard.html">Automating WireGuard Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/vxlan-wireguard.html">Automating VXLAN over WireGuard Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/zerotier.html">Automating ZeroTier Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/openvpn.html">Automating OpenVPN Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/whois.html">WHOIS Lookup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/estimated-location.html">Estimated Location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/subnet-division-rules.html">Automating Subnet and IP Address Provisioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/rest-api.html">REST API Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/websocket-api.html">WebSocket API Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/settings.html">Settings</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Developer Docs Index</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="installation.html">Developer Installation Instructions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html">Code Utilities</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Extending OpenWISP Controller</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../monitoring/index.html">Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../network-topology/index.html">Network Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../firmware-upgrader/index.html">Firmware Upgrader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../radius/index.html">RADIUS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../wifi-login-pages/index.html">WiFi Login Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ipam/index.html">IPAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notifications/index.html">Notifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../openwrt-agents.html">OpenWrt Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../community.html">Community Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">Release Notes</a></li>
+</ul>
+
+</nav><div class="offline-docs">
+    <div class="heading">
+        <h6>OFFLINE DOCS</h6>
+    </div>
+    <p class="urls">
+        <a href="/docs/26.09/OpenWISP-26.09.pdf" target="_blank">
+            PDF</a>
+        |
+        <a href="/docs/26.09/OpenWISP-26.09.epub" target="_blank">
+            ePUB</a>
+    </p>
+</div>
+      </div>
+    </div>
+    <button type="button" @click="showSidebar = false"
+      class="absolute md:hidden right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" fill="currentColor"
+        stroke="none" class="h-4 w-4">
+        <path
+          d="M480 632 284 828q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536 576l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480 632Z" />
+      </svg>
+    </button>
+  </aside>
+          <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+<div class="w-full min-w-0 mx-auto">
+<nav aria-label="breadcrumbs"
+     class="flex items-center mb-4 space-x-1 text-sm text-muted-foreground">
+  <a class="overflow-hidden text-ellipsis whitespace-nowrap hover:text-foreground"
+     href="../../index.html">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         height="18"
+         width="18"
+         viewBox="0 96 960 960"
+         aria-label="Home"
+         fill="currentColor"
+         stroke="none">
+      <path d="M240 856h120V616h240v240h120V496L480 316 240 496v360Zm-80 80V456l320-240 320 240v480H520V696h-80v240H160Zm320-350Z" />
+    </svg>
+  </a>
+  
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../../modules.html">Modules</a>
+    
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../index.html">Controller</a>
+    
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="index.html">Developer Docs</a>
+    
+<div class="mr-1">/</div><span aria-current="page"
+        class="font-medium text-foreground overflow-hidden whitespace-nowrap">Extending OpenWISP Controller</span>
+</nav>
+
+    <div id="content" role="main">
+      <section id="extending-openwisp-controller">
+<h1>Extending OpenWISP Controller<a class="headerlink" href="#extending-openwisp-controller" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page is for developers who want to customize or extend OpenWISP
+Controller, whether for bug fixes, new features, or contributions.</p>
+<p>For user guides and general information, please see:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../user/quickstart.html"><span class="doc">General OpenWISP Quickstart</span></a></p></li>
+<li><p><a class="reference internal" href="../index.html"><span class="doc">OpenWISP Controller User Docs</span></a></p></li>
+</ul>
+</div>
+<p>One of the core values of the OpenWISP project is <a class="reference internal" href="../../general/values.html#values-software-reusability"><span class="std std-ref">Software
+Reusability</span></a>, for this reason <em>OpenWISP
+Controller</em> provides a set of base classes which can be imported, extended
+and reused to create derivative apps.</p>
+<p>In order to implement your custom version of <em>OpenWISP Controller</em>, you
+need to perform the steps described in this section.</p>
+<p>When in doubt, the code in the <a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/">test project</a>
+will serve you as source of truth: just replicate and adapt that code to
+get a basic derivative of <em>OpenWISP Controller</em> working.</p>
+<p>If you want to add new users fields, please follow the <a class="reference internal" href="../../users/developer/extending.html"><span class="doc">tutorial to
+extend the openwisp-users module</span></a>. As an
+example, we have extended <em>openwisp-users</em> to <em>sample_users</em> app and added
+a field <code class="docutils literal notranslate"><span class="pre">social_security_number</span></code> in the <a class="reference external" href="https://github.com/openwisp/openwisp-controller/blob/master/tests/openwisp2/sample_users/models.py">sample_users/models.py</a>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you plan on using a customized version of this module, we suggest
+to start with it since the beginning, because migrating your data from
+the default module to your extended version may be time consuming.</p>
+</div>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title"><strong>Table of Contents</strong>:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#initialize-your-project-custom-apps" id="id9">1. Initialize Your Project &amp; Custom Apps</a></p></li>
+<li><p><a class="reference internal" href="#install-openwisp-controller" id="id10">2. Install <code class="docutils literal notranslate"><span class="pre">openwisp-controller</span></code></a></p></li>
+<li><p><a class="reference internal" href="#add-your-apps-to-installed-apps" id="id11">3. Add Your Apps to <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#add-extended-apps" id="id12">4. Add <code class="docutils literal notranslate"><span class="pre">EXTENDED_APPS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#add-openwisp-utils-staticfiles-dependencyfinder" id="id13">5. Add <code class="docutils literal notranslate"><span class="pre">openwisp_utils.staticfiles.DependencyFinder</span></code></a></p></li>
+<li><p><a class="reference internal" href="#add-openwisp-utils-loaders-dependencyloader" id="id14">6. Add <code class="docutils literal notranslate"><span class="pre">openwisp_utils.loaders.DependencyLoader</span></code></a></p></li>
+<li><p><a class="reference internal" href="#initial-database-setup" id="id15">7. Initial Database Setup</a></p></li>
+<li><p><a class="reference internal" href="#django-channels-setup" id="id16">8. Django Channels Setup</a></p></li>
+<li><p><a class="reference internal" href="#other-settings" id="id17">9. Other Settings</a></p></li>
+<li><p><a class="reference internal" href="#inherit-the-appconfig-class" id="id18">10. Inherit the AppConfig Class</a></p></li>
+<li><p><a class="reference internal" href="#create-your-custom-models" id="id19">11. Create Your Custom Models</a></p></li>
+<li><p><a class="reference internal" href="#add-swapper-configurations" id="id20">12. Add Swapper Configurations</a></p></li>
+<li><p><a class="reference internal" href="#create-database-migrations" id="id21">13. Create Database Migrations</a></p></li>
+<li><p><a class="reference internal" href="#create-the-admin" id="id22">14. Create the Admin</a></p>
+<ul>
+<li><p><a class="reference internal" href="#monkey-patching" id="id23">14.1. Monkey Patching</a></p></li>
+<li><p><a class="reference internal" href="#inheriting-admin-classes" id="id24">14.2. Inheriting admin classes</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#create-root-url-configuration" id="id25">15. Create Root URL Configuration</a></p></li>
+<li><p><a class="reference internal" href="#import-the-automated-tests" id="id26">16. Import the Automated Tests</a></p></li>
+<li><p><a class="reference internal" href="#other-base-classes-that-can-be-inherited-and-extended" id="id27">Other Base Classes that Can Be Inherited and Extended</a></p>
+<ul>
+<li><p><a class="reference internal" href="#extending-the-controller-api-views" id="id28">1. Extending the Controller API Views</a></p></li>
+<li><p><a class="reference internal" href="#extending-the-geo-api-views" id="id29">2. Extending the Geo API Views</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#custom-subnet-division-rule-types" id="id30">Custom Subnet Division Rule Types</a></p></li>
+<li><p><a class="reference internal" href="#more-utilities-to-extend-openwisp-controller" id="id31">More Utilities to Extend OpenWISP Controller</a></p></li>
+</ul>
+</nav>
+<section id="initialize-your-project-custom-apps">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">1. Initialize Your Project &amp; Custom Apps</a><a class="headerlink" href="#initialize-your-project-custom-apps" title="Link to this heading"></a></h2>
+<p>Firstly, to get started you need to create a django project:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">django-admin<span class="w"> </span>startproject<span class="w"> </span>mycontroller
+</span></code></pre></div>
+</div>
+<p>Now, you need to do is to create some new django apps which will contain
+your custom version of <em>OpenWISP Controller</em>.</p>
+<p>A django project is a collection of django apps. There are 4 django apps
+in the openwisp_controller project, namely <em>config</em>, <em>pki</em>, <em>connection</em> &amp;
+<em>geo</em>. You'll need to create 4 apps in your project for each app in
+<em>openwisp-controller</em>.</p>
+<p>A django app is nothing more than a <a class="reference external" href="https://docs.python.org/3/tutorial/modules.html#packages">python package</a> (a directory
+of python scripts), in the following examples we'll call these django app
+<code class="docutils literal notranslate"><span class="pre">sample_config</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_pki</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_connection</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_geo</span></code> &amp;
+<code class="docutils literal notranslate"><span class="pre">sample_subnet_division</span></code>. but you can name it how you want:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">django-admin<span class="w"> </span>startapp<span class="w"> </span>sample_config
+</span><span id="line-2">django-admin<span class="w"> </span>startapp<span class="w"> </span>sample_pki
+</span><span id="line-3">django-admin<span class="w"> </span>startapp<span class="w"> </span>sample_connection
+</span><span id="line-4">django-admin<span class="w"> </span>startapp<span class="w"> </span>sample_geo
+</span><span id="line-5">django-admin<span class="w"> </span>startapp<span class="w"> </span>sample_subnet_division
+</span></code></pre></div>
+</div>
+<p>Keep in mind that the command mentioned above must be called from a
+directory which is available in your <a class="reference external" href="https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH">PYTHON_PATH</a> so that
+you can then import the result into your project.</p>
+<p>For more information about how to work with django projects and django
+apps, please refer to the <a class="reference external" href="https://docs.djangoproject.com/en/5.2/intro/tutorial01/">django documentation</a>.</p>
+</section>
+<section id="install-openwisp-controller">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">2. Install <code class="docutils literal notranslate"><span class="pre">openwisp-controller</span></code></a><a class="headerlink" href="#install-openwisp-controller" title="Link to this heading"></a></h2>
+<p>Install (and add to the requirement of your project) openwisp-controller:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">pip<span class="w"> </span>install<span class="w"> </span>openwisp-controller
+</span></code></pre></div>
+</div>
+</section>
+<section id="add-your-apps-to-installed-apps">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">3. Add Your Apps to <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code></a><a class="headerlink" href="#add-your-apps-to-installed-apps" title="Link to this heading"></a></h2>
+<p>Now you need to add <code class="docutils literal notranslate"><span class="pre">mycontroller.sample_config</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mycontroller.sample_pki</span></code>, <code class="docutils literal notranslate"><span class="pre">mycontroller.sample_connection</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mycontroller.sample_geo</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">mycontroller.sample_subnet_division</span></code> to
+<code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> in your <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>, ensuring also that
+<code class="docutils literal notranslate"><span class="pre">openwisp_controller.config</span></code>, <code class="docutils literal notranslate"><span class="pre">openwisp_controller.geo</span></code>,
+<code class="docutils literal notranslate"><span class="pre">openwisp_controller.pki</span></code>, <code class="docutils literal notranslate"><span class="pre">openwisp_controller.connnection</span></code> &amp;
+<code class="docutils literal notranslate"><span class="pre">openwisp_controller.subnet_division</span></code> have been removed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="c1"># Remember: Order in INSTALLED_APPS is important.</span>
+</span><span id="line-2"><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="line-3">    <span class="c1"># other django installed apps</span>
+</span><span id="line-4">    <span class="s2">"openwisp_utils.admin_theme"</span><span class="p">,</span>
+</span><span id="line-5">    <span class="s2">"admin_auto_filters"</span><span class="p">,</span>
+</span><span id="line-6">    <span class="c1"># all-auth</span>
+</span><span id="line-7">    <span class="s2">"django.contrib.sites"</span><span class="p">,</span>
+</span><span id="line-8">    <span class="s2">"allauth"</span><span class="p">,</span>
+</span><span id="line-9">    <span class="s2">"allauth.account"</span><span class="p">,</span>
+</span><span id="line-10">    <span class="s2">"allauth.socialaccount"</span><span class="p">,</span>
+</span><span id="line-11">    <span class="c1"># openwisp2 module</span>
+</span><span id="line-12">    <span class="c1"># 'openwisp_controller.config', &lt;-- comment out or delete this line</span>
+</span><span id="line-13">    <span class="c1"># 'openwisp_controller.pki', &lt;-- comment out or delete this line</span>
+</span><span id="line-14">    <span class="c1"># 'openwisp_controller.geo', &lt;-- comment out or delete this line</span>
+</span><span id="line-15">    <span class="c1"># 'openwisp_controller.connection', &lt;-- comment out or delete this line</span>
+</span><span id="line-16">    <span class="c1"># 'openwisp_controller.subnet_division', &lt;-- comment out or delete this line</span>
+</span><span id="line-17">    <span class="s2">"mycontroller.sample_config"</span><span class="p">,</span>
+</span><span id="line-18">    <span class="s2">"mycontroller.sample_pki"</span><span class="p">,</span>
+</span><span id="line-19">    <span class="s2">"mycontroller.sample_geo"</span><span class="p">,</span>
+</span><span id="line-20">    <span class="s2">"mycontroller.sample_connection"</span><span class="p">,</span>
+</span><span id="line-21">    <span class="s2">"mycontroller.sample_subnet_division"</span><span class="p">,</span>
+</span><span id="line-22">    <span class="s2">"openwisp_users"</span><span class="p">,</span>
+</span><span id="line-23">    <span class="c1"># admin</span>
+</span><span id="line-24">    <span class="s2">"django.contrib.admin"</span><span class="p">,</span>
+</span><span id="line-25">    <span class="c1"># other dependencies</span>
+</span><span id="line-26">    <span class="s2">"sortedm2m"</span><span class="p">,</span>
+</span><span id="line-27">    <span class="s2">"reversion"</span><span class="p">,</span>
+</span><span id="line-28">    <span class="s2">"leaflet"</span><span class="p">,</span>
+</span><span id="line-29">    <span class="c1"># rest framework</span>
+</span><span id="line-30">    <span class="s2">"rest_framework"</span><span class="p">,</span>
+</span><span id="line-31">    <span class="s2">"rest_framework_gis"</span><span class="p">,</span>
+</span><span id="line-32">    <span class="c1"># channels</span>
+</span><span id="line-33">    <span class="s2">"channels"</span><span class="p">,</span>
+</span><span id="line-34">    <span class="c1"># django-import-export</span>
+</span><span id="line-35">    <span class="s2">"import_export"</span><span class="p">,</span>
+</span><span id="line-36"><span class="p">]</span>
+</span></code></pre></div>
+</div>
+<p>Substitute <code class="docutils literal notranslate"><span class="pre">mycontroller</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_config</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_pki</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sample_connection</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_geo</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">sample_subnet_division</span></code> with
+the name you chose in step 1.</p>
+</section>
+<section id="add-extended-apps">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">4. Add <code class="docutils literal notranslate"><span class="pre">EXTENDED_APPS</span></code></a><a class="headerlink" href="#add-extended-apps" title="Link to this heading"></a></h2>
+<p>Add the following to your <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">EXTENDED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="line-2">    <span class="s2">"django_x509"</span><span class="p">,</span>
+</span><span id="line-3">    <span class="s2">"django_loci"</span><span class="p">,</span>
+</span><span id="line-4">    <span class="s2">"openwisp_controller.config"</span><span class="p">,</span>
+</span><span id="line-5">    <span class="s2">"openwisp_controller.pki"</span><span class="p">,</span>
+</span><span id="line-6">    <span class="s2">"openwisp_controller.geo"</span><span class="p">,</span>
+</span><span id="line-7">    <span class="s2">"openwisp_controller.connection"</span><span class="p">,</span>
+</span><span id="line-8">    <span class="s2">"openwisp_controller.subnet_division"</span><span class="p">,</span>
+</span><span id="line-9"><span class="p">)</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="add-openwisp-utils-staticfiles-dependencyfinder">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">5. Add <code class="docutils literal notranslate"><span class="pre">openwisp_utils.staticfiles.DependencyFinder</span></code></a><a class="headerlink" href="#add-openwisp-utils-staticfiles-dependencyfinder" title="Link to this heading"></a></h2>
+<p>Add <code class="docutils literal notranslate"><span class="pre">openwisp_utils.staticfiles.DependencyFinder</span></code> to
+<code class="docutils literal notranslate"><span class="pre">STATICFILES_FINDERS</span></code> in your <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">STATICFILES_FINDERS</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="line-2">    <span class="s2">"django.contrib.staticfiles.finders.FileSystemFinder"</span><span class="p">,</span>
+</span><span id="line-3">    <span class="s2">"django.contrib.staticfiles.finders.AppDirectoriesFinder"</span><span class="p">,</span>
+</span><span id="line-4">    <span class="s2">"openwisp_utils.staticfiles.DependencyFinder"</span><span class="p">,</span>
+</span><span id="line-5"><span class="p">]</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="add-openwisp-utils-loaders-dependencyloader">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">6. Add <code class="docutils literal notranslate"><span class="pre">openwisp_utils.loaders.DependencyLoader</span></code></a><a class="headerlink" href="#add-openwisp-utils-loaders-dependencyloader" title="Link to this heading"></a></h2>
+<p>Add <code class="docutils literal notranslate"><span class="pre">openwisp_utils.loaders.DependencyLoader</span></code> to <code class="docutils literal notranslate"><span class="pre">TEMPLATES</span></code> in your
+<code class="docutils literal notranslate"><span class="pre">settings.py</span></code>, but ensure it comes before
+<code class="docutils literal notranslate"><span class="pre">django.template.loaders.app_directories.Loader</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">TEMPLATES</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="line-2">    <span class="p">{</span>
+</span><span id="line-3">        <span class="s2">"BACKEND"</span><span class="p">:</span> <span class="s2">"django.template.backends.django.DjangoTemplates"</span><span class="p">,</span>
+</span><span id="line-4">        <span class="s2">"OPTIONS"</span><span class="p">:</span> <span class="p">{</span>
+</span><span id="line-5">            <span class="s2">"loaders"</span><span class="p">:</span> <span class="p">[</span>
+</span><span id="line-6">                <span class="s2">"django.template.loaders.filesystem.Loader"</span><span class="p">,</span>
+</span><span id="line-7">                <span class="s2">"openwisp_utils.loaders.DependencyLoader"</span><span class="p">,</span>
+</span><span id="line-8">                <span class="s2">"django.template.loaders.app_directories.Loader"</span><span class="p">,</span>
+</span><span id="line-9">            <span class="p">],</span>
+</span><span id="line-10">            <span class="s2">"context_processors"</span><span class="p">:</span> <span class="p">[</span>
+</span><span id="line-11">                <span class="s2">"django.template.context_processors.debug"</span><span class="p">,</span>
+</span><span id="line-12">                <span class="s2">"django.template.context_processors.request"</span><span class="p">,</span>
+</span><span id="line-13">                <span class="s2">"django.contrib.auth.context_processors.auth"</span><span class="p">,</span>
+</span><span id="line-14">                <span class="s2">"django.contrib.messages.context_processors.messages"</span><span class="p">,</span>
+</span><span id="line-15">                <span class="s2">"openwisp_utils.admin_theme.context_processor.menu_items"</span><span class="p">,</span>
+</span><span id="line-16">                <span class="s2">"openwisp_notifications.context_processors.notification_api_settings"</span><span class="p">,</span>
+</span><span id="line-17">            <span class="p">],</span>
+</span><span id="line-18">        <span class="p">},</span>
+</span><span id="line-19">    <span class="p">}</span>
+</span><span id="line-20"><span class="p">]</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="initial-database-setup">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">7. Initial Database Setup</a><a class="headerlink" href="#initial-database-setup" title="Link to this heading"></a></h2>
+<p>Ensure you are using one of the available geodjango backends, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="line-2">    <span class="s2">"default"</span><span class="p">:</span> <span class="p">{</span>
+</span><span id="line-3">        <span class="s2">"ENGINE"</span><span class="p">:</span> <span class="s2">"openwisp_utils.db.backends.spatialite"</span><span class="p">,</span>
+</span><span id="line-4">        <span class="s2">"NAME"</span><span class="p">:</span> <span class="s2">"openwisp-controller.db"</span><span class="p">,</span>
+</span><span id="line-5">    <span class="p">}</span>
+</span><span id="line-6"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+<p>For more information about GeoDjango, please refer to the <a class="reference external" href="https://docs.djangoproject.com/en/5.2/ref/contrib/gis/">geodjango
+documentation</a>.</p>
+</section>
+<section id="django-channels-setup">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">8. Django Channels Setup</a><a class="headerlink" href="#django-channels-setup" title="Link to this heading"></a></h2>
+<p>Create <code class="docutils literal notranslate"><span class="pre">asgi.py</span></code> in your project folder and add following lines in it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">channels.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthMiddlewareStack</span>
+</span><span id="line-2"><span class="kn">from</span><span class="w"> </span><span class="nn">channels.routing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProtocolTypeRouter</span><span class="p">,</span> <span class="n">URLRouter</span>
+</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">channels.security.websocket</span><span class="w"> </span><span class="kn">import</span> <span class="n">AllowedHostsOriginValidator</span>
+</span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">django.core.asgi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_asgi_application</span>
+</span><span id="line-5">
+</span><span id="line-6"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.routing</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_routes</span>
+</span><span id="line-7">
+</span><span id="line-8"><span class="c1"># You can also add your routes like this</span>
+</span><span id="line-9"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.routing</span><span class="w"> </span><span class="kn">import</span> <span class="n">my_routes</span>
+</span><span id="line-10">
+</span><span id="line-11"><span class="n">application</span> <span class="o">=</span> <span class="n">ProtocolTypeRouter</span><span class="p">(</span>
+</span><span id="line-12">    <span class="p">{</span>
+</span><span id="line-13">        <span class="s2">"http"</span><span class="p">:</span> <span class="n">get_asgi_application</span><span class="p">(),</span>
+</span><span id="line-14">        <span class="s2">"websocket"</span><span class="p">:</span> <span class="n">AllowedHostsOriginValidator</span><span class="p">(</span>
+</span><span id="line-15">            <span class="n">AuthMiddlewareStack</span><span class="p">(</span><span class="n">URLRouter</span><span class="p">(</span><span class="n">get_routes</span><span class="p">()</span> <span class="o">+</span> <span class="n">my_routes</span><span class="p">))</span>
+</span><span id="line-16">        <span class="p">),</span>
+</span><span id="line-17">    <span class="p">}</span>
+</span><span id="line-18"><span class="p">)</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="other-settings">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">9. Other Settings</a><a class="headerlink" href="#other-settings" title="Link to this heading"></a></h2>
+<p>Add the following settings to <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">FORM_RENDERER</span> <span class="o">=</span> <span class="s2">"django.forms.renderers.TemplatesSetting"</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="n">ASGI_APPLICATION</span> <span class="o">=</span> <span class="s2">"my_project.asgi.application"</span>
+</span><span id="line-4"><span class="n">CHANNEL_LAYERS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="line-5">    <span class="s2">"default"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"BACKEND"</span><span class="p">:</span> <span class="s2">"channels.layers.InMemoryChannelLayer"</span><span class="p">},</span>
+</span><span id="line-6"><span class="p">}</span>
+</span></code></pre></div>
+</div>
+<p>For more information about FORM_RENDERER setting, please refer to the
+<a class="reference external" href="https://docs.djangoproject.com/en/5.2/ref/settings/#form-renderer">FORM_RENDERER documentation</a>. For
+more information about ASGI_APPLICATION setting, please refer to the
+<a class="reference external" href="https://channels.readthedocs.io/en/latest/deploying.html#configuring-the-asgi-application">ASGI_APPLICATION documentation</a>.
+For more information about CHANNEL_LAYERS setting, please refer to the
+<a class="reference external" href="https://channels.readthedocs.io/en/latest/deploying.html#setting-up-a-channel-backend">CHANNEL_LAYERS documentation</a>.</p>
+</section>
+<section id="inherit-the-appconfig-class">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">10. Inherit the AppConfig Class</a><a class="headerlink" href="#inherit-the-appconfig-class" title="Link to this heading"></a></h2>
+<p>Please refer to the following files in the sample app of the test project:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">sample_config</span></code>:</dt><dd><ul>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_config/__init__.py">sample_config/__init__.py</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_config/apps.py">sample_config/apps.py</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">sample_geo</span></code>:</dt><dd><ul>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_geo/__init__.py">sample_geo/__init__.py</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_geo/apps.py">sample_geo/apps.py</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">sample_pki</span></code>:</dt><dd><ul>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_pki/__init__.py">sample_pki/__init__.py</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_pki/apps.py">sample_pki/apps.py</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">sample_connection</span></code>:</dt><dd><ul>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_connection/__init__.py">sample_connection/__init__.py</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_connection/apps.py">sample_connection/apps.py</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">sample_subnet_division</span></code>:</dt><dd><ul>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_subnet_division/__init__.py">sample_subnet_division/__init__.py</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_subnet_division/apps.py">sample_subnet_division/apps.py</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>You have to replicate and adapt that code in your project.</p>
+<p>For more information regarding the concept of <code class="docutils literal notranslate"><span class="pre">AppConfig</span></code> please refer
+to the <a class="reference external" href="https://docs.djangoproject.com/en/5.2/ref/applications/">&quot;Applications&quot; section in the django documentation</a>.</p>
+</section>
+<section id="create-your-custom-models">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">11. Create Your Custom Models</a><a class="headerlink" href="#create-your-custom-models" title="Link to this heading"></a></h2>
+<p>For the purpose of showing an example, we added a simple &quot;details&quot; field
+to the models of the sample app in the test project.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_config/models.py">sample_config models</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_geo/models.py">sample_geo models</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_pki/models.py">sample_pki models</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_connection/models.py">sample_connection models</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_subnet_division/models.py">sample_subnet_division</a></p></li>
+</ul>
+<p>You can add fields in a similar way in your <code class="docutils literal notranslate"><span class="pre">models.py</span></code> file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you have any doubt regarding how to use, extend or develop models
+please refer to the <a class="reference external" href="https://docs.djangoproject.com/en/5.2/topics/db/models/">&quot;Models&quot; section in the django documentation</a>.</p>
+</div>
+</section>
+<section id="add-swapper-configurations">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">12. Add Swapper Configurations</a><a class="headerlink" href="#add-swapper-configurations" title="Link to this heading"></a></h2>
+<p>Once you have created the models, add the following to your
+<code class="docutils literal notranslate"><span class="pre">settings.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="c1"># Setting models for swapper module</span>
+</span><span id="line-2"><span class="n">CONFIG_DEVICE_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.Device"</span>
+</span><span id="line-3"><span class="n">CONFIG_DEVICEGROUP_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.DeviceGroup"</span>
+</span><span id="line-4"><span class="n">CONFIG_CONFIG_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.Config"</span>
+</span><span id="line-5"><span class="n">CONFIG_TEMPLATETAG_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.TemplateTag"</span>
+</span><span id="line-6"><span class="n">CONFIG_TAGGEDTEMPLATE_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.TaggedTemplate"</span>
+</span><span id="line-7"><span class="n">CONFIG_TEMPLATE_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.Template"</span>
+</span><span id="line-8"><span class="n">CONFIG_VPN_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.Vpn"</span>
+</span><span id="line-9"><span class="n">CONFIG_VPNCLIENT_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.VpnClient"</span>
+</span><span id="line-10"><span class="n">CONFIG_ORGANIZATIONCONFIGSETTINGS_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.OrganizationConfigSettings"</span>
+</span><span id="line-11"><span class="n">CONFIG_ORGANIZATIONLIMITS_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.OrganizationLimits"</span>
+</span><span id="line-12"><span class="n">CONFIG_WHOISINFO_MODEL</span> <span class="o">=</span> <span class="s2">"sample_config.WHOISInfo"</span>
+</span><span id="line-13"><span class="n">DJANGO_X509_CA_MODEL</span> <span class="o">=</span> <span class="s2">"sample_pki.Ca"</span>
+</span><span id="line-14"><span class="n">DJANGO_X509_CERT_MODEL</span> <span class="o">=</span> <span class="s2">"sample_pki.Cert"</span>
+</span><span id="line-15"><span class="n">GEO_LOCATION_MODEL</span> <span class="o">=</span> <span class="s2">"sample_geo.Location"</span>
+</span><span id="line-16"><span class="n">GEO_FLOORPLAN_MODEL</span> <span class="o">=</span> <span class="s2">"sample_geo.FloorPlan"</span>
+</span><span id="line-17"><span class="n">GEO_DEVICELOCATION_MODEL</span> <span class="o">=</span> <span class="s2">"sample_geo.DeviceLocation"</span>
+</span><span id="line-18"><span class="n">GEO_ORGANIZATIONGEOSETTINGS_MODEL</span> <span class="o">=</span> <span class="s2">"sample_geo.OrganizationGeoSettings"</span>
+</span><span id="line-19"><span class="n">CONNECTION_CREDENTIALS_MODEL</span> <span class="o">=</span> <span class="s2">"sample_connection.Credentials"</span>
+</span><span id="line-20"><span class="n">CONNECTION_DEVICECONNECTION_MODEL</span> <span class="o">=</span> <span class="s2">"sample_connection.DeviceConnection"</span>
+</span><span id="line-21"><span class="n">CONNECTION_COMMAND_MODEL</span> <span class="o">=</span> <span class="s2">"sample_connection.Command"</span>
+</span><span id="line-22"><span class="n">SUBNET_DIVISION_SUBNETDIVISIONRULE_MODEL</span> <span class="o">=</span> <span class="s2">"sample_subnet_division.SubnetDivisionRule"</span>
+</span><span id="line-23"><span class="n">SUBNET_DIVISION_SUBNETDIVISIONINDEX_MODEL</span> <span class="o">=</span> <span class="s2">"sample_subnet_division.SubnetDivisionIndex"</span>
+</span></code></pre></div>
+</div>
+<p>Substitute <code class="docutils literal notranslate"><span class="pre">sample_config</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_pki</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_connection</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sample_geo</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">sample_subnet_division</span></code> with the name you chose in
+step 1.</p>
+</section>
+<section id="create-database-migrations">
+<h2><a class="toc-backref" href="#id21" role="doc-backlink">13. Create Database Migrations</a><a class="headerlink" href="#create-database-migrations" title="Link to this heading"></a></h2>
+<p>Create database migrations:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">./manage.py<span class="w"> </span>makemigrations
+</span></code></pre></div>
+</div>
+<p>Now, to use the default <code class="docutils literal notranslate"><span class="pre">administrator</span></code> and <code class="docutils literal notranslate"><span class="pre">operator</span></code> user groups
+like the used in the openwisp_controller module, you'll manually need to
+make a migrations file which would look like:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_config/migrations/0002_default_groups_permissions.py">sample_config/migrations/0002_default_groups_permissions.py</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_geo/migrations/0002_default_group_permissions.py">sample_geo/migrations/0002_default_group_permissions.py</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_pki/migrations/0002_default_group_permissions.py">sample_pki/migrations/0002_default_group_permissions.py</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_connection/migrations/0002_default_group_permissions.py">sample_connection/migrations/0002_default_group_permissions.py</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_subnet_division/migrations/0002_default_group_permissions.py">sample_subnet_division/migrations/0002_default_group_permissions.py</a></p></li>
+</ul>
+<p>Create database migrations:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">./manage.py<span class="w"> </span>migrate
+</span></code></pre></div>
+</div>
+<p>For more information, refer to the <a class="reference external" href="https://docs.djangoproject.com/en/5.2/topics/migrations/">&quot;Migrations&quot; section in the django
+documentation</a>.</p>
+</section>
+<section id="create-the-admin">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink">14. Create the Admin</a><a class="headerlink" href="#create-the-admin" title="Link to this heading"></a></h2>
+<p>Refer to the <code class="docutils literal notranslate"><span class="pre">admin.py</span></code> file of the sample app.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_config/admin.py">sample_config admin.py</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_geo/admin.py">sample_geo admin.py</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_pki/admin.py">sample_pki admin.py</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_connection/admin.py">sample_connection admin.py</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_subnet_division/admin.py">sample_subnet_division admin.py</a>.</p></li>
+</ul>
+<p>To introduce changes to the admin, you can do it in two main ways which
+are described below.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more information regarding how the django admin works, or how it
+can be customized, please refer to <a class="reference external" href="https://docs.djangoproject.com/en/5.2/ref/contrib/admin/">&quot;The django admin site&quot; section in
+the django documentation</a>.</p>
+</div>
+<section id="monkey-patching">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">14.1. Monkey Patching</a><a class="headerlink" href="#monkey-patching" title="Link to this heading"></a></h3>
+<p>If the changes you need to add are relatively small, you can resort to
+monkey patching.</p>
+<p>For example:</p>
+<section id="sample-config">
+<h4><code class="docutils literal notranslate"><span class="pre">sample_config</span></code><a class="headerlink" href="#sample-config" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.config.admin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="line-2">    <span class="n">DeviceAdmin</span><span class="p">,</span>
+</span><span id="line-3">    <span class="n">DeviceGroupAdmin</span><span class="p">,</span>
+</span><span id="line-4">    <span class="n">TemplateAdmin</span><span class="p">,</span>
+</span><span id="line-5">    <span class="n">VpnAdmin</span><span class="p">,</span>
+</span><span id="line-6"><span class="p">)</span>
+</span><span id="line-7">
+</span><span id="line-8"><span class="n">DeviceAdmin</span><span class="o">.</span><span class="n">fields</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">"example"</span><span class="p">]</span>  <span class="c1"># &lt;-- monkey patching example</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="sample-connection">
+<h4><code class="docutils literal notranslate"><span class="pre">sample_connection</span></code><a class="headerlink" href="#sample-connection" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.connection.admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">CredentialsAdmin</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="n">CredentialsAdmin</span><span class="o">.</span><span class="n">fields</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">"example"</span><span class="p">]</span>  <span class="c1"># &lt;-- monkey patching example</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="sample-geo">
+<h4><code class="docutils literal notranslate"><span class="pre">sample_geo</span></code><a class="headerlink" href="#sample-geo" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.geo.admin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="line-2">    <span class="n">FloorPlanAdmin</span><span class="p">,</span>
+</span><span id="line-3">    <span class="n">LocationAdmin</span><span class="p">,</span>
+</span><span id="line-4">    <span class="n">GeoSettingsInline</span><span class="p">,</span>
+</span><span id="line-5"><span class="p">)</span>
+</span><span id="line-6">
+</span><span id="line-7"><span class="n">FloorPlanAdmin</span><span class="o">.</span><span class="n">fields</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">"example"</span><span class="p">]</span>  <span class="c1"># &lt;-- monkey patching example</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="sample-pki">
+<h4><code class="docutils literal notranslate"><span class="pre">sample_pki</span></code><a class="headerlink" href="#sample-pki" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.pki.admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">CaAdmin</span><span class="p">,</span> <span class="n">CertAdmin</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="n">CaAdmin</span><span class="o">.</span><span class="n">fields</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">"example"</span><span class="p">]</span>  <span class="c1"># &lt;-- monkey patching example</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="id1">
+<h4><code class="docutils literal notranslate"><span class="pre">sample_subnet_division</span></code><a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.subnet_division.admin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="line-2">    <span class="n">SubnetDivisionRuleInlineAdmin</span><span class="p">,</span>
+</span><span id="line-3"><span class="p">)</span>
+</span><span id="line-4">
+</span><span id="line-5"><span class="n">SubnetDivisionRuleInlineAdmin</span><span class="o">.</span><span class="n">fields</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">"example"</span><span class="p">]</span>  <span class="c1"># &lt;-- monkey patching example</span>
+</span></code></pre></div>
+</div>
+</section>
+</section>
+<section id="inheriting-admin-classes">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">14.2. Inheriting admin classes</a><a class="headerlink" href="#inheriting-admin-classes" title="Link to this heading"></a></h3>
+<p>If you need to introduce significant changes and/or you don't want to
+resort to monkey patching, you can proceed as follows:</p>
+<section id="id2">
+<h4><code class="docutils literal notranslate"><span class="pre">sample_config</span></code><a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
+</span><span id="line-2"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.config.admin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="line-3">    <span class="n">DeviceAdmin</span> <span class="k">as</span> <span class="n">BaseDeviceAdmin</span><span class="p">,</span>
+</span><span id="line-4">    <span class="n">TemplateAdmin</span> <span class="k">as</span> <span class="n">BaseTemplateAdmin</span><span class="p">,</span>
+</span><span id="line-5">    <span class="n">VpnAdmin</span> <span class="k">as</span> <span class="n">BaseVpnAdmin</span><span class="p">,</span>
+</span><span id="line-6">    <span class="n">DeviceGroupAdmin</span> <span class="k">as</span> <span class="n">BaseDeviceGroupAdmin</span><span class="p">,</span>
+</span><span id="line-7"><span class="p">)</span>
+</span><span id="line-8"><span class="kn">from</span><span class="w"> </span><span class="nn">swapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_model</span>
+</span><span id="line-9">
+</span><span id="line-10"><span class="n">Vpn</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"openwisp_controller"</span><span class="p">,</span> <span class="s2">"Vpn"</span><span class="p">)</span>
+</span><span id="line-11"><span class="n">Device</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"openwisp_controller"</span><span class="p">,</span> <span class="s2">"Device"</span><span class="p">)</span>
+</span><span id="line-12"><span class="n">DeviceGroup</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"openwisp_controller"</span><span class="p">,</span> <span class="s2">"DeviceGroup"</span><span class="p">)</span>
+</span><span id="line-13"><span class="n">Template</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"openwisp_controller"</span><span class="p">,</span> <span class="s2">"Template"</span><span class="p">)</span>
+</span><span id="line-14">
+</span><span id="line-15"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">Vpn</span><span class="p">)</span>
+</span><span id="line-16"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">Device</span><span class="p">)</span>
+</span><span id="line-17"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">DeviceGroup</span><span class="p">)</span>
+</span><span id="line-18"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">Template</span><span class="p">)</span>
+</span><span id="line-19">
+</span><span id="line-20">
+</span><span id="line-21"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Vpn</span><span class="p">)</span>
+</span><span id="line-22"><span class="k">class</span><span class="w"> </span><span class="nc">VpnAdmin</span><span class="p">(</span><span class="n">BaseVpnAdmin</span><span class="p">):</span>
+</span><span id="line-23">    <span class="c1"># add your changes here</span>
+</span><span id="line-24">    <span class="k">pass</span>
+</span><span id="line-25">
+</span><span id="line-26">
+</span><span id="line-27"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Device</span><span class="p">)</span>
+</span><span id="line-28"><span class="k">class</span><span class="w"> </span><span class="nc">DeviceAdmin</span><span class="p">(</span><span class="n">BaseDeviceAdmin</span><span class="p">):</span>
+</span><span id="line-29">    <span class="c1"># add your changes here</span>
+</span><span id="line-30">    <span class="k">pass</span>
+</span><span id="line-31">
+</span><span id="line-32">
+</span><span id="line-33"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">DeviceGroup</span><span class="p">)</span>
+</span><span id="line-34"><span class="k">class</span><span class="w"> </span><span class="nc">DeviceGroupAdmin</span><span class="p">(</span><span class="n">BaseDeviceGroupAdmin</span><span class="p">):</span>
+</span><span id="line-35">    <span class="c1"># add your changes here</span>
+</span><span id="line-36">    <span class="k">pass</span>
+</span><span id="line-37">
+</span><span id="line-38">
+</span><span id="line-39"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Template</span><span class="p">)</span>
+</span><span id="line-40"><span class="k">class</span><span class="w"> </span><span class="nc">TemplateAdmin</span><span class="p">(</span><span class="n">BaseTemplateAdmin</span><span class="p">):</span>
+</span><span id="line-41">    <span class="c1"># add your changes here</span>
+</span><span id="line-42">    <span class="k">pass</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="id3">
+<h4><code class="docutils literal notranslate"><span class="pre">sample_connection</span></code><a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
+</span><span id="line-2"><span class="kn">from</span><span class="w"> </span><span class="nn">swapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_model</span>
+</span><span id="line-3">
+</span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.connection.admin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="line-5">    <span class="n">CredentialsAdmin</span> <span class="k">as</span> <span class="n">BaseCredentialsAdmin</span><span class="p">,</span>
+</span><span id="line-6"><span class="p">)</span>
+</span><span id="line-7">
+</span><span id="line-8"><span class="n">Credentials</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"connection"</span><span class="p">,</span> <span class="s2">"Credentials"</span><span class="p">)</span>
+</span><span id="line-9">
+</span><span id="line-10"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">Credentials</span><span class="p">)</span>
+</span><span id="line-11">
+</span><span id="line-12">
+</span><span id="line-13"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Credentials</span><span class="p">)</span>
+</span><span id="line-14"><span class="k">class</span><span class="w"> </span><span class="nc">CredentialsAdmin</span><span class="p">(</span><span class="n">BaseCredentialsAdmin</span><span class="p">):</span>
+</span><span id="line-15">    <span class="c1"># add your changes here</span>
+</span><span id="line-16">    <span class="k">pass</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="id4">
+<h4><code class="docutils literal notranslate"><span class="pre">sample_geo</span></code><a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.geo.admin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="line-2">    <span class="n">FloorPlanAdmin</span> <span class="k">as</span> <span class="n">BaseFloorPlanAdmin</span><span class="p">,</span>
+</span><span id="line-3">    <span class="n">LocationAdmin</span> <span class="k">as</span> <span class="n">BaseLocationAdmin</span><span class="p">,</span>
+</span><span id="line-4"><span class="p">)</span>
+</span><span id="line-5"><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
+</span><span id="line-6"><span class="kn">from</span><span class="w"> </span><span class="nn">swapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_model</span>
+</span><span id="line-7">
+</span><span id="line-8"><span class="n">Location</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"openwisp_controller"</span><span class="p">,</span> <span class="s2">"Location"</span><span class="p">)</span>
+</span><span id="line-9"><span class="n">FloorPlan</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"openwisp_controller"</span><span class="p">,</span> <span class="s2">"FloorPlan"</span><span class="p">)</span>
+</span><span id="line-10">
+</span><span id="line-11"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">FloorPlan</span><span class="p">)</span>
+</span><span id="line-12"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">Location</span><span class="p">)</span>
+</span><span id="line-13">
+</span><span id="line-14">
+</span><span id="line-15"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">FloorPlan</span><span class="p">)</span>
+</span><span id="line-16"><span class="k">class</span><span class="w"> </span><span class="nc">FloorPlanAdmin</span><span class="p">(</span><span class="n">BaseFloorPlanAdmin</span><span class="p">):</span>
+</span><span id="line-17">    <span class="k">pass</span>
+</span><span id="line-18">    <span class="c1"># add your changes here</span>
+</span><span id="line-19">
+</span><span id="line-20">
+</span><span id="line-21"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Location</span><span class="p">)</span>
+</span><span id="line-22"><span class="k">class</span><span class="w"> </span><span class="nc">LocationAdmin</span><span class="p">(</span><span class="n">BaseLocationAdmin</span><span class="p">):</span>
+</span><span id="line-23">    <span class="k">pass</span>
+</span><span id="line-24">    <span class="c1"># add your changes here</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="id5">
+<h4><code class="docutils literal notranslate"><span class="pre">sample_pki</span></code><a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.geo.admin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="line-2">    <span class="n">CaAdmin</span> <span class="k">as</span> <span class="n">BaseCaAdmin</span><span class="p">,</span>
+</span><span id="line-3">    <span class="n">CertAdmin</span> <span class="k">as</span> <span class="n">BaseCertAdmin</span><span class="p">,</span>
+</span><span id="line-4"><span class="p">)</span>
+</span><span id="line-5"><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
+</span><span id="line-6"><span class="kn">from</span><span class="w"> </span><span class="nn">swapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_model</span>
+</span><span id="line-7">
+</span><span id="line-8"><span class="n">Ca</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"openwisp_controller"</span><span class="p">,</span> <span class="s2">"Ca"</span><span class="p">)</span>
+</span><span id="line-9"><span class="n">Cert</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"openwisp_controller"</span><span class="p">,</span> <span class="s2">"Cert"</span><span class="p">)</span>
+</span><span id="line-10">
+</span><span id="line-11"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">Ca</span><span class="p">)</span>
+</span><span id="line-12"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">Cert</span><span class="p">)</span>
+</span><span id="line-13">
+</span><span id="line-14">
+</span><span id="line-15"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Ca</span><span class="p">)</span>
+</span><span id="line-16"><span class="k">class</span><span class="w"> </span><span class="nc">CaAdmin</span><span class="p">(</span><span class="n">BaseCaAdmin</span><span class="p">):</span>
+</span><span id="line-17">    <span class="k">pass</span>
+</span><span id="line-18">    <span class="c1"># add your changes here</span>
+</span><span id="line-19">
+</span><span id="line-20">
+</span><span id="line-21"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Cert</span><span class="p">)</span>
+</span><span id="line-22"><span class="k">class</span><span class="w"> </span><span class="nc">CertAdmin</span><span class="p">(</span><span class="n">BaseCertAdmin</span><span class="p">):</span>
+</span><span id="line-23">    <span class="k">pass</span>
+</span><span id="line-24">    <span class="c1"># add your changes here</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="id6">
+<h4><code class="docutils literal notranslate"><span class="pre">sample_subnet_division</span></code><a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.subnet_division.admin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="line-2">    <span class="n">SubnetAdmin</span> <span class="k">as</span> <span class="n">BaseSubnetAdmin</span><span class="p">,</span>
+</span><span id="line-3">    <span class="n">IpAddressAdmin</span> <span class="k">as</span> <span class="n">BaseIpAddressAdmin</span><span class="p">,</span>
+</span><span id="line-4">    <span class="n">SubnetDivisionRuleInlineAdmin</span> <span class="k">as</span> <span class="n">BaseSubnetDivisionRuleInlineAdmin</span><span class="p">,</span>
+</span><span id="line-5"><span class="p">)</span>
+</span><span id="line-6"><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
+</span><span id="line-7"><span class="kn">from</span><span class="w"> </span><span class="nn">swapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_model</span>
+</span><span id="line-8">
+</span><span id="line-9"><span class="n">Subnet</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"openwisp_ipam"</span><span class="p">,</span> <span class="s2">"Subnet"</span><span class="p">)</span>
+</span><span id="line-10"><span class="n">IpAddress</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"openwisp_ipam"</span><span class="p">,</span> <span class="s2">"IpAddress"</span><span class="p">)</span>
+</span><span id="line-11"><span class="n">SubnetDivisionRule</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"subnet_division"</span><span class="p">,</span> <span class="s2">"SubnetDivisionRule"</span><span class="p">)</span>
+</span><span id="line-12">
+</span><span id="line-13"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">Subnet</span><span class="p">)</span>
+</span><span id="line-14"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">IpAddress</span><span class="p">)</span>
+</span><span id="line-15"><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">SubnetDivisionRule</span><span class="p">)</span>
+</span><span id="line-16">
+</span><span id="line-17">
+</span><span id="line-18"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Subnet</span><span class="p">)</span>
+</span><span id="line-19"><span class="k">class</span><span class="w"> </span><span class="nc">SubnetAdmin</span><span class="p">(</span><span class="n">BaseSubnetAdmin</span><span class="p">):</span>
+</span><span id="line-20">    <span class="k">pass</span>
+</span><span id="line-21">    <span class="c1"># add your changes here</span>
+</span><span id="line-22">
+</span><span id="line-23">
+</span><span id="line-24"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">IpAddress</span><span class="p">)</span>
+</span><span id="line-25"><span class="k">class</span><span class="w"> </span><span class="nc">IpAddressAdmin</span><span class="p">(</span><span class="n">BaseIpAddressAdmin</span><span class="p">):</span>
+</span><span id="line-26">    <span class="k">pass</span>
+</span><span id="line-27">    <span class="c1"># add your changes here</span>
+</span><span id="line-28">
+</span><span id="line-29">
+</span><span id="line-30"><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">SubnetDivisionRule</span><span class="p">)</span>
+</span><span id="line-31"><span class="k">class</span><span class="w"> </span><span class="nc">SubnetDivisionRuleInlineAdmin</span><span class="p">(</span><span class="n">BaseSubnetDivisionRuleInlineAdmin</span><span class="p">):</span>
+</span><span id="line-32">    <span class="k">pass</span>
+</span><span id="line-33">    <span class="c1"># add your changes here</span>
+</span></code></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="create-root-url-configuration">
+<h2><a class="toc-backref" href="#id25" role="doc-backlink">15. Create Root URL Configuration</a><a class="headerlink" href="#create-root-url-configuration" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
+</span><span id="line-2"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.config.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_controller_urls</span>
+</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.geo.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_geo_urls</span>
+</span><span id="line-4">
+</span><span id="line-5"><span class="c1"># from .sample_config import views as config_views</span>
+</span><span id="line-6"><span class="c1"># from .sample_geo import views as geo_views</span>
+</span><span id="line-7">
+</span><span id="line-8"><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="line-9">    <span class="c1"># ... other urls in your project ...</span>
+</span><span id="line-10">    <span class="c1"># Use only when changing controller API views (discussed below)</span>
+</span><span id="line-11">    <span class="c1"># url(r'^controller/', include((get_controller_urls(config_views), 'controller'), namespace='controller'))</span>
+</span><span id="line-12">    <span class="c1"># Use only when changing geo API views (discussed below)</span>
+</span><span id="line-13">    <span class="c1"># url(r'^geo/', include((get_geo_urls(geo_views), 'geo'), namespace='geo')),</span>
+</span><span id="line-14">    <span class="c1"># openwisp-controller urls</span>
+</span><span id="line-15">    <span class="n">url</span><span class="p">(</span>
+</span><span id="line-16">        <span class="sa">r</span><span class="s2">""</span><span class="p">,</span>
+</span><span id="line-17">        <span class="n">include</span><span class="p">(</span>
+</span><span id="line-18">            <span class="p">(</span><span class="s2">"openwisp_controller.config.urls"</span><span class="p">,</span> <span class="s2">"config"</span><span class="p">),</span>
+</span><span id="line-19">            <span class="n">namespace</span><span class="o">=</span><span class="s2">"config"</span><span class="p">,</span>
+</span><span id="line-20">        <span class="p">),</span>
+</span><span id="line-21">    <span class="p">),</span>
+</span><span id="line-22">    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s2">""</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">"openwisp_controller.urls"</span><span class="p">)),</span>
+</span><span id="line-23"><span class="p">]</span>
+</span></code></pre></div>
+</div>
+<p>For more information about URL configuration in django, please refer to
+the <a class="reference external" href="https://docs.djangoproject.com/en/5.2/topics/http/urls/">&quot;URL dispatcher&quot; section in the django documentation</a>.</p>
+</section>
+<section id="import-the-automated-tests">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink">16. Import the Automated Tests</a><a class="headerlink" href="#import-the-automated-tests" title="Link to this heading"></a></h2>
+<p>When developing a custom application based on this module, it's a good
+idea to import and run the base tests too, so that you can be sure the
+changes you're introducing are not breaking some of the existing features
+of <em>OpenWISP Controller</em>.</p>
+<p>In case you need to add breaking changes, you can overwrite the tests
+defined in the base classes to test your own behavior.</p>
+<p>See the tests in sample_app to find out how to do this.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/tests.py">project common tests.py</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_config/tests.py">sample_config tests.py</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_geo/tests.py">sample_geo tests.py</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_geo/pytest.py">sample_geo pytest.py</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_pki/tests.py">sample_pki tests.py</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_connection/tests.py">sample_connection tests.py</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_subnet_division/tests.py">sample_subnet_division tests.py</a></p></li>
+</ul>
+<p>For running the tests, you need to copy fixtures as well:</p>
+<ul class="simple">
+<li><p>Change <cite>sample_config</cite> to your config app's name in <a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_config/fixtures/">sample_config
+fixtures</a>
+and paste it in the <code class="docutils literal notranslate"><span class="pre">sample_config/fixtures/</span></code> directory.</p></li>
+</ul>
+<p>You can then run tests with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="c1"># the --parallel flag is optional</span>
+</span><span id="line-2">./manage.py<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--parallel<span class="w"> </span>mycontroller
+</span></code></pre></div>
+</div>
+<p>Substitute <code class="docutils literal notranslate"><span class="pre">mycontroller</span></code> with the name you chose in step 1.</p>
+<p>For more information about automated tests in django, please refer to
+<a class="reference external" href="https://docs.djangoproject.com/en/5.2/topics/testing/">&quot;Testing in Django&quot;</a>.</p>
+</section>
+<section id="other-base-classes-that-can-be-inherited-and-extended">
+<h2><a class="toc-backref" href="#id27" role="doc-backlink">Other Base Classes that Can Be Inherited and Extended</a><a class="headerlink" href="#other-base-classes-that-can-be-inherited-and-extended" title="Link to this heading"></a></h2>
+<p>The following steps are not required and are intended for more advanced
+customization.</p>
+<section id="extending-the-controller-api-views">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">1. Extending the Controller API Views</a><a class="headerlink" href="#extending-the-controller-api-views" title="Link to this heading"></a></h3>
+<p>Extending the <a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_config/views.py">sample_config/views.py</a>
+is required only when you want to make changes in the controller API,
+Remember to change <code class="docutils literal notranslate"><span class="pre">config_views</span></code> location in <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> in point 11
+for extending views.</p>
+<p>For more information about django views, please refer to the <a class="reference external" href="https://docs.djangoproject.com/en/5.2/topics/http/views/">views
+section in the django documentation</a>.</p>
+</section>
+<section id="extending-the-geo-api-views">
+<h3><a class="toc-backref" href="#id29" role="doc-backlink">2. Extending the Geo API Views</a><a class="headerlink" href="#extending-the-geo-api-views" title="Link to this heading"></a></h3>
+<p>Extending the <a class="reference external" href="https://github.com/openwisp/openwisp-controller/tree/master/tests/openwisp2/sample_geo/views.py">sample_geo/views.py</a>
+is required only when you want to make changes in the geo API, Remember to
+change <code class="docutils literal notranslate"><span class="pre">geo_views</span></code> location in <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> in point 11 for extending
+views.</p>
+<p>For more information about django views, please refer to the <a class="reference external" href="https://docs.djangoproject.com/en/5.2/topics/http/views/">views
+section in the django documentation</a>.</p>
+</section>
+</section>
+<section id="custom-subnet-division-rule-types">
+<span id="id8"></span><h2><a class="toc-backref" href="#id30" role="doc-backlink">Custom Subnet Division Rule Types</a><a class="headerlink" href="#custom-subnet-division-rule-types" title="Link to this heading"></a></h2>
+<p>It is possible to create your own <a class="reference internal" href="../user/subnet-division-rules.html"><span class="doc">subnet division rule types</span></a>. The rule type determines when subnets
+and IPs will be provisioned and when they will be destroyed.</p>
+<p>You can create your custom rule types by extending
+<code class="docutils literal notranslate"><span class="pre">openwisp_controller.subnet_division.rule_types.base.BaseSubnetDivisionRuleType</span></code>.</p>
+<p>Below is an example to create a subnet division rule type that will
+provision subnets and IPs when a new device is created and will delete
+them upon deletion for that device.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="c1"># In mycontroller/sample_subnet_division/rules_types/custom.py</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">post_delete</span><span class="p">,</span> <span class="n">post_save</span>
+</span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">swapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_model</span>
+</span><span id="line-5">
+</span><span id="line-6"><span class="kn">from</span><span class="w"> </span><span class="nn">openwisp_controller.subnet_division.rule_types.base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="line-7">    <span class="n">BaseSubnetDivisionRuleType</span><span class="p">,</span>
+</span><span id="line-8"><span class="p">)</span>
+</span><span id="line-9">
+</span><span id="line-10"><span class="n">Device</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"config"</span><span class="p">,</span> <span class="s2">"Device"</span><span class="p">)</span>
+</span><span id="line-11">
+</span><span id="line-12">
+</span><span id="line-13"><span class="k">class</span><span class="w"> </span><span class="nc">CustomRuleType</span><span class="p">(</span><span class="n">BaseSubnetDivisionRuleType</span><span class="p">):</span>
+</span><span id="line-14">    <span class="c1"># The signal on which provisioning should be triggered</span>
+</span><span id="line-15">    <span class="n">provision_signal</span> <span class="o">=</span> <span class="n">post_save</span>
+</span><span id="line-16">    <span class="c1"># The sender of the provision_signal</span>
+</span><span id="line-17">    <span class="n">provision_sender</span> <span class="o">=</span> <span class="n">Device</span>
+</span><span id="line-18">    <span class="c1"># Dispatch UID for connecting provision_signal to provision_receiver</span>
+</span><span id="line-19">    <span class="n">provision_dispatch_uid</span> <span class="o">=</span> <span class="s2">"some_unique_identifier_string"</span>
+</span><span id="line-20">
+</span><span id="line-21">    <span class="c1"># The signal on which deletion should be triggered</span>
+</span><span id="line-22">    <span class="n">destroyer_signal</span> <span class="o">=</span> <span class="n">post_delete</span>
+</span><span id="line-23">    <span class="c1"># The sender of the destroyer_signal</span>
+</span><span id="line-24">    <span class="n">destroyer_sender</span> <span class="o">=</span> <span class="n">Device</span>
+</span><span id="line-25">    <span class="c1"># Dispatch UID for connecting destroyer_signal to destroyer_receiver</span>
+</span><span id="line-26">    <span class="n">destroyer_dispatch_uid</span> <span class="o">=</span> <span class="s2">"another_unique_identifier_string"</span>
+</span><span id="line-27">
+</span><span id="line-28">    <span class="c1"># Attribute path to organization_id</span>
+</span><span id="line-29">    <span class="c1"># Example 1: If organization_id is direct attribute of provision_signal</span>
+</span><span id="line-30">    <span class="c1">#            sender instance, then</span>
+</span><span id="line-31">    <span class="c1">#   organization_id_path = 'organization_id'</span>
+</span><span id="line-32">    <span class="c1"># Example 2: If organization_id is indirect attribute of provision signal</span>
+</span><span id="line-33">    <span class="c1">#            sender instance, then</span>
+</span><span id="line-34">    <span class="c1">#   organization_id_path = 'some_attribute.another_intermediate.organization_id'</span>
+</span><span id="line-35">    <span class="n">organization_id_path</span> <span class="o">=</span> <span class="s2">"organization_id"</span>
+</span><span id="line-36">
+</span><span id="line-37">    <span class="c1"># Similar to organization_id_path but for the required subnet attribute</span>
+</span><span id="line-38">    <span class="n">subnet_path</span> <span class="o">=</span> <span class="s2">"subnet"</span>
+</span><span id="line-39">
+</span><span id="line-40">    <span class="c1"># An intermediate method through which you can specify conditions for provisions</span>
+</span><span id="line-41">    <span class="nd">@classmethod</span>
+</span><span id="line-42">    <span class="k">def</span><span class="w"> </span><span class="nf">should_create_subnets_ips</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span id="line-43">        <span class="c1"># Using "post_save" provision_signal, the rule should be only</span>
+</span><span id="line-44">        <span class="c1"># triggered when a new object is created.</span>
+</span><span id="line-45">        <span class="k">return</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"created"</span><span class="p">]</span>
+</span><span id="line-46">
+</span><span id="line-47">    <span class="c1"># You can define logic to trigger provisioning for existing objects</span>
+</span><span id="line-48">    <span class="c1"># using following classmethod. By default, BaseSubnetDivisionRuleType</span>
+</span><span id="line-49">    <span class="c1"># performs no operation for existing objects.</span>
+</span><span id="line-50">    <span class="nd">@classmethod</span>
+</span><span id="line-51">    <span class="k">def</span><span class="w"> </span><span class="nf">provision_for_existing_objects</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rule_obj</span><span class="p">):</span>
+</span><span id="line-52">        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">Device</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">organization</span><span class="o">=</span><span class="n">rule_obj</span><span class="o">.</span><span class="n">organization</span><span class="p">):</span>
+</span><span id="line-53">            <span class="bp">cls</span><span class="o">.</span><span class="n">provision_receiver</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">created</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></code></pre></div>
+</div>
+<p>After creating a class for your custom rule type, you will need to set
+<a class="reference internal" href="../user/settings.html#openwisp-controller-subnet-division-types"><span class="std std-ref">OPENWISP_CONTROLLER_SUBNET_DIVISION_TYPES</span></a> setting as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">OPENWISP_CONTROLLER_SUBNET_DIVISION_TYPES</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="line-2">    <span class="p">(</span>
+</span><span id="line-3">        <span class="s2">"openwisp_controller.subnet_division.rule_types.vpn.VpnSubnetDivisionRuleType"</span><span class="p">,</span>
+</span><span id="line-4">        <span class="s2">"VPN"</span><span class="p">,</span>
+</span><span id="line-5">    <span class="p">),</span>
+</span><span id="line-6">    <span class="p">(</span>
+</span><span id="line-7">        <span class="s2">"openwisp_controller.subnet_division.rule_types.device.DeviceSubnetDivisionRuleType"</span><span class="p">,</span>
+</span><span id="line-8">        <span class="s2">"Device"</span><span class="p">,</span>
+</span><span id="line-9">    <span class="p">),</span>
+</span><span id="line-10">    <span class="p">(</span>
+</span><span id="line-11">        <span class="s2">"mycontroller.sample_subnet_division.rules_types.custom.CustomRuleType"</span><span class="p">,</span>
+</span><span id="line-12">        <span class="s2">"Custom Rule"</span><span class="p">,</span>
+</span><span id="line-13">    <span class="p">),</span>
+</span><span id="line-14"><span class="p">)</span>
+</span></code></pre></div>
+</div>
+</section>
+<section id="more-utilities-to-extend-openwisp-controller">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink">More Utilities to Extend OpenWISP Controller</a><a class="headerlink" href="#more-utilities-to-extend-openwisp-controller" title="Link to this heading"></a></h2>
+<p>See <a class="reference internal" href="utils.html"><span class="doc">Code Utilities</span></a>.</p>
+</section>
+</section>
+
+    </div><div class="flex justify-between items-center pt-6 mt-12 border-t border-border gap-4">
+    <div class="mr-auto">
+      <a href="utils.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="mr-2 h-4 w-4">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Code Utilities
+      </a>
+    </div>
+    <div class="ml-auto">
+      <a href="../../monitoring/index.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        Monitoring
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="ml-2 h-4 w-4">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+</div></div><aside id="right-sidebar" class="hidden text-sm xl:block">
+  <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
+    <ul>
+<li><a class="reference internal" href="#initialize-your-project-custom-apps">1. Initialize Your Project &amp; Custom Apps</a></li>
+<li><a class="reference internal" href="#install-openwisp-controller">2. Install <code class="docutils literal notranslate"><span class="pre">openwisp-controller</span></code></a></li>
+<li><a class="reference internal" href="#add-your-apps-to-installed-apps">3. Add Your Apps to <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code></a></li>
+<li><a class="reference internal" href="#add-extended-apps">4. Add <code class="docutils literal notranslate"><span class="pre">EXTENDED_APPS</span></code></a></li>
+<li><a class="reference internal" href="#add-openwisp-utils-staticfiles-dependencyfinder">5. Add <code class="docutils literal notranslate"><span class="pre">openwisp_utils.staticfiles.DependencyFinder</span></code></a></li>
+<li><a class="reference internal" href="#add-openwisp-utils-loaders-dependencyloader">6. Add <code class="docutils literal notranslate"><span class="pre">openwisp_utils.loaders.DependencyLoader</span></code></a></li>
+<li><a class="reference internal" href="#initial-database-setup">7. Initial Database Setup</a></li>
+<li><a class="reference internal" href="#django-channels-setup">8. Django Channels Setup</a></li>
+<li><a class="reference internal" href="#other-settings">9. Other Settings</a></li>
+<li><a class="reference internal" href="#inherit-the-appconfig-class">10. Inherit the AppConfig Class</a></li>
+<li><a class="reference internal" href="#create-your-custom-models">11. Create Your Custom Models</a></li>
+<li><a class="reference internal" href="#add-swapper-configurations">12. Add Swapper Configurations</a></li>
+<li><a class="reference internal" href="#create-database-migrations">13. Create Database Migrations</a></li>
+<li><a class="reference internal" href="#create-the-admin">14. Create the Admin</a><ul>
+<li><a class="reference internal" href="#monkey-patching">14.1. Monkey Patching</a><ul>
+<li><a class="reference internal" href="#sample-config"><code class="docutils literal notranslate"><span class="pre">sample_config</span></code></a></li>
+<li><a class="reference internal" href="#sample-connection"><code class="docutils literal notranslate"><span class="pre">sample_connection</span></code></a></li>
+<li><a class="reference internal" href="#sample-geo"><code class="docutils literal notranslate"><span class="pre">sample_geo</span></code></a></li>
+<li><a class="reference internal" href="#sample-pki"><code class="docutils literal notranslate"><span class="pre">sample_pki</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">sample_subnet_division</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#inheriting-admin-classes">14.2. Inheriting admin classes</a><ul>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">sample_config</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">sample_connection</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">sample_geo</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">sample_pki</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">sample_subnet_division</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-root-url-configuration">15. Create Root URL Configuration</a></li>
+<li><a class="reference internal" href="#import-the-automated-tests">16. Import the Automated Tests</a></li>
+<li><a class="reference internal" href="#other-base-classes-that-can-be-inherited-and-extended">Other Base Classes that Can Be Inherited and Extended</a><ul>
+<li><a class="reference internal" href="#extending-the-controller-api-views">1. Extending the Controller API Views</a></li>
+<li><a class="reference internal" href="#extending-the-geo-api-views">2. Extending the Geo API Views</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-subnet-division-rule-types">Custom Subnet Division Rule Types</a></li>
+<li><a class="reference internal" href="#more-utilities-to-extend-openwisp-controller">More Utilities to Extend OpenWISP Controller</a></li>
+</ul>
+</div>
+</aside>
+          </main>
+        </div>
+      </div><footer class="py-6 border-t border-border md:py-0">
+    <div class="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+      <div class="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-6 md:px-0">
+        <a href="../../index.html">
+            <img src="../../_static/openwisp-logo.svg" alt="OpenWISP" width="125" height="72" class="hidden dark:block" />
+            <img src="../../_static/openwisp-logo-black.svg" alt="OpenWISP" width="125" height="72" class="dark:hidden" /></a>
+        <p class="text-sm leading-loose text-right text-muted-foreground md:text-center">© 2008-2026, OpenWISP&nbsp;</p>
+      </div>
+    </div>
+</footer>
+    </div><button id="scrolltop"
+        x-cloak
+        @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="fixed bottom-8 right-8 p-2 z-10 rounded-sm bg-gray-700 text-xs text-white transition-all duration-1000 hover:bg-gray-950 focus:bg-gray-950"
+        :class="{'opacity-0 invisible' : !showScrollTop}"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       height="14"
+       viewBox="0 96 960 960"
+       width="14"
+       class="inline fill-current mb-[2px]"
+       aria-hidden="true">
+    <path d="M450 896V370L202 618l-42-42 320-320 320 320-42 42-248-248v526h-60Z" />
+  </svg>
+  Back to top
+</button>
+    
+
+    <script src="../../_static/documentation_options.js?v=c6950507"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="../../_static/theme.js?v=5db23cf8"></script>
+    
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.openwisp.io/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '7']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript>
+  <p>
+    <img referrerpolicy="no-referrer-when-downgrade" src="//analytics.openwisp.io/matomo.php?idsite=7&amp;rec=1" style="border:0;" alt="" />
+  </p>
+</noscript>
+<!-- End Matomo Code -->
+
+<div id="lightbox" class="lightbox">
+  <span class="close">&times;</span>
+</div>
+<script src="../../_static/lightbox.js"></script>
+
+</body>
+
+</html>

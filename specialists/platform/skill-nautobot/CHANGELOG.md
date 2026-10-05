@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+## 0.4.0 — 2026-10-05
+
+- New references, each verified against the installed 3.2.3 source and bundled docs: `data-model.md` (Locations, Platforms and `network_driver`,
+  interfaces and VLANs, modules, contacts and teams), `app-development.md` (an app from skeleton to tests), `integrations.md` (pynautobot, SSoT/DiffSync,
+  Git data, export templates, Ansible and Nornir inventories, Golden Config) and `operations-and-recovery.md` (backup and restore, health, metrics,
+  performance, security settings).
+- Promoted helpers in `scripts/`: `nautobot_paging.py` (fail-closed traversal) and `nautobot_ipam.py` (mask rule), with tests; the contract test now
+  allows `scripts/` and requires each helper to be tested and stdlib-only.
+- `SKILL.md`: Orient section, routing for every reference, wider description.
+- Fleet lessons from a measured capture corpus (identity signals, address overlap, DNS and sysName) and installed-source Learned entries.
+- Scenarios N-S24 to N-S26. Independent assessment: UNC `docs/reports/project-reviews/nautobot-openwisp-skills-independent-assessment-20261005_1427.md`.
+
+- 2026-10-05 `integrations.md`: Learned entry from the installed source (pynautobot 3.2.0).
+- 2026-10-05 `integrations.md`: Learned entry from the installed source (nornir-nautobot 4.4.2).
+- 2026-10-05 `operations-and-recovery.md`: Learned entry from the installed source (Nautobot 3.2.3).
+
+- 2026-10-05 `staged-onboarding.md`: 3 Learned entries from the capture corpus (measured fleet lessons).
+- 2026-10-05 `discovery-and-topology.md`: 2 Learned entries from the capture corpus (measured fleet lessons).
+- 2026-10-05 `authority-and-modeling.md`: 2 Learned entries from the capture corpus (measured fleet lessons).
+
 ## 0.3.0 — 2026-10-05
 
 - Added `references/operations-cookbook.md`: twelve version-matched recipes with a summary table (GraphQL, REST, Dynamic Groups, computed/custom fields, Config

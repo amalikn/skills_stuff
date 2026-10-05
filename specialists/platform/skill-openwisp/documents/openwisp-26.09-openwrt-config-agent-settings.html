@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en" data-content_root="../../"
+  x-data="{ darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches), activeSection: ''}"
+  :class="{ 'dark' : darkMode === true }">
+
+<head>
+  <script>
+    (function () {
+      // Set initial color scheme
+      if ((localStorage.getItem("_x_darkMode") === "true") || (window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      }
+
+      // Watch for media preference changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+        localStorage.setItem("_x_darkMode", event.matches);
+        document.documentElement.classList.toggle("dark", event.matches);
+      });
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030711" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Settings | OpenWISP 26.09 documentation</title>
+  <meta property="og:title" content="Settings | OpenWISP 26.09 documentation" />
+  <meta name="twitter:title" content="Settings | OpenWISP 26.09 documentation" />
+  <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e48b8583" />
+  <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../_static/pygments_dark.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/theme.css?v=d6d7c91b" />
+  <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=d3e37945" />
+  <link rel="icon" href="../../_static/favicon.svg" />
+
+  <link rel="search" title="Search" href="../../search.html" />
+  <link rel="next" title="Automatic registration" href="automatic-registration.html" />
+  <link rel="prev" title="Quick Start Guide" href="quickstart.html" />
+<meta property="og:image" content="https://openwisp.io/docs/26.09/_static/docs-og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="480" />
+
+<link rel="canonical" href="https://openwisp.io/docs/stable/openwrt-config-agent/user/settings.html" />
+
+
+</head>
+
+<body x-data="{ showSidebar: false, showScrollTop: false }"
+  class="min-h-screen font-sans antialiased bg-background text-foreground" :class="{ 'overflow-hidden': showSidebar }"@scroll.window="showScrollTop = pageYOffset > 100">
+  <div x-cloak x-show="showSidebar"
+    class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden"
+    @click.self="showSidebar = false"></div><div id="page" class="relative flex flex-col min-h-screen"><a href="#content"
+      class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100">
+      Skip to content
+    </a><header class="sticky top-0 z-40 w-full border-b shadow-xs border-border bg-background/90 backdrop-blur"><div class="container flex items-center h-14">
+    <div class="hidden mr-4 md:flex">
+      <a href="../../index.html" class="flex items-center mr-6">
+        <img width="24" height="24" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+          alt="Logo" />
+        <img width="24" height="24" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+          alt="Logo" /><span class="hidden font-bold sm:inline-block text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+      </a><nav class="flex items-center space-x-6 text-sm font-medium">
+    
+    <a href="https://openwisp.org/features/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Features</a>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/faq/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Blog</a>
+</nav></div><button
+      class="inline-flex items-center justify-center h-10 px-0 py-2 mr-2 text-base font-medium transition-colors rounded-md hover:text-accent-foreground hover:bg-transparent md:hidden"
+      type="button" @click="showSidebar = true">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" aria-hidden="true"
+        fill="currentColor">
+        <path
+          d="M152.587 825.087q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440Zm0-203.587q-19.152 0-32.326-13.174T107.087 576q0-19.152 13.174-32.326t32.326-13.174h320q19.152 0 32.326 13.174T518.087 576q0 19.152-13.174 32.326T472.587 621.5h-320Zm0-203.587q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440ZM708.913 576l112.174 112.174q12.674 12.674 12.674 31.826t-12.674 31.826Q808.413 764.5 789.261 764.5t-31.826-12.674l-144-144Q600 594.391 600 576t13.435-31.826l144-144q12.674-12.674 31.826-12.674t31.826 12.674q12.674 12.674 12.674 31.826t-12.674 31.826L708.913 576Z" />
+      </svg>
+      <span class="sr-only">Toggle navigation menu</span>
+    </button>
+    <div class="flex items-center justify-between flex-1 gap-2 sm:gap-4 md:justify-end">
+      <div class="flex-1 w-full md:w-auto md:flex-none"><form id="searchbox"
+      action="../../search.html"
+      method="get"
+      class="relative flex items-center group"
+      @keydown.k.window.meta="$refs.search.focus()">
+  <input x-ref="search"
+          name="q"
+          id="search-input"
+          type="search"
+          aria-label="Search the docs"
+          placeholder="Search ..."
+          class="inline-flex items-center font-medium transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background border border-input hover:bg-accent focus:bg-accent hover:text-accent-foreground focus:text-accent-foreground hover:placeholder-accent-foreground py-2 px-4 relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64" />
+  <kbd class="pointer-events-none absolute right-1.5 top-2 hidden h-5 select-none text-muted-foreground items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex group-hover:bg-accent group-hover:text-accent-foreground">
+    <span class="text-xs">⌘</span>
+    K
+  </kbd>
+</form>
+      </div>
+      <nav class="flex items-center gap-1">
+        <button @click="darkMode = !darkMode"
+          class="relative inline-flex items-center justify-center px-0 text-sm font-medium transition-colors rounded-md hover:bg-accent hover:text-accent-foreground h-9 w-9"
+          type="button"
+          title="Toggle color scheme">
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-100 rotate-0 dark:-rotate-90 dark:scale-0">
+            <path
+              d="M480 685q45.456 0 77.228-31.772Q589 621.456 589 576q0-45.456-31.772-77.228Q525.456 467 480 467q-45.456 0-77.228 31.772Q371 530.544 371 576q0 45.456 31.772 77.228Q434.544 685 480 685Zm0 91q-83 0-141.5-58.5T280 576q0-83 58.5-141.5T480 376q83 0 141.5 58.5T680 576q0 83-58.5 141.5T480 776ZM80 621.5q-19.152 0-32.326-13.174T34.5 576q0-19.152 13.174-32.326T80 530.5h80q19.152 0 32.326 13.174T205.5 576q0 19.152-13.174 32.326T160 621.5H80Zm720 0q-19.152 0-32.326-13.174T754.5 576q0-19.152 13.174-32.326T800 530.5h80q19.152 0 32.326 13.174T925.5 576q0 19.152-13.174 32.326T880 621.5h-80Zm-320-320q-19.152 0-32.326-13.174T434.5 256v-80q0-19.152 13.174-32.326T480 130.5q19.152 0 32.326 13.174T525.5 176v80q0 19.152-13.174 32.326T480 301.5Zm0 720q-19.152 0-32.326-13.17Q434.5 995.152 434.5 976v-80q0-19.152 13.174-32.326T480 850.5q19.152 0 32.326 13.174T525.5 896v80q0 19.152-13.174 32.33-13.174 13.17-32.326 13.17ZM222.174 382.065l-43-42Q165.5 327.391 166 308.239t13.174-33.065q13.435-13.674 32.587-13.674t32.065 13.674l42.239 43q12.674 13.435 12.555 31.706-.12 18.272-12.555 31.946-12.674 13.674-31.445 13.413-18.772-.261-32.446-13.174Zm494 494.761-42.239-43q-12.674-13.435-12.674-32.087t12.674-31.565Q686.609 756.5 705.38 757q18.772.5 32.446 13.174l43 41.761Q794.5 824.609 794 843.761t-13.174 33.065Q767.391 890.5 748.239 890.5t-32.065-13.674Zm-42-494.761Q660.5 369.391 661 350.62q.5-18.772 13.174-32.446l41.761-43Q728.609 261.5 747.761 262t33.065 13.174q13.674 13.435 13.674 32.587t-13.674 32.065l-43 42.239q-13.435 12.674-31.706 12.555-18.272-.12-31.946-12.555Zm-495 494.761Q165.5 863.391 165.5 844.239t13.674-32.065l43-42.239q13.435-12.674 32.087-12.674t31.565 12.674Q299.5 782.609 299 801.38q-.5 18.772-13.174 32.446l-41.761 43Q231.391 890.5 212.239 890t-33.065-13.174ZM480 576Z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-0 rotate-90 dark:rotate-0 dark:scale-100">
+            <path
+              d="M480 936q-151 0-255.5-104.5T120 576q0-138 90-239.5T440 218q25-3 39 18t-1 44q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q21-14 43-1.5t19 39.5q-14 138-117.5 229T480 936Zm0-80q88 0 158-48.5T740 681q-20 5-40 8t-40 3q-123 0-209.5-86.5T364 396q0-20 3-40t8-40q-78 32-126.5 102T200 576q0 116 82 198t198 82Zm-10-270Z" />
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+    <div class="flex-1"><div
+        class="container md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10"><aside id="left-sidebar"
+  class="fixed inset-y-0 left-0 md:top-14 z-50 md:z-30 bg-background md:bg-transparent transition-all duration-100 -translate-x-full md:translate-x-0 ml-0 p-6 md:p-0 md:-ml-2 md:h-[calc(100vh-3.5rem)] w-5/6 md:w-full overflow-y-auto border-r border-border md:sticky"
+  :aria-hidden="!showSidebar" :class="{ 'translate-x-0': showSidebar }">
+
+    <a href="../../index.html" class="justify-start text-sm md:!hidden bg-background">
+      <img width="16" height="16" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+        alt="Logo" />
+      <img width="16" height="16" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+        alt="Logo" /><span class="font-bold text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+    </a>
+
+    <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
+      <div class="overflow-y-auto h-full w-full relative pr-6"><div class="doc-versions">
+    <label>Version</label>
+    <div class="dropdown" x-data="{ showVersionSwitcher: false, buttonWidth: 0 }"
+        x-init="buttonWidth = $refs.button.offsetWidth">
+        <button type="button" x-ref="button" class="dropbtn "
+             @click="showVersionSwitcher = !showVersionSwitcher"
+            :class="{'active': showVersionSwitcher}" >
+            26.09
+            
+            <svg fill="currentColor" height="18px" stroke="none" viewBox="0 0 24 24" width="18px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+            
+        </button>
+        <div x-show="showVersionSwitcher" class="dropdown-content" :class="{'hidden': !showVersionSwitcher}"
+            @click.away="showVersionSwitcher = false" style="display: none;" :style="{ width: buttonWidth + 'px' }">
+            
+            
+            <a href="/docs/dev/openwrt-config-agent/user/settings.html">dev</a>
+            
+            
+            
+            
+            
+            <a href="/docs/25.10/openwrt-config-agent/user/settings.html">25.10</a>
+            
+            
+            
+            <a href="/docs/24.11/openwrt-config-agent/user/settings.html">24.11</a>
+            
+            
+        </div>
+    </div>
+</div>
+<nav class="flex flex-col font-bold md:hidden">
+    
+    <a href="https://openwisp.org/features/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Features
+    </a>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/faq/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Blog
+    </a>
+</nav>
+<nav class="table w-full min-w-full my-6 lg:my-8 mt-4">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../first-steps.html">First Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project-overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installers.html">Installers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../openwrt-agents.html">OpenWrt Agents</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">OpenWISP Config Agent</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="intro.html">OpenWISP Config: Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="automatic-registration.html">Automatic registration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hotplug-events.html">Hotplug Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compiling.html">Compiling a Custom OpenWrt Image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging.html">Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../developer/installation.html">Developer Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../openwrt-monitoring-agent/index.html">OpenWISP Monitoring Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../community.html">Community Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">Release Notes</a></li>
+</ul>
+
+</nav><div class="offline-docs">
+    <div class="heading">
+        <h6>OFFLINE DOCS</h6>
+    </div>
+    <p class="urls">
+        <a href="/docs/26.09/OpenWISP-26.09.pdf" target="_blank">
+            PDF</a>
+        |
+        <a href="/docs/26.09/OpenWISP-26.09.epub" target="_blank">
+            ePUB</a>
+    </p>
+</div>
+      </div>
+    </div>
+    <button type="button" @click="showSidebar = false"
+      class="absolute md:hidden right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" fill="currentColor"
+        stroke="none" class="h-4 w-4">
+        <path
+          d="M480 632 284 828q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536 576l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480 632Z" />
+      </svg>
+    </button>
+  </aside>
+          <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+<div class="w-full min-w-0 mx-auto">
+<nav aria-label="breadcrumbs"
+     class="flex items-center mb-4 space-x-1 text-sm text-muted-foreground">
+  <a class="overflow-hidden text-ellipsis whitespace-nowrap hover:text-foreground"
+     href="../../index.html">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         height="18"
+         width="18"
+         viewBox="0 96 960 960"
+         aria-label="Home"
+         fill="currentColor"
+         stroke="none">
+      <path d="M240 856h120V616h240v240h120V496L480 316 240 496v360Zm-80 80V456l320-240 320 240v480H520V696h-80v240H160Zm320-350Z" />
+    </svg>
+  </a>
+  
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../../openwrt-agents.html">OpenWrt Agents</a>
+    
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../index.html">OpenWISP Config Agent</a>
+    
+<div class="mr-1">/</div><span aria-current="page"
+        class="font-medium text-foreground overflow-hidden whitespace-nowrap">Settings</span>
+</nav>
+
+    <div id="content" role="main">
+      <section id="settings">
+<h1>Settings<a class="headerlink" href="#settings" title="Link to this heading"></a></h1>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title"><strong>Table of Contents</strong>:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#configuration-options" id="id1">Configuration Options</a></p></li>
+<li><p><a class="reference internal" href="#merge-configuration" id="id2">Merge Configuration</a></p></li>
+<li><p><a class="reference internal" href="#configuration-test" id="id3">Configuration Test</a></p>
+<ul>
+<li><p><a class="reference internal" href="#disable-testing" id="id4">Disable Testing</a></p></li>
+<li><p><a class="reference internal" href="#define-custom-tests" id="id5">Define Custom Tests</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#hardware-id" id="id6">Hardware ID</a></p></li>
+<li><p><a class="reference internal" href="#boot-up-delay" id="id7">Boot Up Delay</a></p></li>
+<li><p><a class="reference internal" href="#hooks" id="id8">Hooks</a></p>
+<ul>
+<li><p><a class="reference internal" href="#pre-reload-hook" id="id9"><code class="docutils literal notranslate"><span class="pre">pre-reload-hook</span></code></a></p></li>
+<li><p><a class="reference internal" href="#post-reload-hook" id="id10"><code class="docutils literal notranslate"><span class="pre">post-reload-hook</span></code></a></p></li>
+<li><p><a class="reference internal" href="#post-registration-hook" id="id11"><code class="docutils literal notranslate"><span class="pre">post-registration-hook</span></code></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#unmanaged-configurations" id="id12">Unmanaged Configurations</a></p></li>
+</ul>
+</nav>
+<section id="configuration-options">
+<span id="openwrt-config-agent-configuration-options"></span><h2><a class="toc-backref" href="#id1" role="doc-backlink">Configuration Options</a><a class="headerlink" href="#configuration-options" title="Link to this heading"></a></h2>
+<p>UCI configuration options must go in <code class="docutils literal notranslate"><span class="pre">/etc/config/openwisp</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">url</span></code>: URL of controller, e.g.: <code class="docutils literal notranslate"><span class="pre">https://demo.openwisp.io</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interval</span></code>: time in seconds between checks for changes to the
+configuration, defaults to <code class="docutils literal notranslate"><span class="pre">120</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">management_interval</span></code>: time in seconds between the management ip
+discovery attempts, defaults to <code class="docutils literal notranslate"><span class="pre">$interval/12</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">registration_interval</span></code>: time in seconds between the registration
+attempts, defaults to <code class="docutils literal notranslate"><span class="pre">$interval/4</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verify_ssl</span></code>: whether SSL verification must be performed or not,
+defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shared_secret</span></code>: shared secret, needed for
+<a class="reference internal" href="automatic-registration.html"><span class="doc">Automatic registration</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">consistent_key</span></code>: whether <a class="reference internal" href="automatic-registration.html#config-consistent-key-generation"><span class="std std-ref">Consistent Key Generation</span></a> is
+enabled or not, defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">merge_config</span></code>: whether <a class="reference internal" href="#config-merge-configuration"><span class="std std-ref">Merge Configuration</span></a> is enabled
+or not, defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code>: template tags to use during registration, multiple tags
+separated by space can be used, for more information see <a class="reference internal" href="../../controller/user/templates.html#templates-tags"><span class="std std-ref">Template
+Tags</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_config</span></code>: whether a new configuration must be tested before being
+considered applied, defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_retries</span></code>: maximum number of retries when doing the default
+configuration test, defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_script</span></code>: custom test script, read more about this feature in
+<a class="reference internal" href="#config-configuration-test"><span class="std std-ref">Configuration Test</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uuid</span></code>: unique identifier of the router configuration in the
+controller application</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: key required to download the configuration</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hardware_id_script</span></code>: custom script to read out a hardware id (e.g. a
+serial number), read more about this feature in
+<a class="reference internal" href="#config-hardware-id"><span class="std std-ref">Hardware ID</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hardware_id_key</span></code>: whether to use the hardware id for key generation
+or not, defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bootup_delay</span></code>: maximum value in seconds of a random delay after boot,
+defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code>, see <a class="reference internal" href="#config-bootup-delay"><span class="std std-ref">Boot Up Delay</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unmanaged</span></code>: list of config sections which won't be overwritten, see
+<a class="reference internal" href="#config-unmanaged-configuration"><span class="std std-ref">Unmanaged Configurations</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">capath</span></code>: value passed to curl <code class="docutils literal notranslate"><span class="pre">--capath</span></code> argument, by default is
+empty; see also <a class="reference external" href="https://curl.haxx.se/docs/manpage.html#--capath">curl capath argument</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cacert</span></code>: value passed to curl <code class="docutils literal notranslate"><span class="pre">--cacert</span></code> argument, by default is
+empty; see also <a class="reference external" href="https://curl.haxx.se/docs/manpage.html#--cacert">curl cacert argument</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connect_timeout</span></code>: value passed to curl <code class="docutils literal notranslate"><span class="pre">--connect-timeout</span></code>
+argument, defaults to <code class="docutils literal notranslate"><span class="pre">15</span></code>; see <a class="reference external" href="https://curl.haxx.se/docs/manpage.html#--connect-timeout">curl connect-timeout argument</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_time</span></code>: value passed to curl <code class="docutils literal notranslate"><span class="pre">--max-time</span></code> argument, defaults to
+<code class="docutils literal notranslate"><span class="pre">30</span></code>; see <a class="reference external" href="https://curl.haxx.se/docs/manpage.html#-m">curl max-time argument</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mac_interface</span></code>: the interface from which the MAC address is taken
+when performing automatic registration, defaults to <code class="docutils literal notranslate"><span class="pre">eth0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">management_interface</span></code>: management interface name (both openwrt UCI
+names and linux interface names are supported), it's used to collect the
+management interface ip address and send this information to the
+OpenWISP server, for more information please read <a class="reference internal" href="../../user/vpn.html"><span class="doc">how to make sure
+OpenWISP can reach your devices</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">default_hostname</span></code>: if your firmware has a custom default hostname,
+you can use this configuration option so the agent can recognize it
+during registration and replicate the standard behavior (new device will
+be named after its mac address, to avoid having many new devices with
+the same name), the possible options are to either set this to the value
+of the default hostname used by your firmware, or set it to <code class="docutils literal notranslate"><span class="pre">*</span></code> to
+always force to register new devices using their mac address as their
+name (this last option is useful if you have a firmware which can work
+on different hardware models and each model has a different default
+hostname)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pre_reload_hook</span></code>: path to custom executable script, see
+<a class="reference internal" href="#config-pre-reload-hook"><span class="std std-ref">pre-reload-hook</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post_reload_hook</span></code>: path to custom executable script, see
+<a class="reference internal" href="#config-post-reload-hook"><span class="std std-ref">post-reload-hook</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post_reload_delay</span></code>: delay in seconds to wait before the
+post-reload-hook and any configuration test, defaults to <code class="docutils literal notranslate"><span class="pre">5</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post_registration_hook</span></code>: path to custom executable script, see
+<a class="reference internal" href="#config-post-registration-hook"><span class="std std-ref">post-registration-hook</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">respawn_threshold</span></code>: time in seconds used as procd respawn threshold,
+defaults to <code class="docutils literal notranslate"><span class="pre">3600</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">respawn_timeout</span></code>: time in seconds used as procd respawn timeout,
+defaults to <code class="docutils literal notranslate"><span class="pre">5</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">respawn_retry</span></code>: number of procd respawn retries (use <code class="docutils literal notranslate"><span class="pre">0</span></code> for
+infinity), defaults to <code class="docutils literal notranslate"><span class="pre">5</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">checksum_max_retries</span></code>: maximum number of retries for checksum
+requests which fail with 404, defaults to <code class="docutils literal notranslate"><span class="pre">5</span></code>, after these failures
+the agent will assume the device has been deleted from OpenWISP
+Controller and will exit; please keep in mind that due to
+<code class="docutils literal notranslate"><span class="pre">respawn_retry</span></code>, procd will try to respawn the agent after it exits,
+so the total number of attempts which will be tried has to be calculated
+as: <code class="docutils literal notranslate"><span class="pre">checksum_max_retries</span> <span class="pre">*</span> <span class="pre">respawn_retry</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">checksum_retry_delay</span></code>: time in seconds between retries, defaults to
+<code class="docutils literal notranslate"><span class="pre">6</span></code></p></li>
+</ul>
+</section>
+<section id="merge-configuration">
+<span id="config-merge-configuration"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Merge Configuration</a><a class="headerlink" href="#merge-configuration" title="Link to this heading"></a></h2>
+<p>By default the remote configuration is merged with the local one. This has
+several advantages:</p>
+<ul class="simple">
+<li><p>less boilerplate configuration stored in the remote controller</p></li>
+<li><p>local users can change local configurations without fear of losing their
+changes</p></li>
+</ul>
+<p>It is possible to turn this feature off by setting <code class="docutils literal notranslate"><span class="pre">merge_config</span></code> to
+<code class="docutils literal notranslate"><span class="pre">0</span></code> in <code class="docutils literal notranslate"><span class="pre">/etc/config/openwisp</span></code>.</p>
+<p><strong>Details about the merging behavior</strong>:</p>
+<ul class="simple">
+<li><p>if a configuration option or list is present both in the remote
+configuration and in the local configuration, the remote configurations
+will overwrite the local ones</p></li>
+<li><p>configuration options that are present in the local configuration but
+are not present in the remote configuration will be retained</p></li>
+<li><p>configuration files that were present in the local configuration and are
+replaced by the remote configuration are backed up and eventually
+restored if the modifications are removed from the controller</p></li>
+</ul>
+</section>
+<section id="configuration-test">
+<span id="config-configuration-test"></span><h2><a class="toc-backref" href="#id3" role="doc-backlink">Configuration Test</a><a class="headerlink" href="#configuration-test" title="Link to this heading"></a></h2>
+<p>When a new configuration is downloaded, the agent will first backup the
+current running configuration, then it will try to apply the new one and
+perform a basic test, which consists in trying to contact the controller
+again;</p>
+<p>If the test succeeds, the configuration is considered applied and the
+backup is deleted.</p>
+<p>If the test fails, the backup is restored and the agent will log the
+failure via syslog (see <a class="reference internal" href="debugging.html"><span class="doc">Debugging</span></a> for more information on auditing
+logs).</p>
+<section id="disable-testing">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Disable Testing</a><a class="headerlink" href="#disable-testing" title="Link to this heading"></a></h3>
+<p>To disable this feature, set the <code class="docutils literal notranslate"><span class="pre">test_config</span></code> option to <code class="docutils literal notranslate"><span class="pre">0</span></code>, then
+reload/restart <em>openwisp-config</em>.</p>
+</section>
+<section id="define-custom-tests">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Define Custom Tests</a><a class="headerlink" href="#define-custom-tests" title="Link to this heading"></a></h3>
+<p>If the default test does not satisfy your needs, you can define your own
+tests in an <strong>executable</strong> script and indicate the path to this script in
+the <code class="docutils literal notranslate"><span class="pre">test_script</span></code> config option.</p>
+<p>If the exit code of the executable script is higher than <code class="docutils literal notranslate"><span class="pre">0</span></code> the test
+will be considered failed.</p>
+</section>
+</section>
+<section id="hardware-id">
+<span id="config-hardware-id"></span><h2><a class="toc-backref" href="#id6" role="doc-backlink">Hardware ID</a><a class="headerlink" href="#hardware-id" title="Link to this heading"></a></h2>
+<p>It is possible to use a unique hardware id for device identification, for
+example a serial number.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">hardware_id_script</span></code> contains the path to an executable script, it
+will be used to read out the hardware id from the device. The hardware id
+will then be sent to the controller when the device is registered.</p>
+<p>If the above configuration option is set then the hardware id will also be
+used for generating the device key, instead of the mac address. If you use
+a hardware id script but prefer to use the mac address for key generation
+then set <code class="docutils literal notranslate"><span class="pre">hardware_id_key</span></code> to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>See also the <a class="reference internal" href="../../controller/user/settings.html#openwisp-controller-hardware-id-enabled"><span class="std std-ref">related hardware ID settings in OpenWISP Controller</span></a>.</p>
+</section>
+<section id="boot-up-delay">
+<span id="config-bootup-delay"></span><h2><a class="toc-backref" href="#id7" role="doc-backlink">Boot Up Delay</a><a class="headerlink" href="#boot-up-delay" title="Link to this heading"></a></h2>
+<p>The option <code class="docutils literal notranslate"><span class="pre">bootup_delay</span></code> is used to delay the initialization of the
+agent for a random amount of seconds after the device boots.</p>
+<p>The value specified in this option represents the maximum value of the
+range of possible random values, the minimum value being <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>The default value of this option is 10, meaning that the initialization of
+the agent will be delayed for a random number of seconds, this random
+number being comprised between <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
+<p>This feature is used to spread the load on the OpenWISP server when a
+large amount of devices boot at the same time after a blackout.</p>
+<p>Large OpenWISP installations may want to increase this value.</p>
+</section>
+<section id="hooks">
+<span id="config-hooks"></span><h2><a class="toc-backref" href="#id8" role="doc-backlink">Hooks</a><a class="headerlink" href="#hooks" title="Link to this heading"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Hooks are deprecated in favor of <a class="reference internal" href="hotplug-events.html"><span class="doc">Hotplug events</span></a>.</p>
+</div>
+<p>Below are described the available hooks in <em>openwisp-config</em>.</p>
+<section id="pre-reload-hook">
+<span id="config-pre-reload-hook"></span><h3><a class="toc-backref" href="#id9" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">pre-reload-hook</span></code></a><a class="headerlink" href="#pre-reload-hook" title="Link to this heading"></a></h3>
+<p>Defaults to <code class="docutils literal notranslate"><span class="pre">/etc/openwisp/pre-reload-hook</span></code>; the hook is not called if
+the path does not point to an executable script file.</p>
+<p>This hook is called each time <em>openwisp-config</em> applies a configuration,
+but <strong>before services are reloaded</strong>, more precisely in these situations:</p>
+<ul class="simple">
+<li><p>after a new remote configuration is downloaded and applied</p></li>
+<li><p>after a configuration test failed (see <a class="reference internal" href="#config-configuration-test"><span class="std std-ref">Configuration Test</span></a>)
+and a previous backup is restored</p></li>
+</ul>
+<p>You can use this hook to perform custom actions before services are
+reloaded, e.g.: to perform auto-configuration with <a class="reference external" href="http://libre-mesh.org/">LibreMesh</a>.</p>
+<p>Example configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">config</span> <span class="n">controller</span> <span class="s1">'http'</span>
+</span><span id="line-2">        <span class="o">...</span>
+</span><span id="line-3">        <span class="n">option</span> <span class="n">pre_reload_hook</span> <span class="s1">'/usr/sbin/my-pre-reload-hook'</span>
+</span><span id="line-4">        <span class="o">...</span>
+</span></code></pre></div>
+</div>
+<p>Complete example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="c1"># set hook in configuration</span>
+</span><span id="line-2">uci<span class="w"> </span><span class="nb">set</span><span class="w"> </span>openwisp.http.pre_reload_hook<span class="o">=</span><span class="s1">'/usr/sbin/my-pre-reload-hook'</span>
+</span><span id="line-3">uci<span class="w"> </span>commit<span class="w"> </span>openwisp
+</span><span id="line-4"><span class="c1"># create hook script</span>
+</span><span id="line-5">cat<span class="w"> </span><span class="s">&lt;&lt;EOF &gt; /usr/sbin/my-pre-reload-hook</span>
+</span><span id="line-6"><span class="s">#!/bin/sh</span>
+</span><span id="line-7"><span class="s"># put your custom operations here</span>
+</span><span id="line-8"><span class="s">EOF</span>
+</span><span id="line-9"><span class="c1"># make script executable</span>
+</span><span id="line-10">chmod<span class="w"> </span>+x<span class="w"> </span>/usr/sbin/my-pre-reload-hook
+</span><span id="line-11"><span class="c1"># reload openwisp-config by using procd's convenient utility</span>
+</span><span id="line-12">reload_config
+</span></code></pre></div>
+</div>
+</section>
+<section id="post-reload-hook">
+<span id="config-post-reload-hook"></span><h3><a class="toc-backref" href="#id10" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">post-reload-hook</span></code></a><a class="headerlink" href="#post-reload-hook" title="Link to this heading"></a></h3>
+<p>Defaults to <code class="docutils literal notranslate"><span class="pre">/etc/openwisp/post-reload-hook</span></code>; the hook is not called if
+the path does not point to an executable script file.</p>
+<p>Same as <cite>pre_reload_hook</cite> but with the difference that this hook is called
+after the configuration services have been reloaded.</p>
+</section>
+<section id="post-registration-hook">
+<span id="config-post-registration-hook"></span><h3><a class="toc-backref" href="#id11" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">post-registration-hook</span></code></a><a class="headerlink" href="#post-registration-hook" title="Link to this heading"></a></h3>
+<p>Defaults to <code class="docutils literal notranslate"><span class="pre">/etc/openwisp/post-registration-hook</span></code>;</p>
+<p>Path to an executable script that will be called after the registration is
+completed.</p>
+</section>
+</section>
+<section id="unmanaged-configurations">
+<span id="config-unmanaged-configuration"></span><h2><a class="toc-backref" href="#id12" role="doc-backlink">Unmanaged Configurations</a><a class="headerlink" href="#unmanaged-configurations" title="Link to this heading"></a></h2>
+<p>In some cases it could be necessary to ensure that some configuration
+sections won't be overwritten by the controller.</p>
+<p>These settings are called &quot;unmanaged&quot;, in the sense that they are not
+managed remotely. In the default configuration of <em>openwisp-config</em> there
+are no unmanaged settings.</p>
+<p>Example unmanaged settings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">config</span> <span class="n">controller</span> <span class="s1">'http'</span>
+</span><span id="line-2">        <span class="o">...</span>
+</span><span id="line-3">        <span class="nb">list</span> <span class="n">unmanaged</span> <span class="s1">'system.@led'</span>
+</span><span id="line-4">        <span class="nb">list</span> <span class="n">unmanaged</span> <span class="s1">'network.loopback'</span>
+</span><span id="line-5">        <span class="nb">list</span> <span class="n">unmanaged</span> <span class="s1">'network.@switch'</span>
+</span><span id="line-6">        <span class="nb">list</span> <span class="n">unmanaged</span> <span class="s1">'network.@switch_vlan'</span>
+</span><span id="line-7">        <span class="o">...</span>
+</span></code></pre></div>
+</div>
+<p>Note the lines with the <cite>&#64;</cite> sign; this syntax means any UCI section of the
+specified type will be unmanaged.</p>
+<p>In the previous example, the loopback interface, all <code class="docutils literal notranslate"><span class="pre">led</span> <span class="pre">settings</span></code>, all
+<code class="docutils literal notranslate"><span class="pre">switch</span></code> and <code class="docutils literal notranslate"><span class="pre">switch_vlan</span></code> directives will never be overwritten by the
+remote configuration and will only be editable via SSH or via the web
+interface.</p>
+</section>
+</section>
+
+    </div><div class="flex justify-between items-center pt-6 mt-12 border-t border-border gap-4">
+    <div class="mr-auto">
+      <a href="quickstart.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="mr-2 h-4 w-4">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Quick Start Guide
+      </a>
+    </div>
+    <div class="ml-auto">
+      <a href="automatic-registration.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        Automatic registration
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="ml-2 h-4 w-4">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+</div></div><aside id="right-sidebar" class="hidden text-sm xl:block">
+  <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
+    <ul>
+<li><a class="reference internal" href="#configuration-options">Configuration Options</a></li>
+<li><a class="reference internal" href="#merge-configuration">Merge Configuration</a></li>
+<li><a class="reference internal" href="#configuration-test">Configuration Test</a><ul>
+<li><a class="reference internal" href="#disable-testing">Disable Testing</a></li>
+<li><a class="reference internal" href="#define-custom-tests">Define Custom Tests</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hardware-id">Hardware ID</a></li>
+<li><a class="reference internal" href="#boot-up-delay">Boot Up Delay</a></li>
+<li><a class="reference internal" href="#hooks">Hooks</a><ul>
+<li><a class="reference internal" href="#pre-reload-hook"><code class="docutils literal notranslate"><span class="pre">pre-reload-hook</span></code></a></li>
+<li><a class="reference internal" href="#post-reload-hook"><code class="docutils literal notranslate"><span class="pre">post-reload-hook</span></code></a></li>
+<li><a class="reference internal" href="#post-registration-hook"><code class="docutils literal notranslate"><span class="pre">post-registration-hook</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#unmanaged-configurations">Unmanaged Configurations</a></li>
+</ul>
+</div>
+</aside>
+          </main>
+        </div>
+      </div><footer class="py-6 border-t border-border md:py-0">
+    <div class="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+      <div class="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-6 md:px-0">
+        <a href="../../index.html">
+            <img src="../../_static/openwisp-logo.svg" alt="OpenWISP" width="125" height="72" class="hidden dark:block" />
+            <img src="../../_static/openwisp-logo-black.svg" alt="OpenWISP" width="125" height="72" class="dark:hidden" /></a>
+        <p class="text-sm leading-loose text-right text-muted-foreground md:text-center">© 2008-2026, OpenWISP&nbsp;</p>
+      </div>
+    </div>
+</footer>
+    </div><button id="scrolltop"
+        x-cloak
+        @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="fixed bottom-8 right-8 p-2 z-10 rounded-sm bg-gray-700 text-xs text-white transition-all duration-1000 hover:bg-gray-950 focus:bg-gray-950"
+        :class="{'opacity-0 invisible' : !showScrollTop}"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       height="14"
+       viewBox="0 96 960 960"
+       width="14"
+       class="inline fill-current mb-[2px]"
+       aria-hidden="true">
+    <path d="M450 896V370L202 618l-42-42 320-320 320 320-42 42-248-248v526h-60Z" />
+  </svg>
+  Back to top
+</button>
+    
+
+    <script src="../../_static/documentation_options.js?v=c6950507"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="../../_static/theme.js?v=5db23cf8"></script>
+    
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.openwisp.io/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '7']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript>
+  <p>
+    <img referrerpolicy="no-referrer-when-downgrade" src="//analytics.openwisp.io/matomo.php?idsite=7&amp;rec=1" style="border:0;" alt="" />
+  </p>
+</noscript>
+<!-- End Matomo Code -->
+
+<div id="lightbox" class="lightbox">
+  <span class="close">&times;</span>
+</div>
+<script src="../../_static/lightbox.js"></script>
+
+</body>
+
+</html>

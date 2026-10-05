@@ -21,6 +21,7 @@
 - [2026-09-11 — portal-FQDN regression: two separate incidents, one still live on 2 sites](#2026-09-11--portal-fqdn-regression-two-separate-incidents-one-still-live-on-2-sites)
 - [2026-09-24 — neighbour table: mornington hits the 1024 hard cap (2,230 table-fulls); proposed `gc_thresh` standard (PROPOSAL, not applied)](#2026-09-24--neighbour-table-mornington-hits-the-1024-hard-cap-2230-table-fulls-proposed-gc_thresh-standard-proposal-not-applied)
 - [2026-09-30 — `bot-cw-dashboard` restarts netfilter-persistent on koonibba and amata, wiping every device's access mark (OPEN, owner outside this repo)](#2026-09-30--bot-cw-dashboard-restarts-netfilter-persistent-on-koonibba-and-amata-wiping-every-devices-access-mark-open-owner-outside-this-repo)
+- [2026-10-05 — cnMaestro shows Wi-Fi clients as 0.0.0.0: SMC DHCP is healthy, the gap is on the AP/controller side (OPEN)](#2026-10-05--cnmaestro-shows-wi-fi-clients-as-0000-smc-dhcp-is-healthy-the-gap-is-on-the-apcontroller-side-open)
 
 ---
 
@@ -996,3 +997,19 @@ Two gotchas from the check:
 - `new-looma-smc01` is in the inventory but has no `flavor=rcp` label and was unreachable on Teleport.
 
 The AP-ping monitoring path of both bots is recorded in skill-cambium `references/05_known-issues.md` (2026-09-30).
+
+## 2026-10-05 — cnMaestro shows Wi-Fi clients as 0.0.0.0: SMC DHCP is healthy, the gap is on the AP/controller side (OPEN)
+
+Operator report (kalumburu screenshot): cnMaestro's Wireless Clients list shows IPv4 `0.0.0.0` for every client; IPs showed before (operator). Box
+layer checked read-only on 2026-10-05:
+
+- **DHCP is not the fault.** kalumburu-smc01: all 8 screenshot MACs hold a lease in `10.0.0.0/18` on `bridge_501`, 6 REACHABLE or STALE in ARP; last
+  hour 239 ACK, 0 NAK. Ten sites (kalumburu, burringurrah, jigalong, mowanjum, tjuntjuntjara, horn-island, hope-vale, galiwinku, pukatja, kowanyama):
+  0 NAK and 0 "no free leases". kalumburu `/etc/dhcp/dhcpd.conf` dated 2026-02-13; R195P TFTP configs in `/var/lib/tftpboot` dated 2026-09-02.
+- **`unexpected ICMP Echo Reply from 10.255.3.110` is benign.** dhcpd's raw ICMP socket sees echo replies meant for other processes on the box
+  (for example `bot-apn-dashboard`'s `ping -c 1 <AP>`) and logs any it did not send. 10.255.3.110 is an E500 on `bridge_500`.
+- **Unexplained:** kalumburu `isc-dhcp-server` restarted at 2026-10-05 14:54:19 AEDT (`ActiveEnterTimestamp`), not by this session.
+- **For a client's IP, use the SMC lease** (`dhcpd.leases`), not cnMaestro.
+
+The AP-side cause (R195P `device-agent` reports no client IP since the move to apn-cnmaestro01, lead suspect) and the sweep tool
+`client-ip-sweep.sh` are in skill-cambium `references/05_known-issues.md` (2026-10-05).

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en" data-content_root="../../"
+  x-data="{ darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches), activeSection: ''}"
+  :class="{ 'dark' : darkMode === true }">
+
+<head>
+  <script>
+    (function () {
+      // Set initial color scheme
+      if ((localStorage.getItem("_x_darkMode") === "true") || (window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      }
+
+      // Watch for media preference changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+        localStorage.setItem("_x_darkMode", event.matches);
+        document.documentElement.classList.toggle("dark", event.matches);
+      });
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030711" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Configuration Templates | OpenWISP 26.09 documentation</title>
+  <meta property="og:title" content="Configuration Templates | OpenWISP 26.09 documentation" />
+  <meta name="twitter:title" content="Configuration Templates | OpenWISP 26.09 documentation" />
+  <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e48b8583" />
+  <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../_static/pygments_dark.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/theme.css?v=d6d7c91b" />
+  <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=d3e37945" />
+  <link rel="icon" href="../../_static/favicon.svg" />
+
+  <link rel="search" title="Search" href="../../search.html" />
+  <link rel="next" title="Configuration Variables" href="variables.html" />
+  <link rel="prev" title="Device Configuration Status" href="device-config-status.html" />
+<meta property="og:image" content="https://openwisp.io/docs/26.09/_static/docs-og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="480" />
+
+<link rel="canonical" href="https://openwisp.io/docs/stable/controller/user/templates.html" />
+
+
+</head>
+
+<body x-data="{ showSidebar: false, showScrollTop: false }"
+  class="min-h-screen font-sans antialiased bg-background text-foreground" :class="{ 'overflow-hidden': showSidebar }"@scroll.window="showScrollTop = pageYOffset > 100">
+  <div x-cloak x-show="showSidebar"
+    class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden"
+    @click.self="showSidebar = false"></div><div id="page" class="relative flex flex-col min-h-screen"><a href="#content"
+      class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100">
+      Skip to content
+    </a><header class="sticky top-0 z-40 w-full border-b shadow-xs border-border bg-background/90 backdrop-blur"><div class="container flex items-center h-14">
+    <div class="hidden mr-4 md:flex">
+      <a href="../../index.html" class="flex items-center mr-6">
+        <img width="24" height="24" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+          alt="Logo" />
+        <img width="24" height="24" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+          alt="Logo" /><span class="hidden font-bold sm:inline-block text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+      </a><nav class="flex items-center space-x-6 text-sm font-medium">
+    
+    <a href="https://openwisp.org/features/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Features</a>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/faq/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" @focusin="open = true" @focusout="open = false" @mouseenter="open = true"
+        @mouseleave="open = false" class="relative navigation-link">
+        <a href="#" class="py-2 transition-colors hover:text-foreground/80 focus:outline-none" tabindex="0"
+            aria-haspopup="true" :aria-expanded="open.toString()">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg" class="rotate-90 inline">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute bg-background mt-2 z-10 transition navigation-dropdown"
+            style="display: none;">
+            <a href="https://openwisp.org/support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/" class="block px-4 py-2 text-sm transition-colors text-foreground/60" tabindex="0"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="py-2 transition-colors hover:text-foreground/80 text-foreground/60"
+        rel="nofollow noopener">Blog</a>
+</nav></div><button
+      class="inline-flex items-center justify-center h-10 px-0 py-2 mr-2 text-base font-medium transition-colors rounded-md hover:text-accent-foreground hover:bg-transparent md:hidden"
+      type="button" @click="showSidebar = true">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" aria-hidden="true"
+        fill="currentColor">
+        <path
+          d="M152.587 825.087q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440Zm0-203.587q-19.152 0-32.326-13.174T107.087 576q0-19.152 13.174-32.326t32.326-13.174h320q19.152 0 32.326 13.174T518.087 576q0 19.152-13.174 32.326T472.587 621.5h-320Zm0-203.587q-19.152 0-32.326-13.174t-13.174-32.326q0-19.152 13.174-32.326t32.326-13.174h440q19.152 0 32.326 13.174t13.174 32.326q0 19.152-13.174 32.326t-32.326 13.174h-440ZM708.913 576l112.174 112.174q12.674 12.674 12.674 31.826t-12.674 31.826Q808.413 764.5 789.261 764.5t-31.826-12.674l-144-144Q600 594.391 600 576t13.435-31.826l144-144q12.674-12.674 31.826-12.674t31.826 12.674q12.674 12.674 12.674 31.826t-12.674 31.826L708.913 576Z" />
+      </svg>
+      <span class="sr-only">Toggle navigation menu</span>
+    </button>
+    <div class="flex items-center justify-between flex-1 gap-2 sm:gap-4 md:justify-end">
+      <div class="flex-1 w-full md:w-auto md:flex-none"><form id="searchbox"
+      action="../../search.html"
+      method="get"
+      class="relative flex items-center group"
+      @keydown.k.window.meta="$refs.search.focus()">
+  <input x-ref="search"
+          name="q"
+          id="search-input"
+          type="search"
+          aria-label="Search the docs"
+          placeholder="Search ..."
+          class="inline-flex items-center font-medium transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background border border-input hover:bg-accent focus:bg-accent hover:text-accent-foreground focus:text-accent-foreground hover:placeholder-accent-foreground py-2 px-4 relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64" />
+  <kbd class="pointer-events-none absolute right-1.5 top-2 hidden h-5 select-none text-muted-foreground items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex group-hover:bg-accent group-hover:text-accent-foreground">
+    <span class="text-xs">⌘</span>
+    K
+  </kbd>
+</form>
+      </div>
+      <nav class="flex items-center gap-1">
+        <button @click="darkMode = !darkMode"
+          class="relative inline-flex items-center justify-center px-0 text-sm font-medium transition-colors rounded-md hover:bg-accent hover:text-accent-foreground h-9 w-9"
+          type="button"
+          title="Toggle color scheme">
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-100 rotate-0 dark:-rotate-90 dark:scale-0">
+            <path
+              d="M480 685q45.456 0 77.228-31.772Q589 621.456 589 576q0-45.456-31.772-77.228Q525.456 467 480 467q-45.456 0-77.228 31.772Q371 530.544 371 576q0 45.456 31.772 77.228Q434.544 685 480 685Zm0 91q-83 0-141.5-58.5T280 576q0-83 58.5-141.5T480 376q83 0 141.5 58.5T680 576q0 83-58.5 141.5T480 776ZM80 621.5q-19.152 0-32.326-13.174T34.5 576q0-19.152 13.174-32.326T80 530.5h80q19.152 0 32.326 13.174T205.5 576q0 19.152-13.174 32.326T160 621.5H80Zm720 0q-19.152 0-32.326-13.174T754.5 576q0-19.152 13.174-32.326T800 530.5h80q19.152 0 32.326 13.174T925.5 576q0 19.152-13.174 32.326T880 621.5h-80Zm-320-320q-19.152 0-32.326-13.174T434.5 256v-80q0-19.152 13.174-32.326T480 130.5q19.152 0 32.326 13.174T525.5 176v80q0 19.152-13.174 32.326T480 301.5Zm0 720q-19.152 0-32.326-13.17Q434.5 995.152 434.5 976v-80q0-19.152 13.174-32.326T480 850.5q19.152 0 32.326 13.174T525.5 896v80q0 19.152-13.174 32.33-13.174 13.17-32.326 13.17ZM222.174 382.065l-43-42Q165.5 327.391 166 308.239t13.174-33.065q13.435-13.674 32.587-13.674t32.065 13.674l42.239 43q12.674 13.435 12.555 31.706-.12 18.272-12.555 31.946-12.674 13.674-31.445 13.413-18.772-.261-32.446-13.174Zm494 494.761-42.239-43q-12.674-13.435-12.674-32.087t12.674-31.565Q686.609 756.5 705.38 757q18.772.5 32.446 13.174l43 41.761Q794.5 824.609 794 843.761t-13.174 33.065Q767.391 890.5 748.239 890.5t-32.065-13.674Zm-42-494.761Q660.5 369.391 661 350.62q.5-18.772 13.174-32.446l41.761-43Q728.609 261.5 747.761 262t33.065 13.174q13.674 13.435 13.674 32.587t-13.674 32.065l-43 42.239q-13.435 12.674-31.706 12.555-18.272-.12-31.946-12.555Zm-495 494.761Q165.5 863.391 165.5 844.239t13.674-32.065l43-42.239q13.435-12.674 32.087-12.674t31.565 12.674Q299.5 782.609 299 801.38q-.5 18.772-13.174 32.446l-41.761 43Q231.391 890.5 212.239 890t-33.065-13.174ZM480 576Z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 96 960 960" fill="currentColor"
+            class="absolute transition-all scale-0 rotate-90 dark:rotate-0 dark:scale-100">
+            <path
+              d="M480 936q-151 0-255.5-104.5T120 576q0-138 90-239.5T440 218q25-3 39 18t-1 44q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q21-14 43-1.5t19 39.5q-14 138-117.5 229T480 936Zm0-80q88 0 158-48.5T740 681q-20 5-40 8t-40 3q-123 0-209.5-86.5T364 396q0-20 3-40t8-40q-78 32-126.5 102T200 576q0 116 82 198t198 82Zm-10-270Z" />
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+    <div class="flex-1"><div
+        class="container md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10"><aside id="left-sidebar"
+  class="fixed inset-y-0 left-0 md:top-14 z-50 md:z-30 bg-background md:bg-transparent transition-all duration-100 -translate-x-full md:translate-x-0 ml-0 p-6 md:p-0 md:-ml-2 md:h-[calc(100vh-3.5rem)] w-5/6 md:w-full overflow-y-auto border-r border-border md:sticky"
+  :aria-hidden="!showSidebar" :class="{ 'translate-x-0': showSidebar }">
+
+    <a href="../../index.html" class="justify-start text-sm md:!hidden bg-background">
+      <img width="16" height="16" class="mr-2 hidden dark:block" src="../../_static/openwisp-logo.svg"
+        alt="Logo" />
+      <img width="16" height="16" class="mr-2 dark:hidden" src="../../_static/openwisp-logo-black.svg"
+        alt="Logo" /><span class="font-bold text-clip whitespace-nowrap">OpenWISP 26.09 documentation</span>
+    </a>
+
+    <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
+      <div class="overflow-y-auto h-full w-full relative pr-6"><div class="doc-versions">
+    <label>Version</label>
+    <div class="dropdown" x-data="{ showVersionSwitcher: false, buttonWidth: 0 }"
+        x-init="buttonWidth = $refs.button.offsetWidth">
+        <button type="button" x-ref="button" class="dropbtn "
+             @click="showVersionSwitcher = !showVersionSwitcher"
+            :class="{'active': showVersionSwitcher}" >
+            26.09
+            
+            <svg fill="currentColor" height="18px" stroke="none" viewBox="0 0 24 24" width="18px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+            
+        </button>
+        <div x-show="showVersionSwitcher" class="dropdown-content" :class="{'hidden': !showVersionSwitcher}"
+            @click.away="showVersionSwitcher = false" style="display: none;" :style="{ width: buttonWidth + 'px' }">
+            
+            
+            <a href="/docs/dev/controller/user/templates.html">dev</a>
+            
+            
+            
+            
+            
+            <a href="/docs/25.10/controller/user/templates.html">25.10</a>
+            
+            
+            
+            <a href="/docs/24.11/controller/user/templates.html">24.11</a>
+            
+            
+        </div>
+    </div>
+</div>
+<nav class="flex flex-col font-bold md:hidden">
+    
+    <a href="https://openwisp.org/features/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Features
+    </a>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            About
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/faq/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                FAQ
+            </a>
+            <a href="https://openwisp.org/code/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Source Code
+            </a>
+            <a href="https://openwisp.org/history/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                History
+            </a>
+            <a href="https://openwisp.org/team/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Team
+            </a>
+            <a href="https://openwisp.org/partners/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Partners
+            </a>
+            <a href="https://openwisp.org/sponsorship/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Sponsorship
+            </a>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" class="flex flex-col">
+        <a @click="open = !open" @focus="open = true" @blur="open = false"
+            class="flex items-center justify-between px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800 w-full focus:outline-none"
+            :aria-expanded="open.toString()" aria-haspopup="true">
+            Support
+            <svg fill="currentColor" height="24px" stroke="none" viewBox="0 0 24 24" width="24px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+            </svg>
+        </a>
+        <div x-show="open" x-transition class="flex flex-col pl-6 mt-2 space-y-1">
+            <a href="https://openwisp.org/support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Community Support
+            </a>
+            <a href="https://openwisp.org/commercial-support/"
+                class="block ml-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 text-gray-700"
+                rel="nofollow noopener">
+                Commercial Support
+            </a>
+        </div>
+    </div>
+    
+    <a href="https://openwisp.org/blog/" class="block px-4 py-2 transition-colors hover:bg-gray-100 text-gray-800"
+        rel="nofollow noopener">
+        Blog
+    </a>
+</nav>
+<nav class="table w-full min-w-full my-6 lg:my-8 mt-4">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../first-steps.html">First Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project-overview.html">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installers.html">Installers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../users/index.html">Users</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Controller</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="intro.html">Controller: Structure &amp; Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device-config-status.html">Device Configuration Status</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Configuration Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="variables.html">Configuration Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device-groups.html">Device Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="push-operations.html">Configuring Push Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shell-commands.html">Sending Commands to Devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="import-export.html">Import/Export Device Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="organization-limits.html">Organization Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wireguard.html">Automating WireGuard Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vxlan-wireguard.html">Automating VXLAN over WireGuard Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zerotier.html">Automating ZeroTier Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openvpn.html">Automating OpenVPN Tunnels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whois.html">WHOIS Lookup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="estimated-location.html">Estimated Location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="subnet-division-rules.html">Automating Subnet and IP Address Provisioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rest-api.html">REST API Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="websocket-api.html">WebSocket API Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../developer/index.html">Developer Docs Index</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../monitoring/index.html">Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../network-topology/index.html">Network Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../firmware-upgrader/index.html">Firmware Upgrader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../radius/index.html">RADIUS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../wifi-login-pages/index.html">WiFi Login Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ipam/index.html">IPAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notifications/index.html">Notifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../openwrt-agents.html">OpenWrt Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../community.html">Community Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">Release Notes</a></li>
+</ul>
+
+</nav><div class="offline-docs">
+    <div class="heading">
+        <h6>OFFLINE DOCS</h6>
+    </div>
+    <p class="urls">
+        <a href="/docs/26.09/OpenWISP-26.09.pdf" target="_blank">
+            PDF</a>
+        |
+        <a href="/docs/26.09/OpenWISP-26.09.epub" target="_blank">
+            ePUB</a>
+    </p>
+</div>
+      </div>
+    </div>
+    <button type="button" @click="showSidebar = false"
+      class="absolute md:hidden right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 96 960 960" fill="currentColor"
+        stroke="none" class="h-4 w-4">
+        <path
+          d="M480 632 284 828q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536 576l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480 632Z" />
+      </svg>
+    </button>
+  </aside>
+          <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+<div class="w-full min-w-0 mx-auto">
+<nav aria-label="breadcrumbs"
+     class="flex items-center mb-4 space-x-1 text-sm text-muted-foreground">
+  <a class="overflow-hidden text-ellipsis whitespace-nowrap hover:text-foreground"
+     href="../../index.html">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         height="18"
+         width="18"
+         viewBox="0 96 960 960"
+         aria-label="Home"
+         fill="currentColor"
+         stroke="none">
+      <path d="M240 856h120V616h240v240h120V496L480 316 240 496v360Zm-80 80V456l320-240 320 240v480H520V696h-80v240H160Zm320-350Z" />
+    </svg>
+  </a>
+  
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../../modules.html">Modules</a>
+    
+<div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden whitespace-nowrap"
+       href="../index.html">Controller</a>
+    
+<div class="mr-1">/</div><span aria-current="page"
+        class="font-medium text-foreground overflow-hidden whitespace-nowrap">Configuration Templates</span>
+</nav>
+
+    <div id="content" role="main">
+      <section id="configuration-templates">
+<h1>Configuration Templates<a class="headerlink" href="#configuration-templates" title="Link to this heading"></a></h1>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title"><strong>Table of Contents</strong>:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#what-is-a-template" id="id3">What is a Template?</a></p></li>
+<li><p><a class="reference internal" href="#template-ordering-and-override" id="id4">Template Ordering and Override</a></p></li>
+<li><p><a class="reference internal" href="#shared-templates-vs-organization-specific" id="id5">Shared Templates vs Organization Specific</a></p></li>
+<li><p><a class="reference internal" href="#default-templates" id="id6">Default Templates</a></p></li>
+<li><p><a class="reference internal" href="#required-templates" id="id7">Required Templates</a></p></li>
+<li><p><a class="reference internal" href="#device-group-templates" id="id8">Device Group Templates</a></p></li>
+<li><p><a class="reference internal" href="#template-tags" id="id9">Template Tags</a></p></li>
+<li><p><a class="reference internal" href="#implementation-details-of-templates" id="id10">Implementation Details of Templates</a></p></li>
+</ul>
+</nav>
+<section id="what-is-a-template">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">What is a Template?</a><a class="headerlink" href="#what-is-a-template" title="Link to this heading"></a></h2>
+<p>Templates are designed to store configuration that can be reused by some
+or all the devices in the system.</p>
+<p>Updating the configuration stored in a template allows to update the
+configuration of all the devices that have that template assigned.</p>
+<p>This means that configuration can be defined only once for multiple
+devices, and if the need to update a specific piece of configuration
+arises, it can be easily achieved by updating the template.</p>
+</section>
+<section id="template-ordering-and-override">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Template Ordering and Override</a><a class="headerlink" href="#template-ordering-and-override" title="Link to this heading"></a></h2>
+<p>A device can use multiple templates, <strong>the order in which templates are
+assigned to each device matters</strong>: templates assigned last can override
+templates assigned earlier, the order can be changed by drag and dropping
+the template in the device configuration page as in the animated
+screenshot below.</p>
+<a class="reference external image-reference" href="../../_images/template-ordering.gif"><img alt="Template ordering: drag and drop to change order" class="align-center" src="../../_images/template-ordering.gif" />
+</a>
+<p>The device configuration can also override what is defined in templates.</p>
+<p>Overriding means redefining a specific configuration section in a way that
+overwrites the template.</p>
+<p><strong>Overriding involves some form of duplication of information, which is
+not great, it should be used as a last resort</strong>. The recommended way to
+define parts of the configuration that are specific for each device is to
+use <a class="reference internal" href="variables.html"><span class="doc">Configuration variables</span></a>.</p>
+</section>
+<section id="shared-templates-vs-organization-specific">
+<span id="controller-shared-vs-org"></span><h2><a class="toc-backref" href="#id5" role="doc-backlink">Shared Templates vs Organization Specific</a><a class="headerlink" href="#shared-templates-vs-organization-specific" title="Link to this heading"></a></h2>
+<p>Templates can be <em>organization specific</em> or <em>shared</em> (no organization
+specified).</p>
+<a class="reference external image-reference" href="../../_images/organization-specific-vs-shared.gif"><img alt="Shared templates vs organization specific" class="align-center" src="../../_images/organization-specific-vs-shared.gif" />
+</a>
+<p><strong>Organization specific templates</strong> will be available and usable only
+within the same organization which they are assigned to.</p>
+<p>If no organization is specified when creating a template, a shared
+template will be created, <strong>shared templates are available to any
+organization in the system</strong>.</p>
+<p>Here are a few typical use cases of shared templates:</p>
+<ul class="simple">
+<li><p>Management VPN</p></li>
+<li><p>Authorized SSH keys belonging to network administrators</p></li>
+<li><p>Crontab with generic periodic management operations</p></li>
+</ul>
+</section>
+<section id="default-templates">
+<span id="id1"></span><h2><a class="toc-backref" href="#id6" role="doc-backlink">Default Templates</a><a class="headerlink" href="#default-templates" title="Link to this heading"></a></h2>
+<a class="reference external image-reference" href="../../_images/default-templates.gif"><img alt="Templates enabled by default" class="align-center" src="../../_images/default-templates.gif" />
+</a>
+<p>When templates are flagged as <strong>&quot;Enabled by default&quot;</strong>, they will be
+automatically assigned to all devices, <strong>this includes existing devices</strong>.</p>
+<p>This is a very powerful feature: <strong>once default templates are correctly
+configured to implement the use case you need, you will only have to
+register a device into OpenWISP for it to auto-configure itself</strong>.</p>
+<p>Moreover, you can change the default templates any time you need, which is
+the reason this feature has replaced the practice of storing default
+configuration in firmware images (which would need to be recompiled and
+redistributed): with default templates, the default firmware image only
+needs to contain the bare minimum configuration to connect to OpenWISP,
+once the device connects to OpenWISP it will download and apply the
+default templates without the need of manual intervention from the network
+operators.</p>
+<p>An organization specific template flagged as default will be automatically
+assigned to all current and future devices in the same organization.</p>
+<p>A shared default template instead will be automatically assigned to all
+existing and new devices in the system, regardless of organization.</p>
+</section>
+<section id="required-templates">
+<span id="id2"></span><h2><a class="toc-backref" href="#id7" role="doc-backlink">Required Templates</a><a class="headerlink" href="#required-templates" title="Link to this heading"></a></h2>
+<a class="reference external image-reference" href="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/required-templates.png"><img alt="Required template example" src="https://raw.githubusercontent.com/openwisp/openwisp-controller/docs/docs/required-templates.png" />
+</a>
+<p>Required templates are similar to <a class="reference internal" href="#default-templates"><span class="std std-ref">Default Templates</span></a> but cannot be
+unassigned from a device configuration, they can only be overridden.</p>
+<p>They will be always assigned earlier than default templates, so they can
+be overridden if needed.</p>
+<p>In the example above, the &quot;SSID&quot; template is flagged as &quot;(required)&quot; and
+its checkbox is always checked and disabled.</p>
+</section>
+<section id="device-group-templates">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Device Group Templates</a><a class="headerlink" href="#device-group-templates" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="#default-templates"><span class="std std-ref">Default Templates</span></a> are an incredibly useful tool, but they're
+limited: <strong>only one set of default templates can be created</strong> per each
+organization.</p>
+<p>With <a class="reference internal" href="device-groups.html#device-group-templates"><span class="std std-ref">Group Templates</span></a> it is possible to specify a set of
+default templates for each device group.</p>
+</section>
+<section id="template-tags">
+<span id="templates-tags"></span><h2><a class="toc-backref" href="#id9" role="doc-backlink">Template Tags</a><a class="headerlink" href="#template-tags" title="Link to this heading"></a></h2>
+<a class="reference external image-reference" href="../../_images/template-tags.gif"><img alt="Template tags" class="align-center" src="../../_images/template-tags.gif" />
+</a>
+<p>In some cases, you may have multiple set of default settings to use, let's
+explain this with a practical example: you may have 2 different device
+types in your network:</p>
+<ul class="simple">
+<li><p>Mesh routers: they connect to one another, forming a wireless mesh
+network</p></li>
+<li><p>Dumb access points: they connect to the mesh routers on the LAN port and
+offer internet access which is routed via the mesh network by the
+routers</p></li>
+</ul>
+<p>In this example case, the default configuration to use in each device type
+can greatly differ.</p>
+<p>In such a setup, default templates would only contain configuration which
+is common to both device types, while configuration which is specific for
+each type would be stored in specific templates which are then tagged with
+specific keywords:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mesh</span></code>: tag to use for mesh configuration</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dumb-ap</span></code>: tag to use for dumb AP configuration</p></li>
+</ul>
+<p>The <a class="reference internal" href="../../openwrt-config-agent/user/settings.html#openwrt-config-agent-configuration-options"><span class="std std-ref">openwisp-config</span></a>
+configuration of each device type must specify the correct tag before each
+device registers in the system.</p>
+<p>Here's the sample <code class="docutils literal notranslate"><span class="pre">/etc/config/openwisp</span></code> configuration for mesh devices:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="na">config controller 'http'</span>
+</span><span id="line-2"><span class="w">    </span><span class="na">option url 'https</span><span class="o">:</span><span class="s">//openwisp2.mynetwork.com'</span>
+</span><span id="line-3"><span class="w">    </span><span class="na">option shared_secret 'mySharedSecret123'</span>
+</span><span id="line-4"><span class="w">    </span><span class="na">option tags 'mesh'</span>
+</span></code></pre></div>
+</div>
+<p>Once devices with the above configuration will register into the system,
+any template tagged as <code class="docutils literal notranslate"><span class="pre">mesh</span></code> (as in the screenshot below) will be
+assigned to them.</p>
+<a class="reference external image-reference" href="../../_images/mesh-template-tag.png"><img alt="Template tags: mesh example" class="align-center" src="../../_images/mesh-template-tag.png" />
+</a>
+<p>The sample <code class="docutils literal notranslate"><span class="pre">/etc/config/openwisp</span></code> configuration for dumb access points
+is the following:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="na">config controller 'http'</span>
+</span><span id="line-2"><span class="w">    </span><span class="na">option url 'https</span><span class="o">:</span><span class="s">//openwisp2.mynetwork.com'</span>
+</span><span id="line-3"><span class="w">    </span><span class="na">option shared_secret 'mySharedSecret123'</span>
+</span><span id="line-4"><span class="w">    </span><span class="na">option tags 'dumb-ap'</span>
+</span></code></pre></div>
+</div>
+<p>Once devices with the above configuration will register into the system,
+any template tagged as <code class="docutils literal notranslate"><span class="pre">dumb-ap</span></code> (as in the screenshot below) will be
+assigned to them.</p>
+<a class="reference external image-reference" href="../../_images/dumb-ap-template-tag.png"><img alt="Template tags: dumb AP example" class="align-center" src="../../_images/dumb-ap-template-tag.png" />
+</a>
+</section>
+<section id="implementation-details-of-templates">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Implementation Details of Templates</a><a class="headerlink" href="#implementation-details-of-templates" title="Link to this heading"></a></h2>
+<p>Templates are implemented under the hood by the OpenWISP configuration
+engine: netjsonconfig.</p>
+<p>For more advanced technical information about templates, consult the
+netjsonconfig documentation: <a class="reference external" href="https://netjsonconfig.openwisp.org/en/latest/general/basics.html#template">Basic Concepts, Template</a>.</p>
+</section>
+</section>
+
+    </div><div class="flex justify-between items-center pt-6 mt-12 border-t border-border gap-4">
+    <div class="mr-auto">
+      <a href="device-config-status.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="mr-2 h-4 w-4">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Device Configuration Status
+      </a>
+    </div>
+    <div class="ml-auto">
+      <a href="variables.html"
+         class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input hover:bg-accent hover:text-accent-foreground py-2 px-4">
+        Configuration Variables
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             class="ml-2 h-4 w-4">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+</div></div><aside id="right-sidebar" class="hidden text-sm xl:block">
+  <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
+    <ul>
+<li><a class="reference internal" href="#what-is-a-template">What is a Template?</a></li>
+<li><a class="reference internal" href="#template-ordering-and-override">Template Ordering and Override</a></li>
+<li><a class="reference internal" href="#shared-templates-vs-organization-specific">Shared Templates vs Organization Specific</a></li>
+<li><a class="reference internal" href="#default-templates">Default Templates</a></li>
+<li><a class="reference internal" href="#required-templates">Required Templates</a></li>
+<li><a class="reference internal" href="#device-group-templates">Device Group Templates</a></li>
+<li><a class="reference internal" href="#template-tags">Template Tags</a></li>
+<li><a class="reference internal" href="#implementation-details-of-templates">Implementation Details of Templates</a></li>
+</ul>
+</div>
+</aside>
+          </main>
+        </div>
+      </div><footer class="py-6 border-t border-border md:py-0">
+    <div class="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+      <div class="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-6 md:px-0">
+        <a href="../../index.html">
+            <img src="../../_static/openwisp-logo.svg" alt="OpenWISP" width="125" height="72" class="hidden dark:block" />
+            <img src="../../_static/openwisp-logo-black.svg" alt="OpenWISP" width="125" height="72" class="dark:hidden" /></a>
+        <p class="text-sm leading-loose text-right text-muted-foreground md:text-center">© 2008-2026, OpenWISP&nbsp;</p>
+      </div>
+    </div>
+</footer>
+    </div><button id="scrolltop"
+        x-cloak
+        @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="fixed bottom-8 right-8 p-2 z-10 rounded-sm bg-gray-700 text-xs text-white transition-all duration-1000 hover:bg-gray-950 focus:bg-gray-950"
+        :class="{'opacity-0 invisible' : !showScrollTop}"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       height="14"
+       viewBox="0 96 960 960"
+       width="14"
+       class="inline fill-current mb-[2px]"
+       aria-hidden="true">
+    <path d="M450 896V370L202 618l-42-42 320-320 320 320-42 42-248-248v526h-60Z" />
+  </svg>
+  Back to top
+</button>
+    
+
+    <script src="../../_static/documentation_options.js?v=c6950507"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="../../_static/theme.js?v=5db23cf8"></script>
+    
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.openwisp.io/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '7']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript>
+  <p>
+    <img referrerpolicy="no-referrer-when-downgrade" src="//analytics.openwisp.io/matomo.php?idsite=7&amp;rec=1" style="border:0;" alt="" />
+  </p>
+</noscript>
+<!-- End Matomo Code -->
+
+<div id="lightbox" class="lightbox">
+  <span class="close">&times;</span>
+</div>
+<script src="../../_static/lightbox.js"></script>
+
+</body>
+
+</html>

@@ -217,3 +217,40 @@ Implications for the device layer:
 
 Source: read-only surveys, `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/koonibba-usage-drop/mark-watch/` (`bot-survey-20260930/`,
 `rcp-survey-20260930/`). RCP journals only reach 2026-09-28/29, so its counts cover about 1-2 days.
+
+## Fleet SNMP identity gaps (measured 2026-10-05)
+
+Source: UNC capture corpus: newest discovery sweep per site (43 sites, about 4,000 hosts, 2026-09-23 to 2026-09-30) and 44 identify reads, aggregated read-only on 2026-10-05. Counts, not samples; read before trusting SNMP alone for identity or naming.
+
+- **ePMP default sysName.** 349 ePMP units answer `sysName` = `CambiumNetworks` (Force 300-16 223 of 899, Force 300-25 97 of 491, 3000L 29 of 131). Never
+  name or match a unit on it; use the DNS A record, the asset register name or the device API.
+- **No serial over SNMP.** The sweep's SNMP read returned no serial for every E500 (87 of 87) and E430H (5 of 5), while every XV2 returned one; also for 21 of
+  1,176 R195P units. Take those serials from the device API (Enterprise Wi-Fi) or leave the field empty; cnWave V-series is already recorded in
+  `snmp-oid-registry.yaml`.
+- **MAC notation differs by adapter.** cnPilot and cnWave identify reads return lowercase colon MACs, Enterprise Wi-Fi dash-separated, ePMP upper-case
+  colon. Normalise before comparing.
+- **Unknown-family units.** Two units with the Cambium OUI `00:04:56` answer with the net-snmp `sysObjectID` `.1.3.6.1.4.1.8072.3.2.10` and no model,
+  so the family cannot be told from SNMP. Identify them with the device API before landing them. UNVERIFIED which product they are.
+
+## R195P reports every Wi-Fi client as IPv4 0.0.0.0 to cnMaestro (2026-10-05)
+
+Symptom: cnMaestro's Wireless Clients list shows `0.0.0.0` in IPv4 Address for every client of a cnPilot R195P (kalumburu screenshot, operator 2026-10-05,
+suspected fleet-wide). It is a reporting gap, not a DHCP failure.
+
+- **SMC DHCP is healthy.** At 10 sites (6 apn, 4 nbn) the last hour of `isc-dhcp-server` showed ACKs, no NAKs and no "no free leases". At kalumburu all 8
+  screenshot MACs held a lease and 6 were REACHABLE in the SMC's ARP on `bridge_501`.
+- **The AP itself has no client IP.** On KAL-R195P-1014 (4.7.3-R21) `/tmp/stahost`, written by `/bin/device-agent` (the cnMaestro agent), lists every
+  client as `0.0.0.0` while `/var/log/wireless_sta.log` shows up to about 100 MB per client. The sibling table `/tmp/allhost` (Mac, IP, AuthState, IfName,
+  IpMode, ...) is empty: it is the R195P's own router-mode LAN host table.
+- **Regression, not design (operator, 2026-10-05: cnMaestro showed client IPs before).** Nothing changed on the SMC (kalumburu `dhcpd.conf` dated
+  2026-02-13) or in the R195P TFTP config (all 150 kalumburu files dated 2026-09-02, still `cns_static_url=https://cloud.cambiumnetworks.com`,
+  `mwan_bridge_type=ip_br`). The unit is nonetheless connected to `52.64.230.196:443`, apn-cnmaestro01: Cloud redirected it during the move to
+  on-prem (about 2026-09-26). That move is the one fleet-wide change on record, so it is the lead suspect. UNVERIFIED: how Cloud obtained the IP while
+  the agent's `/tmp/stahost` holds none, and the date IPs disappeared. It holds on every firmware seen (4.7-R9, 4.7.2-R10, 4.7.3-R21, 4.8.1-R4), which
+  also points away from the unit.
+- **Fleet sample:** 12 R195Ps with clients at kalumburu, burringurrah, horn-island, jigalong, mowanjum and tjuntjuntjara: every client `zero_ip`, every MAC
+  leased on the SMC.
+- **Not settled:** whether Enterprise Wi-Fi APs report client IPs. The one E500 client seen (kalumburu, VLAN 500) had no lease, so its `0.0.0.0` was
+  correct. XV2 prints nothing for a non-interactive `show wireless clients`; check an nbn site's client list in cnMaestro instead.
+- **Tool:** `just client-ip-sweep <site>-smc01 <apn|nbn>` (`scripts/client-ip-sweep.sh`) for the three-layer check. For a client's IP, use the SMC lease
+  (`dhcpd.leases`), not cnMaestro.

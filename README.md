@@ -27,8 +27,8 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 
 | Pack | Path | Status |
 | --- | --- | --- |
-| `skill-nautobot` | `specialists/platform/skill-nautobot/` | 0.3.0 — source-of-truth decisions plus a version-matched operations cookbook (Nautobot 3.2.3) |
-| `skill-openwisp` | `specialists/platform/skill-openwisp/` | 0.3.0 — passive monitoring decisions plus a version-matched operations cookbook (OpenWISP 26.09.0) |
+| `skill-nautobot` | `specialists/platform/skill-nautobot/` | 0.4.0 — operate, model, extend, integrate and recover Nautobot 3.2.3, with tested helpers |
+| `skill-openwisp` | `specialists/platform/skill-openwisp/` | 0.4.0 — configuration, monitoring, RADIUS, firmware and recovery for OpenWISP 26.09.0, with tested helpers |
 
 ## Current Focus
 - Project specialist coverage now includes:

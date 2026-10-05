@@ -42,3 +42,9 @@ those native objects. A live association-table sighting is **observation**, not 
 remain proposed. A central collector unable to reach site protocols must use a justified site vantage; SNMP/ICMP and TCP forwarding are not interchangeable.
 Vendor OIDs, commands and RF interpretation belong to equipment/transport expertise. For a graph consumer read OpenWISP
 [topology and FOSS](../../skill-openwisp/references/topology-and-foss.md) only when the request crosses into presentation.
+
+> **Learned 2026-10-05** · Nautobot 3.2.3 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: a multi-site estate whose management addresses are globally unique
+> Expect overlapping address space in multi-site estates: 773 of 1,309 live management addresses appeared at more than one site, and the site router's own address at all 43. Model one Namespace (or VRF) per routing domain and never key on an address. Exclude the sweeping host itself from candidates.
+
+> **Learned 2026-10-05** · Nautobot 3.2.3 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: a DHCP lease that proves a unit is currently present
+> DHCP leases are not liveness: 275 of 486 leased candidates were in state free, and every cross-site duplicate MAC came from lease-only rows. Drop lease-only rows (no ARP, no ping) before duplicate detection, and keep an explicit bucket for hosts whose banner or OUI matches no known signature (14% of hosts stayed unidentified).

@@ -43,3 +43,6 @@ same query format, but that does not prove every 1.3 deployment; test the effect
 time, submission time and stored point time. Backfill may correctly store an old point yet fail freshness/health; do not mark it current because ingestion is recent.
 The original tests verify schema shape and metric-producing fields for local fixtures/captures, not Celery, storage or charts. See
 [verification and troubleshooting](verification-and-troubleshooting.md) for those independent proofs.
+
+> **Learned 2026-10-05** · OpenWISP 26.09.0 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: an SNMP read that returns running firmware for these families
+> A one-pass SNMP read gave model for 99.9% of answering units but firmware only for one family of four; firmware for the others has to come from the device API or a controller. Omit what a source does not report rather than filling it.

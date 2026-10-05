@@ -8,6 +8,7 @@ Change log for the `skills_stuff` parent repository.
 - Pushes should use controlled workflows so rollback points are explicit.
 
 ## 2026-10-05
+- Released `skill-nautobot` and `skill-openwisp` 0.4.0 after an independent assessment: eight new verified references (app development, data model, integrations, recovery; configuration management, connections and firmware, RADIUS, deployment and recovery), Orient sections, tested stdlib-only helpers in `scripts/`, and measured fleet lessons from the UNC capture corpus. `skill-cambium` 0.6.29 and `skill-smc` 0.1.82 record the corpus's device facts.
 - Released `skill-nautobot` and `skill-openwisp` 0.3.0: version-matched operations cookbooks with summary tables, a standing write-back contract enforced by the contract test, promoted OpenWISP evidence, new trap scenarios and a paired fresh-context evaluation (4 of 4 pass with the skill, controls partial).
 - `skill-cambium` 0.6.28 and `skill-smc` 0.1.81 route platform questions to the two platform packs.
 

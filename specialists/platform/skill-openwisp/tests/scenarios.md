@@ -122,3 +122,21 @@ headers, `/api/v1/users/organization/` output. Prohibit granting superuser as th
 Prompt: `OPENWISP_MONITORING_AUTO_PING` is False, yet devices still show ping results from the central server. First reference: `operations-cookbook.md` (section 6).
 Required decision: the switch only stops new checks at device creation; deactivate the existing Check objects through an authorized change. Supporting evidence: active
 checks per device, settings value read in each process. Prohibit concluding the setting failed to load without reading it. Uncertainty: which checks were created before the switch.
+
+## O-S25 — Template change not reaching a device
+
+Prompt: A template edit shows on the device's configuration page, but the device still runs the old settings. First reference: `configuration-management.md`.
+Required decision: read the config status (modified, applied, error), whether the agent fetches (checksum, interval), and whether the device has a backend at all.
+Supporting evidence: config status history, agent log, backend. Prohibit pushing over SSH before knowing whether the device is managed. Uncertainty: agent internals.
+
+## O-S26 — Captive portal for community Wi-Fi
+
+Prompt: Design terms-and-conditions captive portal sign-in with per-user accounting on OpenWISP. First reference: `radius-and-captive-portal.md`. Required
+decision: openwisp-radius with FreeRADIUS behind the NAS's portal; organisation RADIUS settings; registration method; accounting into sessions. Supporting
+evidence: installed modules, FreeRADIUS presence, NAS type. Prohibit assuming SMS or SAML work when they are disabled or not installed. Uncertainty: NAS login fields.
+
+## O-S27 — Restore after losing the host
+
+Prompt: Rebuild OpenWISP on a new host from last night's backups. First reference: `deployment-and-recovery.md`. Required decision: restore PostgreSQL, then
+InfluxDB, then media, in order; verify device keys, registrations and a fresh point before calling it done. Supporting evidence: backup set, versions, the
+probe's three checks. Prohibit declaring success on container start. Uncertainty: the procedure has not been rehearsed on this deployment.

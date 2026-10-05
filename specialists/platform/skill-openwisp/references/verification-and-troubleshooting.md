@@ -50,3 +50,9 @@ worker write errors before health or graph conclusions. Case C: point at 10:00 i
 permission; changing health thresholds is irrelevant. Reverse case: graph shows fresh data but health unknown; inspect check schedule/window, not chart code.
 Read [customisation and upgrades](customisation-and-upgrades.md) when worker/API settings differ and [health, alerts and notifications](health-alerts-notifications.md)
 when the health branch is at fault. Never print a per-device key in a diagnostic artifact.
+
+> **Learned 2026-10-05** · OpenWISP 26.09.0 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: a fleet where every unit that misses ping is truly down
+> ICMP alone under-counts liveness: 14% of candidates missed ping, yet 80 of 94 such radio units answered SNMP and many others held ARP entries. Use a second signal (SNMP or ARP from the site) before declaring a device down.
+
+> **Learned 2026-10-05** · OpenWISP 26.09.0 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: repeat sweeps where reachability is stable from run to run
+> Single polls flap: between repeat sweeps 6.8% of addresses changed ping state while addresses and families stayed stable. Alert on sustained absence over a window, not on one missed poll.

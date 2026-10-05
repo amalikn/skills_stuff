@@ -78,5 +78,11 @@ epmp-getters host role="sm": _require-venv
 scan-fields path: _require-venv
     @{{py}} scripts/scan-config-fields.py "{{path}}"
 
+# Read-only: why does cnMaestro show Wi-Fi clients as 0.0.0.0? SMC DHCP health vs the IPv4 each sampled AP reports vs SMC leases.
+# prog is apn or nbn (selects the Teleport cluster and SNMP vault entry). Never prints a password.
+# Example: just client-ip-sweep kalumburu-smc01 apn 2
+client-ip-sweep smc prog="apn" samples="3":
+    @scripts/client-ip-sweep.sh "{{smc}}" "{{prog}}" "{{samples}}"
+
 # Run safe local preflight checks
 preflight: runtimes check

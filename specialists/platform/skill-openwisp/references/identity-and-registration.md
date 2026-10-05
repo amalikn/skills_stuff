@@ -46,3 +46,6 @@ does **not** re-key that history if the service identity is intended to persist;
 appropriate when the installed version exposes and validates the required identity/group fields. A server-side integration is justified only when that REST path
 cannot express the contract, and then must be version-pinned, permission-scoped and regression-tested. Read [passive ingestion](passive-ingestion.md) after registration
 and Nautobot [lifecycle and replacement](../../skill-nautobot/references/lifecycle-and-replacement.md) only when inventory identity changes.
+
+> **Learned 2026-10-05** · OpenWISP 26.09.0 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: a replacement policy under which a serial should become the monitoring key
+> Key monitoring on the inventory's stable logical ID, not on a hardware value: serial was the strongest corroborating signal (never conflicted, 93% present) but changes on a hardware swap; MAC needs normalising and, for some families, an offset. Use serial and MAC to confirm a match, never as the key.

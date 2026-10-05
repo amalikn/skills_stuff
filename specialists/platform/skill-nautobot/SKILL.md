@@ -3,7 +3,8 @@ name: skill-nautobot
 description: >-
   Design, query and troubleshoot Nautobot: inventory, IPAM and Namespaces, custom fields, computed fields, Relationships, Dynamic Groups, Config Contexts,
   Secrets, REST/GraphQL/pynautobot, Jobs and Job Hooks, webhooks, approvals, change log, Golden Config, staged onboarding, field ownership, permissions and
-  upgrades (nautobot-server). Use for Nautobot source-of-truth work; not as the primary skill for OpenWISP telemetry, graphs or alerts.
+  upgrades (nautobot-server), app development, SSoT/DiffSync, Ansible and Nornir inventories, backup and restore, metrics and security settings.
+  Use for Nautobot work; not as the primary skill for OpenWISP telemetry, graphs or alerts.
 ---
 
 # Nautobot
@@ -21,6 +22,19 @@ Obtain project-specific authorization before every write, keep the writer identi
 Keep an observation's source, time, vantage and confidence when it may affect a later decision.
 Do not embed client credentials, customer topology, or equipment-specific commands in reusable guidance.
 
+## Orient first
+
+On an unfamiliar deployment, establish the version, the installed apps and whether workers answer before reading anything else; models, API shapes
+and Job interfaces change between releases.
+
+```bash
+nautobot-server --version; pip list 2>/dev/null | grep -iE 'nautobot|pynautobot|diffsync|nornir'; grep -nE '^PLUGINS' "$NAUTOBOT_CONFIG"
+nautobot-server celery inspect ping -t 5; nautobot-server celery inspect active_queues; nautobot-server health_check
+```
+
+`scripts/` holds tested, stdlib-only helpers: `nautobot_paging.py` (`listing()` adds a total order; `traverse()` refuses a listing that repeats,
+skips or miscounts) and `nautobot_ipam.py` (an address's mask from the narrowest network Prefix).
+
 ## Route the task
 
 Choose the primary skill by the object or failure **being changed**: a Nautobot field, Device, Job or intent edge starts here; OpenWISP registration/metric/worker/
@@ -31,6 +45,10 @@ execution begin with equipment/transport expertise, with this skill supplying on
 | Task                                                      | Read first                                |
 | --------------------------------------------------------- | ----------------------------------------- |
 | Exact syntax: REST, GraphQL, groups, fields, hooks, CLI   | [references/operations-cookbook.md](references/operations-cookbook.md) |
+| Locations, platforms, interfaces, VLANs, modules, contacts | [references/data-model.md](references/data-model.md) |
+| Writing a Nautobot app: models, API, UI, Jobs, tests      | [references/app-development.md](references/app-development.md) |
+| pynautobot, SSoT/DiffSync, Git data, Ansible, Nornir, GC  | [references/integrations.md](references/integrations.md) |
+| Backup, restore, health, metrics, performance, security   | [references/operations-and-recovery.md](references/operations-and-recovery.md) |
 | Ownership, IPAM, relationships, custom data models        | [references/authority-and-modeling.md](references/authority-and-modeling.md) |
 | API traversal, deterministic readers, safe writers        | [references/api-and-writers.md](references/api-and-writers.md) |
 | Brownfield discovery, identity, staging and approval      | [references/staged-onboarding.md](references/staged-onboarding.md) |

@@ -35,6 +35,7 @@ pack's `AGENTS.md` Standing Write-Back Contract.
 | `device-inventory.csv` column contract, `UNKNOWN` discipline, cross-site IP collisions, extraction workflow   | `references/04_device-inventory-schema.md`    |
 | Coverage gaps, unverified assumptions, pack staleness risks                                                   | `references/05_known-issues.md`               |
 | Device REST API / SSH CLI data points per adapter method, config-backup source, write-ops boundary            | `references/06_device-api-cli-reference.md`   |
+| cnMaestro shows Wi-Fi clients with IPv4 0.0.0.0 — run `just client-ip-sweep <site>-smc01 <apn\|nbn>`          | `references/05_known-issues.md`               |
 
 **Do not write new operational content to this file** — it is a navigation index only. Write content to the matching reference file.
 

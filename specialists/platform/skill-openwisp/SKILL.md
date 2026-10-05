@@ -3,7 +3,8 @@ name: skill-openwisp
 description: >-
   Operate, diagnose and extend OpenWISP: device registration and hardware_id, organisations and device groups, REST API and tokens, NetJSON DeviceMonitoring
   pushes and backfill, custom metrics and charts, InfluxDB storage and retention, Celery workers and queues, health checks, alerts and notifications,
-  docker-openwisp settings and upgrades. Use for OpenWISP monitoring and presentation work; not as the primary skill for Nautobot inventory or lifecycle intent.
+  configuration templates and VPN, SSH commands and firmware upgrades, RADIUS and captive portal, backup and restore, docker-openwisp settings
+  and upgrades. Use for OpenWISP work; not as the primary skill for Nautobot inventory or lifecycle intent.
 ---
 
 # OpenWISP
@@ -22,6 +23,20 @@ Obtain project authorization for writes, retain source/version/evidence, and nev
 Keep observation source, timestamp, freshness and unit semantics available to the consuming policy.
 Do not embed client credentials, customer topology, or equipment-specific commands in reusable guidance.
 
+## Orient first
+
+On an unfamiliar deployment, establish the version, the enabled modules and whether the workers live before reading anything else; docs, behaviour
+and API paths differ by release, and a container shown Up says nothing about its Celery workers.
+
+```bash
+docker exec <dashboard> sh -c 'cat /opt/openwisp/openwisp/VERSION; pip list 2>/dev/null | grep -iE "^(openwisp|netjsonconfig|netdiff|django) "'
+docker exec <dashboard> sh -c 'env | grep "^USE_OPENWISP_" | sort'
+python3 scripts/openwisp_probe.py workers --container <celery>      # then: freshness --container <influxdb>; settings --containers ... --expected <file>
+```
+
+`scripts/` holds tested, stdlib-only helpers: `openwisp_identity.py` (hardware_id, device names, MACs, backfill time in UTC) and `openwisp_probe.py`
+(workers, newest point, effective settings; read-only).
+
 ## Route the task
 
 Choose the primary skill by the object or failure **being changed**: OpenWISP registration, worker, metric, health, notification or graph starts here; Nautobot
@@ -34,6 +49,10 @@ RF interpretation and transport execution begin with equipment/transport experti
 | Exact syntax: REST, tokens, InfluxDB, Celery, settings, commands    | [references/operations-cookbook.md](references/operations-cookbook.md) |
 | Logical identity, adoption, duplicate prevention, replacement       | [references/identity-and-registration.md](references/identity-and-registration.md) |
 | Passive observations, NetJSON and closed-firmware metrics           | [references/passive-ingestion.md](references/passive-ingestion.md) |
+| Templates, variables, backends, agent, auto-registration, VPN       | [references/configuration-management.md](references/configuration-management.md) |
+| Credentials, SSH commands, config push, firmware upgrades           | [references/connections-and-firmware.md](references/connections-and-firmware.md) |
+| RADIUS, captive portal, registration, accounting, Wi-Fi sessions    | [references/radius-and-captive-portal.md](references/radius-and-captive-portal.md) |
+| Deployment, process roles, scaling, backup, restore, geo            | [references/deployment-and-recovery.md](references/deployment-and-recovery.md) |
 | Accepted payload, worker, storage, freshness and graph triage       | [references/verification-and-troubleshooting.md](references/verification-and-troubleshooting.md) |
 | Health, policy, suppression, correlation and notification transport | [references/health-alerts-notifications.md](references/health-alerts-notifications.md) |
 | Observed topology, NetJSON NetworkGraph and complementary FOSS      | [references/topology-and-foss.md](references/topology-and-foss.md) |

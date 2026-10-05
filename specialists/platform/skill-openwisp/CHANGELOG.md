@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+## 0.4.0 — 2026-10-05
+
+- New references, each verified against the installed 26.09.0 images and versioned docs: `configuration-management.md` (templates, variables,
+  backends, agent, auto-registration, VPN), `connections-and-firmware.md`, `radius-and-captive-portal.md` and `deployment-and-recovery.md`; extending
+  models through swappable models added to `customisation-and-upgrades.md`.
+- Promoted helpers in `scripts/`: `openwisp_identity.py` (hardware_id, names, MACs, UTC backfill time) and `openwisp_probe.py` (workers, freshness,
+  effective settings; read-only), with tests; the probe found a live week-long worker outage on its first run.
+- `SKILL.md`: Orient section, routing for every reference, wider description.
+- Fleet lessons from a measured capture corpus (liveness signals, SNMP gaps, identity) and two places where the 26.09 docs and the images disagree.
+- Scenarios O-S25 to O-S27.
+
+- 2026-10-05 `connections-and-firmware.md`: Learned entry, docs and installed image disagree (verified against the running URLconf / beat schedule).
+- 2026-10-05 `radius-and-captive-portal.md`: Learned entry, docs and installed image disagree (verified against the running URLconf / beat schedule).
+
+- 2026-10-05 `verification-and-troubleshooting.md`: 2 Learned entries from the capture corpus (measured fleet lessons).
+- 2026-10-05 `passive-ingestion.md`: 1 Learned entry from the capture corpus (measured fleet lessons).
+- 2026-10-05 `identity-and-registration.md`: 1 Learned entry from the capture corpus (measured fleet lessons).
+
 ## 0.3.0 — 2026-10-05
 
 - Added `references/operations-cookbook.md`: ten version-matched recipes with a summary table (REST auth and paging, controller devices and deletion, monitoring

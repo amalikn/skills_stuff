@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20261005_1451 — R195P client IPv4 0.0.0.0 in cnMaestro explained; client-ip-sweep.sh added (v0.6.29 -> v0.6.30)](#20261005_1451--r195p-client-ipv4-0000-in-cnmaestro-explained-client-ip-sweepsh-added-v0629---v0630)
+- [20261005_1442 — Fleet SNMP identity gaps measured from the capture corpus (v0.6.28 -> v0.6.29)](#20261005_1442--fleet-snmp-identity-gaps-measured-from-the-capture-corpus-v0628---v0629)
 - [20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.6.27 -> v0.6.28)](#20261005_1350--related-skills-platform-packs-skill-nautobot-and-skill-openwisp-v0627---v0628)
 - [20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)](#20260930_1221--terminology-paid-pin-corrected-to-access-mark-v0626---v0627)
 - [20260930_1209 — Dashboard bots poll AP reachability by ping from the SMC over Teleport (v0.6.25 -> v0.6.26)](#20260930_1209--dashboard-bots-poll-ap-reachability-by-ping-from-the-smc-over-teleport-v0625---v0626)
@@ -76,6 +78,17 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261005_1451 — R195P client IPv4 0.0.0.0 in cnMaestro explained; client-ip-sweep.sh added (v0.6.29 -> v0.6.30)
+
+- `references/05_known-issues.md`: new section. R195P reports every client as `0.0.0.0`; a regression since the move to apn-cnmaestro01 (operator: IPs showed before;
+  unit confirmed connected to 52.64.230.196), SMC and TFTP config unchanged; SMC DHCP healthy at 10 sites; 12 R195Ps on 6 apn sites all `zero_ip` with every MAC leased.
+- `scripts/client-ip-sweep.sh` (new, written in ansible-wifi 2026-10-05): SMC DHCP health vs AP-reported client IPv4 vs SMC leases, per site. Catalogued
+  in `scripts/README.md`, `just client-ip-sweep`, RUNBOOK routing row. Known limit: XV2 returns no table over non-interactive SSH.
+
+## 20261005_1442 — Fleet SNMP identity gaps measured from the capture corpus (v0.6.28 -> v0.6.29)
+
+- `references/05_known-issues.md`: new section. ePMP generic sysName (349 units), no SNMP serial on E500, E430H and some R195P, MAC notation per adapter, two net-snmp units of unknown family.
 
 ## 20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.6.27 -> v0.6.28)
 

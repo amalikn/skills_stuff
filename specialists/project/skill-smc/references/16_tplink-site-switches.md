@@ -158,3 +158,10 @@ days.
   password unless a password prompt is on screen; the driver waits for one.
 - Stale host keys: every connection uses `UserKnownHostsFile=/dev/null`, because multi-SMC sites and swapped units change keys (`01_overview.md`).
 - Writes: the script is read-only by default (`show`, `ping`, `tracert` only). `--write` sends config commands to a production switch and needs the operator's explicit go-ahead.
+
+## Hosts answering an `IPSSH` banner (measured 2026-10-05, UNVERIFIED as TP-Link)
+
+Source: UNC capture corpus: newest discovery sweep per site (43 sites, about 4,000 hosts, 2026-09-23 to 2026-09-30) and 44 identify reads, aggregated read-only on 2026-10-05. 52 hosts across 25 sites answer SSH with the banner `IPSSH`, not `TPSSH`, and none has a Cambium OUI; they include hosts at sites listed
+above as "TP-Link OUIs but none answered TPSSH" (for example aurukun 4, doomadgee 2, galiwinku 3). OUIs seen include `98:25:4A`, `A8:42:A1` and
+`5C:E9:31`. Whether they are TP-Link switches (another firmware's banner) is **UNVERIFIED**: confirm one with a read-only login before adding `IPSSH` to
+the discovery signature; until then the sweep should keep them in an unmatched-banner bucket rather than drop them.

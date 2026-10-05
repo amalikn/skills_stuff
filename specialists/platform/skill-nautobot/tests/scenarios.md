@@ -119,3 +119,21 @@ evidence: response body, model filterset. Prohibit writing after a failed read. 
 Prompt: Hold a proposed inventory change until a team lead approves it. First reference: `operations-cookbook.md` (section 7). Required decision: use core approval
 workflows (definition by model, constraints and weight; ordered stages); confirm a definition matches, because with none the workflow silently does not start.
 Supporting evidence: matching definition, stage approver group, workflow state. Prohibit Job `approval_required` (removed in 3.0). Uncertainty: the model must be approvable.
+
+## N-S24 — A custom model in an app
+
+Prompt: Add a durable object with its own lifecycle and API to Nautobot. First reference: `app-development.md`. Required decision: an app with a
+PrimaryModel subclass, migrations, filterset, serializer and UI viewset through `nautobot.apps`; tests under `nautobot-server test`. Supporting evidence:
+installed version, the app's `NautobotAppConfig`. Prohibit editing core or using a custom field for an object with its own identity. Uncertainty: UI framework details by release.
+
+## N-S25 — Reconcile an external source
+
+Prompt: Keep Nautobot in step with an external inventory every hour. First reference: `integrations.md`. Required decision: SSoT/DiffSync adapters with a
+dry-run diff and an explicit delete policy, or a thin mapper if SSoT is not installed; never default deletes on. Supporting evidence: installed apps, flags,
+diff output. Prohibit a blind create-or-update loop. Uncertainty: whether SSoT is installed here.
+
+## N-S26 — Restore after losing the database
+
+Prompt: Rebuild Nautobot from backups on a new host. First reference: `operations-and-recovery.md`. Required decision: restore PostgreSQL and the media, Git and
+Jobs directories, run `post_upgrade`, then verify with `health_check`, object counts and a Job run. Supporting evidence: backup set, versions. Prohibit calling
+container start a restore. Uncertainty: the order has not been rehearsed here.

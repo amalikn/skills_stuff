@@ -59,3 +59,9 @@ Read [staged onboarding](staged-onboarding.md) for promotion and [API and writer
 
 > **Learned 2026-10-05** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: nautobot/extras/management/__init__.py lines 107-170 and extras/models/roles.py line 37 in the installed source · Falsifier: a 3.2.x post_upgrade or migrate run that recreates a deleted default Role
 > Default Statuses and Roles are created only by data migrations that have already run, so a deleted built-in is never recreated by `migrate` or `post_upgrade`. Treat them as shared taxonomy: a cleanup script reports candidates and stops, and recovery is from the change log ([operations cookbook](operations-cookbook.md) section 9).
+
+> **Learned 2026-10-05** · Nautobot 3.2.3 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: a fleet with a duplicated non-empty serial
+> Serial may be legitimately empty (7% of units, concentrated in a few models whose SNMP returns none) but was unique whenever present (0 duplicates in 3,043). Enforce uniqueness only for non-empty values and let the identity source fill the gap later.
+
+> **Learned 2026-10-05** · Nautobot 3.2.3 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: a fleet whose device-reported names are unique and descriptive
+> Do not name or key devices on SNMP sysName: one family returned a generic default on 349 units, default-pattern names repeated across sites, and 11 duplicate-name groups existed inside single sites. DNS A records named 98% of live units; 13% of in-subnet records pointed at nothing, so a dangling record is a warning, not an error.
