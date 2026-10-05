@@ -39,6 +39,16 @@ Learned entries are cheap on purpose. At a release, the maintainer: promotes eac
 only when the fact is load-bearing (a decision depends on it); adds or updates a `compatibility.yaml` row when the evidence came from a new version or a live rung;
 adds a scenario when a no-skill agent would plausibly get the fact wrong; moves `## Unreleased` under the new version; and reruns the tests.
 
+## Promoting a project script
+
+Code grows in the projects that use this skill and moves here when it has earned it. A project keeps a register of its scripts (UNC:
+`scripts/promotion-register.json`, enforced by its governance check) marking each `project_only`, `candidate` with what it still needs, or `promoted`.
+Promote when the script's behaviour holds for any deployment of the platform, it imports nothing project-specific, and its engine can be pure or
+read-only with I/O injected by the caller. Then: the engine goes to `scripts/` with offline tests in `tests/test_helpers.py` (stdlib only, enforced by
+the contract test); the project script becomes a thin wrapper that keeps its CLI and defaults; before-and-after outputs of its read-only or dry-run
+modes must match; and the CHANGELOG names the source project and script. A write path is tested offline with recorded responses and live only on a
+disposable instance.
+
 ## Keeping it current
 
 Each `operations-cookbook.md` names the version it was verified against. When the installed version changes, re-verify every section whose syntax the task relies on,

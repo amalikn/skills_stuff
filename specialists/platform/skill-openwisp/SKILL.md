@@ -34,8 +34,9 @@ docker exec <dashboard> sh -c 'env | grep "^USE_OPENWISP_" | sort'
 python3 scripts/openwisp_probe.py workers --container <celery>      # then: freshness --container <influxdb>; settings --containers ... --expected <file>
 ```
 
-`scripts/` holds tested, stdlib-only helpers: `openwisp_identity.py` (hardware_id, device names, MACs, backfill time in UTC) and `openwisp_probe.py`
-(workers, newest point, effective settings; read-only).
+`scripts/` holds tested, stdlib-only helpers (`just helpers`): `openwisp_identity.py` (hardware_id, device names, MACs, backfill time in UTC),
+`openwisp_probe.py` (workers, newest point, effective settings; read-only), `openwisp_registry.py` (registrations against a source of truth),
+`openwisp_health_mirror.py` (health into an inventory, only on change) and `openwisp_alert_policy.py` (AlertSettings from a policy file).
 
 ## Route the task
 

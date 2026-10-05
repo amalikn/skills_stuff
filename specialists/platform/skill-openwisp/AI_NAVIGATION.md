@@ -1,0 +1,318 @@
+# AI Navigation — skill-openwisp
+
+Purpose: this file is the project context entrypoint for AI agents. It tells agents where project truth lives, what to read first, what is authoritative, what is temporary, and what must be updated
+after work.
+
+This file is a router, not the full knowledge store.
+
+<!-- This Contents block sits OUTSIDE the managed markers on purpose: it indexes the whole file,
+     including any project-authored sections below the END marker, and the upgrader regenerates
+     everything between the markers. Keep it updated when sections are added either side. -->
+
+## Contents
+
+- [Mandatory read order](#mandatory-read-order)
+- [Source priority](#source-priority)
+- [Project context files](#project-context-files)
+- [Task routing](#task-routing)
+  - [Architecture/design questions](#architecturedesign-questions)
+  - [Planning/status questions](#planningstatus-questions)
+  - [Agent/governance questions](#agentgovernance-questions)
+  - [Implementation/code questions](#implementationcode-questions)
+- [Script and Task Navigation](#script-and-task-navigation)
+  - [Documentation updates](#documentation-updates)
+- [Governance coherence checks](#governance-coherence-checks)
+- [Companion consistency](#companion-consistency)
+- [Drift handling](#drift-handling)
+- [Update rules](#update-rules)
+- [Generated context](#generated-context)
+- [Context compaction recovery](#context-compaction-recovery)
+- [Audit procedure](#audit-procedure)
+- [Agent answer contract](#agent-answer-contract)
+- [Pack domain routing](#pack-domain-routing)
+- [Pack artifacts](#pack-artifacts)
+
+<!-- BEGIN MANAGED: skill-ai-it:navigation -->
+<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+
+## Mandatory read order
+
+Before answering, planning, editing, or creating files in this project, read in this order:
+
+1. `AGENTS.md`
+2. `AI_NAVIGATION.md`
+3. `context-map.yaml`
+4. `CHANGELOG.md`
+5. Relevant `.archcore/` documents, if present
+6. Relevant `memory-bank/` files, if present
+7. Relevant project docs/code based on the task
+
+If available, also consult:
+
+- `graphify-out/GRAPH_REPORT.md`
+- `.ai-context/governance-pack.md`
+
+## Source priority
+
+When sources conflict, use this priority:
+
+1. `.archcore/` accepted ADRs, rules, specs, guides, and plans
+2. `AGENTS.md` / `CLAUDE.md`
+3. `AI_NAVIGATION.md`
+4. `context-map.yaml`
+5. `CHANGELOG.md`
+6. `ARCHITECTURE.md` / `architecture.md`
+7. `ROADMAP.md` / `roadmap.md`
+8. `memory-bank/activeContext.md`
+9. `memory-bank/progress.md`
+10. `SCRATCHPAD.md` / `scratchpad.md`
+11. old notes, drafts, archived files
+
+`SCRATCHPAD.md` is temporary unless promoted into Archcore, roadmap, memory-bank, or explicitly marked `KEEP`.
+
+## Project context files
+
+| File / Path | Role | Authority |
+|---|---|---|
+| `AGENTS.md` | Universal agent instruction file | High |
+| `CLAUDE.md` | Claude-specific bootstrap file | High |
+| `AI_NAVIGATION.md` | Human-readable AI routing file | High |
+| `context-map.yaml` | Machine-readable routing map | High |
+| `CHANGELOG.md` | Durable project/governance change history | Medium-high |
+| `.archcore/adr/` | Architecture decisions | Highest |
+| `.archcore/rules/` | Durable project/agent rules | Highest |
+| `.archcore/specs/` | Technical/design contracts | Highest |
+| `.archcore/guides/` | Operational guides | High |
+| `.archcore/plans/` | Approved implementation plans | High |
+| `ARCHCORE_PROMOTION_CANDIDATES.md` | Generated list of Archcore promotion candidates from governance markdown. Read before running promote mode. | Generated support |
+| `ARCHITECTURE.md` / `architecture.md` | Human-readable architecture overview | Medium-high |
+| `ROADMAP.md` / `roadmap.md` | Human-readable roadmap | Medium-high |
+| `memory-bank/activeContext.md` | Current working context | Medium |
+| `memory-bank/progress.md` | Progress and current state | Medium |
+| `memory-bank/decisionLog.md` | Decision notes before promotion | Medium |
+| `SCRATCHPAD.md` / `scratchpad.md` | Temporary notes | Low |
+| `docs/` | Supporting documentation | Depends on file |
+| `graphify-out/` | Generated navigation graph | Generated support |
+| `.ai-context/governance-pack.md` | Generated deterministic context pack | Generated support |
+
+## Task routing
+
+### Architecture/design questions
+
+Read:
+
+1. `.archcore/adr/`
+2. `.archcore/specs/`
+3. `ARCHITECTURE.md` / `architecture.md`
+4. `docs/**/*.md`
+
+Do not answer from scratchpad alone.
+
+### Planning/status questions
+
+Read:
+
+1. `.archcore/plans/`
+2. `ROADMAP.md` / `roadmap.md`
+3. `CHANGELOG.md`
+4. `memory-bank/progress.md`
+5. `memory-bank/activeContext.md`
+6. `SCRATCHPAD.md` / `scratchpad.md`
+
+Report uncertainty if these disagree.
+
+### Agent/governance questions
+
+Read:
+
+1. `AGENTS.md`
+2. `CLAUDE.md`
+3. `AI_NAVIGATION.md`
+4. `context-map.yaml`
+5. `CHANGELOG.md`
+6. `.archcore/rules/`
+
+### Implementation/code questions
+
+Read:
+
+1. `AGENTS.md`
+2. `context-map.yaml`
+3. Relevant `.archcore/specs/`
+4. Relevant source files
+5. Relevant tests
+6. `graphify-out/GRAPH_REPORT.md`, if present
+
+Use code navigation tools where available.
+
+## Script and Task Navigation
+
+For script, task, or automation questions, read in this order:
+
+1. Existing canonical task runner if documented
+2. `justfile`
+3. `scripts/README.md`
+4. `Taskfile.yml`
+5. `Makefile`
+6. `package.json`
+7. Raw scripts under `scripts/` after inspection
+
+Prefer `just --list` and `just <task>` when a `justfile` exists.
+
+Do not run uncataloged scripts blindly. Treat uncataloged scripts as `unknown safety` until inspected.
+
+If the catalog is stale, propose an update to `scripts/README.md` or the relevant task runner.
+
+If a task is marked `destructive`, `review-required`, or `unknown`, stop and request review before execution.
+
+### Documentation updates
+
+Before updating docs, check:
+
+1. `.archcore/`
+2. `README.md`
+3. `CHANGELOG.md`
+4. `ARCHITECTURE.md` / `architecture.md`
+5. `ROADMAP.md` / `roadmap.md`
+6. `memory-bank/`
+7. `docs/`
+
+After updates, ensure related files are not left inconsistent.
+
+## Governance coherence checks
+
+If `scripts/check_governance.py` exists, run it before claiming any durable change is complete, and after any change that adds, moves, renames, or retires a file. It turns this project's governance
+claims into assertions and exits non-zero on failure.
+
+When it fails, fix the project — not the check. Broadening an ignore-list or exempting the failing file converts a real finding into a permanent blind spot.
+
+The check count is a coverage signal, not a score, and is expected to rise as the project acquires structure. Adding a new class of artifact, a generated output, or a constant restated across files
+requires extending the checker's registries in the same pass.
+
+## Companion consistency
+
+When changing governance files, update these companion files together:
+
+| File | Companion files |
+|---|---|
+| `AGENTS.md` | `AI_NAVIGATION.md`, `context-map.yaml`, `scripts/README.md` |
+| `AI_NAVIGATION.md` | `context-map.yaml` |
+| `context-map.yaml` | `AI_NAVIGATION.md` |
+| `scripts/README.md` | `AGENTS.md`, `context-map.yaml` |
+| New script added | `scripts/README.md`, `AGENTS.md`, `justfile`, `scripts/check_governance.py` |
+| New artifact class, generated output, or restated constant | `scripts/check_governance.py` registries |
+
+## Drift handling
+
+If files disagree:
+
+1. Stop.
+2. Identify the conflicting files.
+3. State which source has higher authority.
+4. Propose the smallest correction.
+5. Do not silently merge conflicting assumptions.
+
+## Update rules
+
+| Change type | Update |
+|---|---|
+| New durable decision | Add/propose `.archcore/adr/` |
+| New agent/project rule | Add/propose `.archcore/rules/` |
+| New architecture contract | Add/propose `.archcore/specs/` |
+| New operating procedure | Add/propose `.archcore/guides/` |
+| New implementation plan | Add/propose `.archcore/plans/` |
+| Progress change | Update `memory-bank/progress.md` |
+| Current working state changed | Update `memory-bank/activeContext.md` |
+| Temporary note | Add to `SCRATCHPAD.md` only if not durable |
+| Context routing changed | Update `AI_NAVIGATION.md` and `context-map.yaml` |
+| Governance or navigation files changed | Append `CHANGELOG.md` |
+
+## Generated context
+
+Generated files are useful but not authoritative by themselves.
+
+| Generated file | Purpose |
+|---|---|
+| `graphify-out/GRAPH_REPORT.md` | Relationship/navigation overview |
+| `graphify-out/graph.json` | Machine-readable graph |
+| `.ai-context/governance-pack.md` | Deterministic context bundle |
+| `.ai-context/repo-pack.md` | Larger project/repo context bundle |
+
+Regenerate these after large documentation, architecture, or source changes.
+
+## Context compaction recovery
+
+After context compaction, rebuild agent context in this order:
+
+1. **Read `AI_NAVIGATION.md`** first — this file is the navigation map.
+2. **Load `.archcore/`** — durable project truth (ADRs, rules, specs, guides, plans).
+3. **Regenerate `graphify-out/`**: `graphify update .`
+4. **Regenerate `.ai-context/`**: `repomix --config repomix.config.json`
+5. **Verify `SCRATCHPAD.md`** — if empty, populate from memory-keeper / mcp-project-context.
+6. **Verify `CHANGELOG.md`** is current.
+7. **Verify `AI_NAVIGATION.md` and `context-map.yaml` companion consistency.**
+
+Label recovered entries: `Context recovered via skill-ai-it context-recovery procedure`.
+
+## Audit procedure
+
+To verify project context coherence, run these checks:
+
+1. Confirm `AGENTS.md` points to `AI_NAVIGATION.md`.
+2. Confirm `AI_NAVIGATION.md` points to `context-map.yaml`.
+3. Confirm `CHANGELOG.md` exists and recent governance/navigation changes are recorded.
+4. Confirm `context-map.yaml` has routing for architecture, planning, governance, implementation, documentation, and scripts.
+5. Confirm `.archcore/` is either present and routed, or absent and treated as optional.
+6. Confirm generated context paths (`graphify-out/`, `.ai-context/`) are excluded from source-of-truth decisions.
+7. Confirm `SCRATCHPAD.md` is marked transient.
+8. Confirm repeat-run managed blocks exist where needed.
+9. Confirm companion files in `context-map.yaml update_rules` were updated when source files changed.
+10. Confirm drift/conflict policy says stop-and-report.
+
+## Agent answer contract
+
+When answering from project context:
+
+1. Prefer cited file paths.
+2. Do not invent project state.
+3. Say “not found in project context” if unsupported.
+4. Distinguish confirmed facts from assumptions.
+5. Ask only when required; otherwise proceed with stated assumptions.
+
+<!-- END MANAGED: skill-ai-it:navigation -->
+
+## Pack domain routing
+
+Project-authored, outside the managed block. Mirrors the routing table in [SKILL.md](SKILL.md); the governance checker fails when a reference file is missing from either.
+Ordinary single-platform tasks load one reference. A task whose changed object belongs to OpenWISP's counterpart starts in [skill-nautobot](../skill-nautobot/SKILL.md).
+
+| Task | Read first |
+|---|---|
+| Exact syntax: REST, tokens, InfluxDB, Celery, settings, commands | [references/operations-cookbook.md](references/operations-cookbook.md) |
+| Logical identity, adoption, duplicate prevention, replacement | [references/identity-and-registration.md](references/identity-and-registration.md) |
+| Passive observations, NetJSON and closed-firmware metrics | [references/passive-ingestion.md](references/passive-ingestion.md) |
+| Templates, variables, backends, agent, auto-registration, VPN | [references/configuration-management.md](references/configuration-management.md) |
+| Credentials, SSH commands, config push, firmware upgrades | [references/connections-and-firmware.md](references/connections-and-firmware.md) |
+| RADIUS, captive portal, registration, accounting, Wi-Fi sessions | [references/radius-and-captive-portal.md](references/radius-and-captive-portal.md) |
+| Deployment, process roles, scaling, backup, restore, geo | [references/deployment-and-recovery.md](references/deployment-and-recovery.md) |
+| Accepted payload, worker, storage, freshness and graph triage | [references/verification-and-troubleshooting.md](references/verification-and-troubleshooting.md) |
+| Health, policy, suppression, correlation and notification transport | [references/health-alerts-notifications.md](references/health-alerts-notifications.md) |
+| Observed topology, NetJSON NetworkGraph and complementary FOSS | [references/topology-and-foss.md](references/topology-and-foss.md) |
+| Missing capability, modules, supported seams and FOSS | [references/capability-extension.md](references/capability-extension.md) |
+| Django settings, metrics, workers, overlays and upgrades | [references/customisation-and-upgrades.md](references/customisation-and-upgrades.md) |
+| Reusable learning capture and engagement closeout | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |
+
+## Pack artifacts
+
+| Artifact | Role | Enforced by |
+|---|---|---|
+| [SKILL.md](SKILL.md) | Activation surface: role, boundaries, orient-first commands, routing, write-back contract | `tests/test_package_contract.py` |
+| `references/` | Content source, one focused file per domain; each carries dated Learned entries | Contract test + `scripts/check_governance.py` |
+| [sources.yaml](sources.yaml) | Claim ledger (O-Cnn): statement, evidence rung, source type, reference, scenario | Contract test schema |
+| [compatibility.yaml](compatibility.yaml) | Environment ledger: product version, validation layer, result | Contract test schema |
+| [documents/readme.md](documents/readme.md) | Index of version-matched official doc snapshots with sha256 | Contract test (both directions + hash) |
+| [tests/scenarios.md](tests/scenarios.md) | Evaluation scenarios (O-Snn) each claim links to | Contract test |
+| [tests/eval-procedure.md](tests/eval-procedure.md) | How to run a with/without-skill evaluation | — |
+| [scripts/README.md](scripts/README.md) | Helper and recipe catalog | `scripts/check_governance.py` |
+| [CHANGELOG.md](CHANGELOG.md) | Release history; `## Unreleased` collects write-back lines | Contract test |
+| [.archcore/index.guide.md](.archcore/index.guide.md) | Index of durable ADRs, rules and plans, and what is never promoted | `scripts/check_governance.py` (both directions) |

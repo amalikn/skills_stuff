@@ -1,0 +1,2 @@
+# Runtime packages for this pack's recipes: the same pin the contract test needs (tests/requirements.txt), kept in one place.
+-r tests/requirements.txt

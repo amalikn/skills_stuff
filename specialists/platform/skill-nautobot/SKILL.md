@@ -32,8 +32,9 @@ nautobot-server --version; pip list 2>/dev/null | grep -iE 'nautobot|pynautobot|
 nautobot-server celery inspect ping -t 5; nautobot-server celery inspect active_queues; nautobot-server health_check
 ```
 
-`scripts/` holds tested, stdlib-only helpers: `nautobot_paging.py` (`listing()` adds a total order; `traverse()` refuses a listing that repeats,
-skips or miscounts) and `nautobot_ipam.py` (an address's mask from the narrowest network Prefix).
+`scripts/` holds tested, stdlib-only helpers (`just helpers`): `nautobot_paging.py` (`listing()` adds a total order; `traverse()` refuses a listing
+that repeats, skips or miscounts), `nautobot_ipam.py` (an address's mask from the narrowest network Prefix), `nautobot_masks.py` (plan and apply
+the mask fix) and `nautobot_linkage.py` (objects that belong to a Location but nothing links to, by registered rules).
 
 ## Route the task
 
