@@ -17,4 +17,4 @@ worked around on 2026-09-17, and again while promoting this rule into `.archcore
 
 ## Enforcement
 
-See ADR: `.archcore/adr/adr-vault-file-avoids-opa-blocked-words.md`
+See ADR: `.archcore/adr/vault-file-avoids-opa-blocked-words.adr.md`

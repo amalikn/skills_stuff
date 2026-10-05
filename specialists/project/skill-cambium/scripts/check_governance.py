@@ -127,6 +127,15 @@ EXAMPLE_MARKER = "path:example"
 # toolchain rather than a broken reference. Registered with a per-entry reason rather than silently ignore-listed, so
 # the exemption stays reviewable — remove an entry the day the artifact appears. Tune per project.
 CONDITIONAL_PATHS: frozenset[str] = frozenset({
+    # Archcore files renamed to the <slug>.<type>.md form on 2026-10-05 (v0.6.32). Earlier CHANGELOG entries name the old paths as
+    # history; these entries keep that record readable without restating it as a live claim.
+    ".archcore/README.md",
+    ".archcore/adr/adr-separate-pack-from-skill-smc.md",
+    ".archcore/adr/adr-vault-file-avoids-opa-blocked-words.md",
+    ".archcore/rules/rule-cambium-smc-cross-pack-boundary.md",
+    ".archcore/rules/rule-manifest-version-discipline.md",
+    ".archcore/rules/rule-vault-reference-convention.md",
+    ".archcore/specs/spec-specialist-pack-file-roles.md",
     "Taskfile.yml",                   # this pack uses justfile, not Task
     "Makefile",
     "package.json",                   # no Node toolchain here
@@ -557,7 +566,7 @@ def check_evidence_provenance() -> None:
 def check_manifest_freshness() -> None:
     """`manifest.json`'s `updated_at` is not older than the most recent CHANGELOG.md entry, TO THE MINUTE.
 
-    Enforces `.archcore/rules/rule-manifest-version-discipline.md`: "Update manifest.json whenever any content file in
+    Enforces `.archcore/rules/manifest-version-discipline.rule.md`: "Update manifest.json whenever any content file in
     this pack changes". That rule was violated for ~19 hours on 2026-09-17 — dozens of CHANGELOG entries landed (all
     four device adapters, site-addressing.yaml expansion, SNMP vault additions) while manifest.json's `updated_at`
     still read an early-morning bootstrap timestamp. Caught only by manual audit, because no check existed.
@@ -586,7 +595,7 @@ def check_manifest_freshness() -> None:
     if len(manifest_ts) == 12 and manifest_ts < latest:
         fail("manifest-freshness",
              f"manifest.json updated_at ({manifest_ts}) is older than CHANGELOG.md's latest entry ({latest}) "
-             "— rule-manifest-version-discipline.md requires bumping it in the same pass as a content change")
+             "— manifest-version-discipline.rule.md requires bumping it in the same pass as a content change")
 
 
 # --------------------------------------------------------------------------------------------------------------- MAIN

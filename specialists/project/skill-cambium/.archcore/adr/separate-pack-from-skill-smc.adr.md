@@ -40,4 +40,4 @@ Rationale:
 
 ## Enforcement
 
-See rule: [`.archcore/rules/rule-cambium-smc-cross-pack-boundary.md`](../rules/rule-cambium-smc-cross-pack-boundary.md)
+See rule: [`.archcore/rules/cambium-smc-cross-pack-boundary.rule.md`](../rules/cambium-smc-cross-pack-boundary.rule.md)

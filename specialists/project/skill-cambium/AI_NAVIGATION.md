@@ -32,7 +32,7 @@ equivalent and would delete them" -->
 
 ## Source priority
 
-1. `.archcore/` accepted ADRs, rules, specs — 6 documents accepted 2026-09-17; see [`.archcore/README.md`](.archcore/README.md) for the index
+1. `.archcore/` accepted ADRs, rules, specs — 6 documents accepted 2026-09-17; see [`.archcore/index.guide.md`](.archcore/index.guide.md) for the index
 2. `SKILL.md` (Standing Write-Back Contract, Use When, Related Skills)
 3. `references/*.md` (content source — the numbered files)
 4. `AGENTS.md` / `CLAUDE.md`
@@ -87,7 +87,7 @@ When recovering agent context after compaction (new session, cleared context win
 
 1. Read this file (`AI_NAVIGATION.md`) first for the mandatory read order and routing table above.
 2. Read `context-map.yaml` for the machine-readable routing map.
-3. Load `.archcore/` context if present — no longer empty: 6 documents (2 ADRs, 3 rules, 1 spec) accepted 2026-09-17, see [`.archcore/README.md`](.archcore/README.md) for the index. Re-check the
+3. Load `.archcore/` context if present — no longer empty: 6 documents (2 ADRs, 3 rules, 1 spec) accepted 2026-09-17, see [`.archcore/index.guide.md`](.archcore/index.guide.md) for the index. Re-check the
    count, it may have grown further.
 4. Regenerate `.ai-context/governance-pack.md`: `repomix --config repomix.config.json`.
 5. Verify `SCRATCHPAD.md` has current state; if empty or stale, populate from memory-keeper / mcp-project-context.

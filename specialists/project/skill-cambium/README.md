@@ -10,7 +10,7 @@ conventions, and the `device-inventory.csv` schema. Complements `skill-smc`, whi
 ## Folder index
 
 - [references/](references/) — 6 numbered reference files, progressive disclosure (content source)
-- [.archcore/](.archcore/) — durable rules, ADR, and spec for this pack (initialized 2026-09-17; 6 documents accepted the same day, see [.archcore/README.md](.archcore/README.md))
+- [.archcore/](.archcore/) — durable rules, ADR, and spec for this pack (initialized 2026-09-17; 6 documents accepted the same day, see [.archcore/index.guide.md](.archcore/index.guide.md))
 
 ## Governance pointers
 

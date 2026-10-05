@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261005_1934 — Archcore filenames brought to the <slug>.<type>.md form; index.guide.md replaces .archcore/README.md (v0.6.31 -> v0.6.32)](#20261005_1934--archcore-filenames-brought-to-the-slugtypemd-form-indexguidemd-replaces-archcorereadmemd-v0631---v0632)
 - [20261005_1545 — Capture-review notes: cnWave nic2 traffic, E-series radio off, ePMP STA table (v0.6.30 -> v0.6.31)](#20261005_1545--capture-review-notes-cnwave-nic2-traffic-e-series-radio-off-epmp-sta-table-v0630---v0631)
 - [20261005_1451 — R195P client IPv4 0.0.0.0 in cnMaestro explained; client-ip-sweep.sh added (v0.6.29 -> v0.6.30)](#20261005_1451--r195p-client-ipv4-0000-in-cnmaestro-explained-client-ip-sweepsh-added-v0629---v0630)
 - [20261005_1442 — Fleet SNMP identity gaps measured from the capture corpus (v0.6.28 -> v0.6.29)](#20261005_1442--fleet-snmp-identity-gaps-measured-from-the-capture-corpus-v0628---v0629)
@@ -79,6 +80,23 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261005_1934 — Archcore filenames brought to the <slug>.<type>.md form; index.guide.md replaces .archcore/README.md (v0.6.31 -> v0.6.32)
+
+### Changed
+
+- `archcore status` rejected all 7 files under `.archcore/` (filename must match `<slug>.<type>.md`; a bare README is not a document). Renamed with `git mv`, content unchanged:
+  the 2 ADRs, 3 rules and 1 spec now carry their type as a filename suffix instead of a prefix, and the index is `.archcore/index.guide.md` with YAML frontmatter
+  (`title`, `status: accepted`, `tags: [index]`) in place of the Title/Category header. `archcore status` now reports no issues.
+- Live references updated in `README.md`, `AI_NAVIGATION.md`, `AGENTS.md`, `scripts/check_governance.py` and the cross-references inside `.archcore/`. Earlier CHANGELOG entries keep
+  the old names as history; the old paths are registered in `scripts/check_governance.py` `CONDITIONAL_PATHS` so those mentions still pass path resolution.
+- `SKILL.md` Related skills: the platform-pack location is now the resolvable link `../../platform/` (it failed path resolution since v0.6.28).
+
+### Notes
+
+- Open, not done here: the skill-ai-it navigation validator fails this pack on stale managed blocks (`AGENTS.md` navigation and `scripts/README.md` scripts still carry the
+  2026-08-11 stamp) and warns on the `context-map.yaml` version; the fix is a `/skill-ai-it refresh`.
+- Done alongside the skill-ai-it bootstrap of the platform packs `skill-nautobot` and `skill-openwisp`, whose `.archcore/` was written in the compliant form from the start.
 
 ## 20261005_1545 — Capture-review notes: cnWave nic2 traffic, E-series radio off, ePMP STA table (v0.6.30 -> v0.6.31)
 

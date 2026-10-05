@@ -16,7 +16,7 @@ Defines the role and content-source status of every governance file in the skill
 | `SKILL.md`               | Agent-facing activation surface                    | Defines triggers, the Standing Write-Back Contract, and pointers to `references/` |
 | `RUNBOOK.md`             | Navigation index only                              | Maps task types to numbered reference files; not a content source                 |
 | `references/01_` – `05_` | Numbered content source files                      | Load only the one needed for the task                                             |
-| `manifest.json`          | Machine-readable specialist metadata               | Sole version-of-record — see `rule-manifest-version-discipline.md`                |
+| `manifest.json`          | Machine-readable specialist metadata               | Sole version-of-record — see `manifest-version-discipline.rule.md`                |
 | `AGENTS.md`              | Agent policy for pack maintenance                  | Governs contributors, not end-users                                               |
 | `CLAUDE.md`              | Claude Code governance wrapper                     | Pack maintenance only                                                             |
 | `AI_NAVIGATION.md`       | Human-readable context router                      | Pack maintenance only                                                             |

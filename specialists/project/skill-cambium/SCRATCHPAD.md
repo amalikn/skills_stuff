@@ -36,6 +36,9 @@ same pass as this note (2026-09-17, staleness audit).
 
 ## Open items
 
+- [ ] Run `/skill-ai-it refresh` here: the navigation validator fails on stale managed blocks (`AGENTS.md` navigation, `scripts/README.md` scripts at the 2026-08-11 stamp) and
+  warns on the `context-map.yaml` version (found 2026-10-05, v0.6.32).
+- [ ] `AGENTS.md` is not tracked in git (the repo's git info/exclude file ignores it repo-wide); the platform packs force-added theirs on 2026-10-05 — decide whether this pack should too.
 - [x] Authenticated device session — resolved 2026-09-17: real SSH CLI login (`show version`) and real REST API session (`login`/`get_facts`/`get_interfaces`/`logout`) both confirmed against Hope Vale
   Tower 1 (Enterprise Wi-Fi XV2-2T0). Credential (`<secret:keepassxc:cambium-devices/enterprise-wifi>`) confirmed correct against real hardware.
 - [ ] `hardware_revision` still UNKNOWN for all 17 models except what's now observed for XV2-2T0 (model/serial/firmware confirmed via `get_facts()` — hardware_revision itself not yet in scope of the
@@ -69,6 +72,7 @@ same pass as this note (2026-09-17, staleness audit).
 
 ## Recent decisions
 
+- 2026-10-05 — `.archcore/` renamed to the `<slug>.<type>.md` form with `.archcore/index.guide.md` (v0.6.32) so `archcore status` passes; old paths kept as reviewed exemptions for history.
 - 2026-09-17 — Operator rejected building a formal CLI/API grammar + capability-model skill (`device-interface-modeler`) ahead of any real adapter code, despite a real multi-vendor plan. Resolved via
   `skill-walk-before-run` (RED, then RESOLVED by the `scripts/cambium_xv2_adapter.py` test — `PASS`, schema not needed). Standing rule going forward: build the next vendor's adapter the same way (own
   specialist skill pack, plain code against the real device) — revisit formal schema only once a second real vendor adapter exists to design against.
@@ -82,6 +86,11 @@ same pass as this note (2026-09-17, staleness audit).
 
 ## Session history (summaries — full detail in memory-keeper)
 
+### 2026-10-05 — Archcore filename compliance (v0.6.32)
+
+- `git mv` of 7 `.archcore/` files; live references updated; `SKILL.md` platform-pack link fixed; `just check` 237 OK, `archcore status` clean.
+- Evidence basis: memory-keeper key `platform-packs.slurp.20261005`.
+
 ### 2026-09-17 (~21:21-22:15) — first whole-pack staleness audit, coherence sweep, first-ever commit
 
 - Ran skill-staleness-audit in full detail mode: gate PASSED, checks 133→145. Found and fixed 13 defects, the two most material being a KEEP-block in this file that still claimed only the XV2 family
@@ -90,7 +99,7 @@ same pass as this note (2026-09-17, staleness audit).
   VERIFIED-OBSERVED state of all four families, a frozen `manifest.json` version/timestamp, a superseded R195P `stable_fact`, and two "5 reference files" miscounts (file `06` already existed). Added
   `check_manifest_freshness` and populated the previously-empty `COUNT_CLAIMS` registry in `scripts/check_governance.py`, both negative-tested.
 - Coherence sweep then propagated those fixes further: checks 145→150. `AI_NAVIGATION.md` and `context-map.yaml` were both missing routing rows/entries for reference files 05 and 06;
-  `.archcore/README.md` and its manifest-version-discipline rule still claimed no automated check existed for manifest freshness, immediately after the audit added one. Verified `skill-smc` only ever
+  the archcore index (then a README) and its manifest-version-discipline rule still claimed no automated check existed for manifest freshness, immediately after the audit added one. Verified `skill-smc` only ever
   references this pack by topic, never by version or file count, so nothing there needed reconciling.
 - **Committed this pack to git for the first time.** It had accumulated a full day of real work (four live-verified adapters, `references/site-addressing.yaml` expanded to all 10 sites, SNMP vault
   entries, `.archcore/` rules and ADRs) with zero version-control history until now. `skills_stuff` repo (this pack is a subpath, remote `https://github.com/amalikn/skills_stuff`), commit `1d25892`,
@@ -128,7 +137,7 @@ same pass as this note (2026-09-17, staleness audit).
   constraint; flagged for the operator to commit.
 - **`skill-project-coherence` run 2026-09-17 ~21:45, propagating the staleness audit above.** Found and fixed two companion-file gaps the audit itself didn't reach: `AI_NAVIGATION.md` still said "5
   files" in a managed-block comment and was missing a routing-table row for `references/06_device-api-cli-reference.md`; `context-map.yaml`'s `routing`/`update_rules` sections had no entries for files
-  05/06 at all. Also found `.archcore/README.md` and its manifest-version-discipline rule still claimed "no automated check yet" after the audit added `check_manifest_freshness` — corrected. See
+  05/06 at all. Also found the archcore index (then a README) and its manifest-version-discipline rule still claimed "no automated check yet" after the audit added `check_manifest_freshness` — corrected. See
   CHANGELOG `20260917_2145`. The untracked-directory item above is still open — this pass did not touch git state, per its own constraint.
 
 ---
