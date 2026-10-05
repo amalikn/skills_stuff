@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261005_1545 — Capture-review notes: cnWave nic2 traffic, E-series radio off, ePMP STA table (v0.6.30 -> v0.6.31)](#20261005_1545--capture-review-notes-cnwave-nic2-traffic-e-series-radio-off-epmp-sta-table-v0630---v0631)
 - [20261005_1451 — R195P client IPv4 0.0.0.0 in cnMaestro explained; client-ip-sweep.sh added (v0.6.29 -> v0.6.30)](#20261005_1451--r195p-client-ipv4-0000-in-cnmaestro-explained-client-ip-sweepsh-added-v0629---v0630)
 - [20261005_1442 — Fleet SNMP identity gaps measured from the capture corpus (v0.6.28 -> v0.6.29)](#20261005_1442--fleet-snmp-identity-gaps-measured-from-the-capture-corpus-v0628---v0629)
 - [20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.6.27 -> v0.6.28)](#20261005_1350--related-skills-platform-packs-skill-nautobot-and-skill-openwisp-v0627---v0628)
@@ -78,6 +79,10 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261005_1545 — Capture-review notes: cnWave nic2 traffic, E-series radio off, ePMP STA table (v0.6.30 -> v0.6.31)
+
+- `references/06_device-api-cli-reference.md`: new section with three device facts from the UNC capture review, each checked against its capture.
 
 ## 20261005_1451 — R195P client IPv4 0.0.0.0 in cnMaestro explained; client-ip-sweep.sh added (v0.6.29 -> v0.6.30)
 

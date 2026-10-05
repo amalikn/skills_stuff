@@ -687,3 +687,16 @@ Found while taking enterprise Wi-Fi end to end into OpenWISP (mowanjum E500 and 
   XV2-22H only (the XV2-2T0 has two Ethernet ports), plus `VLAN501` on four of five units. `HOP_XV2_AP26_IP3_26` listed no `VLAN501`, although its `HopeVale_WiFi` WLAN is on VLAN 501 like the others.
   It is not the client count at read time: AP27 and AP35 had no clients and still listed it. The cause is **unverified**; a restart about 7 hours earlier on AP26 is one lead. Callers must iterate the
   interfaces a device reports, never assume a fixed set.
+
+## Capture-review notes (2026-10-05)
+
+Three device facts found when the UNC capture corpus was reviewed for lessons; each was checked against the capture named.
+
+- **cnWave `getNetworkStats`:** `nic1` can be an unused port whose counters stay at zero. Request `nic1` to `nic3` in one call and read traffic from
+  the port that carries it (`nic2` on the V5000 DN and V3000 CN observed); zero on `nic1` does not mean the node is idle. Evidence: the cnWave canary at
+  horn-island, 2026-09-22 (`nic1` and `nic3` 0, `nic2` non-zero on both nodes).
+- **Enterprise Wi-Fi radio summary:** a switched-off radio reports `channel` as `-` and `radio_state` as `OFF`, so it has no frequency. Treat it as a
+  down radio and never parse the channel as a number. Seen on E500 4.2.3.1-r9; UNVERIFIED for XV2 and other firmware.
+- **ePMP AP connected stations:** the obsolete `cambiumAPConnectedSTAListTable` (`.1.3.6.1.4.1.17713.21.1.2.11`) answers noSuchObject on live ePMP
+  3000L APs; per-SM data comes only from `cambiumAPConnectedSTATable` (`.1.3.6.1.4.1.17713.21.1.2.30`). Evidence: the T1/T2 capture at hope-vale,
+  2026-09-21. Firmware version not in the capture (UNVERIFIED).
