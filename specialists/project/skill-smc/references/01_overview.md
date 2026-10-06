@@ -255,6 +255,8 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
   802.1X are not used anywhere.
 - **Satellite round trip.** Depends on the link: Sky Muster Plus 600–800 ms; Starlink under 100 ms. Operator figures, not a measurement.
 - **MQTT.** The IoT devices behind mosquitto monitor the UPS and the battery boxes; `apn-mqtt-client` collects the data, and Rob is its main user.
+  Security: `roles/smc_mqtt/tasks/main.yml` writes the `APN_IOT` broker password as a literal value (not a variable) into `/etc/mosquitto/mosquitto.passwd` with mode 0644, on
+  HEAD, `big_push` and `master` (checked 2026-10-06). Rotate it and move it to the secrets store.
 - **Tstik.** Thuraya is to be replaced by Iridium; whether the same Tstik is used afterwards is unknown (to check with Germain, NOC).
 - **postfix.** Decision: listen on loopback only (`inet_interfaces = loopback-only`). Not yet implemented.
 - **autossh backdoor and DNS-over-TLS tunnel.** Retirement undecided.

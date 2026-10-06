@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261006_1842 — MQTT broker password is a literal in the role (v0.1.87 -> v0.1.88)](#20261006_1842--mqtt-broker-password-is-a-literal-in-the-role-v0187---v0188)
 - [20261006_1840 — Product name is Litebooth (v0.1.86 -> v0.1.87)](#20261006_1840--product-name-is-litebooth-v0186---v0187)
 - [20261006_1834 — Operator answers, second round: portal, filtering, url_capture, VoIP, switches, links, monitoring, resiliency scope (v0.1.85 -> v0.1.86)](#20261006_1834--operator-answers-second-round-portal-filtering-url_capture-voip-switches-links-monitoring-resiliency-scope-v0185---v0186)
 - [20261006_1805 — Operator answers from the enterprise-strategy register: platforms and counts corrected, hosting, MQTT, low touch, people (v0.1.84 -> v0.1.85)](#20261006_1805--operator-answers-from-the-enterprise-strategy-register-platforms-and-counts-corrected-hosting-mqtt-low-touch-people-v0184---v0185)
@@ -101,6 +102,10 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261006_1842 — MQTT broker password is a literal in the role (v0.1.87 -> v0.1.88)
+
+- `references/01_overview.md`: `smc_mqtt` writes the broker password as a literal, file mode 0644, on HEAD, `big_push` and `master`; rotate and move to the secrets store.
 
 ## 20261006_1840 — Product name is Litebooth (v0.1.86 -> v0.1.87)
 
