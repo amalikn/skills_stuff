@@ -282,7 +282,7 @@ pending vs. offline is distinguished by whether the watchdog series has ever exi
 ## Live services and listeners, hope-vale-smc01 (2026-09-30)
 
 Read-only (`systemctl list-units --type=service --state=running`, `ss -lntup`) on nbn_accelerate, BOXER-6641, Ubuntu 22.04.3: 60 running services.
-Listeners: sshd tcp/22, postfix tcp/25 on 0.0.0.0 (not in this map's intended set; open question), apache2 tcp/80 and 443, unbound tcp+udp/53
+Listeners: sshd tcp/22, postfix tcp/25 on 0.0.0.0 (not in this map's intended set; operator 2026-10-06: restrict to loopback, not yet done), apache2 tcp/80 and 443, unbound tcp+udp/53
 (control 127.0.0.1:8953), squid tcp/3128-3131, iperf3 tcp/55200-55209 (ten `iperf552NN` units), prometheus tcp/9090, node_exporter tcp/9100,
 mosquitto tcp/1883 on the management address only, snmpd udp/161 on 10.255.0.1 and 127.0.0.1, ntpd udp/123 on every address, rsyslogd udp/514,
 dhcpd udp/67, stubby 127.0.0.1:60053, speedtest_exporter 127.0.0.1:9798, and the tsh forwards 127.0.0.1:50007, 59090, 60007, 60853. One

@@ -142,7 +142,8 @@ other direction.
 - When adding a script, document purpose, inputs, outputs, safety, idempotency, and when to use it.
 - Run with `python3 scripts/check_governance.py` (no venv in this pack — stdlib only).
 
-<!-- BEGIN MANAGED: skill-ai-it:scripts --> <!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->
+<!-- BEGIN MANAGED: skill-ai-it:scripts -->
+<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
 
 ## Execution Policy
 

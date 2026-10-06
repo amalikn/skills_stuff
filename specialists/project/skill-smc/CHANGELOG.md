@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20261006_1805 — Operator answers from the enterprise-strategy register: platforms and counts corrected, hosting, MQTT, low touch, people (v0.1.84 -> v0.1.85)](#20261006_1805--operator-answers-from-the-enterprise-strategy-register-platforms-and-counts-corrected-hosting-mqtt-low-touch-people-v0184---v0185)
+- [20261006_1217 — Hardware watchdog constraints: RuntimeWatchdogSec semantics, Raspberry Pi 15 s ceiling, overlayroot persistence (v0.1.83 -> v0.1.84)](#20261006_1217--hardware-watchdog-constraints-runtimewatchdogsec-semantics-raspberry-pi-15-s-ceiling-overlayroot-persistence-v0183---v0184)
 - [20261005_1505 — cnMaestro 0.0.0.0 client IPs: SMC DHCP verified healthy; dhcpd unexpected-ICMP log line explained (v0.1.82 -> v0.1.83)](#20261005_1505--cnmaestro-0000-client-ips-smc-dhcp-verified-healthy-dhcpd-unexpected-icmp-log-line-explained-v0182---v0183)
 - [20261005_1442 — IPSSH banner hosts recorded as unverified switch candidates (v0.1.81 -> v0.1.82)](#20261005_1442--ipssh-banner-hosts-recorded-as-unverified-switch-candidates-v0181---v0182)
 - [20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.1.80 -> v0.1.81)](#20261005_1350--related-skills-platform-packs-skill-nautobot-and-skill-openwisp-v0180---v0181)
@@ -97,6 +99,21 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261006_1805 — Operator answers from the enterprise-strategy register: platforms and counts corrected, hosting, MQTT, low touch, people (v0.1.84 -> v0.1.85)
+
+- `references/01_overview.md`: `wh` and `nbn_wh` corrected from x86 to Raspberry Pi (APN vs NBN table and flavour table); `rcp` 18 and `wh` 24 production sites; new section 2 records the operator
+  answers of 6 Oct 2026 (hosting, satellite latency, VRRP, MQTT, Tstik, postfix, tunnels, A/B, watchdog, low touch, people).
+- `SKILL.md`: `smc_ltp` is 8 production sites per the operator; `pia` is not low touch.
+- `SKILL.md`: the platform-pack pointer now uses the pack-relative path `../../platform/`; the governance path check failed on `specialists/platform`.
+- `references/06_failure-modes.md`: Teleport connectivity on 6 Oct 2026 (five `wh` hubs not connected) and the operator's acceptance of a hardware watchdog, spare first.
+- `references/02_service-map.md`: postfix decision (loopback only), not yet implemented.
+
+## 20261006_1217 — Hardware watchdog constraints: RuntimeWatchdogSec semantics, Raspberry Pi 15 s ceiling, overlayroot persistence (v0.1.83 -> v0.1.84)
+
+From apn/enterprise-strategy (pain point P17, Hub SMCs that hang and stay down). `references/06_failure-modes.md` "Silent Total Hang" gains *Verified constraints on the fix*:
+`RuntimeWatchdogSec=` semantics from systemd-system.conf(5); the `bcm2835_wdt` maximum timeout of about 15 s from the raspberrypi/linux driver source; the overlayroot persistence trap
+(the watchdog's own reboot discards a config written only to the upper dir); and that the enterprise-strategy SMC resiliency plan covers failed updates only. Read back after writing.
 
 ## 20261005_1505 — cnMaestro 0.0.0.0 client IPs: SMC DHCP verified healthy; dhcpd unexpected-ICMP log line explained (v0.1.82 -> v0.1.83)
 
@@ -218,7 +235,7 @@ three defects, the fix and the tests. Read back after writing.
 
 ## 20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)
 
-Found by unified-network-controller Step 8 (report `docs/reports/controller-option3/step8-extensions-tftp-intent-20260927_1949.md` there). `references/08_ansible-authoring.md`, the TFTP bullet of
+Found by unified-network-controller Step 8 (report `docs/reports/smc-and-site-network/step8-extensions-tftp-intent-20260927_1949.md` there). `references/08_ansible-authoring.md`, the TFTP bullet of
 "What a low-touch SMC keeps per device": the role never creates `/var/lib/tftpboot` (22.04's `tftpd-hpa` makes `/srv/tftp`), the seven per-extension keys and the tab-separated lines,
 wangkatjungka-smc01's configs from an uncommitted template variant, the `extension_end` hosts the role cannot render, low-touch CSVs starting at 1000 against cnMaestro ranges at x001, and the older
 10.255.1.x layout. `references/07_hardware-overlay.md`: the "template hard-codes Cloud" line corrected for what boxes actually serve. Read back after writing.

@@ -193,7 +193,7 @@ config all` over SSH is that path for this family. Not yet wired into Oxidized o
 ## Write Operations — XV2-22H REST writes proven on one test unit (2026-09-29)
 
 Read from the unit's own UI bundle (`assets/falcon-ng-client-2.0.0.min.js`, 6.6.0.3-r9; unified-network-controller
-`docs/reports/controller-option3/xv2-rest-config-write-20260929_1900.md` and its sources folder) and exercised on `daniel-test-nbn-Generic_XV2-22H_APX_IPX_X`
+`docs/reports/device-families/xv2-rest-config-write-20260929_1900.md` and its sources folder) and exercised on `daniel-test-nbn-Generic_XV2-22H_APX_IPX_X`
 (serial W4ZA0MQ97WNS), a stage test unit, with the operator's agreement:
 
 - Each section writes with `POST /api/<section>-config` (`system`, `radio`, `network`, `ethports`, `vlan`, `dhcp`, `firewall`, `service`, `wlan`; plus

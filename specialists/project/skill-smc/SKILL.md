@@ -101,9 +101,9 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
 - DHCP: `dhcpd -t -cf /etc/dhcp/dhcpd.conf` (config test); `grep -i error /var/log/syslog`
 - DNS, non-`smc_ltp` hosts (all flavors — Unbound + Stubby, client path only): `unbound-checkconf`; `unbound-control status`; `systemctl status stubby`; config at `/etc/unbound/`, DoT upstream config
   at `/etc/stubby/stubby.yml` (Stubby listens on `127.0.0.1@60053`, single upstream `127.0.0.1@60853` via autossh local forward, no failover)
-- DNS, `smc_ltp` hosts only (static `rcp` group, 9 sites — `guda-guda`, `pia`, `umoona`, `warburton`, `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra` (nine on `big_push`, re-read
-  2026-09-27: `pia` and `yakanarra` had been missing from this list) — all "low touch"-onboarded sites; also runs CNMaestro Cambium backhaul provisioning, see `references/08_ansible-authoring.md`):
-  `named-checkconf`; `rndc status`; verify zones loaded in `/etc/bind/`
+- DNS, `smc_ltp` hosts only (static `rcp` group; the operator gives 8 production sites, 2026-10-06 — `pia` is not low touch although `big_push` lists it — `guda-guda`, `pia`, `umoona`, `warburton`,
+  `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra` (nine on `big_push`, re-read 2026-09-27: `pia` and `yakanarra` had been missing from this list) — all "low touch"-onboarded
+  sites; also runs CNMaestro Cambium backhaul provisioning, see `references/08_ansible-authoring.md`): `named-checkconf`; `rndc status`; verify zones loaded in `/etc/bind/`
 - DNS, host's own resolution (separate from the two rows above — see `references/02_service-map.md`): `resolvectl status`; `systemctl status systemd-resolved`; `DNSStubListener=no` by default means
   the box's own `getaddrinfo()` bypasses Unbound/Stubby/BIND entirely
 
@@ -219,7 +219,7 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - **`skill-cambium`** — the Cambium device/hardware layer this fleet's boxes provision and manage: device families/firmware, local-admin credential vault, cnMaestro estate, asset-register conventions,
   device-inventory schema. Call it for anything about the radios/APs themselves rather than the SMC box or Ansible. It calls back here for: SMC service troubleshooting, Ansible topology/role
   questions, `smc_cnmaestro_provisioning` behaviour, Teleport access. Neither pack duplicates the other's content — cross-reference, don't copy.
-- **`skill-nautobot`** and **`skill-openwisp`** (canonical under `specialists/platform/`) — the platform layer this fleet's inventory and monitoring run on. Call them for
+- **`skill-nautobot`** and **`skill-openwisp`** (canonical under `../../platform/`) — the platform layer this fleet's inventory and monitoring run on. Call them for
   Nautobot models, APIs, Jobs and onboarding mechanics, or OpenWISP registration, metrics, workers and storage. A SMC box or Ansible fact stays here; a fact true of any
   Nautobot or OpenWISP deployment goes to them as a dated Learned entry.
 

@@ -215,7 +215,7 @@ branch without that play, `smc_ltp.yml --check` fails with `'client_secret' is u
 `dhcpd.conf` identical and netplan four blank lines apart. Conversion not pursued (operator, 2026-09-29).
 
 **The low-touch contract, read end to end (2026-09-30, unified-network-controller
-`docs/reports/controller-option3/cnmaestro-low-touch-contract-20260930_0319.md`).** `cnmaestro-provisioning.py` (big_push, 4,514 lines) runs on every
+`docs/reports/device-families/cnmaestro-low-touch-contract-20260930_0319.md`).** `cnmaestro-provisioning.py` (big_push, 4,514 lines) runs on every
 20 s provisioning-VLAN lease as a daemon, one per MAC. It calls `https://<fqdn>/wifi-dashboard/smc/v1/cnmaestro<cnMaestro v2 resource>` with the
 site access key as bearer: `GET /devices/<mac>` (state, product, mode, parent), `GET /devices?managed_account=&network=` (the site snapshot every
 allocation is made against), `PUT /devices/<mac>` to approve (name, account, network, `approved`, description JSON with `us`, auto variables,
@@ -1027,7 +1027,7 @@ selectors; isolate competing old-plugin outputs only for migrated fixtures/sites
 Compare complete variables and rendered network/DHCP/firewall/monitoring outputs, not only four maps or serialized bytes. Two generic profiles do not prove fleet-wide compatibility. The related
 Nautobot controller workspace exists; its current rollout state was not assessed.
 
-**Consolidated design.** [RCP topology authoring and integration plan](/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/plans/20261002_1115_topology-authoring-kapitan-vs-cue-plan.md).
+**Consolidated design.** [RCP topology authoring and integration plan](/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/plans/topology-authoring-kapitan-vs-cue-plan-20261002_1115.md).
 Status: proposal/documentation only; no adapter implemented, topology/cache mutation or live deployment.
 
 **Validation evidence.** `ANSIBLE_LOCAL_TEMP=/tmp/ansible-wifi-topology-check /opt/homebrew/Cellar/ansible/14.4.0_1/libexec/bin/python` instantiated `Topology(...).flatten()` separately for each
@@ -1954,7 +1954,7 @@ The per-device records an `rcp` low-touch box holds are projections of two sourc
 - **`/var/lib/tftpboot/<extension>.cfg`** (`roles/smc_router_provisioning`): one flat nvram `key=value` file per extension from `r195_template.cfg.j2` (`r195_tjuntjun_template.cfg.j2` for `TJUN`), fed
   by `item.extension/mgmt_ip/public_ip/password` plus site vars (`HostName=<SITE>-R195P-<ext>`, `mwan_ipaddr`, SIP account and password, `SNMPTrapCommunity`, TR-069 ACS credentials in clear). The
   directory is emptied and regenerated on every run and served by `tftpd-hpa`. How a unit learns its file name is `UNVERIFIED`: nothing in `smc_dhcpd` sets option 66. **Added 2026-09-27
-  (unified-network-controller Step 8 report `docs/reports/controller-option3/step8-extensions-tftp-intent-20260927_1949.md`):** the role never creates `/var/lib/tftpboot`; Ubuntu 22.04's `tftpd-hpa`
+  (unified-network-controller Step 8 report `docs/reports/smc-and-site-network/step8-extensions-tftp-intent-20260927_1949.md`):** the role never creates `/var/lib/tftpboot`; Ubuntu 22.04's `tftpd-hpa`
   (5.2+20150808-1.2build2) creates `/srv/tftp`, so on a fresh box the unarchive fails ("must be an existing dir"), and production boxes have the directory only from older images. The files are a pure
   function of the CSV row plus the site short name (seven per-extension keys: `DBID_SIP_ACCOUNT`, `DBID_SIP_DIS_NAME`, `DBID_SIP_PASSWORD`, `DBID_SIP_PHONE_NUM`, `HostName`, `SNMPTrapCommunity`,
   `mwan_ipaddr`); 260 lines separate per-port values with tabs, which must stay tabs. wangkatjungka-smc01's live set was rendered from an uncommitted variant of the template (lines reordered,

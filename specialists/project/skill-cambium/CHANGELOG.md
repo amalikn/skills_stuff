@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261006_1805 — Who to ask (Germain, Mark, Brendan, Gravolin, Rob) and low touch after cnMaestro (v0.6.32 -> v0.6.33)](#20261006_1805--who-to-ask-germain-mark-brendan-gravolin-rob-and-low-touch-after-cnmaestro-v0632---v0633)
 - [20261005_1934 — Archcore filenames brought to the <slug>.<type>.md form; index.guide.md replaces .archcore/README.md (v0.6.31 -> v0.6.32)](#20261005_1934--archcore-filenames-brought-to-the-slugtypemd-form-indexguidemd-replaces-archcorereadmemd-v0631---v0632)
 - [20261005_1545 — Capture-review notes: cnWave nic2 traffic, E-series radio off, ePMP STA table (v0.6.30 -> v0.6.31)](#20261005_1545--capture-review-notes-cnwave-nic2-traffic-e-series-radio-off-epmp-sta-table-v0630---v0631)
 - [20261005_1451 — R195P client IPv4 0.0.0.0 in cnMaestro explained; client-ip-sweep.sh added (v0.6.29 -> v0.6.30)](#20261005_1451--r195p-client-ipv4-0000-in-cnmaestro-explained-client-ip-sweepsh-added-v0629---v0630)
@@ -80,6 +81,11 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261006_1805 — Who to ask (Germain, Mark, Brendan, Gravolin, Rob) and low touch after cnMaestro (v0.6.32 -> v0.6.33)
+
+- `references/01_overview.md`: new section from the operator's answers of 6 Oct 2026 — who to ask (Germain: NOC, Cambium and the Wi-Fi dashboard; Mark: NOC desktop RF study per deployment; Brendan:
+  field team; Gravolin; Rob), low touch unchanged when the Unified Network Controller replaces cnMaestro, more than two days on site, 8 `smc_ltp` sites.
 
 ## 20261005_1934 — Archcore filenames brought to the <slug>.<type>.md form; index.guide.md replaces .archcore/README.md (v0.6.31 -> v0.6.32)
 
@@ -1544,3 +1550,22 @@ complying or silently ignoring it; no code or governance change was made to acco
 - Read back `references/06_device-api-cli-reference.md` in the same session — all 4 new/updated sections present as written (subject to this repo's own markdown-formatter hook reflowing table
   whitespace, not content).
 - `python3 scripts/check_governance.py` — see this session's run for pass/fail count.
+
+## 2026-10-05 — deterministic navigation-control upgrade
+
+<!-- skill-ai-it-upgrade: 2026-09-23-template-sourced-blocks-v1 -->
+
+- Applied `skill-ai-it` deterministic navigation-control upgrade.
+- Upgraded managed navigation/scripts blocks to version `2026-09-23-template-sourced-blocks-v1`.
+- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
+- Preserved user-authored content outside managed blocks.
+- Generated outputs remain support-only; no `.archcore/` promotion was performed.
+
+Applied to: context-map.yaml, AGENTS.md, scripts/README.md
+
+### Refresh follow-up (skill-ai-it refresh, 20261005_1940)
+
+- `repomix.config.json` created from the skill template and `repomix --config repomix.config.json` run — `.ai-context/` is generated support only.
+- `graphify update .` run — `graphify-out/` regenerated (239 nodes, 444 edges, 13 communities); generated support only.
+- `AI_NAVIGATION.md` left untouched: it carries the `skill-ai-it:manual` opt-out; the generic block is in `AI_NAVIGATION.md.proposed-navigation-block` for reference only.
+- `scripts/check_governance.py` run from the working-cache venv — 243 checks passed.

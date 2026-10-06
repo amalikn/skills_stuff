@@ -260,6 +260,12 @@ not `Type=oneshot`. Noise and needless wear, not the cause of the hang — fix i
 `wh` (2026-08-28): same signature, still open: **kintore** dark since ~June 2026, **orrtipa-thurra-bonya** and **yuelamu** dark since ~August 2026. **glen-hill** and **violet-valley** returned
 recently after months dark.
 
+`wh` (2026-10-06 17:50 AEDT, read-only `tsh ls`): 19 of 24 connected to Teleport. Not connected: **kintore**, **kupungarri**, **nyirripi**, **orrtipa-thurra-bonya**, **yuelamu**
+(`yuelamu-smc01`; the `rct` box `yuelamu-10mile-smc01` is connected). Not connected to Teleport is not proof of a hang — a hung Teleport agent looks the same. Operator: a couple may need a site
+visit. `rcp` the same day: 17 production nodes connected, against 18 production sites (operator).
+
+Operator, 2026-10-06: a hardware watchdog is acceptable for this hang; test it on the spare (`spare-smc01`) first.
+
 `rcp` (2026-09-07): **pandanus-park-smc01** dark since 2026-09-05 08:29 UTC (see above) — first `rcp` instance found. Not yet checked whether other `rcp` sites (single-SMC, no RISE) carry the same
 undetected exposure; a fleet-wide `up{flavor="rcp"}` absence sweep has not been run.
 
@@ -271,6 +277,18 @@ Enable a hardware watchdog on every flavor that lacks one:
   in the RISE stack sits above the layer that fails.
 - `rcp` (x86): needs the same treatment via the x86-equivalent driver (e.g. `iTCO_wdt`/`sp5100_tco` depending on chassis) plus `RuntimeWatchdogSec` — confirm hardware support per chassis model before
   assuming parity with the RPi fix. `rcp` currently has zero recovery layer of any kind (see "Why `rcp` is exposed too" above), so this is a bigger gap than `wh`'s inert-but-present one.
+
+**Verified constraints on the fix (2026-10-06, enterprise-strategy P17 review):**
+
+- `RuntimeWatchdogSec=` (systemd-system.conf(5), "Hardware Watchdog") programs `/dev/watchdog0` to reboot the system if systemd does not contact it within the timeout; systemd pings at
+  least every half-interval, and the setting does nothing without a hardware watchdog device. Source: freedesktop.org systemd-system.conf man page (systemd 262, read 2026-10-06). Ubuntu 22.04
+  ships an older systemd — confirm the option on a box before rollout.
+- **The Raspberry Pi watchdog tops out at ~15 s.** `bcm2835_wdt.c` (raspberrypi/linux `rpi-6.6.y`): `PM_WDOG_TIME_SET 0x000fffff`, `WDOG_TICKS_TO_SECS(x) ((x) >> 16)` → 1,048,575 / 65,536 ≈
+  15.99 s, and `.timeout` defaults to that maximum. Any `RuntimeWatchdogSec` above it is clamped to the nearest supported value, so set it at or below 15 s.
+- **Persistence on overlayroot:** the `systemd` drop-in and any module-load config must be written to the lower dir (`/media/root-ro`) or they vanish on the first reboot — the reboot the
+  watchdog itself causes. Not yet tested on any `wh` box.
+- The SMC resiliency plan in `apn/enterprise-strategy/workstreams/continuity/` scopes recovery from **failed updates** only; this hang is not update-related, so that plan as written does not
+  cover it. Options note: `smc-hang-recovery-options-20261006_1214.md` in that folder.
 
 ---
 
@@ -433,7 +451,7 @@ serves no DHCP until someone runs `systemctl reset-failed isc-dhcp-server; syste
 
 What avoids it: the apply surface ansible-wifi's own handler uses, `netplan generate` then `networkctl reload`, which reconfigures only the links whose config changed; and, after any apply or
 rollback, `systemctl reset-failed` plus `restart` of the services that bind to the bridges (`isc-dhcp-server`, `named`) before judging health. A rollback that restores the network and leaves DHCP dead
-is not a rollback (unified-network-controller `wc-local/scripts/smc/smc_intent.py`, report `docs/reports/controller-option3/step7-smc-intent-rehearsal-20260927_0226.md`).
+is not a rollback (unified-network-controller `wc-local/scripts/smc/smc_intent.py`, report `docs/reports/smc-and-site-network/step7-smc-intent-rehearsal-20260927_0226.md`).
 
 Same hook, same risk anywhere many links become routable together: a reboot with many VLANs, an `ansible-playbook` run whose `networkctl reload` touches many links at once, a cable event on the trunk
 port. Worth checking on a production box after any of those: `systemctl is-active isc-dhcp-server`. The hook's own guard (`systemctl status` before `restart`) does not stop the storm; a

@@ -117,8 +117,9 @@ and has real functional differences beyond the SSH endpoint — do not assume "c
 | ----------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
 | Central-infra inventory | `inventories/apn/` — jenkins, prometheus_aws,                      | `inventories/cw/` — jenkins, prometheus_aws, teleport_aws; **no graylog/opensearch host groups**      |
 |                         |   teleport_aws, **graylog_servers, opensearch_servers**            |                                                                                                       |
-| Site-fleet inventories  | `rcp` (x86, ~10 sites, VoIP), `rct` (RPi, ~300+ sites — largest    | `nbn_accelerate` (x86, ~20 sites), `nbn_wh` (x86, 2 real sites + 1 generic template)                  |
-|                         |   fleet in repo), `wh` (x86, ~15 sites)                            |                                                                                                       |
+| Site-fleet inventories  | `rcp` (x86, 18 prod sites, VoIP), `rct` (RPi, read-only, ~300+     | `nbn_accelerate` (x86, ~20 sites), `nbn_wh` (RPi, overlayroot not yet active, 2 real sites +          |
+|                         |   sites — largest fleet in repo), `wh` (RPi, read-only, 24         |   1 generic template)                                                                                 |
+|                         |   sites); platform and counts: operator 2026-10-06                 |                                                                                                       |
 | Kernel-update pipeline  | Full automated Jenkins kernel-update pipeline                      | **Absent** — `cw/group_vars/jenkins.yml` has no kernel-update keys or toggle at all                   |
 |                         |   (`jenkins_update_kernel` batch/quarantine config) in             |                                                                                                       |
 |                         |   `apn/group_vars/jenkins.yml`; per-flavor                         |                                                                                                       |
@@ -234,9 +235,33 @@ different* circuits as access-VLANs.
 | cw             | x86         | NBN Accelerate cluster — central infra hub |
 | rcp            | x86         | RCP network                                |
 | rct            | ARM64 (RPi) | Raspberry Pi-based                         |
-| wh             | x86         | WH network                                 |
+| wh             | RPi         | WH network (read-only)                     |
 | nbn_accelerate | x86         | NBN Accelerate broadband                   |
-| nbn_wh         | x86         | NBN WH                                     |
+| nbn_wh         | RPi         | NBN WH (read-only not yet active)          |
 
 ---
+
+---
+
+## 2. Operator answers, 6 Oct 2026
+
+Answers the operator gave to the enterprise-strategy clarification register (`/Volumes/Data/_ai/_project/project_stuff/apn/enterprise-strategy/requirements/clarification-register-20261006_1430.md`),
+`USER_STATED`. Where they differ from older statements in this pack, they win.
+
+- **Platforms.** `rct`, `wh` and `nbn_wh` are Raspberry Pi; every other flavour is x86. `rct` and `wh` are read-only (overlayroot); `nbn_wh` is not yet.
+- **Site counts.** `wh` 24 sites; `rcp` 18 production sites; `smc_ltp` 8 sites — `pia` is not low touch, although `big_push` lists it.
+- **VRRP.** Only aurukun (three SMCs, `nbn_accelerate`) runs keepalived; no `rcp`, `wh`, `nbn_wh` or `rct` site does.
+- **Central hosting.** Prometheus and Graylog run in AWS Sydney (ap-southeast-2) and are managed by Malik. Eclipse is hosted in SY3, is high availability and is monitored by the NOC. RADIUS and
+  802.1X are not used anywhere.
+- **Satellite round trip.** Depends on the link: Sky Muster Plus 600–800 ms; Starlink under 100 ms. Operator figures, not a measurement.
+- **MQTT.** The IoT devices behind mosquitto monitor the UPS and the battery boxes; `apn-mqtt-client` collects the data, and Rob is its main user.
+- **Tstik.** Thuraya is to be replaced by Iridium; whether the same Tstik is used afterwards is unknown (to check with Germain, NOC).
+- **postfix.** Decision: listen on loopback only (`inet_interfaces = loopback-only`). Not yet implemented.
+- **autossh backdoor and DNS-over-TLS tunnel.** Retirement undecided.
+- **A/B update mechanism.** Undecided; the `ansible-wifi` SCRATCHPAD recommendation (tryboot on RPi, Mender on x86) is not approved.
+- **Hardware watchdog (P17).** Acceptable; test on the spare (`spare-smc01`) first. Constraints: [06_failure-modes.md](06_failure-modes.md).
+- **Low touch after cnMaestro.** Nothing should change for the field or the NOC: the Unified Network Controller takes over the steps cnMaestro performs today (claim, approve, the RPZ names).
+  A low-touch install takes more than two days on site.
+- **Who knows what.** Gravolin — level 2 engineer, primary on low touch. Germain — NOC, Cambium and the Wi-Fi dashboard. Brendan — the field team. Mark — NOC, desktop RF study for each
+  deployment. Rob — electronics, new hardware and radio; main user of the UPS and battery data.
 

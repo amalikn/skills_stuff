@@ -128,3 +128,24 @@ This pack documents conventions and stable facts. The actual per-model matrix an
 - `cambium-swap/inventory/cnmaestro-instances.yaml` — the cnMaestro estate.
 
 Read the file, not this pack's memory of it, before acting on a specific device or model.
+
+---
+
+## Who to Ask, and Low Touch After cnMaestro (operator, 6 Oct 2026)
+
+`USER_STATED` by the operator for the enterprise-strategy clarification register.
+
+| Person   | Area                                                                                                                         |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Germain  | NOC — Cambium devices and the Wi-Fi dashboard                                                                                |
+| Mark     | NOC — desktop RF study for every site deployment: from the map and Google Earth, an RF plan placing towers, external APs,    |
+|          |   Force 300 links and other radios                                                                                           |
+| Brendan  | The field team                                                                                                               |
+| Gravolin | Level 2 engineer on the SMC, radio and network; primary engineer on low touch; supports the field team on site               |
+| Rob      | Electronics, research for new hardware, and radio                                                                            |
+
+- **Low touch when cnMaestro goes.** Nothing should change for the field team or the NOC: the Unified Network Controller takes over the steps cnMaestro performs in the low-touch chain today
+  (claim, approve, the device names in the SMC's RPZ zone). The chain itself is described in skill-smc (`references/08_ansible-authoring.md`).
+- **Install time.** A low-touch install takes more than two days on site.
+- **Low-touch sites.** 8 production `smc_ltp` sites; `pia` is not low touch, although the `big_push` branch lists it.
+
