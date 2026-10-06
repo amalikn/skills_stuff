@@ -264,7 +264,7 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
   A low-touch install takes more than two days on site.
 - **Captive portal.** Required on every product and flavour; when Eclipse is unreachable it fails closed (no new access).
 - **Content filtering.** Required at all community sites.
-- **url_capture.** Required on all x86 solutions; extending it to the Raspberry Pi solutions and Light Booth is being considered, not decided.
+- **url_capture.** Required on all x86 solutions; extending it to the Raspberry Pi solutions and Litebooth is being considered, not decided.
 - **VoIP.** `rcp`: Asterisk on the SMC, the R195 SIP endpoints register to it, and Asterisk connects to the outside. `rct`: a Dallas Delta UI, a single SIP endpoint.
 - **Site switches.** Each `rcp` and `nbn_accelerate` site has two TP-Link switches; at some both are online, at others one is on standby. Credentials are mostly the same (see
   [16_tplink-site-switches.md](16_tplink-site-switches.md)).

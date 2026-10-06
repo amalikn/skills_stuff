@@ -149,7 +149,7 @@ Read the file, not this pack's memory of it, before acting on a specific device 
 - **Install time.** A low-touch install takes more than two days on site.
 - **Controllers and licences.** Every Cambium device has moved to cnMaestro Essentials on `apn-cnmaestro01`, which is now the only instance. A cnMaestro X licence is held but unused. Cloud
   Anchor is still used but ends at the end of October 2026, and its licences lapse with it. This supersedes the earlier `cw-cnmaestro01` and `lt-cnmaestro` entries in
-  [02_device-access-and-vault.md](02_device-access-and-vault.md); confirm those two are retired before relying on them.
+  [02_device-access-and-vault.md](02_device-access-and-vault.md); the operator confirmed both are retired (6 Oct 2026).
 - **Firmware.** Upgrades go through cnMaestro.
 - **NOC views.** Daily troubleshooting uses signal/SNR, client and radio-statistics views (Germain or Adam to confirm the full list).
 - **Replacements.** When a model or vendor runs out of stock, Rob researches and recommends the replacement. MikroTik and UniFi are being looked at; hardware is ordered, not yet tested.

@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261006_1840 — Product name is Litebooth (v0.1.86 -> v0.1.87)](#20261006_1840--product-name-is-litebooth-v0186---v0187)
 - [20261006_1834 — Operator answers, second round: portal, filtering, url_capture, VoIP, switches, links, monitoring, resiliency scope (v0.1.85 -> v0.1.86)](#20261006_1834--operator-answers-second-round-portal-filtering-url_capture-voip-switches-links-monitoring-resiliency-scope-v0185---v0186)
 - [20261006_1805 — Operator answers from the enterprise-strategy register: platforms and counts corrected, hosting, MQTT, low touch, people (v0.1.84 -> v0.1.85)](#20261006_1805--operator-answers-from-the-enterprise-strategy-register-platforms-and-counts-corrected-hosting-mqtt-low-touch-people-v0184---v0185)
 - [20261006_1217 — Hardware watchdog constraints: RuntimeWatchdogSec semantics, Raspberry Pi 15 s ceiling, overlayroot persistence (v0.1.83 -> v0.1.84)](#20261006_1217--hardware-watchdog-constraints-runtimewatchdogsec-semantics-raspberry-pi-15-s-ceiling-overlayroot-persistence-v0183---v0184)
@@ -100,6 +101,11 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261006_1840 — Product name is Litebooth (v0.1.86 -> v0.1.87)
+
+- `references/01_overview.md`: the product is Litebooth, not Light Booth (operator, 6 Oct 2026).
+
 
 ## 20261006_1834 — Operator answers, second round: portal, filtering, url_capture, VoIP, switches, links, monitoring, resiliency scope (v0.1.85 -> v0.1.86)
 
