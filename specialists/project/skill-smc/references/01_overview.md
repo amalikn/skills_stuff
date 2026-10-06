@@ -262,6 +262,17 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
 - **Hardware watchdog (P17).** Acceptable; test on the spare (`spare-smc01`) first. Constraints: [06_failure-modes.md](06_failure-modes.md).
 - **Low touch after cnMaestro.** Nothing should change for the field or the NOC: the Unified Network Controller takes over the steps cnMaestro performs today (claim, approve, the RPZ names).
   A low-touch install takes more than two days on site.
+- **Captive portal.** Required on every product and flavour; when Eclipse is unreachable it fails closed (no new access).
+- **Content filtering.** Required at all community sites.
+- **url_capture.** Required on all x86 solutions; extending it to the Raspberry Pi solutions and Light Booth is being considered, not decided.
+- **VoIP.** `rcp`: Asterisk on the SMC, the R195 SIP endpoints register to it, and Asterisk connects to the outside. `rct`: a Dallas Delta UI, a single SIP endpoint.
+- **Site switches.** Each `rcp` and `nbn_accelerate` site has two TP-Link switches; at some both are online, at others one is on standby. Credentials are mostly the same (see
+  [16_tplink-site-switches.md](16_tplink-site-switches.md)).
+- **Internet links.** Most sites use Sky Muster Plus; the x86 deployments of the past year are all Starlink.
+- **Monitoring.** LibreNMS is not in use. Alerts reach the NOC from Prometheus (Alertmanager) to Teams and from the Wi-Fi dashboard bots. Detecting a silent site stays with Prometheus for now;
+  there is no response target for a silent site.
+- **SMC resiliency scope.** The A/B update model only; hang recovery stays investigation only (the watchdog test on the spare is still acceptable).
+- **Rob and the SMC.** Rob gives hardware input and can raise concerns on SMC decisions; the SMC decisions are Malik's.
 - **Who knows what.** Gravolin — level 2 engineer, primary on low touch. Germain — NOC, Cambium and the Wi-Fi dashboard. Brendan — the field team. Mark — NOC, desktop RF study for each
   deployment. Rob — electronics, new hardware and radio; main user of the UPS and battery data.
 

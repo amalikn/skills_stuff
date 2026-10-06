@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261006_1834 — Operator answers, second round: portal, filtering, url_capture, VoIP, switches, links, monitoring, resiliency scope (v0.1.85 -> v0.1.86)](#20261006_1834--operator-answers-second-round-portal-filtering-url_capture-voip-switches-links-monitoring-resiliency-scope-v0185---v0186)
 - [20261006_1805 — Operator answers from the enterprise-strategy register: platforms and counts corrected, hosting, MQTT, low touch, people (v0.1.84 -> v0.1.85)](#20261006_1805--operator-answers-from-the-enterprise-strategy-register-platforms-and-counts-corrected-hosting-mqtt-low-touch-people-v0184---v0185)
 - [20261006_1217 — Hardware watchdog constraints: RuntimeWatchdogSec semantics, Raspberry Pi 15 s ceiling, overlayroot persistence (v0.1.83 -> v0.1.84)](#20261006_1217--hardware-watchdog-constraints-runtimewatchdogsec-semantics-raspberry-pi-15-s-ceiling-overlayroot-persistence-v0183---v0184)
 - [20261005_1505 — cnMaestro 0.0.0.0 client IPs: SMC DHCP verified healthy; dhcpd unexpected-ICMP log line explained (v0.1.82 -> v0.1.83)](#20261005_1505--cnmaestro-0000-client-ips-smc-dhcp-verified-healthy-dhcpd-unexpected-icmp-log-line-explained-v0182---v0183)
@@ -99,6 +100,13 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261006_1834 — Operator answers, second round: portal, filtering, url_capture, VoIP, switches, links, monitoring, resiliency scope (v0.1.85 -> v0.1.86)
+
+- `references/01_overview.md` section 2: captive portal on every product and fail closed; content filtering at all community sites; url_capture on all x86 (RPi and Light Booth under
+  consideration); VoIP on rcp (Asterisk with R195 endpoints) and rct (Dallas Delta UI); two switches per rcp and nbn_accelerate site; Sky Muster Plus at most sites and Starlink on the past
+  year's x86 deployments; LibreNMS not in use; NOC alert paths; SMC resiliency scope is A/B only; Rob's role on SMC decisions. Operator, 6 Oct 2026.
+
 
 ## 20261006_1805 — Operator answers from the enterprise-strategy register: platforms and counts corrected, hosting, MQTT, low touch, people (v0.1.84 -> v0.1.85)
 

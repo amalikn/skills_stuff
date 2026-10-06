@@ -147,5 +147,13 @@ Read the file, not this pack's memory of it, before acting on a specific device 
 - **Low touch when cnMaestro goes.** Nothing should change for the field team or the NOC: the Unified Network Controller takes over the steps cnMaestro performs in the low-touch chain today
   (claim, approve, the device names in the SMC's RPZ zone). The chain itself is described in skill-smc (`references/08_ansible-authoring.md`).
 - **Install time.** A low-touch install takes more than two days on site.
+- **Controllers and licences.** Every Cambium device has moved to cnMaestro Essentials on `apn-cnmaestro01`, which is now the only instance. A cnMaestro X licence is held but unused. Cloud
+  Anchor is still used but ends at the end of October 2026, and its licences lapse with it. This supersedes the earlier `cw-cnmaestro01` and `lt-cnmaestro` entries in
+  [02_device-access-and-vault.md](02_device-access-and-vault.md); confirm those two are retired before relying on them.
+- **Firmware.** Upgrades go through cnMaestro.
+- **NOC views.** Daily troubleshooting uses signal/SNR, client and radio-statistics views (Germain or Adam to confirm the full list).
+- **Replacements.** When a model or vendor runs out of stock, Rob researches and recommends the replacement. MikroTik and UniFi are being looked at; hardware is ordered, not yet tested.
+- **Asset registers.** The NOC maintains the site asset registers.
+- **RF planning.** Mark's desktop study uses Google Earth and Google Maps; Cambium LINKPlanner only rarely.
 - **Low-touch sites.** 8 production `smc_ltp` sites; `pia` is not low touch, although the `big_push` branch lists it.
 

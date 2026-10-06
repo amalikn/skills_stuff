@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261006_1834 — Operator answers, second round: one cnMaestro instance, licences, firmware, NOC views, replacements, RF planning (v0.6.33 -> v0.6.34)](#20261006_1834--operator-answers-second-round-one-cnmaestro-instance-licences-firmware-noc-views-replacements-rf-planning-v0633---v0634)
 - [20261006_1805 — Who to ask (Germain, Mark, Brendan, Gravolin, Rob) and low touch after cnMaestro (v0.6.32 -> v0.6.33)](#20261006_1805--who-to-ask-germain-mark-brendan-gravolin-rob-and-low-touch-after-cnmaestro-v0632---v0633)
 - [20261005_1934 — Archcore filenames brought to the <slug>.<type>.md form; index.guide.md replaces .archcore/README.md (v0.6.31 -> v0.6.32)](#20261005_1934--archcore-filenames-brought-to-the-slugtypemd-form-indexguidemd-replaces-archcorereadmemd-v0631---v0632)
 - [20261005_1545 — Capture-review notes: cnWave nic2 traffic, E-series radio off, ePMP STA table (v0.6.30 -> v0.6.31)](#20261005_1545--capture-review-notes-cnwave-nic2-traffic-e-series-radio-off-epmp-sta-table-v0630---v0631)
@@ -81,6 +82,13 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261006_1834 — Operator answers, second round: one cnMaestro instance, licences, firmware, NOC views, replacements, RF planning (v0.6.33 -> v0.6.34)
+
+- `references/01_overview.md`: every Cambium device on cnMaestro Essentials at `apn-cnmaestro01`, the only instance; cnMaestro X licence unused; Cloud Anchor ends end of October 2026;
+  firmware through cnMaestro; NOC daily views; Rob researches replacements, MikroTik and UniFi hardware ordered, untested; NOC maintains asset registers; Mark's RF tools. Operator, 6 Oct 2026.
+- `references/02_device-access-and-vault.md`: `lt-cnmaestro` row notes the operator's one-instance statement; retirement to confirm.
+
 
 ## 20261006_1805 — Who to ask (Germain, Mark, Brendan, Gravolin, Rob) and low touch after cnMaestro (v0.6.32 -> v0.6.33)
 
