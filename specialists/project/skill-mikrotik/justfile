@@ -1,0 +1,27 @@
+# skill-mikrotik task runner. Every recipe is read-only towards devices unless stated otherwise.
+
+set shell := ["bash", "-uc"]
+
+# Show available recipes
+default:
+    @just --list
+
+# Governance coherence checks (run before claiming a change to this pack is complete)
+check:
+    scripts/check_governance.py
+
+# Run read-only RouterOS commands on one device behind an SMC, e.g. just exec delye-smc01 10.255.0.5 '/system health print'
+exec smc ip +cmds:
+    scripts/mikrotik-exec.sh {{smc}} {{ip}} {{cmds}}
+
+# Survey MikroTiks behind every reachable SMC of a flavor (FLAVOR=rct default) into <outdir>/survey.csv
+survey outdir:
+    scripts/mikrotik-fleet-survey.sh {{outdir}}
+
+# Deep capture of one site's switch and AP; set WAIT_UP=1 to wait for an offline SMC to reconnect first
+capture smc outdir:
+    scripts/mikrotik-site-capture.sh {{smc}} {{outdir}}
+
+# Summarise a survey.csv (ranges, outliers, devices power-cycled since their SMC booted)
+summary csv:
+    scripts/survey-summary.py {{csv}}

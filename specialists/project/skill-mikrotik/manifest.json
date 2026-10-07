@@ -1,0 +1,44 @@
+{
+  "specialist_type": "project",
+  "subject_name": "mikrotik",
+  "slug": "skill-mikrotik",
+  "subject_id": null,
+  "title": "MikroTik Site Switch and AP Operations",
+  "description": "Operational knowledge base for the MikroTik devices behind SMC boxes (RB450Gx4 site switch, Metal 52 ac AP on rct sites): read-only RouterOS access through a Teleport port-forward, port and VLAN layout, uptime/voltage/link-down health, TSTIK power-cycle evidence, fleet surveys and outage diagnosis. Complements skill-smc (SMC box, ansible-wifi, TSTIK app) and skill-cambium (Cambium devices).",
+  "tags": [
+    "mikrotik",
+    "routeros",
+    "rb450gx4",
+    "metal",
+    "switch",
+    "rct",
+    "teleport"
+  ],
+  "environment": "ansible-wifi",
+  "owner": null,
+  "site": null,
+  "role": null,
+  "scope_boundary": "In scope: MikroTik/RouterOS devices at SMC sites, their access method, layout, health, logs, failure signatures and read-only tooling. Out of scope: the SMC box, Ansible, Teleport and the TSTIK app (skill-smc); Cambium devices (skill-cambium). Changes to devices are out of scope unless the operator approves a specific change.",
+  "parent_refs": [],
+  "related_refs": [
+    "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc",
+    "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-cambium",
+    "/Volumes/Data/_ansible/ansible-wifi",
+    "/Volumes/Data/_ansible/local-knowledge-ansible"
+  ],
+  "source_bias": "stable-operational",
+  "created_at": "2026-10-07T03:22:00Z",
+  "updated_at": "20261007_1542",
+  "version": "0.1.5",
+  "dependencies": [],
+  "known_constraints": [
+    "Devices are reachable only through the site SMC; no secret may appear in a command run on the SMC (Teleport audit log ships to Graylog).",
+    "The RouterOS log is an in-memory buffer lost on device reboot; capture before any power-cycle.",
+    "Read-only by default; mikrotik-exec.sh refuses non-read commands unless MT_ALLOW_WRITE=1."
+  ],
+  "stable_facts": [
+    "rct site switch: RB450Gx4 at 10.255.0.5; AP: Metal 52 ac at 10.255.0.20; both RouterOS 7.8 where surveyed (2026-10-07).",
+    "Switch ether1 is the trunk to the SMC eth0 (VLANs 500/501/521/522 tagged, untagged bridged with ether2, the Sky Muster NTD, into bridge-vlan521).",
+    "The SMC's TSTIK app power-cycles the switch rail after ~11 minutes of failed switch/AP pings (skill-smc 06_failure-modes.md)."
+  ]
+}
