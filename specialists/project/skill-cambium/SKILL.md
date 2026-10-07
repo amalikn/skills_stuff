@@ -25,6 +25,8 @@ metadata:
 - Understanding a Cambium model's firmware baseline, EoL/EoS status, or family classification
 - Looking up a device's REST API endpoints or SSH CLI commands, e.g. for adapter/integration code
 - Deciding whether a fact belongs here (device/hardware layer) or in `skill-smc` (box/Ansible layer)
+- Investigating AP, SM or client behaviour from SMC-side or central evidence (SMC logs, Graylog, Prometheus, cnMaestro): check the data-gap
+  entries in `references/05_known-issues.md` and write device-layer findings back here, even if the session started as SMC or AWS work
 
 ## Standing Write-Back Contract (applies no matter which project invoked this skill)
 

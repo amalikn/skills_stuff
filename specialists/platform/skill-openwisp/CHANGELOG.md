@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 20261007_1205 `references/health-alerts-notifications.md`: Learned 2026-10-07 (reusable_candidate, UNVERIFIED): agents with `verify_ssl` go silent
+  fleet-wide when the controller certificate expires; alert on certificate expiry and fleet-wide freshness, classify as a transport cause.
 - 20261005_1936 Governance follow-ups (operator): the `justfile` merges this bootstrap's recipes with a parallel session's `helpers` and probe recipes, and `bootstrap`
   installs root `requirements.txt` (`-r tests/requirements.txt`, one PyYAML pin); `AGENTS.md` is tracked with `git add -f` because the repo's git info/exclude file ignores it
   repo-wide (the exclude rule is unchanged, so later edits need `git add -f` again); all 6 `.archcore/` documents accepted.

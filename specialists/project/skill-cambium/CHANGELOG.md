@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261007_1205 — SMC logs missing in Graylog 2026-09-12 to 2026-10-07; trigger for SMC-side evidence (v0.6.35 -> v0.6.36)](#20261007_1205--smc-logs-missing-in-graylog-2026-09-12-to-2026-10-07-trigger-for-smc-side-evidence-v0635---v0636)
 - [20261006_1840 — cw-cnmaestro01 and lt-cnmaestro confirmed retired (v0.6.34 -> v0.6.35)](#20261006_1840--cw-cnmaestro01-and-lt-cnmaestro-confirmed-retired-v0634---v0635)
 - [20261006_1834 — Operator answers, second round: one cnMaestro instance, licences, firmware, NOC views, replacements, RF planning (v0.6.33 -> v0.6.34)](#20261006_1834--operator-answers-second-round-one-cnmaestro-instance-licences-firmware-noc-views-replacements-rf-planning-v0633---v0634)
 - [20261006_1805 — Who to ask (Germain, Mark, Brendan, Gravolin, Rob) and low touch after cnMaestro (v0.6.32 -> v0.6.33)](#20261006_1805--who-to-ask-germain-mark-brendan-gravolin-rob-and-low-touch-after-cnmaestro-v0632---v0633)
@@ -83,6 +84,12 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261007_1205 — SMC logs missing in Graylog 2026-09-12 to 2026-10-07; trigger for SMC-side evidence (v0.6.35 -> v0.6.36)
+
+- `references/05_known-issues.md`: cross-reference to skill-smc 2026-10-07. Graylog has almost no SMC-originated logs for the window, so device-layer
+  investigations relying on SMC dhcpd or forwarded AP/SM syslog must use on-box evidence or Prometheus.
+- `SKILL.md` Use When: investigations of AP/SM/client behaviour from SMC-side or central evidence trigger this pack and its write-back.
 
 ## 20261006_1840 — cw-cnmaestro01 and lt-cnmaestro confirmed retired (v0.6.34 -> v0.6.35)
 

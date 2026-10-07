@@ -38,6 +38,8 @@ practical.
 |   kupungarri) and `rcp` (pandanus-park)                                                                                                             |   Total Hang                                   |
 | When did this site actually die? 3-year Prometheus retention; why Graylog silence is not proof a box was down; how to actually query Graylog for it | `references/06_failure-modes.md` §Silent       |
 |   (Teleport App Access, not a bare `curl`) is in `references/03_communication-flows.md`                                                             |   Total Hang                                   |
+| Logs missing in Graylog / fluent-bit `certificate has expired` / `curl gl.aws.apn.au` gives 403 / Graylog AWS path (ALB rules, target groups,         | `references/03_communication-flows.md`         |
+|   EC2) / ACM cert + CAA dependency / the 2026-09-12 to 2026-10-07 fleet log gap                                                                       |   §Graylog Backend Path; 13 (2026-10-07)       |
 | Why `rct` self-recovers and `wh`/`rcp` do not — tstik vs `watchdog.auto_reboot: 0` vs no RISE at all, no hardware watchdog anywhere in repo         | `references/06_failure-modes.md` §Silent       |
 |                                                                                                                                                     |   Total Hang                                   |
 | Hardware differences, overlayroot, disk write behavior, persistence risk                                                                            | `references/07_hardware-overlay.md`            |

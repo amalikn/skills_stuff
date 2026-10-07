@@ -1013,3 +1013,44 @@ layer checked read-only on 2026-10-05:
 
 The AP-side cause (R195P `device-agent` reports no client IP since the move to apn-cnmaestro01, lead suspect) and the sweep tool
 `client-ip-sweep.sh` are in skill-cambium `references/05_known-issues.md` (2026-10-05).
+
+## 2026-10-07 — `gl.aws.apn.au` cert expiry stopped SMC log shipping for 25 days (RESOLVED; gap not recoverable)
+
+The ACM cert on the Graylog ALB (`gl.aws.apn.au`) expired 2026-09-12 09:59:59 AEST: auto-renewal failed with `CAA_ERROR` because `apn.au` has
+`CAA 0 issue "letsencrypt.org"` only. Fixed 2026-10-07 about 11:17 AEDT (CAA added at `aws.apn.au`, new cert on the ALB). Full runbook:
+`local-knowledge-ansible/ansible-wifi/issues/apn/graylog-acm-cert-expiry/acm-cert-renewal-caa-error-20261007_1117.md`.
+
+- **Signature on the box (fluent-bit log, also visible in Graylog while connections lasted):**
+  `[tls] certificate verification failed, reason: certificate has expired (X509 code: 10)`, then
+  `no upstream connections available to gl.aws.apn.au:443` and `chunk ... cannot be retried`. fluent-bit's `[OUTPUT] http` has `tls.verify On`.
+- **graylog-sidecar was not affected:** `sidecar.yml` has `tls_skip_verify: true`, so sidecars kept polling. A healthy sidecar in the Graylog UI does not
+  prove logs are arriving.
+- **Graylog volume:** about 590,000 SMC messages per hour before; near zero (72,903 in 25 days) during; back to about 600,000 per hour from 11:15-11:20
+  AEDT on 2026-10-07. Connections opened before expiry kept delivering for about an hour, then stopped. **No backfill:** fluent-bit dropped chunks after
+  retries, so the gap is permanent.
+- **A bare `curl https://gl.aws.apn.au/` returns 403 by design:** the ALB listener default action is a fixed 403. Rules forward only `/gelf` +
+  `X-GELF-Token` (to :12202), `/api` + the sidecar `Authorization` header (to :9000), `/*` + `X-Graylog-Token` (to :9000) and `/beats/*` (to :5044), all to
+  `apn-graylog01` (`i-077c7d21df1872ccc`, 10.240.11.10).
+- **The two sources that did not come back are dark for other reasons (Prometheus + Teleport, 2026-10-07):**
+  - `nyirripi-smc01` (wh): Graylog stopped 2026-09-12 10:56 AEST from the cert. The box itself kept running (uptime since 2026-07-09, both links
+    `interfacecheck_success=1`) until the last Prometheus scrape at **2026-09-16 08:06 AEST**, then went dark abruptly with healthy links. It is not
+    registered in Teleport now. This is the silent-hang or power-loss pattern (06_failure-modes.md). It needs a site visit or power cycle.
+  - `kupungarri-smc01` (wh): rebooted 2026-10-01 23:06 AEST (31 RISE status messages reached Graylog at boot). Before the last scrape at
+    **2026-10-05 05:02 AEST**, `vlan522` failed every check and `eth0` was flapping (success 0/1 alternating). It is not in Teleport now. Likely a
+    WAN or site problem, consistent with its power-quality history.
+- Other `wh` hosts not in Teleport on 2026-10-07: `generic-wh01`, `kintore-smc01`, `orrtipa-thurra-bonya-smc01`, `yuelamu-smc01` (not investigated).
+
+## 2026-10-07 — two-inventory runs lose topology variables; kernel unhold fails before the target kernel is installed
+
+- **OPEN:** `vars_plugins/topology_vars.py` caches one inventory's `topology_vars/` for the whole run, so `-i rct -i wh` leaves one inventory's hosts without
+  `topology_interfaces`. Workaround: one inventory per run. Proposed fix (per-directory cache) is not applied. Detail: `08_ansible-authoring.md`, "Two
+  failures from one RISE run on `rct`".
+- **Fixed on branch `unc-virtual-smc-malik-rcp01`, uncommitted, not yet run on a Pi:** `smc_update_kernel` unhold failed on uninstalled target kernel
+  packages (regression from `848e9841`, 2026-09-03). Seen on `honeymoon-bay-smc01` and `pago-point-smc01` (`rct`, `1065` to `1078`). Same section.
+- **Coverage gap: nothing alerted for 25 days.** The fleet-wide log gap was found only because of the ACM email chain. No alert covers a Graylog
+  ingest drop, fluent-bit output errors, or the `gl.aws.apn.au` cert's expiry date. Candidates (none implemented): a Graylog event definition on
+  SMC message rate (`_exists_:tp_site`) per source; scraping fluent-bit's built-in HTTP server (`HTTP_Server On`, port 2020 in the reference
+  config) for `fluentbit_output_errors_total`/`retries_failed`; a blackbox `probe_ssl_earliest_cert_expiry` on `gl.aws.apn.au:443`. Whether fluent-bit
+  :2020 is scraped today was not checked.
+- **Graylog EC2 security groups are wide (observation, nothing changed):** `noc-sg-graylog` allows 80, 9000 and 27017 (MongoDB) from 0.0.0.0/0;
+  `apn=graylog-backend-sg` allows 5044, 12202 and udp/514 from 0.0.0.0/0. The instance has no public IP and no IGW route, so these are reachable only from inside the VPC or over the VPN.

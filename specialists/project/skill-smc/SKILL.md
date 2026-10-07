@@ -35,6 +35,8 @@ Invoke for any of:
 - Adding a new site, VLAN, service, or feature to the SMC infrastructure
 - Interpreting a Prometheus alert for an SMC host
 - Determining blast radius of a topology or role change
+- Working on a central backend the SMC fleet depends on, even when the task looks like plain AWS/DNS/cert work: Graylog (`gl.aws.apn.au`, its ALB, ACM cert,
+  CAA), Teleport, Prometheus/Grafana. A failure there is an SMC fleet incident (example: the 2026-09-12 cert expiry silently stopped all SMC log shipping).
 
 ## Standing Write-Back Contract (applies no matter which project invoked this skill)
 
@@ -159,6 +161,7 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 4. **Cache coherence**: delete `inventories/*/topology_vars/.<site>.yml` to force plugin regeneration (git checkout changes mtimes, making stale cache appear current).
 5. **Generator drift**: when changing a topology pattern, check `roles/smc_generate_smc_files` templates — future site generation must stay consistent with current site changes.
 6. **Overlayroot impact on Ansible**: changes deployed via `smc_bases.yml` only persist if the playbook remounts the lower dir rw. Verify with `mount | grep overlay` on the target.
+7. **One inventory per run**: `vars_plugins/topology_vars.py` caches only the first inventory's `topology_vars/` (OPEN bug, 2026-10-07), so `-i A -i B` leaves B's hosts without `topology_*` vars. See `references/08_ansible-authoring.md`.
 
 ---
 

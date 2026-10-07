@@ -254,3 +254,17 @@ suspected fleet-wide). It is a reporting gap, not a DHCP failure.
   correct. XV2 prints nothing for a non-interactive `show wireless clients`; check an nbn site's client list in cnMaestro instead.
 - **Tool:** `just client-ip-sweep <site>-smc01 <apn|nbn>` (`scripts/client-ip-sweep.sh`) for the three-layer check. For a client's IP, use the SMC lease
   (`dhcpd.leases`), not cnMaestro.
+
+## Central SMC logs missing in Graylog 2026-09-12 to 2026-10-07 (cross-reference, 2026-10-07)
+
+Owned by skill-smc (`references/13_known-issues.md` 2026-10-07; `03_communication-flows.md` "Graylog Backend Path in AWS"). Recorded here because
+device-layer investigations read SMC-side logs.
+
+- The ACM cert on `gl.aws.apn.au` expired 2026-09-12 09:59:59 AEST. Every SMC's fluent-bit (`tls.verify On`) stopped shipping until about
+  11:15 AEDT on 2026-10-07. Logs were not backfilled, so **Graylog holds almost no SMC-originated messages for that window**.
+- The gap matters for Cambium work wherever the evidence is SMC-side logs: `isc-dhcp-server` leases and ACK/NAK for AP clients, AP or SM syslog
+  sent to the SMC (`syslogServerIPFirst` is the SMC management address on ePMP SMs, see `06_device-api-cli-reference.md`), and dashboard-bot activity.
+  Whether AP/SM syslog received by the SMC lands in a file fluent-bit tails is UNVERIFIED. If it does, it is in the same gap.
+- For that window use on-box files (SMC `/var/log`, AP `/tmp` and logs) or Prometheus. The 2026-10-05 R195P 0.0.0.0 investigation above used
+  on-box evidence and is unaffected.
+- Do not read Graylog silence for a site in that window as the site being down. Check Prometheus `up` instead (skill-smc `06_failure-modes.md`).

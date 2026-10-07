@@ -1985,3 +1985,60 @@ The per-device records an `rcp` low-touch box holds are projections of two sourc
 For a source of truth outside cnMaestro (unified-network-controller): the address is the Nautobot `IPAddress` (management as `primary_ip4`, public on the WAN interface, both in the site Namespace),
 the A-record name is `IPAddress.dns_name`, the extension and DID are Device fields, secrets stay in OpenBao; `extensions.csv`, the TFTP files and `db.cambium-rpz` then become renders. Recorded there
 as a proposal, not a decision.
+
+## Two failures from one RISE run on `rct` (2026-10-07, branch `unc-virtual-smc-malik-rcp01`)
+
+Both surfaced on `honeymoon-bay-smc01` and `pago-point-smc01` (`rct`, Raspberry Pi, kernel `5.15.0-1065-raspi`).
+
+### `vars_plugins/topology_vars.py` loads only one inventory's `topology_vars/` per run (OPEN, not fixed)
+
+**Symptom:** `AnsibleUndefinedVariable: {{ topology_interfaces }}: 'topology_interfaces' is undefined` in `smc_node_exporter` ("Generate and copy ...
+my_node_network_device_info.prom"), on hosts whose topology files are valid. The operator ran with two inventories, `-i` rct and `-i` wh.
+
+**Cause:** the plugin caches flattened topology in a module-level global, `HOST_TOPOLOGY_VARS={}`, and fills it only while it is empty
+(`if HOST_TOPOLOGY_VARS == {}:` in `VarsModule.get_vars`, around lines 646-678). Ansible creates one plugin instance per inventory source, but the global is
+shared, so the first host the plugin sees decides which `<inventory>/topology_vars/` directory is loaded. Every host from the other inventory gets no
+`topology_*` variables. With `-i rct -i wh` the rct hosts were the ones left out. `topology_vars_dir_process()` also calls `os.chdir()` into that directory,
+which changes the working directory for the whole process.
+
+**Reproduced (2026-10-07):**
+
+```bash
+ansible-inventory --playbook-dir . -i inventories/rct/prod --host honeymoon-bay-smc01                         # topology_interfaces present
+ansible-inventory --playbook-dir . -i inventories/rcp/prod -i inventories/rct/prod --host honeymoon-bay-smc01  # absent
+```
+
+`--playbook-dir .` is required: `ansible.cfg` has no `vars_plugins` path, so the plugin is found only as `vars_plugins/` next to the playbook. Without that
+flag `ansible-inventory` never loads it and every host shows no topology variables, which looks like the same bug but is not.
+
+**Workaround:** run one inventory per `ansible-playbook` invocation. The operator re-ran with rct only and it passed.
+
+**Proposed fix (not applied):** key the cache by directory, `HOST_TOPOLOGY_VARS[topology_vars_dir]`, load each directory the first time it is seen, look the
+host up in that directory's dict, and drop the `os.chdir()` in favour of joined paths. Single-inventory runs behave the same; the `.<site>.yml` cache files
+keep their format. The plugin is shared by all seven flavours, so validate with the two commands above plus a single-inventory `--list` on each flavour.
+
+### `smc_update_kernel` "Unhold kernel packages" fails when the target kernel is not installed (regression, fixed on the branch)
+
+**Symptom (first RISE run that needed an upgrade after 2026-09-03):** `Failed to find package 'linux-image-5.15.0-1078-raspi' to perform selection
+'install'`, the same for `linux-modules`, `linux-modules-extra` and `linux-headers` of `1078`. The `1065` items succeeded. The target comes from
+`smc_bases_target_kernel: "5.15.0-1078-raspi"` in `inventories/rct/group_vars/smc_bases.yml`.
+
+**Cause:** `ansible.builtin.dpkg_selections` runs `dpkg --get-selections <pkg>` and fails when dpkg has never seen the package (`dpkg_selections.py` lines
+78-80, ansible-core 2.21.4). The repo availability check passed, so the packages were in apt, but they were not yet installed. Before commit `848e9841`
+(2026-09-03, which moved the playbook body into the role) the live playbook unheld only `current_kernel_pkgs`. The consolidation took the unhold loop from
+the orphaned role copy, which also includes `target_kernel_pkgs`. Including target packages is still reasonable: a half-finished earlier run may have left
+them installed and held.
+
+**State after the failure:** nothing installed. The `1065` packages were unheld (`linux-headers` reported `changed`), and both boxes kept running `1065`.
+
+**Fix (in `roles/smc_update_kernel/tasks/main.yml`, uncommitted on the branch on 2026-10-07):** a new task, "Query dpkg for known kernel packages", runs
+`dpkg-query -W -f '${Package} ${db:Status-Status}\n'` over target plus current packages with `failed_when: false`, because rc is 1 when any package is
+unknown while stdout still lists the known ones. "Unhold" loops over every package dpkg lists. "Mark kernel packages as auto" loops only over lines ending in
+` installed`, so `apt-mark` never runs on a missing package. The unhold task now uses the FQCN `ansible.builtin.dpkg_selections`.
+
+**Validated:** expressions rendered against sample `dpkg-query` output; `ansible-playbook --syntax-check -i inventories/rct/prod smc_update_kernel.yml`
+passed; `ansible-lint` showed no findings on the changed lines. **Not yet validated on a Pi**, including the `${db:Status-Status}` field on the fleet's dpkg.
+On re-run, the unhold step should list only `1065` packages on a fresh upgrade. If `1078` appears there, an earlier attempt already installed it.
+
+**General lesson:** `dpkg_selections` works only on packages already in dpkg's database. Filter its loop through `dpkg-query` first. `apt-mark` on a package
+that is not installed carries the same risk.

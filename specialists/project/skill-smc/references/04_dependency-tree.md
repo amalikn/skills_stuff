@@ -22,6 +22,10 @@ Level 3 — Monitoring
   autossh-prometheus-federation → metrics federation to central Prometheus lost
   node_exporter       → all system metrics stop
   prometheus (local)  → local metrics storage, speedtest scraping
+  graylog-sidecar + fluent-bit → central logs to gl.aws.apn.au (rct/wh/apn) or gl.communitywifi.net.au (nbn_wh);
+                         fluent-bit needs a VALID server cert (tls.verify On): ACM cert on apn-graylog-alb, which
+                         needs CAA at aws.apn.au allowing amazon.com. Expired cert = silent log loss fleet-wide,
+                         no backfill, sidecars still look healthy (13_known-issues.md 2026-10-07)
 
 Level 4 — Optional / Flavor-Specific
   asterisk            → VoIP (rcp only, apn-cluster-exclusive — never on cw-cluster flavors)

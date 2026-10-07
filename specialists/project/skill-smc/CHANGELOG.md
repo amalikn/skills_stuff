@@ -2,6 +2,9 @@
 
 ## Contents
 
+- [20261007_1150 — Graylog AWS path, cert dependency, log-gap triage, wh dark-box update, alert gap (v0.1.90 -> v0.1.91)](#20261007_1150--graylog-aws-path-cert-dependency-log-gap-triage-wh-dark-box-update-alert-gap-v0190---v0191)
+- [20261007_1141 — Two-inventory runs lose topology vars; smc_update_kernel unhold regression fixed on branch (v0.1.89 -> v0.1.90)](#20261007_1141--two-inventory-runs-lose-topology-vars-smc_update_kernel-unhold-regression-fixed-on-branch-v0189---v0190)
+- [20261007_1137 — gl.aws.apn.au cert expiry stopped SMC log shipping; Graylog aggregate API; nyirripi and kupungarri dark (v0.1.88 -> v0.1.89)](#20261007_1137--glawsapnau-cert-expiry-stopped-smc-log-shipping-graylog-aggregate-api-nyirripi-and-kupungarri-dark-v0188---v0189)
 - [20261006_1842 — MQTT broker password is a literal in the role (v0.1.87 -> v0.1.88)](#20261006_1842--mqtt-broker-password-is-a-literal-in-the-role-v0187---v0188)
 - [20261006_1840 — Product name is Litebooth (v0.1.86 -> v0.1.87)](#20261006_1840--product-name-is-litebooth-v0186---v0187)
 - [20261006_1834 — Operator answers, second round: portal, filtering, url_capture, VoIP, switches, links, monitoring, resiliency scope (v0.1.85 -> v0.1.86)](#20261006_1834--operator-answers-second-round-portal-filtering-url_capture-voip-switches-links-monitoring-resiliency-scope-v0185---v0186)
@@ -102,6 +105,29 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261007_1150 — Graylog AWS path, cert dependency, log-gap triage, wh dark-box update, alert gap (v0.1.90 -> v0.1.91)
+
+- `references/03_communication-flows.md`: new section "Graylog Backend Path in AWS": DNS alias, ALB rules and target groups, EC2, SGs, endpoint per inventory, 403 by design, ACM/CAA dependency.
+- `references/04_dependency-tree.md`: Level 3 adds graylog-sidecar + fluent-bit and the cert/CAA dependency.
+- `references/05_troubleshooting.md`: Tier 7 item 5, logs missing in Graylog (fluent-bit log strings, openssl check, 403 is normal).
+- `references/06_failure-modes.md`: Silent Total Hang fleet update: nyirripi-smc01 matches (dark 2026-09-16), kupungarri-smc01 WAN loss (dark 2026-10-05), four more wh absent from Teleport.
+- `references/13_known-issues.md`: 2026-10-07 entry adds the no-alert coverage gap with candidate alerts, and the wide Graylog EC2 security groups.
+- `RUNBOOK.md`: routing row for missing Graylog logs and the Graylog AWS path.
+
+## 20261007_1141 — Two-inventory runs lose topology vars; smc_update_kernel unhold regression fixed on branch (v0.1.89 -> v0.1.90)
+
+- `references/08_ansible-authoring.md`: new section "Two failures from one RISE run on `rct`": `topology_vars.py` module-level cache loads one
+  inventory's `topology_vars/` per run (OPEN, reproduced, proposed per-directory fix); `smc_update_kernel` unhold of uninstalled target packages
+  (regression from `848e9841`), fixed on branch `unc-virtual-smc-malik-rcp01` with a `dpkg-query` filter, not yet run on a Pi.
+- `references/13_known-issues.md`: 2026-10-07 entry pointing to that section.
+- `SKILL.md`: Ansible authoring rule 7, one inventory per run.
+
+## 20261007_1137 — gl.aws.apn.au cert expiry stopped SMC log shipping; Graylog aggregate API; nyirripi and kupungarri dark (v0.1.88 -> v0.1.89)
+
+- `references/13_known-issues.md`: 2026-10-07 entry: ACM `CAA_ERROR` let the Graylog ALB cert expire; fluent-bit (`tls.verify On`) stopped shipping from 2026-09-12 to
+  2026-10-07 with no backfill, while sidecars (`tls_skip_verify`) looked healthy; ALB default 403; nyirripi-smc01 and kupungarri-smc01 dark for other reasons.
+- `references/03_communication-flows.md`: Graylog `/api/search/aggregate` for per-source counts (the `/terms` endpoint returns nothing); fluent-bit vs sidecar TLS handling.
 
 ## 20261006_1842 — MQTT broker password is a literal in the role (v0.1.87 -> v0.1.88)
 

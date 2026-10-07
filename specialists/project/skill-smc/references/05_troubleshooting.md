@@ -225,6 +225,18 @@ provisioning, check `roles/smc_cnmaestro_provisioning` and CNMaestro cloud conne
    Confirmed gap (2026-07-29, see 13_known-issues.md): `my_node_network_device_info`
    returns zero series on some rcp sites while base kernel network metrics and `up`
    are both fine on the same hosts — a per-metric gap, not a per-scrape-target one.
+
+5. Logs missing in Graylog (one site or the whole fleet)?
+   On the box:   tail -n 50 /var/log/fluent-bit/fluent-bit.log
+     "certificate verification failed ... certificate has expired (X509 code: 10)"
+       -> server cert problem, fleet-wide: check the ACM cert on apn-graylog-alb
+     "no upstream connections available to gl.aws.apn.au:443"
+       -> TLS or network failure to the ALB
+   From anywhere:
+     echo | openssl s_client -connect gl.aws.apn.au:443 -servername gl.aws.apn.au | openssl x509 -noout -enddate
+     curl https://gl.aws.apn.au/   -> 403 is NORMAL (ALB default action); see 03 "Graylog Backend Path in AWS"
+   Fleet view: Graylog /api/search/aggregate grouped by source (03 "Graylog REST API Access").
+   A healthy sidecar does not prove logs are arriving: the sidecar skips TLS verification and fluent-bit does not.
 ```
 
 ### Tier 8: Overlayroot — Ansible Changes Not Persisting

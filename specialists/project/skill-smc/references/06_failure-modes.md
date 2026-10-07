@@ -269,6 +269,15 @@ Operator, 2026-10-06: a hardware watchdog is acceptable for this hang; test it o
 `rcp` (2026-09-07): **pandanus-park-smc01** dark since 2026-09-05 08:29 UTC (see above) — first `rcp` instance found. Not yet checked whether other `rcp` sites (single-SMC, no RISE) carry the same
 undetected exposure; a fleet-wide `up{flavor="rcp"}` absence sweep has not been run.
 
+**Update 2026-10-07 (`wh`, from Prometheus + Graylog + Teleport, read-only):**
+
+| Host | Last Prometheus scrape (AEST) | Links just before | Reading |
+|---|---|---|---|
+| `nyirripi-smc01` | 2026-09-16 08:06 | `eth0` and `vlan522` both `interfacecheck_success=1`; no reboot since 2026-07-09 | **Matches this signature**: healthy box, healthy links, vanished. Not in Teleport. Needs a power cycle. (Its Graylog silence from 2026-09-12 10:56 was the separate cert outage, 13_known-issues.md 2026-10-07.) |
+| `kupungarri-smc01` | 2026-10-05 05:02 | `vlan522` 0 throughout, `eth0` flapping 0/1; rebooted 2026-10-01 23:06 | **Probably not this signature.** The WAN was failing before it went dark. Check site WAN and power first. |
+
+Also absent from Teleport on 2026-10-07 and not yet checked: `generic-wh01`, `kintore-smc01`, `orrtipa-thurra-bonya-smc01`, `yuelamu-smc01`.
+
 #### Recommended fix
 
 Enable a hardware watchdog on every flavor that lacks one:

@@ -9,6 +9,7 @@
   * [`wifi-02.activ8me.net.au` / `202.171.100.138` is APN's OWN keepalived/LVS VIP — not a third-party service](#wifi-02activ8menetau-202171100138-is-apns-own-keepalivedlvs-vip-not-a-third-party-service)
   * [Per-Site Public Egress IP — a first-class diagnostic, and one address for the whole box](#per-site-public-egress-ip-a-first-class-diagnostic-and-one-address-for-the-whole-box)
   * [Fluent Bit / Graylog Sidecar Config Architecture](#fluent-bit-graylog-sidecar-config-architecture)
+  * [Graylog Backend Path in AWS (`gl.aws.apn.au`) — verified live 2026-10-07](#graylog-backend-path-in-aws-glawsapnau-verified-live-2026-10-07)
   * [WAN Uplink Addressing and Default-Route Programming](#wan-uplink-addressing-and-default-route-programming)
   * [Manual TBF/`ifb` Ingress Shaping — live, fleet-wide, NOT Ansible-managed](#manual-tbfifb-ingress-shaping-live-fleet-wide-not-ansible-managed)
   * [WAN-Path Diagnostic Techniques (from the 2026-07-30 dark-VLAN investigation)](#wan-path-diagnostic-techniques-from-the-2026-07-30-dark-vlan-investigation)
@@ -244,6 +245,40 @@ is stored per-project, e.g. `smc-file-writing-analysis/.graylog-token`, gitignor
 graylog-api <path>`. `apn-graylog01` is the server host (`tsh ssh`), API on `localhost:9000`.
 
 **Teleport / tsh scope:** SSH access + the `apn-graylog` **app** (Graylog API via `tsh apps login`). DB/Kubernetes access not in use.
+
+### Graylog Backend Path in AWS (`gl.aws.apn.au`) — verified live 2026-10-07
+
+Endpoints by inventory (`graylog.api_url` / fluent-bit `Host`): `rct`, `wh` and `apn` use `gl.aws.apn.au`; `nbn_wh` uses `gl.communitywifi.net.au`, a separate
+Graylog not described here. The path below was read live from AWS account `519076595945` (`ap-southeast-2`) with the `noc-admin` CLI profile.
+
+```text
+SMC fluent-bit  --HTTPS POST /gelf (gzip GELF, X-GELF-Token, tls.verify On)--+
+SMC sidecar     --HTTPS /api/... every 10 s (Basic <token>:token, tls_skip_verify)--+
+                                                                                    v
+gl.aws.apn.au  Route 53 alias A (zone aws.apn.au Z06674973R861WSOMMI9V) -> apn-graylog-alb-355462764.ap-southeast-2.elb.amazonaws.com
+  -> IGW -> ALB apn-graylog-alb (internet-facing, 3 AZs, public subnets 10.240.1-3.0/24, SG apn-graylog-alb-sg tcp/443 from 0.0.0.0/0)
+     listener HTTPS:443 only, TLS ends here (ACM cert, policy ELBSecurityPolicy-TLS-1-2-2017-01)
+  -> plain HTTP inside VPC apn-vpc 10.240.0.0/18
+  -> EC2 apn-graylog01 i-077c7d21df1872ccc 10.240.11.10 (c5.xlarge, private subnet 10.240.11.0/24, no public IP; egress via NAT, APN ranges via VGW)
+```
+
+| ALB rule | Match | Target group | Target port |
+|---|---|---|---|
+| 10 | path `/api`, `/api/*` + `Authorization` header (sidecar token) | `apn-graylog-api-tg` | 9000 (TG says 9443; the registered port wins) |
+| 20 | path `/*` + `X-Graylog-Token` header | `apn-graylog-web-tg` | 9000 |
+| 30 | path `/beats/*` (no header check) | `apn-graylog-beats-tg` | 5044 |
+| 40 | path `/gelf`, `/gelf/*` + `X-GELF-Token` header | `apn-graylog-gelf-tg` | 12202 (GELF HTTP input) |
+| default | anything else | fixed response **403** | - |
+
+- **A bare `curl https://gl.aws.apn.au/` returns 403 by design.** That proves TLS and the ALB are up, not that Graylog is broken. To check log shipping
+  end to end, query Graylog (below) or read fluent-bit's own log on a box.
+- **Operators do not use this hostname.** UI and API access is through the Teleport app `apn-graylog` (next section).
+- **The cert is ACM-managed and depends on CAA at `aws.apn.au`.** `apn.au` only allows `letsencrypt.org`. Since 2026-10-07 `aws.apn.au` has
+  `CAA 0 issue "amazon.com"` + `0 issue "letsencrypt.org"`. Removing that record brings back the `CAA_ERROR` that let the cert expire on 2026-09-12
+  (13_known-issues.md, 2026-10-07). The current cert `9ca285a0-...` expires 2027-04-23. ACM renews it automatically while it stays attached and the CAA allows Amazon.
+- The header tokens are static shared secrets, stored in plain text in `roles/smc_graylog/files/apn-fluentbit-config-file` and in the ALB rules.
+  Rotating one means changing both sides at the same time, and the Graylog-side collector config as well (fluent-bit's live config is pulled by the sidecar).
+- `noc-admin` cannot read WAF associations (`wafv2:GetWebACLForResource` denied), so whether a WAF sits in front of the ALB is unknown.
 
 ### WAN Uplink Addressing and Default-Route Programming
 
@@ -591,6 +626,24 @@ curl -s \
 `smc-file-writing-analysis/.graylog-token`; moved here so the credential travels with this access-method doc instead of being re-derived per project. The `smc-file-writing-analysis` project's
 `justfile` (`GRAYLOG_TOKEN_FILE` variable) and `scripts/graylog_config_lint.sh` both reference this path directly, with `GRAYLOG_TOKEN` env var as the override. Reuse that same file/env-var convention
 for ad hoc queries rather than creating a second copy.
+
+
+**Graylog API on this version — aggregate counts (verified 2026-10-07):** `/api/search/universal/{absolute,relative}/terms` returns nothing. For
+per-source counts use the scripting API, which is read-only even though it is a POST:
+
+```bash
+curl -s --cert "$CERT" --key "$KEY" -u "${TOKEN}:token" -H 'Accept: application/json' \
+  -H 'Content-Type: application/json' -H 'X-Requested-By: cli' -X POST \
+  https://apn-graylog.teleport.apn.au/api/search/aggregate \
+  -d '{"query":"_exists_:tp_site","timerange":{"type":"relative","range":86400},
+       "group_by":[{"field":"source","limit":500}],"metrics":[{"function":"count"},{"function":"max","field":"gl2_receive_timestamp"}]}'
+```
+
+`_exists_:tp_site` selects SMC-originated messages only. To tell a live gap from a later backfill, compare `timestamp` with `gl2_receive_timestamp`.
+Inline `curl` in a Claude Code Bash call is blocked by the context-mode hook, so put the call in a script file and run that.
+
+**fluent-bit and the sidecar treat TLS differently:** fluent-bit `tls.verify On` and sidecar `tls_skip_verify: true`. A bad or expired `gl.aws.apn.au` cert stops
+log shipping while the sidecars still look healthy (13_known-issues.md, 2026-10-07).
 
 ---
 
