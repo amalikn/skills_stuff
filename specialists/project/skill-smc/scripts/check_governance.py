@@ -83,7 +83,7 @@ def _live_surfaces() -> tuple[str, ...]:
 
 
 # Index file -> (folder it indexes, glob). Enforces BOTH directions: every reference file is named in the index, and
-# every name in the index resolves to a real file. These four are the surfaces rule-reference-update-discipline.md
+# every name in the index resolves to a real file. These four are the surfaces reference-update-discipline.rule.md
 # requires to carry a per-file row when a reference is added. The other two surfaces the rule names —
 # exports/claude_code/project/skill-smc/adapter.md and install.md — map references/*.md via a wildcard
 # (`references/*.md` / `cp references/*.md`), so a per-file catalog check against them would false-fail on every
@@ -134,7 +134,15 @@ CONDITIONAL_PATHS: frozenset[str] = frozenset({
     "justfile",                           # no root justfile; scripts/ has two scoped ones
     "adapter.md",                         # shorthand in prose for exports/claude_code/project/skill-smc/adapter.md
     "install.md",                         # shorthand in prose for exports/claude_code/project/skill-smc/install.md
-    "rule-manifest-version-discipline.md",  # shorthand in prose for .archcore/rules/rule-manifest-version-discipline.md
+    "manifest-version-discipline.rule.md",  # shorthand in prose for .archcore/rules/manifest-version-discipline.rule.md
+    # Archcore files renamed to the <slug>.<type>.md form on 2026-10-07 (v0.1.99). CHANGELOG and SCRATCHPAD history name the old
+    # paths; these entries keep that record readable without restating it as a live claim.
+    "rule-manifest-version-discipline.md",
+    ".archcore/adr/adr-progressive-disclosure-structure.md",
+    ".archcore/rules/rule-manifest-version-discipline.md",
+    ".archcore/rules/rule-progressive-disclosure-loading.md",
+    ".archcore/rules/rule-reference-update-discipline.md",
+    ".archcore/specs/spec-specialist-pack-file-roles.md",
     "ansible-wifi-root-governance/AGENTS.md",  # lives in the sibling ansible-wifi repo, not this pack
     "issues/apn/routing-issue/AGENTS.md",      # example path from the sibling ansible-wifi repo
     "opa/data",                                # OPA policy layer lives in the sibling ansible-wifi repo
@@ -151,7 +159,7 @@ CONDITIONAL_PATHS: frozenset[str] = frozenset({
     "smc_bases.yml",                      # playbook in the sibling ansible-wifi repo
 })
 
-# Surfaces scanned for a stray hardcoded pack-version stamp, per rule-manifest-version-discipline.md's explicit list
+# Surfaces scanned for a stray hardcoded pack-version stamp, per manifest-version-discipline.rule.md's explicit list
 # ("not RUNBOOK.md, not SKILL.md, not any references/*.md file") plus the other agent-facing governance surfaces.
 # CHANGELOG.md and install.md are deliberately excluded — both are append-only history logs where a past version
 # number is a historical fact, not a live claim, per the "do not enforce history" doctrine. The check matches only
@@ -269,7 +277,7 @@ def check_referenced_paths() -> None:
 def check_catalog_coverage() -> None:
     """Both directions: the catalog names nothing missing, and nothing present is uncataloged.
 
-    Enforces rule-reference-update-discipline.md's per-file surfaces (RUNBOOK.md, SKILL.md, AI_NAVIGATION.md,
+    Enforces reference-update-discipline.rule.md's per-file surfaces (RUNBOOK.md, SKILL.md, AI_NAVIGATION.md,
     context-map.yaml) and the pack's own scripts/README.md inventory convention.
     """
     for index, (folder, glob) in CATALOGS.items():
@@ -294,7 +302,7 @@ def check_catalog_coverage() -> None:
 def check_version_single_source() -> None:
     """manifest.json is the sole version-of-record; no other governance surface may hardcode a duplicate.
 
-    Rule: .archcore/rules/rule-manifest-version-discipline.md. A second hardcoded copy drifts because no other rule
+    Rule: .archcore/rules/manifest-version-discipline.rule.md. A second hardcoded copy drifts because no other rule
     updates it on a bump — this happened twice already (RUNBOOK.md header carried a stale 0.1.28 against manifest's
     0.1.29; SKILL.md's Source footer carried the same risk), both fixed 2026-09-08. CHANGELOG.md and install.md are
     deliberately excluded: both are append-only history logs where a past version number is a historical fact, not

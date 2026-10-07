@@ -1269,6 +1269,16 @@ Properties worth knowing before you fight it:
 - **Order matters.** Fix findings on your own lines first, refresh the baseline second, do whitespace last. A blanket whitespace pass early expands the changed-line set and drags hundreds of inherited
   findings into the blocking set — that mistake turned a 43-finding job into a 404-finding one.
 - yamllint has no baseline, so inherited whitespace defects in a file you touch block the push even though they predate you. That cleanup is unavoidable; keep it whitespace-only and in its own commit.
+  **Superseded 2026-10-07:** the shared `.yamllint` (`local-knowledge-ansible/ansible-wifi/ansible-wifi-root-governance/.yamllint`) now disables `trailing-spaces`,
+  `new-line-at-end-of-file`, `new-lines` and `empty-lines`, allows extra spaces after a colon (topology_vars alignment, emitted by the generator templates), disables `document-start`, and
+  ignores `collections/` and the hidden `topology_vars/.*.yml` cache. Repo-wide errors went from 2,444 to 0 once the last 14 real ones were fixed (commit `c6dc4206`). Whitespace no longer
+  blocks a push.
+- A file that did not parse at the base commit has no findings in the baseline. Fixing its syntax makes every finding in it appear at once and the gate blocks on all of them
+  (`roles/smc_rise_overlay/tasks/main.yml`, 2026-10-07). Compare ansible-lint output at base and head before assuming you introduced anything.
+- **Pushing from an agent or any non-terminal shell:** the syntax-check stage fails with `ERROR: Ansible requires blocking IO on stdin/stdout/stderr. Non-blocking file handles
+  detected: <stderr>` even though the playbook is fine. ssh (the push transport) puts the stdio it shares with the hook into non-blocking mode when it is not a terminal; redirecting
+  stderr to a file does not help. Push under a pseudo-terminal: `script -q <logfile> git push origin <branch> </dev/null`. From an interactive terminal the problem does not occur.
+  Never use `--no-verify` for this (2026-10-07, ansible-core 2.17 in the hook venv).
 
 **Fixed 2026-09-27 (unified-network-controller session; ansible-wifi's hook is untracked, `.git/hooks/pre-push`, old copy kept as `pre-push.bak-20260927`):** three defects made stacked or
 non-checked-out branches unpushable without `--no-verify`. (1) The gate linted `HEAD`, not the pushed commit: the hook now lints each pushed commit, in a temporary detached worktree when it is not the
@@ -2017,7 +2027,7 @@ flag `ansible-inventory` never loads it and every host shows no topology variabl
 host up in that directory's dict, and drop the `os.chdir()` in favour of joined paths. Single-inventory runs behave the same; the `.<site>.yml` cache files
 keep their format. The plugin is shared by all seven flavours, so validate with the two commands above plus a single-inventory `--list` on each flavour.
 
-### `smc_update_kernel` "Unhold kernel packages" fails when the target kernel is not installed (regression, fixed on the branch)
+### `smc_update_kernel` "Unhold kernel packages" fails when the target kernel is not installed (regression, fixed in `623ef64e` on `rise`)
 
 **Symptom (first RISE run that needed an upgrade after 2026-09-03):** `Failed to find package 'linux-image-5.15.0-1078-raspi' to perform selection
 'install'`, the same for `linux-modules`, `linux-modules-extra` and `linux-headers` of `1078`. The `1065` items succeeded. The target comes from
@@ -2031,7 +2041,7 @@ them installed and held.
 
 **State after the failure:** nothing installed. The `1065` packages were unheld (`linux-headers` reported `changed`), and both boxes kept running `1065`.
 
-**Fix (in `roles/smc_update_kernel/tasks/main.yml`, uncommitted on the branch on 2026-10-07):** a new task, "Query dpkg for known kernel packages", runs
+**Fix (in `roles/smc_update_kernel/tasks/main.yml`, committed `623ef64e` on branch `rise`, 2026-10-07):** a new task, "Query dpkg for known kernel packages", runs
 `dpkg-query -W -f '${Package} ${db:Status-Status}\n'` over target plus current packages with `failed_when: false`, because rc is 1 when any package is
 unknown while stdout still lists the known ones. "Unhold" loops over every package dpkg lists. "Mark kernel packages as auto" loops only over lines ending in
 ` installed`, so `apt-mark` never runs on a missing package. The unhold task now uses the FQCN `ansible.builtin.dpkg_selections`.

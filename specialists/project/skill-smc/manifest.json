@@ -28,8 +28,8 @@
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "20261006_1842",
-  "version": "0.1.91",
+  "updated_at": "20261007_1625",
+  "version": "0.1.99",
   "dependencies": [],
   "known_constraints": [
     "SMC boxes run overlayroot \u2014 changes do not persist across reboot unless lower dir is remounted rw",

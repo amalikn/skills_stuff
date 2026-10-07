@@ -2,6 +2,9 @@
 
 ## Contents
 
+- [20261007_1625 — skill-ai-it refresh: navigation and scripts managed blocks to template-sourced-blocks-v1 (v0.1.98 -> v0.1.99)](#20261007_1625--skill-ai-it-refresh-navigation-and-scripts-managed-blocks-to-template-sourced-blocks-v1-v0198---v0199)
+- [20261007_1623 — rct site addressing from ansible-wifi vs the Mk3 diagram (v0.1.97 -> v0.1.98)](#20261007_1623--rct-site-addressing-from-ansible-wifi-vs-the-mk3-diagram-v0197---v0198)
+- [20261007_1229 — Backdoor-first rule for unreachable boxes, backdoor-watch.sh, kupungarri re-check (v0.1.91 -> v0.1.92)](#20261007_1229--backdoor-first-rule-for-unreachable-boxes-backdoor-watchsh-kupungarri-re-check-v0191---v0192)
 - [20261007_1150 — Graylog AWS path, cert dependency, log-gap triage, wh dark-box update, alert gap (v0.1.90 -> v0.1.91)](#20261007_1150--graylog-aws-path-cert-dependency-log-gap-triage-wh-dark-box-update-alert-gap-v0190---v0191)
 - [20261007_1141 — Two-inventory runs lose topology vars; smc_update_kernel unhold regression fixed on branch (v0.1.89 -> v0.1.90)](#20261007_1141--two-inventory-runs-lose-topology-vars-smc_update_kernel-unhold-regression-fixed-on-branch-v0189---v0190)
 - [20261007_1137 — gl.aws.apn.au cert expiry stopped SMC log shipping; Graylog aggregate API; nyirripi and kupungarri dark (v0.1.88 -> v0.1.89)](#20261007_1137--glawsapnau-cert-expiry-stopped-smc-log-shipping-graylog-aggregate-api-nyirripi-and-kupungarri-dark-v0188---v0189)
@@ -105,6 +108,59 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261007_1625 — skill-ai-it refresh: navigation and scripts managed blocks to template-sourced-blocks-v1 (v0.1.98 -> v0.1.99)
+
+<!-- skill-ai-it-upgrade: 2026-09-23-template-sourced-blocks-v1 -->
+
+- Ran the `skill-ai-it` deterministic navigation-control upgrade (`refresh` mode).
+- `AGENTS.md` and `scripts/README.md`: managed `navigation` / `scripts` blocks upgraded from `2026-08-11-governance-checks-layer-v1` to
+  `2026-09-23-template-sourced-blocks-v1`. Content outside the blocks untouched.
+- `context-map.yaml`: `skill_ai_it_version` restamped; one long `description` value re-wrapped by the YAML writer, same text.
+- `AI_NAVIGATION.md`: skipped, carries the `skill-ai-it:manual` opt-out. The generic `.proposed-navigation-block` file was discarded.
+- The upgrader appends its entry at the end of the file; moved here because this CHANGELOG is newest-first.
+
+## 20261007_1623 — rct site addressing from ansible-wifi vs the Mk3 diagram (v0.1.97 -> v0.1.98)
+
+- `references/03_communication-flows.md`: new subsection, SMC VLAN addresses and DHCP scopes from `inventories/rct/topology_vars` (319 of 325 sites
+  identical), compared with the Mk3 connection diagram v0.5 the operator supplied (held in skill-mikrotik). The diagram is stale on management DNS and on a
+  `192.168.100.2` note; ansible-wifi is authoritative.
+
+## 20261007_1605 — arrkapa root cause: MikroTik switch crash loop (v0.1.96 -> v0.1.97)
+
+- `references/06_failure-modes.md`: arrkapa trunk silence explained: the site switch is in a kernel-failure / watchdog reboot loop; eth0 flapped 249 times in 14.5 h; TSTIK resets 80-104 a day had no effect.
+
+## 20261007_1425 — Cross-link to new skill-mikrotik (v0.1.95 -> v0.1.96)
+
+- `SKILL.md` Related Skills: new `skill-mikrotik` pack for the site MikroTik switch and AP (RB450Gx4 `10.255.0.5`, Metal 52 ac `10.255.0.20`).
+
+## 20261007_1405 — TSTIK reset logic from source, tstik-capture.sh (v0.1.94 -> v0.1.95)
+
+- `references/06_failure-modes.md`: the RCT TSTIK resets are the rct-tstik Laravel app on the SMC (phone, NTD, MikroTik switch rails), not AVR firmware; thresholds and history location.
+- `scripts/tstik-capture.sh` (new, read-only): TSTIK stats, reset history from `laravel.log*`, eth0 link log; `WAIT_UP=1` waits for Teleport. Tested on delye-smc01.
+
+## 20261007_1350 — arrkapa trunk-silence diagnosis, vlan-traffic-timeline.py (v0.1.93 -> v0.1.94)
+
+- `scripts/vlan-traffic-timeline.py` (new, read-only): per-interface rates, or counter deltas across a dark gap, to place an outage on the wire.
+- `references/06_failure-modes.md`: whole switch trunk goes silent while the SMC keeps transmitting (arrkapa); RCT/WH wiring is Pi eth0 -> MikroTik switch.
+- `references/08_ansible-authoring.md`: `.yamllint` relaxation, unparseable-file baseline gap, and pushing under a pseudo-terminal from non-terminal shells.
+
+## 20261007_1314 — WH stability: power-loss and undervoltage classes, auto_reboot correction, overlay contents, fleet-stability scripts (v0.1.92 -> v0.1.93)
+
+- `references/06_failure-modes.md`: corrected "auto_reboot: 0 — the RISE watchdog never reboots" (string `"0"` is truthy; `reboot_after_cleanup` ignores the flag). New sections: daily winter
+  power loss at solar sites (alpurrurulam, haasts-bluff, canteen-creek, glen-hill) and continuous Pi undervoltage that `node_hwmon_in_lcrit_alarm_volts` misses.
+- `references/07_hardware-overlay.md`: what fills the WH overlay tmpfs (portal sudo logging in auth.log, rotations, journal, squidGuard, snapd, apt, fluent-bit) and the fixes.
+- `SKILL.md`: Tier 1 asks for outage classification with `fleet-reboot-timeline.py` before calling a hang.
+- `scripts/` (new, read-only): `smc_prom.py`, `smc_graylog.py`, `fleet-reboot-timeline.py`, `predark-snapshot.py`, `fleet-resource-profile.py`, `undervoltage-profile.py`,
+  `overlay-usage-breakdown.sh`; catalogued in `scripts/README.md`, recipes in `fleet-health.justfile`.
+- Report: `local-knowledge-ansible/ansible-wifi/issues/wh-fleet/wh-stability-reboot-analysis-20261007_1310.md` (includes arrkapa `rct`: SMC up since 2026-07-03, outages are WAN).
+
+## 20261007_1229 — Backdoor-first rule for unreachable boxes, backdoor-watch.sh, kupungarri re-check (v0.1.91 -> v0.1.92)
+
+- `SKILL.md`: Tier 1 now requires the autossh backdoor check before any box is reported unreachable (operator, 2026-10-07), plus a "Backdoor port" row.
+- `scripts/backdoor-watch.sh` (new, read-only): resolves site to port and bastion from ansible-wifi inventory; `check`, `history` (stale-session bind failures), `watch` (UP/DOWN
+  changes, `UNTIL_UP`). Catalogued in `scripts/README.md`; linked from `references/03_communication-flows.md` §Backdoor SSH Access.
+- `references/06_failure-modes.md`: kupungarri-smc01 re-check: 37 h outage 2026-09-14/16 with no reboot, `eth0` flapping 4-8 times a day, `vlan522` always failing.
 
 ## 20261007_1150 — Graylog AWS path, cert dependency, log-gap triage, wh dark-box update, alert gap (v0.1.90 -> v0.1.91)
 

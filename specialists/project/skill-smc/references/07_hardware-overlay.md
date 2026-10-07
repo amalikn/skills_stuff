@@ -878,3 +878,46 @@ SMC facts that matter to cnMaestro continuity:
   onboarding queue", so new low-touch onboarding and device approval stop once the Anchor is gone.
 
 Full analysis, evidence and tests live in the cambium-swap project; do not duplicate them here.
+
+## What fills the WH overlay tmpfs, and the fixes (laramba, mimbi, canteen-creek, 2026-10-07)
+
+The upper layer is a 3.9–4.1 GB tmpfs. Daily `rise_watchdog_disk_used_pct` climbs 3–5 points a day (~120–200 MB) until a reboot, or until the watchdog's 70% cleanup holds it at 65–74%.
+`scripts/overlay-usage-breakdown.sh` (read-only) measured:
+
+| Consumer | laramba | mimbi | canteen-creek | Cause |
+| --- | --- | --- | --- | --- |
+| `auth.log` + `.1` | 550 MB | ~300 MB | 65 MB | Portal `sudo iptables` / `sudo rmtrack`: three lines per call (command, PAM open, PAM close); 409,346 sessions in one weekly rotation at laramba |
+| `syslog` + `.1` | 242 MB | 230 MB | 163 MB | Weekly rotation, `.1` uncompressed (delaycompress), healthcheck restart chatter |
+| journal | 416 MB | 240 MB | 424 MB | See the journald section below |
+| squidGuard | 316 MB | 609 MB | 293 MB | `blocklists_download.sh && blocklists_update.sh` at 03:29 and 15:29; mimbi keeps `db` and `newdb` |
+| snapd | 315 MB | 546 MB | 315 MB | `lxd`, `core20`, `core22` refreshing; mimbi keeps two revisions |
+| apt | 351 MB | 351 MB | 351 MB | `apt-daily` / `apt-daily-upgrade` timers still active with overlay on |
+| `fluent-bit.log` | – | – | 250 MB | Error logging during the Graylog cert outage |
+
+Fixes, largest first (none applied yet): command-scoped sudoers `Defaults!<alias> !syslog, !pam_session` for the portal commands (granted in `roles/smc_application`; check the option
+names against sudoers(5) for sudo 1.9.9 first); daily rotation with `maxsize` and immediate `compress` on overlay hosts; the journald cap; turn off the apt timers and empty the lists while
+overlay is on; hold or remove snaps; weekly squidGuard rebuild without keeping `newdb`; `Type=oneshot` healthcheck; watchdog cleanup from 60% without the Graylog gate. The gate never opens
+on WH: no `rise_watchdog_graylog_*` series exist for any WH site, so rotated logs are never purged.
+
+## RISE journald is sized against the SD card, not the overlay (honeymoon-bay-smc01, 2026-10-07)
+
+The `smc_rise_logcaps` warning "Oversized files found that rise_logcap will never truncate" listing `system@...journal` files at exactly 67108864 bytes is a boundary false positive: the scan
+uses `>=` against `hard_cap_mb: 64`, journal files are binary (so "ineligible"), and journald grows files in 8 MiB steps, so 64 MiB is a natural size. Archived journals are sealed and never
+written, so they never copy_up; the real risk is journald's own limits.
+
+Live on honeymoon-bay-smc01 (systemd 249, overlay not yet enabled, 57G ext4 root, no journald overrides): `System Journal ... is 328.0M, max 4.0G`. Defaults are 10% of the filesystem capped at
+4G, file size one eighth of that capped at 128M (journald.conf(5)). Once overlayroot is on, that 4G limit is meaningless against the tmpfs upper layer. Why the two files closed at 64 MiB (not 128M)
+is UNVERIFIED; no journal messages survive in either window.
+
+Fix drafted in ansible-wifi (branch `rise`, uncommitted at time of writing): `rise_logcaps.journald` (`max_use: 200M`, `max_file: 32M`, `max_file` must stay below `hard_cap_mb`) deployed by
+`smc_rise_logcaps` as `/etc/systemd/journald.conf.d/50-rise.conf`, with a `Restart journald` handler, and `/var/log/journal` added to `rise_logcaps.exclude_paths` in rct, wh and nbn_wh. Without the
+exclusion, a surviving 64 MiB archive fails the `smc_rise_enable_overlay` preflight (the 100M vacuum keeps the newest archives).
+
+Repo-search gotcha: `grep` on this Mac is aliased to ugrep, which ignores `--include=*.yml` with a warning and returns nothing; use `command grep` or plain `-rn`.
+
+**Verified on pago-point-smc01 (stage1 canary, 2026-10-07 13:32):** stage1 passed the preflight that had failed on a 64 MiB archived journal. After the reboot: overlayroot active (tmpfs upper 3.9G,
+247M used), `50-rise.conf` present, journald reports `System Journal ... is 112.0M, max 200.0M`, and the logcaps report shows `ineligible 0`.
+
+**Correction (2026-10-07):** after overlayroot is on, journald does not keep the 4G ceiling: it sizes against the filesystem holding `/var/log/journal`,
+which is then the tmpfs upper layer (default about 10% of 3.9G, ~390M; see the 2026-09-03 jarlmadangah-burru measurement). The 200M pin is still the
+tighter, deterministic bound and is what clears the preflight.

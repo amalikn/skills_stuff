@@ -32,21 +32,37 @@ and on the two `wh` switches tried.
 
 VERIFIED-OBSERVED on delye 2026-10-07 (`/interface bridge port print`, `/ip address print`). The switch uses one bridge per VLAN, not a VLAN-filtering bridge.
 
-| Port   | Connects to            | Bridge membership                                                                  |
-| ------ | ---------------------- | ---------------------------------------------------------------------------------- |
-| ether1 | SMC eth0 (trunk)       | `eth1-vlan500/501/521/522` sub-interfaces; ether1 untagged in `bridge-vlan521`     |
-| ether2 | Sky Muster NTD         | untagged in `bridge-vlan521` (same L2 as the SMC's untagged eth0 and its VLAN 521) |
-| ether3 | second WAN (VLAN 522)  | `bridge-vlan522`, inactive at delye                                                |
-| ether4 | phone UI (192.168.5.x) | untagged in `bridge-vlan500`; negotiates 10 Mbps half duplex                       |
-| ether5 | Metal AP (trunk)       | `eth5-vlan500/501`                                                                 |
+| Port   | Connects to                                  | Bridge membership                                                                  |
+| ------ | -------------------------------------------- | ---------------------------------------------------------------------------------- |
+| ether1 | SMC eth0 (trunk 500, 501, 521, 522)          | `eth1-vlan500/501/521/522` sub-interfaces; ether1 untagged in `bridge-vlan521`     |
+| ether2 | Satellite modem Uni-D1 (NTD), access 521     | untagged in `bridge-vlan521` (same L2 as the SMC's untagged eth0 and its VLAN 521) |
+| ether3 | Satellite modem Uni-D2, access 522           | `bridge-vlan522`, inactive at delye                                                |
+| ether4 | Dallas Delta ATA UI (`rct` only), access 500 | untagged in `bridge-vlan500`; negotiates 10 Mbps half duplex                       |
+| ether5 | AP, PoE: Metal 52 ac (`rct`), Cambium (`wh`) | `eth5-vlan500/501` (trunk 500, 501)                                                |
 
-Management address `10.255.0.5/24` on `bridge-vlan500`. The SMC side of the same trunk is `eth0` with `eth0.500`, `eth0.501`, `vlan521`, `vlan522` (skill-smc). The two `wh` switches also carry a VLAN
+The provisioning script builds exactly this layout (`06_provisioning.md`). Management address `10.255.0.5/24` on `bridge-vlan500`. The SMC side of the same trunk is `eth0` with `eth0.500`, `eth0.501`, `vlan521`, `vlan522` (skill-smc). The two `wh` switches also carry a VLAN
 502 sub-interface on ether1; their full layout is not captured yet.
+
+### Site design (Mk3 connection diagram)
+
+Source: `references/mk3-connection-diagram-v0.5.pdf` (operator, 2026-10-07): the Mk3 site, true for `rct` and `wh` except that `wh` has no Dallas Delta ATA
+and a Cambium AP in place of the Metal AP (operator). Read with care: it is a v0.5 design drawing, and two SMC-side values differ from ansible-wifi
+(skill-smc `references/03_communication-flows.md`, rct site addressing).
+
+- **Satellite modem** (Sky Muster NTD) is not VLAN-aware: Uni-D1 on ether2 (VLAN 521), Uni-D2 on ether3 (VLAN 522). The two WAN VLANs are two ports of
+  the same modem.
+- **Why ether1 is also untagged in `bridge-vlan521`:** the SMC and switch need untagged internet so Ansible is not cut off during first deployment; the SMC's
+  untagged `eth0` and VLAN 521 meet ether2 on that bridge.
+- **Dallas Delta ATA UI** (`rct`): `192.168.5.253/24`, gateway `192.168.5.100` (the SMC's second address on VLAN 500, kept for this phone), no VLAN. A
+  Thuraya satellite phone is wired to it as backup; the UI's BIA module switches to Thuraya when the UI has no SIP registration. UI states: 1 not registered,
+  2 registered and on hook, 3 call in progress.
+- **AP:** Ethernet on VLAN 500 at `10.255.0.20/24` (gateway `10.255.0.1`), Wi-Fi bridged into VLAN 501, powered from ether5.
+- **SMC Wi-Fi:** the SMC's own `wlan0` (SSID `A8_Management`) is bridged into VLAN 500. The PSK is not recorded here.
 
 ## Power
 
 - `rct`: switch 23.6–30.0 V, median 27.0 V; AP 22.7–27.8 V, median 25.7 V. A ~24 V solar bus. The SMC's TSTIK app can cut the switch rail; the AP restarts with the switch (uptime within an hour of the
-  switch's at 284 of 289 sites), consistent with the AP being powered through the switch.
+  switch's at 284 of 289 sites), and the provisioning script sets ether5 `poe-out forced-on` (`06_provisioning.md`): the AP is powered by the switch.
 - `wh`: switch 48.4–48.5 V (laramba, canteen-creek): a 48 V supply, separate from the Pi's 5 V supply. canteen-creek's switch had been up 68 days (since 2026-07-31, the day of its last daily blackout)
   while its Pi rebooted on 2026-10-01 and logs continuous undervoltage: the Pi's supply fails on its own (skill-smc 06_failure-modes.md, Pi undervoltage).
 
@@ -71,23 +87,19 @@ Link-downs since device boot, physical ports:
 ## Cloned MAC addresses (all 294 rct switches, 2026-10-07)
 
 Every surveyed switch has a different serial number (294 unique) but the same port MACs: ether1 `6C:3B:6B:53:F0:D5` on all 294, and the `wh` switches at laramba and
-canteen-creek answer ARP for `10.255.0.5` from `6c:3b:6b:53:f0:d8` exactly as `rct` switches do. delye's `/export terse` pins `mac-address=` on each port
-(`…F0:D5` to `…F0:D9`). The fleet was most likely built by restoring one unit's binary backup. Harmless inside a site, but any inventory, DHCP reservation,
+canteen-creek answer ARP for `10.255.0.5` from `6c:3b:6b:53:f0:d8` exactly as `rct` switches do. Harmless inside a site, but any inventory, DHCP reservation,
 monitoring or cnMaestro-style tool keyed on MAC will see one device. Identify switches by SMC host plus serial, never by MAC.
 
-### Why, and the remedy (operator confirmed 2026-10-07: one backup restored onto every switch)
+### Cause and remedy
 
-- **VERIFIED-DOC** (help.mikrotik.com, Backup, read 2026-10-07): "The RouterOS backup feature allows cloning a router configuration in binary format, which
-  can then be re-applied on the same device. The system's backup file also contains the device's MAC addresses, which are restored when the backup file is
-  loaded." A binary `.backup` cannot be made without MACs; it is meant for the same device. For copying a configuration to other devices the same docs point
-  to `/export` and `/import` (plain text, "to clone the whole configuration from one router to another").
-- **VERIFIED-OBSERVED** (amuroona, 2026-10-07): ether1 `orig-mac-address=78:9A:18:39:D1:2A` (factory) vs `mac-address=6C:3B:6B:53:F0:D5` (cloned); all four
-  bridges `auto-mac=yes`, so they inherit the cloned port MACs. The Metal APs are not affected (289 of 289 unique).
+- **Cause** (USER_STATED, operator 2026-10-07, with the script's commands): the Raspberry Pi provisioning script ends part 1 with
+  `/interface ethernet set [ find default-name=etherN ] mac-address=6C:3B:6B:53:F0:D5` … `…D9` for ether1 to ether5, so every switch it builds gets the same
+  five MACs (`06_provisioning.md`). Matches delye's `/export terse`, which pins those MACs on each port.
+- **VERIFIED-OBSERVED** (amuroona, 2026-10-07): ether1 `orig-mac-address=78:9A:18:39:D1:2A` (factory) vs `mac-address=6C:3B:6B:53:F0:D5` (set by the script);
+  all four bridges `auto-mac=yes`, so they inherit the pinned port MACs. The Metal APs are not affected (289 of 289 unique).
 - **Remedy, proposed, not applied** (needs operator approval):
-  - **New switches:** build from a text template, not the binary backup. `/export` the golden switch, delete every `mac-address=` line and any bridge
-    `admin-mac=` line, then `/import` the cleaned file on each new unit so it keeps its factory MACs. The lines must be removed because the golden unit is
-    itself a clone: delye's export pins the cloned MACs. RouterOS 7 exports leave out sensitive values (`03_routeros-cli-reference.md`), so set the admin
-    password separately after the import.
+  - **New switches:** delete the five `mac-address=` commands from part 1 of the Pi script. Each new unit then keeps its factory MACs; nothing else in the
+    script sets a MAC (the bridges use `auto-mac`).
   - **Existing fleet:** `/interface ethernet reset-mac-address [find]` returns each port to its `orig-mac-address`; then confirm each bridge's `mac-address`
     follows (the Bridging docs say a bridge keeps its saved auto MAC until a higher-priority source appears, so a reboot or an explicit
     `auto-mac=no admin-mac=<that unit's ether1 orig MAC>` may be needed). The docs show `reset-mac-address` for wireless (`/interface/wireless

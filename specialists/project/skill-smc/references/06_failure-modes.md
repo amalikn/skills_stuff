@@ -190,10 +190,17 @@ once.
 
 #### Why `wh` and not `rct`
 
-`rct` carries the external **tstik** board, which hard-power-cycles the appliance when internet connectivity is lost. It masks this failure mode entirely — an `rct` box in the same state self-recovers
+`rct` carries the external **tstik** board, which hard-power-cycles the appliance when internet connectivity is lost. **Refined 2026-10-07 from the rct-tstik source (pinned commit
+`e79f8d86`):** the reset logic is not AVR firmware. It is the `rct-tstik` Laravel app on the SMC itself (`php artisan update:stats`, cron every minute),
+which pings the phone UI (192.168.5.253), Sky Muster NTD (192.168.100.1), MikroTik switch (10.255.0.5), AP (10.255.0.20) and 8.8.8.8/1.1.1.1, and asks the
+AVR to cut a rail for 10 s: phone after 11 failed UI runs; NTD after 11 failed modem runs or 35 failed internet runs; **switch** after 11 failed switch or
+AP runs, or 71 failed internet runs. The code never power-cycles the SMC, and it stops entirely if the SMC hangs. Whether the AVR firmware has its own
+watchdog for the SMC is not established. History: `storage/logs/laravel.log*` (UTC, size-rotated, about a week); capture with `scripts/tstik-capture.sh`. It masks this failure mode entirely — an `rct` box in the same state self-recovers
 within minutes and nobody opens a ticket. `wh` has no equivalent, and nothing in software substitutes for it:
 
-- `watchdog.auto_reboot: 0` in `inventories/{wh,nbn_wh,rct}/group_vars/smc_bases.yml` — the RISE watchdog never reboots.
+- `watchdog.auto_reboot: 0` in `inventories/{wh,nbn_wh,rct}/group_vars/smc_bases.yml` does **not** stop reboots (corrected 2026-10-07): the template renders it as the string `"0"`, which
+  Python treats as true, and the `reboot_after_cleanup` path never checks the flag. The watchdog reboots at overlay >= 80% today, while exporting `rise_watchdog_auto_reboot 0`. It still
+  cannot reboot on a hang.
 - The RISE watchdog is a userspace `systemd` timer. A kernel-level lockup stops it dead along with everything else.
 - Its only reboot trigger is disk pressure, and its log cleanup is **gated on Graylog reachability** — so it disables itself precisely when the site is offline.
 - **The repo contains no hardware-watchdog configuration at all** — no `/dev/watchdog`, no `RuntimeWatchdogSec`, no `bcm2835_wdt`. Verified by `rg` across the whole tree, 2026-08-28.
@@ -278,6 +285,12 @@ undetected exposure; a fleet-wide `up{flavor="rcp"}` absence sweep has not been 
 
 Also absent from Teleport on 2026-10-07 and not yet checked: `generic-wh01`, `kintore-smc01`, `orrtipa-thurra-bonya-smc01`, `yuelamu-smc01`.
 
+**kupungarri-smc01 re-check, 2026-10-07 12:21 AEDT (read-only: `tsh ls`, `apn-prometheus01` via `mcp-grafana-apn`):** still unreachable; not in Teleport (344 nodes listed). Over 45 days,
+`node_boot_time_seconds` shows boots only on 2026-08-24 (three, the site visit) and 2026-10-01 23:06. The 37 h scrape gap from 2026-09-14 17:21 to 2026-09-16 06:31 had **no reboot**: the
+box stayed up and lost its path out, then recovered by itself. `eth0`, the only working WAN, failed `interfacecheck` roughly 4 to 8 times a day from 2026-09-13 to the end; `vlan522` failed every
+check. The last sample (2026-10-05 06:01 AEDT) had `eth0` passing, so the data cannot separate a hang from a WAN loss. Next discriminator: whether the site's Cambium devices still check in to
+`apn-cnmaestro01` (web UI only, no API; see skill-cambium). Devices online there point to a hung SMC.
+
 #### Recommended fix
 
 Enable a hardware watchdog on every flavor that lacks one:
@@ -309,6 +322,61 @@ Enable a hardware watchdog on every flavor that lacks one:
 mount lands at 50% of RAM — consistent with the existing "`overlay.size_ratio` is inert" finding in `07_hardware-overlay.md` §8.
 
 ---
+
+### Daily Winter Power Loss at Solar Sites — dark before dawn, boots mid-morning (`wh`, 2026-10-07)
+
+Not a hang and not software. Report: `local-knowledge-ansible/ansible-wifi/issues/wh-fleet/wh-stability-reboot-analysis-20261007_1310.md`.
+
+| Field | Value |
+| --- | --- |
+| Sites | alpurrurulam, haasts-bluff, canteen-creek, glen-hill (`wh`) |
+| Signature | Dark from 03:30–09:00 AEDT, then a **boot** at nearly the same clock time each day (haasts-bluff within ~10 min of 12:05 for weeks). 17–44 such boots per site in 90 days |
+| Season | `changes(node_boot_time_seconds[92d])`: dozens in Jun–Nov, 0–5 in Dec–Feb, two winters running |
+| Logs | Last Graylog lines routine (health 100%, mem 29%), **no shutdown sequence**; after boot `systemd-resolved: Clock change detected` (no RTC, so a cold start) |
+| Resources before | Normal (`predark-snapshot.py`): mem 23–36%, load < 1.3, overlay 22–43% |
+| Cause | Solar battery flat before dawn, load reconnects when PV recovers (operator: canteen-creek has known battery problems). On-box watchdogs cannot help |
+| Detect | `scripts/fleet-reboot-timeline.py`: `DARK->boot` events repeating at the same clock time |
+
+The 2026-08-28 census filed outages under six hours as "ordinary remote-site connectivity". At these four sites most of them are power losses; classify with `fleet-reboot-timeline.py` before
+assuming connectivity.
+
+### Continuous Pi Undervoltage That Prometheus Cannot See (canteen-creek, glen-hill, 2026-10-07)
+
+| Field | Value |
+| --- | --- |
+| Signature | `kernel: hwmon hwmon2: Undervoltage detected!` in kern.log. canteen-creek 1,859–7,352 a day (2026-08-06 to 09-11), still 228/hour on 10-07; glen-hill on 08-27 before its dark boot |
+| Profile | Flat across all 24 hours (`undervoltage-profile.py hourly`): the 5 V rail is undersized or sagging continuously (PSU / DC-DC / cable), separate from the battery cycle |
+| Blind spot | `node_hwmon_in_lcrit_alarm_volts` reads 0 at canteen-creek: the rpi_volt alarm is not latched between scrapes. Use Graylog kern.log, not this metric, to clear a site |
+| Scope | Explains canteen-creek and glen-hill. It does **not** explain the long-outage class: the 2026-08-28 throttle-flag cohort test still stands |
+| Supply split | canteen-creek's MikroTik switch runs from 48 V and had been up 68 days (since 2026-07-31) while the Pi rebooted on 2026-10-01: the Pi's 5 V supply fails on its own (skill-mikrotik `01_overview.md`, 2026-10-07) |
+
+### Whole Switch Trunk Goes Silent While the SMC Keeps Transmitting (arrkapa `rct`, 2026-10-02 onward)
+
+Looks like a satellite outage; it is not. RCT and WH sites connect the Pi's `eth0` to a MikroTik switch, which carries the Sky Muster NTD (untagged internet), the AP
+management VLAN 500, client VLAN 501 and the NBN modem management VLAN 521 (operator, 2026-10-07).
+
+| Field | Value |
+| --- | --- |
+| SMC | Up throughout: `node_boot_time_seconds` unchanged since 2026-07-03 |
+| Satellite path | eth0 RTT ~660 ms and 30–48 Mbps for 60 days (Sky Muster); `interfacecheck` ~92% until 10-02, then 0.07–0.55 a day |
+| During each outage | `vlan-traffic-timeline.py --gap`: eth0 received 3,641 packets in 54 h (normal: ~360 MB/h) while sending 33,602 small ones; AP VLAN 500, modem VLAN 521 and client VLAN 501 all silent; zero rx errors or frame errors |
+| Pattern | All VLANs stop and restart together, in windows of a few hours (e.g. 02:00–06:00, 14:00–16:00) |
+| Earlier, separate | Client VLAN 501 traffic stopped 2026-09-29 ~15:00 while APs and the satellite stayed up (constant 75 KB/h background since) |
+| Reading | A satellite-only fault would leave local AP and modem-management traffic flowing. The fault is between the Pi and the MikroTik or in the MikroTik. TX still counting suggests link stayed up and the switch stopped forwarding (inference: no `node_network_carrier` here); no errors argues against a degraded cable |
+| TSTIK resets | The SMC's TSTIK app power-cycles the MikroTik 10 s after ~11 min of failed switch/AP pings, which fits the few-hour recovery windows; confirm from its `laravel.log` (`tstik-capture.sh`) |
+| Confirm | On the box when reachable: `journalctl -k \| grep -iE 'eth0.*link (up\|down)'` (no reboot, so the kernel log is intact); MikroTik uptime and log; TSTIK `LANPower` and `PING_*` |
+
+**Root cause found 2026-10-07 16:02 (VERIFIED-OBSERVED):** the arrkapa RB450Gx4 switch (serial `HCW08285341`) is in a crash-reboot loop. Its log
+holds 43 `router was rebooted without proper shutdown by watchdog timer` and 48 `kernel failure in previous boot` entries in the last 1,000 lines, several a
+minute at times; only 6 are plain power cuts (`probably power outage`, the TSTIK). The SMC's kernel log shows eth0 dropping 249 times between 01:28 and 16:00,
+down about 6 s and up about 23 s each time, and only 18 of those drops fall within a minute of a TSTIK switch reset. The TSTIK app reset the switch 80–104
+times a day from 2026-10-02 (4 on 10-01, none before) plus the modem and phone just as often, without effect. Board health at capture was normal (27.1 V,
+53 C, 948 MiB free, 0% bad blocks, RouterOS 7.8 like the whole fleet), so the unit itself is failing. Action: replace the switch; configure the spare from a
+text export with the `mac-address=` lines removed (cloned-MAC remedy in `01_overview.md`). Only one other switch in the 294-site survey logged the same
+signature: batavia-downs (11 lines, stable for 15 days at survey). Evidence: `local-knowledge-ansible/ansible-wifi/issues/rct-fleet/arrkapa-wan/capture-arrkapa-mikrotik/` and `local-knowledge-ansible/ansible-wifi/issues/rct-fleet/arrkapa-wan/capture-arrkapa/`.
+
+SMC side: `journalctl -k | grep 'eth0: Link is'` on the box (no reboot, so the history since boot is intact) shows the flapping; skill-mikrotik
+`04_failure-modes.md` has the switch-side signature.
 
 ### WAN Uplink Stuck With No DHCP Lease, Self-Heal Cron Masquerades as "Flapping" (aurukun-smc03, `nbn_accelerate`, 2026-09-04)
 

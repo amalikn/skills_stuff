@@ -149,9 +149,9 @@ python3 scripts/check_governance.py
 Two check families, tuned to this pack's stated rules (see the file's own CONFIG section for the exact registries and per-entry exemption reasons):
 
 - **Catalog coverage** — every `references/*.md` file is named in `RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, and `context-map.yaml` (the four surfaces
-  `.archcore/rules/rule-reference-update-discipline.md` requires a per-file row in), and every script in `scripts/` is named in this file. Fails in both directions — a stale catalog entry, or an
+  `.archcore/rules/reference-update-discipline.rule.md` requires a per-file row in), and every script in `scripts/` is named in this file. Fails in both directions — a stale catalog entry, or an
   uncataloged new file.
-- **Version single-source** — no governance surface hardcodes a duplicate of this pack's own version number (`.archcore/rules/rule-manifest-version-discipline.md`); `manifest.json` is the sole
+- **Version single-source** — no governance surface hardcodes a duplicate of this pack's own version number (`.archcore/rules/manifest-version-discipline.rule.md`); `manifest.json` is the sole
   version-of-record. The check derives the current major.minor line from `manifest.json` at run time rather than matching any semver-shaped number, so it does not collide with unrelated software
   versions mentioned in the references (ClamAV, ansible-lint, etc.).
 
@@ -445,6 +445,65 @@ fixed `local_port` so tunnels never collide and a stale leftover on a shared por
 | `teleport-tunnel.sh` | `tsh` (Teleport session), ansible-wifi                  | `external-network`,             | Opens a real tunnel to a live device; never writes anything, never                |
 |                      |   inventories (read-only)                               |   `requires-credentials`        |   touches ansible-wifi                                                            |
 
+### `backdoor-watch.sh`
+
+Checks, and optionally watches, a box's autossh backdoor: the reverse tunnel `autossh-teleport-openssh` holds open to the project bastion on port `50000 + site_eclipse_siteid`. Written
+2026-10-07 for kupungarri-smc01. Run it before calling any box unreachable; a box missing from `tsh ls` can still be up behind this tunnel. Site, host, siteid, port and bastion are resolved from
+ansible-wifi's inventory, the same way `teleport-tunnel.sh` does it.
+
+```bash
+./backdoor-watch.sh kupungarri                 # check: is 50468 listening on apn-teleport01 now
+./backdoor-watch.sh kupungarri history         # per-day "cannot listen to port" (stale session holding the port)
+INTERVAL=10 DURATION=7200 ./backdoor-watch.sh kupungarri-smc01 watch     # one line per UP/DOWN change
+UNTIL_UP=1 ./backdoor-watch.sh kupungarri watch &                         # exits at the first UP
+```
+
+Watch mode runs its loop on the bastion inside one `tsh` session, so a box in a reboot or WAN-flap loop that holds the tunnel for a minute is still caught. It never connects onward to the box; once
+it shows UP, get a shell with `tsh ssh --proxy <cluster> root@<bastion>` then `ssh -p <port> root@127.0.0.1` (`../references/03_communication-flows.md` §Backdoor SSH Access). Tested 2026-10-07
+against `apn-teleport01`: DOWN on kupungarri (50468), UP on windjana-gorge (50471), history, watch and `UNTIL_UP`.
+
+| Script               | Touches                                                 | Safety                          | Notes                                                                             |
+| -------------------- | ------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
+| `backdoor-watch.sh`  | bastion via `tsh` (`ss`, auth logs), ansible-wifi        | **read-only**, `external-network` | Never touches the SMC box or ansible-wifi; history writes one temp file on the     |
+|                      |   inventories (read-only)                               |                                 |   bastion and removes it                                                          |
+
+### Fleet stability: `fleet-reboot-timeline.py`, `predark-snapshot.py`, `fleet-resource-profile.py`, `undervoltage-profile.py`, `overlay-usage-breakdown.sh`
+
+Written 2026-10-07 for the WH "sites get stuck until a technician reboots them" investigation (report:
+`local-knowledge-ansible/ansible-wifi/issues/wh-fleet/wh-stability-reboot-analysis-20261007_1310.md`). Use them in this order for any flavor:
+
+1. `fleet-reboot-timeline.py [days] [selector]` classifies every boot and outage per site from `node_boot_time_seconds`: `reboot` (ordinary),
+   `DARK->boot` (dark >1h then came back by booting = power loss or hard hang + power-cycle), `gap-no-reboot` (box up, WAN/tunnel down). A gap
+   every site shares is a central Prometheus outage. Many `DARK->boot` at the same clock time daily = solar/battery, not software.
+2. `predark-snapshot.py <site> '<last_seen>'` shows memory, swap, overlay, load, PSI, temperature and traffic in the hours before an event.
+   Flat healthy numbers up to the last sample rule out resource exhaustion.
+3. `undervoltage-profile.py daily|hourly <site> <from> <to>` counts `hwmon: Undervoltage detected!` in Graylog kern.log. Prometheus
+   `node_hwmon_in_lcrit_alarm_volts` misses it (not latched), so do not use that metric to clear a site.
+4. `fleet-resource-profile.py [selector] [window]` gives one CSV row per site (memory, PSI, temperature, overlay peak, hours >=70%, watchdog
+   cleanup minutes, auto_reboot) for a stable-vs-unstable comparison.
+5. `overlay-usage-breakdown.sh <host>...` lists what fills the overlayroot tmpfs upper layer, plus the auth.log message shapes, timers, cron
+   and snaps behind the growth.
+
+6. `vlan-traffic-timeline.py <site> --gap '<last_seen>' '<back>'` shows what crossed each interface while a box was invisible
+   (cumulative counters, valid when it did not reboot). Only the WAN interface silent = WAN/satellite fault; every VLAN on the trunk
+   silent while the SMC keeps transmitting = the SMC-to-switch segment or the switch itself.
+
+`smc_prom.py` (Prometheus via the local Grafana datasource proxy, credentials read from the Grafana MCP entry in `~/.claude.json`) and
+`smc_graylog.py` (`search` / `agg` through the `apn-graylog` Teleport app, token from `../.graylog-token`) are the shared libraries; both also
+work as CLIs. Recipes: `just -f fleet-health.justfile stability-timeline|stability-profile|predark|undervoltage|overlay-breakdown`.
+
+| Script                        | Touches                                          | Safety                            | Notes                                                       |
+| ----------------------------- | ------------------------------------------------ | --------------------------------- | ----------------------------------------------------------- |
+| `smc_prom.py`                 | Grafana datasource proxy (Prometheus API)        | **read-only**, `external-network` | Reads the Grafana token from `~/.claude.json`; never prints it |
+| `smc_graylog.py`              | Graylog REST API via Teleport app                | **read-only**, `external-network` | `agg` is a POST but read-only; needs `tsh apps login`       |
+| `fleet-reboot-timeline.py`    | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | 90d WH run takes about 1 minute                             |
+| `predark-snapshot.py`         | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` |                                                             |
+| `fleet-resource-profile.py`   | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | CSV to stdout; failed columns are reported on stderr        |
+| `undervoltage-profile.py`     | Graylog (via `smc_graylog.py`)                   | **read-only**, `external-network` | `hourly` makes 24 queries per day; keep ranges short        |
+| `overlay-usage-breakdown.sh`  | Live SMC appliances via `tsh ssh`                | **read-only**                     | du/find under nice+ionice; `TSH_PROXY` for the CW cluster   |
+| `vlan-traffic-timeline.py`    | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | Per-interface rates, or counter deltas across a dark gap |
+| `tstik-capture.sh`            | Live RCT box via `tsh ssh`                       | **read-only**                     | TSTIK stats + reset history + eth0 link log; `WAIT_UP=1` polls Teleport first; never copies `config.json` |
+
 ### `tplink-switch.sh` and `tplink_cli_driver.py`
 
 Reach a TP-Link site switch (SG2428P and kin) through the site's SMC box, written 2026-09-24 at kalumburu. The wrapper resolves site -> SMC host -> Teleport cluster exactly as `teleport-tunnel.sh`
@@ -506,7 +565,8 @@ reusable knowledge and tooling, not case-specific evidence. See the parent repo'
 `local-knowledge-ansible/ansible-wifi/issues/` folder per this policy once collection finishes, rather than leaving raw per-host evidence inside the skill-smc pack long-term. The *analysis*
 (conclusions, confirmed/refuted claims, new findings) belongs in `references/*.md`; the raw capture files do not.
 
-<!-- BEGIN MANAGED: skill-ai-it:scripts --> <!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->
+<!-- BEGIN MANAGED: skill-ai-it:scripts -->
+<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
 
 ## Execution Policy
 

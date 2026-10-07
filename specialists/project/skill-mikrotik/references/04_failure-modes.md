@@ -25,8 +25,14 @@ Silent While the SMC Keeps Transmitting".
 - During each outage every VLAN on the SMC's eth0 received almost nothing (3,641 packets in 54 h) while the SMC kept sending ~750 small packets an hour. Local VLANs (AP management 500, NTD management
   521) went silent together with the internet, which a satellite-only fault would not do.
 - The SMC's TSTIK app power-cycles this switch after ~11 minutes of failed switch/AP pings, which fits the few-hour recovery windows.
-- **Not yet confirmed on the switch itself:** arrkapa has been unreachable since 2026-10-07 10:54. `scripts/mikrotik-site-capture.sh` with `WAIT_UP=1` is set to capture uptime, ether1 link-downs and the log
-  as soon as it reconnects (output: the `capture-arrkapa-mikrotik` folder in the arrkapa-wan investigation folder). Update this entry from that capture.
+- **Root cause found 2026-10-07 16:02 (VERIFIED-OBSERVED):** the arrkapa RB450Gx4 switch (serial `HCW08285341`) is in a crash-reboot loop. Its log
+  holds 43 `router was rebooted without proper shutdown by watchdog timer` and 48 `kernel failure in previous boot` entries in the last 1,000 lines, several a
+  minute at times; only 6 are plain power cuts (`probably power outage`, the TSTIK). The SMC's kernel log shows eth0 dropping 249 times between 01:28 and 16:00,
+  down about 6 s and up about 23 s each time, and only 18 of those drops fall within a minute of a TSTIK switch reset. The TSTIK app reset the switch 80–104
+  times a day from 2026-10-02 (4 on 10-01, none before) plus the modem and phone just as often, without effect. Board health at capture was normal (27.1 V,
+  53 C, 948 MiB free, 0% bad blocks, RouterOS 7.8 like the whole fleet), so the unit itself is failing. Action: replace the switch; configure the spare from a
+  text export with the `mac-address=` lines removed (cloned-MAC remedy in `01_overview.md`). Only one other switch in the 294-site survey logged the same
+  signature: batavia-downs (11 lines, stable for 15 days at survey). Evidence: `local-knowledge-ansible/ansible-wifi/issues/rct-fleet/arrkapa-wan/capture-arrkapa-mikrotik/` and `local-knowledge-ansible/ansible-wifi/issues/rct-fleet/arrkapa-wan/capture-arrkapa/`.
 
 ## SMC-port link flapping (delye, rct, 2026-08-17/18)
 
@@ -48,4 +54,12 @@ timestamps) with skill-smc `scripts/tstik-capture.sh`.
 - ether4 (phone UI) carries the largest counts (racecourse 47,914): the phone, its cable or its 10 Mbps half-duplex link drops constantly. Not an outage cause for the SMC.
 - ether2 (Sky Muster NTD) up to ~10,000: TSTIK modem power-cycles each add one; a high count with a short switch uptime points at repeated modem resets.
 - Survey and ranges: `01_overview.md`.
+
+## Switch kernel failure and watchdog reboot loop (arrkapa 2026-10, batavia-downs earlier)
+
+Signature in `/log print`: `system,error,critical router was rebooted without proper shutdown by watchdog timer` followed by `kernel failure in previous
+boot`, repeating. Every reboot drops every port, so the SMC sees its eth0 link flap (seconds down, tens of seconds up) and loses every VLAN at once, and the
+`rct` TSTIK app starts power-cycling the switch, modem and phone without effect. Distinguish from a TSTIK power cut, which logs `router rebooted without proper
+shutdown, probably power outage`. A switch showing this repeatedly is a hardware replacement, not a configuration fix. Fleet check: grep the survey raw
+files for `watchdog timer`.
 

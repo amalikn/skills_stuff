@@ -48,6 +48,15 @@
 
 ---
 
+## 20261007_1613 — feat: `scripts/skills_registry.py` builds and checks a project area's skills.md
+
+New stdlib script and `just skills-registry <root>` recipe. It scans a folder's `AGENTS.md`, `CLAUDE.md`, `AI_NAVIGATION.md` and `SKILL.md` files for
+`skill-*` names and resolves each one to `skills_stuff` (a `SKILL.md`, or a `manifest.json` in an older specialist pack), a project-local skill folder, an
+installed-only copy, or not found. It renders `skills.md` with tables kept under 200 columns, or with `--check` (the default) reports skills added or
+dropped since the file was written. `--write` will not replace an existing `skills.md` without `--force`, and then keeps a backup. Names seen only in plain
+prose ("the skill-package rules") and aliases (`skill-pwrb`) are reported for a human rather than listed; `--keep` lists one anyway. Built after the APN
+and personal-project `skills.md` files were written by hand on 2026-10-07; run against both, its check matches them except for choices made by hand.
+
 ## 20260927_2005 — docs: the three target map promotion gaps are built in the pilot
 
 The ROADMAP entry records that unified-network-controller's `scripts/target_map.py` now has `--init` (starter map, source or inline mode), `--sync` (appends targets a plan gains, as text) and a

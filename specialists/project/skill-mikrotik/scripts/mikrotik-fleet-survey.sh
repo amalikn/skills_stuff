@@ -20,8 +20,10 @@ proxy=${TSH_PROXY:-teleport.apn.au}
 mkdir -p "$out/raw"
 
 if [ $# -eq 0 ]; then
-  set -- $(tsh ls --proxy="$proxy" --format=json "flavor=${FLAVOR:-rct}" 2>/dev/null \
-    | python3 -c 'import json,sys; print(" ".join(sorted(n["spec"]["hostname"] for n in json.load(sys.stdin) if n["spec"]["hostname"].endswith("-smc01"))))')
+  hosts=()
+  while IFS= read -r h; do [ -n "$h" ] && hosts+=("$h"); done < <(tsh ls --proxy="$proxy" --format=json "flavor=${FLAVOR:-rct}" 2>/dev/null \
+    | python3 -c 'import json,sys; print("\n".join(sorted(n["spec"]["hostname"] for n in json.load(sys.stdin) if n["spec"]["hostname"].endswith("-smc01"))))')
+  set -- ${hosts[@]+"${hosts[@]}"}
 fi
 echo "$(date '+%F %T') surveying $# sites: devices $devices" >&2
 

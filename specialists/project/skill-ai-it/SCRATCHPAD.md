@@ -105,6 +105,14 @@ not overwrite the hand-built checker (521
 
 ## Session history
 
+### 20261007_1626 — `scripts/skills_registry.py`: a skills list for any project area
+
+- Operator asked for a maintained list of work skills per project area. `apn/skills.md` and `me/skills.md` were written by hand first (committed in those
+  repos), then generalised into `scripts/skills_registry.py` and `just skills-registry <root>` (check by default; `--print`; `--write`, which never replaces
+  an existing file without `--force` and a backup).
+- Names only ever written in plain prose cannot be told apart from hyphenated phrases, so they are reported for a human (`--keep` lists one). Open from its
+  first run: `skill-malik-ai` is cited by `me/islam` and `me/japan/tracks/jdm` but exists nowhere.
+
 ### 20260923_1300 — KEEP: self-governance, and a loss this package caused in itself
 
 - The upgrader's inlined navigation block had drifted nine sections behind `templates/AI_NAVIGATION.md` since 2026-08-11. Bootstrapping then upgrading a project deleted 105 lines of routing while

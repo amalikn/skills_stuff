@@ -35,8 +35,8 @@ Invoke for any of:
 - Adding a new site, VLAN, service, or feature to the SMC infrastructure
 - Interpreting a Prometheus alert for an SMC host
 - Determining blast radius of a topology or role change
-- Working on a central backend the SMC fleet depends on, even when the task looks like plain AWS/DNS/cert work: Graylog (`gl.aws.apn.au`, its ALB, ACM cert,
-  CAA), Teleport, Prometheus/Grafana. A failure there is an SMC fleet incident (example: the 2026-09-12 cert expiry silently stopped all SMC log shipping).
+- Working on a central backend the SMC fleet depends on, even when the task looks like plain AWS/DNS/cert work: Graylog (`gl.aws.apn.au`, its ALB, ACM cert, CAA), Teleport, Prometheus/Grafana. A
+  failure there is an SMC fleet incident (example: the 2026-09-12 cert expiry silently stopped all SMC log shipping).
 
 ## Standing Write-Back Contract (applies no matter which project invoked this skill)
 
@@ -86,8 +86,18 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
 ## Troubleshooting Decision Tree
 
 ### Tier 1: Box Unreachable
+
+**Never report a box as unreachable until the autossh backdoor has been checked** (operator, 2026-10-07). Teleport absent from `tsh ls` is not enough. On the project bastion (`apn-teleport01` /
+`cw-teleport01`): `ss -tln | grep 127.0.0.1:<50000+site_eclipse_siteid>`; if listening, `ssh -p <port> root@127.0.0.1`. If not, grep the bastion's `/var/log/auth.log*` for `cannot listen to port:
+<port>` (a stale session is holding the port) and poll the listener to catch a box that comes up briefly. Procedure: `references/03_communication-flows.md` §Backdoor SSH Access. Script: `scripts/backdoor-watch.sh <site> [check|history|watch]`.
+
+**Classify the outage before calling it a hang** (2026-10-07): `scripts/fleet-reboot-timeline.py 90 'site="<site>"'` separates ordinary reboots, dark-then-boot (power loss, or a
+hang that was power-cycled) and WAN-only gaps. Solar sites lose power every winter morning, and a Pi undervoltage storm shows only in Graylog kern.log, not in Prometheus
+(`references/06_failure-modes.md`). The RISE watchdog reboots only on overlay >= 80%, and `auto_reboot: 0` does not stop it.
+
 | Check          | Command                                          | What to look for                       |
 | -------------- | ------------------------------------------------ | -------------------------------------- |
+| Backdoor port  | bastion: `ss -tln \| grep :<50000+siteid>`       | Listening = box alive; SSH in via it   |
 | autossh tunnel | `systemctl status autossh-teleport-openssh`      | Active/failed; check last restart time |
 | Network route  | Prometheus: `NodeNetworkDefaultRouteInstability` | 4+ route changes in 60min              |
 | Overlayroot    | `mount \| grep overlay`                          | Lower dir must be mounted              |
@@ -161,7 +171,8 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 4. **Cache coherence**: delete `inventories/*/topology_vars/.<site>.yml` to force plugin regeneration (git checkout changes mtimes, making stale cache appear current).
 5. **Generator drift**: when changing a topology pattern, check `roles/smc_generate_smc_files` templates — future site generation must stay consistent with current site changes.
 6. **Overlayroot impact on Ansible**: changes deployed via `smc_bases.yml` only persist if the playbook remounts the lower dir rw. Verify with `mount | grep overlay` on the target.
-7. **One inventory per run**: `vars_plugins/topology_vars.py` caches only the first inventory's `topology_vars/` (OPEN bug, 2026-10-07), so `-i A -i B` leaves B's hosts without `topology_*` vars. See `references/08_ansible-authoring.md`.
+7. **One inventory per run**: `vars_plugins/topology_vars.py` caches only the first inventory's `topology_vars/` (OPEN bug, 2026-10-07), so `-i A -i B` leaves B's hosts without `topology_*` vars. See
+   `references/08_ansible-authoring.md`.
 
 ---
 
@@ -205,28 +216,32 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
 - `references/13_known-issues.md` — coverage gaps, live-validation limits, and staleness risks.
 - `references/14_pin-activation-diagnosis.md` — pin validity (mangle) vs pin issuance (Apache access log): two independent mechanisms, marks-≠-activations pitfalls, and the 2026-09-11 fleet case
   study.
-- `references/snmp-oid-registry.yaml` — verified SNMP OIDs on the SMC box itself (net-snmp agent; canary 2026-09-24), the list `unified-network-controller/wc-local/scripts/collector/smc_collect.py` reads.
-- `references/snmp-oid-registry-tplink.yaml` — verified SNMP OIDs on the TP-Link site switches (SG2428P, 2026-09-30), kept like skill-cambium's registry: each
-  with the controller's use for it, plus the MIBs checked and absent. `references/tplink-site-switches.yaml` holds one record per switch (identity, address,
-  VLANs, port descriptions, SNMP state, evidence) and `references/tplink-snmp-enablement-survey-20260930.csv` the SNMP survey, as skill-cambium keeps them.
+- `references/snmp-oid-registry.yaml` — verified SNMP OIDs on the SMC box itself (net-snmp agent; canary 2026-09-24), the list `unified-network-controller/wc-local/scripts/collector/smc_collect.py`
+  reads.
+- `references/snmp-oid-registry-tplink.yaml` — verified SNMP OIDs on the TP-Link site switches (SG2428P, 2026-09-30), kept like skill-cambium's registry: each with the controller's use for it, plus
+  the MIBs checked and absent. `references/tplink-site-switches.yaml` holds one record per switch (identity, address, VLANs, port descriptions, SNMP state, evidence) and
+  `references/tplink-snmp-enablement-survey-20260930.csv` the SNMP survey, as skill-cambium keeps them.
 - `references/15_cambium-asset-registers.md` — pointer only: the ansible-wifi `site_name` join point for a Cambium asset register. Full asset-register naming-convention/extraction knowledge now lives
   in `skill-cambium` — see Related Skills below.
-- `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture, the
-  `SNMP-<location>` read-write community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/tplink-switch.sh`.
+- `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture, the `SNMP-<location>` read-write
+  community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/tplink-switch.sh`.
 - `scripts/` — reusable read-only diagnostic tooling for WAN-routing/topology-drift investigations (evidence capture, the "hook covers netplan" drift analyser, and a topology_vars-vs-live-hardware
   cross-check), fleet hardware/service-health + portal-FQDN-status audit, captive-portal pin-activation diagnosis, plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate);
   see `scripts/README.md`.
 
 ## Related Skills
 
+- **`skill-mikrotik`** — the MikroTik devices behind the SMC (on `rct`: RB450Gx4 switch at `10.255.0.5`, Metal 52 ac AP at `10.255.0.20`). Call it when a site
+  outage might be the switch or the SMC-to-switch cable, or to read switch uptime, voltage, link-downs and logs. The SMC side of the trunk, the TSTIK app
+  that power-cycles the switch, and Teleport stay here; write a fact spanning both to both packs.
 - **`skill-cambium`** — the Cambium device/hardware layer this fleet's boxes provision and manage: device families/firmware, local-admin credential vault, cnMaestro estate, asset-register conventions,
   device-inventory schema. Call it for anything about the radios/APs themselves rather than the SMC box or Ansible. It calls back here for: SMC service troubleshooting, Ansible topology/role
   questions, `smc_cnmaestro_provisioning` behaviour, Teleport access. Neither pack duplicates the other's content — cross-reference, don't copy.
-- **`skill-nautobot`** and **`skill-openwisp`** (canonical under `../../platform/`) — the platform layer this fleet's inventory and monitoring run on. Call them for
-  Nautobot models, APIs, Jobs and onboarding mechanics, or OpenWISP registration, metrics, workers and storage. A SMC box or Ansible fact stays here; a fact true of any
-  Nautobot or OpenWISP deployment goes to them as a dated Learned entry.
+- **`skill-nautobot`** and **`skill-openwisp`** (canonical under `../../platform/`) — the platform layer this fleet's inventory and monitoring run on. Call them for Nautobot models, APIs, Jobs and
+  onboarding mechanics, or OpenWISP registration, metrics, workers and storage. A SMC box or Ansible fact stays here; a fact true of any Nautobot or OpenWISP deployment goes to them as a dated Learned
+  entry.
 
 ## Source
 - specialist_type: project
 - slug: skill-smc
-- version: see `manifest.json` in the canonical source (not duplicated here — see `rule-manifest-version-discipline.md`)
+- version: see `manifest.json` in the canonical source (not duplicated here — see `manifest-version-discipline.rule.md`)

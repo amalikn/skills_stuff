@@ -13,6 +13,7 @@ This file is the navigation index for `skill-mikrotik`. Load only the reference 
 | Logging in: KeePass entry, Teleport port-forward, read-only guard, why nothing secret runs on the SMC | `references/02_device-access.md`          |
 | Which RouterOS command shows what; field meanings; RouterOS 7 gotchas                                 | `references/03_routeros-cli-reference.md` |
 | A site is dark or flapping: known signatures and how they were confirmed                              | `references/04_failure-modes.md`          |
+| How new switches are built: the Pi provisioning script, what it sets, issues it puts on every unit | `references/06_provisioning.md` |
 | Gaps, unverified assumptions, things not yet surveyed                                                 | `references/05_known-issues.md`           |
 | Scripts and their safety class                                                                        | `scripts/README.md`                       |
 

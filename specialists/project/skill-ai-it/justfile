@@ -121,3 +121,9 @@ nav-check-diff: _require-venv
 # package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
 nav-selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"
+
+# Pass --print to see a generated skills.md, --write to create one (it refuses to replace an existing file without --force,
+# which keeps a backup). Example: just skills-registry /Volumes/Data/_ai/_project/project_stuff/apn --also /Volumes/Data/_ansible/ansible-wifi/AGENTS.md
+# Skills list for a project area: check its skills.md against the skills its governance files name (exit 1 on drift)
+skills-registry root *args: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/skills_registry.py" --project-root "{{root}}" {{args}}

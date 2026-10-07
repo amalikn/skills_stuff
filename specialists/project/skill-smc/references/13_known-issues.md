@@ -1045,7 +1045,7 @@ The ACM cert on the Graylog ALB (`gl.aws.apn.au`) expired 2026-09-12 09:59:59 AE
 - **OPEN:** `vars_plugins/topology_vars.py` caches one inventory's `topology_vars/` for the whole run, so `-i rct -i wh` leaves one inventory's hosts without
   `topology_interfaces`. Workaround: one inventory per run. Proposed fix (per-directory cache) is not applied. Detail: `08_ansible-authoring.md`, "Two
   failures from one RISE run on `rct`".
-- **Fixed on branch `unc-virtual-smc-malik-rcp01`, uncommitted, not yet run on a Pi:** `smc_update_kernel` unhold failed on uninstalled target kernel
+- **Fixed in `623ef64e` on branch `rise`, not yet run on a Pi:** `smc_update_kernel` unhold failed on uninstalled target kernel
   packages (regression from `848e9841`, 2026-09-03). Seen on `honeymoon-bay-smc01` and `pago-point-smc01` (`rct`, `1065` to `1078`). Same section.
 - **Coverage gap: nothing alerted for 25 days.** The fleet-wide log gap was found only because of the ACM email chain. No alert covers a Graylog
   ingest drop, fluent-bit output errors, or the `gl.aws.apn.au` cert's expiry date. Candidates (none implemented): a Graylog event definition on

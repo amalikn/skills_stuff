@@ -133,3 +133,33 @@ portal-fqdn-check:
       fi
     done
     true
+
+# --- Fleet stability (2026-10-07 WH investigation; all read-only, see scripts/README.md) -----
+
+# Per-site reboot / dark-boot / WAN-gap timeline, e.g. just -f fleet-health.justfile stability-timeline 90 'flavor="wh"'
+stability-timeline days="90" selector='flavor="wh"':
+    ./fleet-reboot-timeline.py {{days}} '{{selector}}'
+
+# Per-site resource / overlay / watchdog CSV
+stability-profile selector='flavor="wh"' window="90d":
+    ./fleet-resource-profile.py '{{selector}}' {{window}}
+
+# Metrics in the hours before a site went dark (last_seen from stability-timeline, AEDT)
+predark site last_seen hours="8":
+    ./predark-snapshot.py {{site}} '{{last_seen}}' {{hours}}
+
+# Pi undervoltage events from Graylog kern.log (mode: daily|hourly)
+undervoltage site from to mode="daily":
+    ./undervoltage-profile.py {{mode}} {{site}} {{from}} {{to}}
+
+# What fills the overlayroot tmpfs upper layer on the given hosts
+overlay-breakdown +hosts:
+    ./overlay-usage-breakdown.sh {{hosts}}
+
+# Per-interface traffic around an outage; pass --gap '<last_seen>' '<back>' for counter deltas across it
+vlan-traffic site +args:
+    ./vlan-traffic-timeline.py {{site}} {{args}}
+
+# RCT: TSTIK snapshot, power-reset history and eth0 link log (read-only). WAIT_UP=1 to wait for the box to reconnect
+tstik-capture host outdir="":
+    ./tstik-capture.sh {{host}} {{outdir}}

@@ -43,5 +43,5 @@ Split RUNBOOK.md into 13 numbered focused reference files under `references/`:
 ## Enforcement
 
 See rules:
-- `.archcore/rules/rule-progressive-disclosure-loading.md`
-- `.archcore/rules/rule-reference-update-discipline.md`
+- `.archcore/rules/progressive-disclosure-loading.rule.md`
+- `.archcore/rules/reference-update-discipline.rule.md`

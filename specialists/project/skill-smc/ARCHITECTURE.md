@@ -47,8 +47,8 @@ Everything else (PROFILE.md, SYSTEM_PROMPT.md, manifest.json, exports/, .archcor
 
 ## Key decisions
 
-- **Progressive disclosure (ADR v0.1.2):** monolithic RUNBOOK.md split into 13 numbered references to reduce per-task token cost. See [.archcore/adr/adr-progressive-disclosure-structure.md](.archcore/adr/adr-progressive-disclosure-structure.md).
-- **RUNBOOK.md as index only:** never holds content; is always a routing table. See [.archcore/rules/rule-progressive-disclosure-loading.md](.archcore/rules/rule-progressive-disclosure-loading.md).
+- **Progressive disclosure (ADR v0.1.2):** monolithic RUNBOOK.md split into 13 numbered references to reduce per-task token cost. See [.archcore/adr/progressive-disclosure-structure.adr.md](.archcore/adr/progressive-disclosure-structure.adr.md).
+- **RUNBOOK.md as index only:** never holds content; is always a routing table. See [.archcore/rules/progressive-disclosure-loading.rule.md](.archcore/rules/progressive-disclosure-loading.rule.md).
 - **PROFILE.md not installed:** content is summarised in SKILL.md and 01_overview.md to avoid a dangling reference in the client install surface.
 - **manifest.json not installed:** consumed by skill tooling at build/validate time, not needed at agent runtime.
 

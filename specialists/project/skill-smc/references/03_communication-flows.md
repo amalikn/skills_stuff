@@ -14,6 +14,7 @@
   * [Manual TBF/`ifb` Ingress Shaping — live, fleet-wide, NOT Ansible-managed](#manual-tbfifb-ingress-shaping-live-fleet-wide-not-ansible-managed)
   * [WAN-Path Diagnostic Techniques (from the 2026-07-30 dark-VLAN investigation)](#wan-path-diagnostic-techniques-from-the-2026-07-30-dark-vlan-investigation)
   * [Local (LAN) Traffic](#local-lan-traffic)
+  * [rct Site Addressing (ansible-wifi vs the Mk3 diagram)](#rct-site-addressing-ansible-wifi-vs-the-mk3-diagram)
   * [Alert Flows](#alert-flows)
   * [Grafana / Prometheus MCP Access](#grafana-prometheus-mcp-access)
   * [Graylog REST API Access (via Teleport App, no MCP)](#graylog-rest-api-access-via-teleport-app-no-mcp)
@@ -60,6 +61,9 @@ resulting port uniquely identifies one site fleet-wide, regardless of which proj
 | -------------- | ------------------------------------------------- | ------------------------------- | --------------------------------------------------------------- |
 | nbn_accelerate | `nbn_accelerate`, `nbn_wh` (+ `cw` central-infra) | `teleport.communitywifi.net.au` | `3.104.50.51` — reverse-DNS/`known_hosts` alias `cw-teleport01` |
 | APN            | `rcp`, `wh`, `rct` (+ `apn` central-infra)        | `teleport.apn.au`               | `13.54.242.59`                                                  |
+
+**Script:** `../scripts/backdoor-watch.sh <site> [check|history|watch]` does steps 1-2 and the listener check without opening a shell; `watch` polls for a box that
+only holds the tunnel briefly (2026-10-07).
 
 **Procedure**:
 1. Find `site_eclipse_siteid` for the target site (`host_vars`/`group_vars`) and add 50000 to get its port.
@@ -519,6 +523,23 @@ WiFi clients ─→ hostapd (radio)
 
 MQTT devices → mosquitto (IoT telemetry)
 ```
+
+### rct Site Addressing (ansible-wifi vs the Mk3 diagram)
+
+VERIFIED-CODE 2026-10-07: `inventories/rct/topology_vars/<site>.yml` `layer3.links`, identical in 319 of 325 files (the six others are warehouse, noc,
+malik, generic and similar test entries). Compared with the Mk3 connection diagram v0.5 (skill-mikrotik `references/mk3-connection-diagram-v0.5.pdf`).
+
+| Link       | SMC interface                | SMC address                         | DHCP (ansible)                          | Diagram says                          |
+| ---------- | ---------------------------- | ----------------------------------- | --------------------------------------- | ------------------------------------- |
+| management | `bridge_500` (eth0 VLAN 500) | `10.255.0.1/24`, `192.168.5.100/24` | `+100`–`+110`, DNS `8.8.8.8`, `8.8.4.4` | same, but DNS `116.250.255.18`, `.19` |
+| public     | `bridge_501` (eth0 VLAN 501) | `10.0.0.1/23`                       | `+10`–`-2` of the /23                   | same                                  |
+| nbn_modem  | eth0 VLAN 521                | `192.168.100.50/24`                 | none                                    | `.50`, but a note asks for `.2`       |
+| internet02 | eth0 VLAN 522                | DHCP                                | none                                    | same                                  |
+| switch     | `eth0` untagged              | DHCP (role internet)                | none                                    | same                                  |
+
+- `192.168.5.100` exists for the Dallas Delta ATA UI (`192.168.5.253`), which predates the 10.255 scheme (skill-mikrotik `references/01_overview.md`).
+- `192.168.100.50` reaches the satellite modem's own scope (`192.168.100.0/24`, NTD at `.1`) over `bridge-vlan521`, for installer mode.
+- Where the diagram and ansible differ, ansible-wifi is what the SMC runs; the diagram is a v0.5 design drawing.
 
 ### Alert Flows
 
