@@ -103,11 +103,17 @@ not overwrite the hand-built checker (521
 - 2026-05-22 — Rule 12 added to navigation block: update scripts/README.md when scripts/tasks change (write-side obligation).
 - 2026-05-22 — Graphify runs `graphify update .` on every active-mode run. Required for full skill operation when CLI is available.
 - 2026-05-22 — Repomix runs `repomix --config repomix.config.json` on every active-mode run. Creates config from template if missing.
-- 2026-05-22 — Repo-local `scripts/context-preflight.sh` is explicit opt-in only; generic behavior stays maintained in `skill-ai-it`.
+- 2026-05-22 — Repo-local `scripts/context_preflight.sh` is explicit opt-in only; generic behavior stays maintained in `skill-ai-it`.
 
 ---
 
 ## Session history
+
+### 20261007_2017 — runtime isolation holes, snake_case naming, rewrap tool retired into the global one
+
+- `check_interpreter_pinning` now fails shebang-run recipes and bare interpreters inside `scripts/*.sh` (rule 4); `check_file_naming` enforces the
+  governance snake_case rule (`KEBAB_LEGACY` for existing files); template renamed `templates/context_preflight.sh`. Open: the template's own kebab
+  recipes (`nav-upgrade` and the rest) wait until touched; whether `check_function_docs` (skill-mikrotik) joins the template is the operator's call.
 
 ### 20261007_1626 — `scripts/skills_registry.py`: a skills list for any project area
 

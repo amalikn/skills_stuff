@@ -1,5 +1,58 @@
 # Changelog
 
+## 20261007_2009 — Scripts and recipes renamed to snake_case (v0.1.15 -> v0.1.16)
+
+- Operator (2026-10-07): snake_case for every code file and command name (governance coding-guide). `scripts/mikrotik_exec.sh`,
+  `scripts/mikrotik_fleet_survey.sh`, `scripts/mikrotik_site_capture.sh`, `scripts/mikrotik_snmp_community.py` and `scripts/survey_summary.py` (git mv
+  from the kebab names); recipes `mib_oids`, `fetch_doc`, `product_text`, `snmp_community`. Every live reference updated, here and in UNC's device-type
+  matrix and the ansible-wifi SCRATCHPAD; older entries below keep the names they were written with.
+- `scripts/check_governance.py`: `RENAMED_PATHS` resolves an old name in this CHANGELOG only; `check_file_naming` (from skill-ai-it) fails on a new
+  kebab-case code file. Renamed scripts re-tested live on amuroona (read-only).
+
+## 20261007_1938 — Every script function documented; check_function_docs (v0.1.14 -> v0.1.15)
+
+- Operator (2026-10-07): every function gets proper comments, like ansible-wifi's `roles/smc_rise_watchdog/templates/rise_watchdog.py.j2`. Docstrings added to the 23 undocumented
+  functions (`scripts/check_governance.py`, `scripts/confluence_fetch.py`, `scripts/mib_oids.py`, `scripts/mikrotik-snmp-community.py`, `scripts/snmp_via_smc.py`
+  and its embedded SMC agent, `scripts/survey-summary.py`), comment blocks above the two shell functions, section banners in the agent.
+- `scripts/product_text.py` rewritten as documented functions; its retrieval date is now today's, not a fixed 2026-10-07.
+- `scripts/check_governance.py` `check_function_docs`: fails on a Python function without a docstring (embedded code included) or a shell function without
+  a comment above it; on the committed scripts it reports 11. `AGENTS.md` working rule.
+- The documented agent re-tested live on amuroona (read-only GET and walk).
+
+## 20261007_1909 — SNMP write test on amuroona's switch; redaction fix (v0.1.13 -> v0.1.14)
+
+- Operational (operator approved; the operator added the temporary read-write community, removed after the test): `sysName` SET applied and restored
+  (450Gx4 -> 450Gx4-snmpw -> 450Gx4, 19:05-19:06, confirmed over SSH); `sysLocation` SET returns noError but is not applied; the read-only community's
+  SET is refused (readOnly). End state: SNMP on, read-only community only, `public` disabled, identity and location as before.
+- `references/snmp-oid-registry.yaml`: sysName `access: rw` with the GET-lag note; sysLocation negative recorded. `references/07_equipment-and-snmp.md`,
+  known issue 14 updated.
+- `scripts/mikrotik-snmp-community.py`: redacts every community name in its output except `public`. Before this, a run with the read-write entry printed
+  the read-only community in clear (operator's terminal, 2026-10-07).
+
+## 20261007_1901 — SNMP verified on amuroona; GPS recorded per type (v0.1.12 -> v0.1.13)
+
+- Operational (operator approved): SNMP enabled read-only on amuroona's switch (10.255.0.5, 18:51) and AP (10.255.0.20, 18:53); default `public`
+  disabled; vault community allowed from the SMC only. No write was made: adding a read-write community for the write test was refused by this
+  session's permission check.
+- `references/snmp-oid-registry.yaml`: 25 OIDs verified on the switch and 21 on the AP (moved from `candidates`, with values); empty tables noted; a
+  `gps` block per type (operator: check every vendor's devices for GPS): neither gives coordinates.
+- `references/07_equipment-and-snmp.md` SNMP section and known issue 14 rewritten from the results (gauge temperature in whole degrees, PoE state only,
+  sysObjectID not a model key, AP radio at 2.4 GHz).
+
+## 20261007_1849 — Pinned runtime, SNMP tools, known issue 14 findings (v0.1.11 -> v0.1.12)
+
+- Runtime isolation (operator): `.mise.toml` (Python 3.14), `requirements.txt` (stdlib only), venv in the working-cache peer
+  `/Volumes/Data/_ai/_skills/skills-working-cache/skill-mikrotik/.venv` (`just bootstrap`, `just runtimes`); every recipe goes through `{{py}}` and
+  `_require-venv`; `scripts/mikrotik-exec.sh` and `scripts/mikrotik-fleet-survey.sh` take Python from `MT_PY`. `scripts/check_governance.py` now fails on shebang-run
+  recipes and inline interpreters (from skill-ai-it).
+- `justfile`: `exec`, `snmp` and `snmp-community` use positional arguments, so a multi-word RouterOS command reaches the script whole (it was split into
+  words and refused by the read-only guard).
+- `scripts/snmp_via_smc.py` (new): SNMP v2c get/walk/set from the SMC with no net-snmp, community from KeePass on stdin. Tested only against a unit with
+  SNMP off (clean timeout).
+- `scripts/mikrotik-snmp-community.py` (new): enable/remove/show a community, value redacted. Not yet run on a device: the session's permission check
+  refused remote writes.
+- `references/05_known-issues.md` item 14: default `public` community on both units, no `snmp-set` in RouterOS 7.8, SMC has Python but no net-snmp.
+
 ## 20261007_1655 — Equipment, SNMP OID registry, MIBs and vendor sources (v0.1.10 -> v0.1.11)
 
 - `references/vendor-sources-20261007_1640/` (new, operator: research kept in the skill, MIBs too): MIKROTIK-MIB for RouterOS 7.8 and 7.24.5, help.mikrotik.com

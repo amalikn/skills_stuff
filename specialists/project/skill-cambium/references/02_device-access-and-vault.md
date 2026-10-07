@@ -104,6 +104,13 @@ adds `~/.config/keepassxc`) — fixed globally with `ln -sf ~/.config/keepassxc/
 `tsh ssh root@hope-vale-smc01` then `sshpass -p "$PASS" ssh admin@10.255.3.1 'show version'` (password captured into a shell variable via `kp show -s -a Password ...`, never printed) returned a
 genuine device response — Enterprise Wi-Fi XV2-2T0, serial `WLYB0501N05R`, firmware `6.6.0.3-r9`, confirming the whole vault→Teleport→device chain works, not just each piece in isolation.
 
+**Do not run `sshpass -p` on the SMC (2026-10-07).** Any command run on an SMC through `tsh ssh` is recorded verbatim by Teleport and appears in Graylog as
+`teleport ... [AUDIT] exec` / `Started local command execution` lines; an interactive session is recorded too. A password typed or expanded into such a command
+leaves the vault. Checked 2026-10-07: Graylog (retention back to about 2026-08-06, gap 2026-09-12 to 10-07) holds five SMC messages mentioning `sshpass`
+(umoona, jigalong, kalumburu, mowanjum, mornington) and none carries a literal `-p` value or `SSHPASS=` assignment; Teleport's own session recordings were not
+checked. Use a local port-forward (`tsh ssh -N -L 127.0.0.1:<port>:<device_ip>:<443|22> root@<smc>`) and run the adapter or client on the operator Mac with the
+password in an environment variable, as the adapters already expect (`CAMBIUM_HOST=localhost:<port>`).
+
 **Web UI access, canonical form (2026-09-17):** the SSH-nested-command approach above works, but the operator's own standard practice is a local-port-forward tunnel straight to the device's web UI —
 see `skill-smc`'s `references/01_overview.md` for the exact `tsh ssh --proxy <teleport> -L <local_port>:<device_ip>:<device_port> root@<smc-hostname>` form (the explicit `--proxy` flag is what made it
 reliable — an earlier attempt without it was flaky). Verified live against the same Tower 1 AP on port 443 (HTTP 200 through the tunnel). Port convention: `443` for current Cambium web UIs (Enterprise

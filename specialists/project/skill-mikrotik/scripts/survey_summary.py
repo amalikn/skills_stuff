@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Summarise a mikrotik-fleet-survey.sh survey.csv: reach rate, models, versions, voltage/temperature ranges, outliers, and switches that
+"""Summarise a mikrotik_fleet_survey.sh survey.csv: reach rate, models, versions, voltage/temperature ranges, outliers, and switches that
 were power-cycled more recently than their SMC booted. Read-only.
 
-usage: survey-summary.py <survey.csv> [--no-prom]
+usage: survey_summary.py <survey.csv> [--no-prom]
 SMC boot times come from Prometheus through skill-smc's scripts/smc_prom.py (sibling pack); --no-prom skips that comparison.
 """
 import csv, os, re, sys, time
@@ -21,6 +21,7 @@ def days(u):
 
 
 def num(x):
+    """A CSV cell as float, or None when it is blank or not a number: an unreachable device leaves its cells empty."""
     try:
         return float(x)
     except (TypeError, ValueError):

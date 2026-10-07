@@ -255,6 +255,29 @@ suspected fleet-wide). It is a reporting gap, not a DHCP failure.
 - **Tool:** `just client-ip-sweep <site>-smc01 <apn|nbn>` (`scripts/client-ip-sweep.sh`) for the three-layer check. For a client's IP, use the SMC lease
   (`dhcpd.leases`), not cnMaestro.
 
+## `wh` flavour: first device contact (laramba, canteen-creek, 2026-10-07)
+
+Until 2026-10-07 this pack held nothing about `wh` sites; `site-addressing.yaml` still has no `wh` flavour. Read-only, through `tsh ssh -N -L` port-forwards via each SMC,
+evidence in `local-knowledge-ansible/ansible-wifi/issues/wh-fleet/cambium-wh-20261007_1457/` (VERIFIED-OBSERVED 2026-10-07):
+
+| Site | IP (mgmt VLAN 500) | OUI | Identified as | How | Result |
+| --- | --- | --- | --- | --- | --- |
+| laramba | `10.255.0.20` | `bc:a9:93` | Enterprise Wi-Fi XV2-2T0, `Laramba_XV2_AP1_IP0_20`, 6.6.0.3-r9, cnMaestro `apn-cnmaestro01` connected | `scripts/cambium_xv2_adapter.py`, `enterprise-wifi` entry | OK; uptime 34 h while the site switch had 123 d and the SMC 11 d |
+| canteen-creek | `10.255.0.20` | `bc:a9:93` | XV2-2T0, `Canteen_Creek_Central_XV2T0`, 6.6.0.3-r9 | same | OK; uptime 68 d, equal to the site switch's |
+| canteen-creek | `10.255.0.21` | `00:04:56` | ePMP 1000 Hotspot; web UI is the Falcon stack (`falcon-ng-client-2.0.0`), same as Enterprise Wi-Fi | web `POST /api/login` via `scripts/cambium_xv2_adapter.py` | **No login found.** 403 (wrong password) for `epmp-ap`, `enterprise-wifi` and the MikroTik entry; 404 for `enterprise-wifi-legacy` and `epmp-ap-legacy`, possibly the unit refusing after failures. SSH with `epmp-ap` neither refused nor produced output. Stopped after five web attempts |
+| canteen-creek | `10.255.0.10` | `00:04:56` | ePMP point-to-point **AP** (`cambiumDeviceMode 1`), firmware 4.7.0.1, SSID `A8bridge` | SSH `show dashboard`, `epmp-ap-legacy` (`epmp-ap` rejected) | OK |
+| canteen-creek | `10.255.0.11` | `00:04:56` | ePMP point-to-point **SM** (`cambiumDeviceMode 2`), firmware 4.7.0.1, associated to `00:04:56:D3:FA:C6` (`.10`) | same | OK |
+
+- At both sites `.20` is the Cambium AP, not a MikroTik: on `rct` the same address is a MikroTik Metal 52 ac (skill-mikrotik).
+- XV2 `ETH1` `rx_bytes`/`tx_bytes` read `4294967295` on laramba: 32-bit counters pinned at their maximum. Do not compute rates from them.
+- **Point-to-point bridges (operator, 2026-10-07):** `rct` sites have none, a single AP each (the MikroTik Metal, skill-mikrotik); most `wh` sites have a single AP and
+  only a handful have an ePMP point-to-point bridge. Known `wh` sites with a bridge: **canteen-creek** (`10.255.0.10` AP, `10.255.0.11` SM, VERIFIED-OBSERVED
+  2026-10-07). Add each new one here with its addresses when found.
+- canteen-creek `.10` and `.11` print the login banner "change the default SNMP Read-Only Community string" and "... Read-Write Community string":
+  both bridge units still run the factory SNMP communities (VERIFIED-OBSERVED 2026-10-07, value not read). Needs an operator decision before any change.
+- Login probe: `scripts/device-login-probe.sh` (one attempt per entry, client on the Mac; an empty session is reported as UNCONFIRMED, not accepted).
+- Gaps: the ePMP 1000 Hotspot login (canteen-creek `.21`); the rest of the `wh` fleet; a `wh` block in `site-addressing.yaml`.
+
 ## Central SMC logs missing in Graylog 2026-09-12 to 2026-10-07 (cross-reference, 2026-10-07)
 
 Owned by skill-smc (`references/13_known-issues.md` 2026-10-07; `03_communication-flows.md` "Graylog Backend Path in AWS"). Recorded here because

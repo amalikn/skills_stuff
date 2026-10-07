@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20261007_1910 — GPS position per device type, gps_probe.py (v0.6.40 -> v0.6.41)](#20261007_1910--gps-position-per-device-type-gps_probepy-v0640---v0641)
+- [20261007_1641 — File-roles spec no longer says skill-smc has an exports adapter (v0.6.39 -> v0.6.40)](#20261007_1641--file-roles-spec-no-longer-says-skill-smc-has-an-exports-adapter-v0639---v0640)
 - [20261007_1205 — SMC logs missing in Graylog 2026-09-12 to 2026-10-07; trigger for SMC-side evidence (v0.6.35 -> v0.6.36)](#20261007_1205--smc-logs-missing-in-graylog-2026-09-12-to-2026-10-07-trigger-for-smc-side-evidence-v0635---v0636)
 - [20261006_1840 — cw-cnmaestro01 and lt-cnmaestro confirmed retired (v0.6.34 -> v0.6.35)](#20261006_1840--cw-cnmaestro01-and-lt-cnmaestro-confirmed-retired-v0634---v0635)
 - [20261006_1834 — Operator answers, second round: one cnMaestro instance, licences, firmware, NOC views, replacements, RF planning (v0.6.33 -> v0.6.34)](#20261006_1834--operator-answers-second-round-one-cnmaestro-instance-licences-firmware-noc-views-replacements-rf-planning-v0633---v0634)
@@ -84,6 +86,33 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261007_1910 — GPS position per device type, gps_probe.py (v0.6.40 -> v0.6.41)
+
+- Operator (2026-10-07): check which devices give GPS coordinates, for every vendor. Read-only SNMP from the SMCs, coordinates never printed.
+  `references/snmp-oid-registry.yaml`: a `gps` block on every type. ePMP 3000L has its own fix (cambiumGPSStatus); Force 300-16 and -25 carry only a
+  configured position (no receiver); E500, XV2-22H, XV2-2T0, R195P (MIB only) and cnWave V5000 give none. GPS sync is recorded apart from position.
+- `scripts/gps_probe.py` (new, promoted from the check) with `just gps-probe`.
+
+## 20261007_1641 — File-roles spec no longer says skill-smc has an exports adapter (v0.6.39 -> v0.6.40)
+
+- `.archcore/specs/specialist-pack-file-roles.spec.md` Notes: the comparison with skill-smc said it had 13 references, an `exports/` client-adapter layer and a
+  dedicated-agent profile and system prompt. skill-smc retired all three on 2026-10-07 (its v0.1.100) and now has more than 13 references, so the sentence no longer
+  counts references and says neither pack has those layers.
+
+## 20261007_1525 — canteen-creek ePMP bridge identified, PTP register, login probe (v0.6.38 -> v0.6.39)
+
+- `references/05_known-issues.md`: canteen-creek `.10`/`.11` are an ePMP point-to-point AP/SM pair (4.7.0.1, `epmp-ap-legacy`); `.21` ePMP 1000 Hotspot login unresolved after five attempts; operator facts: rct has no point-to-point bridges, only a handful of wh sites do; list of known wh bridge sites started.
+- `scripts/device-login-probe.sh` (new, read-only), catalogued, `just login-probe`.
+
+## 20261007_1501 — First wh device contact; sshpass-on-SMC warning (v0.6.37 -> v0.6.38)
+
+- `references/05_known-issues.md`: `wh` first contact. laramba and canteen-creek `10.255.0.20` are XV2-2T0 6.6.0.3-r9 (adapter OK); canteen-creek ePMP 1000 Hotspot `.21` 404s on the ePMP adapter's LuCI login; `.10`/`.11` are HTTP-only ePMP; XV2 32-bit counters pinned; `references/site-addressing.yaml` has no `wh` flavour.
+- `references/02_device-access-and-vault.md`: do not run `sshpass -p` on the SMC (Teleport audit to Graylog); Graylog checked, no literal password found; use a local port-forward.
+
+## 20261007_1425 — Cross-link to new skill-mikrotik (v0.6.36 -> v0.6.37)
+
+- `SKILL.md` Related Skills: new `skill-mikrotik` pack; the device vendor decides the pack.
 
 ## 20261007_1205 — SMC logs missing in Graylog 2026-09-12 to 2026-10-07; trigger for SMC-side evidence (v0.6.35 -> v0.6.36)
 

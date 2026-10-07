@@ -129,7 +129,7 @@ skill-ai-it/
 │   ├── check_governance.py
 │   ├── scripts-README.md
 │   ├── update_rules.yaml
-│   └── context-preflight.sh
+│   └── context_preflight.sh
 └── patterns/
     ├── archcore-routing.md
     ├── memory-bank-structure.md

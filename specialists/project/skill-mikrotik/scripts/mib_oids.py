@@ -11,6 +11,11 @@ ROOTS = {"enterprises": "1.3.6.1.4.1", "iso": "1"}
 
 
 def parse(path):
+    """Map every object a MIB defines to (parent, index, macro, syntax, units, status).
+
+    A stdlib regex pass, not a full SMI parser: comments are stripped, then each `::= { parent index }` assignment is paired with the last definition
+    header before it. That suits MIKROTIK-MIB's flat layout; a parent imported from another MIB resolves only as far as ROOTS reaches.
+    """
     txt = open(path, encoding="latin-1").read()
     txt = re.sub(r"--[^\n]*", "", txt)
     defs = {}
@@ -35,6 +40,7 @@ def parse(path):
 
 
 def resolve(defs, name, seen=None):
+    """The numeric OID of a name, found by walking parent links up to a known root in ROOTS. Raises KeyError for a parent defined in another MIB."""
     if name in ROOTS:
         return ROOTS[name]
     parent, idx = defs[name][0], defs[name][1]
@@ -42,6 +48,7 @@ def resolve(defs, name, seen=None):
 
 
 def main():
+    """Print name, OID, syntax, units and status for every object, or only names matching the optional regex; '?' marks a name that cannot be resolved."""
     defs = parse(sys.argv[1])
     rx = re.compile(sys.argv[2]) if len(sys.argv) > 2 else None
     for n, d in defs.items():

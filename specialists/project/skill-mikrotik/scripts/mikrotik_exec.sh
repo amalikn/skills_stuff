@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Run RouterOS CLI commands on a MikroTik behind an SMC, through a Teleport port-forward. Read-only by default.
 #
-# usage: mikrotik-exec.sh <smc-host> <mikrotik-ip> '<routeros command>' ['<command>' ...]
-#   e.g. mikrotik-exec.sh delye-smc01 10.255.0.5 '/system resource print' '/log print where topics~"interface"'
+# usage: mikrotik_exec.sh <smc-host> <mikrotik-ip> '<routeros command>' ['<command>' ...]
+#   e.g. mikrotik_exec.sh delye-smc01 10.255.0.5 '/system resource print' '/log print where topics~"interface"'
 #   TSH_PROXY   Teleport proxy (default teleport.apn.au)
 #   MT_ENTRY    KeePass entry holding UserName/Password (default "Network/mikrotik switch & metal ap")
 #   MT_ALLOW_WRITE=1  allow commands that are not print/monitor/export (default: refuse them)
+#   MT_PY       Python for the output rewrite (default python3; the justfile sets the pinned working-cache venv)
 #   MT_BATCH=0  one SSH session per command instead of one for all (default 1; batching cuts a site from ~60 s to ~15 s over satellite)
 #
 # Why it is built this way (2026-10-07):
@@ -15,10 +16,11 @@
 #    SSHPASS environment variable (`-e`), never argv.
 #  - Host keys are not pinned: the local port and the device behind it change per run.
 set -u
-smc=${1:?usage: mikrotik-exec.sh <smc-host> <mikrotik-ip> '<cmd>' ...}; ip=${2:?mikrotik ip}; shift 2
+smc=${1:?usage: mikrotik_exec.sh <smc-host> <mikrotik-ip> '<cmd>' ...}; ip=${2:?mikrotik ip}; shift 2
 [ $# -ge 1 ] || { echo "no RouterOS command given" >&2; exit 2; }
 proxy=${TSH_PROXY:-teleport.apn.au}
 entry=${MT_ENTRY:-Network/mikrotik switch & metal ap}
+py=${MT_PY:-python3}
 
 if [ "${MT_ALLOW_WRITE:-0}" != 1 ]; then
   for c in "$@"; do
@@ -43,6 +45,10 @@ for _ in $(seq 1 30); do
 done
 nc -z 127.0.0.1 "$port" 2>/dev/null || { echo "port-forward via $smc to $ip:22 did not come up" >&2; exit 4; }
 
+# sshrun <remote command>: one SSH session to the device through the forwarded local port; prints its output with carriage returns removed.
+# The password reaches ssh only through SSHPASS (`sshpass -e`), never argv. Host keys are not pinned because the local port and the device behind it
+# change per run. A "Permission denied" is retried twice with a growing pause (10 s, 20 s): on 2026-10-07 two devices refused the correct password
+# for a few minutes and then accepted it.
 sshrun() {
   # SSH_ASKPASS_REQUIRE=never: with DISPLAY set, ssh otherwise tries an X11 askpass instead of the sshpass pty. A login that still
   # fails is retried twice: on 2026-10-07 two devices refused the same, correct password for a few minutes, then accepted it.
@@ -60,7 +66,7 @@ if [ "${MT_BATCH:-1}" = 1 ]; then
   # order; `:put "### N"` marks where command N starts, and the markers are rewritten to the command text below.
   batch=""; i=0
   for c in "$@"; do i=$((i+1)); batch="${batch}:put \"### ${i}\"; ${c}; "; done
-  sshrun "$batch" | python3 -c '
+  sshrun "$batch" | "$py" -c '
 import re, sys
 cmds = sys.argv[1:]
 for line in sys.stdin:

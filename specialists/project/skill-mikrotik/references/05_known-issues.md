@@ -16,7 +16,7 @@ wraps an item across rows.
 1. **Closed 2026-10-07:** arrkapa switch read at 16:02; it is in a kernel-failure / watchdog reboot loop (`04_failure-modes.md`). Open part: why
    batavia-downs logged the same signature earlier (11 entries) and whether it recurs.
 2. **Layout outside `rct` only partly known.** `wh` has the same RB450Gx4 on 48 V and no MikroTik AP (laramba, canteen-creek, 2026-10-07); its full port map and the VLAN 502 sub-interface are not
-   captured; `nbn_wh`, `rcp`, `nbn_accelerate` not checked. Close: `FLAVOR=wh scripts/mikrotik-fleet-survey.sh`, then `scripts/mikrotik-site-capture.sh` on one `wh` site.
+   captured; `nbn_wh`, `rcp`, `nbn_accelerate` not checked. Close: `FLAVOR=wh scripts/mikrotik_fleet_survey.sh`, then `scripts/mikrotik_site_capture.sh` on one `wh` site.
 3. **Device clock source and timezone.** Log timestamps have no year, which blocks correlation with SMC and TSTIK logs. The provisioning script sets
    `Australia/Melbourne` and NTP servers `10.255.0.1` (the SMC) and `139.180.160.82` (`06_provisioning.md`); not yet read back from a device. Close:
    `/system clock print`, `/system ntp client print` on a few devices, and whether the SMC answers NTP.
@@ -44,8 +44,10 @@ wraps an item across rows.
     Not yet read back from a device. The operator pasted that password into a chat transcript on 2026-10-07; it is in no file, and rotating it is the
     operator's call. Close: `/tool mac-server print`, `/tool mac-server mac-winbox print`, `/ip service print` on one switch; propose
     hardening (per-unit passwords from the vault, MAC access limited to VLAN 500, `www` off) for operator approval.
-14. **SNMP disabled on every MikroTik checked** (delye and amuroona, switch and AP, 2026-10-07); RouterOS ships it off and the Pi script never enables it. Why:
-    no OID in `snmp-oid-registry.yaml` can be verified and no collector can read these units. Close: with operator approval enable SNMP v2c read-only on one
-    switch and one AP, community limited to `10.255.0.0/24`; verify the candidates; then add it to the Pi script.
+14. **SNMP off on every MikroTik except amuroona's switch and AP**, enabled read-only there 2026-10-07 with operator approval (default `public` disabled,
+    vault community allowed from the SMC only); results in `snmp-oid-registry.yaml`. RouterOS ships SNMP off with a `public` community open to `::/0`,
+    so an enable must disable `public` first; RouterOS 7.8 has no `snmp-set`, and the SMC has Python but no net-snmp (`scripts/snmp_via_smc.py`). Why it
+    matters: no collector can read the other units. Write test done 2026-10-07 (sysName applies, sysLocation is accepted and ignored). Open: the fleet rollout, and a line in the Pi script. Close: operator decision on the rollout; `just snmp_community <smc> <ip> enable <entry>`
+    per unit.
 15. **RB450Gx4 `cpu not running at default frequency` warning** on every switch read (716 MHz fixed; nominal 448–896 MHz auto). Effect unknown; secondary sources
     say setting it to auto clears it. Close: compare `/system routerboard settings print` with a factory unit; any change needs operator approval.

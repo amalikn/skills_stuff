@@ -40,6 +40,8 @@ metadata:
 - Auditing whether AI agents can find the right project context
 - Promoting durable content from scratchpad/memory/docs into navigation, ADR, rule, spec, or roadmap structures
 - Bootstrapping a child project under `apn/`, `project_stuff/`, or any managed workspace
+- Creating a new skill or specialist pack, or any folder that gets scripts or a task runner — **before its first commit**, even when it already has an
+  `AGENTS.md` copied from a sibling (skill-mikrotik, 2026-10-07, was built by hand and shipped with shebang-run recipes and bare `python3` until the operator caught it)
 - User says "set up the AI files for this folder", "bootstrap this project", "add AI navigation", "refresh the governance", "audit project context", or invokes `/skill-ai-it`
 
 **Do not invoke** for destructive rewrites. This skill is repeat-safe by design: if governance files already exist, audit and update only missing or stale sections unless the user explicitly requests
@@ -184,7 +186,7 @@ skill-ai-it/
 │   ├── AGENTS-governance-checks-block.md
 │   ├── scripts-README.md
 │   ├── check_governance.py
-│   ├── context-preflight.sh
+│   ├── context_preflight.sh
 │   └── .markdownlint-cli2.jsonc
 └── patterns/
     ├── archcore-routing.md
@@ -339,7 +341,7 @@ From inventory + content reads, determine:
 |                                |                                                      |                                     |                                                         |   and        |
 |                                |                                                      |                                     |                                                         |   coverage   |
 |                                |                                                      |                                     |                                                         |   gaps       |
-| `scripts/context-preflight.sh` | explicit request only                                | explicit request only               | audit/propose only                                      | check        |
+| `scripts/context_preflight.sh` | explicit request only                                | explicit request only               | audit/propose only                                      | check        |
 | `ARCHITECTURE.md`              | conditional                                          | no unless needed                    | update pointers only                                    | check        |
 | `CONVENTIONS.md`               | conditional                                          | no unless needed                    | update pointers only                                    | check        |
 | `ROADMAP.md`                   | conditional                                          | no unless needed                    | update progress only                                    | check        |
@@ -528,7 +530,7 @@ Apply the same reasoning to `mise run` tasks in `.mise.toml`: give them the abso
 
 Node has no venv layer, so `mise exec -- node` **is** the explicit form for it. The distinction applies wherever a venv sits between mise and the interpreter — in practice, Python.
 
-**Generate these three things together, or none of them works:**
+**Generate these together, or none of them works:**
 
 1. **`.mise.toml` in the project**, pinning every runtime the recipes use. Pin **Node as well as Python** when any recipe shells out to a JS tool — pinning only Python leaves `mise exec -- node`
    falling through to the host, which looks pinned and is not.
@@ -543,6 +545,25 @@ Node has no venv layer, so `mise exec -- node` **is** the explicit form for it. 
 
 3. **A `_require-venv` guard that every Python recipe depends on**, so a missing venv fails with a rebuild instruction instead of silently falling back to the host — which is the same defect wearing a
    different hat.
+
+4. **Scripts never choose their own interpreter either.** Two ways a recipe that names no interpreter still gets the host one:
+   - **A script run by path** (`scripts/check.py`, `./tool.js`): its shebang (`#!/usr/bin/env python3`) resolves on `PATH`. Write `{{py}} scripts/check.py`. The
+     shebang stays for a direct run; the recipe must not rely on it.
+   - **A shell script that calls the interpreter inline** (`... | python3 -c`, `python3 - <<EOF`): the recipe pins nothing it runs. The script takes the
+     interpreter from a variable with a host default, `py=${PROJ_PY:-python3}` then `"$py"`, and the recipe passes it: `PROJ_PY={{py}} scripts/x.sh`. A
+     Python wrapper that calls such a script passes its own `sys.executable` on. A line whose interpreter runs on another host (`ssh host python3 ...`) is
+     not a local runtime: mark it `# runtime: remote`.
+
+   `check_interpreter_pinning` in `templates/check_governance.py` fails on both (since 2026-10-07), as it does on a bare interpreter name in a recipe.
+
+#### File and command naming — snake_case
+
+Governance `categories/coding-guide.md` (operator, 2026-10-07): **snake_case** for every code file this skill generates or finds (`.py`, `.sh` and the
+rest) and every command name a project defines (`just` recipes, CLI symlinks). A Python file must be importable (PEP 8; a hyphen is the minus operator),
+the Google Shell Style Guide asks the same of shell, and one rule beats a per-language split. kebab-case only where something outside the code fixes it:
+skill names, document slugs (`<slug>-YYYYMMDD_hhmm.md`), repo and folder names. `check_file_naming` in `templates/check_governance.py` fails on a
+kebab-case code file under `scripts/`; a project adopting the rule lists its existing ones in `KEBAB_LEGACY` and renames each when next touched,
+updating every reference in the same change. This package's own optional template is `templates/context_preflight.sh` (renamed from the kebab form).
 
 Also generate `just bootstrap` (builds the venv from the mise pins; safe to re-run) and `just runtimes` (prints the resolved interpreters). `runtimes` is the one that makes the invariant *observable*
 — without it, "the recipes use the pinned runtime" is an assumption nobody can check in under a minute.
@@ -1586,14 +1607,14 @@ Preferred source template: `templates/repomix.config.json`.
 }
 ```
 
-#### scripts/context-preflight.sh — optional local artifact, explicit request only
+#### scripts/context_preflight.sh — optional local artifact, explicit request only
 
 Do not create a repo-local preflight script during normal bootstrap, navigation-add, or refresh runs. The skill package is the maintained source for generic validation/preflight behavior.
 
-Create `scripts/context-preflight.sh` only when the user explicitly asks for a repo-local command or when the target project already has one and the user asks to refresh it. If the file exists, audit
+Create `scripts/context_preflight.sh` only when the user explicitly asks for a repo-local command or when the target project already has one and the user asks to refresh it. If the file exists, audit
 it for drift and propose changes instead of treating it as the source of truth.
 
-Preferred opt-in source template: `templates/context-preflight.sh`.
+Preferred opt-in source template: `templates/context_preflight.sh`.
 
 ```bash
 #!/usr/bin/env bash
@@ -1688,13 +1709,13 @@ These are created only on explicit user request or generated by supporting tools
 
 | Path                           | Source                                                      | Notes                                         |
 | ------------------------------ | ----------------------------------------------------------- | --------------------------------------------- |
-| `scripts/context-preflight.sh` | Explicit request only; use `templates/context-preflight.sh` | Local opt-in preflight entrypoint             |
+| `scripts/context_preflight.sh` | Explicit request only; use `templates/context_preflight.sh` | Local opt-in preflight entrypoint             |
 | `graphify-out/`                | Graphify CLI                                                | Generated, rebuildable; not canonical truth   |
 | `.ai-context/`                 | Repomix CLI                                                 | Generated context bundle; not canonical truth |
 | `docs/` audit reports          | skill-ai-it audit mode                                      | Per-run findings                              |
 | `docs/archive/`                | Manual archiving                                            | One-time artifacts no longer needed in root   |
 
-See the `#### scripts/context-preflight.sh` section above under Conditionally-created files for the full template content and generation policy.
+See the `#### scripts/context_preflight.sh` section above under Conditionally-created files for the full template content and generation policy.
 
 ---
 
@@ -1794,7 +1815,7 @@ After creating/updating files in the target folder:
   check points at it rather than at the candidates file, and the candidates filename is registered in `CONDITIONAL_PATHS` so historical mentions do not fail path resolution
 
 - [ ] `archcore status` was run after `promote` and reports the new documents cleanly (no "unrecognized file" issues)
-- [ ] If a repo-local `scripts/context-preflight.sh` was explicitly requested, it is executable or the user was told to run `chmod +x scripts/context-preflight.sh`
+- [ ] If a repo-local `scripts/context_preflight.sh` was explicitly requested, it is executable or the user was told to run `chmod +x scripts/context_preflight.sh`
 - [ ] Existing YAML/JSON files were not destructively regenerated during refresh mode
 - [ ] Existing `.archcore/` documents were not directly edited unless explicitly authorized
 - [ ] Drift/conflict findings were reported instead of silently resolved
@@ -1962,7 +1983,7 @@ If this skill is being maintained as a reusable package, extract the embedded fa
 - `templates/AGENTS-navigation-block.md`
 - `templates/justfile`
 - `templates/scripts-README.md`
-- `templates/context-preflight.sh`
+- `templates/context_preflight.sh`
 - `patterns/archcore-routing.md`
 - `patterns/memory-bank-structure.md`
 - `patterns/drift-audit.md`

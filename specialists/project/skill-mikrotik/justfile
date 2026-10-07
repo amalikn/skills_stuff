@@ -1,39 +1,72 @@
 # skill-mikrotik task runner. Every recipe is read-only towards devices unless stated otherwise.
 
 set shell := ["bash", "-uc"]
+set dotenv-load := false
+
+# Recipes go through {{py}}, never a bare interpreter (skill-ai-it runtime isolation; same layout as skill-smc and skill-cambium).
+# The venv lives in the working-cache peer, never in this repo; the shell scripts get it as MT_PY.
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-mikrotik"
+py := wc + "/.venv/bin/python"
 
 # Show available recipes
 default:
     @just --list
 
+# Build the working-cache venv from the mise-pinned runtime. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @{{py}} -m pip install --quiet --upgrade pip -r requirements.txt
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Fail early rather than falling back to the host interpreter
+_require-venv:
+    @test -x "{{py}}" || { echo "venv missing at {{py}} — run: just bootstrap" >&2; exit 1; }
+
+# Report which runtime the recipes will actually use
+runtimes:
+    @printf 'python  '; {{py}} -c "import sys; print(sys.version.split()[0], sys.executable)" 2>/dev/null || echo "MISSING — run: just bootstrap"
+
 # Governance coherence checks (run before claiming a change to this pack is complete)
-check:
-    scripts/check_governance.py
+check: _require-venv
+    @{{py}} scripts/check_governance.py
 
 # Run read-only RouterOS commands on one device behind an SMC, e.g. just exec delye-smc01 10.255.0.5 '/system health print'
-exec smc ip +cmds:
-    scripts/mikrotik-exec.sh {{smc}} {{ip}} {{cmds}}
+[positional-arguments]
+exec smc ip +cmds: _require-venv
+    MT_PY={{py}} scripts/mikrotik_exec.sh "$@"
 
 # Survey MikroTiks behind every reachable SMC of a flavor (FLAVOR=rct default) into <outdir>/survey.csv
-survey outdir:
-    scripts/mikrotik-fleet-survey.sh {{outdir}}
+survey outdir: _require-venv
+    MT_PY={{py}} scripts/mikrotik_fleet_survey.sh {{outdir}}
 
 # Deep capture of one site's switch and AP; set WAIT_UP=1 to wait for an offline SMC to reconnect first
-capture smc outdir:
-    scripts/mikrotik-site-capture.sh {{smc}} {{outdir}}
+capture smc outdir: _require-venv
+    MT_PY={{py}} scripts/mikrotik_site_capture.sh {{smc}} {{outdir}}
 
 # Summarise a survey.csv (ranges, outliers, devices power-cycled since their SMC booted)
-summary csv:
-    scripts/survey-summary.py {{csv}}
+summary csv: _require-venv
+    {{py}} scripts/survey_summary.py {{csv}}
 
-# Resolve MIKROTIK-MIB names to OIDs, e.g. just mib-oids references/vendor-sources-20261007_1640/mib-7.8/mikrotik.mib 'mtxrPOE|mtxrGauge'
-mib-oids mib regex='':
-    scripts/mib_oids.py "{{mib}}" '{{regex}}'
+# Resolve MIKROTIK-MIB names to OIDs, e.g. just mib_oids references/vendor-sources-20261007_1640/mib-7.8/mikrotik.mib 'mtxrPOE|mtxrGauge'
+mib_oids mib regex='': _require-venv
+    {{py}} scripts/mib_oids.py "{{mib}}" '{{regex}}'
 
 # Save a help.mikrotik.com page as text by its Confluence page id
-fetch-doc page_id out:
-    scripts/confluence_fetch.py "{{page_id}}" "{{out}}"
+fetch_doc page_id out: _require-venv
+    {{py}} scripts/confluence_fetch.py "{{page_id}}" "{{out}}"
 
 # Text of a saved mikrotik.com product page (html file, its url, output .txt)
-product-text html url out:
-    scripts/product_text.py "{{html}}" "{{url}}" "{{out}}"
+product_text html url out: _require-venv
+    {{py}} scripts/product_text.py "{{html}}" "{{url}}" "{{out}}"
+
+# SNMP from the device's SMC (read-only unless an op is set:), e.g. just snmp amuroona-smc01 10.255.0.5 cambium-devices/apn-snmp-ro get:.1.3.6.1.2.1.1.5.0
+[positional-arguments]
+snmp smc ip entry +ops: _require-venv
+    {{py}} scripts/snmp_via_smc.py "$@"
+
+# WRITES: enable, remove or show an SNMP community on one device (operator approval per device), e.g. just snmp_community amuroona-smc01 10.255.0.5 show cambium-devices/apn-snmp-ro
+[positional-arguments]
+snmp_community smc ip action entry *flags: _require-venv
+    MT_PY={{py}} {{py}} scripts/mikrotik_snmp_community.py "$@"

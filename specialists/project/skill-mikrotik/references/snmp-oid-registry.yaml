@@ -5,9 +5,11 @@
 # Rule: an OID enters a type's `oids` ONLY after a live exchange against a unit of that exact model, recorded with date, unit, site, firmware and method,
 # and only when unified-network-controller has a use for it. Until then it sits in `candidates`: resolved from the vendor MIB for RouterOS 7.8 (the
 # fleet's version; references/vendor-sources-20261007_1640/mib-7.8/mikrotik.mib, LAST-UPDATED 202112210000Z) with `scripts/mib_oids.py`, never typed by hand.
-# `oids` is empty on both types: SNMP is DISABLED on every unit checked (delye and amuroona, switch and AP, 2026-10-07: `/snmp print` enabled: no, no
-# communities) and the provisioning script never enables it (06_provisioning.md). Enabling it is a device change: operator approval, one unit first,
-# then a line in the Pi script (05_known-issues.md, SNMP item). Until then the read path is `routeros_cli` (SSH, scripts/mikrotik-exec.sh).
+# SNMP ships DISABLED and the provisioning script never enables it (06_provisioning.md). With operator approval it was enabled read-only on ONE switch
+# and ONE AP, amuroona, 2026-10-07 (community from KeePass cambium-devices/apn-snmp-ro, allowed from the SMC 10.255.0.1/32 only, default `public`
+# disabled); `oids` holds what answered there, read from the SMC with scripts/snmp_via_smc.py. Every other unit still has SNMP off: the read path there
+# is `routeros_cli` (SSH, scripts/mikrotik_exec.sh). `access` is read only unless an entry says `access: rw` (SET made and read back).
+# `gps` per type records whether the device gives coordinates (operator, 2026-10-07: check every vendor's devices for GPS).
 # Table OIDs listed with kind: column are COLUMN OIDs: a row reads <column>.<index>. Scalars are listed at instance .0.
 # Every MIKROTIK-MIB name below has the same OID in the 7.24.5 MIB (mib-7.24.5/); POWER-ETHERNET-MIB is not supported by RouterOS (ros-snmp.txt).
 
@@ -32,7 +34,7 @@ device_types:
       firmware: "RouterOS 7.8 (factory 6.48.7); current stable 7.24.5, long-term 7.23.7 on 2026-10-07"
       fleet: "294 of 297 rct switches surveyed 2026-10-07; also at wh sites"
     routeros_cli:
-      verified: {date: "2026-10-07", units: [delye switch, amuroona switch], firmware: "7.8", method: "ssh via scripts/mikrotik-exec.sh"}
+      verified: {date: "2026-10-07", units: [delye switch, amuroona switch], firmware: "7.8", method: "ssh via scripts/mikrotik_exec.sh"}
       reads:
         - "/system routerboard print (model, serial, firmware)"
         - "/system resource print (version, uptime, cpu, memory)"
@@ -40,41 +42,51 @@ device_types:
         - "/interface ethernet print stats (link-downs)"
         - "/interface ethernet poe print"
         - "/snmp print"
-    oids: []
+    gps:
+      provides_coordinates: "no"
+      how: "no GPS receiver (product page); only the routeros package installed (no gps package); MIKROTIK-MIB mtxrGps .1.3.6.1.4.1.14988.1.1.12 walks empty"
+      verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "snmp walk from the SMC + /system package print"}
+    oids:
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "model string", result: "'RouterOS RB450Gx4'", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "vendor detection; the per-model value is in neither MIB, read it on the first unit", result: ".1.3.6.1.4.1.14988.1 for every model: not a model key", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.1.3.0", name: sysUpTime, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "reboot detection (TSTIK power-cycles, watchdog loops)", result: "timeticks", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, access: rw, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "identity; 450Gx4 on every switch, so not a key", result: "'450Gx4' on every switch", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}, write: "SET 450Gx4 -> 450Gx4-snmpw applied at once (CLI /system identity), restored; an SNMP GET right after a SET returns the OLD value for a few seconds, so verify a write over SSH or after a pause (amuroona 2026-10-07 19:05)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.3.0", name: mtxrSerialNumber, kind: scalar, syntax: "DisplayString", use: "Nautobot serial, the identity key", result: "HEX096Y47WC, matches SSH", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.4.0", name: mtxrFirmwareVersion, kind: scalar, syntax: "DisplayString", use: "RouterBOOT firmware", result: "'7.8'", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.9.0", name: mtxrBoardName, kind: scalar, syntax: "DisplayString", use: "board name (Metal 52 ac / RB450Gx4)", result: "'RB450Gx4'", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.4.4.0", name: mtxrLicVersion, kind: scalar, syntax: "DisplayString", use: "RouterOS version -> Nautobot software version", result: "'7.8'", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.2", name: mtxrGaugeName, kind: column, syntax: "DisplayString", use: "gauge row name (voltage, temperature, cpu-temperature)", result: "rows 13 voltage, 14 temperature", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.3", name: mtxrGaugeValue, kind: column, syntax: "Gauge32", use: "solar-bus voltage and temperature trend", result: "voltage 268 (dV = 26.8 V); temperature 42 (WHOLE degrees C, not x10)", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.4", name: mtxrGaugeUnit, kind: column, syntax: "INTEGER { celsius(1), rpm(2), dV(3), dA(4), dW(5), status(6) }", use: "unit of each gauge row", result: "voltage 3 (dV), temperature 1 (celsius)", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.8.0", name: mtxrHlVoltage, kind: scalar, syntax: "Voltage", use: "supply voltage (dV) if v7 still answers", result: "268 = 26.8 V: still answers on v7", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.10.0", name: mtxrHlTemperature, kind: scalar, syntax: "Temperature", use: "board temperature (x10) if v7 still answers", result: "420 = 42.0 C (x10): still answers on v7", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.1", name: ifName, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "port name, joins Nautobot interfaces (ether1..)", result: "ether1-5 at index 1-5, then bridges and VLAN sub-interfaces (7-16)", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.2.2.1.8", name: ifOperStatus, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "link state", result: "ether3 down (unused second modem port)", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.6", name: ifHCInOctets, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "traffic", result: "counter64", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.10", name: ifHCOutOctets, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "traffic", result: "counter64", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.14.1.1.90", name: mtxrInterfaceStatsLinkDowns, kind: column, syntax: "Counter32", use: "link-downs per port: SMC trunk flapping (ether1), NTD and phone churn", result: "per ifIndex; ether2 10, ether3 5", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.2", name: mtxrPOEName, kind: column, syntax: "DisplayString", use: "PoE port name", result: "ether5 (index 5)", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.3", name: mtxrPOEStatus, kind: column, syntax: "INTEGER { disabled(1), waitingForLoad(2), poweredOn(3), overload(4) }", use: "AP power state", result: "3 poweredOn", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.4", name: mtxrPOEVoltage, kind: column, syntax: "Voltage", use: "PoE voltage (dV)", result: "0: this board reports PoE state, not measurements", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.5", name: mtxrPOECurrent, kind: column, syntax: "Integer32", use: "PoE current (mA)", result: "0: not measured", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.6", name: mtxrPOEPower, kind: column, syntax: "Power", use: "AP power draw (dW)", result: "0: not measured", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.7.0", name: mtxrFirmwareUpgradeVersion, kind: scalar, use: "RouterBOOT version available to upgrade to", result: "'7.8'", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.15", name: ifHighSpeed, kind: column, use: "port speed, Mb/s", result: "ether1 1000", verified: {date: "2026-10-07", unit: "amuroona 450Gx4 (HEX096Y47WC)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      # Negative 2026-10-07: mtxrHlProcessorTemperature .1.3.6.1.4.1.14988.1.1.3.11.0 answers noSuchObject on the RB450Gx4.
+      # Write test 2026-10-07 (operator approved; temporary read-write community, removed afterwards): sysLocation .1.3.6.1.2.1.1.6.0 SET returns
+      # noError and echoes the value, but RouterOS does NOT apply it (CLI `/snmp print` location stays empty while set). Do not write sysLocation
+      # or trust a noError on it; the read-only community's SET is refused with readOnly.
     candidates:
       # identity: what Nautobot records (serial is the match key; port MACs are cloned on the switches)
-      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "model string"}
-      - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "vendor detection; the per-model value is in neither MIB, read it on the first unit"}
-      - {oid: ".1.3.6.1.2.1.1.3.0", name: sysUpTime, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "reboot detection (TSTIK power-cycles, watchdog loops)"}
-      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "identity; 450Gx4 on every switch, so not a key"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.7.3.0", name: mtxrSerialNumber, kind: scalar, syntax: "DisplayString", use: "Nautobot serial, the identity key"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.7.4.0", name: mtxrFirmwareVersion, kind: scalar, syntax: "DisplayString", use: "RouterBOOT firmware"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.7.9.0", name: mtxrBoardName, kind: scalar, syntax: "DisplayString", use: "board name (Metal 52 ac / RB450Gx4)"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.4.4.0", name: mtxrLicVersion, kind: scalar, syntax: "DisplayString", use: "RouterOS version -> Nautobot software version"}
       # health: RouterOS 7 reports through the gauge table (ros-health.txt: voltage in dV, temperature x10); the mtxrHl scalars are still
       # STATUS current in both MIBs, but whether v7 answers them is untested. mtxrGaugeValue became Integer32 in 7.12 (changelog).
-      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.2", name: mtxrGaugeName, kind: column, syntax: "DisplayString", use: "gauge row name (voltage, temperature, cpu-temperature)"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.3", name: mtxrGaugeValue, kind: column, syntax: "Gauge32", use: "solar-bus voltage and temperature trend"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.4", name: mtxrGaugeUnit, kind: column, syntax: "INTEGER { celsius(1), rpm(2), dV(3), dA(4), dW(5), status(6) }", use: "unit of each gauge row"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.3.8.0", name: mtxrHlVoltage, kind: scalar, syntax: "Voltage", use: "supply voltage (dV) if v7 still answers"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.3.10.0", name: mtxrHlTemperature, kind: scalar, syntax: "Temperature", use: "board temperature (x10) if v7 still answers"}
       # interfaces: standard IF-MIB plus MikroTik's own link-down counter (the trunk-flap signature, 04_failure-modes.md)
-      - {oid: ".1.3.6.1.2.1.31.1.1.1.1", name: ifName, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "port name, joins Nautobot interfaces (ether1..)"}
-      - {oid: ".1.3.6.1.2.1.2.2.1.8", name: ifOperStatus, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "link state"}
-      - {oid: ".1.3.6.1.2.1.31.1.1.1.6", name: ifHCInOctets, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "traffic"}
-      - {oid: ".1.3.6.1.2.1.31.1.1.1.10", name: ifHCOutOctets, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "traffic"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.14.1.1.90", name: mtxrInterfaceStatsLinkDowns, kind: column, syntax: "Counter32", use: "link-downs per port: SMC trunk flapping (ether1), NTD and phone churn"}
       # neighbours (MNDP/LLDP/CDP as RouterOS sees them): topology
-      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.2", name: mtxrNeighborIpAddress, kind: column, syntax: "IpAddress", use: "neighbour address"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.3", name: mtxrNeighborMacAddress, kind: column, syntax: "MacAddress", use: "neighbour MAC"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.6", name: mtxrNeighborIdentity, kind: column, syntax: "DisplayString", use: "neighbour name"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.8", name: mtxrNeighborInterfaceID, kind: column, syntax: "ObjectIndex", use: "local port the neighbour is on"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.2", name: mtxrNeighborIpAddress, kind: column, syntax: "IpAddress", use: "neighbour address", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.3", name: mtxrNeighborMacAddress, kind: column, syntax: "MacAddress", use: "neighbour MAC", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.6", name: mtxrNeighborIdentity, kind: column, syntax: "DisplayString", use: "neighbour name", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.8", name: mtxrNeighborInterfaceID, kind: column, syntax: "ObjectIndex", use: "local port the neighbour is on", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
       # PoE out (ether5 feeds the AP). Status codes in the 7.8 MIB: disabled(1) waitingForLoad(2) poweredOn(3) overload(4); more were added in 7.15.
-      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.2", name: mtxrPOEName, kind: column, syntax: "DisplayString", use: "PoE port name"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.3", name: mtxrPOEStatus, kind: column, syntax: "INTEGER { disabled(1), waitingForLoad(2), poweredOn(3), overload(4) }", use: "AP power state"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.4", name: mtxrPOEVoltage, kind: column, syntax: "Voltage", use: "PoE voltage (dV)"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.5", name: mtxrPOECurrent, kind: column, syntax: "Integer32", use: "PoE current (mA)"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.6", name: mtxrPOEPower, kind: column, syntax: "Power", use: "AP power draw (dW)"}
   metal-52-ac:
     family: wifi-ap
     models: [RBMetalG-52SHPacn]
@@ -91,50 +103,54 @@ device_types:
       firmware: "RouterOS 7.8 (factory 6.48.6)"
       fleet: "289 of 297 rct APs surveyed 2026-10-07"
     routeros_cli:
-      verified: {date: "2026-10-07", units: [delye AP, amuroona AP], firmware: "7.8", method: "ssh via scripts/mikrotik-exec.sh"}
+      verified: {date: "2026-10-07", units: [delye AP, amuroona AP], firmware: "7.8", method: "ssh via scripts/mikrotik_exec.sh"}
       reads:
         - "/system routerboard print"
         - "/system resource print"
         - "/interface wireless registration-table print"
         - "/snmp print"
-    oids: []
+    gps:
+      provides_coordinates: "no"
+      how: "no GPS receiver (product page); only the routeros package installed (no gps package); MIKROTIK-MIB mtxrGps .1.3.6.1.4.1.14988.1.1.12 walks empty"
+      verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "snmp walk from the SMC + /system package print"}
+    oids:
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "model string", result: "'RouterOS RBMetalG-52SHPacn'", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "vendor detection; the per-model value is in neither MIB, read it on the first unit", result: ".1.3.6.1.4.1.14988.1, same as the switch", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.1.3.0", name: sysUpTime, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "reboot detection (TSTIK power-cycles, watchdog loops)", result: "timeticks", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "identity; 450Gx4 on every switch, so not a key", result: "'AP1'", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.3.0", name: mtxrSerialNumber, kind: scalar, syntax: "DisplayString", use: "Nautobot serial, the identity key", result: "HE508V99BYW", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.4.0", name: mtxrFirmwareVersion, kind: scalar, syntax: "DisplayString", use: "RouterBOOT firmware", result: "'7.8'", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.9.0", name: mtxrBoardName, kind: scalar, syntax: "DisplayString", use: "board name (Metal 52 ac / RB450Gx4)", result: "'RBMetalG-52SHPacn'", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.4.4.0", name: mtxrLicVersion, kind: scalar, syntax: "DisplayString", use: "RouterOS version -> Nautobot software version", result: "'7.8'", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.2", name: mtxrGaugeName, kind: column, syntax: "DisplayString", use: "gauge row name (voltage, temperature, cpu-temperature)", result: "rows 13 voltage, 14 temperature", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.3", name: mtxrGaugeValue, kind: column, syntax: "Gauge32", use: "solar-bus voltage and temperature trend", result: "voltage 257 (dV); temperature 35 (whole degrees C)", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.4", name: mtxrGaugeUnit, kind: column, syntax: "INTEGER { celsius(1), rpm(2), dV(3), dA(4), dW(5), status(6) }", use: "unit of each gauge row", result: "3 dV, 1 celsius", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.8.0", name: mtxrHlVoltage, kind: scalar, syntax: "Voltage", use: "supply voltage (dV) if v7 still answers", result: "257 = 25.7 V", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.10.0", name: mtxrHlTemperature, kind: scalar, syntax: "Temperature", use: "board temperature (x10) if v7 still answers", result: "350 = 35.0 C (x10)", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.1", name: ifName, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "port name, joins Nautobot interfaces (ether1..)", result: "ether1, wlan1, bridge-vlan501, eth1-vlan500, eth1-vlan501", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.2.1.2.2.1.8", name: ifOperStatus, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "link state", result: "wlan1 down with no client registered", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.14.1.1.90", name: mtxrInterfaceStatsLinkDowns, kind: column, syntax: "Counter32", use: "link-downs per port: SMC trunk flapping (ether1), NTD and phone churn", result: "per ifIndex", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.4", name: mtxrWlApSsid, kind: column, syntax: "DisplayString", use: "SSID per radio", result: "'Activ8me Hotspot'", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.6", name: mtxrWlApClientCount, kind: column, syntax: "Counter32", use: "client count", result: "0 at test time", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.7", name: mtxrWlApFreq, kind: column, syntax: "Integer32", use: "channel frequency", result: "2412: the radio runs 2.4 GHz (band 2412/20-Ce/gn), not 5 GHz", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.9", name: mtxrWlApNoiseFloor, kind: column, syntax: "Integer32", use: "noise floor", result: "-105", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.10", name: mtxrWlApOverallTxCCQ, kind: column, syntax: "Counter32", use: "link quality", result: "0 with no clients", verified: {date: "2026-10-07", unit: "amuroona AP1 (HE508V99BYW)", site: amuroona, firmware: "7.8", method: "get/walk from the SMC, scripts/snmp_via_smc.py"}}
     candidates:
       # identity: what Nautobot records (serial is the match key; port MACs are cloned on the switches)
-      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "model string"}
-      - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "vendor detection; the per-model value is in neither MIB, read it on the first unit"}
-      - {oid: ".1.3.6.1.2.1.1.3.0", name: sysUpTime, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "reboot detection (TSTIK power-cycles, watchdog loops)"}
-      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "identity; 450Gx4 on every switch, so not a key"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.7.3.0", name: mtxrSerialNumber, kind: scalar, syntax: "DisplayString", use: "Nautobot serial, the identity key"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.7.4.0", name: mtxrFirmwareVersion, kind: scalar, syntax: "DisplayString", use: "RouterBOOT firmware"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.7.9.0", name: mtxrBoardName, kind: scalar, syntax: "DisplayString", use: "board name (Metal 52 ac / RB450Gx4)"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.4.4.0", name: mtxrLicVersion, kind: scalar, syntax: "DisplayString", use: "RouterOS version -> Nautobot software version"}
       # health: RouterOS 7 reports through the gauge table (ros-health.txt: voltage in dV, temperature x10); the mtxrHl scalars are still
       # STATUS current in both MIBs, but whether v7 answers them is untested. mtxrGaugeValue became Integer32 in 7.12 (changelog).
-      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.2", name: mtxrGaugeName, kind: column, syntax: "DisplayString", use: "gauge row name (voltage, temperature, cpu-temperature)"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.3", name: mtxrGaugeValue, kind: column, syntax: "Gauge32", use: "solar-bus voltage and temperature trend"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.4", name: mtxrGaugeUnit, kind: column, syntax: "INTEGER { celsius(1), rpm(2), dV(3), dA(4), dW(5), status(6) }", use: "unit of each gauge row"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.3.8.0", name: mtxrHlVoltage, kind: scalar, syntax: "Voltage", use: "supply voltage (dV) if v7 still answers"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.3.10.0", name: mtxrHlTemperature, kind: scalar, syntax: "Temperature", use: "board temperature (x10) if v7 still answers"}
       # interfaces: standard IF-MIB plus MikroTik's own link-down counter (the trunk-flap signature, 04_failure-modes.md)
-      - {oid: ".1.3.6.1.2.1.31.1.1.1.1", name: ifName, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "port name, joins Nautobot interfaces (ether1..)"}
-      - {oid: ".1.3.6.1.2.1.2.2.1.8", name: ifOperStatus, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "link state"}
       - {oid: ".1.3.6.1.2.1.31.1.1.1.6", name: ifHCInOctets, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "traffic"}
       - {oid: ".1.3.6.1.2.1.31.1.1.1.10", name: ifHCOutOctets, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "traffic"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.14.1.1.90", name: mtxrInterfaceStatsLinkDowns, kind: column, syntax: "Counter32", use: "link-downs per port: SMC trunk flapping (ether1), NTD and phone churn"}
       # neighbours (MNDP/LLDP/CDP as RouterOS sees them): topology
-      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.2", name: mtxrNeighborIpAddress, kind: column, syntax: "IpAddress", use: "neighbour address"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.3", name: mtxrNeighborMacAddress, kind: column, syntax: "MacAddress", use: "neighbour MAC"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.6", name: mtxrNeighborIdentity, kind: column, syntax: "DisplayString", use: "neighbour name"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.8", name: mtxrNeighborInterfaceID, kind: column, syntax: "ObjectIndex", use: "local port the neighbour is on"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.2", name: mtxrNeighborIpAddress, kind: column, syntax: "IpAddress", use: "neighbour address", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.3", name: mtxrNeighborMacAddress, kind: column, syntax: "MacAddress", use: "neighbour MAC", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.6", name: mtxrNeighborIdentity, kind: column, syntax: "DisplayString", use: "neighbour name", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.8", name: mtxrNeighborInterfaceID, kind: column, syntax: "ObjectIndex", use: "local port the neighbour is on", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
       # wireless: the Metal runs the legacy `wireless` package on mipsbe (ros-packages.txt), so the mtxrWl tables apply
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.4", name: mtxrWlApSsid, kind: column, syntax: "DisplayString", use: "SSID per radio"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.6", name: mtxrWlApClientCount, kind: column, syntax: "Counter32", use: "client count"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.7", name: mtxrWlApFreq, kind: column, syntax: "Integer32", use: "channel frequency"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.9", name: mtxrWlApNoiseFloor, kind: column, syntax: "Integer32", use: "noise floor"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.10", name: mtxrWlApOverallTxCCQ, kind: column, syntax: "Counter32", use: "link quality"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.1", name: mtxrWlRtabAddr, kind: column, syntax: "MacAddress", use: "client MAC"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.3", name: mtxrWlRtabStrength, kind: column, syntax: "Integer32", use: "client signal"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.8", name: mtxrWlRtabTxRate, kind: column, syntax: "Gauge32", use: "client tx rate"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.9", name: mtxrWlRtabRxRate, kind: column, syntax: "Gauge32", use: "client rx rate"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.11", name: mtxrWlRtabUptime, kind: column, syntax: "TimeTicks", use: "client session time"}
-      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.12", name: mtxrWlRtabSignalToNoise, kind: column, syntax: "Integer32", use: "client SNR"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.1", name: mtxrWlRtabAddr, kind: column, syntax: "MacAddress", use: "client MAC", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.3", name: mtxrWlRtabStrength, kind: column, syntax: "Integer32", use: "client signal", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.8", name: mtxrWlRtabTxRate, kind: column, syntax: "Gauge32", use: "client tx rate", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.9", name: mtxrWlRtabRxRate, kind: column, syntax: "Gauge32", use: "client rx rate", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.11", name: mtxrWlRtabUptime, kind: column, syntax: "TimeTicks", use: "client session time", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.12", name: mtxrWlRtabSignalToNoise, kind: column, syntax: "Integer32", use: "client SNR", tested: "2026-10-07 amuroona: table answers but empty (no client / neighbour discovery limited to the empty LAN list)"}

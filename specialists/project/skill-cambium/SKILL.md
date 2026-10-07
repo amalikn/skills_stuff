@@ -67,6 +67,7 @@ stays project-local.
 
 ## Related Skills
 
+- **`skill-mikrotik`** — MikroTik switches and APs at the same sites (RouterOS). The device vendor decides the pack: Cambium here, MikroTik there.
 - **`skill-smc`** — the SMC box and ansible-wifi authoring layer. Call it for: SMC service troubleshooting, Ansible topology/role questions, `smc_cnmaestro_provisioning` behaviour, Teleport access to
   a box. It calls back here for: device credentials, device-family/firmware facts, asset-register conventions. Neither pack duplicates the other's content — cross-reference, don't copy.
 - **`skill-nautobot`** and **`skill-openwisp`** (canonical under [`../../platform/`](../../platform/)) — the platform layer this fleet's inventory and monitoring run on. Call them for

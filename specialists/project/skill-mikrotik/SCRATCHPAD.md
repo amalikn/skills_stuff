@@ -18,8 +18,11 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 - All 294 `rct` switches carry cloned MACs set by the Pi provisioning script (`references/06_provisioning.md`). Remedy written up, not applied; waiting on operator go-ahead.
 - Provisioning (operator, 2026-10-07): a Pi pushes RouterOS 7.8 over TFTP and two SSH batches (`references/06_provisioning.md`); the Mk3 connection diagram
   (`references/mk3-connection-diagram-v0.5.pdf`) shows what is on each port, `rct` and `wh` alike apart from the ATA and the AP.
-- Vendor sources, MIBs and the OID registry (candidates only; SNMP disabled everywhere checked) in `references/` (v0.1.11); UNC carries the vendor.
-- Background waiter for arrkapa: `scripts/mikrotik-site-capture.sh` with `WAIT_UP=1`, output the `capture-arrkapa-mikrotik` folder in the arrkapa-wan investigation folder.
+- Vendor sources, MIBs and the OID registry in `references/` (v0.1.11); UNC carries the vendor. SNMP read-only on amuroona's switch and AP only
+  (2026-10-07): 25 and 21 OIDs verified, write test done (sysName applies, sysLocation ignored); GPS: neither model (v0.1.13-0.1.14).
+- Pinned runtime (`just bootstrap`, working-cache `.venv`), every function documented (`check_function_docs`), scripts and recipes in snake_case
+  (v0.1.12, 0.1.15, 0.1.16).
+- Background waiter for arrkapa: `scripts/mikrotik_site_capture.sh` with `WAIT_UP=1`, output the `capture-arrkapa-mikrotik` folder in the arrkapa-wan investigation folder.
 
 ## Next actions
 
@@ -27,7 +30,7 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 2. Survey `wh` (known issue 2).
 3. With operator approval: test the cloned-MAC remedy on one switch (known issue 11), then a small canary.
 4. Decide with the operator on central monitoring for these devices (known issue 5).
-5. SNMP read-only on one switch and one AP (operator approved 2026-10-07): verify the registry candidates, test a harmless write, record results.
+5. SNMP fleet rollout: operator decision (known issue 14); then add the enable to the Pi script. Candidates still open on the AP: ifHCIn/OutOctets.
 6. Ask the operator for the provisioning script's location and owner and how APs are provisioned (known issue 12); read back the script's security
    settings on one switch (known issue 13).
 
@@ -42,11 +45,14 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 - 2026-10-07 — Pack created from the arrkapa investigation; 297-site `rct` survey; `wh` canary; cloned MACs traced to the provisioning script (first thought to be a binary backup); v0.1.5 committed (`e720222`).
 - 2026-10-07 16:20 — Provisioning script and Mk3 diagram supplied by the operator: cause corrected (v0.1.9), ports and site design (v0.1.10), SMC addressing
   vs ansible-wifi in skill-smc 0.1.98.
+- 2026-10-07 evening — SNMP verified on amuroona (read-only, then a write test the operator approved); GPS check across vendors (UNC
+  `gps.device_types`); runtime pinning; function docs; snake_case renames. Incident: a `--rw` run printed the read-only community in the operator's
+  terminal; redaction fixed, rotation is the operator's call.
 
 ## Memory pointers
 
 - memory-keeper channel `skill-mikrotik`: `skill-mikrotik.origin-and-structure`, `.access-method`, `.rct-survey-20261007`, `.layout-and-wh`,
-  `.cloned-mac-remedy` (updated 16:26), `.provisioning-script-20261007`, `.mk3-diagram-20261007`, `.cloned-mac-evidence-delta`, `.arrkapa-and-open`, `.cross-links-20261007`. Related keys in channel `ansible-wifi`:
+  `.cloned-mac-remedy` (updated 16:26), `.provisioning-script-20261007`, `.mk3-diagram-20261007`, `.equipment-snmp-registry-20261007`, `.snmp-amuroona-results-20261007`, `.cloned-mac-evidence-delta`, `.arrkapa-and-open`, `.cross-links-20261007`. Related keys in channel `ansible-wifi`:
   `skill-mikrotik-created-20261007`, `ansible-wifi.mikrotik.cloned-macs-keepass-rename-20261007`.
 - project-context project `skill-mikrotik` (`ee2796d9-6122-42c8-9aba-2d453b8a5f55`): one note, two decisions. Checkpoints `slurp-20261007-skill-mikrotik`, `slurp-20261007-mikrotik-provisioning`.
 

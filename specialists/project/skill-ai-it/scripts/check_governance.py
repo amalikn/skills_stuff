@@ -366,6 +366,35 @@ def check_task_recipes() -> None:
                 fail("runner", f"{surface} names recipe `{named}` which {TASK_RUNNER} does not define")
 
 
+# Code files that kept a kebab-case name when the snake_case rule arrived. Listed here, by repo-relative path, until they are next touched and renamed
+# (governance coding-guide: renamed when touched, references updated in the same change; never a new one). Empty is the goal.
+KEBAB_LEGACY: frozenset[str] = frozenset()
+CODE_SUFFIXES: frozenset[str] = frozenset({".py", ".sh", ".bash", ".js", ".mjs", ".ts", ".rb", ".pl"})
+
+
+def check_file_naming() -> None:
+    """Every code file under scripts/ is named in snake_case; a hyphen in its name fails unless the file is listed in KEBAB_LEGACY.
+
+    Governance coding-guide (operator, 2026-10-07): snake_case for every code file and command name. A Python file must be an importable identifier
+    (PEP 8; a hyphen is the minus operator to `import`), and the Google Shell Style Guide asks the same of shell ("make_template but not
+    make-template"). One rule for every language is what stops a `survey-summary.py` appearing beside `survey_summary.py`. kebab-case belongs only to
+    names fixed outside the code: skill names, document slugs, repo and folder names. A KEBAB_LEGACY entry whose file no longer exists also fails, so
+    the list shrinks as files are renamed instead of going stale.
+    """
+    scripts = ROOT / "scripts"
+    found = sorted(p for p in scripts.rglob("*") if p.is_file() and p.suffix in CODE_SUFFIXES) if scripts.is_dir() else []
+    for path in found:
+        rel = path.relative_to(ROOT).as_posix()
+        counted()
+        if "-" in path.stem and rel not in KEBAB_LEGACY:
+            fail("file-naming", f"{rel} is kebab-case; name code files in snake_case ({path.stem.replace('-', '_')}{path.suffix}) and update "
+                                f"every reference, or list it in KEBAB_LEGACY until it is next touched")
+    for rel in sorted(KEBAB_LEGACY):
+        counted()
+        if not (ROOT / rel).is_file():
+            fail("file-naming", f"KEBAB_LEGACY lists {rel}, which no longer exists: remove the entry")
+
+
 def check_interpreter_pinning() -> None:
     """No task recipe reaches an interpreter implicitly.
 
@@ -421,6 +450,38 @@ def check_interpreter_pinning() -> None:
                 "runtime",
                 f"{TASK_RUNNER}:{lineno} calls bare `{match.group(1)}` — route it through the pinned interpreter",
             )
+        # 3. A recipe that runs a script BY PATH (`scripts/check.py`, `./tool.js`) never names an interpreter, so the script's
+        #    shebang (`#!/usr/bin/env python3`) picks the host one. Missed until 2026-10-07: skill-mikrotik passed this check
+        #    with every recipe written that way, because the check only looked for interpreter NAMES on recipe lines.
+        for cmd in re.split(r"&&|\|\||;|\|", scan):
+            words = cmd.strip().lstrip("@-").split()
+            while words and re.match(r"^[A-Za-z_]\w*=", words[0]):
+                words = words[1:]  # leading VAR=value assignments are not the command
+            if words and re.search(r"\.(py|js|mjs|rb)$", words[0]):
+                fail(
+                    "runtime",
+                    f"{TASK_RUNNER}:{lineno} runs `{words[0]}` by path, so its shebang picks the interpreter — call it as "
+                    f"{{{{py}}}} {words[0]} and depend on _require-venv",
+                )
+    # 4. Shell scripts under scripts/ that call a bare interpreter inline (`... | python3 -c`, `python3 - <<EOF`) undo the
+    #    pinning from inside: the recipe pins nothing they run. They take the interpreter from a variable the task runner sets
+    #    (`py=${PROJ_PY:-python3}` then `"$py"`; the recipe passes PROJ_PY={{py}}), so a direct run still works and a recipe
+    #    run is pinned. A line whose interpreter runs on ANOTHER host (`ssh host python3 ...`) is marked `# runtime: remote`.
+    scripts_dir = ROOT / "scripts"
+    for path in sorted(scripts_dir.glob("**/*.sh")) if scripts_dir.is_dir() else []:
+        rel = path.relative_to(ROOT).as_posix()
+        for lineno, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#") or "# runtime: remote" in line:
+                continue
+            scan = re.sub(r"'[^']*'|\"[^\"]*\"", lambda m: " " * len(m.group(0)), stripped)
+            counted()
+            for match in re.finditer(r"(?<![-\w/.:$])(python3?|node)\b(?![.\w])", scan):
+                fail(
+                    "runtime",
+                    f"{rel}:{lineno} calls bare `{match.group(1)}` — take it from a variable the task runner sets "
+                    f"(py=${{PROJ_PY:-python3}}, then \"$py\"; the recipe passes {{{{py}}}})",
+                )
 
 
 # --------------------------------------------------------------------------------------------------------------- TIER 3
@@ -579,6 +640,7 @@ CHECKS = (
     check_template_catalog,
     check_task_recipes,
     check_interpreter_pinning,
+    check_file_naming,
     check_derived_freshness,
     check_constant_sync,
     check_append_only_grain,

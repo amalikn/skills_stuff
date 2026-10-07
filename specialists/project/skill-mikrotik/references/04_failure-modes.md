@@ -40,7 +40,7 @@ VERIFIED-OBSERVED 2026-10-07. delye's switch ether1 (the SMC trunk) shows `link-
 pairs a few seconds apart from 2026-08-17. The SMC's uptime (50 days at 2026-10-07) puts its boot at about 2026-08-18, so the flapping stopped when the SMC was rebooted or replaced. The cause (Pi NIC,
 cable, or Pi power) is not established. amuroona, for comparison: `link-downs=2` on ether1.
 
-How to spot it: ether1 `link-downs` in the thousands in `scripts/mikrotik-fleet-survey.sh` output, or many `interface,info ether1 link` lines in the log.
+How to spot it: ether1 `link-downs` in the thousands in `scripts/mikrotik_fleet_survey.sh` output, or many `interface,info ether1 link` lines in the log.
 
 ## Switch uptime shorter than the SMC's
 

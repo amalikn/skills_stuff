@@ -70,7 +70,7 @@ Report-first approach for Archcore: `bootstrap` and `refresh` emit `ARCHCORE_PRO
 ### Medium-term
 
 - **`audit` mode refinement** — structured output format for audit findings (missing files, stale sections, routing gaps, drift) so agents can act on audit output without ambiguity.
-- **Context-preflight validation** — extend `templates/context-preflight.sh` to check for `ARCHCORE_PROMOTION_CANDIDATES.md` freshness and warn if candidates are stale relative to governance files.
+- **Context-preflight validation** — extend `templates/context_preflight.sh` to check for `ARCHCORE_PROMOTION_CANDIDATES.md` freshness and warn if candidates are stale relative to governance files.
 - **Candidate freshness tracking** — add a `generated_on` timestamp and source file checksums to `ARCHCORE_PROMOTION_CANDIDATES.md` so refresh mode can diff rather than rescan from scratch.
 
 ### Longer-term / ideas

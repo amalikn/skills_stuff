@@ -44,9 +44,21 @@ Cambium AP instead, so a Metal is never fed 48 V there.
 
 ## SNMP
 
-- **Disabled.** VERIFIED_OBSERVED 2026-10-07 on delye and amuroona, switch and AP: `/snmp print` shows `enabled: no` and no communities. RouterOS ships it off
-  (`references/vendor-sources-20261007_1640/ros-snmp.txt`: "enabled (yes | no; Default: no)") and the provisioning script never turns it on (06_provisioning.md). Every OID in
-  `snmp-oid-registry.yaml` is therefore a candidate from the MIB, not a verified one. Known issue 14.
+- **Off by default, now on at one site.** RouterOS ships SNMP off (`ros-snmp.txt`: "enabled (yes | no; Default: no)") with a default `public` community
+  open to `::/0`, and the provisioning script never turns it on (06_provisioning.md). With operator approval it was enabled read-only on amuroona's
+  switch and AP (2026-10-07): `public` disabled, a vault community (`cambium-devices/apn-snmp-ro`) allowed only from the SMC (`10.255.0.1/32`), via
+  `just snmp_community`. Every other unit still has it off. Known issue 14.
+- **What answered** (read from the SMC with `just snmp`; full list with values in `snmp-oid-registry.yaml` `oids`): sysDescr gives the model
+  ("RouterOS RB450Gx4", "RouterOS RBMetalG-52SHPacn"); sysObjectID is `.1.3.6.1.4.1.14988.1` for both, so it is not a model key; serial, RouterOS
+  version and board name; IF-MIB names, status and 64-bit octets; per-port link-downs; PoE status on ether5. Health: the old scalars still answer on 7.8
+  (voltage in dV, temperature x10), but the gauge table gives temperature in **whole degrees** (unit celsius) while voltage stays in dV. The RB450Gx4's
+  PoE voltage, current and power read 0: it reports PoE state only. `mtxrHlProcessorTemperature` is `noSuchObject` on the RB450Gx4. Neighbour tables
+  are empty (discovery is limited to the `LAN` interface list, which the provisioning leaves empty). The AP's radio runs **2.4 GHz** (2412/20-Ce/gn).
+- **Writes** (operator approved, amuroona switch, 2026-10-07; temporary read-write community from `cambium-devices/apn-snmp-rw`, removed after):
+  `sysName` SET applies at once (CLI identity changed, then restored), but an SNMP GET straight after returns the old value for a few seconds, so verify a
+  write over SSH or after a pause. `sysLocation` SET returns `noError` and is **not applied**: the location stayed empty. The read-only community's SET is
+  refused (`readOnly`). RouterOS 7.8 has no `snmp-set` and the rct SMCs no net-snmp, so writes go through `scripts/snmp_via_smc.py`.
+- **GPS:** neither model gives coordinates: no receiver on the product pages, no `gps` package, and `mtxrGps` (`.1.3.6.1.4.1.14988.1.1.12`) walks empty.
 - **Enabling it is a device change:** operator approval, one unit first. A community's `address` defaults to `0.0.0.0/0` (`ros-snmp.txt`), so any community
   must be limited to `10.255.0.0/24`, read-only. Then verify each candidate OID on that unit and move it to `oids`, and add the lines to the Pi script.
 - **MIBs.** MIKROTIK-MIB for RouterOS 7.8 (`references/vendor-sources-20261007_1640/mib-7.8/mikrotik.mib`, LAST-UPDATED 202112210000Z) and 7.24.5 (`references/vendor-sources-20261007_1640/mib-7.24.5/mikrotik.mib`); every OID the
@@ -56,7 +68,7 @@ Cambium AP instead, so a Metal is never fed 48 V there.
 - **Version differences that matter:** `mtxrGaugeValue` changed to integer in 7.12, and PoE-out status codes were added to the MIB in 7.15
   (`references/vendor-sources-20261007_1640/routeros-changelogs-7.8-to-7.24.5.txt`). RouterOS 7 reports health through the gauge table, voltage in dV and temperature multiplied by 10
   (`references/vendor-sources-20261007_1640/ros-health.txt`).
-- `scripts/mib_oids.py` resolves any MIB name to its OID (`just mib-oids <mib> '<regex>'`).
+- `scripts/mib_oids.py` resolves any MIB name to its OID (`just mib_oids <mib> '<regex>'`).
 
 ## Firmware
 
@@ -84,4 +96,4 @@ and will be reused after a reboot", and "it is recommended to disable "auto-mac"
 
 `references/vendor-sources-20261007_1640/readme.md` indexes every file: the two MIBs (with derived OID index files), help.mikrotik.com pages saved as text (SNMP, Ethernet, Bridging,
 RouterBOARD, Device-mode, Health, Packages, WiFi), product pages and PDFs, the concatenated changelogs 7.8 to 7.24.5, and three forum threads (secondary).
-Refetch a doc page with `just fetch-doc <confluence-id> <out.txt>`.
+Refetch a doc page with `just fetch_doc <confluence-id> <out.txt>`.

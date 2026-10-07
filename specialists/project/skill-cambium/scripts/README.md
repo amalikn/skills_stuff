@@ -108,6 +108,8 @@ other direction.
 |  |  |  |  |  |  |   raw JSON |
 |  |  |  |  |  |  |   for secrets |
 | `generate_site_addressing_families.py` | Derives a site's `families:` block | `--flavour rcp\|nbn_accelerate`, | YAML fragment to | `safe` | Yes | Onboarding a |
+| `device-login-probe.sh` | Finds which KeePass entry logs in to a device behind an SMC over SSH | SMC host, device IP, read-only command, candidate entries | Entry verdicts, first lines of output | **read-only**; one login attempt per entry, client on the Mac, nothing secret on the SMC | Yes | Unknown or mixed credentials on a site (`PTY=1` for CLIs that ignore exec commands) |
+| `gps_probe.py` | Which units give a GPS position: GETs the ePMP GPS and location OIDs, or walks a MIB arm for coordinate-like values; never prints coordinates | A JSON plan: SMC node, proxy, units (ip, label, kind epmp or walk, arm) | Console report per unit: present / empty / AU-plausible, satellites, sync source, distance between units | `safe` (read-only SNMP) | Yes | When a device type's `gps` answer is unknown or a new model arrives |
 |  | (octet_pattern/host_count per device | `--site <slug>` or `--all`, | stdout — never writes |  |  | new site's |
 |  | family) | optional `--inventory-root` | `references/site-addressing.yaml` |  |  | export, or |
 |  |   for `references/site-addressing.yaml` |  |  |  |  |  |

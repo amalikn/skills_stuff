@@ -161,7 +161,7 @@ Project-local automation needs a separate inventory layer because raw scripts do
 
 The skill package is the maintained source for generic behavior. Target projects should not need local copies of the skill logic.
 
-Repo-local scripts such as `scripts/context-preflight.sh` are explicit opt-in artifacts only. They can be useful as compatibility wrappers, but they must not become a second source of truth for
+Repo-local scripts such as `scripts/context_preflight.sh` are explicit opt-in artifacts only. They can be useful as compatibility wrappers, but they must not become a second source of truth for
 generic Archcore, Graphify, or Repomix behavior.
 
 ## Repeat-safety model

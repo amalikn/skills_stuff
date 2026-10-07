@@ -28,13 +28,13 @@
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-10-07T03:22:00Z",
-  "updated_at": "20261007_1655",
-  "version": "0.1.11",
+  "updated_at": "20261007_2009",
+  "version": "0.1.16",
   "dependencies": [],
   "known_constraints": [
     "Devices are reachable only through the site SMC; no secret may appear in a command run on the SMC (Teleport audit log ships to Graylog).",
     "The RouterOS log is an in-memory buffer lost on device reboot; capture before any power-cycle.",
-    "Read-only by default; mikrotik-exec.sh refuses non-read commands unless MT_ALLOW_WRITE=1."
+    "Read-only by default; mikrotik_exec.sh refuses non-read commands unless MT_ALLOW_WRITE=1."
   ],
   "stable_facts": [
     "rct site switch: RB450Gx4 at 10.255.0.5; AP: Metal 52 ac at 10.255.0.20; both RouterOS 7.8 where surveyed (2026-10-07).",

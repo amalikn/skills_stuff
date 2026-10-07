@@ -24,7 +24,7 @@ The devices have addresses on the site management VLAN (`10.255.0.0/24`, `bridge
 1. `tsh --proxy=teleport.apn.au ssh -N -L 127.0.0.1:<port>:<device-ip>:22 root@<site>-smc01` forwards a local port through the SMC.
 2. A local `ssh` to `127.0.0.1:<port>` reaches RouterOS SSH. `sshpass -e` reads the password from `SSHPASS`, never from argv.
 
-`scripts/mikrotik-exec.sh` does both, picks a random local port, waits for it with `nc`, and tears the forward down on exit.
+`scripts/mikrotik_exec.sh` does both, picks a random local port, waits for it with `nc`, and tears the forward down on exit.
 
 ## Why the password never runs on the SMC
 
@@ -33,7 +33,7 @@ teleport `[AUDIT] exec` and `Started local command execution` lines under the si
 
 ## Read-only guard
 
-`scripts/mikrotik-exec.sh` refuses a command unless it contains a read-only verb (`print`, `export`, `monitor … once`, `get`) or starts with `:put`/`:local`. `MT_ALLOW_WRITE=1` overrides it; use that only
+`scripts/mikrotik_exec.sh` refuses a command unless it contains a read-only verb (`print`, `export`, `monitor … once`, `get`) or starts with `:put`/`:local`. `MT_ALLOW_WRITE=1` overrides it; use that only
 with the operator's go-ahead for a specific change.
 
 ## Host keys

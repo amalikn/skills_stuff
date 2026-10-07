@@ -86,3 +86,11 @@ client-ip-sweep smc prog="apn" samples="3":
 
 # Run safe local preflight checks
 preflight: runtimes check
+
+# Which KeePass entry logs in to a device behind an SMC (one SSH attempt per entry, read-only), e.g. just login-probe canteen-creek-smc01 10.255.0.10 'show dashboard' cambium-devices/epmp-ap cambium-devices/epmp-ap-legacy
+login-probe smc ip cmd +entries:
+    scripts/device-login-probe.sh {{smc}} {{ip}} '{{cmd}}' {{entries}}
+
+# Which Cambium units give a GPS position (read-only SNMP from the SMC; coordinates never printed). PLAN is the JSON described in scripts/gps_probe.py
+gps-probe plan: _require-venv
+    {{py}} scripts/gps_probe.py '{{plan}}'

@@ -86,6 +86,7 @@ same pass as this note (2026-09-17, staleness audit).
 
 ## Session history (summaries — full detail in memory-keeper)
 
+- 2026-10-07 — GPS per device type (operator): `gps` block on every registry type (ePMP 3000L yes, Force 300 configured, the rest no); `scripts/gps_probe.py`; v0.6.41.
 ### 2026-10-05 — Archcore filename compliance (v0.6.32)
 
 - `git mv` of 7 `.archcore/` files; live references updated; `SKILL.md` platform-pack link fixed; `just check` 237 OK, `archcore status` clean.

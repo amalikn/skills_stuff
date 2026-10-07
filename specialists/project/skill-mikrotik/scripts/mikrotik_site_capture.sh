@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Deep read-only capture of one site's MikroTiks (switch and AP) behind an SMC, for incident analysis.
 #
-# usage: mikrotik-site-capture.sh <smc-host> <outdir>
-#        WAIT_UP=1 MAX_WAIT=86400 POLL=120 mikrotik-site-capture.sh <smc-host> <outdir>   # wait for the SMC to appear in Teleport first
+# usage: mikrotik_site_capture.sh <smc-host> <outdir>
+#        WAIT_UP=1 MAX_WAIT=86400 POLL=120 mikrotik_site_capture.sh <smc-host> <outdir>   # wait for the SMC to appear in Teleport first
 #   DEVICES  MikroTik IPs (default "10.255.0.5 10.255.0.20")
 #
 # Captures per device: identity, resource (uptime, version), routerboard, health (voltage, temperature), interface detail
@@ -11,7 +11,7 @@
 # hides sensitive values by default; hide-sensitive is the 6.x flag). The RouterOS memory log is lost when the device reboots, so
 # capture before any power-cycle.
 set -u
-smc=${1:?usage: mikrotik-site-capture.sh <smc-host> <outdir>}; out=${2:?outdir}
+smc=${1:?usage: mikrotik_site_capture.sh <smc-host> <outdir>}; out=${2:?outdir}
 here=$(cd "$(dirname "$0")" && pwd)
 proxy=${TSH_PROXY:-teleport.apn.au}
 if [ "${WAIT_UP:-0}" = 1 ]; then
@@ -24,7 +24,7 @@ if [ "${WAIT_UP:-0}" = 1 ]; then
 fi
 mkdir -p "$out"
 for ip in ${DEVICES:-10.255.0.5 10.255.0.20}; do
-  "$here/mikrotik-exec.sh" "$smc" "$ip" \
+  "$here/mikrotik_exec.sh" "$smc" "$ip" \
     '/system identity print' '/system resource print' '/system routerboard print' '/system health print' \
     '/interface print detail without-paging' '/interface ethernet print stats without-paging' \
     '/interface ethernet monitor [find] once' '/interface bridge port print without-paging' \

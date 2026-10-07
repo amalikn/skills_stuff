@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20261007_2009 — feat: snake_case file naming, check_file_naming; template renamed to context_preflight.sh](#20261007_2009--feat-snake_case-file-naming-check_file_naming-template-renamed-to-context_preflightsh)
+- [20261007_1848 — fix: runtime isolation now also catches shebang-run recipes and inline interpreters in shell scripts](#20261007_1848--fix-runtime-isolation-now-also-catches-shebang-run-recipes-and-inline-interpreters-in-shell-scripts)
 - [20261007_1628 — fix: the navigation template folded the audit/check rule into item 12](#20261007_1628--fix-the-navigation-template-folded-the-auditcheck-rule-into-item-12)
 - [20260927_2005 — docs: the three target map promotion gaps are built in the pilot](#20260927_2005--docs-the-three-target-map-promotion-gaps-are-built-in-the-pilot)
 - [20260927_1819 — docs: three gaps recorded before the target map standard can be promoted](#20260927_1819--docs-three-gaps-recorded-before-the-target-map-standard-can-be-promoted)
@@ -48,6 +50,29 @@
 - [20260812_1300](#20260812_1300)
 
 ---
+
+## 20261007_2009 — feat: snake_case file naming, check_file_naming; template renamed to context_preflight.sh
+
+Operator (2026-10-07): snake_case for code files and command names (governance coding-guide; PEP 8 and the Google Shell Style Guide cited there).
+`templates/check_governance.py` and this package's checker gain `check_file_naming` (kebab-case code files under `scripts/` fail unless listed in
+`KEBAB_LEGACY`; a stale entry fails too), negative-tested. `templates/context-preflight.sh` renamed `templates/context_preflight.sh` and live references
+updated (dated `docs/` keep the old name). `SKILL.md`: File and command naming section. Projects with the old name rename it when next touched.
+
+## 20261007_1848 — fix: runtime isolation now also catches shebang-run recipes and inline interpreters in shell scripts
+
+Operator (2026-10-07), after skill-mikrotik shipped without pinned interpreter paths: make sure these patterns are not missed again.
+`check_interpreter_pinning` only looked for interpreter NAMES on recipe lines, so skill-mikrotik passed it while every recipe ran its script through
+the shebang (`scripts/check_governance.py`, the host `python3`) and two shell scripts called `python3` inline.
+
+- `templates/check_governance.py` and this package's `scripts/check_governance.py`: the check now also fails a recipe that runs a `.py`/`.js`/`.rb` script
+  by path, and a `scripts/**/*.sh` line that calls a bare `python3`/`python`/`node` (fix: `py=${PROJ_PY:-python3}` passed from the recipe; a remote
+  call is marked `# runtime: remote`). Negative test: run against skill-mikrotik as committed at `7b9be7d`, it reports all 8 defects; both packages pass
+  after the fix.
+- `SKILL.md`: rule 4 under Runtime isolation, and a Use When trigger: a new skill pack or any folder that gets scripts runs through this skill before
+  its first commit.
+- skill-mikrotik: `.mise.toml`, `requirements.txt`, working-cache venv, `{{py}}` recipes with `_require-venv`, `MT_PY` in its shell scripts, and the
+  same check.
+
 
 ## 20261007_1628 — fix: the navigation template folded the audit/check rule into item 12
 

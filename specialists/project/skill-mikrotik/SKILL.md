@@ -53,7 +53,7 @@ It does not own the SMC, Ansible, the TSTIK app, or Cambium devices: see Related
 
 ## Access in One Paragraph
 
-The devices are only reachable from the SMC's management VLAN. `scripts/mikrotik-exec.sh <smc> <ip> '<cmd>'` opens a Teleport port-forward through the SMC (`tsh ssh -N -L`) and runs the SSH client
+The devices are only reachable from the SMC's management VLAN. `scripts/mikrotik_exec.sh <smc> <ip> '<cmd>'` opens a Teleport port-forward through the SMC (`tsh ssh -N -L`) and runs the SSH client
 locally with `sshpass -e`, so the password never appears in a command that runs on the SMC: Teleport audits exec commands and the SMC ships that audit log to Graylog. The script refuses anything but
 `print`/`export`/`monitor … once`/`get` unless `MT_ALLOW_WRITE=1`. Details: `references/02_device-access.md`.
 
@@ -61,12 +61,12 @@ locally with `sshpass -e`, so the password never appears in a command that runs 
 
 1. **Is the SMC up but dark?** In skill-smc, `fleet-reboot-timeline.py` (boot time unchanged = box up) and `vlan-traffic-timeline.py --gap` (what crossed each VLAN). Only the WAN VLAN silent =
    WAN/satellite. Every VLAN on the trunk silent = this switch or the SMC-to-switch cable.
-2. **Switch uptime vs SMC uptime** (`scripts/mikrotik-fleet-survey.sh` or `/system resource print`): a much younger switch was power-cycled, on `rct` usually by the TSTIK app after ~11 minutes of failed
+2. **Switch uptime vs SMC uptime** (`scripts/mikrotik_fleet_survey.sh` or `/system resource print`): a much younger switch was power-cycled, on `rct` usually by the TSTIK app after ~11 minutes of failed
    switch/AP pings.
 3. **Port link-downs and the log** (`/interface print detail` `link-downs=`, `/log print where topics~"interface"`): rising link-downs on ether1 = SMC side (Pi NIC, cable, SMC reboots); on ether2 =
    Sky Muster NTD side.
 4. **Supply voltage and temperature** (`/system health print`): the DC bus the board is fed from; compare with the fleet range in `references/01_overview.md`.
-5. **Capture before any power-cycle**: the RouterOS log is an in-memory 1,000-line buffer and is lost on reboot. `scripts/mikrotik-site-capture.sh` (add `WAIT_UP=1` for a box that is offline now).
+5. **Capture before any power-cycle**: the RouterOS log is an in-memory 1,000-line buffer and is lost on reboot. `scripts/mikrotik_site_capture.sh` (add `WAIT_UP=1` for a box that is offline now).
 
 ## Related Workspaces
 

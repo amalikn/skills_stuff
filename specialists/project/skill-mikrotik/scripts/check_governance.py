@@ -76,6 +76,11 @@ SIBLING_ROOTS: dict[str, str] = {
 
 
 def _sibling_roots() -> list[Path]:
+    """The declared sibling roots that exist on this machine, resolved.
+
+    An absent root is reported as SKIPPED, not failed: references into it are then unverified, and saying so beats both a silent pass and a false
+    failure on a machine that lacks that checkout.
+    """
     roots: list[Path] = []
     for name, rel in sorted(SIBLING_ROOTS.items()):
         base = (ROOT / rel).resolve()
@@ -87,6 +92,10 @@ def _sibling_roots() -> list[Path]:
 
 
 def _live_surfaces() -> tuple[str, ...]:
+    """Markdown files treated as live governance surfaces: every top-level .md plus scripts/README.md.
+
+    Derived from the tree rather than hand-listed, so a new top-level document is checked from the moment it exists.
+    """
     found = [p.relative_to(ROOT).as_posix()
              for pat in ("*.md", "scripts/README.md")
              for p in ROOT.glob(pat)]
@@ -201,6 +210,7 @@ checks_run = 0
 
 
 def fail(check: str, detail: str) -> None:
+    """Record one failure under its check name; main() prints them all at the end, so one defect never hides the next."""
     failures.append(f"{check}: {detail}")
 
 
@@ -211,6 +221,7 @@ def counted() -> None:
 
 
 def read(rel: str) -> str | None:
+    """A pack-relative file's text, or None when it does not exist. Callers decide whether absence is itself a failure."""
     path = ROOT / rel
     return path.read_text(encoding="utf-8") if path.is_file() else None
 
@@ -230,6 +241,7 @@ def table_rows(rel: str) -> list[dict[str, str]]:
 
 
 def members(folder: str, glob: str) -> list[Path]:
+    """Files in a pack folder that match glob, sorted, dotfiles excluded. An absent folder has no members rather than raising."""
     base = ROOT / folder
     if not base.is_dir():
         return []
@@ -261,6 +273,17 @@ def check_split_path_tokens() -> None:
                                    f"path token in half — join it onto one line")
 
 
+# Scripts renamed to snake_case on 2026-10-07 (governance coding-guide: snake_case for code files). Dated CHANGELOG entries keep the names they were
+# written with, so an old name resolves through this map in CHANGELOG.md ONLY; every live surface must use the current name.
+RENAMED_PATHS: dict[str, str] = {
+    "mikrotik-exec.sh": "scripts/mikrotik_exec.sh",
+    "mikrotik-fleet-survey.sh": "scripts/mikrotik_fleet_survey.sh",
+    "mikrotik-site-capture.sh": "scripts/mikrotik_site_capture.sh",
+    "mikrotik-snmp-community.py": "scripts/mikrotik_snmp_community.py",
+    "survey-summary.py": "scripts/survey_summary.py",
+}
+
+
 def check_referenced_paths() -> None:
     """Every path named in a live governance surface resolves — here, or inside a declared sibling checkout."""
     _siblings = _sibling_roots()
@@ -290,6 +313,8 @@ def check_referenced_paths() -> None:
             near = (ROOT / surface).parent / tok
             if near.exists() or (ROOT / tok).exists() or any((b / tok).exists() for b in _siblings):
                 continue
+            if surface == "CHANGELOG.md" and Path(tok).name in RENAMED_PATHS and (ROOT / RENAMED_PATHS[Path(tok).name]).exists():
+                continue  # history keeps the name it was written with
             fail("path", f"{surface} references `{tok}`, which exists neither here nor under any declared "
                          f"sibling root ({', '.join(sorted(SIBLING_ROOTS))})")
 
@@ -373,6 +398,77 @@ def check_task_recipes() -> None:
                 fail("runner", f"{surface} names recipe `{named}` which {TASK_RUNNER} does not define")
 
 
+def check_function_docs() -> None:
+    """Every function in scripts/ says what it does: a docstring on each Python function, a comment block above each shell function.
+
+    Operator, 2026-10-07: every function gets proper comments, in the style of ansible-wifi's rise_watchdog.py (a summary line, then the reasoning and
+    the failure behaviour where it is not obvious). Python code embedded as a string constant (snmp_via_smc.py's AGENT, run on the SMC) is parsed and
+    held to the same rule, because it is code a reader has to trust. A shell function needs at least one `#` line directly above its definition.
+    """
+    import ast
+
+    def undocumented(tree: ast.AST) -> list[str]:
+        """Names of the function definitions in tree that have no docstring."""
+        return [n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and not ast.get_docstring(n)]
+
+    for path in sorted((ROOT / "scripts").glob("*.py")):
+        rel = path.relative_to(ROOT).as_posix()
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+        except SyntaxError as e:
+            fail("function-docs", f"{rel} does not parse: {e}")
+            continue
+        counted()
+        for name in undocumented(tree):
+            fail("function-docs", f"{rel}: function `{name}` has no docstring")
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str) and "\ndef " in node.value:
+                try:
+                    inner = ast.parse(node.value)
+                except SyntaxError:
+                    continue  # a string that only mentions `def` is prose, not embedded code
+                counted()
+                for name in undocumented(inner):
+                    fail("function-docs", f"{rel}: embedded function `{name}` (line {node.lineno}) has no docstring")
+    for path in sorted((ROOT / "scripts").glob("*.sh")):
+        rel = path.relative_to(ROOT).as_posix()
+        lines = path.read_text(encoding="utf-8").splitlines()
+        for i, line in enumerate(lines):
+            if re.match(r"^\s*[A-Za-z_][\w-]*\s*\(\)\s*\{", line):
+                counted()
+                if i == 0 or not lines[i - 1].lstrip().startswith("#"):
+                    fail("function-docs", f"{rel}:{i + 1} shell function `{line.strip()[:40]}` has no comment block above it")
+
+
+# Code files that kept a kebab-case name when the snake_case rule arrived. Listed here, by repo-relative path, until they are next touched and renamed
+# (governance coding-guide: renamed when touched, references updated in the same change; never a new one). Empty is the goal.
+KEBAB_LEGACY: frozenset[str] = frozenset()
+CODE_SUFFIXES: frozenset[str] = frozenset({".py", ".sh", ".bash", ".js", ".mjs", ".ts", ".rb", ".pl"})
+
+
+def check_file_naming() -> None:
+    """Every code file under scripts/ is named in snake_case; a hyphen in its name fails unless the file is listed in KEBAB_LEGACY.
+
+    Governance coding-guide (operator, 2026-10-07): snake_case for every code file and command name. A Python file must be an importable identifier
+    (PEP 8; a hyphen is the minus operator to `import`), and the Google Shell Style Guide asks the same of shell ("make_template but not
+    make-template"). One rule for every language is what stops a `survey-summary.py` appearing beside `survey_summary.py`. kebab-case belongs only to
+    names fixed outside the code: skill names, document slugs, repo and folder names. A KEBAB_LEGACY entry whose file no longer exists also fails, so
+    the list shrinks as files are renamed instead of going stale.
+    """
+    scripts = ROOT / "scripts"
+    found = sorted(p for p in scripts.rglob("*") if p.is_file() and p.suffix in CODE_SUFFIXES) if scripts.is_dir() else []
+    for path in found:
+        rel = path.relative_to(ROOT).as_posix()
+        counted()
+        if "-" in path.stem and rel not in KEBAB_LEGACY:
+            fail("file-naming", f"{rel} is kebab-case; name code files in snake_case ({path.stem.replace('-', '_')}{path.suffix}) and update "
+                                f"every reference, or list it in KEBAB_LEGACY until it is next touched")
+    for rel in sorted(KEBAB_LEGACY):
+        counted()
+        if not (ROOT / rel).is_file():
+            fail("file-naming", f"KEBAB_LEGACY lists {rel}, which no longer exists: remove the entry")
+
+
 def check_interpreter_pinning() -> None:
     """No task recipe reaches an interpreter implicitly.
 
@@ -419,6 +515,38 @@ def check_interpreter_pinning() -> None:
                 "runtime",
                 f"{TASK_RUNNER}:{lineno} calls bare `{match.group(1)}` — route it through the pinned interpreter",
             )
+        # 3. A recipe that runs a script BY PATH (`scripts/check.py`, `./tool.js`) never names an interpreter, so the script's
+        #    shebang (`#!/usr/bin/env python3`) picks the host one. Missed until 2026-10-07: skill-mikrotik passed this check
+        #    with every recipe written that way, because the check only looked for interpreter NAMES on recipe lines.
+        for cmd in re.split(r"&&|\|\||;|\|", scan):
+            words = cmd.strip().lstrip("@-").split()
+            while words and re.match(r"^[A-Za-z_]\w*=", words[0]):
+                words = words[1:]  # leading VAR=value assignments are not the command
+            if words and re.search(r"\.(py|js|mjs|rb)$", words[0]):
+                fail(
+                    "runtime",
+                    f"{TASK_RUNNER}:{lineno} runs `{words[0]}` by path, so its shebang picks the interpreter — call it as "
+                    f"{{{{py}}}} {words[0]} and depend on _require-venv",
+                )
+    # 4. Shell scripts under scripts/ that call a bare interpreter inline (`... | python3 -c`, `python3 - <<EOF`) undo the
+    #    pinning from inside: the recipe pins nothing they run. They take the interpreter from a variable the task runner sets
+    #    (`py=${PROJ_PY:-python3}` then `"$py"`; the recipe passes PROJ_PY={{py}}), so a direct run still works and a recipe
+    #    run is pinned. A line whose interpreter runs on ANOTHER host (`ssh host python3 ...`) is marked `# runtime: remote`.
+    scripts_dir = ROOT / "scripts"
+    for path in sorted(scripts_dir.glob("**/*.sh")) if scripts_dir.is_dir() else []:
+        rel = path.relative_to(ROOT).as_posix()
+        for lineno, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#") or "# runtime: remote" in line:
+                continue
+            scan = re.sub(r"'[^']*'|\"[^\"]*\"", lambda m: " " * len(m.group(0)), stripped)
+            counted()
+            for match in re.finditer(r"(?<![-\w/.:$])(python3?|node)\b(?![.\w])", scan):
+                fail(
+                    "runtime",
+                    f"{rel}:{lineno} calls bare `{match.group(1)}` — take it from a variable the task runner sets "
+                    f"(py=${{PROJ_PY:-python3}}, then \"$py\"; the recipe passes {{{{py}}}})",
+                )
 
 
 # --------------------------------------------------------------------------------------------------------------- TIER 3
@@ -588,6 +716,8 @@ CHECKS = (
     check_catalog_coverage,
     check_task_recipes,
     check_interpreter_pinning,
+    check_file_naming,
+    check_function_docs,
     check_derived_freshness,
     check_constant_sync,
     check_append_only_grain,
@@ -597,6 +727,7 @@ CHECKS = (
 
 
 def main() -> int:
+    """Run every registered check, print each unique failure, and return the exit code: 0 when all passed, 1 when anything failed."""
     for check in CHECKS:
         check()
 
