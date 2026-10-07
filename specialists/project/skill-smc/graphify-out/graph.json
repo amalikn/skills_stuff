@@ -427,10 +427,19 @@
       "norm_label": "check_version_single_source()"
     },
     {
+      "label": "check_version_format()",
+      "file_type": "code",
+      "source_file": "scripts/check_governance.py",
+      "source_location": "L348",
+      "id": "check_governance_check_version_format",
+      "community": 0,
+      "norm_label": "check_version_format()"
+    },
+    {
       "label": "main()",
       "file_type": "code",
       "source_file": "scripts/check_governance.py",
-      "source_location": "L356",
+      "source_location": "L389",
       "id": "check_governance_main",
       "community": 0,
       "norm_label": "main()"
@@ -470,6 +479,15 @@
       "community": 0,
       "norm_label": "manifest.json is the sole version-of-record; no other governance surface may har",
       "id": "check_governance_rationale_304"
+    },
+    {
+      "label": "Version numbering: patch runs 0-9, then the minor bumps (x.y.9 -> x.(y+1).0); th",
+      "file_type": "rationale",
+      "source_file": "scripts/check_governance.py",
+      "source_location": "L349",
+      "id": "check_governance_rationale_349",
+      "community": 0,
+      "norm_label": "version numbering: patch runs 0-9, then the minor bumps (x.y.9 -> x.(y+1).0); th"
     },
     {
       "label": "analyse-routing-drift.py",
@@ -958,6 +976,18 @@
       "_tgt": "analyse_topology_interface_match_parse_netplan",
       "source": "smc_graylog_search",
       "target": "analyse_topology_interface_match_parse_netplan"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/check_governance.py",
+      "source_location": "L370",
+      "weight": 1.0,
+      "_src": "check_governance_check_version_format",
+      "_tgt": "smc_graylog_search",
+      "source": "smc_graylog_search",
+      "target": "check_governance_check_version_format"
     },
     {
       "relation": "calls",
@@ -1455,7 +1485,19 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "scripts/check_governance.py",
-      "source_location": "L356",
+      "source_location": "L348",
+      "weight": 1.0,
+      "_src": "check_governance_py",
+      "_tgt": "check_governance_check_version_format",
+      "source": "check_governance_py",
+      "target": "check_governance_check_version_format",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/check_governance.py",
+      "source_location": "L389",
       "weight": 1.0,
       "_src": "check_governance_py",
       "_tgt": "check_governance_main",
@@ -1539,6 +1581,18 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/check_governance.py",
+      "source_location": "L364",
+      "weight": 1.0,
+      "_src": "check_governance_check_version_format",
+      "_tgt": "check_governance_fail",
+      "source": "check_governance_fail",
+      "target": "check_governance_check_version_format",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/check_governance.py",
       "source_location": "L225",
       "weight": 1.0,
       "_src": "check_governance_check_split_path_tokens",
@@ -1587,6 +1641,18 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/check_governance.py",
+      "source_location": "L362",
+      "weight": 1.0,
+      "_src": "check_governance_check_version_format",
+      "_tgt": "check_governance_counted",
+      "source": "check_governance_counted",
+      "target": "check_governance_check_version_format",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/check_governance.py",
       "source_location": "L238",
       "weight": 1.0,
       "_src": "check_governance_check_referenced_paths",
@@ -1623,6 +1689,18 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/check_governance.py",
+      "source_location": "L355",
+      "weight": 1.0,
+      "_src": "check_governance_check_version_format",
+      "_tgt": "check_governance_read",
+      "source": "check_governance_read",
+      "target": "check_governance_check_version_format",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/check_governance.py",
       "source_location": "L243",
       "weight": 1.0,
       "_src": "check_governance_check_referenced_paths",
@@ -1647,7 +1725,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/check_governance.py",
-      "source_location": "L338",
+      "source_location": "L340",
       "weight": 1.0,
       "_src": "check_governance_check_version_single_source",
       "_tgt": "check_governance_without_code",
@@ -1671,7 +1749,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/check_governance.py",
-      "source_location": "L331",
+      "source_location": "L333",
       "weight": 1.0,
       "_src": "check_governance_check_version_single_source",
       "_tgt": "check_governance_members",
@@ -1725,6 +1803,18 @@
       "_tgt": "check_governance_check_version_single_source",
       "source": "check_governance_check_version_single_source",
       "target": "check_governance_rationale_304",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/check_governance.py",
+      "source_location": "L349",
+      "weight": 1.0,
+      "_src": "check_governance_rationale_349",
+      "_tgt": "check_governance_check_version_format",
+      "source": "check_governance_check_version_format",
+      "target": "check_governance_rationale_349",
       "confidence_score": 1.0
     },
     {

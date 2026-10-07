@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261007_1645 — Version scheme: patch runs 0 to 9, then the minor bumps; renumbered to 0.2.0 (v0.1.100 -> v0.2.0)](#20261007_1645--version-scheme-patch-runs-0-to-9-then-the-minor-bumps-renumbered-to-020-v01100---v020)
 - [20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)](#20261007_1637--layout-brought-in-line-with-the-newer-project-packs-skillmd-slimmed-profile-system-prompt-and-exports-adapter-retired-v0199---v01100)
 - [20261007_1625 — skill-ai-it refresh: managed blocks to template-sourced-blocks-v1; Archcore filenames to the <slug>.<type>.md form (v0.1.98 -> v0.1.99)](#20261007_1625--skill-ai-it-refresh-managed-blocks-to-template-sourced-blocks-v1-archcore-filenames-to-the-slugtypemd-form-v0198---v0199)
 - [20261007_1623 — rct site addressing from ansible-wifi vs the Mk3 diagram (v0.1.97 -> v0.1.98)](#20261007_1623--rct-site-addressing-from-ansible-wifi-vs-the-mk3-diagram-v0197---v0198)
@@ -109,6 +110,18 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261007_1645 — Version scheme: patch runs 0 to 9, then the minor bumps; renumbered to 0.2.0 (v0.1.100 -> v0.2.0)
+
+- Operator rule (2026-10-07): the patch number runs 0 to 9 only; after `x.y.9` the next version is `x.(y+1).0`. This pack had reached `0.1.100`, so it moves to
+  `0.2.0` now. Entries below keep the versions they were released under.
+- `.archcore/rules/manifest-version-discipline.rule.md` states the scheme and names the checks that enforce it. Its `updated_at` line said ISO 8601; it now says
+  `YYYYMMDD_hhmm`, which is what this pack has used in practice.
+- `scripts/check_governance.py`: new `check_version_format`. It fails when the manifest patch is more than one digit, or when the newest CHANGELOG heading's
+  `-> vX.Y.Z` differs from `manifest.json`. Proved red against `0.1.100` before the bump.
+- `AGENTS.md` Tier 3 line updated to the scheme.
+- `check_version_single_source` false positive fixed: at 0.2.x its pattern matched `0.2.0` inside the IP `10.0.2.0` in `08_ansible-authoring.md`. The pattern now
+  rejects a match preceded or followed by digits and dots. Still proved red by an injected `v0.2.0` stamp in `RUNBOOK.md` (removed).
 
 ## 20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)
 

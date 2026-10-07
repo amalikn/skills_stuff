@@ -42,7 +42,7 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 
 ## Current state
 
-**2026-10-07 16:43 `KEEP` — v0.1.100, layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav-validate`,
+**2026-10-07 16:43 `KEEP` — v0.1.100 (renumbered 0.2.0 at 16:45 under the new 0–9 patch rule), layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav-validate`,
 `just fleet …`, `just routing …`), `.mise.toml`, `requirements.txt` (PyYAML for the nav validator only), lint config, `.gitignore`, `.archcore/index.guide.md`. `SKILL.md` is a short router
 (144 lines); detail lives in references. The profile file, the dedicated-agent prompt and the `exports/` adapter are retired; install is the symlink `~/.claude/skills/skill-smc`.
 `AGENTS.md` is local-only (`.git/info/exclude`), so its rule edits never appear in git. Checks: governance 320/320, nav 0/0, archcore 0 issues.
@@ -160,6 +160,8 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Recent decisions
 
+- 2026-10-07 `KEEP` — **Version scheme (operator rule):** patch runs 0 to 9; after `x.y.9` comes `x.(y+1).0`. Pack renumbered 0.1.100 -> 0.2.0. Rule in
+  `.archcore/rules/manifest-version-discipline.rule.md`, enforced by `check_version_format`.
 - 2026-08-03 — Operator reported "new-looma-smc01 is back online." Verified rather than just acknowledged: queried live Prometheus via `mcp-grafana-apn` (`up{instance=~"new-looma.*"}`, 7-day range).
   Confirmed a 31h whole-host outage (both `prometheus` self-scrape and `node_exporter` dark simultaneously) from 2026-08-01 23:40 UTC to 2026-08-03 06:40 UTC, now recovered — matching the operator's
   report with hard evidence and exact timestamps rather than taking it at face value. Also found a second, earlier 18h gap in the same window that turned out to already be explained by the documented
@@ -513,7 +515,7 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 - 2026-10-07 16:43: memory-keeper `skill-smc` keys `skill-smc.progress.skill-ai-it-refresh-v0199-20261007`, `skill-smc.finding.skill-ai-it-template-item12-20261007`,
   `skill-smc.progress.archcore-rename-20261007`, `skill-smc.error.concurrent-commit-fbc0aff-20261007`, `skill-smc.progress.layout-parity-v01100-20261007`,
   `skill-smc.finding.content-moved-on-slim-20261007`, `skill-smc.error.venv-missing-pyyaml-20261007`, `skill-smc.progress.cambium-spec-fix-20261007`,
-  `skill-smc.decision.layout-parity-and-commit-scope-20261007`; project-context `0bf38158` note + decision; checkpoint `slurp-20261007-skill-smc-layout-parity`
+  `skill-smc.decision.layout-parity-and-commit-scope-20261007`, `skill-smc.decision.version-scheme-patch-0-9-20261007`; project-context `0bf38158` note + decision; checkpoint `slurp-20261007-skill-smc-layout-parity`
   (memory-keeper `8ab3b9e2`, project-context `709e1015`). `KEEP`
 
 - 2026-09-24 12:25: memory-keeper `unc` keys `unc.tplink-switch-access.20260924`, `unc.tplink-tooling.20260924`, `unc.neighbour-table.20260924`, `unc.errors.20260924-tplink`; project-context

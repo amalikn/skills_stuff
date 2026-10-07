@@ -146,8 +146,11 @@ provenance: promoted from AGENTS.md on 20260626
 
 Update `manifest.json` whenever any pack content changes:
 
-- `version` — bump patch (e.g. `0.1.2` → `0.1.3`) for content changes; minor for structural changes
-- `updated_at` — set to the current date in ISO 8601 format (`YYYY-MM-DDT00:00:00Z`)
+- `version` — `major.minor.patch`, where **patch runs 0 to 9 only** (operator, 2026-10-07). Each change bumps patch; after `x.y.9` the next version is `x.(y+1).0`,
+  never `x.y.10`. A structural change may also move straight to the next minor. The pack was renumbered from `0.1.100` to `0.2.0` on 2026-10-07 under this rule;
+  versions before that (up to `0.1.100`) stay as recorded in `CHANGELOG.md`.
+- `updated_at` — the time of the change as `YYYYMMDD_hhmm`, read from `date`, never estimated. (Until 2026-10-07 this rule said ISO 8601; the pack has used
+  `YYYYMMDD_hhmm` in practice, so the rule now says what the pack does.)
 
 Also update `stable_facts` if a live validation session confirms or contradicts a prior fact, and `known_constraints` if a new constraint is discovered.
 
@@ -157,6 +160,9 @@ Append a corresponding entry to `CHANGELOG.md`.
 inevitably drifts because no other rule updates it on a bump; this happened once already (`RUNBOOK.md`'s header carried a stale `0.1.28` against manifest's `0.1.29`, fixed 2026-09-08) and `SKILL.md`'s
 own `## Source` footer carried the same risk until fixed the same day. If a file needs to display the pack's version to a reader, point to `manifest.json` (canonical source) or say "see manifest.json"
 — never restate the number.
+
+**Enforced by** `scripts/check_governance.py`: `check_version_single_source` (no duplicate stamps) and `check_version_format` (patch is a single digit, and the newest
+`CHANGELOG.md` heading's `-> vX.Y.Z` matches `manifest.json`).
 
 **Rationale:** `manifest.json` is the machine-readable specialist metadata consumed by install tooling and skill validators. A stale `updated_at` misleads automated freshness checks.
 ````
@@ -8734,7 +8740,8 @@ When running `project-coherence` on the `skill-smc` specialist pack — whether 
 
 ### Tier 3 — Metadata and history
 
-- `manifest.json` — bump `version` (patch) + `updated_at` if any reference file content or structure changed
+- `manifest.json` — bump `version` + `updated_at` if any reference file content or structure changed. Patch runs 0 to 9; after `x.y.9` comes `x.(y+1).0`
+  (operator, 2026-10-07; `just check` enforces it)
 - `CHANGELOG.md` — append entry for what changed (references updated, routing added, version bump)
 - `SCRATCHPAD.md` — update current state, tick/add open items, prepend session history summary
 
@@ -9066,6 +9073,7 @@ and no separate adapter document; those, the profile file and the dedicated-agen
 
 ## Contents
 
+- [20261007_1645 — Version scheme: patch runs 0 to 9, then the minor bumps; renumbered to 0.2.0 (v0.1.100 -> v0.2.0)](#20261007_1645--version-scheme-patch-runs-0-to-9-then-the-minor-bumps-renumbered-to-020-v01100---v020)
 - [20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)](#20261007_1637--layout-brought-in-line-with-the-newer-project-packs-skillmd-slimmed-profile-system-prompt-and-exports-adapter-retired-v0199---v01100)
 - [20261007_1625 — skill-ai-it refresh: managed blocks to template-sourced-blocks-v1; Archcore filenames to the <slug>.<type>.md form (v0.1.98 -> v0.1.99)](#20261007_1625--skill-ai-it-refresh-managed-blocks-to-template-sourced-blocks-v1-archcore-filenames-to-the-slugtypemd-form-v0198---v0199)
 - [20261007_1623 — rct site addressing from ansible-wifi vs the Mk3 diagram (v0.1.97 -> v0.1.98)](#20261007_1623--rct-site-addressing-from-ansible-wifi-vs-the-mk3-diagram-v0197---v0198)
@@ -9173,6 +9181,18 @@ and no separate adapter document; those, the profile file and the dedicated-agen
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261007_1645 — Version scheme: patch runs 0 to 9, then the minor bumps; renumbered to 0.2.0 (v0.1.100 -> v0.2.0)
+
+- Operator rule (2026-10-07): the patch number runs 0 to 9 only; after `x.y.9` the next version is `x.(y+1).0`. This pack had reached `0.1.100`, so it moves to
+  `0.2.0` now. Entries below keep the versions they were released under.
+- `.archcore/rules/manifest-version-discipline.rule.md` states the scheme and names the checks that enforce it. Its `updated_at` line said ISO 8601; it now says
+  `YYYYMMDD_hhmm`, which is what this pack has used in practice.
+- `scripts/check_governance.py`: new `check_version_format`. It fails when the manifest patch is more than one digit, or when the newest CHANGELOG heading's
+  `-> vX.Y.Z` differs from `manifest.json`. Proved red against `0.1.100` before the bump.
+- `AGENTS.md` Tier 3 line updated to the scheme.
+- `check_version_single_source` false positive fixed: at 0.2.x its pattern matched `0.2.0` inside the IP `10.0.2.0` in `08_ansible-authoring.md`. The pattern now
+  rejects a match preceded or followed by digits and dots. Still proved red by an injected `v0.2.0` stamp in `RUNBOOK.md` (removed).
 
 ## 20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)
 
@@ -11277,8 +11297,8 @@ nav-check-diff: _require-venv
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "20261007_1637",
-  "version": "0.1.100",
+  "updated_at": "20261007_1645",
+  "version": "0.2.0",
   "dependencies": [],
   "known_constraints": [
     "SMC boxes run overlayroot \u2014 changes do not persist across reboot unless lower dir is remounted rw",
@@ -11615,7 +11635,7 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 
 ## Current state
 
-**2026-10-07 16:43 `KEEP` — v0.1.100, layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav-validate`,
+**2026-10-07 16:43 `KEEP` — v0.1.100 (renumbered 0.2.0 at 16:45 under the new 0–9 patch rule), layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav-validate`,
 `just fleet …`, `just routing …`), `.mise.toml`, `requirements.txt` (PyYAML for the nav validator only), lint config, `.gitignore`, `.archcore/index.guide.md`. `SKILL.md` is a short router
 (144 lines); detail lives in references. The profile file, the dedicated-agent prompt and the `exports/` adapter are retired; install is the symlink `~/.claude/skills/skill-smc`.
 `AGENTS.md` is local-only (`.git/info/exclude`), so its rule edits never appear in git. Checks: governance 320/320, nav 0/0, archcore 0 issues.
@@ -11733,6 +11753,8 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Recent decisions
 
+- 2026-10-07 `KEEP` — **Version scheme (operator rule):** patch runs 0 to 9; after `x.y.9` comes `x.(y+1).0`. Pack renumbered 0.1.100 -> 0.2.0. Rule in
+  `.archcore/rules/manifest-version-discipline.rule.md`, enforced by `check_version_format`.
 - 2026-08-03 — Operator reported "new-looma-smc01 is back online." Verified rather than just acknowledged: queried live Prometheus via `mcp-grafana-apn` (`up{instance=~"new-looma.*"}`, 7-day range).
   Confirmed a 31h whole-host outage (both `prometheus` self-scrape and `node_exporter` dark simultaneously) from 2026-08-01 23:40 UTC to 2026-08-03 06:40 UTC, now recovered — matching the operator's
   report with hard evidence and exact timestamps rather than taking it at face value. Also found a second, earlier 18h gap in the same window that turned out to already be explained by the documented
@@ -12086,7 +12108,7 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 - 2026-10-07 16:43: memory-keeper `skill-smc` keys `skill-smc.progress.skill-ai-it-refresh-v0199-20261007`, `skill-smc.finding.skill-ai-it-template-item12-20261007`,
   `skill-smc.progress.archcore-rename-20261007`, `skill-smc.error.concurrent-commit-fbc0aff-20261007`, `skill-smc.progress.layout-parity-v01100-20261007`,
   `skill-smc.finding.content-moved-on-slim-20261007`, `skill-smc.error.venv-missing-pyyaml-20261007`, `skill-smc.progress.cambium-spec-fix-20261007`,
-  `skill-smc.decision.layout-parity-and-commit-scope-20261007`; project-context `0bf38158` note + decision; checkpoint `slurp-20261007-skill-smc-layout-parity`
+  `skill-smc.decision.layout-parity-and-commit-scope-20261007`, `skill-smc.decision.version-scheme-patch-0-9-20261007`; project-context `0bf38158` note + decision; checkpoint `slurp-20261007-skill-smc-layout-parity`
   (memory-keeper `8ab3b9e2`, project-context `709e1015`). `KEEP`
 
 - 2026-09-24 12:25: memory-keeper `unc` keys `unc.tplink-switch-access.20260924`, `unc.tplink-tooling.20260924`, `unc.neighbour-table.20260924`, `unc.errors.20260924-tplink`; project-context

@@ -1,12 +1,12 @@
 # Graph Report - skill-smc  (2026-10-07)
 
 ## Corpus Check
-- 11 files · ~230,769 words
+- 11 files · ~231,207 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 78 nodes · 111 edges · 14 communities detected
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.8)
+- 80 nodes · 117 edges · 14 communities detected
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -26,16 +26,16 @@
 - [[_COMMUNITY_Community 17|Community 17]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `search()` - 8 edges
+1. `search()` - 9 edges
 2. `check_referenced_paths()` - 8 edges
 3. `parse_live()` - 8 edges
 4. `check_catalog_coverage()` - 7 edges
 5. `check_version_single_source()` - 7 edges
 6. `main()` - 6 edges
-7. `read()` - 6 edges
-8. `_curl()` - 5 edges
-9. `fail()` - 5 edges
-10. `counted()` - 5 edges
+7. `fail()` - 6 edges
+8. `counted()` - 6 edges
+9. `check_version_format()` - 6 edges
+10. `read()` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `count()` --calls--> `search()`  [INFERRED]
@@ -46,14 +46,14 @@
   scripts/smc_graylog.py → scripts/analyse-routing-drift.py
 - `search()` --calls--> `parse_netplan()`  [INFERRED]
   scripts/smc_graylog.py → scripts/analyse-topology-interface-match.py
-- `search()` --calls--> `parse_hook()`  [INFERRED]
-  scripts/smc_graylog.py → scripts/analyse-routing-drift.py
+- `check_version_format()` --calls--> `search()`  [INFERRED]
+  scripts/check_governance.py → scripts/smc_graylog.py
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.25
-Nodes (15): check_catalog_coverage(), check_referenced_paths(), check_split_path_tokens(), check_version_single_source(), counted(), fail(), _live_surfaces(), members() (+7 more)
+Cohesion: 0.23
+Nodes (17): check_catalog_coverage(), check_referenced_paths(), check_split_path_tokens(), check_version_format(), check_version_single_source(), counted(), fail(), _live_surfaces() (+9 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.22
@@ -108,7 +108,7 @@ Cohesion: 1.0
 Nodes (1): manifest.json is the sole version-of-record; no other governance surface may har
 
 ## Knowledge Gaps
-- **22 isolated node(s):** `Strip ANSI, then honour carriage returns: the pager erases its prompt with CR +`, `Parse the committed topology_vars/<site>.yml from the working tree (not a specif`, `Range query chunked into <=10k-point windows. Returns {json(labels): [(t, v), ..`, `YYYY-MM-DD HH:MM' in AEDT -> epoch seconds.`, `No backticked path is split across two table rows by a trailing backslash.` (+17 more)
+- **23 isolated node(s):** `Strip ANSI, then honour carriage returns: the pager erases its prompt with CR +`, `Parse the committed topology_vars/<site>.yml from the working tree (not a specif`, `Range query chunked into <=10k-point windows. Returns {json(labels): [(t, v), ..`, `YYYY-MM-DD HH:MM' in AEDT -> epoch seconds.`, `No backticked path is split across two table rows by a trailing backslash.` (+18 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 10`** (1 nodes): `No backticked path is split across two table rows by a trailing backslash.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -130,13 +130,13 @@ Nodes (1): manifest.json is the sole version-of-record; no other governance surf
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `search()` connect `Community 2` to `Community 1`, `Community 4`, `Community 5`?**
-  _High betweenness centrality (0.164) - this node is a cross-community bridge._
-- **Why does `parse_netplan()` connect `Community 4` to `Community 2`?**
-  _High betweenness centrality (0.082) - this node is a cross-community bridge._
+- **Why does `search()` connect `Community 2` to `Community 0`, `Community 1`, `Community 4`, `Community 5`?**
+  _High betweenness centrality (0.390) - this node is a cross-community bridge._
+- **Why does `check_version_format()` connect `Community 0` to `Community 2`?**
+  _High betweenness centrality (0.234) - this node is a cross-community bridge._
 - **Why does `parse_live()` connect `Community 1` to `Community 2`?**
-  _High betweenness centrality (0.080) - this node is a cross-community bridge._
-- **Are the 5 inferred relationships involving `search()` (e.g. with `count()` and `main()`) actually correct?**
-  _`search()` has 5 INFERRED edges - model-reasoned connections that need verification._
+  _High betweenness centrality (0.139) - this node is a cross-community bridge._
+- **Are the 6 inferred relationships involving `search()` (e.g. with `count()` and `main()`) actually correct?**
+  _`search()` has 6 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Strip ANSI, then honour carriage returns: the pager erases its prompt with CR +`, `Parse the committed topology_vars/<site>.yml from the working tree (not a specif`, `Range query chunked into <=10k-point windows. Returns {json(labels): [(t, v), ..` to the rest of the system?**
-  _22 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _23 weakly-connected nodes found - possible documentation gaps or missing edges._

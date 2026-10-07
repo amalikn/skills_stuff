@@ -325,7 +325,9 @@ def check_version_single_source() -> None:
         counted()
         return
     prefix = f"{parts[0]}.{parts[1]}"
-    pattern = re.compile(rf"\bv?{re.escape(prefix)}\.\d+\b")
+    # Not preceded or followed by a digit or dot: "10.0.2.0" (an IP in 08_ansible-authoring.md) contains "0.2.0" and is not a
+    # version stamp. Found 2026-10-07 when the pack moved to 0.2.0.
+    pattern = re.compile(rf"(?<![\d.])v?{re.escape(prefix)}\.\d+(?![\d.]*\d)")
 
     surfaces = list(VERSION_STAMP_SURFACES) + [
         p.relative_to(ROOT).as_posix() for p in members("references", "*.md")
@@ -343,6 +345,36 @@ def check_version_single_source() -> None:
             )
 
 
+def check_version_format() -> None:
+    """Version numbering: patch runs 0-9, then the minor bumps (x.y.9 -> x.(y+1).0); the newest CHANGELOG entry names it.
+
+    Rule: .archcore/rules/manifest-version-discipline.rule.md (operator, 2026-10-07). The pack had reached 0.1.100 by bumping
+    patch without limit; it was renumbered to 0.2.0. Only the live manifest and the NEWEST CHANGELOG heading are checked —
+    older entries (0.1.10 to 0.1.100) are history, not live claims.
+    """
+    manifest = read("manifest.json")
+    if manifest is None:
+        return
+    try:
+        current = str(json.loads(manifest).get("version", ""))
+    except json.JSONDecodeError:
+        return
+    counted()
+    if not re.fullmatch(r"\d+\.\d+\.[0-9]", current):
+        fail("version-format", f"manifest.json version {current!r} must be major.minor.patch with a single-digit patch (0-9); "
+                               f"after x.y.9 the next version is x.(y+1).0")
+    changelog = read("CHANGELOG.md") or ""
+    for line in changelog.splitlines():
+        if line.startswith("## ") and re.match(r"## \d{8}_\d{4} ", line):
+            counted()
+            m = re.search(r"->\s*v?(\d+\.\d+\.\d+)\)?\s*$", line)
+            if m is None:
+                fail("version-format", f"newest CHANGELOG.md entry does not end with '(vA -> vB)': {line[:80]!r}")
+            elif m.group(1) != current:
+                fail("version-format", f"newest CHANGELOG.md entry ends at v{m.group(1)} but manifest.json says {current}")
+            break
+
+
 # --------------------------------------------------------------------------------------------------------------- MAIN
 
 CHECKS = (
@@ -350,6 +382,7 @@ CHECKS = (
     check_split_path_tokens,
     check_catalog_coverage,
     check_version_single_source,
+    check_version_format,
 )
 
 
