@@ -21,6 +21,9 @@ Raw output goes to the investigation folder you name (under `local-knowledge-ans
 | `mikrotik-site-capture.sh` | One site's switch and AP                   | **read-only**                  | Full log, port monitor, bridge layout, `/export terse` (secrets hidden by RouterOS 7);    |
 |                            |                                            |                                |   `WAIT_UP=1` waits for the SMC                                                           |
 | `check_governance.py`      | This pack's own files                      | **read-only**                  | Stdlib only; `just check`                                                                 |
+| `mib_oids.py`              | A local MIB file                           | **read-only**                  | MIKROTIK-MIB object name -> numeric OID, syntax, units, status; optional name regex       |
+| `confluence_fetch.py`      | help.mikrotik.com (web)                    | **read-only**                  | One documentation page by Confluence id, saved as text with its source and version line   |
+| `product_text.py`          | A saved mikrotik.com product page          | **read-only**                  | Description and spec tables of a product page as text                                     |
 
 ## mikrotik-exec.sh
 

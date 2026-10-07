@@ -1,5 +1,16 @@
 # Changelog
 
+## 20261007_1655 — Equipment, SNMP OID registry, MIBs and vendor sources (v0.1.10 -> v0.1.11)
+
+- `references/vendor-sources-20261007_1640/` (new, operator: research kept in the skill, MIBs too): MIKROTIK-MIB for RouterOS 7.8 and 7.24.5, help.mikrotik.com
+  pages, product pages and PDFs, changelogs 7.8 to 7.24.5, three forum threads (secondary), indexed in its `readme.md`.
+- `references/snmp-oid-registry.yaml` (new): both models with equipment facts, verified `routeros_cli` reads, and candidate OIDs resolved from the 7.8 MIB;
+  `oids` empty because SNMP is disabled on every unit checked.
+- `references/07_equipment-and-snmp.md` (new): specs, SNMP, firmware (no IPQ-40xx kernel fix up to 7.24.5), the cpu-frequency warning, MAC commands.
+- `references/05_known-issues.md`: items 8 and 11 updated; new 14 (SNMP disabled) and 15 (cpu-frequency warning).
+- `scripts/mib_oids.py`, `scripts/confluence_fetch.py`, `scripts/product_text.py` promoted from the research session, with `just mib-oids`, `fetch-doc`,
+  `product-text`.
+
 ## 20261007_1623 — Mk3 connection diagram: what is on each port, rct vs wh (v0.1.9 -> v0.1.10)
 
 - `references/mk3-connection-diagram-v0.5.pdf` (new): the operator's Mk3 site diagram, moved here from the pack root (was `Mk3 Connection Diagram v0.5 1.pdf`).

@@ -92,6 +92,8 @@ locally with `sshpass -e`, so the password never appears in a command that runs 
 - `references/04_failure-modes.md` — signatures seen in the fleet and how they were confirmed.
 - `references/05_known-issues.md` — gaps, unverified assumptions, staleness risks.
 - `references/06_provisioning.md` — the Pi provisioning script: firmware, the two SSH command batches, what they set, and the cloned MACs they cause.
+- `references/07_equipment-and-snmp.md` — vendor specs for both models, SNMP state and MIBs, firmware status, vendor sources in `references/vendor-sources-20261007_1640/`.
+- `references/snmp-oid-registry.yaml` — per-model OIDs (candidates until SNMP is enabled and verified) and equipment facts, the list tools read.
 - `scripts/README.md` — script catalogue with safety classification.
 
 ## Source

@@ -1,0 +1,374 @@
+Source: https://forum.mikrotik.com/t/cannot-change-back-the-cpu-frequency/181656 — retrieved 2026-10-07
+Title: Cannot change back the CPU frequency (MikroTik community forum; SECONDARY source. 'staff/moderator' below is the Discourse forum flag, not proof of MikroTik employment)
+
+--- post 1 | tdabasinskas | 2025-02-02T17:10:03.000Z | forum-staff=False moderator=False
+I have RB5009UPr+S+. For testing purposes, I’ve switched CPU Frequency in RouterBOARD settings from Auto to 1400MHz. I want to revert it, but I cannot do that - getting “not allowed by device mode: ()”:
+
+
+
+I’m running 7.17.1 and the device is in Advanced Mode:
+
+     mode: advanced     
+     allowed-versions: 7.13+,6.49.8+
+              flagged: no           
+     flagging-enabled: yes          
+            scheduler: yes          
+                socks: yes          
+                fetch: yes          
+                 pptp: yes          
+                 l2tp: yes          
+       bandwidth-test: yes          
+          traffic-gen: no           
+              sniffer: yes          
+                ipsec: yes          
+                romon: yes          
+                proxy: yes          
+              hotspot: yes          
+                  smb: yes          
+                email: yes          
+             zerotier: yes          
+            container: yes          
+  install-any-version: no           
+           partitions: no           
+          routerboard: no           
+        attempt-count: 0
+
+
+Any advice?
+
+--- post 2 | tdabasinskas | 2025-02-02T17:14:38.000Z | forum-staff=False moderator=False
+OK, so appearently, it required running:
+
+/system/device-mode/update routerboard=yes
+
+
+However, I don’t think that’s expected behavior, is it? It’s OK if this requires updating the mode, but then it shouldn’t allowed me to change the frequency from “Auto” in the first place.
+
+--- post 3 | gabacho4 | 2025-02-02T17:21:07.000Z | forum-staff=False moderator=False
+As of 7.17 it is as Mikrotik is trying to lock down features that can be abused by hackers and other nefarious actors. This change has been quite the lightning rod for complaint and anger but it doesn’t look like they’re going to change things. You’ll have to run commands for specific features you want to turn on/off and then reboot the device by pulling the power or pressing reset button. Now image having to do that same thing with 100s or 1000s of fielded devices…
+
+--- post 4 | mkx | 2025-02-02T17:26:05.000Z | forum-staff=False moderator=False
+… but then it shouldn’t allowed me to change the frequency from “Auto” in the first place.
+
+
+
+
+At which ROS version did you set CPU frequency to 1400MHz? Versions lower than 7.17 allowed that without a hiccup …
+
+--- post 5 | tdabasinskas | 2025-02-02T17:59:50.000Z | forum-staff=False moderator=False
+… but then it shouldn’t allowed me to change the frequency from “Auto” in the first place.
+
+
+
+
+At which ROS version did you set CPU frequency to 1400MHz? Versions lower than 7.17 allowed that without a hiccup …
+
+
+
+
+7.17.1. That’s why it’s strange. If I had set this using older version and couldn’t revert after upgrade, it would make sense. Now, I changed it, but couldn’t revert it back after a couple of minutes. The router wasn’t even rebooted during that time.
+
+--- post 6 | holvoetn | 2025-02-02T18:16:38.000Z | forum-staff=True moderator=True
+Was routerboard version already updated at that time or not ?
+
+Anyhow,  sounds like a bug.
+
+Depending on who looks at it …
+
+--- post 7 | infabo | 2025-02-02T18:30:15.000Z | forum-staff=False moderator=False
+@tdabasinskas this is a bug IMHO. I have experienced this bug as well. I did came up with some test cases and reported them all to Mikrotik support this week. SUP-177436
+
+Depending on your action sequence there is a high chance that rebooting (/system/reboot) reverts cpu-frequency back to “auto” magically. Give it a try.
+
+--- post 8 | tdabasinskas | 2025-02-02T20:05:26.000Z | forum-staff=False moderator=False
+@tdabasinskas this is a bug IMHO. I have experienced this bug as well. I did came up with some test cases and reported them all to Mikrotik support this week. SUP-177436
+
+Depending on your action sequence there is a high chance that rebooting (/system/reboot) reverts cpu-frequency back to “auto” magically. Give it a try.
+
+
+
+
+Tried this in another router - a simple reboot didn’t help.
+
+--- post 9 | infabo | 2025-02-03T09:29:33.000Z | forum-staff=False moderator=False
+I prefer not to go into detail regarding my observations and the test cases I used to reproduce this issue, as I believe it could be security-sensitive. Additionally, it is unclear whether this bug is limited to CPU frequency adjustments or if it represents a broader flaw affecting other device-mode restricted settings. I have not investigated further, as repeatedly cycling device modes via the mode/reset button is not practical for extended testing.
+
+@tdabasinskas
+
+Please report to MikroTik support if not already. https://mikrotik.com/support
+
+--- post 10 | tdabasinskas | 2025-02-03T15:41:20.000Z | forum-staff=False moderator=False
+I prefer not to go into detail regarding my observations and the test cases I used to reproduce this issue, as I believe it could be security-sensitive. Additionally, it is unclear whether this bug is limited to CPU frequency adjustments or if it represents a broader flaw affecting other device-mode restricted settings. I have not investigated further, as repeatedly cycling device modes via the mode/reset button is not practical for extended testing.
+
+@tdabasinskas
+
+Please report to MikroTik support if not already. https://mikrotik.com/support
+
+
+
+
+Yeah, created SUP-178269 for this.
+
+--- post 11 | infabo | 2025-02-03T19:27:52.000Z | forum-staff=False moderator=False
+MikroTik Support thanked me for reaching out and for the report. They mentioned that they had reproduced the issue and were looking forward to fixing it in future RouterOS versions.
+
+--- post 12 | infabo | 2025-02-06T15:33:34.000Z | forum-staff=False moderator=False
+What's new in 7.17.2 (2025-Feb-06 11:10):
+
+*) device-mode - do not allow changing CPU frequency if "routerboard" is not allowed by device mode (introduced in v7.17);
+
+--- post 13 | kalsze | 2025-03-13T09:09:48.000Z | forum-staff=False moderator=False
+As of 7.17 it is as Mikrotik is trying to lock down features that can be abused by hackers and other nefarious actors. This change has been quite the lightning rod for complaint and anger but it doesn’t look like they’re going to change things. You’ll have to run commands for specific features you want to turn on/off and then reboot the device by pulling the power or pressing reset button. Now image having to do that same thing with 100s or 1000s of fielded devices…
+
+
+
+
+Having to physically turn off the power or press a reset button seems crazy. I’m remotely administering the RB at my parents’ home on another continent, half-way around the globe.
+
+--- post 14 | gnikola | 2025-03-15T08:10:40.000Z | forum-staff=False moderator=False
+I can only confirm that on my LHG 5ac the problem persists on 7.18.2:
+
+[user@MikroTik] > system routerboard/settings/print              
+                        ;;; Warning: cpu not running at default frequency
+              auto-upgrade: no                                           
+               boot-device: nand-if-fail-then-ethernet                   
+         preboot-etherboot: disabled                                     
+  preboot-etherboot-server: any                                          
+             cpu-frequency: 716MHz                                       
+             boot-protocol: bootp                                        
+       force-backup-booter: no                                           
+               silent-boot: no                                           
+      protected-routerboot: disabled                                     
+      reformat-hold-button: 20s                                          
+  reformat-old-button-max: 10m                                          
+[user@MikroTik] > system routerboard/settings/set cpu-frequency=auto
+failure: not allowed by device-mode
+[user@MikroTik] > system/resource/print
+                   uptime: 6m45s              
+                  version: 7.18.2 (stable)    
+               build-time: 2025-03-11 11:59:04
+         factory-software: 6.48.6             
+              free-memory: 186.4MiB           
+             total-memory: 256.0MiB           
+                      cpu: ARM                
+                cpu-count: 4                  
+            cpu-frequency: 716MHz             
+                 cpu-load: 0%                 
+           free-hdd-space: 1048.0KiB          
+          total-hdd-space: 16.0MiB            
+  write-sect-since-reboot: 21                 
+         write-sect-total: 4247               
+        architecture-name: arm                
+               board-name: LHG 5 ac           
+                 platform: MikroTik           
+[user@MikroTik] >
+
+--- post 15 | mkx | 2025-03-15T10:23:29.000Z | forum-staff=False moderator=False
+I can only confirm that on my LHG 5ac the problem persists on 7.18.2:
+
+
+
+
+I’m not sure your post illustrates the persistence of the problem.
+
+The way things are supposed to work:
+
+print of routerboard settings will didpkay warning if CPU frequency is not set to default. And setting CPU frequency on ROS v17 and later is only allowed if device-mode property routerboard is enabled.
+
+The problem: with initial 7.17 (and 7.18?) versions it was possible to set CPU frequency once even if routerboard property of device-mode was disabled.
+
+The bug-fix: with 7.17.2 it’s no more possible to set CPU frequency once when routerboard property of device-mode is disabled.
+
+Related behaviour: running config is never (well, almost never) changed by ROS upgrade. Which includes CPU frequency setting. What does change with ROS upgrades are default settings[*] … which affects output of export command - it displays settings which are setting device away from defaults (of any particular ROS version currently running). And print output is affected as well (in this particular case it displays the nasty warning about CPU frequency setting).
+
+One has to manually change settings (e.g. to conform to new defaults) … but with this bug it was not possible (because one has to enable routerboard property of device-mode which can be a problem this way or another). For users who were affected by the bug (they changed CPU frequency setzing whrn this was not supposed to be pissible) the bug fix doesn’t change anything … to revert CPU frequency to former setting they’ll have to follow the same procedure as they had to with “affected ROS version”.
+
+[*]two examples:
+
+
+around version 6.45 CPU frequency setting “auto” (meaning kernel can dynamically change CPU frequency depending on CPU load) became available on certain devices. A version or three later it became default so all devices with static CPU frequency setting (previous default) started to display the warning (not sure when the warning display was introduced, I don’t think it was displayed previous to “auto” setting).
+
+around version 6.43 default ethernet port speed changed ftom 100Mbps to 1Gbps. Previusly export command showed the setting if port speed was set to 1Gbps, afterwards it showed the setting if it was set to 109Mbps (previous default) even on devices e+with 100Mbps ethernet ports. RIS upgrade did not touch tge setting … and it did not affect anybidy … most users used autonegotiate=yes which doesn’t care sbout speed setting anyway. And for those with disabled autonegotiation any automatic change of settings could be fatal.
+
+--- post 16 | godel0914 | 2025-06-02T13:38:06.000Z | forum-staff=False moderator=False
+Any solution yet, or any workaround? If not allowed by device mode (6), in what mode i can change the CPU speed?
+
+Now it’s hot summer day, lower the CPU speed to release unused power can lower the overall temperature, why lock it up?
+
+--- post 17 | jaclaz | 2025-06-02T13:55:20.000Z | forum-staff=False moderator=False
+Any solution yet, or any workaround? If not allowed by device mode (6), in what mode i can change the CPU speed?
+
+
+
+
+Are you asking how to set device mode to allow the CPU speed change or are you asking how to workaround the device mode?
+
+If the first:
+
+https://help.mikrotik.com/docs/spaces/ROS/pages/93749258/Device-mode
+
+/system/device-mode/update routerboard=yes
+
+
+A reboot might be needed.
+
+--- post 18 | godel0914 | 2025-06-02T14:34:33.000Z | forum-staff=False moderator=False
+Any solution yet, or any workaround? If not allowed by device mode (6), in what mode i can change the CPU speed?
+
+
+
+
+Are you asking how to set device mode to allow the CPU speed change or are you asking how to workaround the device mode?
+
+If the first:
+
+https://help.mikrotik.com/docs/spaces/ROS/pages/93749258/Device-mode
+
+/system/device-mode/update routerboard=yes
+
+
+A reboot might be needed.
+
+
+
+
+Anything working to lower my CPU speed so to lower the CPU temperature too, sadly the command not working…
+
+I chose to turn off/on power. What is mode button? I don’t want to risk and press reset…
+
+OK, after second time rebooting, finally i can dial down my CPU speed, thanks.
+
+Capture2.JPG604×391 39.4 KB
+
+--- post 19 | godel0914 | 2025-06-02T14:49:06.000Z | forum-staff=False moderator=False
+New problem. After dial down the CPU speed to 400Mhz, the resources still show the CPU in 1200 Mhz…
+
+--- post 20 | jaclaz | 2025-06-02T15:50:57.000Z | forum-staff=False moderator=False
+Hmmm.   
+
+Check also in terminal, should be:
+
+https://wiki.mikrotik.com/Manual:System/Resource
+
+/system resource print
+
+
+And try rebooting again, it might be an artifact of Winbox UI.
+
+--- post 21 | godel0914 | 2025-06-03T01:03:10.000Z | forum-staff=False moderator=False
+Hmmm.   
+
+Check also in terminal, should be:
+
+https://wiki.mikrotik.com/Manual:System/Resource
+
+/system resource print
+
+
+And try rebooting again, it might be an artifact of Winbox UI.
+
+
+
+
+Confirmed reboot the router will make the change work. The temperature finally goes down, thanks for all the help.
+
+--- post 22 | jaclaz | 2025-06-03T07:21:32.000Z | forum-staff=False moderator=False
+Confirmed reboot the router will make the change work. The temperature finally goes down, thanks for all the help.
+
+
+
+
+Good. 
+
+It is not at all clear (and actually not even the first reboot is often documented) which particular commands/changes actually need a reboot to be effective (most don’t of course), lately I came across a certain number of reports about this (or that) command that actually needs a reboot, hence I added the advice here as #23:
+
+http://forum.mikrotik.com/t/gp-csa-for-mikrotik-devices/182176/1
+
+In my perverted mind,.a reboot is going to happen before or later, so it is anyway good practice to test what happens when the device is rebooted while it is attended, but not having a definite list of which commands/settings actually need the reboot can easily confuse users that may think that their changes had no effect or - in some cases - a reboot cannot be performed if not after hours/with the network in maintenance mode, and you cannot be entirely sure of what will happen when it is performed.
+
+--- post 23 | godel0914 | 2025-06-04T05:09:12.000Z | forum-staff=False moderator=False
+One question, after the command:
+
+/system/device-mode/update routerboard=yes
+
+Is there only : “turn off power” or reboot by pressing reset or mode button to make the change??
+
+It’s very troublesome to power off, or press reset, can’t the developer team just allow user to reboot??
+
+After routerboard=yes, my automatic backup&update script failed.
+
+Bkp&Upd: config backup was not created, file does not exist: backup_v7.18.2_stable_2025-06-04-11-52-37.rsc
+
+Bkp&Upd: Backup creation failed. Update process will be canceled if automatic update is enabled
+
+I would like to turn routerboard=no and see if my backup&update script working, but it’s a rather annoying way to make the change…
+
+BTW, what’s the mode button? where is it?
+
+--- post 24 | godel0914 | 2025-06-04T05:52:43.000Z | forum-staff=False moderator=False
+About automatic bacup&update, set up forceBackup to true solve the problem...
+
+Additional parameter if you set scriptMode to osupdate or osnotify
+Set true if you want the script to perform backup every time its fired, whatever script mode is set.
+:local forceBackup true
+
+--- post 25 | jaclaz | 2025-06-04T08:08:59.000Z | forum-staff=False moderator=False
+Good to know about that “true” settings.   
+
+The “mode” button is only on some devices, it is a programmable button to which you can “attach” a script or however an action/command that will be normally executed when pressed.
+
+A very simple/basic example here:
+
+http://forum.mikrotik.com/t/ledtoggle-simple-script-to-toggle-user-led-on-off/182527/1
+
+
+
+
+
+
+
+
+
+It’s very troublesome to power off, or press reset, can’t the developer team just allow user to reboot??
+
+
+
+The whole idea behind the setting (right or wrong as it may be) is that you cannot make that change without being physically present near the device (in order to push the button or remove power).
+
+If you prefer it is a way to avoid that some changes can be made remotely by an attacker that managed to (remotely):
+
+
+get connected to the device
+
+access it (bruteforcing BOTH user name AND password)
+
+
+Of course it is just fine for your home/lab or however “simple” setup, for remote devices, possibly mounted up a pole on top of a mountain, it is a huge PITA and - besides - while normally the device should reboot just fine if you remove power and re-apply it, there will always be the case when it won’t and you will need to climb up the pole or roof or whatever …
+
+--- post 26 | godel0914 | 2025-06-04T15:53:54.000Z | forum-staff=False moderator=False
+Good to know about that “true” settings. > 
+
+
+
+Automatic backup&update failed again after i upgraded the RouterOS to 7.19.1, i thought changing the setting to true would solve the problem.
+
+Unfortunately, even after i downgrade the RouterOS to 7.18.2, the script still failed to complete.
+
+
+physically present near the device
+
+
+
+CCR-1036 got NO power button. Each time pull out power cord will result in abnormal power off, risk to lose data. No need to say stick the reset hole risk to lose all data. The design is to punish users.
+
+I used to maintain the trading workstaion for bank traders, the best say i heard is, the best security measure is to shutdown the workstaion and stop trading…
+
+--- post 27 | jaclaz | 2025-06-04T16:01:52.000Z | forum-staff=False moderator=False
+Each time pull out power cord will result in abnormal power off, risk to lose data.
+
+
+
+
+So will do any blackout (if you are not running an UPS, in which case it will be a UPS failure   ) or limiter switch on that line triggered by anything, or someone tripping on the power cord .
+
+While it is not a good idea to apply and remove power every (say) 5 minutes for a week, a few power off and power on won’t do much harm.

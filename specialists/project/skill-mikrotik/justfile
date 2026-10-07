@@ -25,3 +25,15 @@ capture smc outdir:
 # Summarise a survey.csv (ranges, outliers, devices power-cycled since their SMC booted)
 summary csv:
     scripts/survey-summary.py {{csv}}
+
+# Resolve MIKROTIK-MIB names to OIDs, e.g. just mib-oids references/vendor-sources-20261007_1640/mib-7.8/mikrotik.mib 'mtxrPOE|mtxrGauge'
+mib-oids mib regex='':
+    scripts/mib_oids.py "{{mib}}" '{{regex}}'
+
+# Save a help.mikrotik.com page as text by its Confluence page id
+fetch-doc page_id out:
+    scripts/confluence_fetch.py "{{page_id}}" "{{out}}"
+
+# Text of a saved mikrotik.com product page (html file, its url, output .txt)
+product-text html url out:
+    scripts/product_text.py "{{html}}" "{{url}}" "{{out}}"

@@ -1,0 +1,140 @@
+# SNMP OIDs for the MikroTik site switch and AP, the machine-readable list, kept like skill-cambium's references/snmp-oid-registry.yaml and
+# skill-smc's snmp-oid-registry-tplink.yaml (operator, 2026-10-07: "the list of equipment and their OIDs and their information for MikroTik like we have
+# done for Cambium"). Consumer: unified-network-controller (catalog wc-local/nautobot/catalog/vendors/mikrotik/); no code reads it yet.
+#
+# Rule: an OID enters a type's `oids` ONLY after a live exchange against a unit of that exact model, recorded with date, unit, site, firmware and method,
+# and only when unified-network-controller has a use for it. Until then it sits in `candidates`: resolved from the vendor MIB for RouterOS 7.8 (the
+# fleet's version; references/vendor-sources-20261007_1640/mib-7.8/mikrotik.mib, LAST-UPDATED 202112210000Z) with `scripts/mib_oids.py`, never typed by hand.
+# `oids` is empty on both types: SNMP is DISABLED on every unit checked (delye and amuroona, switch and AP, 2026-10-07: `/snmp print` enabled: no, no
+# communities) and the provisioning script never enables it (06_provisioning.md). Enabling it is a device change: operator approval, one unit first,
+# then a line in the Pi script (05_known-issues.md, SNMP item). Until then the read path is `routeros_cli` (SSH, scripts/mikrotik-exec.sh).
+# Table OIDs listed with kind: column are COLUMN OIDs: a row reads <column>.<index>. Scalars are listed at instance .0.
+# Every MIKROTIK-MIB name below has the same OID in the 7.24.5 MIB (mib-7.24.5/); POWER-ETHERNET-MIB is not supported by RouterOS (ros-snmp.txt).
+
+schema_version: 1
+updated: "2026-10-07"
+arm: ".1.3.6.1.4.1.14988 (MikroTik; mikrotikExperimentalModule .1.1)"
+vendor_sources: references/vendor-sources-20261007_1640/readme.md
+
+device_types:
+  rb450gx4:
+    family: switch
+    models: [RB450Gx4]
+    equipment:
+      role: "site switch, 10.255.0.5, one bridge per VLAN (01_overview.md)"
+      hardware: "r2 (routerboard print, delye and amuroona 2026-10-07)"
+      cpu: "IPQ-4019, 4 cores ARM 32bit, nominal 448-896 MHz auto (product-rb450gx4.txt); units run 716 MHz and warn 'cpu not running at default frequency'"
+      ram: "1 GB (product page; 1024 MiB read)"
+      storage: "512 MB"
+      ports: "5 x gigabit copper, ether1-ether5; PoE out on ether5 only"
+      power: "DC jack 10-57 V or PoE in 802.3af/at 12-57 V; max 16 W, 4 W without attachments; rct fleet 23.6-30.0 V, wh 48 V"
+      temperature: "-40 to 70 C tested ambient"
+      firmware: "RouterOS 7.8 (factory 6.48.7); current stable 7.24.5, long-term 7.23.7 on 2026-10-07"
+      fleet: "294 of 297 rct switches surveyed 2026-10-07; also at wh sites"
+    routeros_cli:
+      verified: {date: "2026-10-07", units: [delye switch, amuroona switch], firmware: "7.8", method: "ssh via scripts/mikrotik-exec.sh"}
+      reads:
+        - "/system routerboard print (model, serial, firmware)"
+        - "/system resource print (version, uptime, cpu, memory)"
+        - "/system health print (voltage, temperature)"
+        - "/interface ethernet print stats (link-downs)"
+        - "/interface ethernet poe print"
+        - "/snmp print"
+    oids: []
+    candidates:
+      # identity: what Nautobot records (serial is the match key; port MACs are cloned on the switches)
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "model string"}
+      - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "vendor detection; the per-model value is in neither MIB, read it on the first unit"}
+      - {oid: ".1.3.6.1.2.1.1.3.0", name: sysUpTime, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "reboot detection (TSTIK power-cycles, watchdog loops)"}
+      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "identity; 450Gx4 on every switch, so not a key"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.3.0", name: mtxrSerialNumber, kind: scalar, syntax: "DisplayString", use: "Nautobot serial, the identity key"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.4.0", name: mtxrFirmwareVersion, kind: scalar, syntax: "DisplayString", use: "RouterBOOT firmware"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.9.0", name: mtxrBoardName, kind: scalar, syntax: "DisplayString", use: "board name (Metal 52 ac / RB450Gx4)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.4.4.0", name: mtxrLicVersion, kind: scalar, syntax: "DisplayString", use: "RouterOS version -> Nautobot software version"}
+      # health: RouterOS 7 reports through the gauge table (ros-health.txt: voltage in dV, temperature x10); the mtxrHl scalars are still
+      # STATUS current in both MIBs, but whether v7 answers them is untested. mtxrGaugeValue became Integer32 in 7.12 (changelog).
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.2", name: mtxrGaugeName, kind: column, syntax: "DisplayString", use: "gauge row name (voltage, temperature, cpu-temperature)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.3", name: mtxrGaugeValue, kind: column, syntax: "Gauge32", use: "solar-bus voltage and temperature trend"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.4", name: mtxrGaugeUnit, kind: column, syntax: "INTEGER { celsius(1), rpm(2), dV(3), dA(4), dW(5), status(6) }", use: "unit of each gauge row"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.8.0", name: mtxrHlVoltage, kind: scalar, syntax: "Voltage", use: "supply voltage (dV) if v7 still answers"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.10.0", name: mtxrHlTemperature, kind: scalar, syntax: "Temperature", use: "board temperature (x10) if v7 still answers"}
+      # interfaces: standard IF-MIB plus MikroTik's own link-down counter (the trunk-flap signature, 04_failure-modes.md)
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.1", name: ifName, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "port name, joins Nautobot interfaces (ether1..)"}
+      - {oid: ".1.3.6.1.2.1.2.2.1.8", name: ifOperStatus, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "link state"}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.6", name: ifHCInOctets, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "traffic"}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.10", name: ifHCOutOctets, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "traffic"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.14.1.1.90", name: mtxrInterfaceStatsLinkDowns, kind: column, syntax: "Counter32", use: "link-downs per port: SMC trunk flapping (ether1), NTD and phone churn"}
+      # neighbours (MNDP/LLDP/CDP as RouterOS sees them): topology
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.2", name: mtxrNeighborIpAddress, kind: column, syntax: "IpAddress", use: "neighbour address"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.3", name: mtxrNeighborMacAddress, kind: column, syntax: "MacAddress", use: "neighbour MAC"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.6", name: mtxrNeighborIdentity, kind: column, syntax: "DisplayString", use: "neighbour name"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.8", name: mtxrNeighborInterfaceID, kind: column, syntax: "ObjectIndex", use: "local port the neighbour is on"}
+      # PoE out (ether5 feeds the AP). Status codes in the 7.8 MIB: disabled(1) waitingForLoad(2) poweredOn(3) overload(4); more were added in 7.15.
+      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.2", name: mtxrPOEName, kind: column, syntax: "DisplayString", use: "PoE port name"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.3", name: mtxrPOEStatus, kind: column, syntax: "INTEGER { disabled(1), waitingForLoad(2), poweredOn(3), overload(4) }", use: "AP power state"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.4", name: mtxrPOEVoltage, kind: column, syntax: "Voltage", use: "PoE voltage (dV)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.5", name: mtxrPOECurrent, kind: column, syntax: "Integer32", use: "PoE current (mA)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.15.1.1.6", name: mtxrPOEPower, kind: column, syntax: "Power", use: "AP power draw (dW)"}
+  metal-52-ac:
+    family: wifi-ap
+    models: [RBMetalG-52SHPacn]
+    equipment:
+      role: "rct site AP, 10.255.0.20; Ethernet on VLAN 500, Wi-Fi bridged to VLAN 501 (01_overview.md); wh sites use a Cambium AP instead"
+      board_name: "Metal 52 ac"
+      hardware: "r2"
+      cpu: "1 core MIPSBE 720 MHz (product page says QCA9556; the unit reports firmware-type qca9550L)"
+      ram: "64 MB"
+      storage: "16 MB"
+      ports: "1 x gigabit (PoE in); radio wlan1, 802.11ac 5 GHz, legacy wireless package"
+      power: "passive PoE in 10-30 V from the switch's ether5 (poe-out forced-on); max 11 W"
+      temperature: "-40 to 70 C tested ambient"
+      firmware: "RouterOS 7.8 (factory 6.48.6)"
+      fleet: "289 of 297 rct APs surveyed 2026-10-07"
+    routeros_cli:
+      verified: {date: "2026-10-07", units: [delye AP, amuroona AP], firmware: "7.8", method: "ssh via scripts/mikrotik-exec.sh"}
+      reads:
+        - "/system routerboard print"
+        - "/system resource print"
+        - "/interface wireless registration-table print"
+        - "/snmp print"
+    oids: []
+    candidates:
+      # identity: what Nautobot records (serial is the match key; port MACs are cloned on the switches)
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "model string"}
+      - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "vendor detection; the per-model value is in neither MIB, read it on the first unit"}
+      - {oid: ".1.3.6.1.2.1.1.3.0", name: sysUpTime, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "reboot detection (TSTIK power-cycles, watchdog loops)"}
+      - {oid: ".1.3.6.1.2.1.1.5.0", name: sysName, kind: scalar, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "identity; 450Gx4 on every switch, so not a key"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.3.0", name: mtxrSerialNumber, kind: scalar, syntax: "DisplayString", use: "Nautobot serial, the identity key"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.4.0", name: mtxrFirmwareVersion, kind: scalar, syntax: "DisplayString", use: "RouterBOOT firmware"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.7.9.0", name: mtxrBoardName, kind: scalar, syntax: "DisplayString", use: "board name (Metal 52 ac / RB450Gx4)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.4.4.0", name: mtxrLicVersion, kind: scalar, syntax: "DisplayString", use: "RouterOS version -> Nautobot software version"}
+      # health: RouterOS 7 reports through the gauge table (ros-health.txt: voltage in dV, temperature x10); the mtxrHl scalars are still
+      # STATUS current in both MIBs, but whether v7 answers them is untested. mtxrGaugeValue became Integer32 in 7.12 (changelog).
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.2", name: mtxrGaugeName, kind: column, syntax: "DisplayString", use: "gauge row name (voltage, temperature, cpu-temperature)"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.3", name: mtxrGaugeValue, kind: column, syntax: "Gauge32", use: "solar-bus voltage and temperature trend"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.100.1.4", name: mtxrGaugeUnit, kind: column, syntax: "INTEGER { celsius(1), rpm(2), dV(3), dA(4), dW(5), status(6) }", use: "unit of each gauge row"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.8.0", name: mtxrHlVoltage, kind: scalar, syntax: "Voltage", use: "supply voltage (dV) if v7 still answers"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.3.10.0", name: mtxrHlTemperature, kind: scalar, syntax: "Temperature", use: "board temperature (x10) if v7 still answers"}
+      # interfaces: standard IF-MIB plus MikroTik's own link-down counter (the trunk-flap signature, 04_failure-modes.md)
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.1", name: ifName, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "port name, joins Nautobot interfaces (ether1..)"}
+      - {oid: ".1.3.6.1.2.1.2.2.1.8", name: ifOperStatus, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "link state"}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.6", name: ifHCInOctets, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "traffic"}
+      - {oid: ".1.3.6.1.2.1.31.1.1.1.10", name: ifHCOutOctets, kind: column, source: "MIB-2 / IF-MIB (ros-snmp.txt Used MIBs)", use: "traffic"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.14.1.1.90", name: mtxrInterfaceStatsLinkDowns, kind: column, syntax: "Counter32", use: "link-downs per port: SMC trunk flapping (ether1), NTD and phone churn"}
+      # neighbours (MNDP/LLDP/CDP as RouterOS sees them): topology
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.2", name: mtxrNeighborIpAddress, kind: column, syntax: "IpAddress", use: "neighbour address"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.3", name: mtxrNeighborMacAddress, kind: column, syntax: "MacAddress", use: "neighbour MAC"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.6", name: mtxrNeighborIdentity, kind: column, syntax: "DisplayString", use: "neighbour name"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.11.1.1.8", name: mtxrNeighborInterfaceID, kind: column, syntax: "ObjectIndex", use: "local port the neighbour is on"}
+      # wireless: the Metal runs the legacy `wireless` package on mipsbe (ros-packages.txt), so the mtxrWl tables apply
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.4", name: mtxrWlApSsid, kind: column, syntax: "DisplayString", use: "SSID per radio"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.6", name: mtxrWlApClientCount, kind: column, syntax: "Counter32", use: "client count"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.7", name: mtxrWlApFreq, kind: column, syntax: "Integer32", use: "channel frequency"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.9", name: mtxrWlApNoiseFloor, kind: column, syntax: "Integer32", use: "noise floor"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.3.1.10", name: mtxrWlApOverallTxCCQ, kind: column, syntax: "Counter32", use: "link quality"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.1", name: mtxrWlRtabAddr, kind: column, syntax: "MacAddress", use: "client MAC"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.3", name: mtxrWlRtabStrength, kind: column, syntax: "Integer32", use: "client signal"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.8", name: mtxrWlRtabTxRate, kind: column, syntax: "Gauge32", use: "client tx rate"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.9", name: mtxrWlRtabRxRate, kind: column, syntax: "Gauge32", use: "client rx rate"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.11", name: mtxrWlRtabUptime, kind: column, syntax: "TimeTicks", use: "client session time"}
+      - {oid: ".1.3.6.1.4.1.14988.1.1.1.2.1.12", name: mtxrWlRtabSignalToNoise, kind: column, syntax: "Integer32", use: "client SNR"}

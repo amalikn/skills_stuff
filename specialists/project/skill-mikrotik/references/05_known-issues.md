@@ -27,10 +27,12 @@ wraps an item across rows.
 6. **Cause of delye's 2026-08-17/18 ether1 flapping.** Same signature could recur. Close: any surviving SMC-side log for that window; ask the site team what changed on 2026-08-18.
 7. **Two devices refused the correct password for a few minutes on 2026-10-07.** Could be a login rate limit or a local sshpass race. Close: note the time if it recurs; `/log print where
    topics~"account"` on the device.
-8. **RouterOS 7.8 (February 2023) everywhere surveyed.** Old release with later fixes. Close: vendor changelog review before any upgrade proposal; upgrades need operator approval.
+8. **RouterOS 7.8 (February 2023) everywhere surveyed.** Stable is 7.24.5 and long-term 7.23.7 (2026-10-07); no changelog in between fixes IPQ-40xx kernel
+   failures (07_equipment-and-snmp.md). Close: choose a target version and test it on one switch; upgrades need operator approval.
 9. **rollah switch ether1 (SMC trunk): 1,987 link-downs**, the only fleet outlier (median 7). Same signature as delye's flapping. Close: capture rollah's switch log and the SMC's kernel link log.
 10. **kwala switch and AP temperatures read 0–2 C.** Faulty sensor or reporting. Close: re-read and compare with the SMC's CPU temperature.
-11. **Cloned-MAC remedy untested on a device.** `/interface ethernet reset-mac-address [find]` is not confirmed for Ethernet (docs show the wireless form), and
+11. **Cloned-MAC remedy untested on a device.** `/interface ethernet reset-mac-address` is documented for Ethernet (07_equipment-and-snmp.md) but with no version, so
+    7.8 is unconfirmed; and
     whether the `auto-mac=yes` bridges pick up the factory MAC without a reboot is unknown. Why: the fleet fix in `01_overview.md` depends on both. Close: with
     operator approval, run it on one switch, record `/interface ethernet print detail` and `/interface bridge print detail` before and after, then update
     `01_overview.md`.
@@ -42,3 +44,8 @@ wraps an item across rows.
     Not yet read back from a device. The operator pasted that password into a chat transcript on 2026-10-07; it is in no file, and rotating it is the
     operator's call. Close: `/tool mac-server print`, `/tool mac-server mac-winbox print`, `/ip service print` on one switch; propose
     hardening (per-unit passwords from the vault, MAC access limited to VLAN 500, `www` off) for operator approval.
+14. **SNMP disabled on every MikroTik checked** (delye and amuroona, switch and AP, 2026-10-07); RouterOS ships it off and the Pi script never enables it. Why:
+    no OID in `snmp-oid-registry.yaml` can be verified and no collector can read these units. Close: with operator approval enable SNMP v2c read-only on one
+    switch and one AP, community limited to `10.255.0.0/24`; verify the candidates; then add it to the Pi script.
+15. **RB450Gx4 `cpu not running at default frequency` warning** on every switch read (716 MHz fixed; nominal 448–896 MHz auto). Effect unknown; secondary sources
+    say setting it to auto clears it. Close: compare `/system routerboard settings print` with a factory unit; any change needs operator approval.

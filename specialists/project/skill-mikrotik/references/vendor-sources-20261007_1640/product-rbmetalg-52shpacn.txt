@@ -1,0 +1,210 @@
+Source: https://mikrotik.com/product/RBMetalG-52SHPacn — retrieved 2026-10-07
+
+Now with 802.11ac support, a Gigabit Ethernet port and a selectable wireless band (2.4GHz or 5GHz, up to 80 MHz wide channel). The new Gigabit port will help you utilize the full benefit of 802.11ac high speed wireless.
+The Metal 52 ac supports 2.4GHz, 5GHz and all the legacy wireless modes as well (802.11 b/g/n for 2.4GHz and 802.11 a/n/ac for 5GHz).
+We have two versions available.
+- RBMetalG-52SHPacn-US (USA) is factory locked for 2412-2462MHz, 5170-5250MHz and 5725-5835MHz frequencies. This lock can not be removed.
+- RBMetalG-52SHPacn (International) supports 2412-2484MHz and 5150MHz-5875MHz range (Specific frequency range can be limited by country regulations).
+Specification
+Specifications
+Product code
+RBMetalG-52SHPacn
+Suggested price
+$119.00
+Architecture
+MIPSBE
+CPU
+QCA9556
+CPU core count
+1
+CPU nominal frequency
+720 MHz
+Dimensions
+215x60x38mm
+RouterOS license
+4
+Operating System
+RouterOS
+Size of RAM
+64 MB
+Storage size
+16 MB
+Storage type
+FLASH
+MTBF
+Approximately 200'000 hours at 25C
+Tested ambient temperature
+-40°C to 70°C
+Powering
+Number of DC inputs
+1 (PoE-IN)
+Max power consumption
+11 W
+PoE in
+Passive PoE
+Cooling type
+Passive
+PoE in input Voltage
+10-30 V
+Wireless specifications
+Wireless 2.4 GHz/5 GHz Max data rate
+433 Mbit/s
+Wireless 2.4 GHz/5 GHz Number of chains
+1
+Wireless 2.4 GHz/5 GHz standards
+802.11a/n/ac, 802.11b/g/n
+Antenna gain dBi for 2.4 GHz/5 GHz
+6
+Wireless 2.4 GHz/5 GHz chip model
+QCA9889
+Wireless 2.4 GHz/5 GHz generation
+Wi-Fi 5
+Ethernet
+10/100/1000 Ethernet ports
+1
+Other
+PCB temperature monitor
+Yes
+Voltage Monitor
+Yes
+Beeper
+Yes
+Certification & Approvals
+Certification
+CE, FCC, IC, EAC, ROHS
+IP
+IP55
+Included parts
+24V 0.8A power adapter
+Angled N connector
+Metal rings (two)
+6dBi / 8dBi omni antenna
+Gigabit PoE injector
+Note
+The device has an operating system preinstalled and licensed. No separate purchase is necessary and the product is ready to use. The device includes free software updates for the life of the product or a minimum of 5 years starting from date of purchase.
+Wireless Specification
+5 GHz
+Transmit (dBm)
+Receive Sensitivity
+6MBit/s
+31
+-93
+54MBit/s
+27
+-78
+MCS0
+30
+-93
+MCS7
+26
+-74
+MCS9
+22
+-69
+2.4 GHz
+Transmit (dBm)
+Receive Sensitivity
+1MBit/s
+31
+-97
+11MBit/s
+31
+-91
+6MBit/s
+31
+-93
+54MBit/s
+28
+-77
+MCS0
+31
+-93
+MCS7
+27
+-72
+Ethernet test results
+RBMetalG-52SHPacn | QCA9556 1G all port test
+Mode | Configuration | 1518 byte | 512 byte | 64 byte
+kpps | Mbps | kpps | Mbps | kpps | Mbps
+Bridging | none (fast path) | 81.2 | 986.1 | 233.1 | 954.8 | 576.7 | 295.3
+Bridging | 25 bridge filter rules | 81.2 | 986.1 | 123.7 | 506.7 | 117.8 | 60.3
+Routing | none (fast path) | 81.2 | 986.1 | 233.1 | 954.8 | 454.8 | 232.9
+Routing | 25 simple queues | 81.2 | 986.1 | 152.6 | 625 | 137.2 | 70.2
+Routing | 25 ip filter rules | 69.4 | 842.8 | 66.3 | 271.6 | 68.7 | 35.2
+All tests are done with Xena Networks specialized test equipment (XenaBay),and done according to RFC2544 (Xena2544)
+Max throughput is determined with 30+ second attempts with 0,1% packet loss tolerance in 64, 512, 1518 byte packet sizes
+Test results show device maximum performance, and are reached using mentioned hardware and software configuration, different configurations most likely will result in lower results
+Documents
+Brochure
+Read product brochure and find out about features and specification
+.PDF
+Quick Guide
+Quick Guide
+Mounting dimensions
+Block Diagram
+FCC 5GHz
+FCC 2.4GHz
+DOC
+User Manual
+Product images
+Download images:
+Metal 52 ac
+Format:
+png
+Format:
+png
+Format:
+png
+Download
+Latest RouterOS stable release v7.24.5 download files for mipsbe devices.
+System Package
+RouterOS
+Download
+File
+routeros-7.24.5-mipsbe.npk
+Size
+10.92 MB
+SHA256
+f62f2272d2a374bf02e170260fd236f6681d6212a07ceb173d7843a0c3e327e9
+Download
+Default Packages
+wireless
+Download
+File
+wireless-7.24.5-mipsbe.npk
+Size
+1.35 MB
+SHA256
+715af71a7d95bed122cd0dc4c43dbfae89975d8b862dfcabc9c7a5b8dcd91233
+Download
+More
+Netinstall:
+Win64
+Download
+File
+netinstall64-7.24.5.zip
+Size
+36.38 MB
+SHA256
+557d0d4d61b1ef84183a76d9e798b242839e89eb650b49675580860d26a209a8
+Download
+Win32
+Download
+File
+netinstall-7.24.5.zip
+Size
+36.35 MB
+SHA256
+bd59c35bb6dbd974d40aabc8071da28f63158854c56646ce47f7ff30dee27467
+Download
+Linux CLI
+Download
+File
+netinstall-7.24.5.tar.gz
+Size
+43.51 MB
+SHA256
+471f8628ee292767a5201f2e2c888ad26dca6a9261e14eb1a04f61a7b04f3cf9
+Download
+More in
+download page

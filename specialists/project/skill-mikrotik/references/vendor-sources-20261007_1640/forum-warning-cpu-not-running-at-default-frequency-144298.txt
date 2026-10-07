@@ -1,0 +1,50 @@
+Source: https://forum.mikrotik.com/t/warning-cpu-not-running-at-default-frequency/144298 — retrieved 2026-10-07
+Title: Warning: cpu not running at default frequency (MikroTik community forum; SECONDARY source. 'staff/moderator' below is the Discourse forum flag, not proof of MikroTik employment)
+
+--- post 1 | memelchenkov | 2020-11-01T17:00:29.000Z | forum-staff=False moderator=False
+Hello.
+
+In Chateau device w/ default firmware I have a warning “Warning: cpu not running at default frequency” in “System - RouterBOARD” window. If I come deeper, to its “Settings”, there is “716Mhz” frequency chosen. What should I set there? Or just ignore this warning until fix in future firmware update?
+
+--- post 2 | santyx32 | 2020-11-02T03:15:27.000Z | forum-staff=False moderator=False
+They added ondemand CPU scheduler as default on newer betas, although I prefer to run my ac2 at 716mhz which it’s the stock max clock for better latencies.
+
+--- post 3 | memelchenkov | 2020-11-03T16:54:51.000Z | forum-staff=False moderator=False
+Thanks!
+
+--- post 4 | 14459278 | 2021-05-04T19:50:00.000Z | forum-staff=False moderator=False
+Current I’m in this problem on my rbm11g. How can I solve it. Modem is not working for that?
+
+--- post 5 | mkx | 2021-05-04T19:54:08.000Z | forum-staff=False moderator=False
+RBM11G product page specifies default frequency to be 880MHz. If your unit is not set to this frequency, set it and the warning should go away (after a reboot).
+
+--- post 6 | zarianu | 2022-10-29T08:49:53.000Z | forum-staff=False moderator=False
+Hello,
+
+having same issue on RB4011iGS+5HacQ2HnD 7.7beta4, resources show 1400 MHz. Do I have to do smth with this?
+
+TA, regards,
+
+Konstantin
+
+--- post 7 | mkx | 2022-10-29T12:29:38.000Z | forum-staff=False moderator=False
+RB4011 should most probably be set to “auto” … which enables ROS to change frequency according to load. On my RBD52G (hAP ac2) and RBD25G (audience) things seem to work very smooth with such setting.
+
+--- post 8 | zarianu | 2022-10-31T19:49:37.000Z | forum-staff=False moderator=False
+Thanks, will try that.
+
+
+
+
+
+
+
+
+RB4011 should most probably be set to “auto” … which enables ROS to change frequency according to load. On my RBD52G (hAP ac2) and RBD25G (audience) things seem to work very smooth with such setting.
+
+
+
+
+Regards,
+
+Konstantin

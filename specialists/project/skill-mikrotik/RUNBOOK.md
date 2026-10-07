@@ -14,6 +14,8 @@ This file is the navigation index for `skill-mikrotik`. Load only the reference 
 | Which RouterOS command shows what; field meanings; RouterOS 7 gotchas                                 | `references/03_routeros-cli-reference.md` |
 | A site is dark or flapping: known signatures and how they were confirmed                              | `references/04_failure-modes.md`          |
 | How new switches are built: the Pi provisioning script, what it sets, issues it puts on every unit | `references/06_provisioning.md` |
+| Model specs, SNMP state and MIBs, firmware status, cpu-frequency warning, vendor sources | `references/07_equipment-and-snmp.md` |
+| SNMP OIDs per model (candidates from the 7.8 MIB until verified), equipment facts, the list tools read | `references/snmp-oid-registry.yaml` |
 | Gaps, unverified assumptions, things not yet surveyed                                                 | `references/05_known-issues.md`           |
 | Scripts and their safety class                                                                        | `scripts/README.md`                       |
 

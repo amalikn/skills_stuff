@@ -1,0 +1,25 @@
+Source: https://forum.mikrotik.com/t/rbcapgi-5acd2nd-cpu-not-running-at-default-frequency/178422 — retrieved 2026-10-07
+Title: RBcAPGi-5acD2nD - cpu not running at default frequency (MikroTik community forum; SECONDARY source. 'staff/moderator' below is the Discourse forum flag, not proof of MikroTik employment)
+
+--- post 1 | GiovanniG | 2024-09-01T11:02:25.000Z | forum-staff=False moderator=False
+Hi, this router appears unstable, it was not reachable, I asked the client to rebot it and it worked again. Configuration seams ok, it was running 7.15.2 when happened, now I’ve upgraded it to 7.15.3.
+
+Why it displays the CPU is not working ar right frequency? I’m afraid it’s because of that, how can I correct it? Thank you for help
+
+--- post 2 | holvoetn | 2024-09-01T11:13:39.000Z | forum-staff=True moderator=True
+Somewhere in earlier versions it was changed that CPU frequency should be set to auto.
+
+Then the message will disappear.
+
+--- post 3 | GiovanniG | 2024-09-03T08:06:39.000Z | forum-staff=False moderator=False
+Thank you I did, the warning disappeared, I hope also the unstability.
+
+I’ve bought it with version 6, and that clock was specified already. That’s something I should keep in mind for next XL
+
+--- post 4 | GiovanniG | 2026-06-17T21:06:50.477Z | forum-staff=False moderator=False
+Hi mates, it worked in past but now I can't set more to auto, any ideas? thank you
+
+immagine748×307 16.3 KB
+
+--- post 5 | GiovanniG | 2026-06-17T21:12:22.759Z | forum-staff=False moderator=False
+IA suggests to execute /system/device-mode/update routerboard=yes but I'm not in the place to turn router off. Honestly I don't understand why Mikrotik creates this bug and don't lieave frequency to auto by default, it was never specified

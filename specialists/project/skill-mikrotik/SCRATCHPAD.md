@@ -18,6 +18,7 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 - All 294 `rct` switches carry cloned MACs set by the Pi provisioning script (`references/06_provisioning.md`). Remedy written up, not applied; waiting on operator go-ahead.
 - Provisioning (operator, 2026-10-07): a Pi pushes RouterOS 7.8 over TFTP and two SSH batches (`references/06_provisioning.md`); the Mk3 connection diagram
   (`references/mk3-connection-diagram-v0.5.pdf`) shows what is on each port, `rct` and `wh` alike apart from the ATA and the AP.
+- Vendor sources, MIBs and the OID registry (candidates only; SNMP disabled everywhere checked) in `references/` (v0.1.11); UNC carries the vendor.
 - Background waiter for arrkapa: `scripts/mikrotik-site-capture.sh` with `WAIT_UP=1`, output the `capture-arrkapa-mikrotik` folder in the arrkapa-wan investigation folder.
 
 ## Next actions
@@ -26,7 +27,8 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 2. Survey `wh` (known issue 2).
 3. With operator approval: test the cloned-MAC remedy on one switch (known issue 11), then a small canary.
 4. Decide with the operator on central monitoring for these devices (known issue 5).
-5. Ask the operator for the provisioning script's location and owner and how APs are provisioned (known issue 12); read back the script's security
+5. SNMP read-only on one switch and one AP (operator approved 2026-10-07): verify the registry candidates, test a harmless write, record results.
+6. Ask the operator for the provisioning script's location and owner and how APs are provisioned (known issue 12); read back the script's security
    settings on one switch (known issue 13).
 
 ## Recent decisions

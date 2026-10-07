@@ -1,0 +1,419 @@
+name	oid	syntax	units	status
+mikrotikExperimentalModule	1.3.6.1.4.1.14988.1			
+mikrotik	1.3.6.1.4.1.14988			
+mtXMetaInfo	1.3.6.1.4.1.14988.1.2			
+mtXRouterOsGroups	1.3.6.1.4.1.14988.1.2.1			
+mtXRouterOs	1.3.6.1.4.1.14988.1.1			
+mtxrWireless	1.3.6.1.4.1.14988.1.1.1			
+mtxrQueues	1.3.6.1.4.1.14988.1.1.2			
+mtxrHealth	1.3.6.1.4.1.14988.1.1.3			
+mtxrLicense	1.3.6.1.4.1.14988.1.1.4			
+mtxrHotspot	1.3.6.1.4.1.14988.1.1.5			
+mtxrDHCP	1.3.6.1.4.1.14988.1.1.6			
+mtxrSystem	1.3.6.1.4.1.14988.1.1.7			
+mtxrScripts	1.3.6.1.4.1.14988.1.1.8			
+mtxrTraps	1.3.6.1.4.1.14988.1.1.9			
+mtxrNstremeDual	1.3.6.1.4.1.14988.1.1.10			
+mtxrNeighbor	1.3.6.1.4.1.14988.1.1.11			
+mtxrGps	1.3.6.1.4.1.14988.1.1.12			
+mtxrWirelessModem	1.3.6.1.4.1.14988.1.1.13			
+mtxrInterfaceStats	1.3.6.1.4.1.14988.1.1.14			
+mtxrPOE	1.3.6.1.4.1.14988.1.1.15			
+mtxrLTEModem	1.3.6.1.4.1.14988.1.1.16			
+mtxrPartition	1.3.6.1.4.1.14988.1.1.17			
+mtxrScriptRun	1.3.6.1.4.1.14988.1.1.18			
+mtxrOptical	1.3.6.1.4.1.14988.1.1.19			
+mtxrIPSec	1.3.6.1.4.1.14988.1.1.20			
+mtxrWlStatTable	1.3.6.1.4.1.14988.1.1.1.1	SEQUENCE OF MtxrWlStatEntry		current
+mtxrWlStatEntry	1.3.6.1.4.1.14988.1.1.1.1.1	MtxrWlStatEntry		current
+mtxrWlStatIndex	1.3.6.1.4.1.14988.1.1.1.1.1.1	ObjectIndex		current
+mtxrWlStatTxRate	1.3.6.1.4.1.14988.1.1.1.1.1.2	Gauge32		current
+mtxrWlStatRxRate	1.3.6.1.4.1.14988.1.1.1.1.1.3	Gauge32		current
+mtxrWlStatStrength	1.3.6.1.4.1.14988.1.1.1.1.1.4	Integer32		current
+mtxrWlStatSsid	1.3.6.1.4.1.14988.1.1.1.1.1.5	DisplayString		current
+mtxrWlStatBssid	1.3.6.1.4.1.14988.1.1.1.1.1.6	MacAddress		current
+mtxrWlStatFreq	1.3.6.1.4.1.14988.1.1.1.1.1.7	Integer32		current
+mtxrWlStatBand	1.3.6.1.4.1.14988.1.1.1.1.1.8	DisplayString		current
+mtxrWlStatTxCCQ	1.3.6.1.4.1.14988.1.1.1.1.1.9	Counter32		current
+mtxrWlStatRxCCQ	1.3.6.1.4.1.14988.1.1.1.1.1.10	Counter32		current
+mtxrWlRtabTable	1.3.6.1.4.1.14988.1.1.1.2	SEQUENCE OF MtxrWlRtabEntry		current
+mtxrWlRtabEntry	1.3.6.1.4.1.14988.1.1.1.2.1	MtxrWlRtabEntry		current
+mtxrWlRtabAddr	1.3.6.1.4.1.14988.1.1.1.2.1.1	MacAddress		current
+mtxrWlRtabIface	1.3.6.1.4.1.14988.1.1.1.2.1.2	ObjectIndex		current
+mtxrWlRtabStrength	1.3.6.1.4.1.14988.1.1.1.2.1.3	Integer32		current
+mtxrWlRtabTxBytes	1.3.6.1.4.1.14988.1.1.1.2.1.4	Counter32		current
+mtxrWlRtabRxBytes	1.3.6.1.4.1.14988.1.1.1.2.1.5	Counter32		current
+mtxrWlRtabTxPackets	1.3.6.1.4.1.14988.1.1.1.2.1.6	Counter32		current
+mtxrWlRtabRxPackets	1.3.6.1.4.1.14988.1.1.1.2.1.7	Counter32		current
+mtxrWlRtabTxRate	1.3.6.1.4.1.14988.1.1.1.2.1.8	Gauge32		current
+mtxrWlRtabRxRate	1.3.6.1.4.1.14988.1.1.1.2.1.9	Gauge32		current
+mtxrWlRtabRouterOSVersion	1.3.6.1.4.1.14988.1.1.1.2.1.10	DisplayString		current
+mtxrWlRtabUptime	1.3.6.1.4.1.14988.1.1.1.2.1.11	TimeTicks		current
+mtxrWlRtabSignalToNoise	1.3.6.1.4.1.14988.1.1.1.2.1.12	Integer32		current
+mtxrWlRtabTxStrengthCh0	1.3.6.1.4.1.14988.1.1.1.2.1.13	Integer32		current
+mtxrWlRtabRxStrengthCh0	1.3.6.1.4.1.14988.1.1.1.2.1.14	Integer32		current
+mtxrWlRtabTxStrengthCh1	1.3.6.1.4.1.14988.1.1.1.2.1.15	Integer32		current
+mtxrWlRtabRxStrengthCh1	1.3.6.1.4.1.14988.1.1.1.2.1.16	Integer32		current
+mtxrWlRtabTxStrengthCh2	1.3.6.1.4.1.14988.1.1.1.2.1.17	Integer32		current
+mtxrWlRtabRxStrengthCh2	1.3.6.1.4.1.14988.1.1.1.2.1.18	Integer32		current
+mtxrWlRtabTxStrength	1.3.6.1.4.1.14988.1.1.1.2.1.19	Integer32		current
+mtxrWlRtabRadioName	1.3.6.1.4.1.14988.1.1.1.2.1.20	DisplayString		current
+mtxrWlRtabEntryCount	1.3.6.1.4.1.14988.1.1.1.4	Gauge32		current
+mtxrWlApTable	1.3.6.1.4.1.14988.1.1.1.3	SEQUENCE OF MtxrWlApEntry		current
+mtxrWlApEntry	1.3.6.1.4.1.14988.1.1.1.3.1	MtxrWlApEntry		current
+mtxrWlApIndex	1.3.6.1.4.1.14988.1.1.1.3.1.1	ObjectIndex		current
+mtxrWlApTxRate	1.3.6.1.4.1.14988.1.1.1.3.1.2	Gauge32		current
+mtxrWlApRxRate	1.3.6.1.4.1.14988.1.1.1.3.1.3	Gauge32		current
+mtxrWlApSsid	1.3.6.1.4.1.14988.1.1.1.3.1.4	DisplayString		current
+mtxrWlApBssid	1.3.6.1.4.1.14988.1.1.1.3.1.5	MacAddress		current
+mtxrWlApClientCount	1.3.6.1.4.1.14988.1.1.1.3.1.6	Counter32		current
+mtxrWlApFreq	1.3.6.1.4.1.14988.1.1.1.3.1.7	Integer32		current
+mtxrWlApBand	1.3.6.1.4.1.14988.1.1.1.3.1.8	DisplayString		current
+mtxrWlApNoiseFloor	1.3.6.1.4.1.14988.1.1.1.3.1.9	Integer32		current
+mtxrWlApOverallTxCCQ	1.3.6.1.4.1.14988.1.1.1.3.1.10	Counter32		current
+mtxrWlApAuthClientCount	1.3.6.1.4.1.14988.1.1.1.3.1.11	Counter32		current
+mtxrWlCMRtabTable	1.3.6.1.4.1.14988.1.1.1.5	SEQUENCE OF MtxrWlCMRtabEntry		current
+mtxrWlCMRtabEntry	1.3.6.1.4.1.14988.1.1.1.5.1	MtxrWlCMRtabEntry		current
+mtxrWlCMRtabAddr	1.3.6.1.4.1.14988.1.1.1.5.1.1	MacAddress		current
+mtxrWlCMRtabIface	1.3.6.1.4.1.14988.1.1.1.5.1.2	ObjectIndex		current
+mtxrWlCMRtabUptime	1.3.6.1.4.1.14988.1.1.1.5.1.3	TimeTicks		current
+mtxrWlCMRtabTxBytes	1.3.6.1.4.1.14988.1.1.1.5.1.4	Counter32		current
+mtxrWlCMRtabRxBytes	1.3.6.1.4.1.14988.1.1.1.5.1.5	Counter32		current
+mtxrWlCMRtabTxPackets	1.3.6.1.4.1.14988.1.1.1.5.1.6	Counter32		current
+mtxrWlCMRtabRxPackets	1.3.6.1.4.1.14988.1.1.1.5.1.7	Counter32		current
+mtxrWlCMRtabTxRate	1.3.6.1.4.1.14988.1.1.1.5.1.8	Gauge32		current
+mtxrWlCMRtabRxRate	1.3.6.1.4.1.14988.1.1.1.5.1.9	Gauge32		current
+mtxrWlCMRtabTxStrength	1.3.6.1.4.1.14988.1.1.1.5.1.10	Integer32		current
+mtxrWlCMRtabRxStrength	1.3.6.1.4.1.14988.1.1.1.5.1.11	Integer32		current
+mtxrWlCMRtabSsid	1.3.6.1.4.1.14988.1.1.1.5.1.12	DisplayString		current
+mtxrWlCMRtabEapIdent	1.3.6.1.4.1.14988.1.1.1.5.1.13	DisplayString		current
+mtxrWlCMRtabEntryCount	1.3.6.1.4.1.14988.1.1.1.6	Gauge32		current
+mtxrWlCMREntryCount	1.3.6.1.4.1.14988.1.1.1.10	Gauge32		current
+mtxrWlCMTable	1.3.6.1.4.1.14988.1.1.1.7	SEQUENCE OF MtxrWlCMEntry		current
+mtxrWlCMEntry	1.3.6.1.4.1.14988.1.1.1.7.1	MtxrWlCMEntry		current
+mtxrWlCMIndex	1.3.6.1.4.1.14988.1.1.1.7.1.1	ObjectIndex		current
+mtxrWlCMRegClientCount	1.3.6.1.4.1.14988.1.1.1.7.1.2	Counter32		current
+mtxrWlCMAuthClientCount	1.3.6.1.4.1.14988.1.1.1.7.1.3	Counter32		current
+mtxrWlCMState	1.3.6.1.4.1.14988.1.1.1.7.1.4	DisplayString		current
+mtxrWlCMChannel	1.3.6.1.4.1.14988.1.1.1.7.1.5	DisplayString		current
+mtxrWlCMRemoteTable	1.3.6.1.4.1.14988.1.1.1.11	SEQUENCE OF MtxrWlCMRemoteEntry		current
+mtxrWlCMRemoteEntry	1.3.6.1.4.1.14988.1.1.1.11.1	MtxrWlCMRemoteEntry		current
+mtxrWlCMRemoteIndex	1.3.6.1.4.1.14988.1.1.1.11.1.1	ObjectIndex		current
+mtxrWlCMRemoteName	1.3.6.1.4.1.14988.1.1.1.11.1.2	DisplayString		current
+mtxrWlCMRemoteState	1.3.6.1.4.1.14988.1.1.1.11.1.3	DisplayString		current
+mtxrWlCMRemoteAddress	1.3.6.1.4.1.14988.1.1.1.11.1.4	DisplayString		current
+mtxrWlCMRemoteRadios	1.3.6.1.4.1.14988.1.1.1.11.1.5	Counter32		current
+mtxrWl60GTable	1.3.6.1.4.1.14988.1.1.1.8	SEQUENCE OF MtxrWl60GEntry		current
+mtxrWl60GEntry	1.3.6.1.4.1.14988.1.1.1.8.1	MtxrWl60GEntry		current
+mtxrWl60GIndex	1.3.6.1.4.1.14988.1.1.1.8.1.1	ObjectIndex		current
+mtxrWl60GMode	1.3.6.1.4.1.14988.1.1.1.8.1.2	INTEGER { apBridge(0), stationBridge(1), sniff(2), bridge(3)		current
+mtxrWl60GSsid	1.3.6.1.4.1.14988.1.1.1.8.1.3	DisplayString		current
+mtxrWl60GConnected	1.3.6.1.4.1.14988.1.1.1.8.1.4	BoolValue		current
+mtxrWl60GRemote	1.3.6.1.4.1.14988.1.1.1.8.1.5	MacAddress		current
+mtxrWl60GFreq	1.3.6.1.4.1.14988.1.1.1.8.1.6	Integer32		current
+mtxrWl60GMcs	1.3.6.1.4.1.14988.1.1.1.8.1.7	Integer32		current
+mtxrWl60GSignal	1.3.6.1.4.1.14988.1.1.1.8.1.8	Integer32		current
+mtxrWl60GTxSector	1.3.6.1.4.1.14988.1.1.1.8.1.9	Integer32		current
+mtxrWl60GTxSectorInfo	1.3.6.1.4.1.14988.1.1.1.8.1.11	DisplayString		current
+mtxrWl60GRssi	1.3.6.1.4.1.14988.1.1.1.8.1.12	Integer32		current
+mtxrWl60GPhyRate	1.3.6.1.4.1.14988.1.1.1.8.1.13	Gauge32		current
+mtxrWl60GStaTable	1.3.6.1.4.1.14988.1.1.1.9	SEQUENCE OF MtxrWl60GStaEntry		current
+mtxrWl60GStaEntry	1.3.6.1.4.1.14988.1.1.1.9.1	MtxrWl60GStaEntry		current
+mtxrWl60GStaIndex	1.3.6.1.4.1.14988.1.1.1.9.1.1	ObjectIndex		current
+mtxrWl60GStaConnected	1.3.6.1.4.1.14988.1.1.1.9.1.2	BoolValue		current
+mtxrWl60GStaRemote	1.3.6.1.4.1.14988.1.1.1.9.1.3	MacAddress		current
+mtxrWl60GStaMcs	1.3.6.1.4.1.14988.1.1.1.9.1.4	Integer32		current
+mtxrWl60GStaSignal	1.3.6.1.4.1.14988.1.1.1.9.1.5	Integer32		current
+mtxrWl60GStaTxSector	1.3.6.1.4.1.14988.1.1.1.9.1.6	Integer32		current
+mtxrWl60GStaPhyRate	1.3.6.1.4.1.14988.1.1.1.9.1.8	Gauge32		current
+mtxrWl60GStaRssi	1.3.6.1.4.1.14988.1.1.1.9.1.9	Integer32		current
+mtxrWl60GStaDistance	1.3.6.1.4.1.14988.1.1.1.9.1.10	Integer32		current
+mtxrWirelessGroup	1.3.6.1.4.1.14988.1.2.1.1			current
+mtxrQueueSimpleTable	1.3.6.1.4.1.14988.1.1.2.1	SEQUENCE OF MtxrQueueSimpleEntry		current
+mtxrQueueSimpleEntry	1.3.6.1.4.1.14988.1.1.2.1.1	MtxrQueueSimpleEntry		current
+mtxrQueueSimpleIndex	1.3.6.1.4.1.14988.1.1.2.1.1.1	ObjectIndex		current
+mtxrQueueSimpleName	1.3.6.1.4.1.14988.1.1.2.1.1.2	DisplayString		current
+mtxrQueueSimpleSrcAddr	1.3.6.1.4.1.14988.1.1.2.1.1.3	IpAddress		current
+mtxrQueueSimpleSrcMask	1.3.6.1.4.1.14988.1.1.2.1.1.4	IpAddress		current
+mtxrQueueSimpleDstAddr	1.3.6.1.4.1.14988.1.1.2.1.1.5	IpAddress		current
+mtxrQueueSimpleDstMask	1.3.6.1.4.1.14988.1.1.2.1.1.6	IpAddress		current
+mtxrQueueSimpleIface	1.3.6.1.4.1.14988.1.1.2.1.1.7	ObjectIndex		current
+mtxrQueueSimpleBytesIn	1.3.6.1.4.1.14988.1.1.2.1.1.8	Counter64		current
+mtxrQueueSimpleBytesOut	1.3.6.1.4.1.14988.1.1.2.1.1.9	Counter64		current
+mtxrQueueSimplePacketsIn	1.3.6.1.4.1.14988.1.1.2.1.1.10	Counter32		current
+mtxrQueueSimplePacketsOut	1.3.6.1.4.1.14988.1.1.2.1.1.11	Counter32		current
+mtxrQueueSimplePCQQueuesIn	1.3.6.1.4.1.14988.1.1.2.1.1.12	Counter32		current
+mtxrQueueSimplePCQQueuesOut	1.3.6.1.4.1.14988.1.1.2.1.1.13	Counter32		current
+mtxrQueueSimpleDroppedIn	1.3.6.1.4.1.14988.1.1.2.1.1.14	Counter32		current
+mtxrQueueSimpleDroppedOut	1.3.6.1.4.1.14988.1.1.2.1.1.15	Counter32		current
+mtxrQueueTreeTable	1.3.6.1.4.1.14988.1.1.2.2	SEQUENCE OF MtxrQueueTreeEntry		current
+mtxrQueueTreeEntry	1.3.6.1.4.1.14988.1.1.2.2.1	MtxrQueueTreeEntry		current
+mtxrQueueTreeIndex	1.3.6.1.4.1.14988.1.1.2.2.1.1	ObjectIndex		current
+mtxrQueueTreeName	1.3.6.1.4.1.14988.1.1.2.2.1.2	DisplayString		current
+mtxrQueueTreeFlow	1.3.6.1.4.1.14988.1.1.2.2.1.3	DisplayString		current
+mtxrQueueTreeParentIndex	1.3.6.1.4.1.14988.1.1.2.2.1.4	ObjectIndex		current
+mtxrQueueTreeBytes	1.3.6.1.4.1.14988.1.1.2.2.1.5	Counter32		current
+mtxrQueueTreePackets	1.3.6.1.4.1.14988.1.1.2.2.1.6	Counter32		current
+mtxrQueueTreeHCBytes	1.3.6.1.4.1.14988.1.1.2.2.1.7	Counter64		current
+mtxrQueueTreePCQQueues	1.3.6.1.4.1.14988.1.1.2.2.1.8	Counter32		current
+mtxrQueueTreeDropped	1.3.6.1.4.1.14988.1.1.2.2.1.9	Counter32		current
+mtxrQueueGroup	1.3.6.1.4.1.14988.1.2.1.2			current
+mtxrHlCoreVoltage	1.3.6.1.4.1.14988.1.1.3.1	Voltage		current
+mtxrHlThreeDotThreeVoltage	1.3.6.1.4.1.14988.1.1.3.2	Voltage		current
+mtxrHlFiveVoltage	1.3.6.1.4.1.14988.1.1.3.3	Voltage		current
+mtxrHlTwelveVoltage	1.3.6.1.4.1.14988.1.1.3.4	Voltage		current
+mtxrHlSensorTemperature	1.3.6.1.4.1.14988.1.1.3.5	Temperature		current
+mtxrHlCpuTemperature	1.3.6.1.4.1.14988.1.1.3.6	Temperature		current
+mtxrHlBoardTemperature	1.3.6.1.4.1.14988.1.1.3.7	Temperature		current
+mtxrHlVoltage	1.3.6.1.4.1.14988.1.1.3.8	Voltage		current
+mtxrHlActiveFan	1.3.6.1.4.1.14988.1.1.3.9	DisplayString		current
+mtxrHlTemperature	1.3.6.1.4.1.14988.1.1.3.10	Temperature		current
+mtxrHlProcessorTemperature	1.3.6.1.4.1.14988.1.1.3.11	Temperature		current
+mtxrHlPower	1.3.6.1.4.1.14988.1.1.3.12	Power		current
+mtxrHlCurrent	1.3.6.1.4.1.14988.1.1.3.13	Integer32		current
+mtxrHlProcessorFrequency	1.3.6.1.4.1.14988.1.1.3.14	Integer32		current
+mtxrHlPowerSupplyState	1.3.6.1.4.1.14988.1.1.3.15	BoolValue		current
+mtxrHlBackupPowerSupplyState	1.3.6.1.4.1.14988.1.1.3.16	BoolValue		current
+mtxrHlFanSpeed1	1.3.6.1.4.1.14988.1.1.3.17	Gauge32		current
+mtxrHlFanSpeed2	1.3.6.1.4.1.14988.1.1.3.18	Gauge32		current
+mtxrGaugeTable	1.3.6.1.4.1.14988.1.1.3.100	SEQUENCE OF MtxrGaugeTableEntry		current
+mtxrGaugeTableEntry	1.3.6.1.4.1.14988.1.1.3.100.1	MtxrGaugeTableEntry		current
+mtxrGaugeIndex	1.3.6.1.4.1.14988.1.1.3.100.1.1	ObjectIndex		current
+mtxrGaugeName	1.3.6.1.4.1.14988.1.1.3.100.1.2	DisplayString		current
+mtxrGaugeValue	1.3.6.1.4.1.14988.1.1.3.100.1.3	Gauge32		current
+mtxrGaugeUnit	1.3.6.1.4.1.14988.1.1.3.100.1.4	INTEGER { celsius(1), rpm(2), dV(3), dA(4), dW(5), status(6)		current
+mtxrHealthGroup	1.3.6.1.4.1.14988.1.2.1.3			current
+mtxrLicSoftwareId	1.3.6.1.4.1.14988.1.1.4.1	DisplayString		current
+mtxrLicUpgrUntil	1.3.6.1.4.1.14988.1.1.4.2	DateAndTime		current
+mtxrLicLevel	1.3.6.1.4.1.14988.1.1.4.3	Integer32		current
+mtxrLicVersion	1.3.6.1.4.1.14988.1.1.4.4	DisplayString		current
+mtxrLicUpgradableTo	1.3.6.1.4.1.14988.1.1.4.5	Integer32		current
+mtxrLincenseGroup	1.3.6.1.4.1.14988.1.2.1.4			current
+mtxrHotspotActiveUsersTable	1.3.6.1.4.1.14988.1.1.5.1	SEQUENCE OF MtxrHotspotActiveUsersTableEntry		current
+mtxrHotspotActiveUsersTableEntry	1.3.6.1.4.1.14988.1.1.5.1.1	MtxrHotspotActiveUsersTableEntry		current
+mtxrHotspotActiveUserIndex	1.3.6.1.4.1.14988.1.1.5.1.1.1	ObjectIndex		current
+mtxrHotspotActiveUserServerID	1.3.6.1.4.1.14988.1.1.5.1.1.2	Integer32		current
+mtxrHotspotActiveUserName	1.3.6.1.4.1.14988.1.1.5.1.1.3	DisplayString		current
+mtxrHotspotActiveUserDomain	1.3.6.1.4.1.14988.1.1.5.1.1.4	DisplayString		current
+mtxrHotspotActiveUserIP	1.3.6.1.4.1.14988.1.1.5.1.1.5	IpAddress		current
+mtxrHotspotActiveUserMAC	1.3.6.1.4.1.14988.1.1.5.1.1.6	MacAddress		current
+mtxrHotspotActiveUserConnectTime	1.3.6.1.4.1.14988.1.1.5.1.1.7	Integer32		current
+mtxrHotspotActiveUserValidTillTime	1.3.6.1.4.1.14988.1.1.5.1.1.8	Integer32		current
+mtxrHotspotActiveUserIdleStartTime	1.3.6.1.4.1.14988.1.1.5.1.1.9	Integer32		current
+mtxrHotspotActiveUserIdleTimeout	1.3.6.1.4.1.14988.1.1.5.1.1.10	Integer32		current
+mtxrHotspotActiveUserPingTimeout	1.3.6.1.4.1.14988.1.1.5.1.1.11	Integer32		current
+mtxrHotspotActiveUserBytesIn	1.3.6.1.4.1.14988.1.1.5.1.1.12	Counter64		current
+mtxrHotspotActiveUserBytesOut	1.3.6.1.4.1.14988.1.1.5.1.1.13	Counter64		current
+mtxrHotspotActiveUserPacketsIn	1.3.6.1.4.1.14988.1.1.5.1.1.14	Counter64		current
+mtxrHotspotActiveUserPacketsOut	1.3.6.1.4.1.14988.1.1.5.1.1.15	Counter64		current
+mtxrHotspotActiveUserLimitBytesIn	1.3.6.1.4.1.14988.1.1.5.1.1.16	Counter64		current
+mtxrHotspotActiveUserLimitBytesOut	1.3.6.1.4.1.14988.1.1.5.1.1.17	Counter64		current
+mtxrHotspotActiveUserAdvertStatus	1.3.6.1.4.1.14988.1.1.5.1.1.18	Integer32		current
+mtxrHotspotActiveUserRadius	1.3.6.1.4.1.14988.1.1.5.1.1.19	Integer32		current
+mtxrHotspotActiveUserBlockedByAdvert	1.3.6.1.4.1.14988.1.1.5.1.1.20	Integer32		current
+mtxrHotspotActiveUserGroup	1.3.6.1.4.1.14988.1.2.1.5			current
+mtxrDHCPLeaseCount	1.3.6.1.4.1.14988.1.1.6.1	Gauge32		current
+mtxrDHCPGroup	1.3.6.1.4.1.14988.1.2.1.12			current
+mtxrSystemReboot	1.3.6.1.4.1.14988.1.1.7.1	Integer32		current
+mtxrUSBPowerReset	1.3.6.1.4.1.14988.1.1.7.2	Integer32		current
+mtxrSerialNumber	1.3.6.1.4.1.14988.1.1.7.3	DisplayString		current
+mtxrFirmwareVersion	1.3.6.1.4.1.14988.1.1.7.4	DisplayString		current
+mtxrNote	1.3.6.1.4.1.14988.1.1.7.5	DisplayString		current
+mtxrBuildTime	1.3.6.1.4.1.14988.1.1.7.6	DisplayString		current
+mtxrFirmwareUpgradeVersion	1.3.6.1.4.1.14988.1.1.7.7	DisplayString		current
+mtxrDisplayName	1.3.6.1.4.1.14988.1.1.7.8	DisplayString		current
+mtxrBoardName	1.3.6.1.4.1.14988.1.1.7.9	DisplayString		current
+mtxrSystemGroup	1.3.6.1.4.1.14988.1.2.1.13			current
+mtxrScriptTable	1.3.6.1.4.1.14988.1.1.8.1	SEQUENCE OF MtxrScriptTableEntry		current
+mtxrScriptTableEntry	1.3.6.1.4.1.14988.1.1.8.1.1	MtxrScriptTableEntry		current
+mtxrScriptIndex	1.3.6.1.4.1.14988.1.1.8.1.1.1	ObjectIndex		current
+mtxrScriptName	1.3.6.1.4.1.14988.1.1.8.1.1.2	DisplayString		current
+mtxrScriptRunCmd	1.3.6.1.4.1.14988.1.1.8.1.1.3	Integer32		current
+mtxrScriptGroup	1.3.6.1.4.1.14988.1.2.1.8			current
+mtxrScriptRunTable	1.3.6.1.4.1.14988.1.1.18.1	SEQUENCE OF MtxrScriptRunTableEntry		current
+mtxrScriptRunTableEntry	1.3.6.1.4.1.14988.1.1.18.1.1	MtxrScriptRunTableEntry		current
+mtxrScriptRunIndex	1.3.6.1.4.1.14988.1.1.18.1.1.1	ObjectIndex		current
+mtxrScriptRunOutput	1.3.6.1.4.1.14988.1.1.18.1.1.2	DisplayString		current
+mtxrScriptRunGroup	1.3.6.1.4.1.14988.1.2.1.21			current
+mtxrDnStatTable	1.3.6.1.4.1.14988.1.1.10.1	SEQUENCE OF MtxrDnStatEntry		current
+mtxrDnStatEntry	1.3.6.1.4.1.14988.1.1.10.1.1	MtxrDnStatEntry		current
+mtxrDnStatIndex	1.3.6.1.4.1.14988.1.1.10.1.1.1	ObjectIndex		current
+mtxrDnStatTxRate	1.3.6.1.4.1.14988.1.1.10.1.1.2	Gauge32		current
+mtxrDnStatRxRate	1.3.6.1.4.1.14988.1.1.10.1.1.3	Gauge32		current
+mtxrDnStatTxStrength	1.3.6.1.4.1.14988.1.1.10.1.1.4	Integer32		current
+mtxrDnStatRxStrength	1.3.6.1.4.1.14988.1.1.10.1.1.5	Integer32		current
+mtxrDnConnected	1.3.6.1.4.1.14988.1.1.10.1.1.6	Integer32		current
+mtxrNstremeDualGroup	1.3.6.1.4.1.14988.1.2.1.10			current
+mtxrNeighborTable	1.3.6.1.4.1.14988.1.1.11.1	SEQUENCE OF MtxrNeighborTableEntry		current
+mtxrNeighborTableEntry	1.3.6.1.4.1.14988.1.1.11.1.1	MtxrNeighborTableEntry		current
+mtxrNeighborIndex	1.3.6.1.4.1.14988.1.1.11.1.1.1	ObjectIndex		current
+mtxrNeighborIpAddress	1.3.6.1.4.1.14988.1.1.11.1.1.2	IpAddress		current
+mtxrNeighborMacAddress	1.3.6.1.4.1.14988.1.1.11.1.1.3	MacAddress		current
+mtxrNeighborVersion	1.3.6.1.4.1.14988.1.1.11.1.1.4	DisplayString		current
+mtxrNeighborPlatform	1.3.6.1.4.1.14988.1.1.11.1.1.5	DisplayString		current
+mtxrNeighborIdentity	1.3.6.1.4.1.14988.1.1.11.1.1.6	DisplayString		current
+mtxrNeighborSoftwareID	1.3.6.1.4.1.14988.1.1.11.1.1.7	DisplayString		current
+mtxrNeighborInterfaceID	1.3.6.1.4.1.14988.1.1.11.1.1.8	ObjectIndex		current
+mtxrNeighborGroup	1.3.6.1.4.1.14988.1.2.1.11			current
+mtxrDate	1.3.6.1.4.1.14988.1.1.12.1	Integer32		current
+mtxrLongtitude	1.3.6.1.4.1.14988.1.1.12.2	DisplayString		current
+mtxrLatitude	1.3.6.1.4.1.14988.1.1.12.3	DisplayString		current
+mtxrAltitude	1.3.6.1.4.1.14988.1.1.12.4	DisplayString		current
+mtxrSpeed	1.3.6.1.4.1.14988.1.1.12.5	DisplayString		current
+mtxrSattelites	1.3.6.1.4.1.14988.1.1.12.6	Integer32		current
+mtxrValid	1.3.6.1.4.1.14988.1.1.12.7	Integer32		current
+mtxrGPSGroup	1.3.6.1.4.1.14988.1.2.1.15			current
+mtxrWirelessModemSignalStrength	1.3.6.1.4.1.14988.1.1.13.1	Integer32		current
+mtxrWirelessModemSignalECIO	1.3.6.1.4.1.14988.1.1.13.2	Integer32		current
+mtxrWirelessModemGroup	1.3.6.1.4.1.14988.1.2.1.16			current
+mtxrInterfaceStatsTable	1.3.6.1.4.1.14988.1.1.14.1	SEQUENCE OF MtxrInterfaceStatsEntry		current
+mtxrInterfaceStatsEntry	1.3.6.1.4.1.14988.1.1.14.1.1	MtxrInterfaceStatsEntry		current
+mtxrInterfaceStatsIndex	1.3.6.1.4.1.14988.1.1.14.1.1.1	ObjectIndex		current
+mtxrInterfaceStatsName	1.3.6.1.4.1.14988.1.1.14.1.1.2	DisplayString		current
+mtxrInterfaceStatsDriverRxBytes	1.3.6.1.4.1.14988.1.1.14.1.1.11	Counter64		current
+mtxrInterfaceStatsDriverRxPackets	1.3.6.1.4.1.14988.1.1.14.1.1.12	Counter64		current
+mtxrInterfaceStatsDriverTxBytes	1.3.6.1.4.1.14988.1.1.14.1.1.13	Counter64		current
+mtxrInterfaceStatsDriverTxPackets	1.3.6.1.4.1.14988.1.1.14.1.1.14	Counter64		current
+mtxrInterfaceStatsTxRx64	1.3.6.1.4.1.14988.1.1.14.1.1.15	Counter64		current
+mtxrInterfaceStatsTxRx65To127	1.3.6.1.4.1.14988.1.1.14.1.1.16	Counter64		current
+mtxrInterfaceStatsTxRx128To255	1.3.6.1.4.1.14988.1.1.14.1.1.17	Counter64		current
+mtxrInterfaceStatsTxRx256To511	1.3.6.1.4.1.14988.1.1.14.1.1.18	Counter64		current
+mtxrInterfaceStatsTxRx512To1023	1.3.6.1.4.1.14988.1.1.14.1.1.19	Counter64		current
+mtxrInterfaceStatsTxRx1024To1518	1.3.6.1.4.1.14988.1.1.14.1.1.20	Counter64		current
+mtxrInterfaceStatsTxRx1519ToMax	1.3.6.1.4.1.14988.1.1.14.1.1.21	Counter64		current
+mtxrInterfaceStatsRxBytes	1.3.6.1.4.1.14988.1.1.14.1.1.31	Counter64		current
+mtxrInterfaceStatsRxPackets	1.3.6.1.4.1.14988.1.1.14.1.1.32	Counter64		current
+mtxrInterfaceStatsRxTooShort	1.3.6.1.4.1.14988.1.1.14.1.1.33	Counter64		current
+mtxrInterfaceStatsRx64	1.3.6.1.4.1.14988.1.1.14.1.1.34	Counter64		current
+mtxrInterfaceStatsRx65To127	1.3.6.1.4.1.14988.1.1.14.1.1.35	Counter64		current
+mtxrInterfaceStatsRx128To255	1.3.6.1.4.1.14988.1.1.14.1.1.36	Counter64		current
+mtxrInterfaceStatsRx256To511	1.3.6.1.4.1.14988.1.1.14.1.1.37	Counter64		current
+mtxrInterfaceStatsRx512To1023	1.3.6.1.4.1.14988.1.1.14.1.1.38	Counter64		current
+mtxrInterfaceStatsRx1024To1518	1.3.6.1.4.1.14988.1.1.14.1.1.39	Counter64		current
+mtxrInterfaceStatsRx1519ToMax	1.3.6.1.4.1.14988.1.1.14.1.1.40	Counter64		current
+mtxrInterfaceStatsRxTooLong	1.3.6.1.4.1.14988.1.1.14.1.1.41	Counter64		current
+mtxrInterfaceStatsRxBroadcast	1.3.6.1.4.1.14988.1.1.14.1.1.42	Counter64		current
+mtxrInterfaceStatsRxPause	1.3.6.1.4.1.14988.1.1.14.1.1.43	Counter64		current
+mtxrInterfaceStatsRxMulticast	1.3.6.1.4.1.14988.1.1.14.1.1.44	Counter64		current
+mtxrInterfaceStatsRxFCSError	1.3.6.1.4.1.14988.1.1.14.1.1.45	Counter64		current
+mtxrInterfaceStatsRxAlignError	1.3.6.1.4.1.14988.1.1.14.1.1.46	Counter64		current
+mtxrInterfaceStatsRxFragment	1.3.6.1.4.1.14988.1.1.14.1.1.47	Counter64		current
+mtxrInterfaceStatsRxOverflow	1.3.6.1.4.1.14988.1.1.14.1.1.48	Counter64		current
+mtxrInterfaceStatsRxControl	1.3.6.1.4.1.14988.1.1.14.1.1.49	Counter64		current
+mtxrInterfaceStatsRxUnknownOp	1.3.6.1.4.1.14988.1.1.14.1.1.50	Counter64		current
+mtxrInterfaceStatsRxLengthError	1.3.6.1.4.1.14988.1.1.14.1.1.51	Counter64		current
+mtxrInterfaceStatsRxCodeError	1.3.6.1.4.1.14988.1.1.14.1.1.52	Counter64		current
+mtxrInterfaceStatsRxCarrierError	1.3.6.1.4.1.14988.1.1.14.1.1.53	Counter64		current
+mtxrInterfaceStatsRxJabber	1.3.6.1.4.1.14988.1.1.14.1.1.54	Counter64		current
+mtxrInterfaceStatsRxDrop	1.3.6.1.4.1.14988.1.1.14.1.1.55	Counter64		current
+mtxrInterfaceStatsTxBytes	1.3.6.1.4.1.14988.1.1.14.1.1.61	Counter64		current
+mtxrInterfaceStatsTxPackets	1.3.6.1.4.1.14988.1.1.14.1.1.62	Counter64		current
+mtxrInterfaceStatsTxTooShort	1.3.6.1.4.1.14988.1.1.14.1.1.63	Counter64		current
+mtxrInterfaceStatsTx64	1.3.6.1.4.1.14988.1.1.14.1.1.64	Counter64		current
+mtxrInterfaceStatsTx65To127	1.3.6.1.4.1.14988.1.1.14.1.1.65	Counter64		current
+mtxrInterfaceStatsTx128To255	1.3.6.1.4.1.14988.1.1.14.1.1.66	Counter64		current
+mtxrInterfaceStatsTx256To511	1.3.6.1.4.1.14988.1.1.14.1.1.67	Counter64		current
+mtxrInterfaceStatsTx512To1023	1.3.6.1.4.1.14988.1.1.14.1.1.68	Counter64		current
+mtxrInterfaceStatsTx1024To1518	1.3.6.1.4.1.14988.1.1.14.1.1.69	Counter64		current
+mtxrInterfaceStatsTx1519ToMax	1.3.6.1.4.1.14988.1.1.14.1.1.70	Counter64		current
+mtxrInterfaceStatsTxTooLong	1.3.6.1.4.1.14988.1.1.14.1.1.71	Counter64		current
+mtxrInterfaceStatsTxBroadcast	1.3.6.1.4.1.14988.1.1.14.1.1.72	Counter64		current
+mtxrInterfaceStatsTxPause	1.3.6.1.4.1.14988.1.1.14.1.1.73	Counter64		current
+mtxrInterfaceStatsTxMulticast	1.3.6.1.4.1.14988.1.1.14.1.1.74	Counter64		current
+mtxrInterfaceStatsTxUnderrun	1.3.6.1.4.1.14988.1.1.14.1.1.75	Counter64		current
+mtxrInterfaceStatsTxCollision	1.3.6.1.4.1.14988.1.1.14.1.1.76	Counter64		current
+mtxrInterfaceStatsTxExcessiveCollision	1.3.6.1.4.1.14988.1.1.14.1.1.77	Counter64		current
+mtxrInterfaceStatsTxMultipleCollision	1.3.6.1.4.1.14988.1.1.14.1.1.78	Counter64		current
+mtxrInterfaceStatsTxSingleCollision	1.3.6.1.4.1.14988.1.1.14.1.1.79	Counter64		current
+mtxrInterfaceStatsTxExcessiveDeferred	1.3.6.1.4.1.14988.1.1.14.1.1.80	Counter64		current
+mtxrInterfaceStatsTxDeferred	1.3.6.1.4.1.14988.1.1.14.1.1.81	Counter64		current
+mtxrInterfaceStatsTxLateCollision	1.3.6.1.4.1.14988.1.1.14.1.1.82	Counter64		current
+mtxrInterfaceStatsTxTotalCollision	1.3.6.1.4.1.14988.1.1.14.1.1.83	Counter64		current
+mtxrInterfaceStatsTxPauseHonored	1.3.6.1.4.1.14988.1.1.14.1.1.84	Counter64		current
+mtxrInterfaceStatsTxDrop	1.3.6.1.4.1.14988.1.1.14.1.1.85	Counter64		current
+mtxrInterfaceStatsTxJabber	1.3.6.1.4.1.14988.1.1.14.1.1.86	Counter64		current
+mtxrInterfaceStatsTxFCSError	1.3.6.1.4.1.14988.1.1.14.1.1.87	Counter64		current
+mtxrInterfaceStatsTxControl	1.3.6.1.4.1.14988.1.1.14.1.1.88	Counter64		current
+mtxrInterfaceStatsTxFragment	1.3.6.1.4.1.14988.1.1.14.1.1.89	Counter64		current
+mtxrInterfaceStatsLinkDowns	1.3.6.1.4.1.14988.1.1.14.1.1.90	Counter32		current
+mtxrInterfaceStatsGroup	1.3.6.1.4.1.14988.1.2.1.17			current
+mtxrPOETable	1.3.6.1.4.1.14988.1.1.15.1	SEQUENCE OF MtxrPOEEntry		current
+mtxrPOEEntry	1.3.6.1.4.1.14988.1.1.15.1.1	MtxrPOEEntry		current
+mtxrPOEInterfaceIndex	1.3.6.1.4.1.14988.1.1.15.1.1.1	ObjectIndex		current
+mtxrPOEName	1.3.6.1.4.1.14988.1.1.15.1.1.2	DisplayString		current
+mtxrPOEStatus	1.3.6.1.4.1.14988.1.1.15.1.1.3	INTEGER { disabled(1), waitingForLoad(2), poweredOn(3), over		current
+mtxrPOEVoltage	1.3.6.1.4.1.14988.1.1.15.1.1.4	Voltage		current
+mtxrPOECurrent	1.3.6.1.4.1.14988.1.1.15.1.1.5	Integer32		current
+mtxrPOEPower	1.3.6.1.4.1.14988.1.1.15.1.1.6	Power		current
+mtxrPOEGroup	1.3.6.1.4.1.14988.1.2.1.18			current
+mtxrLTEModemTable	1.3.6.1.4.1.14988.1.1.16.1	SEQUENCE OF MtxrLTEModemEntry		current
+mtxrLTEModemEntry	1.3.6.1.4.1.14988.1.1.16.1.1	MtxrLTEModemEntry		current
+mtxrLTEModemInterfaceIndex	1.3.6.1.4.1.14988.1.1.16.1.1.1	ObjectIndex		current
+mtxrLTEModemSignalRSSI	1.3.6.1.4.1.14988.1.1.16.1.1.2	Integer32		current
+mtxrLTEModemSignalRSRQ	1.3.6.1.4.1.14988.1.1.16.1.1.3	Integer32		current
+mtxrLTEModemSignalRSRP	1.3.6.1.4.1.14988.1.1.16.1.1.4	Integer32		current
+mtxrLTEModemCellId	1.3.6.1.4.1.14988.1.1.16.1.1.5	HexInt		current
+mtxrLTEModemAccessTechnology	1.3.6.1.4.1.14988.1.1.16.1.1.6	INTEGER { unknown(-1), gsmcompact(0), gsm(1), utran(2), egpr		current
+mtxrLTEModemSignalSINR	1.3.6.1.4.1.14988.1.1.16.1.1.7	Integer32		current
+mtxrLTEModemEnbId	1.3.6.1.4.1.14988.1.1.16.1.1.8	Integer32		current
+mtxrLTEModemSectorId	1.3.6.1.4.1.14988.1.1.16.1.1.9	Integer32		current
+mtxrLTEModemLac	1.3.6.1.4.1.14988.1.1.16.1.1.10	Integer32		current
+mtxrLTEModemIMEI	1.3.6.1.4.1.14988.1.1.16.1.1.11	DisplayString		current
+mtxrLTEModemIMSI	1.3.6.1.4.1.14988.1.1.16.1.1.12	DisplayString		current
+mtxrLTEModemUICC	1.3.6.1.4.1.14988.1.1.16.1.1.13	DisplayString		current
+mtxrLTEModemRAT	1.3.6.1.4.1.14988.1.1.16.1.1.14	DisplayString		current
+mtxrLTEModemGroup	1.3.6.1.4.1.14988.1.2.1.19			current
+mtxrPartitionTable	1.3.6.1.4.1.14988.1.1.17.1	SEQUENCE OF MtxrPartitionEntry		current
+mtxrPartitionEntry	1.3.6.1.4.1.14988.1.1.17.1.1	MtxrPartitionEntry		current
+mtxrPartitionIndex	1.3.6.1.4.1.14988.1.1.17.1.1.1	ObjectIndex		current
+mtxrPartitionName	1.3.6.1.4.1.14988.1.1.17.1.1.2	DisplayString		current
+mtxrPartitionSize	1.3.6.1.4.1.14988.1.1.17.1.1.3	Integer32		current
+mtxrPartitionVersion	1.3.6.1.4.1.14988.1.1.17.1.1.4	DisplayString		current
+mtxrPartitionActive	1.3.6.1.4.1.14988.1.1.17.1.1.5	BoolValue		current
+mtxrPartitionRunning	1.3.6.1.4.1.14988.1.1.17.1.1.6	BoolValue		current
+mtxrPartitionGroup	1.3.6.1.4.1.14988.1.2.1.20			current
+mtxrOpticalTable	1.3.6.1.4.1.14988.1.1.19.1	SEQUENCE OF MtxrOpticalTableEntry		current
+mtxrOpticalTableEntry	1.3.6.1.4.1.14988.1.1.19.1.1	MtxrOpticalTableEntry		current
+mtxrOpticalGroup	1.3.6.1.4.1.14988.1.2.1.6			current
+mtxrOpticalIndex	1.3.6.1.4.1.14988.1.1.19.1.1.1	ObjectIndex		current
+mtxrOpticalName	1.3.6.1.4.1.14988.1.1.19.1.1.2	DisplayString		current
+mtxrOpticalRxLoss	1.3.6.1.4.1.14988.1.1.19.1.1.3	BoolValue		current
+mtxrOpticalTxFault	1.3.6.1.4.1.14988.1.1.19.1.1.4	BoolValue		current
+mtxrOpticalWavelength	1.3.6.1.4.1.14988.1.1.19.1.1.5	GDiv100	nm	current
+mtxrOpticalTemperature	1.3.6.1.4.1.14988.1.1.19.1.1.6	Gauge32	C	current
+mtxrOpticalSupplyVoltage	1.3.6.1.4.1.14988.1.1.19.1.1.7	GDiv1000	V	current
+mtxrOpticalTxBiasCurrent	1.3.6.1.4.1.14988.1.1.19.1.1.8	Gauge32	mA	current
+mtxrOpticalTxPower	1.3.6.1.4.1.14988.1.1.19.1.1.9	IDiv1000	dBm	current
+mtxrOpticalRxPower	1.3.6.1.4.1.14988.1.1.19.1.1.10	IDiv1000	dBm	current
+mtxrOpticalVendorName	1.3.6.1.4.1.14988.1.1.19.1.1.11	DisplayString		current
+mtxrIkeSACount	1.3.6.1.4.1.14988.1.1.20.1	Gauge32		current
+mtxrIkeSATable	1.3.6.1.4.1.14988.1.1.20.2	SEQUENCE OF MtxrIkeSATableEntry		current
+mtxrIkeSATableEntry	1.3.6.1.4.1.14988.1.1.20.2.1	MtxrIkeSATableEntry		current
+mtxrIkeSAGroup	1.3.6.1.4.1.14988.1.2.1.7			current
+mtxrIkeSAIndex	1.3.6.1.4.1.14988.1.1.20.2.1.1	ObjectIndex		current
+mtxrIkeSAInitiatorCookie	1.3.6.1.4.1.14988.1.1.20.2.1.2	IsakmpCookie		current
+mtxrIkeSAResponderCookie	1.3.6.1.4.1.14988.1.1.20.2.1.3	IsakmpCookie		current
+mtxrIkeSAResponder	1.3.6.1.4.1.14988.1.1.20.2.1.4	BoolValue		current
+mtxrIkeSANatt	1.3.6.1.4.1.14988.1.1.20.2.1.5	BoolValue		current
+mtxrIkeSAVersion	1.3.6.1.4.1.14988.1.1.20.2.1.6	Gauge32		current
+mtxrIkeSAState	1.3.6.1.4.1.14988.1.1.20.2.1.7	INTEGER { exchange(1), established(2), expired(3), eap(4) }		current
+mtxrIkeSAUptime	1.3.6.1.4.1.14988.1.1.20.2.1.8	TimeTicks		current
+mtxrIkeSASeen	1.3.6.1.4.1.14988.1.1.20.2.1.9	TimeTicks		current
+mtxrIkeSAIdentity	1.3.6.1.4.1.14988.1.1.20.2.1.10	DisplayString		current
+mtxrIkeSAPh2Count	1.3.6.1.4.1.14988.1.1.20.2.1.11	Gauge32		current
+mtxrIkeSALocalAddressType	1.3.6.1.4.1.14988.1.1.20.2.1.12	InetAddressType		current
+mtxrIkeSALocalAddress	1.3.6.1.4.1.14988.1.1.20.2.1.13	InetAddress		current
+mtxrIkeSALocalPort	1.3.6.1.4.1.14988.1.1.20.2.1.14	InetPortNumber		current
+mtxrIkeSAPeerAddressType	1.3.6.1.4.1.14988.1.1.20.2.1.15	InetAddressType		current
+mtxrIkeSAPeerAddress	1.3.6.1.4.1.14988.1.1.20.2.1.16	InetAddress		current
+mtxrIkeSAPeerPort	1.3.6.1.4.1.14988.1.1.20.2.1.17	InetPortNumber		current
+mtxrIkeSADynamicAddressType	1.3.6.1.4.1.14988.1.1.20.2.1.18	InetAddressType		current
+mtxrIkeSADynamicAddress	1.3.6.1.4.1.14988.1.1.20.2.1.19	InetAddress		current
+mtxrIkeSATxBytes	1.3.6.1.4.1.14988.1.1.20.2.1.20	Counter64		current
+mtxrIkeSARxBytes	1.3.6.1.4.1.14988.1.1.20.2.1.21	Counter64		current
+mtxrIkeSATxPackets	1.3.6.1.4.1.14988.1.1.20.2.1.22	Counter64		current
+mtxrIkeSARxPackets	1.3.6.1.4.1.14988.1.1.20.2.1.23	Counter64		current
+mtxrNotifications	1.3.6.1.4.1.14988.1.1.9.0			
+mtxrTrap	1.3.6.1.4.1.14988.1.1.9.0.1			current
+mtxrTemperatureException	1.3.6.1.4.1.14988.1.1.9.0.2			current
+mtxrTrapGroup	1.3.6.1.4.1.14988.1.2.1.14			current

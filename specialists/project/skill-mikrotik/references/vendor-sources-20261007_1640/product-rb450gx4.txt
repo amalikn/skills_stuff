@@ -1,0 +1,201 @@
+Source: https://mikrotik.com/product/rb450gx4 — retrieved 2026-10-07
+
+RB450Gx4
+Four core 716MHz CPU, 1GB RAM, 5xGigabit Ethernet, PoE out on port #5, RouterOS L5
+ARM
+Quad-core CPU
+Outdoors
+PoE
+Specification
+Find retailer
+RB450Gx4
+The RB450Gx4 is an Ethernet router with five Gigabit
+Ethernet ports, a serial port, 512 MB NAND memory
+and a microSD card slot. In addition, it supports full 10 V - 57 V input by two power jacks or PoE (802.3af/ at or passive PoE) and can provide PoE output for Ethernet port #5.
+It is powered by MikroTik RouterOS. It comes without
+an enclosure, you are free to use it in your own. The
+device form factor is identical to our previous RB850
+and RB450 series, so you can even use the same
+enclosures.
+The device is powered by a quad core ARM CPU, has
+1 GB of RAM and supports hardware IPsec encryption.
+The device is powered by RouterOS - the operating
+system, which will turn this powerful system into a
+highly sophisticated router, firewall or bandwidth
+manager.
+Specification
+Specifications
+Product code
+RB450Gx4
+Suggested price
+$99.00
+Architecture
+ARM 32bit
+CPU
+IPQ-4019
+CPU core count
+4
+CPU nominal frequency
+448-896 (auto) MHz
+CPU Threads count
+4
+Switch chip model
+IPQ-4019
+Dimensions
+90 x 116 mm
+RouterOS license
+5
+Operating System
+RouterOS
+Size of RAM
+1 GB
+Storage size
+512 MB
+Storage type
+NAND
+MTBF
+Approximately 100'000 hours at 25C
+Tested ambient temperature
+-40°C to 70°C
+Powering
+Number of DC inputs
+3 (DC jack, PoE-IN)
+DC jack input Voltage
+10-57 V
+Max power consumption
+16 W
+Max power consumption without attachments
+4 W
+PoE in
+802.3af/at
+Cooling type
+Passive
+PoE in input Voltage
+12-57 V
+PoE-out
+PoE-out ports
+Ether5
+PoE out
+Passive PoE
+Low voltage PoE-Out current limit
+500 mA
+High voltage PoE-Out current limit
+500 mA
+Max total out (A)
+500 mA
+Ethernet
+10/100/1000 Ethernet ports
+5
+Peripherals
+Memory card type
+microSD
+Serial console port
+RS232
+Other
+PCB temperature monitor
+Yes
+Voltage Monitor
+Yes
+Beeper
+Yes
+Certification & Approvals
+Certification
+CE, EAC, ROHS
+IP
+IP00
+Note
+The device has an operating system preinstalled and licensed. No separate purchase is necessary and the product is ready to use. The device includes free software updates for the life of the product or a minimum of 5 years starting from date of purchase.
+Ethernet test results
+RB450Gx4 | IPQ-4019 1G all port test
+Mode | Configuration | 1518 byte | 512 byte | 64 byte
+kpps | Mbps | kpps | Mbps | kpps | Mbps
+Bridging | none (fast path) | 162,5 | 1973.4 | 469,9 | 1924.7 | 1488,4 | 762.1
+Bridging | 25 bridge filter rules | 162,5 | 1973.4 | 351,2 | 1438.5 | 352,1 | 180.3
+Routing | none (fast path) | 162,5 | 1973.4 | 469,9 | 1924.7 | 1488,4 | 762.1
+Routing | 25 simple queues | 162,5 | 1973.4 | 468,6 | 1919.4 | 493,4 | 252.6
+Routing | 25 ip filter rules | 162,5 | 1973.4 | 222,8 | 912.6 | 227,4 | 116.4
+All tests are done with Xena Networks specialized test equipment (XenaBay),and done according to RFC2544 (Xena2544)
+Max throughput is determined with 30+ second attempts with 0,1% packet loss tolerance in 64, 512, 1518 byte packet sizes
+Test results show device maximum performance, and are reached using mentioned hardware and software configuration, different configurations most likely will result in lower results
+IPsec test results
+RB450Gx4 | IPQ-4018 IPsec throughput
+Mode | Configuration | 1400 byte | 512 byte | 64 byte
+kpps | Mbps | kpps | Mbps | kpps | Mbps
+Single tunnel | AES-128-CBC + SHA1 | 37.9 | 424.5 | 59 | 241.7 | 61.6 | 31.5
+256 tunnels | AES-128-CBC + SHA1 | 36 | 403.2 | 38.5 | 157.7 | 39.8 | 20.4
+256 tunnels | AES-128-CBC + SHA256 | 36 | 403.2 | 38.5 | 157.7 | 39.8 | 20.4
+256 tunnels | AES-256-CBC + SHA1 | 34.4 | 385.3 | 37.9 | 155.2 | 39.8 | 20.4
+256 tunnels | AES-256-CBC + SHA256 | 34.4 | 385.3 | 37.9 | 155.2 | 39.8 | 20.4
+All tests are done with Xena Networks specialized test equipment (XenaBay),and done according to RFC2544 (Xena2544)
+Max throughput is determined with 30+ second attempts with 0,1% packet loss tolerance in 64, 512, 1400 byte packet sizes
+Test results show device maximum performance, and are reached using mentioned hardware and software configuration, different configurations most likely will result in lower results
+Documents
+Brochure
+Read product brochure and find out about features and specification
+.PDF
+Mounting dimensions
+Quick Guide
+Block Diagram
+DOC
+General File
+Design files
+Product images
+Download images:
+RB450Gx4
+Format:
+png
+Format:
+png
+Download
+Latest RouterOS stable release v7.24.5 download files for arm devices.
+System Package
+RouterOS
+Download
+File
+routeros-7.24.5-arm.npk
+Size
+11.73 MB
+SHA256
+62f02a07d8262ffe4e7dde57566a8c30b82a8ff05383e7bd8bc75c4c297c8d4e
+Download
+RouterBOOT
+Download
+File
+ipq4000-7.24.5.fwf
+Size
+37.46 KB
+SHA256
+ff1239b33bac9e1e122dd51e7cc2447280a5b43d33b23b256150c5e5cc72095a
+Download
+(docs)
+More
+Netinstall:
+Win64
+Download
+File
+netinstall64-7.24.5.zip
+Size
+36.38 MB
+SHA256
+557d0d4d61b1ef84183a76d9e798b242839e89eb650b49675580860d26a209a8
+Download
+Win32
+Download
+File
+netinstall-7.24.5.zip
+Size
+36.35 MB
+SHA256
+bd59c35bb6dbd974d40aabc8071da28f63158854c56646ce47f7ff30dee27467
+Download
+Linux CLI
+Download
+File
+netinstall-7.24.5.tar.gz
+Size
+43.51 MB
+SHA256
+471f8628ee292767a5201f2e2c888ad26dca6a9261e14eb1a04f61a7b04f3cf9
+Download
+More in
+download page
