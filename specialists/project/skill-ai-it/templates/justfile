@@ -70,7 +70,7 @@ inventory:
     @test -f scripts/README.md && sed -n '1,220p' scripts/README.md || true
 
 # Audit script/task inventory for obvious drift
-audit-scripts:
+audit_scripts:
     @echo "== just recipes =="
     @just --list || true
     @echo
@@ -90,34 +90,34 @@ check: _require-venv
     @{{py}} scripts/check_governance.py
 
 # Run safe local preflight checks
-preflight: runtimes audit-scripts check lint-md
+preflight: runtimes audit_scripts check lint_md
 
 # Lint Markdown files when markdownlint-cli2 is available
-lint-md:
+lint_md:
     @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
     @markdownlint-cli2 '**/*.md'
 
 # The navigation-control scripts live in the skill package, NOT in this project. Override on the
-# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav-validate
+# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav_validate
 skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 
 # Upgrade navigation control layer (dry-run preview)
-nav-upgrade-dry-run: _require-venv
+nav_upgrade_dry_run: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
 
 # Upgrade navigation control layer (apply changes) — review the dry-run first
-nav-upgrade: _require-venv
+nav_upgrade: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
 
 # Validate navigation control layer
-nav-validate: _require-venv
+nav_validate: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
 
 # Check only expected files changed after upgrade (requires a git repo)
-nav-check-diff: _require-venv
+nav_check_diff: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
 
 # Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
-# package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
-nav-selftest: _require-venv
+# package's templates change, before trusting nav_upgrade to rewrite this project's blocks.
+nav_selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"

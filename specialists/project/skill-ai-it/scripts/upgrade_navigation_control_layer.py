@@ -20,7 +20,7 @@ from datetime import date
 
 # Bumping this stamps re-emitted managed blocks and makes validate_navigation_control_layer.py flag projects still carrying the previous block content. Keep it identical to the VERSION constant
 # in validate_navigation_control_layer.py — the two are a deliberate restatement, and drift between them silently disables the staleness signal.
-VERSION = "2026-09-23-template-sourced-blocks-v1"
+VERSION = "2026-10-07-snake-case-recipes-v1"
 
 # Managed block constants
 BEGIN_OLD = "<!-- BEGIN skill-ai-it:navigation -->"
@@ -48,6 +48,9 @@ END_SCRIPTS_MANAGED = "<!-- END MANAGED: skill-ai-it:scripts -->"
 
 
 def parse_args():
+    """Command line: --project-root, --dry-run, --report-json, --repair-claude-wrapper, and --force (replace a managed block even when it
+    looks project-authored; discards its content).
+    """
     p = argparse.ArgumentParser(description="Upgrade navigation control layer")
     p.add_argument("--project-root", required=True, help="Path to project root")
     p.add_argument("--dry-run", action="store_true", help="Preview changes without writing")
@@ -62,6 +65,7 @@ def parse_args():
 
 
 def report(args, data):
+    """Print the run's summary: project root, version, dry-run flag, and the files changed, skipped and proposed."""
     print(f"Project root: {data['project_root']}")
     print(f"Version: {data['version']}")
     print(f"Dry run: {data['dry_run']}")
@@ -111,6 +115,7 @@ def count_managed_blocks(text: str, section_name: str) -> int:
 
 
 def has_duplicate_managed_block(text: str, section_name: str) -> bool:
+    """True when the text holds more than one managed block for section_name, which the upgrader refuses to edit."""
     return count_managed_blocks(text, section_name) > 1
 
 
@@ -682,7 +687,48 @@ def append_changelog(path, dry_run, report_data, upgrades_text):
     report_data["changed_files"].append(relpath(path, root))
 
 
+# The template's recipes were kebab-case until 2026-10-07; governance coding-guide now asks snake_case for every command name. A project bootstrapped
+# earlier still has the old names in its justfile, and its re-generated blocks would name recipes it does not have, so the upgrade renames them too.
+# Only these seven, which the template itself introduced: a project's own recipes are its own to rename when touched.
+TEMPLATE_RECIPE_RENAMES = {
+    "nav-upgrade-dry-run": "nav_upgrade_dry_run",
+    "nav-upgrade": "nav_upgrade",
+    "nav-validate": "nav_validate",
+    "nav-check-diff": "nav_check_diff",
+    "nav-selftest": "nav_selftest",
+    "audit-scripts": "audit_scripts",
+    "lint-md": "lint_md",
+}
+
+
+def upgrade_justfile_recipes(path, dry_run, report_data):
+    """Rename the template's kebab-case recipes to snake_case in a project's justfile: definitions, dependencies and `just <name>` mentions.
+
+    Whole names only (a hyphen or word character on either side stops a match), so a project recipe such as `lint-md-strict` is left alone. A
+    project with no justfile, or none of these names, is untouched. With --dry-run the change is reported and nothing is written.
+    """
+    if not os.path.isfile(path):
+        return
+    root = os.path.dirname(path)
+    with open(path, encoding="utf-8") as f:
+        text = f.read()
+    new = text
+    for old in sorted(TEMPLATE_RECIPE_RENAMES, key=len, reverse=True):
+        new = re.sub(rf"(?<![\w-]){re.escape(old)}(?![\w-])", TEMPLATE_RECIPE_RENAMES[old], new)
+    if new == text:
+        return
+    if dry_run:
+        report_data["changed_files"].append(f"{relpath(path, root)} (would rename template recipes to snake_case)")
+        return
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(new)
+    report_data["changed_files"].append(relpath(path, root))
+
+
 def main():
+    """Upgrade one project's navigation control layer: write or refresh each managed block from the templates, stamp the current VERSION, add
+    missing context-map keys, rename the template's kebab-case recipes in its justfile, and report what changed (nothing is written with --dry-run).
+    """
     args = parse_args()
     root = os.path.abspath(args.project_root)
     if not os.path.isdir(root):
@@ -709,6 +755,7 @@ def main():
     upgrade_agents_md(os.path.join(root, "AGENTS.md"), dry_run, report_data)
     upgrade_claude_md(os.path.join(root, "CLAUDE.md"), dry_run, report_data, args.repair_claude_wrapper)
     upgrade_scripts_readme(os.path.join(root, "scripts"), os.path.join(root, "scripts/README.md"), dry_run, report_data)
+    upgrade_justfile_recipes(os.path.join(root, "justfile"), dry_run, report_data)
 
     # Build upgrade summary for changelog from non-changelog changes only.
     non_changelog_changes = [

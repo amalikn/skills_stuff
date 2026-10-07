@@ -17,7 +17,7 @@ import sys
 
 # Must stay identical to the VERSION constant in upgrade_navigation_control_layer.py. A project whose managed block carries an older stamp is reported as missing the current version stamp, which is
 # the intended signal to re-run the upgrade — not a defect in the project.
-VERSION = "2026-09-23-template-sourced-blocks-v1"
+VERSION = "2026-10-07-snake-case-recipes-v1"
 MANAGED_VERSION_LINE = f"<!-- skill-ai-it-version: {VERSION} -->"
 
 # Explicit project opt-out, honoured by upgrade_navigation_control_layer.py too. Kept identical in
@@ -35,6 +35,7 @@ REQUIRED_CONTEXT_MAP_KEYS = ["audit_checks", "promotion_rules", "context_recover
 
 
 def relpath(path: str, root: str) -> str:
+    """path relative to root for display, or path unchanged when the two are on different drives."""
     try:
         return os.path.relpath(path, root)
     except ValueError:
@@ -42,6 +43,7 @@ def relpath(path: str, root: str) -> str:
 
 
 def load_yaml_module():
+    """Import PyYAML or exit 1 with the install command; the validator cannot read context-map.yaml without it."""
     try:
         import yaml
         return yaml
@@ -51,6 +53,7 @@ def load_yaml_module():
 
 
 def add_result(results: dict, severity: str, message: str) -> None:
+    """File a message under passed, warnings or failures by severity ('pass', 'warn', 'fail'); any other severity is a programming error."""
     if severity == "pass":
         results["passed"].append(message)
     elif severity == "warn":
@@ -62,6 +65,7 @@ def add_result(results: dict, severity: str, message: str) -> None:
 
 
 def get_nested(mapping: dict, path: list[str]):
+    """The value at a key path in nested dicts, or None as soon as a level is missing or not a dict."""
     cur = mapping
     for key in path:
         if not isinstance(cur, dict) or key not in cur:
@@ -71,6 +75,7 @@ def get_nested(mapping: dict, path: list[str]):
 
 
 def parse_args():
+    """Command line: --project-root and --report-json."""
     p = argparse.ArgumentParser(description="Validate navigation control layer")
     p.add_argument("--project-root", required=True, help="Path to project root")
     p.add_argument("--report-json", help="Write report JSON to file")
@@ -78,18 +83,22 @@ def parse_args():
 
 
 def green(s):
+    """Wrap a string in the ANSI code for green, for a passed line."""
     return f"\033[92m{s}\033[0m"
 
 
 def yellow(s):
+    """Wrap a string in the ANSI code for yellow, for a warning line."""
     return f"\033[93m{s}\033[0m"
 
 
 def red(s):
+    """Wrap a string in the ANSI code for red, for a failed line."""
     return f"\033[91m{s}\033[0m"
 
 
 def check_file_exists(path, label, root=None):
+    """(present, message) for a required file, the message naming it relative to root when root is given."""
     display = relpath(path, root) if root else label
     if os.path.isfile(path):
         return (True, f"{display}: present")
@@ -97,6 +106,7 @@ def check_file_exists(path, label, root=None):
 
 
 def read_file_content(path):
+    """A file's UTF-8 text, None when it does not exist, or `__READ_ERROR__:<reason>` when it cannot be decoded."""
     try:
         with open(path, encoding="utf-8") as f:
             return f.read()
@@ -173,6 +183,7 @@ def check_managed_block_integrity(text, file_label, results, required_sections=N
 
 
 def check_yaml(path, results, root):
+    """Parse a YAML file into a dict and record pass or fail; returns the data, or None when the file is missing or invalid."""
     display = relpath(path, root)
     if not os.path.exists(path):
         add_result(results, "fail", f"{display}: MISSING")
@@ -192,6 +203,7 @@ def check_yaml(path, results, root):
 
 
 def validate_context_map(data, results):
+    """Check context-map.yaml: every required key present and the skill_ai_it_version stamp equal to this validator's VERSION."""
     for key in REQUIRED_CONTEXT_MAP_KEYS:
         if key in data:
             add_result(results, "pass", f"context-map.yaml: '{key}' present")
@@ -246,6 +258,7 @@ def validate_context_map(data, results):
 
 
 def validate_ai_navigation(ai_nav, results):
+    """Check AI_NAVIGATION.md for stale patterns and managed-block integrity; a read error is a failure."""
     if not ai_nav:
         return
     if ai_nav.startswith("__READ_ERROR__:"):
@@ -279,6 +292,9 @@ def validate_ai_navigation(ai_nav, results):
 
 
 def validate_scripts_governance(root, data, results):
+    """When scripts/ exists, check scripts/README.md is present with an intact managed block, that task runners are documented,
+    and that scripts/check_governance.py is wired into a task runner.
+    """
     scripts_dir = os.path.join(root, "scripts")
     scripts_readme = os.path.join(scripts_dir, "README.md")
     if os.path.isdir(scripts_dir):
@@ -340,6 +356,7 @@ def validate_governance_checker(root, present_runners, results):
 
 
 def validate_companion_consistency(data, ai_nav, results):
+    """Warn when context-map's update_rules name governance_navigation but AI_NAVIGATION.md has no companion section."""
     if not data or not ai_nav:
         return
     up = data.get("update_rules", {})
@@ -352,6 +369,7 @@ def validate_companion_consistency(data, ai_nav, results):
 
 
 def main():
+    """Run every validation against one project and print the results; exit 0 PASS, 1 FAIL, 2 WARN (critical checks passed, warnings exist)."""
     args = parse_args()
     root = os.path.abspath(args.project_root)
     if not os.path.isdir(root):

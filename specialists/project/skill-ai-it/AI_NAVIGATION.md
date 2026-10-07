@@ -5,7 +5,7 @@ Purpose: this file is the context entrypoint for agents maintaining `skill-ai-it
 This package is a reusable AI governance/navigation bootstrap skill. It must remain repeat-safe, template-driven, changelog-aware, and tool-agnostic.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## Mandatory read order
 

@@ -111,7 +111,7 @@ When adding repeat-refreshable content into existing files, wrap it with comment
 
 ```markdown
 <!-- BEGIN MANAGED: skill-ai-it:<section-name> -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 ...managed content...
 <!-- END MANAGED: skill-ai-it:<section-name> -->
 ```
@@ -564,6 +564,15 @@ the Google Shell Style Guide asks the same of shell, and one rule beats a per-la
 skill names, document slugs (`<slug>-YYYYMMDD_hhmm.md`), repo and folder names. `check_file_naming` in `templates/check_governance.py` fails on a
 kebab-case code file under `scripts/`; a project adopting the rule lists its existing ones in `KEBAB_LEGACY` and renames each when next touched,
 updating every reference in the same change. This package's own optional template is `templates/context_preflight.sh` (renamed from the kebab form).
+The template's own recipes follow it since 2026-10-07 (`nav_upgrade`, `nav_validate`, `lint_md` and the rest); `nav_upgrade` renames the old kebab
+forms in a project's justfile on its next run.
+
+#### Function documentation
+
+Every function a project's scripts define carries a docstring (Python) or a comment block directly above it (shell): a summary line, then the reasoning
+and the failure behaviour where they are not obvious, with section banners in longer files. The reference style is ansible-wifi's
+`roles/smc_rise_watchdog/templates/rise_watchdog.py.j2`. `check_function_docs` in `templates/check_governance.py` fails on an undocumented one,
+including Python embedded as a string constant (code shipped to another host), so the template's own functions are documented too (operator, 2026-10-07).
 
 Also generate `just bootstrap` (builds the venv from the mise pins; safe to re-run) and `just runtimes` (prints the resolved interpreters). `runtimes` is the one that makes the invariant *observable*
 — without it, "the recipes use the pinned runtime" is an assumption nobody can check in under a minute.
@@ -588,7 +597,7 @@ where you do.
 **Do not add a `.python-version` file alongside `.mise.toml`.** Two files stating the version is two places for it to drift. `.mise.toml` owns the pin.
 
 **Declare third-party dependencies in `requirements.txt`, and have `bootstrap` install them.** Pinning the interpreter without declaring the packages does not remove the hidden host dependency — it
-relocates it, and the failure arrives later and reads worse. This is not hypothetical: the moment the 2026-08-25 project switched off the host interpreter, `just nav-validate` failed on a missing
+relocates it, and the failure arrives later and reads worse. This is not hypothetical: the moment the 2026-08-25 project switched off the host interpreter, `just nav_validate` failed on a missing
 PyYAML that had been supplied invisibly by Homebrew's Python for the whole session. Nothing had ever declared it.
 
 Keep the project's **own** scripts stdlib-only where you can, and say so in the file. The governance gate in particular must never fail for environment reasons — a check that cannot run is
@@ -632,7 +641,7 @@ runtimes:
     @printf 'node    '; {{nd}} --version 2>/dev/null || echo "MISSING — pin node in .mise.toml"
 
 # Audit script/task inventory for drift
-audit-scripts:
+audit_scripts:
     @echo "== just recipes =="; just --list || true
     @echo; echo "== script files =="; find scripts -maxdepth 2 -type f 2>/dev/null | sort || true
 
@@ -641,10 +650,10 @@ check: _require-venv
     @{{py}} scripts/check_governance.py
 
 # Run safe local preflight checks
-preflight: runtimes audit-scripts check
+preflight: runtimes audit_scripts check
 
 # Lint Markdown files when markdownlint-cli2 is available
-lint-md:
+lint_md:
     @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
     @markdownlint-cli2 '**/*.md'
 ```
@@ -779,7 +788,7 @@ Summary: <One-line summary of what this policy governs.>
 - Keep [README.md](README.md) current when adding subfolders or significant documents.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## AI navigation and context preflight
 
@@ -962,7 +971,7 @@ Create during `bootstrap`, `navigation-add`, and `refresh` unless the project al
 `.markdownlint.json(c)`, `.markdownlint.yaml`, or a `markdownlint-cli2` key in `package.json` first, and skip (report as skipped, not overwritten) if any is present.
 
 Preferred source template: `templates/.markdownlint-cli2.jsonc`. It encodes the same rule the *Markdown quality rules* section already enforces on every file this skill writes — prose wraps at 200
-columns, tables/code/headings exempt, `MD024` allows repeated headings across non-sibling sections — so `just lint-md` (or a bare `markdownlint-cli2` run) checks the same standard the skill already
+columns, tables/code/headings exempt, `MD024` allows repeated headings across non-sibling sections — so `just lint_md` (or a bare `markdownlint-cli2` run) checks the same standard the skill already
 applies by hand, instead of a stricter or looser one fighting it.
 
 The template's `ignores` list covers generated/support surfaces common across this skill's own vocabulary (`graphify-out/`, `.ai-context/`, `.remember/`, `.code-context-notes/`, `.staleness-audit/`,
@@ -1058,7 +1067,7 @@ Purpose: this file is the project context entrypoint for AI agents. It tells age
 This file is a router, not the full knowledge store.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## Mandatory read order
 
@@ -1700,7 +1709,7 @@ Create or update `scripts/README.md` from the template. Populate entries for eac
 
 **Only "Execution Policy" / "Preferred Execution Order" / "Maintenance Rules" belong inside the `skill-ai-it:scripts` managed block** — that is the exact content
 `upgrade_navigation_control_layer.py`'s `build_scripts_block()` regenerates. "Runtimes", "Task Inventory", "Raw Script Inventory", "Safety Labels", and "Notes" are project-specific and must sit
-OUTSIDE the markers (the template already places them there). Nesting them inside the managed block, as the template did until 2026-09-18, means the next `nav-upgrade` silently discards them — the
+OUTSIDE the markers (the template already places them there). Nesting them inside the managed block, as the template did until 2026-09-18, means the next `nav_upgrade` silently discards them — the
 upgrader reports `replaced-managed-block` and that reads like success.
 
 ### Optional/generated support files
@@ -1918,14 +1927,14 @@ Available scripts:
 Available just targets (only where the project's `justfile` came from `templates/justfile`, which defines a `skill_dir` variable pointing at the skill package — a project whose justfile predates that
 variable, or was hand-written, will not have these recipes at all; use the absolute-path form above):
 
-- `just nav-upgrade-dry-run`
-- `just nav-upgrade`
-- `just nav-validate`
-- `just nav-check-diff`
-- `just nav-selftest` — the skill package's own block self-test
+- `just nav_upgrade_dry_run`
+- `just nav_upgrade`
+- `just nav_validate`
+- `just nav_check_diff`
+- `just nav_selftest` — the skill package's own block self-test
 - `just check` — the project's own governance checker, once it has one
 
-Override the skill location per invocation with `just skill_dir=/path/to/skill-ai-it nav-validate`.
+Override the skill location per invocation with `just skill_dir=/path/to/skill-ai-it nav_validate`.
 
 ---
 

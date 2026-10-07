@@ -22,7 +22,7 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
   (2026-10-07): 25 and 21 OIDs verified, write test done (sysName applies, sysLocation ignored); GPS: neither model (v0.1.13-0.1.14).
 - Pinned runtime (`just bootstrap`, working-cache `.venv`), every function documented (`check_function_docs`), scripts and recipes in snake_case
   (v0.1.12, 0.1.15, 0.1.16).
-- Background waiter for arrkapa: `scripts/mikrotik_site_capture.sh` with `WAIT_UP=1`, output the `capture-arrkapa-mikrotik` folder in the arrkapa-wan investigation folder.
+- arrkapa captured 2026-10-07 16:02 (switch + TSTIK + SMC kernel log): switch kernel-failure / watchdog reboot loop; waiters finished.
 
 ## Next actions
 
@@ -47,7 +47,7 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
   vs ansible-wifi in skill-smc 0.1.98.
 - 2026-10-07 evening — SNMP verified on amuroona (read-only, then a write test the operator approved); GPS check across vendors (UNC
   `gps.device_types`); runtime pinning; function docs; snake_case renames. Incident: a `--rw` run printed the read-only community in the operator's
-  terminal; redaction fixed, rotation is the operator's call.
+  terminal; redaction fixed; operator: no rotation needed (2026-10-07).
 
 ## Memory pointers
 
@@ -55,4 +55,4 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
   `.cloned-mac-remedy` (updated 16:26), `.provisioning-script-20261007`, `.mk3-diagram-20261007`, `.equipment-snmp-registry-20261007`, `.snmp-amuroona-results-20261007`, `.cloned-mac-evidence-delta`, `.arrkapa-and-open`, `.cross-links-20261007`. Related keys in channel `ansible-wifi`:
   `skill-mikrotik-created-20261007`, `ansible-wifi.mikrotik.cloned-macs-keepass-rename-20261007`.
 - project-context project `skill-mikrotik` (`ee2796d9-6122-42c8-9aba-2d453b8a5f55`): one note, two decisions. Checkpoints `slurp-20261007-skill-mikrotik`, `slurp-20261007-mikrotik-provisioning`.
-
+- 2026-10-07 20:19: `skill-mikrotik.arrkapa-root-cause-20261007` (memory-keeper); checkpoint `slurp-20261007-arrkapa-root-cause`.

@@ -166,6 +166,7 @@ checks_run = 0
 
 
 def fail(check: str, detail: str) -> None:
+    """Record one failure under its check name; main() prints them all at the end, so one defect never hides the next."""
     failures.append(f"{check}: {detail}")
 
 
@@ -176,6 +177,7 @@ def counted() -> None:
 
 
 def read(rel: str) -> str | None:
+    """A project-relative file's text, or None when it does not exist. Callers decide whether absence is itself a failure."""
     path = ROOT / rel
     return path.read_text(encoding="utf-8") if path.is_file() else None
 
@@ -195,6 +197,7 @@ def table_rows(rel: str) -> list[dict[str, str]]:
 
 
 def members(folder: str, glob: str) -> list[Path]:
+    """Files in a project folder that match glob, sorted, dotfiles excluded. An absent folder has no members rather than raising."""
     base = ROOT / folder
     if not base.is_dir():
         return []
@@ -340,6 +343,54 @@ def check_file_naming() -> None:
         counted()
         if not (ROOT / rel).is_file():
             fail("file-naming", f"KEBAB_LEGACY lists {rel}, which no longer exists: remove the entry")
+
+
+def check_function_docs() -> None:
+    """Every function in scripts/ says what it does: a docstring on each Python function, a comment block above each shell function.
+
+    Operator, 2026-10-07: every function gets proper comments, in the style of ansible-wifi's rise_watchdog.py (a summary line, then the reasoning and
+    the failure behaviour where it is not obvious). Python code embedded as a string constant (snmp_via_smc.py's AGENT, run on the SMC) is parsed and
+    held to the same rule, because it is code a reader has to trust. A shell function needs at least one `#` line directly above its definition.
+    """
+    import ast
+
+    def undocumented(tree: ast.AST) -> list[str]:
+        """Names of the function definitions in tree that have no docstring."""
+        return [n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and not ast.get_docstring(n)]
+
+    for path in sorted((ROOT / "scripts").glob("*.py")):
+        rel = path.relative_to(ROOT).as_posix()
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+        except SyntaxError as e:
+            fail("function-docs", f"{rel} does not parse: {e}")
+            continue
+        counted()
+        for name in undocumented(tree):
+            fail("function-docs", f"{rel}: function `{name}` has no docstring")
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str) and "\ndef " in node.value:
+                try:
+                    inner = ast.parse(node.value)
+                except SyntaxError:
+                    continue  # a string that only mentions `def` is prose, not embedded code
+                counted()
+                for name in undocumented(inner):
+                    fail("function-docs", f"{rel}: embedded function `{name}` (line {node.lineno}) has no docstring")
+    for path in sorted((ROOT / "scripts").glob("*.sh")):
+        rel = path.relative_to(ROOT).as_posix()
+        lines = path.read_text(encoding="utf-8").splitlines()
+        for i, line in enumerate(lines):
+            if re.match(r"^\s*[A-Za-z_][\w-]*\s*\(\)\s*\{", line):
+                counted()
+                if i == 0 or not lines[i - 1].lstrip().startswith("#"):
+                    fail("function-docs", f"{rel}:{i + 1} shell function `{line.strip()[:40]}` has no comment block above it")
+
+
+# Code files that kept a kebab-case name when the snake_case rule arrived. Listed here, by repo-relative path, until they are next touched and renamed
+# (governance coding-guide: renamed when touched, references updated in the same change; never a new one). Empty is the goal.
+KEBAB_LEGACY: frozenset[str] = frozenset()
+CODE_SUFFIXES: frozenset[str] = frozenset({".py", ".sh", ".bash", ".js", ".mjs", ".ts", ".rb", ".pl"})
 
 
 def check_interpreter_pinning() -> None:
@@ -562,6 +613,7 @@ CHECKS = (
     check_catalog_coverage,
     check_task_recipes,
     check_interpreter_pinning,
+    check_function_docs,
     check_file_naming,
     check_derived_freshness,
     check_constant_sync,
@@ -571,6 +623,7 @@ CHECKS = (
 
 
 def main() -> int:
+    """Run every registered check, print each unique failure, and return the exit code: 0 when all passed, 1 when anything failed."""
     for check in CHECKS:
         check()
 

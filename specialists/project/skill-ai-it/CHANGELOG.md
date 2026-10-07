@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261007_2027 — feat: snake_case recipes (VERSION 2026-10-07-snake-case-recipes-v1); check_function_docs in the template](#20261007_2027--feat-snake_case-recipes-version-2026-10-07-snake-case-recipes-v1-check_function_docs-in-the-template)
 - [20261007_2009 — feat: snake_case file naming, check_file_naming; template renamed to context_preflight.sh](#20261007_2009--feat-snake_case-file-naming-check_file_naming-template-renamed-to-context_preflightsh)
 - [20261007_1848 — fix: runtime isolation now also catches shebang-run recipes and inline interpreters in shell scripts](#20261007_1848--fix-runtime-isolation-now-also-catches-shebang-run-recipes-and-inline-interpreters-in-shell-scripts)
 - [20261007_1628 — fix: the navigation template folded the audit/check rule into item 12](#20261007_1628--fix-the-navigation-template-folded-the-auditcheck-rule-into-item-12)
@@ -50,6 +51,19 @@
 - [20260812_1300](#20260812_1300)
 
 ---
+
+## 20261007_2027 — feat: snake_case recipes (VERSION 2026-10-07-snake-case-recipes-v1); check_function_docs in the template
+
+Operator (2026-10-07): the template's kebab-case recipes are renamed now, and the template gets the function-docs check.
+
+- Recipes renamed in `templates/justfile` and this package's `justfile`: `audit_scripts`, `lint_md`, `nav_upgrade_dry_run`, `nav_upgrade`,
+  `nav_validate`, `nav_check_diff`, `nav_selftest` (and `skills_registry` here). Managed-block content names them, so the stamp moves to
+  `2026-10-07-snake-case-recipes-v1` on every surface; `nav_validate` now flags projects still on `2026-09-23-template-sourced-blocks-v1`.
+- `scripts/upgrade_navigation_control_layer.py`: new step `upgrade_justfile_recipes` renames those seven template recipes in a project's justfile
+  (whole names only; a project's own recipes are left alone), so a re-upgrade keeps blocks and justfile in step. Dry-run reports it.
+- `templates/check_governance.py` and this package's checker: `check_function_docs` (from skill-mikrotik) fails on an undocumented Python function,
+  embedded code included, or a shell function without a comment above it. 40 functions documented here first (the template's own four, since every
+  project copies it).
 
 ## 20261007_2009 — feat: snake_case file naming, check_file_naming; template renamed to context_preflight.sh
 

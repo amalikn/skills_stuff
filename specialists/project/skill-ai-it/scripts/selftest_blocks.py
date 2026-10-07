@@ -51,6 +51,7 @@ checks = 0
 
 
 def check(condition: bool, detail: str) -> None:
+    """Count one assertion and record its detail as a failure when the condition is false; main() reports them all."""
     global checks
     checks += 1
     if not condition:
@@ -58,6 +59,7 @@ def check(condition: bool, detail: str) -> None:
 
 
 def load():
+    """Import the upgrader from its file path as a module, so its block builders can be called without running its main()."""
     spec = importlib.util.spec_from_file_location("upgrader_under_test", UPGRADER)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -65,10 +67,14 @@ def load():
 
 
 def headings(text: str, level: str = "## ") -> list[str]:
+    """The headings at one level (default `## `) in a block of markdown, deeper levels excluded, in order."""
     return [l.strip() for l in text.split("\n") if l.startswith(level) and not l.startswith(level + "#")]
 
 
 def main() -> int:
+    """Build each managed block (navigation, agents, scripts) with the upgrader and assert its shape: markers, version stamp, no trailing
+    whitespace or blank runs, and every required section. Returns 0 when all pass, 1 otherwise.
+    """
     m = load()
 
     blocks = {

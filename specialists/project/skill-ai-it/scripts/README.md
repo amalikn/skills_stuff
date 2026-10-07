@@ -4,7 +4,7 @@ Runnable scripts for maintaining the **navigation control layer** in target proj
 explicitly.
 
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## Execution Policy
 
@@ -39,7 +39,7 @@ explicitly.
 |---|---|---|---|---|---|---|
 | `upgrade_navigation_control_layer.py` | Writes/refreshes managed navigation blocks in a target project's `AGENTS.md`, `AI_NAVIGATION.md`, and `scripts/README.md`, stamped with the current `VERSION`. | `--project-root`, `--dry-run`, `--report-json`, `--repair-claude-wrapper` | File changes in the target project; console diff | `review-required` | Yes | After a `VERSION` bump, or to bring a project onto the current control layer |
 | `validate_navigation_control_layer.py` | Validates control-layer coherence: managed block integrity, version stamps, required governance files, `context-map.yaml` keys, task-runner references, and governance-checker presence/wiring. | `--project-root`, `--report-json` | Console pass/warn/fail; exit 0/1/2 | `safe` | Yes | After upgrade, or as a periodic audit |
-| `check_expected_diff.py` | Confirms only expected files changed after an upgrade, against `DEFAULT_EXPECTED` plus `--allow` additions. Requires the target to be a git repo. | `--project-root`, `--allow`, `--report-json` | Console list of expected vs unexpected changes | `safe` | Yes | Immediately after `nav-upgrade` |
+| `check_expected_diff.py` | Confirms only expected files changed after an upgrade, against `DEFAULT_EXPECTED` plus `--allow` additions. Requires the target to be a git repo. | `--project-root`, `--allow`, `--report-json` | Console list of expected vs unexpected changes | `safe` | Yes | Immediately after `nav_upgrade` |
 | `selftest_blocks.py` | Self-tests the managed-block builders: canonical markers, current `VERSION` stamp, no trailing whitespace or blank runs, every required navigation section present, and a loud failure when a template is unreadable. | none | Console pass/fail; exit 0/1 | `safe` | Yes | After editing any file under `templates/`, or any builder in `upgrade_navigation_control_layer.py`, before running an upgrade against a real project |
 | `check_governance.py` | Asserts this package's own governance claims: path references resolve, every script is cataloged here, every pattern is named in `SKILL.md`, recipes address the pinned interpreter, and the managed-block `VERSION` is identical on all twelve surfaces that state it. | none | Console pass/fail with an assertion count; exit 0/1 | `safe` | Yes | Before calling any durable change to this package complete |
 | `skills_registry.py` | Builds or checks a project area's skills.md: scans the area's `AGENTS.md`, `CLAUDE.md`, `AI_NAVIGATION.md` and `SKILL.md` files for `skill-*` names, resolves each to `skills_stuff`, a project-local folder, an installed-only copy, or not found, and lists which projects use it. Names seen only in plain prose and aliases are reported, not listed. | `--project-root`, `--check` (default) / `--print` / `--write`, `--force`, `--also`, `--ignore`, `--keep`, `--title` | Check: drift report, exit 0 in step / 1 drift. Print: generated file on stdout. Write: skills.md (backup skills.md.bak-YYYYMMDD_hhmm with `--force`) | `safe` (check, print); `review-required` (write) | Yes | When a project area needs its skills list created, or to spot skills added or dropped since it was written |

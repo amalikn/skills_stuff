@@ -111,6 +111,11 @@ def owner(path: Path, root: Path, local_skills: dict[str, Path]) -> str:
 
 
 def scan(root: Path, also: list[Path], ignore: set[str]):
+    """Every `skill-*` name mentioned in the governance files under root (plus --also files), with the projects that mention it.
+
+    Returns (mentions, local skill folders, names seen marked up in backticks/bold/links, names introduced as aliases). Project-local skills are
+    added as used by the project that holds them even when no file names them. A name matching a folder without a SKILL.md is dropped.
+    """
     local = skill_dirs(root, MAX_DEPTH + 1)
     folders = {p.name for p, _, _ in walk(root, MAX_DEPTH + 1)}
     mentions: dict[str, set[str]] = {}
@@ -140,6 +145,7 @@ def scan(root: Path, also: list[Path], ignore: set[str]):
 
 
 def resolve(names, local: dict[str, Path], root: Path):
+    """Classify each name: project-local, shared (skills_stuff), installed only (~/.claude/skills) or missing, with its location and entry file."""
     shared = skill_dirs(SKILLS_ROOT, 4)
     installed = skill_dirs(INSTALLED_ROOT, 1)
     out = []
@@ -159,6 +165,7 @@ def resolve(names, local: dict[str, Path], root: Path):
 
 
 def fit(text: str, width: int) -> str:
+    """Cut text to width at a word boundary and mark the cut with an ellipsis; text that fits is returned unchanged."""
     if len(text) <= width:
         return text
     cut = text[: width - 1].rsplit(" ", 1)[0].rstrip(",;:.(")
@@ -180,7 +187,9 @@ def table(header, rows, flex: int) -> str:
 
 
 def render(root: Path, title: str, resolved, mentions, today: str) -> str:
+    """The full skills.md text: front matter, rules, one table per kind of skill (each kept under MAX_WIDTH), and a maintenance section."""
     def used(n: str) -> str:
+        """The projects that use skill n, joined with commas and summarised as `+N more` past USED_WIDTH."""
         names = sorted(mentions.get(n, set()))
         shown: list[str] = []
         for i, x in enumerate(names):
@@ -236,7 +245,7 @@ files keep their own invoke rules and may link here instead of repeating this li
 - Generated {today} by skill-ai-it `scripts/skills_registry.py`, then edited by hand. To spot drift:
 
   ```bash
-  just -f {SKILLS_ROOT}/specialists/project/skill-ai-it/justfile skills-registry {root}
+  just -f {SKILLS_ROOT}/specialists/project/skill-ai-it/justfile skills_registry {root}
   ```
 """)
     return "".join(parts)
@@ -253,6 +262,9 @@ def listed(skills_md: Path) -> set[str]:
 
 
 def main() -> int:
+    """Parse arguments and run the chosen mode: --check (default; exit 1 on drift), --print, or --write (refuses to replace an existing
+    skills.md without --force, and then keeps a timestamped backup).
+    """
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--project-root", required=True, type=Path, help="folder whose child projects are scanned; skills.md lives here")
     mode = ap.add_mutually_exclusive_group()

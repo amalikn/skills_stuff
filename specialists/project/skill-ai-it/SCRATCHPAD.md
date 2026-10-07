@@ -33,9 +33,14 @@ reading the templates; the inlined copies are gone. Current stamp is recorded in
 `patterns/governance-checks.md`; seed in `templates/check_governance.py`; obligation block in `templates/AGENTS-governance-checks-block.md`. Enforcement is by coverage self-policing — the checker
 fails on files nothing covers, so extending it is a blocking condition rather than an intention. `refresh` is the adoption path for projects that predate the capability.
 
-**Version bump consequence (KEEP):** `VERSION` moved to `2026-08-11-governance-checks-layer-v1`. Three projects still carry the previous stamp and will report "missing current version stamp" under
-`just nav-validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitability`, `apn/opticomm-profitability`. That report is the intended re-upgrade signal, not a project defect. Remediation: `just
-nav-upgrade` per project.
+**Version bump 2026-10-07 (KEEP):** `VERSION` moved again (snake_case recipes, check_function_docs; the stamp is owned by `scripts/README.md`
+under Coupled Constants). The 14 projects
+whose justfile still has `nav-upgrade` and friends report a stale stamp under `just nav_validate`; `just nav_upgrade` (dry-run first) renames their
+template recipes and refreshes the blocks. Not yet run on any project.
+
+**Earlier version bump consequence (KEEP):** `VERSION` moved to `2026-08-11-governance-checks-layer-v1`. Three projects still carry the previous stamp and will report "missing current version stamp" under
+`just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitability`, `apn/opticomm-profitability`. That report is the intended re-upgrade signal, not a project defect. Remediation: `just
+nav_upgrade` per project.
 
 ---
 
@@ -45,7 +50,7 @@ nav-upgrade` per project.
   Contents block (skill-smc, skill-cambium) need a manual move to the top plus a TOC line on every refresh (skill-smc 2026-09-08 and 2026-10-07). Candidate fix: detect
   ordering from the first two dated headings, insert accordingly, and add the Contents line when one exists.
 
-- [ ] **Dogfood the checker on this package** — `just nav-validate` now warns that `skill-ai-it` itself has no `scripts/check_governance.py`. The package has real invariants worth asserting: every
+- [ ] **Dogfood the checker on this package** — `just nav_validate` now warns that `skill-ai-it` itself has no `scripts/check_governance.py`. The package has real invariants worth asserting: every
   file in the layout tree exists, `templates/` and `patterns/` members are registered in `README.md` / `AI_NAVIGATION.md` / `context-map.yaml`, and `VERSION` is identical across all 11 surfaces that
   restate it. That last one is a textbook duplicated-fact-sync check and this session drifted it by hand.
 
@@ -54,7 +59,7 @@ nav-upgrade` per project.
 
 - [ ] Re-upgrade the three projects on the previous version stamp AND adopt the governance checker — **now the same single command** since refresh was wired to the deterministic sequence:
   `/skill-ai-it refresh <project>` for `me/llm-m2max`, `apn/vocus-profitability`, `apn/opticomm-profitability`. It restamps managed blocks, adds missing context-map keys, creates the checker, and
-  regenerates the context pack. `just nav-upgrade` does NOT work in those projects — they have no local copy of the nav-control scripts. On `me/japan/tracks/jdm` (was `me/jdm` until 2026-08-18), do
+  regenerates the context pack. `just nav_upgrade` does NOT work in those projects — they have no local copy of the nav-control scripts. On `me/japan/tracks/jdm` (was `me/jdm` until 2026-08-18), do
 not overwrite the hand-built checker (521
   assertions); it is the reference implementation this capability was generalized from.
 
@@ -113,12 +118,12 @@ not overwrite the hand-built checker (521
 
 - `check_interpreter_pinning` now fails shebang-run recipes and bare interpreters inside `scripts/*.sh` (rule 4); `check_file_naming` enforces the
   governance snake_case rule (`KEBAB_LEGACY` for existing files); template renamed `templates/context_preflight.sh`. Open: the template's own kebab
-  recipes (`nav-upgrade` and the rest) wait until touched; whether `check_function_docs` (skill-mikrotik) joins the template is the operator's call.
+  recipes (`nav_upgrade` and the rest) wait until touched; whether `check_function_docs` (skill-mikrotik) joins the template is the operator's call.
 
 ### 20261007_1626 — `scripts/skills_registry.py`: a skills list for any project area
 
 - Operator asked for a maintained list of work skills per project area. `apn/skills.md` and `me/skills.md` were written by hand first (committed in those
-  repos), then generalised into `scripts/skills_registry.py` and `just skills-registry <root>` (check by default; `--print`; `--write`, which never replaces
+  repos), then generalised into `scripts/skills_registry.py` and `just skills_registry <root>` (check by default; `--print`; `--write`, which never replaces
   an existing file without `--force` and a backup).
 - Names only ever written in plain prose cannot be told apart from hyphenated phrases, so they are reported for a human (`--keep` lists one). Open from its
   first run: `skill-malik-ai` is cited by `me/islam` and `me/japan/tracks/jdm` but exists nowhere.

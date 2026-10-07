@@ -246,7 +246,7 @@ Also see:
 
 - `templates/update_rules.yaml` — default companion-file update rules template
 - `patterns/navigation-control-automation.md` — explains when to run scripts, exit codes, .proposed handling
-- `templates/justfile` — includes `nav-upgrade`, `nav-upgrade-dry-run`, `nav-validate`, `nav-check-diff` targets
+- `templates/justfile` — includes `nav_upgrade`, `nav_upgrade_dry_run`, `nav_validate`, `nav_check_diff` targets
 
 **Key rules:**
 

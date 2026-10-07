@@ -32,6 +32,7 @@ ALLOWED_OPTIONAL = {
 
 
 def parse_args():
+    """Command line: --project-root (a git work tree), --allow (extra files permitted to change, repeatable), --report-json."""
     p = argparse.ArgumentParser(description="Check expected git diff after upgrade")
     p.add_argument("--project-root", required=True, help="Path to project root (must be a git repo)")
     p.add_argument("--allow", action="append", default=[], help="Additional allowed unexpected files")
@@ -40,6 +41,11 @@ def parse_args():
 
 
 def main():
+    """Compare the project's changed files with what an upgrade is expected to touch, print the unexpected ones, and exit 1 if any.
+
+    The project root need not be the git root (workspaces nest projects in one repository), so paths are taken relative to git's toplevel and
+    filtered to the project. Exit 2 when the root is not a directory or not inside a git work tree.
+    """
     args = parse_args()
     root = os.path.abspath(args.project_root)
 
