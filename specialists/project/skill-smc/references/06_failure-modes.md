@@ -60,24 +60,24 @@ Fix:   Identify what is filling /media/root-rw/overlay
 
 ### Domain-Specific Host DNS Resolution Delay (non-`smc_ltp` hosts)
 
-| Field                     | Value                                                                                                                                                                    |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Error text                | `ping <fqdn>` / `getaddrinfo(AF_UNSPEC)` from the SMC itself stalls ~15s before resolving; direct IP and single-record `dig` are fast; delay is domain-specific          |
-|                           |   (reproduces on domains with an A record + AAAA NODATA, not on domains with no AAAA-eligible answer path)                                                               |
-| Typical context           | Any non-`smc_ltp` host performing a combined A+AAAA lookup (`getaddrinfo(AF_UNSPEC)`) — this is glibc's default behavior for most name resolution, not something the     |
-|                           |   caller opts into                                                                                                                                                       |
-| Cause class               | Architecture exposure, not a code bug: `DNSStubListener=no` (unconditional, `roles/smc_network/templates/resolved.conf.j2`) means host glibc talks directly to           |
-|                           |   `external_dns_servers` over raw UDP — bypassing systemd-resolved's stub *and* unbound/stubby entirely (see `02_service-map.md`). On some WAN paths, one leg (typically |
-|                           |   AAAA) of the near-simultaneous A/AAAA query pair fails to return; isolated queries and TCP both succeed, ruling out general DNS reachability                           |
-| First confirmed on        | garimba-smc01 (rct), 2026-07-03; not reproduced on yuelamu-10mile-smc01 (same fleet, different WAN path)                                                                 |
-| Immediate checks          | `time ping <fqdn>` from the box; compare `dig +tcp` (expected to succeed) against default `getaddrinfo` (may stall); packet capture on the WAN interface during the      |
-|                           |   stall to see which query type's response is missing                                                                                                                    |
-| Mitigation (not           | Point host resolution at systemd-resolved's stub (`127.0.0.53`) instead of the raw uplink file — this changes resolver *implementation* and appears to route around the  |
-|   yet fleet-validated)    |   WAN-path condition, but does **not** prove the underlying condition is fixed. Do not roll out fleet-wide without live validation — see `13_known-issues.md`            |
-| Source-of-truth files     | `roles/smc_network/templates/resolved.conf.j2`, `roles/smc_network/tasks/ubuntu.yml:196-214`,                                                                            |
-|                           |   `roles/smc_dns/templates/unbound.conf.j2`, `roles/smc_dns/files/stubby.yml`                                                                                            |
-| Full RCA                  | `local-knowledge-ansible/ansible-wifi/issues/garimba-smc01/garimba-smc01-dns-resolution-rca-20260703_1158.md` (revision 3, with two rounds of validation-prompt          |
-|                           |   corrections) + companion docs under `issues/garimba-smc01/docs/reports/`                                                                                               |
+| Field                      | Value                                                                                                                                                                   |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Error text                 | `ping <fqdn>` / `getaddrinfo(AF_UNSPEC)` from the SMC itself stalls ~15s before resolving; direct IP and single-record `dig` are fast; delay is domain-specific         |
+|                            |   (reproduces on domains with an A record + AAAA NODATA, not on domains with no AAAA-eligible answer path)                                                              |
+| Typical context            | Any non-`smc_ltp` host performing a combined A+AAAA lookup (`getaddrinfo(AF_UNSPEC)`) — this is glibc's default behavior for most name resolution, not something the    |
+|                            |   caller opts into                                                                                                                                                      |
+| Cause class                | Architecture exposure, not a code bug: `DNSStubListener=no` (unconditional, `roles/smc_network/templates/resolved.conf.j2`) means host glibc talks directly to          |
+|                            |   `external_dns_servers` over raw UDP — bypassing systemd-resolved's stub *and* unbound/stubby entirely (see `02_service-map.md`). On some WAN paths, one leg (typically |
+|                            |   AAAA) of the near-simultaneous A/AAAA query pair fails to return; isolated queries and TCP both succeed, ruling out general DNS reachability                          |
+| First confirmed on         | garimba-smc01 (rct), 2026-07-03; not reproduced on yuelamu-10mile-smc01 (same fleet, different WAN path)                                                                |
+| Immediate checks           | `time ping <fqdn>` from the box; compare `dig +tcp` (expected to succeed) against default `getaddrinfo` (may stall); packet capture on the WAN interface during the     |
+|                            |   stall to see which query type's response is missing                                                                                                                   |
+| Mitigation (not            | Point host resolution at systemd-resolved's stub (`127.0.0.53`) instead of the raw uplink file — this changes resolver *implementation* and appears to route around the |
+|   yet fleet-validated)     |   WAN-path condition, but does **not** prove the underlying condition is fixed. Do not roll out fleet-wide without live validation — see `13_known-issues.md`           |
+| Source-of-truth files      | `roles/smc_network/templates/resolved.conf.j2`, `roles/smc_network/tasks/ubuntu.yml:196-214`,                                                                           |
+|                            |   `roles/smc_dns/templates/unbound.conf.j2`, `roles/smc_dns/files/stubby.yml`                                                                                           |
+| Full RCA                   | `local-knowledge-ansible/ansible-wifi/issues/garimba-smc01/garimba-smc01-dns-resolution-rca-20260703_1158.md` (revision 3, with two rounds of validation-prompt         |
+|                            |   corrections) + companion docs under `issues/garimba-smc01/docs/reports/`                                                                                              |
 
 ### Captive Portal Dead at Bootstrap — `Directory APPPATH/cache must be writable`
 
@@ -102,25 +102,25 @@ Fix:   Identify what is filling /media/root-rw/overlay
 
 ### Disk Path Failure Forcing Root Read-Only (x86 `nbn_accelerate`, active disk path)
 
-| Field                               | Value                                                                                                                                                          |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Error text                          | `/dev/sdb2 on / type ext4 (ro,relatime)`; `mount -o remount,rw /` fails with `cannot remount /dev/sdb2 read-write, is write-protected` (rc=32); most binaries  |
-|                                     |   (`efibootmgr`, `lsblk`, `blkid`, `findmnt`, `dmesg`) fail with `Input/output error`, not a PATH issue                                                        |
-| Typical context                     | amata-smc01 (nbn_accelerate, x86, BOXER-6641 class)                                                                                                            |
-| Cause class                         | Physical storage-path failure on the active root disk (`sdb`) — SSD fault and/or SATA link/cable/backplane/power instability. **Not** overlayroot behavior, not a |
-|                                     |   PATH issue, not an Ansible playbook logic error                                                                                                              |
-| Error signature (from device log,   | `ata4.00: failed command: WRITE FPDMA QUEUED`, repeated `COMRESET failed`, `ata4.00: disabled`, `blk_update_request: I/O error, dev sdb`,                      |
-|   ~2026-04-25 10:37:08)             |   `EXT4-fs ... I/O error while writing superblock`, `EXT4-fs (sdb2): Remounting filesystem read-only`, `hostbyte=DID_BAD_TARGET`                               |
-| What was evaluated                  | `smc_disk_failover` role: uses `efibootmgr -n` (BootNext, one-time) after a prolonged internet-failure count — **not a guaranteed safe immediate failover under** |
-|                                     |   **active I/O corruption**, and EFI tooling itself was unreliable on this host because of the ongoing I/O errors                                              |
-| Operational decision guidance       | 1) Reboot is a reasonable first attempt, outage risk acknowledged. 2) If a short RW window appears post-reboot: `efibootmgr -v` → set one-time boot to the     |
-|                                     |   alternate Ubuntu entry (`efibootmgr -n <id>`) → reboot quickly. 3) If tooling fails or host stays RO: BIOS/UEFI console boot to the alternate SSD manually.  |
-|                                     |   4) After a successful alternate boot: set permanent `BootOrder` with the alternate first (`efibootmgr -o ...`), verify Teleport/autossh, then replace/repair |
-|                                     |   the failed disk path before reintroducing it to the boot order                                                                                               |
-| Status                              | **Open as of 2026-04-30 — not yet recovered.** ROADMAP backlog for this host still lists: recover via reboot/failover, re-establish the PIN/session enforcement |
-|                                     |   chain (`ECLIPSE_*` mark population + `netfilter-persistent`) once writable, validate month-rollover PIN behavior post-recovery, and capture final incident   |
-|                                     |   closeout. Baseline content filtering was confirmed still active during the degradation window — do not assume a fully down box means filtering is also down  |
-| Full incident capture               | `local-knowledge-ansible/ansible-wifi/issues/amata-smc01/2026-04-30-amata-smc01-storage-incident.md` + `amata-error.log`                                       |
+| Field                                | Value                                                                                                                                                         |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Error text                           | `/dev/sdb2 on / type ext4 (ro,relatime)`; `mount -o remount,rw /` fails with `cannot remount /dev/sdb2 read-write, is write-protected` (rc=32); most binaries |
+|                                      |   (`efibootmgr`, `lsblk`, `blkid`, `findmnt`, `dmesg`) fail with `Input/output error`, not a PATH issue                                                       |
+| Typical context                      | amata-smc01 (nbn_accelerate, x86, BOXER-6641 class)                                                                                                           |
+| Cause class                          | Physical storage-path failure on the active root disk (`sdb`) — SSD fault and/or SATA link/cable/backplane/power instability. **Not** overlayroot behavior, not a |
+|                                      |   PATH issue, not an Ansible playbook logic error                                                                                                             |
+| Error signature (from device log,    | `ata4.00: failed command: WRITE FPDMA QUEUED`, repeated `COMRESET failed`, `ata4.00: disabled`, `blk_update_request: I/O error, dev sdb`,                     |
+|   ~2026-04-25 10:37:08)              |   `EXT4-fs ... I/O error while writing superblock`, `EXT4-fs (sdb2): Remounting filesystem read-only`, `hostbyte=DID_BAD_TARGET`                              |
+| What was evaluated                   | `smc_disk_failover` role: uses `efibootmgr -n` (BootNext, one-time) after a prolonged internet-failure count — **not a guaranteed safe immediate failover under** |
+|                                      |   **active I/O corruption**, and EFI tooling itself was unreliable on this host because of the ongoing I/O errors                                             |
+| Operational decision guidance        | 1) Reboot is a reasonable first attempt, outage risk acknowledged. 2) If a short RW window appears post-reboot: `efibootmgr -v` → set one-time boot to the    |
+|                                      |   alternate Ubuntu entry (`efibootmgr -n <id>`) → reboot quickly. 3) If tooling fails or host stays RO: BIOS/UEFI console boot to the alternate SSD manually. |
+|                                      |   4) After a successful alternate boot: set permanent `BootOrder` with the alternate first (`efibootmgr -o ...`), verify Teleport/autossh, then               |
+|                                      |   replace/repair the failed disk path before reintroducing it to the boot order                                                                               |
+| Status                               | **Open as of 2026-04-30 — not yet recovered.** ROADMAP backlog for this host still lists: recover via reboot/failover, re-establish the PIN/session enforcement |
+|                                      |   chain (`ECLIPSE_*` mark population + `netfilter-persistent`) once writable, validate month-rollover PIN behavior post-recovery, and capture final incident  |
+|                                      |   closeout. Baseline content filtering was confirmed still active during the degradation window — do not assume a fully down box means filtering is also down |
+| Full incident capture                | `local-knowledge-ansible/ansible-wifi/issues/amata-smc01/2026-04-30-amata-smc01-storage-incident.md` + `amata-error.log`                                      |
 
 ### Ansible Failure: `iptables-restore` references missing `restricted` set
 
@@ -134,16 +134,16 @@ Fix:   Identify what is filling /media/root-rw/overlay
 
 ### Ansible Failure: loop receives scalar package name
 
-| Field         | Value                                                                                                                                                                                |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Error text    | `Invalid data passed to 'loop' ... got this instead: php8.1-cli`                                                                                                                     |
-| Typical task  | `smc_application : Collect archive size for each pkg (bytes)`                                                                                                                        |
-| Cause class   | Jinja type-check bug in helper normalization                                                                                                                                         |
-| Immediate     | `roles/_helpers/custom_apt_install.yml` package normalization logic                                                                                                                  |
-|   check       |                                                                                                                                                                                      |
-| Resolution    | First-attempt fix (`is sequence` normalization, see `05_troubleshooting.md` Tier 10) hit a second incompatibility under `--check` mode (`Package unavailable`). **Actual applied fix** |
-|               |   **(old-looma/umoona, 2026-07-29): wholesale-replaced** `roles/_helpers/custom_apt_install.yml` and `custom_apt_update_cache.yml` with their `rise-multi` versions (simpler         |
-|               |   `apt-cache policy` check, no size-collection step) rather than patching in place                                                                                                   |
+| Field          | Value                                                                                                                                                                               |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Error text     | `Invalid data passed to 'loop' ... got this instead: php8.1-cli`                                                                                                                    |
+| Typical task   | `smc_application : Collect archive size for each pkg (bytes)`                                                                                                                       |
+| Cause class    | Jinja type-check bug in helper normalization                                                                                                                                        |
+| Immediate      | `roles/_helpers/custom_apt_install.yml` package normalization logic                                                                                                                 |
+|   check        |                                                                                                                                                                                     |
+| Resolution     | First-attempt fix (`is sequence` normalization, see `05_troubleshooting.md` Tier 10) hit a second incompatibility under `--check` mode (`Package unavailable`). **Actual applied fix** |
+|                |   **(old-looma/umoona, 2026-07-29): wholesale-replaced** `roles/_helpers/custom_apt_install.yml` and `custom_apt_update_cache.yml` with their `rise-multi` versions (simpler        |
+|                |   `apt-cache policy` check, no size-collection step) rather than patching in place                                                                                                  |
 
 ---
 
@@ -190,17 +190,21 @@ once.
 
 #### Why `wh` and not `rct`
 
-`rct` carries the external **tstik** board, which hard-power-cycles the appliance when internet connectivity is lost. **Refined 2026-10-07 from the rct-tstik source (pinned commit
-`e79f8d86`):** the reset logic is not AVR firmware. It is the `rct-tstik` Laravel app on the SMC itself (`php artisan update:stats`, cron every minute),
-which pings the phone UI (192.168.5.253), Sky Muster NTD (192.168.100.1), MikroTik switch (10.255.0.5), AP (10.255.0.20) and 8.8.8.8/1.1.1.1, and asks the
-AVR to cut a rail for 10 s: phone after 11 failed UI runs; NTD after 11 failed modem runs or 35 failed internet runs; **switch** after 11 failed switch or
-AP runs, or 71 failed internet runs. The code never power-cycles the SMC, and it stops entirely if the SMC hangs. Whether the AVR firmware has its own
-watchdog for the SMC is not established. History: `storage/logs/laravel.log*` (UTC, size-rotated, about a week); capture with `scripts/tstik-capture.sh`. It masks this failure mode entirely — an `rct` box in the same state self-recovers
-within minutes and nobody opens a ticket. `wh` has no equivalent, and nothing in software substitutes for it:
+`rct` carries the external **tstik** board, which hard-power-cycles the appliance when internet connectivity is lost. **Refined 2026-10-07 from the rct-tstik source (pinned commit `e79f8d86`):** the
+reset logic is not AVR firmware. It is the `rct-tstik` Laravel app on the SMC itself (`php artisan update:stats`, cron every minute), which pings the phone UI (192.168.5.253), Sky Muster NTD
+(192.168.100.1), MikroTik switch (10.255.0.5), AP (10.255.0.20) and 8.8.8.8/1.1.1.1, and asks the AVR to cut a rail for 10 s: phone after 11 failed UI runs; NTD after 11 failed modem runs or 35 failed
+internet runs; **switch** after 11 failed switch or AP runs, or 71 failed internet runs. The code never power-cycles the SMC, and it stops entirely if the SMC hangs. Whether the AVR firmware has its
+own watchdog for the SMC is not established. History: `storage/logs/laravel.log*` (UTC, size-rotated, about a week); capture with `scripts/tstik-capture.sh`. It masks this failure mode entirely — an
+`rct` box in the same state self-recovers within minutes and nobody opens a ticket. `wh` has no equivalent, and nothing in software substitutes for it:
 
-- `watchdog.auto_reboot: 0` in `inventories/{wh,nbn_wh,rct}/group_vars/smc_bases.yml` does **not** stop reboots (corrected 2026-10-07): the template renders it as the string `"0"`, which
-  Python treats as true, and the `reboot_after_cleanup` path never checks the flag. The watchdog reboots at overlay >= 80% today, while exporting `rise_watchdog_auto_reboot 0`. It still
-  cannot reboot on a hang.
+Rechecked 2026-10-07 at Bitbucket `activ8me/rct-tstik` head `8e3f5b0` (2026-08-06): `IOManager::ResetPower` switches the phone UI, NTD, LAN switch, Thuraya modem, Aux1, Aux2 and external I2C rails. No
+rail is named for the SMC. The code calls the satellite modem **Thuraya** (backup phone: emergency number, SMS settings) and has no
+Iridium code, but RCT is moving to **Iridium**: tested at a few sites, with replacement at all RCT sites started (USER_STATED 2026-10-07). RCT sites need a
+visit for it. WH sites have no satellite modem at all. No code path lets an inbound Thuraya message
+trigger a reset. Thuraya commands are sent only from the local web UI (`td` page). The AVR firmware is not in this repo, so an AVR-level SMC watchdog or SMS reset is still unverified.
+
+- `watchdog.auto_reboot: 0` in `inventories/{wh,nbn_wh,rct}/group_vars/smc_bases.yml` does **not** stop reboots (corrected 2026-10-07): the template renders it as the string `"0"`, which Python treats
+  as true, and the `reboot_after_cleanup` path never checks the flag. The watchdog reboots at overlay >= 80% today, while exporting `rise_watchdog_auto_reboot 0`. It still cannot reboot on a hang.
 - The RISE watchdog is a userspace `systemd` timer. A kernel-level lockup stops it dead along with everything else.
 - Its only reboot trigger is disk pressure, and its log cleanup is **gated on Graylog reachability** — so it disables itself precisely when the site is offline.
 - **The repo contains no hardware-watchdog configuration at all** — no `/dev/watchdog`, no `RuntimeWatchdogSec`, no `bcm2835_wdt`. Verified by `rg` across the whole tree, 2026-08-28.
@@ -267,9 +271,9 @@ not `Type=oneshot`. Noise and needless wear, not the cause of the hang — fix i
 `wh` (2026-08-28): same signature, still open: **kintore** dark since ~June 2026, **orrtipa-thurra-bonya** and **yuelamu** dark since ~August 2026. **glen-hill** and **violet-valley** returned
 recently after months dark.
 
-`wh` (2026-10-06 17:50 AEDT, read-only `tsh ls`): 19 of 24 connected to Teleport. Not connected: **kintore**, **kupungarri**, **nyirripi**, **orrtipa-thurra-bonya**, **yuelamu**
-(`yuelamu-smc01`; the `rct` box `yuelamu-10mile-smc01` is connected). Not connected to Teleport is not proof of a hang — a hung Teleport agent looks the same. Operator: a couple may need a site
-visit. `rcp` the same day: 17 production nodes connected, against 18 production sites (operator).
+`wh` (2026-10-06 17:50 AEDT, read-only `tsh ls`): 19 of 24 connected to Teleport. Not connected: **kintore**, **kupungarri**, **nyirripi**, **orrtipa-thurra-bonya**, **yuelamu** (`yuelamu-smc01`; the
+`rct` box `yuelamu-10mile-smc01` is connected). Not connected to Teleport is not proof of a hang — a hung Teleport agent looks the same. Operator: a couple may need a site visit. `rcp` the same day:
+17 production nodes connected, against 18 production sites (operator).
 
 Operator, 2026-10-06: a hardware watchdog is acceptable for this hang; test it on the spare (`spare-smc01`) first.
 
@@ -278,18 +282,21 @@ undetected exposure; a fleet-wide `up{flavor="rcp"}` absence sweep has not been 
 
 **Update 2026-10-07 (`wh`, from Prometheus + Graylog + Teleport, read-only):**
 
-| Host | Last Prometheus scrape (AEST) | Links just before | Reading |
-|---|---|---|---|
-| `nyirripi-smc01` | 2026-09-16 08:06 | `eth0` and `vlan522` both `interfacecheck_success=1`; no reboot since 2026-07-09 | **Matches this signature**: healthy box, healthy links, vanished. Not in Teleport. Needs a power cycle. (Its Graylog silence from 2026-09-12 10:56 was the separate cert outage, 13_known-issues.md 2026-10-07.) |
-| `kupungarri-smc01` | 2026-10-05 05:02 | `vlan522` 0 throughout, `eth0` flapping 0/1; rebooted 2026-10-01 23:06 | **Probably not this signature.** The WAN was failing before it went dark. Check site WAN and power first. |
+| Host               | Last Prometheus scrape (AEST) | Links just before                             | Reading                                                                                         |
+| ------------------ | ----------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `nyirripi-smc01`   | 2026-09-16 08:06              | `eth0` and `vlan522` both                     | **Matches this signature**: healthy box, healthy links, vanished. Not in Teleport. Needs a power |
+|                    |                               |   `interfacecheck_success=1`; no reboot       |   cycle. (Its Graylog silence from 2026-09-12 10:56 was the separate cert outage,               |
+|                    |                               |   since 2026-07-09                            |   13_known-issues.md 2026-10-07.)                                                               |
+| `kupungarri-smc01` | 2026-10-05 05:02              | `vlan522` 0 throughout, `eth0` flapping 0/1;  | **Probably not this signature.** The WAN was failing before it went dark. Check site WAN and    |
+|                    |                               |   rebooted 2026-10-01 23:06                   |   power first.                                                                                  |
 
 Also absent from Teleport on 2026-10-07 and not yet checked: `generic-wh01`, `kintore-smc01`, `orrtipa-thurra-bonya-smc01`, `yuelamu-smc01`.
 
 **kupungarri-smc01 re-check, 2026-10-07 12:21 AEDT (read-only: `tsh ls`, `apn-prometheus01` via `mcp-grafana-apn`):** still unreachable; not in Teleport (344 nodes listed). Over 45 days,
-`node_boot_time_seconds` shows boots only on 2026-08-24 (three, the site visit) and 2026-10-01 23:06. The 37 h scrape gap from 2026-09-14 17:21 to 2026-09-16 06:31 had **no reboot**: the
-box stayed up and lost its path out, then recovered by itself. `eth0`, the only working WAN, failed `interfacecheck` roughly 4 to 8 times a day from 2026-09-13 to the end; `vlan522` failed every
-check. The last sample (2026-10-05 06:01 AEDT) had `eth0` passing, so the data cannot separate a hang from a WAN loss. Next discriminator: whether the site's Cambium devices still check in to
-`apn-cnmaestro01` (web UI only, no API; see skill-cambium). Devices online there point to a hung SMC.
+`node_boot_time_seconds` shows boots only on 2026-08-24 (three, the site visit) and 2026-10-01 23:06. The 37 h scrape gap from 2026-09-14 17:21 to 2026-09-16 06:31 had **no reboot**: the box stayed up
+and lost its path out, then recovered by itself. `eth0`, the only working WAN, failed `interfacecheck` roughly 4 to 8 times a day from 2026-09-13 to the end; `vlan522` failed every check. The last
+sample (2026-10-05 06:01 AEDT) had `eth0` passing, so the data cannot separate a hang from a WAN loss. Next discriminator: whether the site's Cambium devices still check in to `apn-cnmaestro01` (web
+UI only, no API; see skill-cambium). Devices online there point to a hung SMC.
 
 #### Recommended fix
 
@@ -302,15 +309,15 @@ Enable a hardware watchdog on every flavor that lacks one:
 
 **Verified constraints on the fix (2026-10-06, enterprise-strategy P17 review):**
 
-- `RuntimeWatchdogSec=` (systemd-system.conf(5), "Hardware Watchdog") programs `/dev/watchdog0` to reboot the system if systemd does not contact it within the timeout; systemd pings at
-  least every half-interval, and the setting does nothing without a hardware watchdog device. Source: freedesktop.org systemd-system.conf man page (systemd 262, read 2026-10-06). Ubuntu 22.04
-  ships an older systemd — confirm the option on a box before rollout.
-- **The Raspberry Pi watchdog tops out at ~15 s.** `bcm2835_wdt.c` (raspberrypi/linux `rpi-6.6.y`): `PM_WDOG_TIME_SET 0x000fffff`, `WDOG_TICKS_TO_SECS(x) ((x) >> 16)` → 1,048,575 / 65,536 ≈
-  15.99 s, and `.timeout` defaults to that maximum. Any `RuntimeWatchdogSec` above it is clamped to the nearest supported value, so set it at or below 15 s.
-- **Persistence on overlayroot:** the `systemd` drop-in and any module-load config must be written to the lower dir (`/media/root-ro`) or they vanish on the first reboot — the reboot the
-  watchdog itself causes. Not yet tested on any `wh` box.
-- The SMC resiliency plan in `apn/enterprise-strategy/workstreams/continuity/` scopes recovery from **failed updates** only; this hang is not update-related, so that plan as written does not
-  cover it. Options note: `smc-hang-recovery-options-20261006_1214.md` in that folder.
+- `RuntimeWatchdogSec=` (systemd-system.conf(5), "Hardware Watchdog") programs `/dev/watchdog0` to reboot the system if systemd does not contact it within the timeout; systemd pings at least every
+  half-interval, and the setting does nothing without a hardware watchdog device. Source: freedesktop.org systemd-system.conf man page (systemd 262, read 2026-10-06). Ubuntu 22.04 ships an older
+  systemd — confirm the option on a box before rollout.
+- **The Raspberry Pi watchdog tops out at ~15 s.** `bcm2835_wdt.c` (raspberrypi/linux `rpi-6.6.y`): `PM_WDOG_TIME_SET 0x000fffff`, `WDOG_TICKS_TO_SECS(x) ((x) >> 16)` → 1,048,575 / 65,536 ≈ 15.99 s,
+  and `.timeout` defaults to that maximum. Any `RuntimeWatchdogSec` above it is clamped to the nearest supported value, so set it at or below 15 s.
+- **Persistence on overlayroot:** the `systemd` drop-in and any module-load config must be written to the lower dir (`/media/root-ro`) or they vanish on the first reboot — the reboot the watchdog
+  itself causes. Not yet tested on any `wh` box.
+- The SMC resiliency plan in `apn/enterprise-strategy/workstreams/continuity/` scopes recovery from **failed updates** only; this hang is not update-related, so that plan as written does not cover it.
+  Options note: `smc-hang-recovery-options-20261006_1214.md` in that folder.
 
 ---
 
@@ -327,56 +334,58 @@ mount lands at 50% of RAM — consistent with the existing "`overlay.size_ratio`
 
 Not a hang and not software. Report: `local-knowledge-ansible/ansible-wifi/issues/wh-fleet/wh-stability-reboot-analysis-20261007_1310.md`.
 
-| Field | Value |
-| --- | --- |
-| Sites | alpurrurulam, haasts-bluff, canteen-creek, glen-hill (`wh`) |
-| Signature | Dark from 03:30–09:00 AEDT, then a **boot** at nearly the same clock time each day (haasts-bluff within ~10 min of 12:05 for weeks). 17–44 such boots per site in 90 days |
-| Season | `changes(node_boot_time_seconds[92d])`: dozens in Jun–Nov, 0–5 in Dec–Feb, two winters running |
-| Logs | Last Graylog lines routine (health 100%, mem 29%), **no shutdown sequence**; after boot `systemd-resolved: Clock change detected` (no RTC, so a cold start) |
-| Resources before | Normal (`predark-snapshot.py`): mem 23–36%, load < 1.3, overlay 22–43% |
-| Cause | Solar battery flat before dawn, load reconnects when PV recovers (operator: canteen-creek has known battery problems). On-box watchdogs cannot help |
-| Detect | `scripts/fleet-reboot-timeline.py`: `DARK->boot` events repeating at the same clock time |
+| Field            | Value                                                                                                                                                                 |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sites            | alpurrurulam, haasts-bluff, canteen-creek, glen-hill (`wh`)                                                                                                           |
+| Signature        | Dark from 03:30–09:00 AEDT, then a **boot** at nearly the same clock time each day (haasts-bluff within ~10 min of 12:05 for weeks). 17–44 such boots per site in 90 days |
+| Season           | `changes(node_boot_time_seconds[92d])`: dozens in Jun–Nov, 0–5 in Dec–Feb, two winters running                                                                        |
+| Logs             | Last Graylog lines routine (health 100%, mem 29%), **no shutdown sequence**; after boot `systemd-resolved: Clock change detected` (no RTC, so a cold start)           |
+| Resources before | Normal (`predark-snapshot.py`): mem 23–36%, load < 1.3, overlay 22–43%                                                                                                |
+| Cause            | Solar battery flat before dawn, load reconnects when PV recovers (operator: canteen-creek has known battery problems). On-box watchdogs cannot help                   |
+| Detect           | `scripts/fleet-reboot-timeline.py`: `DARK->boot` events repeating at the same clock time                                                                              |
 
-The 2026-08-28 census filed outages under six hours as "ordinary remote-site connectivity". At these four sites most of them are power losses; classify with `fleet-reboot-timeline.py` before
-assuming connectivity.
+The 2026-08-28 census filed outages under six hours as "ordinary remote-site connectivity". At these four sites most of them are power losses; classify with `fleet-reboot-timeline.py` before assuming
+connectivity.
 
 ### Continuous Pi Undervoltage That Prometheus Cannot See (canteen-creek, glen-hill, 2026-10-07)
 
-| Field | Value |
-| --- | --- |
-| Signature | `kernel: hwmon hwmon2: Undervoltage detected!` in kern.log. canteen-creek 1,859–7,352 a day (2026-08-06 to 09-11), still 228/hour on 10-07; glen-hill on 08-27 before its dark boot |
-| Profile | Flat across all 24 hours (`undervoltage-profile.py hourly`): the 5 V rail is undersized or sagging continuously (PSU / DC-DC / cable), separate from the battery cycle |
-| Blind spot | `node_hwmon_in_lcrit_alarm_volts` reads 0 at canteen-creek: the rpi_volt alarm is not latched between scrapes. Use Graylog kern.log, not this metric, to clear a site |
-| Scope | Explains canteen-creek and glen-hill. It does **not** explain the long-outage class: the 2026-08-28 throttle-flag cohort test still stands |
-| Supply split | canteen-creek's MikroTik switch runs from 48 V and had been up 68 days (since 2026-07-31) while the Pi rebooted on 2026-10-01: the Pi's 5 V supply fails on its own (skill-mikrotik `01_overview.md`, 2026-10-07) |
+| Field       | Value                                                                                                                                                                                  |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Signature   | `kernel: hwmon hwmon2: Undervoltage detected!` in kern.log. canteen-creek 1,859–7,352 a day (2026-08-06 to 09-11), still 228/hour on 10-07; glen-hill on 08-27 before its dark boot    |
+| Profile     | Flat across all 24 hours (`undervoltage-profile.py hourly`): the 5 V rail is undersized or sagging continuously (PSU / DC-DC / cable), separate from the battery cycle                 |
+| Blind spot  | `node_hwmon_in_lcrit_alarm_volts` reads 0 at canteen-creek: the rpi_volt alarm is not latched between scrapes. Use Graylog kern.log, not this metric, to clear a site                  |
+| Scope       | Explains canteen-creek and glen-hill. It does **not** explain the long-outage class: the 2026-08-28 throttle-flag cohort test still stands                                             |
+| Supply      | canteen-creek's MikroTik switch runs from 48 V and had been up 68 days (since 2026-07-31) while the Pi rebooted on 2026-10-01: the Pi's 5 V supply fails on its own (skill-mikrotik    |
+|   split     |   `01_overview.md`, 2026-10-07)                                                                                                                                                        |
 
 ### Whole Switch Trunk Goes Silent While the SMC Keeps Transmitting (arrkapa `rct`, 2026-10-02 onward)
 
-Looks like a satellite outage; it is not. RCT and WH sites connect the Pi's `eth0` to a MikroTik switch, which carries the Sky Muster NTD (untagged internet), the AP
-management VLAN 500, client VLAN 501 and the NBN modem management VLAN 521 (operator, 2026-10-07).
+Looks like a satellite outage; it is not. RCT and WH sites connect the Pi's `eth0` to a MikroTik switch, which carries the Sky Muster NTD (untagged internet), the AP management VLAN 500, client VLAN
+501 and the NBN modem management VLAN 521 (operator, 2026-10-07).
 
-| Field | Value |
-| --- | --- |
-| SMC | Up throughout: `node_boot_time_seconds` unchanged since 2026-07-03 |
-| Satellite path | eth0 RTT ~660 ms and 30–48 Mbps for 60 days (Sky Muster); `interfacecheck` ~92% until 10-02, then 0.07–0.55 a day |
-| During each outage | `vlan-traffic-timeline.py --gap`: eth0 received 3,641 packets in 54 h (normal: ~360 MB/h) while sending 33,602 small ones; AP VLAN 500, modem VLAN 521 and client VLAN 501 all silent; zero rx errors or frame errors |
-| Pattern | All VLANs stop and restart together, in windows of a few hours (e.g. 02:00–06:00, 14:00–16:00) |
-| Earlier, separate | Client VLAN 501 traffic stopped 2026-09-29 ~15:00 while APs and the satellite stayed up (constant 75 KB/h background since) |
-| Reading | A satellite-only fault would leave local AP and modem-management traffic flowing. The fault is between the Pi and the MikroTik or in the MikroTik. TX still counting suggests link stayed up and the switch stopped forwarding (inference: no `node_network_carrier` here); no errors argues against a degraded cable |
-| TSTIK resets | The SMC's TSTIK app power-cycles the MikroTik 10 s after ~11 min of failed switch/AP pings, which fits the few-hour recovery windows; confirm from its `laravel.log` (`tstik-capture.sh`) |
-| Confirm | On the box when reachable: `journalctl -k \| grep -iE 'eth0.*link (up\|down)'` (no reboot, so the kernel log is intact); MikroTik uptime and log; TSTIK `LANPower` and `PING_*` |
+| Field             | Value                                                                                                                                                                            |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SMC               | Up throughout: `node_boot_time_seconds` unchanged since 2026-07-03                                                                                                               |
+| Satellite path    | eth0 RTT ~660 ms and 30–48 Mbps for 60 days (Sky Muster); `interfacecheck` ~92% until 10-02, then 0.07–0.55 a day                                                                |
+| During            | `vlan-traffic-timeline.py --gap`: eth0 received 3,641 packets in 54 h (normal: ~360 MB/h) while sending 33,602 small ones; AP VLAN 500, modem VLAN 521 and client VLAN 501 all   |
+|   each outage     |   silent; zero rx errors or frame errors                                                                                                                                         |
+| Pattern           | All VLANs stop and restart together, in windows of a few hours (e.g. 02:00–06:00, 14:00–16:00)                                                                                   |
+| Earlier, separate | Client VLAN 501 traffic stopped 2026-09-29 ~15:00 while APs and the satellite stayed up (constant 75 KB/h background since)                                                      |
+| Reading           | A satellite-only fault would leave local AP and modem-management traffic flowing. The fault is between the Pi and the MikroTik or in the MikroTik. TX still counting suggests    |
+|                   |   link stayed up and the switch stopped forwarding (inference: no `node_network_carrier` here); no errors argues against a degraded cable                                        |
+| TSTIK resets      | The SMC's TSTIK app power-cycles the MikroTik 10 s after ~11 min of failed switch/AP pings, which fits the few-hour recovery windows; confirm from its                           |
+|                   |   `laravel.log` (`tstik-capture.sh`)                                                                                                                                             |
+| Confirm           | On the box when reachable: `journalctl -k \| grep -iE 'eth0.*link (up\|down)'` (no reboot, so the kernel log is intact); MikroTik uptime and log; TSTIK `LANPower` and `PING_*`  |
 
-**Root cause found 2026-10-07 16:02 (VERIFIED-OBSERVED):** the arrkapa RB450Gx4 switch (serial `HCW08285341`) is in a crash-reboot loop. Its log
-holds 43 `router was rebooted without proper shutdown by watchdog timer` and 48 `kernel failure in previous boot` entries in the last 1,000 lines, several a
-minute at times; only 6 are plain power cuts (`probably power outage`, the TSTIK). The SMC's kernel log shows eth0 dropping 249 times between 01:28 and 16:00,
-down about 6 s and up about 23 s each time, and only 18 of those drops fall within a minute of a TSTIK switch reset. The TSTIK app reset the switch 80–104
-times a day from 2026-10-02 (4 on 10-01, none before) plus the modem and phone just as often, without effect. Board health at capture was normal (27.1 V,
-53 C, 948 MiB free, 0% bad blocks, RouterOS 7.8 like the whole fleet), so the unit itself is failing. Action: replace the switch; configure the spare from a
-text export with the `mac-address=` lines removed (cloned-MAC remedy in `01_overview.md`). Only one other switch in the 294-site survey logged the same
-signature: batavia-downs (11 lines, stable for 15 days at survey). Evidence: `local-knowledge-ansible/ansible-wifi/issues/rct-fleet/arrkapa-wan/capture-arrkapa-mikrotik/` and `local-knowledge-ansible/ansible-wifi/issues/rct-fleet/arrkapa-wan/capture-arrkapa/`.
+**Root cause found 2026-10-07 16:02 (VERIFIED-OBSERVED):** the arrkapa RB450Gx4 switch (serial `HCW08285341`) is in a crash-reboot loop. Its log holds 43 `router was rebooted without proper shutdown
+by watchdog timer` and 48 `kernel failure in previous boot` entries in the last 1,000 lines, several a minute at times; only 6 are plain power cuts (`probably power outage`, the TSTIK). The SMC's
+kernel log shows eth0 dropping 249 times between 01:28 and 16:00, down about 6 s and up about 23 s each time, and only 18 of those drops fall within a minute of a TSTIK switch reset. The TSTIK app
+reset the switch 80–104 times a day from 2026-10-02 (4 on 10-01, none before) plus the modem and phone just as often, without effect. Board health at capture was normal (27.1 V, 53 C, 948 MiB free, 0%
+bad blocks, RouterOS 7.8 like the whole fleet), so the unit itself is failing. Action: replace the switch; configure the spare from a text export with the `mac-address=` lines removed (cloned-MAC
+remedy in `01_overview.md`). Only one other switch in the 294-site survey logged the same signature: batavia-downs (11 lines, stable for 15 days at survey). Evidence:
+`local-knowledge-ansible/ansible-wifi/issues/rct-fleet/arrkapa-wan/capture-arrkapa-mikrotik/` and `local-knowledge-ansible/ansible-wifi/issues/rct-fleet/arrkapa-wan/capture-arrkapa/`.
 
-SMC side: `journalctl -k | grep 'eth0: Link is'` on the box (no reboot, so the history since boot is intact) shows the flapping; skill-mikrotik
-`04_failure-modes.md` has the switch-side signature.
+SMC side: `journalctl -k | grep 'eth0: Link is'` on the box (no reboot, so the history since boot is intact) shows the flapping; skill-mikrotik `04_failure-modes.md` has the switch-side signature.
 
 ### WAN Uplink Stuck With No DHCP Lease, Self-Heal Cron Masquerades as "Flapping" (aurukun-smc03, `nbn_accelerate`, 2026-09-04)
 
@@ -482,24 +491,25 @@ and `03_communication-flows.md` §Backdoor SSH Access for the fallback path when
 Confirmed 2026-09-08. **This is an APN-internal policy failure, not a vendor problem** — read `03_communication-flows.md` "`wifi-02.activ8me.net.au` / `202.171.100.138` is APN's OWN keepalived/LVS
 VIP" first for the ownership correction that makes this an internal escalation.
 
-| Field                                    | Value                                                                                                                                                     |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Mechanism                                | The **port-80** virtual service on `202.171.100.138` enforces a source-IP ACL. Sources inside `119.12.209.0/24` (the fleet's normal NAT pool) are permitted; |
-|                                          |   sources outside it are **rejected at the director** with ICMP type 3 code 13 (admin prohibited). **Port 443 carries no such restriction** — HTTP 200 from every |
-|                                          |   source tested                                                                                                                                           |
-| Symptom signature (memorize this)        | `curl`/`telnet` to **port 80** fails with **"No route to host" in ~1 RTT**, while **ping to the same host succeeds** and **port 443 works**. That combination is an |
-|                                          |   ICMP admin-prohibited *reject*, not a routing failure — a genuine routing failure would not let ping through, and a drop/blackhole would time out over  |
-|                                          |   seconds rather than answering immediately                                                                                                               |
-| Do not confuse with the expected         | `curl` **exit 56** / "Connection reset by peer" means the TCP connection reached **ESTABLISHED** and the application then reset it — this is the **normal** behaviour |
-|   behaviour other sites see              |   of this endpoint and is what a healthy in-pool site looks like. `curl` **exit 7** / "No route to host" means the connection **never established at all** — that |
-|                                          |   is the allowlist reject. Always capture `rc=$?` separately; the two are trivially distinguishable by exit code and completely different diagnoses       |
-| Confirmed out-of-range sources           | `galiwinku-smc01` public IP `119.12.211.80`, and `cw-teleport01` `3.104.50.51` — two independent sources, both rejected on port 80, both fine on 443      |
-| Root cause (galiwinku case)              | The site's **carrier NAT placed it in `119.12.211.0/24` instead of the fleet's `119.12.209.0/24`**, silently putting it outside the allowlist. **No config** |
-|                                          |   **change was made on either side and nothing alerted.** Any site whose public IP drifts out of the pool breaks identically and just as silently         |
-| Fix path                                 | Either add the range to the director's allowlist, or — **preferred** — restore the site to the fleet's NAT pool so the allowlist stays a tight,           |
-|                                          |   meaningful control                                                                                                                                      |
-| Investigation limit hit                  | **SSH to the director (`202.171.100.132:22`) is FILTERED from `cw-teleport01`**, so the allowlist rule itself could not be read in-session. The behaviour |
-|                                          |   above is inferred from the ICMP responses, not from the rule text                                                                                       |
+| Field                                     | Value                                                                                                                                                    |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mechanism                                 | The **port-80** virtual service on `202.171.100.138` enforces a source-IP ACL. Sources inside `119.12.209.0/24` (the fleet's normal NAT pool) are permitted; |
+|                                           |   sources outside it are **rejected at the director** with ICMP type 3 code 13 (admin prohibited). **Port 443 carries no such restriction** — HTTP 200 from |
+|                                           |   every source tested                                                                                                                                    |
+| Symptom signature (memorize this)         | `curl`/`telnet` to **port 80** fails with **"No route to host" in ~1 RTT**, while **ping to the same host succeeds** and **port 443 works**. That combination is an |
+|                                           |   ICMP admin-prohibited *reject*, not a routing failure — a genuine routing failure would not let ping through, and a drop/blackhole would time out over |
+|                                           |   seconds rather than answering immediately                                                                                                              |
+| Do not confuse with the expected          | `curl` **exit 56** / "Connection reset by peer" means the TCP connection reached **ESTABLISHED** and the application then reset it — this is the **normal** |
+|   behaviour other sites see               |   behaviour of this endpoint and is what a healthy in-pool site looks like. `curl` **exit 7** / "No route to host" means the connection **never established at** |
+|                                           |   **all** — that is the allowlist reject. Always capture `rc=$?` separately; the two are trivially distinguishable by exit code and completely           |
+|                                           |   different diagnoses                                                                                                                                    |
+| Confirmed out-of-range sources            | `galiwinku-smc01` public IP `119.12.211.80`, and `cw-teleport01` `3.104.50.51` — two independent sources, both rejected on port 80, both fine on 443     |
+| Root cause (galiwinku case)               | The site's **carrier NAT placed it in `119.12.211.0/24` instead of the fleet's `119.12.209.0/24`**, silently putting it outside the allowlist. **No config** |
+|                                           |   **change was made on either side and nothing alerted.** Any site whose public IP drifts out of the pool breaks identically and just as silently        |
+| Fix path                                  | Either add the range to the director's allowlist, or — **preferred** — restore the site to the fleet's NAT pool so the allowlist stays a tight,          |
+|                                           |   meaningful control                                                                                                                                     |
+| Investigation limit hit                   | **SSH to the director (`202.171.100.132:22`) is FILTERED from `cw-teleport01`**, so the allowlist rule itself could not be read in-session. The behaviour |
+|                                           |   above is inferred from the ICMP responses, not from the rule text                                                                                      |
 
 **Prevention**: nothing today audits site public egress IPs against the expected pool. See `03_communication-flows.md` "Per-Site Public Egress IP" for the `curl -sS https://api.ipify.org` check, the
 known per-site values, and the recommended fleet-wide audit. For the method used to prove the rejection was generated at the far end rather than by a nearby middlebox, see `05_troubleshooting.md`

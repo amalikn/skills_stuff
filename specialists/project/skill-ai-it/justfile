@@ -122,6 +122,12 @@ nav_check_diff: _require-venv
 nav_selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"
 
+# Move a project's pre-2026-09-23 managed blocks to the template-sourced layout, keeping project content. The upgrader
+# refuses those blocks (legacy-layout); this is the refresh step that makes them upgradeable. Review with --dry-run first:
+#   just nav_migrate_legacy /path/to/project --dry-run
+nav_migrate_legacy target *flags: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/migrate_legacy_blocks.py" --project-root "{{target}}" {{flags}}
+
 # Pass --print to see a generated skills.md, --write to create one (it refuses to replace an existing file without --force,
 # which keeps a backup). Example: just skills_registry /Volumes/Data/_ai/_project/project_stuff/apn --also /Volumes/Data/_ansible/ansible-wifi/AGENTS.md
 # Skills list for a project area: check its skills.md against the skills its governance files name (exit 1 on drift)

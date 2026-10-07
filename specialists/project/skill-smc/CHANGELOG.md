@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20261007_2124 — rct-tstik rails and satellite modem rechecked; Iridium rollout on rct (v0.2.0 -> v0.2.1)](#20261007_2124--rct-tstik-rails-and-satellite-modem-rechecked-iridium-rollout-on-rct-v020---v021)
+- [2026-10-07 — deterministic navigation-control upgrade](#2026-10-07--deterministic-navigation-control-upgrade)
 - [20261007_1645 — Version scheme: patch runs 0 to 9, then the minor bumps; renumbered to 0.2.0 (v0.1.100 -> v0.2.0)](#20261007_1645--version-scheme-patch-runs-0-to-9-then-the-minor-bumps-renumbered-to-020-v01100---v020)
 - [20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)](#20261007_1637--layout-brought-in-line-with-the-newer-project-packs-skillmd-slimmed-profile-system-prompt-and-exports-adapter-retired-v0199---v01100)
 - [20261007_1625 — skill-ai-it refresh: managed blocks to template-sourced-blocks-v1; Archcore filenames to the <slug>.<type>.md form (v0.1.98 -> v0.1.99)](#20261007_1625--skill-ai-it-refresh-managed-blocks-to-template-sourced-blocks-v1-archcore-filenames-to-the-slugtypemd-form-v0198---v0199)
@@ -110,6 +112,27 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261007_2124 — rct-tstik rails and satellite modem rechecked; Iridium rollout on rct (v0.2.0 -> v0.2.1)
+
+- `references/06_failure-modes.md` (Why `wh` and not `rct`): rechecked against Bitbucket `activ8me/rct-tstik` head `8e3f5b0` (2026-08-06).
+  `IOManager::ResetPower` switches the phone UI, NTD, LAN switch, satellite modem, Aux1, Aux2 and external I2C rails; none is named for the SMC. No code path
+  lets an inbound satellite message trigger a reset; satellite commands come only from the local `td` web page. AVR firmware is not in the repo, so an
+  AVR-level SMC reset stays unverified.
+- The code names the satellite modem Thuraya. Operator (2026-10-07): rct is moving to Iridium, tested at a few sites, replacement at all rct sites started,
+  each needing a visit. WH sites have no satellite modem.
+
+## 2026-10-07 — deterministic navigation-control upgrade
+
+<!-- skill-ai-it-upgrade: 2026-10-07-snake-case-recipes-v1 -->
+
+- Applied `skill-ai-it` deterministic navigation-control upgrade.
+- Upgraded managed navigation/scripts blocks to version `2026-10-07-snake-case-recipes-v1`.
+- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
+- Preserved user-authored content outside managed blocks.
+- Generated outputs remain support-only; no `.archcore/` promotion was performed.
+
+Applied to: context-map.yaml, AGENTS.md, scripts/README.md, justfile, SCRATCHPAD.md
 
 ## 20261007_1645 — Version scheme: patch runs 0 to 9, then the minor bumps; renumbered to 0.2.0 (v0.1.100 -> v0.2.0)
 

@@ -33,6 +33,10 @@ VERSION_LINE = f"<!-- skill-ai-it-version: {VERSION} -->"
 # recognised as skill-authored rather than being mistaken for project content.
 VERSION_MARKER = "skill-ai-it-version:"
 
+# Blocks stamped before this date predate template-sourced blocks and may hold project content;
+# see block_is_replaceable gate 3. Compared as a string prefix, which orders correctly for ISO dates.
+LAYOUT_SINCE = "2026-09-23"
+
 # Explicit, permanent opt-out. A project that has authored real content inside a managed block puts
 # this anywhere in the block and the upgrader will never touch it again. The validator treats a
 # block carrying it as correctly managed rather than as a missing/old-style-marker failure.
@@ -177,6 +181,14 @@ def block_is_replaceable(body: str | None) -> tuple[bool, str]:
         return False, "manual"
     if VERSION_MARKER not in body:
         return False, "no-provenance"
+    # 3. Layout. Before the template-sourced blocks (2026-09-23) the scripts block held the whole
+    #    README and projects catalogued their tasks inside it; the navigation and agents blocks
+    #    collected project rules the same way. A stamp alone does not prove the body is still ours:
+    #    on 2026-10-07 this replace removed 171 catalogue lines from cambium-swap and 113 rules from
+    #    unified-network-controller. Those projects move through `refresh`, which merges by hand.
+    stamp = re.search(re.escape(VERSION_MARKER) + r"\s*(\S+)", body)
+    if stamp and stamp.group(1) < LAYOUT_SINCE:
+        return False, "legacy-layout"
     return True, "skill-authored"
 
 
@@ -449,6 +461,12 @@ def handle_block_result(path, root, updated, changed, action, block, dry_run, re
             # An intentional opt-out is not an exception needing review — saying so every run is
             # how a review flag stops meaning anything.
             needs_review = False
+        elif action == "refused-legacy-layout":
+            reason = (f"was stamped before {LAYOUT_SINCE}, when projects wrote their own content "
+                      "inside this block, so replacing it would delete that content")
+            advice = ("Run `/skill-ai-it refresh` on this project to move project content outside "
+                      "the block, or merge the .proposed block by hand.")
+            needs_review = True
         else:
             reason = ("has no skill-ai-it-version: marker, so it was either never written by this "
                       "skill or has been hand-edited since. Its contents are not ours to discard")
@@ -543,29 +561,62 @@ def upgrade_context_map_yaml(path, dry_run, report_data):
 
     defaults = get_context_map_keys()
     added = []
-
-    if data.get("skill_ai_it_version") != VERSION:
+    stamp_changed = data.get("skill_ai_it_version") != VERSION
+    if stamp_changed:
         data["skill_ai_it_version"] = VERSION
         added.append("skill_ai_it_version")
 
-    for key in ["audit_checks", "promotion_rules", "context_recovery"]:
-        if key not in data:
-            data[key] = defaults[key]
-            added.append(key)
+    missing = [k for k in ["audit_checks", "promotion_rules", "context_recovery"] if k not in data]
+    for key in missing:
+        data[key] = defaults[key]
+        added.append(key)
 
-    if merge_governance_update_rules(data):
+    rules_merged = merge_governance_update_rules(data)
+    if rules_merged:
         added.append("update_rules")
 
     if not added:
         report_data["skipped_files"].append(relpath(path, root))
         return
 
+    # A full yaml.dump of the parsed file drops every comment, quote style and blank line the
+    # project wrote (skill-openwisp lost 5 comments and churned 600 lines for a one-line stamp,
+    # 2026-10-07). So edit the text: rewrite the stamp line in place and append missing top-level
+    # keys as a fragment. Only a nested update_rules merge still needs the full dump, and that
+    # path is flagged for review because it is the lossy one.
+    with open(path) as f:
+        text = f.read()
+    lossy = rules_merged
+    if not lossy:
+        if stamp_changed:
+            stamp_re = re.compile(r'^skill_ai_it_version:[^\n]*$', re.MULTILINE)
+            line = f'skill_ai_it_version: "{VERSION}"'
+            if stamp_re.search(text):
+                text = stamp_re.sub(line, text, count=1)
+            else:
+                text = re.sub(r'^(version:[^\n]*\n)', r'\1' + line + "\n", text, count=1, flags=re.MULTILINE)
+                if line not in text:
+                    text = line + "\n" + text
+        if missing:
+            fragment = yaml.dump({k: defaults[k] for k in missing}, default_flow_style=False, sort_keys=False)
+            text = text.rstrip("\n") + "\n\n" + fragment
+    else:
+        text = yaml.dump(data, default_flow_style=False, sort_keys=False)
+        report_data["requires_manual_review"] = True
+        report_data["warnings"].append(
+            f"{relpath(path, root)}: update_rules merge re-serialised the whole file — "
+            "comments and quoting are lost; review the diff"
+        )
+
     if dry_run:
-        report_data["changed_files"].append(f"{relpath(path, root)} (would add/update: {', '.join(sorted(set(added)))})")
+        mode = "full re-dump" if lossy else "in place"
+        report_data["changed_files"].append(
+            f"{relpath(path, root)} (would add/update: {', '.join(sorted(set(added)))}; {mode})"
+        )
         return
 
     with open(path, "w") as f:
-        yaml.dump(data, f, default_flow_style=False, sort_keys=False)
+        f.write(text)
     report_data["changed_files"].append(relpath(path, root))
 
 
@@ -651,7 +702,7 @@ def upgrade_scripts_readme(scripts_dir, path, dry_run, report_data):
 
 
 def append_changelog(path, dry_run, report_data, upgrades_text):
-    """Append an idempotent changelog entry."""
+    """Add an idempotent changelog entry where the file's own order puts new entries (see changelog_is_newest_first)."""
     root = report_data["project_root"]
     if not os.path.exists(path):
         report_data["skipped_files"].append(relpath(path, root))
@@ -664,8 +715,9 @@ def append_changelog(path, dry_run, report_data, upgrades_text):
         report_data["skipped_files"].append(relpath(path, root))
         return
 
+    heading = f"{date.today().isoformat()} — deterministic navigation-control upgrade"
     entry = f"""
-## {date.today().isoformat()} — deterministic navigation-control upgrade
+## {heading}
 
 {CHANGELOG_MARKER}
 
@@ -678,13 +730,62 @@ def append_changelog(path, dry_run, report_data, upgrades_text):
 {upgrades_text}
 """
 
+    newest_first = changelog_is_newest_first(text)
     if dry_run:
-        report_data["changed_files"].append(f"{relpath(path, root)} (would append changelog entry)")
+        where = "insert at the top" if newest_first else "append"
+        report_data["changed_files"].append(f"{relpath(path, root)} (would {where} changelog entry)")
         return
 
-    with open(path, "a") as f:
-        f.write(entry)
+    with open(path, "w") as f:
+        f.write(place_changelog_entry(text, entry, heading, newest_first))
     report_data["changed_files"].append(relpath(path, root))
+
+
+def _heading_date(heading: str) -> str | None:
+    """The first date in a `##` heading as digits (YYYYMMDD, plus hhmm when given), or None when it carries no date."""
+    m = re.search(r"(\d{4})-?(\d{2})-?(\d{2})(?:_(\d{4}))?", heading)
+    return "".join(g for g in m.groups() if g) if m else None
+
+
+def changelog_is_newest_first(text: str) -> bool:
+    """True when the dated `##` headings run newest first, judged from the first two that differ.
+
+    Appending to a newest-first CHANGELOG buried every upgrade entry at the bottom, where nobody reading from the top finds
+    it (skill-smc and skill-cambium needed a hand move on every refresh; skill-openwisp, skill-nautobot and skill-eval-manager
+    on 2026-10-07). With fewer than two distinct dates the order is unknown and the answer is False, which keeps the old
+    append behaviour.
+    """
+    dates = [d for h in re.findall(r"^## (.+)$", text, re.M) if (d := _heading_date(h))]
+    for a, b in zip(dates, dates[1:]):
+        # Compare at the shared precision, so a YYYYMMDD heading orders against a YYYYMMDDhhmm one.
+        n = min(len(a), len(b))
+        if a[:n] != b[:n]:
+            return a[:n] > b[:n]
+    return False
+
+
+def _anchor(heading: str) -> str:
+    """GitHub-style anchor for a heading: lower case, punctuation dropped, each space a hyphen."""
+    return "#" + re.sub(r"[^\w\- ]", "", heading.lower()).replace(" ", "-")
+
+
+def place_changelog_entry(text: str, entry: str, heading: str, newest_first: bool) -> str:
+    """Return text with the entry in its place and, when a `## Contents` list exists, a matching line in it.
+
+    Newest-first: above the first dated `##` heading, and first in the Contents list. Otherwise appended, and last in the list.
+    """
+    block = entry.strip("\n") + "\n"
+    if newest_first:
+        first = next(m for m in re.finditer(r"^## (.+)$", text, re.M) if _heading_date(m.group(1)))
+        text = text[:first.start()] + block + "\n" + text[first.start():]
+    else:
+        text = text.rstrip("\n") + "\n\n" + block
+    toc = re.search(r"^## Contents\n\n((?:- .*\n(?:  .*\n)*)+)", text, re.M)
+    if toc:
+        line = f"- [{heading}]({_anchor(heading)})\n"
+        at = toc.start(1) if newest_first else toc.end(1)
+        text = text[:at] + line + text[at:]
+    return text
 
 
 # The template's recipes were kebab-case until 2026-10-07; governance coding-guide now asks snake_case for every command name. A project bootstrapped
@@ -700,16 +801,20 @@ TEMPLATE_RECIPE_RENAMES = {
     "lint-md": "lint_md",
 }
 
+# Project docs that name template recipes, renamed alongside the justfile. Not CHANGELOG.md (history).
+RECIPE_DOCS = ["scripts/README.md", "README.md", "AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md",
+               "SKILL.md", "RUNBOOK.md", "SCRATCHPAD.md", "ARCHITECTURE.md", "SETUP.md", "requirements.txt"]
+
 
 def upgrade_justfile_recipes(path, dry_run, report_data):
-    """Rename the template's kebab-case recipes to snake_case in a project's justfile: definitions, dependencies and `just <name>` mentions.
+    """Rename the template's kebab-case recipes to snake_case in a project's justfile or recipe-naming doc: definitions, dependencies and mentions.
 
     Whole names only (a hyphen or word character on either side stops a match), so a project recipe such as `lint-md-strict` is left alone. A
     project with no justfile, or none of these names, is untouched. With --dry-run the change is reported and nothing is written.
     """
     if not os.path.isfile(path):
         return
-    root = os.path.dirname(path)
+    root = report_data["project_root"]
     with open(path, encoding="utf-8") as f:
         text = f.read()
     new = text
@@ -756,6 +861,11 @@ def main():
     upgrade_claude_md(os.path.join(root, "CLAUDE.md"), dry_run, report_data, args.repair_claude_wrapper)
     upgrade_scripts_readme(os.path.join(root, "scripts"), os.path.join(root, "scripts/README.md"), dry_run, report_data)
     upgrade_justfile_recipes(os.path.join(root, "justfile"), dry_run, report_data)
+    # The task tables and prose name the same recipes; renaming only the justfile left skill-openwisp's
+    # scripts/README.md naming recipes that no longer exist (2026-10-07). CHANGELOG.md is history and
+    # keeps the names it was written with.
+    for doc in RECIPE_DOCS:
+        upgrade_justfile_recipes(os.path.join(root, doc), dry_run, report_data)
 
     # Build upgrade summary for changelog from non-changelog changes only.
     non_changelog_changes = [

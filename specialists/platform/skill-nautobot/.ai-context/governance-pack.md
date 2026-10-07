@@ -3728,7 +3728,7 @@ rather than silently falling back to the host interpreter. The one sanctioned ex
 **Do not invoke these scripts with a bare `python3`.** It resolves to whatever the host has on `PATH`, which works until the host changes and then fails in a way that reads like a code bug.
 
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## Execution Policy
 
@@ -3759,26 +3759,26 @@ rather than silently falling back to the host interpreter. The one sanctioned ex
 
 ## Task Inventory
 
-Everything below `## Task Inventory` lives outside the managed block and is maintained by hand — `nav-upgrade` never touches it.
+Everything below `## Task Inventory` lives outside the managed block and is maintained by hand — `nav_upgrade` never touches it.
 
 | Task / Script | Purpose | Inputs | Outputs | Safety | Idempotent | When to use |
 |---|---|---|---|---|---|---|
 | `just bootstrap` | Build the working-cache venv from the mise pin; install `requirements.txt` | `.mise.toml`, `requirements.txt` | venv under the working-cache peer | `modifies-files` (outside the repo) | Yes | First run, or when `just runtimes` reports MISSING |
 | `just runtimes` | Print the interpreter the recipes will actually use | — | Console output | `safe` | Yes | Before trusting any Python recipe |
 | `just inventory` | List tasks and this inventory | `justfile`, `scripts/README.md` | Console output | `safe` | Yes | First check before running pack automation |
-| `just audit-scripts` | Show script/catalog drift | `scripts/`, `scripts/README.md` | Console output | `safe` | Yes | During refresh/audit |
+| `just audit_scripts` | Show script/catalog drift | `scripts/`, `scripts/README.md` | Console output | `safe` | Yes | During refresh/audit |
 | `just helpers` | List the helpers this pack ships | `scripts/*.py` | Console output | `safe` | Yes | Before importing a helper |
 | `just test` | Offline package contract + helper tests (includes the governance checker) | `tests/`, every pack file | Console output, exit status | `safe` | Yes | Before claiming any change complete |
 | `just check` | Governance coherence checks alone | `scripts/check_governance.py`, governance surfaces | Console output, exit status | `safe` | Yes | After adding, moving or renaming any file |
-| `just preflight` | runtimes + audit-scripts + test + check + lint-md | Pack files | Console output | `safe` | Yes | Before commit or handoff |
-| `just lint-md` | Markdown lint against `.markdownlint-cli2.jsonc` | `**/*.md` | Console output | `safe` | Yes | Before commit |
+| `just preflight` | runtimes + audit_scripts + test + check + lint_md | Pack files | Console output | `safe` | Yes | Before commit or handoff |
+| `just lint_md` | Markdown lint against `.markdownlint-cli2.jsonc` | `**/*.md` | Console output | `safe` | Yes | Before commit |
 | `just context-pack` | Regenerate `.ai-context/governance-pack.md` with Repomix | `repomix.config.json` | `.ai-context/governance-pack.md` | `modifies-files` | Yes | After governance or routing changes |
 | `just graph` | Refresh `graphify-out/` (code graph, AST only, no LLM) | Pack source files | `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.json`, `graphify-out/graph.html` | `modifies-files` | Yes | After adding or changing helpers or tests |
-| `just nav-upgrade-dry-run` | Preview the skill-ai-it navigation-layer upgrade | skill-ai-it upgrader | Console output | `safe` | Yes | Before `just nav-upgrade` |
-| `just nav-upgrade` | Apply the navigation-layer upgrade | skill-ai-it upgrader | File changes | `review-required` · `modifies-files` | Yes | After reviewing the dry run |
-| `just nav-validate` | Validate the navigation layer | skill-ai-it validator | Console output | `safe` | Yes | After an upgrade or periodically |
-| `just nav-check-diff` | Confirm only expected governance files changed | git diff | Console output | `safe` | Yes | After an upgrade |
-| `just nav-selftest` | Self-test the skill-ai-it block builders (not this pack) | skill-ai-it templates | Console output | `safe` | Yes | After skill-ai-it templates change |
+| `just nav_upgrade_dry_run` | Preview the skill-ai-it navigation-layer upgrade | skill-ai-it upgrader | Console output | `safe` | Yes | Before `just nav_upgrade` |
+| `just nav_upgrade` | Apply the navigation-layer upgrade | skill-ai-it upgrader | File changes | `review-required` · `modifies-files` | Yes | After reviewing the dry run |
+| `just nav_validate` | Validate the navigation layer | skill-ai-it validator | Console output | `safe` | Yes | After an upgrade or periodically |
+| `just nav_check_diff` | Confirm only expected governance files changed | git diff | Console output | `safe` | Yes | After an upgrade |
+| `just nav_selftest` | Self-test the skill-ai-it block builders (not this pack) | skill-ai-it templates | Console output | `safe` | Yes | After skill-ai-it templates change |
 
 ## Raw Script Inventory
 
@@ -4048,7 +4048,7 @@ write-back contract and [references/evolution-and-write-back.md](references/evol
 an engaging project must check for unpromoted Nautobot knowledge; a closeout without that check is incomplete.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## AI navigation and context preflight
 
@@ -4068,10 +4068,10 @@ Before answering, planning, editing, or creating files in this project:
 10. Do not treat Graphify (`graphify-out/`) or Repomix (`.ai-context/`) output as canonical truth. These are generated support artifacts only, always rebuildable.
 11. Before running scripts or automation, inspect `justfile`, `scripts/README.md`, `Taskfile.yml`, `Makefile`, and `package.json` when present. Prefer `just --list` and `just <task>` when a `justfile`
     exists.
-12. Treat uncataloged scripts as `unknown` safety until inspected. Run defined audit/check commands before completing work.
+12. Treat uncataloged scripts as `unknown` safety until inspected.
 13. When adding, modifying, or removing scripts or tasks, update `scripts/README.md` to reflect the change — purpose, inputs, outputs, safety label, and idempotency.
-14. If `scripts/check_governance.py` exists, run it before claiming any durable change is complete. When it fails, fix the project, not the check. Adding a new artifact class, generated output, or a
-    constant restated across files requires extending its registries in the same pass.
+14. Run defined audit/check commands before completing work. Where `scripts/check_governance.py` exists, that includes it — and when it fails, fix the project, not the check.
+    Adding a new artifact class, generated output, or a constant restated across files requires extending its registries in the same pass.
 15. After making changes, update `CHANGELOG.md` for all durable governance/navigation changes.
 16. Preserve user-authored content outside managed sections. Do not rewrite custom project notes.
 
@@ -4161,7 +4161,7 @@ This file is a router, not the full knowledge store.
 - [Pack artifacts](#pack-artifacts)
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## Mandatory read order
 
@@ -4512,6 +4512,18 @@ Ordinary single-platform tasks load one reference. A task whose changed object b
 - Recorded the observed Nautobot 3.2.3/application baseline, the version-bounded 3.2 Job source, and local official-documentation snapshots.
 - Hardened authority, pagination, staged onboarding, replacement, topology, worker, backup, extension, and upgrade guidance with Phase 1 worked patterns.
 - No migrations or retirements.
+
+## 2026-10-07 — deterministic navigation-control upgrade
+
+<!-- skill-ai-it-upgrade: 2026-10-07-snake-case-recipes-v1 -->
+
+- Applied `skill-ai-it` deterministic navigation-control upgrade.
+- Upgraded managed navigation/scripts blocks to version `2026-10-07-snake-case-recipes-v1`.
+- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
+- Preserved user-authored content outside managed blocks.
+- Generated outputs remain support-only; no `.archcore/` promotion was performed.
+
+Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, justfile, scripts/README.md
 ````
 
 ## File: CLAUDE.md
@@ -4597,7 +4609,7 @@ environments:
 ## File: context-map.yaml
 ````yaml
 version: 1
-skill_ai_it_version: "2026-09-23-template-sourced-blocks-v1"
+skill_ai_it_version: "2026-10-07-snake-case-recipes-v1"
 
 project:
   name: "skill-nautobot"
@@ -5113,7 +5125,7 @@ inventory:
     @test -f scripts/README.md && sed -n '1,220p' scripts/README.md || true
 
 # Audit script/task inventory for obvious drift
-audit-scripts:
+audit_scripts:
     @echo "== just recipes =="
     @just --list || true
     @echo
@@ -5151,36 +5163,36 @@ graph:
     @graphify update .
 
 # Run safe local preflight checks
-preflight: runtimes audit-scripts test check lint-md
+preflight: runtimes audit_scripts test check lint_md
 
 # Lint Markdown files when markdownlint-cli2 is available
-lint-md:
+lint_md:
     @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
     @markdownlint-cli2 '**/*.md'
 
 # The navigation-control scripts live in the skill package, NOT in this project. Override on the
-# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav-validate
+# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav_validate
 skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 
 # Upgrade navigation control layer (dry-run preview)
-nav-upgrade-dry-run: _require-venv
+nav_upgrade_dry_run: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
 
 # Upgrade navigation control layer (apply changes) — review the dry-run first
-nav-upgrade: _require-venv
+nav_upgrade: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
 
 # Validate navigation control layer
-nav-validate: _require-venv
+nav_validate: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
 
 # Check only expected files changed after upgrade (requires a git repo)
-nav-check-diff: _require-venv
+nav_check_diff: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
 
 # Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
-# package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
-nav-selftest: _require-venv
+# package's templates change, before trusting nav_upgrade to rewrite this project's blocks.
+nav_selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"
 ````
 
@@ -5255,7 +5267,7 @@ inventory:
     @test -f scripts/README.md && sed -n '1,220p' scripts/README.md || true
 
 # Audit script/task inventory for obvious drift
-audit-scripts:
+audit_scripts:
     @echo "== just recipes =="
     @just --list || true
     @echo
@@ -5293,36 +5305,36 @@ graph:
     @graphify update .
 
 # Run safe local preflight checks
-preflight: runtimes audit-scripts test check lint-md
+preflight: runtimes audit_scripts test check lint_md
 
 # Lint Markdown files when markdownlint-cli2 is available
-lint-md:
+lint_md:
     @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
     @markdownlint-cli2 '**/*.md'
 
 # The navigation-control scripts live in the skill package, NOT in this project. Override on the
-# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav-validate
+# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav_validate
 skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 
 # Upgrade navigation control layer (dry-run preview)
-nav-upgrade-dry-run: _require-venv
+nav_upgrade_dry_run: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
 
 # Upgrade navigation control layer (apply changes) — review the dry-run first
-nav-upgrade: _require-venv
+nav_upgrade: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
 
 # Validate navigation control layer
-nav-validate: _require-venv
+nav_validate: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
 
 # Check only expected files changed after upgrade (requires a git repo)
-nav-check-diff: _require-venv
+nav_check_diff: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
 
 # Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
-# package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
-nav-selftest: _require-venv
+# package's templates change, before trusting nav_upgrade to rewrite this project's blocks.
+nav_selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"
 ````
 
@@ -5746,7 +5758,7 @@ claims:
     applies_to: [nautobot-unc-inspected-20261001]
     environment_id: nautobot-unc-inspected-20261001
     source_type: report_synthesis
-    evidence: "UNC docs/reports/controller-option3/ntc-ecosystem-complementary-tools-20260929_1304.md Device Onboarding disposition; local research, not product limitation."
+    evidence: "UNC docs/reports/nautobot/ntc-ecosystem-complementary-tools-20260929_1304.md Device Onboarding disposition; local research, not product limitation."
     reference: references/apps-jobs-validation.md
     test: N-S03
   - id: N-C17

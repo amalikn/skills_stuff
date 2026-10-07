@@ -26,7 +26,7 @@ Run any command with `without-paging` appended when the output is long.
 | `/interface bridge port print` | ports and VLAN sub-interfaces per bridge | One bridge per VLAN, no VLAN filtering |
 | `/interface bridge vlan print` | empty here | Consistent with the bridge-per-VLAN layout |
 | `/ip address print` | management address | Switch `10.255.0.5/24` on `bridge-vlan500` |
-| `/log print` | in-memory log | 1,000-line buffer, lost on reboot; mostly link events |
+| `/log print` | in-memory log | 1,000-line buffer; survived 43 crash reboots at arrkapa (2026-10-07, mechanism unverified, `05_known-issues.md` #4); times unreliable after a crash; mostly link events |
 | `/export terse` | config, one line per item | RouterOS 7 hides secrets by default; never add `show-sensitive` (`hide-sensitive` is the 6.x flag) |
 
 Measured values: delye switch 26.7–26.9 V, amuroona 27.2 V, APs about 26 V (fleet ranges in `01_overview.md`).

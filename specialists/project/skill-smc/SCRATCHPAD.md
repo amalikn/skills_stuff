@@ -42,7 +42,7 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 
 ## Current state
 
-**2026-10-07 16:43 `KEEP` — v0.1.100 (renumbered 0.2.0 at 16:45 under the new 0–9 patch rule), layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav-validate`,
+**2026-10-07 16:43 `KEEP` — v0.1.100 (renumbered 0.2.0 at 16:45 under the new 0–9 patch rule), layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav_validate`,
 `just fleet …`, `just routing …`), `.mise.toml`, `requirements.txt` (PyYAML for the nav validator only), lint config, `.gitignore`, `.archcore/index.guide.md`. `SKILL.md` is a short router
 (144 lines); detail lives in references. The profile file, the dedicated-agent prompt and the `exports/` adapter are retired; install is the symlink `~/.claude/skills/skill-smc`.
 `AGENTS.md` is local-only (`.git/info/exclude`), so its rule edits never appear in git. Checks: governance 320/320, nav 0/0, archcore 0 issues.
@@ -484,7 +484,7 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Next actions
 
-- On a new machine: `ln -s` the pack to `~/.claude/skills/skill-smc`, then `just bootstrap`; run `just check` and `just nav-validate` before calling any change done.
+- On a new machine: `ln -s` the pack to `~/.claude/skills/skill-smc`, then `just bootstrap`; run `just check` and `just nav_validate` before calling any change done.
 - New reference file: update the four index surfaces (`RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, `context-map.yaml`); the checker fails until all four name it.
 - Root-cause the new-looma-smc01 31h outage (2026-08-01→2026-08-03) next time `tsh ssh` access to that site is available — check WAN/backhaul/power logs; confirm or rule out any link to the still-open
   `my_node_network_device_info` gap

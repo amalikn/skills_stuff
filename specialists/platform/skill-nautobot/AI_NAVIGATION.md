@@ -33,7 +33,7 @@ This file is a router, not the full knowledge store.
 - [Pack artifacts](#pack-artifacts)
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## Mandatory read order
 

@@ -2,6 +2,9 @@
 
 ## Contents
 
+- [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
+- [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
+- [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
 - [20261007_2027 — feat: snake_case recipes (VERSION 2026-10-07-snake-case-recipes-v1); check_function_docs in the template](#20261007_2027--feat-snake_case-recipes-version-2026-10-07-snake-case-recipes-v1-check_function_docs-in-the-template)
 - [20261007_2009 — feat: snake_case file naming, check_file_naming; template renamed to context_preflight.sh](#20261007_2009--feat-snake_case-file-naming-check_file_naming-template-renamed-to-context_preflightsh)
 - [20261007_1848 — fix: runtime isolation now also catches shebang-run recipes and inline interpreters in shell scripts](#20261007_1848--fix-runtime-isolation-now-also-catches-shebang-run-recipes-and-inline-interpreters-in-shell-scripts)
@@ -51,6 +54,43 @@
 - [20260812_1300](#20260812_1300)
 
 ---
+
+## 20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order
+
+- `append_changelog` appended at the end of every CHANGELOG, so newest-first files needed the entry moved to the top by hand on every refresh (skill-smc,
+  skill-cambium, and four more in today's run). `changelog_is_newest_first` now reads the dates in the `##` headings (`YYYYMMDD_hhmm`, `YYYY-MM-DD`, or a
+  date inside a version heading) and compares the first two that differ; `place_changelog_entry` puts the entry above the first dated section and first in
+  `## Contents` for newest-first files, and appends (last in Contents) otherwise, including when the order cannot be told.
+- Six new self-tests (29 in all). On the committed CHANGELOGs of the twelve projects in today's run, the detected order matches the hand judgement for each.
+
+## 20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated
+
+- **New `scripts/migrate_legacy_blocks.py`, recipe `nav_migrate_legacy <project> [--dry-run]`.** It rebuilds every block the skill emitted while the `2026-08-11`
+  stamp was current (builders and templates of 3ab6c94, 1567158, adcbea4 and 293c42b^) plus the current ones, and classifies each section of a project's legacy
+  block by comparing normalised text: skill text is dropped for the current block, project sections move outside it (above when they preceded every skill
+  section), and an edited skill section is copied verbatim under `## Moved from the managed block` and the run exits 3 until it is trimmed.
+- **Run on the seven refused projects:** psy-assess, islam and japan were mechanical. health and cambium-swap kept their scripts-README rules as *Project
+  execution notes*; atar's no-memory-bank routing became *Project deviations from the managed block*; unified-network-controller kept 113 rule lines above its
+  AGENTS block and its routing under *Project routing additions*. health and unified-network-controller registered `.ai-context/repo-pack.md` in
+  `CONDITIONAL_PATHS`. All twelve projects of the snake_case run are now on `2026-10-07-snake-case-recipes-v1`.
+- islam's `context-map.yaml` took the `update_rules` merge as a text edit (same data as the re-dump, comments kept), not the lossy re-dump.
+- Newest-first CHANGELOGs in skill-openwisp, skill-nautobot, skill-smc and skill-eval-manager had the upgrade entry moved to the top by hand; the open item on
+  the upgrader's append position stands.
+
+## 20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs
+
+Found running `nav_upgrade` across the 12 projects still on kebab-case recipes, pilot first (skill-openwisp), then the rest.
+
+- **Data loss, caught in diff review.** Projects stamped `2026-08-11` hold their own content inside the managed blocks (the older layout). The stamp passed the provenance
+  gate, so the upgrade replaced the blocks wholesale: 171 lines from cambium-swap `scripts/README.md`, 113 from unified-network-controller `AGENTS.md`, and more across seven
+  projects. All seven were restored from git and given only the recipe renames. New gate 3 in `block_is_replaceable`: a block stamped before `LAYOUT_SINCE` (`2026-09-23`)
+  is refused as `legacy-layout`, exit 3, with `/skill-ai-it refresh` as the way forward. Three new self-tests.
+- **`context-map.yaml` lost every comment.** The upgrader re-dumped the parsed file, so a one-line stamp change churned 622 lines in skill-openwisp and dropped its 5 comments.
+  The file is now edited as text; only a nested `update_rules` merge re-dumps, and that path flags the run for review.
+- **Recipe renames stopped at the justfile.** `scripts/README.md` task tables kept the old names, and the project checkers failed on recipes that no longer exist. Renames now
+  also apply to `RECIPE_DOCS` (root governance docs, `scripts/README.md`, `SETUP.md`, `requirements.txt`); `CHANGELOG.md` is left as history.
+- Upgraded in full: skill-openwisp, skill-nautobot, skill-smc, skill-eval-manager, enterprise-strategy. Recipes renamed, blocks waiting for `refresh`: psy-assess, health,
+  islam, japan, atar, unified-network-controller, cambium-swap.
 
 ## 20261007_2027 — feat: snake_case recipes (VERSION 2026-10-07-snake-case-recipes-v1); check_function_docs in the template
 

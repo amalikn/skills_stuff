@@ -36,7 +36,10 @@ fails on files nothing covers, so extending it is a blocking condition rather th
 **Version bump 2026-10-07 (KEEP):** `VERSION` moved again (snake_case recipes, check_function_docs; the stamp is owned by `scripts/README.md`
 under Coupled Constants). The 14 projects
 whose justfile still has `nav-upgrade` and friends report a stale stamp under `just nav_validate`; `just nav_upgrade` (dry-run first) renames their
-template recipes and refreshes the blocks. Not yet run on any project.
+template recipes and refreshes the blocks. **Run 2026-10-07:** five projects on the `2026-09-23` layout upgraded in full (skill-openwisp, skill-nautobot,
+skill-smc, skill-eval-manager, enterprise-strategy). Seven on the `2026-08-11` layout got the recipe renames only; their blocks are refused as `legacy-layout` and need
+`/skill-ai-it refresh`: psy-assess, health, islam, japan, atar, unified-network-controller, cambium-swap. **Done the same day** with `migrate_legacy_blocks.py`; all twelve
+now carry the current stamp, `nav_validate` is clean and every `just check` is at or above its baseline.
 
 **Earlier version bump consequence (KEEP):** `VERSION` moved to `2026-08-11-governance-checks-layer-v1`. Three projects still carry the previous stamp and will report "missing current version stamp" under
 `just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitability`, `apn/opticomm-profitability`. That report is the intended re-upgrade signal, not a project defect. Remediation: `just
@@ -46,9 +49,8 @@ nav_upgrade` per project.
 
 ## Open items
 
-- [ ] **2026-10-07, proposed, not decided:** `upgrade_navigation_control_layer.py` appends its CHANGELOG entry at the end of the file. Newest-first CHANGELOGs with a
-  Contents block (skill-smc, skill-cambium) need a manual move to the top plus a TOC line on every refresh (skill-smc 2026-09-08 and 2026-10-07). Candidate fix: detect
-  ordering from the first two dated headings, insert accordingly, and add the Contents line when one exists.
+- [x] **2026-10-07, done (operator: fix it):** the upgrader's CHANGELOG entry now follows the file's order. `changelog_is_newest_first`
+  reads the dated `##` headings; a newest-first file gets the entry on top and first in Contents, any other file gets it appended.
 
 - [ ] **Dogfood the checker on this package** — `just nav_validate` now warns that `skill-ai-it` itself has no `scripts/check_governance.py`. The package has real invariants worth asserting: every
   file in the layout tree exists, `templates/` and `patterns/` members are registered in `README.md` / `AI_NAVIGATION.md` / `context-map.yaml`, and `VERSION` is identical across all 11 surfaces that

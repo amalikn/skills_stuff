@@ -33,7 +33,7 @@ This file is a router, not the full knowledge store.
   - [Answer contract addition](#answer-contract-addition)
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## Mandatory read order
 
@@ -283,7 +283,7 @@ When answering from project context:
 
 ## Package-specific routing — skill-eval-manager
 
-This section is project-authored and sits deliberately OUTSIDE the managed block above, so a later `nav-upgrade` cannot discard it.
+This section is project-authored and sits deliberately OUTSIDE the managed block above, so a later `nav_upgrade` cannot discard it.
 
 This repo is a **skill package**, not a consuming project. It has no `.archcore/adr/` full of decisions about a running system; its durable truth is the method in `references/` and the contracts in
 `schemas/`. Route accordingly.

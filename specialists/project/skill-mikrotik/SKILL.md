@@ -66,7 +66,7 @@ locally with `sshpass -e`, so the password never appears in a command that runs 
 3. **Port link-downs and the log** (`/interface print detail` `link-downs=`, `/log print where topics~"interface"`): rising link-downs on ether1 = SMC side (Pi NIC, cable, SMC reboots); on ether2 =
    Sky Muster NTD side.
 4. **Supply voltage and temperature** (`/system health print`): the DC bus the board is fed from; compare with the fleet range in `references/01_overview.md`.
-5. **Capture before any power-cycle**: the RouterOS log is an in-memory 1,000-line buffer and is lost on reboot. `scripts/mikrotik_site_capture.sh` (add `WAIT_UP=1` for a box that is offline now).
+5. **Capture before any power-cycle**: the RouterOS log is a 1,000-line buffer; arrkapa's survived crash reboots, but do not count on it across a power-cycle (`references/05_known-issues.md` #4). `scripts/mikrotik_site_capture.sh` (add `WAIT_UP=1` for a box that is offline now).
 
 ## Related Workspaces
 

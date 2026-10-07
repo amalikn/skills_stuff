@@ -137,15 +137,15 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 
 - Promoted 4 ADRs, 4 rules and 3 specs from `BRIEF.md`, `SKILL.md` and `references/`; deleted `ARCHCORE_PROMOTION_CANDIDATES.md` as `promote` requires.
 - `.archcore/index.guide.md` registered as a governance catalog over `.archcore/*/*.md`, enforced in both directions and proven red by deliberate breakage. Checks 189 to 217.
-- Found and fixed a lint gate that could not fail: `just lint-md` printed "not installed; skipped" and exited 0 on real violations. Fixed at source in `skill-ai-it`'s template, its own
+- Found and fixed a lint gate that could not fail: `just lint_md` printed "not installed; skipped" and exited 0 on real violations. Fixed at source in `skill-ai-it`'s template, its own
   justfile and its `SKILL.md` fallback, so other bootstrapped projects stop inheriting it.
 
 ### 2026-09-23 — re-upgrade onto template-sourced managed blocks
 
 - The thin navigation block seen at bootstrap was a defect in `skill-ai-it`, not in this package: its upgrade script held an inlined copy that had drifted nine sections behind its template since
   2026-08-11. Fixed at source the same day; this package was re-upgraded onto stamp `2026-09-23-template-sourced-blocks-v1`, gaining the generic sections back inside the markers.
-- Headings 17 → 26, no project-authored section lost, and a second consecutive `just nav-upgrade` left `AI_NAVIGATION.md` byte-identical.
-- Re-verified: `just check` 189, `just nav-validate` 0/0, `just lint-md` 0, `just validate-all` green.
+- Headings 17 → 26, no project-authored section lost, and a second consecutive `just nav_upgrade` left `AI_NAVIGATION.md` byte-identical.
+- Re-verified: `just check` 189, `just nav_validate` 0/0, `just lint_md` 0, `just validate-all` green.
 
 ### 2026-09-23 — governance bootstrap (skill-ai-it)
 

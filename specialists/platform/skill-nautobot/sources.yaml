@@ -172,7 +172,7 @@ claims:
     applies_to: [nautobot-unc-inspected-20261001]
     environment_id: nautobot-unc-inspected-20261001
     source_type: report_synthesis
-    evidence: "UNC docs/reports/controller-option3/ntc-ecosystem-complementary-tools-20260929_1304.md Device Onboarding disposition; local research, not product limitation."
+    evidence: "UNC docs/reports/nautobot/ntc-ecosystem-complementary-tools-20260929_1304.md Device Onboarding disposition; local research, not product limitation."
     reference: references/apps-jobs-validation.md
     test: N-S03
   - id: N-C17

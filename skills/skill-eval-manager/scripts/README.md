@@ -83,7 +83,7 @@ just check        # governance coherence assertions
 Treat any script not listed here as `unknown` safety until inspected. `just check` fails when this table's file list and `scripts/` disagree in either direction.
 
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## Execution Policy
 

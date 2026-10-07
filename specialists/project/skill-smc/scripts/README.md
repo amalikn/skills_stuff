@@ -567,7 +567,7 @@ reusable knowledge and tooling, not case-specific evidence. See the parent repo'
 (conclusions, confirmed/refuted claims, new findings) belongs in `references/*.md`; the raw capture files do not.
 
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
-<!-- skill-ai-it-version: 2026-09-23-template-sourced-blocks-v1 -->
+<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
 ## Execution Policy
 

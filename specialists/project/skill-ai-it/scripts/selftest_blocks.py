@@ -24,6 +24,7 @@ import importlib.util
 import os
 import re
 import sys
+import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -73,7 +74,8 @@ def headings(text: str, level: str = "## ") -> list[str]:
 
 def main() -> int:
     """Build each managed block (navigation, agents, scripts) with the upgrader and assert its shape: markers, version stamp, no trailing
-    whitespace or blank runs, and every required section. Returns 0 when all pass, 1 otherwise.
+    whitespace or blank runs, and every required section; then the legacy-layout refusal and the in-place context-map stamp. Returns 0 when all
+    pass, 1 otherwise.
     """
     m = load()
 
@@ -121,6 +123,42 @@ def main() -> int:
             check(True, "")
     finally:
         m.NAVIGATION_TEMPLATE = saved
+
+    # A block stamped before the template-sourced layout may hold project content and must be
+    # refused; a current-layout block must still be replaceable. 2026-10-07 lost 171 catalogue lines
+    # from cambium-swap without this gate.
+    legacy = "\n<!-- skill-ai-it-version: 2026-08-11-governance-checks-layer-v1 -->\n## Task Inventory\n"
+    current = f"\n<!-- skill-ai-it-version: {m.VERSION} -->\n"
+    check(m.block_is_replaceable(legacy) == (False, "legacy-layout"), "provenance: a pre-2026-09-23 block was not refused")
+    check(m.block_is_replaceable(current)[0], "provenance: a current-layout block was refused")
+
+    # context-map.yaml: a stamp-only upgrade edits one line and keeps comments and quoting.
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "context-map.yaml")
+        with open(path, "w") as f:
+            f.write('# kept\nversion: 1\nskill_ai_it_version: "old"\nproject:\n  name: "x"  # inline\n')
+        defaults = m.get_context_map_keys()
+        with open(path, "a") as f:
+            f.write(m.load_yaml_module().dump({k: defaults[k] for k in
+                    ["audit_checks", "promotion_rules", "context_recovery", "update_rules"]}, sort_keys=False))
+        before = open(path).read()
+        m.upgrade_context_map_yaml(path, False, {"project_root": tmp, "changed_files": [], "skipped_files": [],
+                                                 "warnings": [], "proposed_files": []})
+        after = open(path).read()
+        expected = before.replace('skill_ai_it_version: "old"', f'skill_ai_it_version: "{m.VERSION}"')
+        check(after == expected, "context-map: a stamp-only upgrade changed more than the stamp line")
+
+    # CHANGELOG placement follows the file's order: newest-first files get the entry on top (and first in Contents).
+    newest = "# Log\n\n## Contents\n\n- [20261002_0900 — b](#x)\n- [20261001_0900 — a](#y)\n\n## 20261002_0900 — b\n\n## 20261001_0900 — a\n"
+    oldest = "# Log\n\n## 2026-09-01\n\n## 2026-09-02\n"
+    check(m.changelog_is_newest_first(newest), "changelog: a newest-first file was not recognised")
+    check(not m.changelog_is_newest_first(oldest), "changelog: an oldest-first file was taken as newest-first")
+    check(not m.changelog_is_newest_first("# Log\n\n## 2026-09-01\n"), "changelog: one dated heading should leave the order unknown (append)")
+    placed = m.place_changelog_entry(newest, "\n## 2026-10-07 — up\n\nbody\n", "2026-10-07 — up", True)
+    check(placed.index("## 2026-10-07 — up") < placed.index("## 20261002_0900"), "changelog: newest-first entry not placed above the first dated section")
+    check("## Contents\n\n- [2026-10-07 — up](#2026-10-07--up)\n" in placed, "changelog: newest-first entry missing from the top of Contents")
+    placed = m.place_changelog_entry(oldest, "\n## 2026-10-07 — up\n\nbody\n", "2026-10-07 — up", False)
+    check(placed.rstrip().endswith("body"), "changelog: oldest-first entry not appended")
 
     if failures:
         print(f"FAIL — {len(failures)} issue(s) across {checks} checks\n")

@@ -1,5 +1,12 @@
 # Changelog
 
+## 20261007_2034 — arrkapa switch log: clock and retention read correctly (v0.1.16 -> v0.1.17)
+
+- `references/04_failure-modes.md`: the arrkapa switch clock ran about 8 h 25 min slow and its log times go backwards around crashes; take the loop cadence
+  from the SMC kernel log (eth0 down 249 times 01:28-16:00), not the switch log.
+- `references/05_known-issues.md` #3 and #4, `references/03_routeros-cli-reference.md`, `SKILL.md`: the log survived 43 crash reboots on that unit
+  (mechanism unverified), so "lost on reboot" was too strong. Site dark again from 20:08 AEDT; capture queued with `WAIT_UP=1`.
+
 ## 20261007_2009 — Scripts and recipes renamed to snake_case (v0.1.15 -> v0.1.16)
 
 - Operator (2026-10-07): snake_case for every code file and command name (governance coding-guide). `scripts/mikrotik_exec.sh`,

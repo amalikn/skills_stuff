@@ -19,10 +19,12 @@ wraps an item across rows.
    captured; `nbn_wh`, `rcp`, `nbn_accelerate` not checked. Close: `FLAVOR=wh scripts/mikrotik_fleet_survey.sh`, then `scripts/mikrotik_site_capture.sh` on one `wh` site.
 3. **Device clock source and timezone.** Log timestamps have no year, which blocks correlation with SMC and TSTIK logs. The provisioning script sets
    `Australia/Melbourne` and NTP servers `10.255.0.1` (the SMC) and `139.180.160.82` (`06_provisioning.md`); not yet read back from a device. Close:
-   `/system clock print`, `/system ntp client print` on a few devices, and whether the SMC answers NTP.
+   `/system clock print`, `/system ntp client print` on a few devices, and whether the SMC answers NTP. Seen at arrkapa (VERIFIED-OBSERVED 2026-10-07): the switch clock was about 8 h 25 min slow at 16:02 AEDT
+   and its log times go backwards around crashes, so NTP was not in sync on that unit; whether healthy units sync is still unchecked.
 4. **Log retention beyond the 1,000-line memory buffer.** Link-flap storms push older events out of `/log print`. The provisioning script sends logging
    rules 0–2 to `action=disk` (`06_provisioning.md`), so log files may survive a reboot in flash; not yet checked. Close: `/system logging print`,
-   `/system logging action print`, `/file print where name~"log"` on one switch; then decide whether to send syslog to the SMC.
+   `/system logging action print`, `/file print where name~"log"` on one switch; then decide whether to send syslog to the SMC. Seen at arrkapa (VERIFIED-OBSERVED 2026-10-07): a switch 2 m 31 s after a reboot still listed 43 watchdog-reboot entries, so the log
+   it shows does survive reboots on that unit; which action keeps it (disk rules or memory `remember`) is UNVERIFIED.
 5. **No central monitoring of these devices.** Uptime, voltage and link-downs are visible only by survey. Close: SNMP or a collector on the SMC; needs the operator's decision.
 6. **Cause of delye's 2026-08-17/18 ether1 flapping.** Same signature could recur. Close: any surviving SMC-side log for that window; ask the site team what changed on 2026-08-18.
 7. **Two devices refused the correct password for a few minutes on 2026-10-07.** Could be a login rate limit or a local sshpass race. Close: note the time if it recurs; `/log print where

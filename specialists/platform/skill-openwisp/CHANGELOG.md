@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-10-07 — deterministic navigation-control upgrade
+
+<!-- skill-ai-it-upgrade: 2026-10-07-snake-case-recipes-v1 -->
+
+- Applied `skill-ai-it` deterministic navigation-control upgrade.
+- Upgraded managed navigation/scripts blocks to version `2026-10-07-snake-case-recipes-v1`.
+- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
+- Preserved user-authored content outside managed blocks.
+- Generated outputs remain support-only; no `.archcore/` promotion was performed.
+
+Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, justfile
+
 ## Unreleased
 
 - 20261007_1205 `references/health-alerts-notifications.md`: Learned 2026-10-07 (reusable_candidate, UNVERIFIED): agents with `verify_ssl` go silent

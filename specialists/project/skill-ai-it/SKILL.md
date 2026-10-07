@@ -40,8 +40,8 @@ metadata:
 - Auditing whether AI agents can find the right project context
 - Promoting durable content from scratchpad/memory/docs into navigation, ADR, rule, spec, or roadmap structures
 - Bootstrapping a child project under `apn/`, `project_stuff/`, or any managed workspace
-- Creating a new skill or specialist pack, or any folder that gets scripts or a task runner — **before its first commit**, even when it already has an
-  `AGENTS.md` copied from a sibling (skill-mikrotik, 2026-10-07, was built by hand and shipped with shebang-run recipes and bare `python3` until the operator caught it)
+- Creating a new skill or specialist pack, or any folder that gets scripts or a task runner — **before its first commit**, even when it already has an `AGENTS.md` copied from a sibling
+  (skill-mikrotik, 2026-10-07, was built by hand and shipped with shebang-run recipes and bare `python3` until the operator caught it)
 - User says "set up the AI files for this folder", "bootstrap this project", "add AI navigation", "refresh the governance", "audit project context", or invokes `/skill-ai-it`
 
 **Do not invoke** for destructive rewrites. This skill is repeat-safe by design: if governance files already exist, audit and update only missing or stale sections unless the user explicitly requests
@@ -138,6 +138,17 @@ The upgrader then never touches that block — including **never inserting** the
 want it. The validator reports it as a pass, not a missing-block failure. `--force` overrides both guards and **discards** the current contents; it exists for the case where you have read the
 `.proposed` file and decided against your own content.
 
+3. **Layout (added 2026-10-07).** A block stamped before `2026-09-23` (`LAYOUT_SINCE`) comes from the layout in which projects wrote their own content inside the block: the whole scripts README with
+   its task catalogue, project rules in the navigation and agents blocks. A stamp alone did not protect it: the first `nav_upgrade` run after the snake_case bump removed 171 catalogue lines from
+   cambium-swap and 113 rules from unified-network-controller before the diff review caught it. The upgrader now refuses these blocks (`refused-legacy-layout`, exit 3) and points at `/skill-ai-it
+   refresh`. There `just nav_migrate_legacy <project> --dry-run` (`scripts/migrate_legacy_blocks.py`) classifies every section of the old
+   block against every block the skill emitted in that era and today: skill text is replaced, project sections move outside the block, and a skill section the
+   project edited is copied verbatim under `## Moved from the managed block` for trimming by hand. Then `nav_upgrade` as usual.
+
+`context-map.yaml` is edited as text: a stamp change rewrites one line and missing top-level keys are appended, so comments and quoting survive. Only a nested `update_rules` merge re-serialises the
+whole file, and that path flags the run for review. Recipe renames reach `scripts/README.md`, the root governance docs, `SETUP.md` and `requirements.txt` as well as the justfile; `CHANGELOG.md` keeps
+the names it was written with.
+
 **Why the opt-out matters as much as the guard.** Without it, a project that has legitimately diverged is permanently red in the validator. A validator that always fails is one nobody reads, and the
 next *real* failure goes unnoticed with it. "Expected failures" is not a stable state — it is a slow way of turning the check off.
 
@@ -214,26 +225,26 @@ skill-ai-it/
 
 2. Classify what you find:
 
-   | Signal                                                                                                       | Inference                                                                             |
+   | Signal | Inference |
    | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
-   | `.py`, `.ts`, `.js`, `.go`, `.rb`, `.rs`, `.java` files                                                      | Code project                                                                          |
-   | `docker-compose.yml`, `Dockerfile`, `Makefile`, `*.tf`                                                       | Infrastructure / ops                                                                  |
-   | `*.eml`, `communications/` folder                                                                            | Communications tracking                                                               |
-   | `*.md` files only, no code                                                                                   | Docs / knowledge base                                                                 |
-   | Mix of the above                                                                                             | Mixed project                                                                         |
-   | `AI_NAVIGATION.md`, `context-map.yaml`                                                                       | AI navigation module already present                                                  |
-   | `.archcore/`                                                                                                 | Structured durable project truth present                                              |
-   | `archcore` CLI available and `.archcore/` missing                                                            | Initialize `.archcore/` with `archcore init` in bootstrap/navigation-add/refresh mode |
-   | `justfile`, `Justfile`                                                                                       | just task catalog present — preferred lightweight runnable task catalog               |
-   | `scripts/`, `Makefile`, `Taskfile.yml`, `justfile`, `package.json` scripts, or common automation files       | Script/task inventory useful; create or refresh `scripts/README.md`                   |
-   | `memory-bank/`                                                                                               | Memory Bank-style project memory present                                              |
-   | `graphify-out/`, `.ai-context/`                                                                              | Generated AI context/navigation artifacts present                                     |
-   | `repomix.config.json`                                                                                        | Deterministic context-pack config present                                             |
-   | `.markdownlint-cli2.jsonc`, `.markdownlint.json(c)`, `.markdownlint.yaml`, or a `markdownlint-cli2` key      | Markdown lint config already owned by the project — do not create/overwrite           |
-   |   in `package.json`                                                                                          |                                                                                       |
-   | `README.md` exists                                                                                           | Read it first before generating                                                       |
-   | `CHANGELOG.md` exists                                                                                        | Read recent entries to understand project evolution and governance changes            |
-   | `AGENTS.md` exists                                                                                           | Update, do not overwrite                                                              |
+   | `.py`, `.ts`, `.js`, `.go`, `.rb`, `.rs`, `.java` files | Code project |
+   | `docker-compose.yml`, `Dockerfile`, `Makefile`, `*.tf` | Infrastructure / ops |
+   | `*.eml`, `communications/` folder | Communications tracking |
+   | `*.md` files only, no code | Docs / knowledge base |
+   | Mix of the above | Mixed project |
+   | `AI_NAVIGATION.md`, `context-map.yaml` | AI navigation module already present |
+   | `.archcore/` | Structured durable project truth present |
+   | `archcore` CLI available and `.archcore/` missing | Initialize `.archcore/` with `archcore init` in bootstrap/navigation-add/refresh mode |
+   | `justfile`, `Justfile` | just task catalog present — preferred lightweight runnable task catalog |
+   | `scripts/`, `Makefile`, `Taskfile.yml`, `justfile`, `package.json` scripts, or common automation files | Script/task inventory useful; create or refresh `scripts/README.md` |
+   | `memory-bank/` | Memory Bank-style project memory present |
+   | `graphify-out/`, `.ai-context/` | Generated AI context/navigation artifacts present |
+   | `repomix.config.json` | Deterministic context-pack config present |
+   | `.markdownlint-cli2.jsonc`, `.markdownlint.json(c)`, `.markdownlint.yaml`, or a `markdownlint-cli2` key | Markdown lint config already owned by the project — do not create/overwrite |
+   |   in `package.json` |  |
+   | `README.md` exists | Read it first before generating |
+   | `CHANGELOG.md` exists | Read recent entries to understand project evolution and governance changes |
+   | `AGENTS.md` exists | Update, do not overwrite |
 
 3. Check the **parent folder** for:
    - `AGENTS.md` — read it to inherit conventions, routing patterns, internal domain
@@ -293,7 +304,7 @@ From inventory + content reads, determine:
 | Project name          | Folder name, formatted (e.g. `aurukun-fni` → "Aurukun FNI")                                                                                                                  |
 | Purpose               | From README, code comments, config descriptions, or folder name semantics                                                                                                    |
 | Technology stack      | From file extensions, package manifests, imports                                                                                                                             |
-| Participants          | From git log (`git log --format="%an" \| sort -u`), email headers in EML files, or existing docs |
+| Participants          | From git log (`git log --format="%an" \| sort -u`), email headers in EML files, or existing docs                                                                             |
 | Internal domain       | From parent AGENTS.md; default `apn.net.au` for APN projects                                                                                                                 |
 | Subfolder roles       | From subfolder names and their contents                                                                                                                                      |
 | Project type          | Code / docs / ops / comms / mixed (drives conditional file creation)                                                                                                         |
@@ -547,32 +558,28 @@ Node has no venv layer, so `mise exec -- node` **is** the explicit form for it. 
    different hat.
 
 4. **Scripts never choose their own interpreter either.** Two ways a recipe that names no interpreter still gets the host one:
-   - **A script run by path** (`scripts/check.py`, `./tool.js`): its shebang (`#!/usr/bin/env python3`) resolves on `PATH`. Write `{{py}} scripts/check.py`. The
-     shebang stays for a direct run; the recipe must not rely on it.
-   - **A shell script that calls the interpreter inline** (`... | python3 -c`, `python3 - <<EOF`): the recipe pins nothing it runs. The script takes the
-     interpreter from a variable with a host default, `py=${PROJ_PY:-python3}` then `"$py"`, and the recipe passes it: `PROJ_PY={{py}} scripts/x.sh`. A
-     Python wrapper that calls such a script passes its own `sys.executable` on. A line whose interpreter runs on another host (`ssh host python3 ...`) is
-     not a local runtime: mark it `# runtime: remote`.
+   - **A script run by path** (`scripts/check.py`, `./tool.js`): its shebang (`#!/usr/bin/env python3`) resolves on `PATH`. Write `{{py}} scripts/check.py`. The shebang stays for a direct run; the
+     recipe must not rely on it.
+   - **A shell script that calls the interpreter inline** (`... | python3 -c`, `python3 - <<EOF`): the recipe pins nothing it runs. The script takes the interpreter from a variable with a host
+     default, `py=${PROJ_PY:-python3}` then `"$py"`, and the recipe passes it: `PROJ_PY={{py}} scripts/x.sh`. A Python wrapper that calls such a script passes its own `sys.executable` on. A line whose
+     interpreter runs on another host (`ssh host python3 ...`) is not a local runtime: mark it `# runtime: remote`.
 
-   `check_interpreter_pinning` in `templates/check_governance.py` fails on both (since 2026-10-07), as it does on a bare interpreter name in a recipe.
+`check_interpreter_pinning` in `templates/check_governance.py` fails on both (since 2026-10-07), as it does on a bare interpreter name in a recipe.
 
 #### File and command naming — snake_case
 
-Governance `categories/coding-guide.md` (operator, 2026-10-07): **snake_case** for every code file this skill generates or finds (`.py`, `.sh` and the
-rest) and every command name a project defines (`just` recipes, CLI symlinks). A Python file must be importable (PEP 8; a hyphen is the minus operator),
-the Google Shell Style Guide asks the same of shell, and one rule beats a per-language split. kebab-case only where something outside the code fixes it:
-skill names, document slugs (`<slug>-YYYYMMDD_hhmm.md`), repo and folder names. `check_file_naming` in `templates/check_governance.py` fails on a
-kebab-case code file under `scripts/`; a project adopting the rule lists its existing ones in `KEBAB_LEGACY` and renames each when next touched,
-updating every reference in the same change. This package's own optional template is `templates/context_preflight.sh` (renamed from the kebab form).
-The template's own recipes follow it since 2026-10-07 (`nav_upgrade`, `nav_validate`, `lint_md` and the rest); `nav_upgrade` renames the old kebab
-forms in a project's justfile on its next run.
+Governance `categories/coding-guide.md` (operator, 2026-10-07): **snake_case** for every code file this skill generates or finds (`.py`, `.sh` and the rest) and every command name a project defines
+(`just` recipes, CLI symlinks). A Python file must be importable (PEP 8; a hyphen is the minus operator), the Google Shell Style Guide asks the same of shell, and one rule beats a per-language split.
+kebab-case only where something outside the code fixes it: skill names, document slugs (`<slug>-YYYYMMDD_hhmm.md`), repo and folder names. `check_file_naming` in `templates/check_governance.py` fails
+on a kebab-case code file under `scripts/`; a project adopting the rule lists its existing ones in `KEBAB_LEGACY` and renames each when next touched, updating every reference in the same change. This
+package's own optional template is `templates/context_preflight.sh` (renamed from the kebab form). The template's own recipes follow it since 2026-10-07 (`nav_upgrade`, `nav_validate`, `lint_md` and
+the rest); `nav_upgrade` renames the old kebab forms in a project's justfile on its next run.
 
 #### Function documentation
 
-Every function a project's scripts define carries a docstring (Python) or a comment block directly above it (shell): a summary line, then the reasoning
-and the failure behaviour where they are not obvious, with section banners in longer files. The reference style is ansible-wifi's
-`roles/smc_rise_watchdog/templates/rise_watchdog.py.j2`. `check_function_docs` in `templates/check_governance.py` fails on an undocumented one,
-including Python embedded as a string constant (code shipped to another host), so the template's own functions are documented too (operator, 2026-10-07).
+Every function a project's scripts define carries a docstring (Python) or a comment block directly above it (shell): a summary line, then the reasoning and the failure behaviour where they are not
+obvious, with section banners in longer files. The reference style is ansible-wifi's `roles/smc_rise_watchdog/templates/rise_watchdog.py.j2`. `check_function_docs` in `templates/check_governance.py`
+fails on an undocumented one, including Python embedded as a string constant (code shipped to another host), so the template's own functions are documented too (operator, 2026-10-07).
 
 Also generate `just bootstrap` (builds the venv from the mise pins; safe to re-run) and `just runtimes` (prints the resolved interpreters). `runtimes` is the one that makes the invariant *observable*
 — without it, "the recipes use the pinned runtime" is an assumption nobody can check in under a minute.
@@ -1882,8 +1889,8 @@ TARGET=/path/to/target/project
 
 **Recommended order:**
 
-0. `python3 "$SKILL_DIR/scripts/selftest_blocks.py"` — only when a template under `templates/` or a builder has been edited since the last run. It asserts the emitted blocks still carry every
-   required section, so a truncated template is caught here rather than in a target project's diff
+0. `python3 "$SKILL_DIR/scripts/selftest_blocks.py"` — only when a template under `templates/` or a builder has been edited since the last run. It asserts the emitted blocks still carry every required
+   section, so a truncated template is caught here rather than in a target project's diff
 
 1. `python3 "$SKILL_DIR/scripts/upgrade_navigation_control_layer.py" --project-root "$TARGET" --dry-run` — preview changes
 2. Review proposed changes
@@ -1917,11 +1924,11 @@ TARGET=/path/to/target/project
 
 Available scripts:
 
-| Script                                         | Purpose                                                                |
-| ---------------------------------------------- | ---------------------------------------------------------------------- |
-| `scripts/upgrade_navigation_control_layer.py`  | Idempotent managed-block upgrade, marker fix, context-map key addition |
-| `scripts/validate_navigation_control_layer.py` | Coherence validation with pass/warn/fail output                        |
-| `scripts/check_expected_diff.py`               | Git-diff check against expected governance file changes                |
+| Script                                         | Purpose                                                                    |
+| ---------------------------------------------- | -------------------------------------------------------------------------- |
+| `scripts/upgrade_navigation_control_layer.py`  | Idempotent managed-block upgrade, marker fix, context-map key addition     |
+| `scripts/validate_navigation_control_layer.py` | Coherence validation with pass/warn/fail output                            |
+| `scripts/check_expected_diff.py`               | Git-diff check against expected governance file changes                    |
 | `scripts/selftest_blocks.py`                   | Self-test of the managed-block builders against the required-section floor |
 
 Available just targets (only where the project's `justfile` came from `templates/justfile`, which defines a `skill_dir` variable pointing at the skill package — a project whose justfile predates that

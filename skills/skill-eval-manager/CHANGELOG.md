@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-10-07 — deterministic navigation-control upgrade
+
+<!-- skill-ai-it-upgrade: 2026-10-07-snake-case-recipes-v1 -->
+
+- Applied `skill-ai-it` deterministic navigation-control upgrade.
+- Upgraded managed navigation/scripts blocks to version `2026-10-07-snake-case-recipes-v1`.
+- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
+- Preserved user-authored content outside managed blocks.
+- Generated outputs remain support-only; no `.archcore/` promotion was performed.
+
+Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, justfile, AI_NAVIGATION.md, SCRATCHPAD.md
+
 ## 20260923_1720 — Own-package lessons are promoted, not logged (0.1.8)
 
 [SKILL.md](SKILL.md) (the standing write-back contract) and [AGENTS.md](AGENTS.md) gain a rule for lessons this package learns about itself: they are written in the same session into the file

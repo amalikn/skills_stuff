@@ -33,6 +33,11 @@ Silent While the SMC Keeps Transmitting".
   53 C, 948 MiB free, 0% bad blocks, RouterOS 7.8 like the whole fleet), so the unit itself is failing. Action: replace the switch; configure the spare from a
   text export with the `mac-address=` lines removed (cloned-MAC remedy in `01_overview.md`). Only one other switch in the 294-site survey logged the same
   signature: batavia-downs (11 lines, stable for 15 days at survey). Evidence: `local-knowledge-ansible/ansible-wifi/issues/rct-fleet/arrkapa-wan/capture-arrkapa-mikrotik/` and `local-knowledge-ansible/ansible-wifi/issues/rct-fleet/arrkapa-wan/capture-arrkapa/`.
+- **Reading the switch log's times (VERIFIED-OBSERVED, arrkapa 2026-10-07):** do not take the cadence from the switch log. Our 16:02 AEDT login was stamped
+  `oct/07 07:36:52`, so its clock ran about 8 h 25 min slow, and entries go backwards within a second (07:32:58 then 07:32:57): the clock is not kept across a
+  crash. The 43 watchdog entries sit within 02:44–07:34 switch time, which is roughly the switch's summed running time, not wall time. Use the SMC's kernel
+  log for the real timeline (eth0 down 249 times 01:28–16:00, about every 3.5 min on average) and the switch uptime (2 m 31 s at capture) to confirm a
+  fresh reboot.
 
 ## SMC-port link flapping (delye, rct, 2026-08-17/18)
 
