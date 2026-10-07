@@ -42,6 +42,11 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 
 ## Current state
 
+**2026-10-07 16:43 `KEEP` — v0.1.100, layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav-validate`,
+`just fleet …`, `just routing …`), `.mise.toml`, `requirements.txt` (PyYAML for the nav validator only), lint config, `.gitignore`, `.archcore/index.guide.md`. `SKILL.md` is a short router
+(144 lines); detail lives in references. The profile file, the dedicated-agent prompt and the `exports/` adapter are retired; install is the symlink `~/.claude/skills/skill-smc`.
+`AGENTS.md` is local-only (`.git/info/exclude`), so its rule edits never appear in git. Checks: governance 320/320, nav 0/0, archcore 0 issues.
+
 **2026-10-02 16:41 KEEP, scoped topology-design update:** the local RCP plan covers Kapitan/CUE/Jsonnet and three inventory integration paths; the corrected design summary is in
 `references/08_ansible-authoring.md`. Metadata version: 0.1.80. Evidence branch: `unc-virtual-smc-malik-rcp01`, clean production tree at start. No implementation or live changes. Open decisions:
 authoritative `generic-big01` DHCP baseline, integration path and runnable tool comparison. Prior KEEP entries below remain historical; this entry does not resolve unrelated open items.
@@ -85,10 +90,14 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Open items
 
+- [ ] **2026-10-07 `KEEP`:** commit `fbc0aff` (parallel session) is labelled "skill-smc 0.1.98" but committed manifest 0.1.99 — amend only if unpushed and the operator wants it.
+- [ ] **2026-10-07 `KEEP`, proposed, not decided:** skill-ai-it's upgrader appends its CHANGELOG entry at the end of the file; this pack's CHANGELOG is newest-first, so every refresh needs a
+  manual move (2026-09-08 and 2026-10-07). Fix belongs in skill-ai-it (detect ordering, insert at top, add the TOC line); recorded in skill-ai-it's SCRATCHPAD.
+
 - [ ] **2026-09-24 `KEEP`:** push `d5566c2` + `8db6d56`; fleet read-only `table_fulls` survey (offered); find the `gc_thresh1` = 1 setter; live-test the enable-password, already-privileged,
   `--shell` and `--write` paths of `tplink-switch.sh` when a suitable switch appears; fix the two pre-existing governance failures.
 
-- [ ] Install v0.1.15 to `~/.claude/skills/skill-smc/` — run steps in `exports/claude_code/project/skill-smc/install.md` (now also copies `scripts/` and documents tsh-ssh-only access)
+- [x] ~~Install v0.1.15 per the copy-based install doc~~ — obsolete 2026-10-07: `~/.claude/skills/skill-smc` is a symlink to the canonical pack and the install doc is retired.
 - [x] ~~Investigate root cause of the `clamav-freshclam` CDN-block~~ — resolved 2026-08-03: **ClamAV 0.103.x reached end-of-life for database updates on 2025-09-14; the CDN now hard-blocks any 0.103.x
   client.** This fleet runs 0.103.11/.12 uniformly. Verified via `WebSearch` against `blog.clamav.net` and the Cisco-Talos/clamav GitHub issue tracker — not a cw-cluster network/firewall issue, a
   documented upstream EOL enforcement. Fix (not yet done): upgrade to 1.0 or 1.4 LTS fleet-wide.
@@ -258,8 +267,10 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Session history (summaries)
 
+- **2026-10-07 (16:37) — Layout parity with the newer project packs (v0.1.99 -> v0.1.100).** Root `justfile`, `.mise.toml`, lint config, `.gitignore`, Archcore index added;
+  `SKILL.md` slimmed to the cambium/mikrotik shape with SKILL-only facts moved into references 03/05/08; profile, system prompt and exports adapter retired.
 - **2026-10-07 (16:25) — skill-ai-it refresh (v0.1.98 -> v0.1.99).** `AGENTS.md` and `scripts/README.md` managed blocks upgraded to `2026-09-23-template-sourced-blocks-v1`;
-  `AI_NAVIGATION.md` stays project-managed. Upstream template defect noted, not fixed here: item 12 of the navigation block absorbs "Run defined audit/check commands".
+  `AI_NAVIGATION.md` stays project-managed. Template item 12/14 defect fixed in skill-ai-it and re-applied; `.archcore/` files renamed to `<slug>.<type>.md`, `archcore status` clean.
 - **2026-09-24 (10:44–12:25) — TP-Link switches + neighbour table** (from unified-network-controller). Switch access worked out and scripted; neighbour-table overflow found on mornington;
   gc_thresh1 attribution corrected in v0.1.54. Detail: memory-keeper channel `unc`, keys `unc.tplink-*`, `unc.neighbour-table.20260924`. `KEEP`
 
@@ -471,12 +482,13 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Next actions
 
+- On a new machine: `ln -s` the pack to `~/.claude/skills/skill-smc`, then `just bootstrap`; run `just check` and `just nav-validate` before calling any change done.
+- New reference file: update the four index surfaces (`RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, `context-map.yaml`); the checker fails until all four name it.
 - Root-cause the new-looma-smc01 31h outage (2026-08-01→2026-08-03) next time `tsh ssh` access to that site is available — check WAN/backhaul/power logs; confirm or rule out any link to the still-open
   `my_node_network_device_info` gap
 - Explore the remaining unreviewed Grafana dashboards flagged 2026-08-03 (Data Backlog, RW-backlog pair, Servers Network/System Information, RISE Dashboard `rise-stage0_5`) next time Grafana access is
   used — see Open Items
 - Cross-reference the RW-backlog dashboards against `autossh-prometheus-federation` in `02_service-map.md` once reviewed — may reveal federation-pipeline health signals not currently documented
-- Install v0.1.17 to `~/.claude/skills/skill-smc/` per `install.md` (not yet done — same open item since v0.1.2)
 - Propose/plan a fleet-wide ClamAV upgrade to 1.0 or 1.4 LTS next time remediation authorization is available — root cause confirmed 2026-08-03, no automated pipeline exists to do this without a
   deliberate rollout
 - Fix mechanism found 2026-08-03 (memory-only so far, not yet in `references/13_known-issues.md`): `roles/smc_clamav/tasks/ubuntu.yml` installs with `state: present` (never upgrades an
@@ -497,6 +509,12 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 ---
 
 ## Memory pointers (navigation only)
+
+- 2026-10-07 16:43: memory-keeper `skill-smc` keys `skill-smc.progress.skill-ai-it-refresh-v0199-20261007`, `skill-smc.finding.skill-ai-it-template-item12-20261007`,
+  `skill-smc.progress.archcore-rename-20261007`, `skill-smc.error.concurrent-commit-fbc0aff-20261007`, `skill-smc.progress.layout-parity-v01100-20261007`,
+  `skill-smc.finding.content-moved-on-slim-20261007`, `skill-smc.error.venv-missing-pyyaml-20261007`, `skill-smc.progress.cambium-spec-fix-20261007`,
+  `skill-smc.decision.layout-parity-and-commit-scope-20261007`; project-context `0bf38158` note + decision; checkpoint `slurp-20261007-skill-smc-layout-parity`
+  (memory-keeper `8ab3b9e2`, project-context `709e1015`). `KEEP`
 
 - 2026-09-24 12:25: memory-keeper `unc` keys `unc.tplink-switch-access.20260924`, `unc.tplink-tooling.20260924`, `unc.neighbour-table.20260924`, `unc.errors.20260924-tplink`; project-context
   `0bf38158` note; checkpoint `slurp-20260924-tplink-switches-neigh-table` (`98c3a99e`). `KEEP`

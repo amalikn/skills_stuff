@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261007_1628 — fix: the navigation template folded the audit/check rule into item 12](#20261007_1628--fix-the-navigation-template-folded-the-auditcheck-rule-into-item-12)
 - [20260927_2005 — docs: the three target map promotion gaps are built in the pilot](#20260927_2005--docs-the-three-target-map-promotion-gaps-are-built-in-the-pilot)
 - [20260927_1819 — docs: three gaps recorded before the target map standard can be promoted](#20260927_1819--docs-three-gaps-recorded-before-the-target-map-standard-can-be-promoted)
 - [20260927_1354 — docs: the target map standard recorded as a promotion candidate (pilot in unified-network-controller)](#20260927_1354--docs-the-target-map-standard-recorded-as-a-promotion-candidate-pilot-in-unified-network-controller)
@@ -47,6 +48,14 @@
 - [20260812_1300](#20260812_1300)
 
 ---
+
+## 20261007_1628 — fix: the navigation template folded the audit/check rule into item 12
+
+- `templates/AGENTS-navigation-block.md`: item 12 carried "Run defined audit/check commands before completing work." on the end of the uncataloged-scripts rule, while
+  item 14 stated the checker rule on its own. The sentence now opens item 14, worded as in the `SKILL.md` fallback: the general rule, with `scripts/check_governance.py` as one case.
+- `SKILL.md`: the embedded fallback had items 13 and 14 in the opposite order to the template; reordered to match (template wins).
+- Version stamp unchanged: the upgrader replaces any block whose text differs, so `nav-upgrade` carries the fix to projects already on `2026-09-23-template-sourced-blocks-v1`.
+  Applied to this package's own `AGENTS.md` and to skill-smc.
 
 ## 20261007_1613 — feat: `scripts/skills_registry.py` builds and checks a project area's skills.md
 

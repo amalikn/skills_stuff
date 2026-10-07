@@ -20,6 +20,13 @@
 
 ### Tier 1: Box Unreachable
 
+**Check the autossh backdoor before calling a box unreachable** (operator, 2026-10-07): `scripts/backdoor-watch.sh <site> [check|history|watch]`, procedure and stale-port check in
+`03_communication-flows.md` §Backdoor SSH Access.
+
+**Classify the outage before calling it a hang** (2026-10-07): `scripts/fleet-reboot-timeline.py 90 'site="<site>"'` separates ordinary reboots, dark-then-boot (power loss, or a
+hang that was power-cycled) and WAN-only gaps. Solar sites lose power every winter morning, and a Pi undervoltage storm shows only in Graylog `kern.log`, not in Prometheus
+(`06_failure-modes.md`). The RISE watchdog reboots only on overlay >= 80%, and `auto_reboot: 0` does not stop it.
+
 ```
 1. autossh tunnel up?
    systemctl status autossh-teleport-openssh
@@ -203,7 +210,7 @@ provisioning, check `roles/smc_cnmaestro_provisioning` and CNMaestro cloud conne
 ```
 1. Textfile collectors stale?
    ls -la /var/lib/node_exporter/textfile_collector/
-   # Check mtime vs max staleness (see Section 2 table)
+   # Check mtime vs max staleness (02_service-map.md collector table)
 
    # Manually run stale collector:
    sudo python3 /opt/rise/sbdm.py

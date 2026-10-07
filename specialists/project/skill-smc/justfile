@@ -1,0 +1,72 @@
+# just task catalog for skill-smc.
+# Usage: just --list | just <task>
+#
+# Recipes go through {{py}}, never a bare interpreter — see skill-ai-it's Runtime isolation doctrine.
+# The two scoped runners under scripts/ (fleet-health.justfile, routing-diagnostics.justfile) keep
+# their own recipes; `just fleet <recipe>` and `just routing <recipe>` reach them from here.
+
+set dotenv-load := false
+
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc"
+py := wc + "/.venv/bin/python"
+
+# skill-ai-it package, for the nav-* recipes. Override: just skill_dir=/path/to/skill-ai-it nav-validate
+skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
+
+# List available tasks
+default:
+    @just --list
+
+# Build the working-cache venv from the mise-pinned runtime. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @test -f requirements.txt && {{py}} -m pip install --quiet --upgrade pip -r requirements.txt || true
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Fail early rather than falling back to the host interpreter
+_require-venv:
+    @test -x "{{py}}" || { echo "venv missing at {{py}} — run: just bootstrap" >&2; exit 1; }
+
+# Report which runtime the recipes will actually use
+runtimes:
+    @printf 'python  '; {{py}} -c "import sys; print(sys.version.split()[0], sys.executable)" 2>/dev/null || echo "MISSING — run: just bootstrap"
+
+# Governance coherence checks — must exit 0 before durable work is called complete.
+check: _require-venv
+    @{{py}} scripts/check_governance.py
+
+# Run safe local preflight checks
+preflight: runtimes check
+
+# Regenerate the Repomix governance pack (.ai-context/governance-pack.md) — generated support, not truth
+context-pack:
+    @repomix --config repomix.config.json
+
+# Lint Markdown files when markdownlint-cli2 is available
+lint-md:
+    @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
+    @markdownlint-cli2 '**/*.md'
+
+# Fleet hardware/service-health audit (read-only). Example: just fleet collect
+fleet *args:
+    @just -f scripts/fleet-health.justfile {{args}}
+
+# WAN-routing diagnostics template (read-only). Copy into an investigation folder before real use.
+routing *args:
+    @just -f scripts/routing-diagnostics.justfile {{args}}
+
+# --- skill-ai-it navigation-control layer -------------------------------------------------------
+
+nav-upgrade-dry-run: _require-venv
+    @{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
+
+nav-upgrade: _require-venv
+    @{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
+
+nav-validate: _require-venv
+    @{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
+
+nav-check-diff: _require-venv
+    @{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .

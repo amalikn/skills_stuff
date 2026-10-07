@@ -28,7 +28,7 @@ Before answering, planning, editing, or creating files:
 1. **Check `.ai-context/governance-pack.md`** — if current (< 7 days), read as primary context load. Regenerate if stale: `repomix --config repomix.config.json`.
 2. If pack unavailable, read:
    - `AGENTS.md`
-   - `SKILL.md` — activation surface and quick-reference
+   - `SKILL.md` — activation surface and decision tree
    - `RUNBOOK.md` — navigation index for references
    - `CHANGELOG.md` — recent changes
 3. Then load the specific `references/*.md` file relevant to the task.
@@ -38,12 +38,11 @@ Before answering, planning, editing, or creating files:
 When sources conflict:
 
 1. `manifest.json` — machine-readable specialist metadata (version, scope, stable facts)
-2. `SKILL.md` — agent-facing activation surface and inline quick-reference
+2. `SKILL.md` — agent-facing activation surface and decision tree
 3. `RUNBOOK.md` — navigation index
 4. `references/<nn>_*.md` — numbered content source files
-5. `PROFILE.md` — background context (not installed to clients)
-6. `CHANGELOG.md` — history
-7. `SCRATCHPAD.md` — temporary only
+5. `CHANGELOG.md` — history
+6. `SCRATCHPAD.md` — temporary only
 
 ## Reference routing (task → file)
 
@@ -77,8 +76,6 @@ When sources conflict:
 | `SKILL.md`                                         | Agent-facing activation surface                                         | High        |
 | `RUNBOOK.md`                                       | Navigation index — task-to-reference routing                            | High        |
 | `manifest.json`                                    | Specialist metadata, scope, stable facts                                | High        |
-| `PROFILE.md`                                       | Background context; not installed to clients                            | Medium      |
-| `SYSTEM_PROMPT.md`                                 | Dedicated agent mode prompt; not loaded in normal invocations           | Medium      |
 | `references/01_overview.md`                        | SMC box definition, flavors, access, APN vs NBN Accelerate differences  | Content     |
 | `references/02_service-map.md`                     | 50+ services, units, config paths                                       | Content     |
 | `references/03_communication-flows.md`             | Inbound/outbound paths                                                  | Content     |
@@ -98,8 +95,7 @@ When sources conflict:
 | `references/snmp-oid-registry-tplink.yaml`         | Verified TP-Link switch OIDs the controller uses (machine-readable)     | Content     |
 | `references/tplink-site-switches.yaml`             | One record per TP-Link switch, with structured evidence                 | Content     |
 | `references/tplink-snmp-enablement-survey-*.csv`   | TP-Link SNMP enablement per switch                                      | Content     |
-| `exports/claude_code/project/skill-smc/adapter.md` | Claude Code source→install mapping                                      | Adapter     |
-| `exports/claude_code/project/skill-smc/install.md` | Claude Code installation steps                                          | Adapter     |
+| `justfile`                                         | Task catalog; Python recipes use the pinned working-cache venv          | High        |
 | `CHANGELOG.md`                                     | Pack version history and governance changes                             | Medium-high |
 | `SCRATCHPAD.md`                                    | Temporary working notes                                                 | Low         |
 | `.ai-context/governance-pack.md`                   | Generated context bundle                                                | Generated   |
@@ -109,7 +105,7 @@ When sources conflict:
 | Change type                   | Update                                                                                  |
 | ----------------------------- | --------------------------------------------------------------------------------------- |
 | New operational knowledge     | Add/update `references/<nn>_*.md`; update `RUNBOOK.md` routing; check `SKILL.md`        |
-| New reference file            | Update `RUNBOOK.md` routing table + `SKILL.md` References + `adapter.md` + `install.md` |
+| New reference file            | Update `RUNBOOK.md` routing + `SKILL.md` References + `AI_NAVIGATION.md` + `context-map.yaml` |
 | Structural change             | Bump `manifest.json` version + `updated_at`; append `CHANGELOG.md`                      |
 | Scope boundary change         | Update `manifest.json` `scope_boundary`; review `SKILL.md` Use When                     |
 | Stable fact confirmed/changed | Update `manifest.json` `stable_facts`; update relevant reference                        |
@@ -137,8 +133,7 @@ When changing a source file, update its companions in the same pass:
 
 | File changed                                 | Companions to update                                                                                                                                  |
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `references/<nn>_*.md` (new or restructured) | `RUNBOOK.md` routing table, `SKILL.md` References section,                                                                                            |
-|                                              |   `exports/claude_code/project/skill-smc/adapter.md`, `exports/claude_code/project/skill-smc/install.md`                                              |
+| `references/<nn>_*.md` (new or restructured) | `RUNBOOK.md` routing table, `SKILL.md` References section, `AI_NAVIGATION.md` tables, `context-map.yaml` routing                                      |
 | Any `references/*.md` content change         | `manifest.json` `version` + `updated_at`; `CHANGELOG.md` entry                                                                                        |
 | `AI_NAVIGATION.md` or `context-map.yaml`     | keep the other in sync — same routing, same file roles                                                                                                |
 | New script added                             | `scripts/README.md`, `AGENTS.md` if it changes a working rule                                                                                         |

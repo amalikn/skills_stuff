@@ -12,6 +12,9 @@
 
 set shell := ["bash", "-uc"]
 
+# Python recipes use the skill-smc working-cache venv (build it with `just bootstrap` at the pack root).
+py := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv/bin/python"
+
 # NBN Accelerate cluster — teleport.communitywifi.net.au. Confirmed live via `tsh ls` 2026-08-03;
 # excludes central-infra nodes (cnmaestro01, cw-jenkins01, cw-prometheus01, cw-teleport01) and
 # generic/test-only hosts (generic-*, aurukun-test-smc0*). aurukun-smc03 is in the static
@@ -138,19 +141,19 @@ portal-fqdn-check:
 
 # Per-site reboot / dark-boot / WAN-gap timeline, e.g. just -f fleet-health.justfile stability-timeline 90 'flavor="wh"'
 stability-timeline days="90" selector='flavor="wh"':
-    ./fleet-reboot-timeline.py {{days}} '{{selector}}'
+    {{py}} fleet-reboot-timeline.py {{days}} '{{selector}}'
 
 # Per-site resource / overlay / watchdog CSV
 stability-profile selector='flavor="wh"' window="90d":
-    ./fleet-resource-profile.py '{{selector}}' {{window}}
+    {{py}} fleet-resource-profile.py '{{selector}}' {{window}}
 
 # Metrics in the hours before a site went dark (last_seen from stability-timeline, AEDT)
 predark site last_seen hours="8":
-    ./predark-snapshot.py {{site}} '{{last_seen}}' {{hours}}
+    {{py}} predark-snapshot.py {{site}} '{{last_seen}}' {{hours}}
 
 # Pi undervoltage events from Graylog kern.log (mode: daily|hourly)
 undervoltage site from to mode="daily":
-    ./undervoltage-profile.py {{mode}} {{site}} {{from}} {{to}}
+    {{py}} undervoltage-profile.py {{mode}} {{site}} {{from}} {{to}}
 
 # What fills the overlayroot tmpfs upper layer on the given hosts
 overlay-breakdown +hosts:
@@ -158,7 +161,7 @@ overlay-breakdown +hosts:
 
 # Per-interface traffic around an outage; pass --gap '<last_seen>' '<back>' for counter deltas across it
 vlan-traffic site +args:
-    ./vlan-traffic-timeline.py {{site}} {{args}}
+    {{py}} vlan-traffic-timeline.py {{site}} {{args}}
 
 # RCT: TSTIK snapshot, power-reset history and eth0 link log (read-only). WAIT_UP=1 to wait for the box to reconnect
 tstik-capture host outdir="":

@@ -33,12 +33,6 @@ authority_order:
 - path: references
   type: content_source
   authority: high
-- path: PROFILE.md
-  type: background_context
-  authority: medium
-- path: exports
-  type: client_adapter
-  authority: medium
 - path: CHANGELOG.md
   type: project_history
   authority: medium_high
@@ -123,17 +117,16 @@ routing:
       constraints, APN vs NBN Accelerate cluster structural comparison.
     read:
     - references/01_overview.md
-    - PROFILE.md
   pack_maintenance:
-    description: Adding/updating references, bumping version, updating export adapters.
+    description: Adding/updating references, bumping version, running the governance checker.
     read:
     - AGENTS.md
     - AI_NAVIGATION.md
     - context-map.yaml
     - CHANGELOG.md
     - manifest.json
-    - exports/claude_code/project/skill-smc/adapter.md
-    - exports/claude_code/project/skill-smc/install.md
+    - justfile
+    - scripts/check_governance.py
 generated_context_policy:
   regenerate_after:
   - new_reference_file

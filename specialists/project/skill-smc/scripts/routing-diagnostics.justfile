@@ -13,6 +13,9 @@
 
 set shell := ["bash", "-uc"]
 
+# Python recipes use the skill-smc working-cache venv (build it with `just bootstrap` at the pack root).
+py := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv/bin/python"
+
 ansible_repo := "/Volumes/Data/_ansible/ansible-wifi"
 deployed     := "REPLACE_WITH_THE_DEPLOYED_COMMIT_FOR_YOUR_INVESTIGATION"
 flavor       := "rcp"
@@ -42,21 +45,21 @@ collect-sites sites: check-login
 
 # Correlate live routing state against the deployed topology
 analyse:
-    ./scripts/analyse-routing-drift.py --flavor {{flavor}}
+    {{py}} scripts/analyse-routing-drift.py --flavor {{flavor}}
 
 # Same, as a markdown table ready to paste into an analysis document
 analyse-md:
-    ./scripts/analyse-routing-drift.py --flavor {{flavor}} --markdown
+    {{py}} scripts/analyse-routing-drift.py --flavor {{flavor}} --markdown
 
 # Compare against a commit other than the deployed one
 analyse-commit commit:
-    ./scripts/analyse-routing-drift.py --flavor {{flavor}} --commit {{commit}}
+    {{py}} scripts/analyse-routing-drift.py --flavor {{flavor}} --commit {{commit}}
 
 # Cross-check topology_vars physical interfaces/VLANs against a site's actual live hardware
 # (catches wrong NIC names, wrong VLAN parents, and VLANs missing from either side — run this
 # BEFORE editing topology_vars or deploying to a site you haven't touched recently)
 match-topology site:
-    ./scripts/analyse-topology-interface-match.py {{site}} --flavor {{flavor}}
+    {{py}} scripts/analyse-topology-interface-match.py {{site}} --flavor {{flavor}}
 
 # List captures held locally
 list-captures:

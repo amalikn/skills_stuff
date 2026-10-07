@@ -11,13 +11,10 @@ metadata:
 
 - [Use When](#use-when)
 - [Standing Write-Back Contract (applies no matter which project invoked this skill)](#standing-write-back-contract-applies-no-matter-which-project-invoked-this-skill)
-- [What an SMC Box Is](#what-an-smc-box-is)
+- [What This Pack Covers](#what-this-pack-covers)
+- [Access in One Paragraph](#access-in-one-paragraph)
+- [Diagnosis Decision Tree](#diagnosis-decision-tree)
 - [Related Workspaces](#related-workspaces)
-- [Troubleshooting Decision Tree](#troubleshooting-decision-tree)
-- [Key Prometheus Alerts Reference](#key-prometheus-alerts-reference)
-- [Ansible Authoring: Key Rules](#ansible-authoring-key-rules)
-- [Communication Flows (Quick Reference)](#communication-flows-quick-reference)
-- [Runtime Environments](#runtime-environments)
 - [References](#references)
 - [Related Skills](#related-skills)
 - [Source](#source)
@@ -25,7 +22,9 @@ metadata:
 ---
 
 ## Use When
+
 Invoke for any of:
+
 - Working on the `ansible-wifi` Ansible repo (roles, templates, inventory, topology vars)
 - Working on `/Volumes/Data/_ansible/ansible-malik` SMC operator playbooks, especially URL-capture PCAP fetch/process workflows
 - Working on `/Volumes/Data/_ai/_scripts/scripts_stuff/python/dns_query` when the change depends on SMC URL-capture PCAP layout, capture cadence, or reporting assumptions
@@ -52,16 +51,34 @@ remind you; invoking this skill at all carries that obligation, including the fi
 - A project's own `AGENTS.md`/`CLAUDE.md` MAY restate this obligation with project-specific detail (its own routing-table rows, its own verification rule number) — that's reinforcement, not the source
   of the rule. A project that says nothing about skill-smc at all still carries this obligation the moment it invokes this skill.
 
-## What an SMC Box Is
-An SMC box is an **x86 PC** or **ARM64 Raspberry Pi** running **Ubuntu 20.04+ (22.04 in production)**, deployed as a managed WiFi hotspot and network gateway. All remote access routes through
-**Teleport** via a persistent `autossh` reverse SSH tunnel. SSH port on Teleport server = `50000 + site_eclipse_siteid`. Ansible connects via `ansible_host =
-{{inventory_hostname}}.teleport.<project>.au` — the domain splits by **project** (APN, nbn_accelerate), not by flavor; each project has multiple flavors nested under it (see `01_overview.md` "Remote
-Access").
+## What This Pack Covers
 
-**Critical — Overlayroot (RPi and WH boxes only; operator, 2026-09-22):** overlayroot runs on the Raspberry Pi and WH boxes (`rct`, `wh`, and `nbn_wh` once rolled out), not on x86. On those, writes go
-to tmpfs (`/media/root-rw/overlay`) and are **lost on reboot**; Ansible changes only persist if the lower dir (`/media/root-ro`) is remounted read-write first, so check overlayroot status before
-assuming a change persisted. x86 boxes (e.g. `rcp`, `nbn_accelerate`) have a plain ext4 root, where an `apt install` persists, and keep volatile data on tmpfs mounts instead. Which paths are tmpfs
-varies by box: `/tmp` is tmpfs on mowanjum-smc01 but ext4 on hope-vale-smc01; `/run` is tmpfs everywhere (see `references/07_hardware-overlay.md`).
+SMC boxes and the `ansible-wifi` repo that builds them. An SMC is an x86 PC (`rcp`, `nbn_accelerate`) or an ARM64 Raspberry Pi (`rct`, `wh`, `nbn_wh`) on Ubuntu 22.04, acting as
+a site's WiFi hotspot and gateway: DHCP, DNS, captive portal, filtering, monitoring exporters, sometimes VoIP and HA. Seven inventory flavors in two projects (`references/01_overview.md`).
+
+**Overlayroot runs on the Pi and WH boxes only** (operator, 2026-09-22): writes there land in tmpfs and vanish on reboot unless the lower dir is remounted read-write. x86 boxes have a
+plain ext4 root. Check before assuming a change persisted (`references/07_hardware-overlay.md`).
+
+It does not own the MikroTik or Cambium devices behind the SMC, or the Nautobot/OpenWISP platforms: see Related Skills.
+
+## Access in One Paragraph
+
+Everything goes through Teleport: `tsh ssh root@<host>` after the operator has logged in, and Ansible's `ansible_host` is `{{inventory_hostname}}.teleport.<project>.au`, split by
+project (APN, nbn_accelerate), not flavor. Every box also holds a raw `autossh` reverse tunnel to its project bastion on port `50000 + site_eclipse_siteid`, independent of the Teleport
+agent. **Never report a box as unreachable until that backdoor has been checked** (operator, 2026-10-07): `scripts/backdoor-watch.sh <site>`. Details:
+`references/03_communication-flows.md` §All Inbound Access and §Backdoor SSH Access.
+
+## Diagnosis Decision Tree
+
+1. **Box unreachable?** Backdoor first (above), then classify the outage with `scripts/fleet-reboot-timeline.py`: reboot, dark-then-boot (power or a power-cycled hang), or WAN-only.
+   `references/05_troubleshooting.md` Tier 1; solar-site power loss and Pi undervoltage in `references/06_failure-modes.md`.
+2. **Alert firing?** `references/06_failure-modes.md` §Key Prometheus Alerts gives trigger and first check for each. There is no per-device `role="internet"` loss alert
+   (`references/13_known-issues.md`).
+3. **Service down, or DHCP/DNS/WiFi/VoIP/HA misbehaving?** `references/05_troubleshooting.md` Tiers 2–6. DNS differs by host: Unbound + Stubby on most boxes, BIND on the `smc_ltp`
+   low-touch sites, and the box's own resolution bypasses both.
+4. **Metrics missing?** Tier 7: textfile collectors have staleness windows (`references/02_service-map.md`), and federation rides its own autossh tunnel.
+5. **Changing Ansible?** `references/08_ansible-authoring.md` first: edit `topology_vars/<site>.yml`, never the hidden `.<site>.yml` cache; a `group_vars` or plugin change reaches all
+   flavors; one inventory per run (`-i A -i B` loses B's topology vars); validate with yamllint, ansible-lint, ansible-inventory, then `--syntax-check`.
 
 ## Related Workspaces
 
@@ -81,125 +98,8 @@ When behavior, layout, or troubleshooting assumptions change in one of these sur
 **project-coherence scope**: When running `project-coherence` on `ansible-wifi`, `RUNBOOK.md` and the focused files under `references/` are external governed artifacts and must be included in the
 coherence Tier 3 pass — check that they reflect any new findings, fixes, or architecture decisions from the session.
 
----
-
-## Troubleshooting Decision Tree
-
-### Tier 1: Box Unreachable
-
-**Never report a box as unreachable until the autossh backdoor has been checked** (operator, 2026-10-07). Teleport absent from `tsh ls` is not enough. On the project bastion (`apn-teleport01` /
-`cw-teleport01`): `ss -tln | grep 127.0.0.1:<50000+site_eclipse_siteid>`; if listening, `ssh -p <port> root@127.0.0.1`. If not, grep the bastion's `/var/log/auth.log*` for `cannot listen to port:
-<port>` (a stale session is holding the port) and poll the listener to catch a box that comes up briefly. Procedure: `references/03_communication-flows.md` §Backdoor SSH Access. Script: `scripts/backdoor-watch.sh <site> [check|history|watch]`.
-
-**Classify the outage before calling it a hang** (2026-10-07): `scripts/fleet-reboot-timeline.py 90 'site="<site>"'` separates ordinary reboots, dark-then-boot (power loss, or a
-hang that was power-cycled) and WAN-only gaps. Solar sites lose power every winter morning, and a Pi undervoltage storm shows only in Graylog kern.log, not in Prometheus
-(`references/06_failure-modes.md`). The RISE watchdog reboots only on overlay >= 80%, and `auto_reboot: 0` does not stop it.
-
-| Check          | Command                                          | What to look for                       |
-| -------------- | ------------------------------------------------ | -------------------------------------- |
-| Backdoor port  | bastion: `ss -tln \| grep :<50000+siteid>`       | Listening = box alive; SSH in via it   |
-| autossh tunnel | `systemctl status autossh-teleport-openssh`      | Active/failed; check last restart time |
-| Network route  | Prometheus: `NodeNetworkDefaultRouteInstability` | 4+ route changes in 60min              |
-| Overlayroot    | `mount \| grep overlay`                          | Lower dir must be mounted              |
-| Teleport node  | `systemctl status teleport`                      | Failed = no new sessions possible      |
-
-### Tier 2: Service Down (systemd failed)
-1. `journalctl -u <service> --since "1h ago"` — what caused the failure
-2. `systemctl list-units --state=failed` — other failed units
-3. Check disk: `HostOutOfDiskSpace` (< 10%) / `HostOutOfInodes`
-4. Config error? Check last Ansible playbook run output
-
-### Tier 3: DHCP / DNS Not Serving Clients
-- DHCP: `dhcpd -t -cf /etc/dhcp/dhcpd.conf` (config test); `grep -i error /var/log/syslog`
-- DNS, non-`smc_ltp` hosts (all flavors — Unbound + Stubby, client path only): `unbound-checkconf`; `unbound-control status`; `systemctl status stubby`; config at `/etc/unbound/`, DoT upstream config
-  at `/etc/stubby/stubby.yml` (Stubby listens on `127.0.0.1@60053`, single upstream `127.0.0.1@60853` via autossh local forward, no failover)
-- DNS, `smc_ltp` hosts only (static `rcp` group; the operator gives 8 production sites, 2026-10-06 — `pia` is not low touch although `big_push` lists it — `guda-guda`, `pia`, `umoona`, `warburton`,
-  `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra` (nine on `big_push`, re-read 2026-09-27: `pia` and `yakanarra` had been missing from this list) — all "low touch"-onboarded
-  sites; also runs CNMaestro Cambium backhaul provisioning, see `references/08_ansible-authoring.md`): `named-checkconf`; `rndc status`; verify zones loaded in `/etc/bind/`
-- DNS, host's own resolution (separate from the two rows above — see `references/02_service-map.md`): `resolvectl status`; `systemctl status systemd-resolved`; `DNSStubListener=no` by default means
-  the box's own `getaddrinfo()` bypasses Unbound/Stubby/BIND entirely
-
-### Tier 4: WiFi AP Issues
-- hostapd: `journalctl -u hostapd --since "1h ago"`
-- CNMaestro provisioning: `systemctl status cnmaestro-provisioning`; check Redis: `redis-cli ping`; daemon log at `/var/log/cnmaestro-provisioning/`
-
-### Tier 5: VoIP / Asterisk Issues
-- `asterisk -rvvv` — Asterisk CLI
-- Check generated extension config: `/etc/asterisk/extensions.conf`
-- `asterisk -rx "dialplan show"` — verify dialplan loaded
-
-### Tier 6: HA / Failover Issues
-- VIP assignment: `ip addr show` — VIP should be on active node
-- VRRP state: `journalctl -u keepalived --since "1h ago"`
-- Conntrack limit: `cat /proc/sys/net/netfilter/nf_conntrack_count` vs `nf_conntrack_max`
-
-### Tier 7: Monitoring Gaps
-- Textfile collectors must update within their staleness window:
-  - `sbdm.py` → `/var/lib/node_exporter/textfile_collector/sbdm.prom` — max 5400s (90min)
-  - `smartmon.py` → `smartmon.prom` — max 5400s
-  - `interfacecheckv2.sh` → `my_node_interfacecheck_success.prom` — max 450s
-  - `apt_info.py` → `apt_info.prom` — max 450s
-- Prometheus federation: check `autossh-prometheus-federation` tunnel service
-
----
-
-## Key Prometheus Alerts Reference
-
-| Alert                                  | Trigger                | First check                             |
-| -------------------------------------- | ---------------------- | --------------------------------------- |
-| `HostOutOfDiskSpace`                   | < 10% free             | `/var/log`, overlayroot upper dir fills |
-| `HostOutOfInodes`                      | < 10% inodes           | small file accumulation in `/tmp`, logs |
-| `HostDiskWillFillIn24Hours`            | predict_linear         | find write rate source                  |
-| `HostSystemdServiceCrashed`            | unit state = failed    | `journalctl -u <unit>`                  |
-| `HostClockSkew`                        | offset > ±0.05s        | `chronyc tracking`                      |
-| `HostConntrackLimit`                   | > 80% conntrack        | `ss -s`; check for connection leak      |
-| `NodeNetworkDefaultRouteInstability`   | 4+ route changes/60min | VRRP flap, overlay issue                |
-| `NodeStarlinkInterfacecheckPacketLoss` | 100% loss 60min        | starlink interface down                 |
-| `sbdm_device_health_status == 0`       | Samsung SSD degraded   | SSD replacement needed                  |
-| `smartmon_device_smart_healthy == 0`   | SMART failure          | drive health critical                   |
-
-**This table is not complete coverage — known gap:** there is no per-device `role="internet"` equivalent of `NodeStarlinkInterfacecheckPacketLoss`. A single dead internet-role link can run undetected
-indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `references/13_known-issues.md` "No per-device `role: internet` Prometheus alert exists".
-
----
-
-## Ansible Authoring: Key Rules
-
-1. **Canonical source** = `inventories/*/topology_vars/<site>.yml`. Hidden `.*.yml` files are generated cache — never edit them directly.
-2. **Cross-flavor impact**: group_vars or plugin change → all 7 flavors affected. Single topology_vars file → one flavor only.
-3. **Validation order**: `yamllint` → `ansible-lint` → `ansible-inventory --list` → `ansible-inventory --host <site>` → `ansible-playbook --syntax-check`.
-4. **Cache coherence**: delete `inventories/*/topology_vars/.<site>.yml` to force plugin regeneration (git checkout changes mtimes, making stale cache appear current).
-5. **Generator drift**: when changing a topology pattern, check `roles/smc_generate_smc_files` templates — future site generation must stay consistent with current site changes.
-6. **Overlayroot impact on Ansible**: changes deployed via `smc_bases.yml` only persist if the playbook remounts the lower dir rw. Verify with `mount | grep overlay` on the target.
-7. **One inventory per run**: `vars_plugins/topology_vars.py` caches only the first inventory's `topology_vars/` (OPEN bug, 2026-10-07), so `-i A -i B` leaves B's hosts without `topology_*` vars. See
-   `references/08_ansible-authoring.md`.
-
----
-
-## Communication Flows (Quick Reference)
-
-**All inbound access** → Teleport proxy → autossh reverse tunnel → port 22 (SSH)
-
-**Outbound from SMC:**
-- `autossh` → `teleport.<project>.au` (persistent reverse tunnel)
-- Prometheus federation → central Prometheus (via dedicated federation tunnel)
-- `cnmaestro-provisioning` → CNMaestro WiFi Dashboard API
-- `rsyslog` → Graylog (UDP syslog)
-- `speedtest_exporter` → Ookla servers
-- NBN Accelerate API (broadband management)
-
-**Alerts:** Prometheus alertmanager → Teams (NOC webhook + dev webhook)
-
----
-
-## Runtime Environments
-- **Neither working-cache venv exists on this Mac (verified 2026-09-26)**: the ansible-wifi and skill-smc venvs this section used to name under the skills working cache are absent, and the
-  ansible-wifi checkout has no venv of its own. What runs ansible-wifi here is Homebrew: `/opt/homebrew/bin/ansible-playbook` (core 2.21.4), `ansible-lint`, `yamllint`. Create the working-cache venv
-  before relying on it; until then, use the Homebrew tools.
-- Ephemeral logs, pid files, and sockets belong under `/Volumes/Data/_ai/_skills/skills-runtime/<skill>/`.
-- Prefer the working-cache venvs when running SMC validation tooling (`ansible-lint`, `yamllint`, `ansible-inventory`, `ansible-playbook`) to keep versions stable across sessions.
-
 ## References
+
 - `RUNBOOK.md` — navigation index and reference-routing table.
 - `references/01_overview.md` — SMC definition, inventory flavors, remote access, satellite constraints, APN vs NBN Accelerate cluster differences.
 - `references/02_service-map.md` — service names, units, config paths, monitoring collectors, RCT/x86 differences.
@@ -225,9 +125,8 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
   in `skill-cambium` — see Related Skills below.
 - `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture, the `SNMP-<location>` read-write
   community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/tplink-switch.sh`.
-- `scripts/` — reusable read-only diagnostic tooling for WAN-routing/topology-drift investigations (evidence capture, the "hook covers netplan" drift analyser, and a topology_vars-vs-live-hardware
-  cross-check), fleet hardware/service-health + portal-FQDN-status audit, captive-portal pin-activation diagnosis, plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate);
-  see `scripts/README.md`.
+- `scripts/` — read-only diagnostics (backdoor check, outage classification, fleet health, WAN-routing drift, pin activation, Prometheus/Graylog query helpers) and the
+  ansible-lint pre-push gate; catalogued with safety labels in `scripts/README.md`. Run them through the pack-root `justfile` (`just --list`).
 
 ## Related Skills
 
@@ -242,6 +141,7 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
   entry.
 
 ## Source
+
 - specialist_type: project
 - slug: skill-smc
 - version: see `manifest.json` in the canonical source (not duplicated here — see `manifest-version-discipline.rule.md`)

@@ -143,7 +143,7 @@ a venv's `bin/` directory, same convention both scripts share).
 ### `check_governance.py`
 
 ```bash
-python3 scripts/check_governance.py
+just check        # from the pack root; runs the pinned venv's Python
 ```
 
 Two check families, tuned to this pack's stated rules (see the file's own CONFIG section for the exact registries and per-entry exemption reasons):
@@ -552,7 +552,8 @@ just -f fleet-health.justfile pin-audit
 ## Requirements
 
 - `tsh` logged in to the relevant Teleport cluster (`tsh login`).
-- `just` (optional — only needed if using the justfile template), `bash`, Python 3 (standard library only — no third-party imports).
+- `just`, `bash`, and the pack's Python venv: run `just bootstrap` once at the pack root. It builds `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv`
+  from the `.mise.toml` pin; every Python recipe, in the root `justfile` and both scoped justfiles here, runs through it. Scripts are standard library only.
 - A local clone of `ansible-wifi` at `/Volumes/Data/_ansible/ansible-wifi` for the topology comparisons.
 
 ## Evidence retention

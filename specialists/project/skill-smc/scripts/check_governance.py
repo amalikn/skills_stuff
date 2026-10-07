@@ -76,7 +76,7 @@ def _live_surfaces() -> tuple[str, ...]:
     # Rewriting past entries to satisfy a path check is the failure that exemption exists to prevent. SCRATCHPAD.md's
     # session log is the same shape: its 2026-06-26 entry records that a dead `references/PROFILE.md` pointer was
     # REMOVED, which a path check reads as a live broken reference. The gain from deriving the population is the
-    # files that were never in scope at all — ARCHITECTURE.md, PROFILE.md, SYSTEM_PROMPT.md, and anything added
+    # files that were never in scope at all — ARCHITECTURE.md and anything added
     # later — not these two.
     return tuple(sorted(s for s in set(found) if s not in _APPEND_ONLY))
 
@@ -84,10 +84,8 @@ def _live_surfaces() -> tuple[str, ...]:
 
 # Index file -> (folder it indexes, glob). Enforces BOTH directions: every reference file is named in the index, and
 # every name in the index resolves to a real file. These four are the surfaces reference-update-discipline.rule.md
-# requires to carry a per-file row when a reference is added. The other two surfaces the rule names —
-# exports/claude_code/project/skill-smc/adapter.md and install.md — map references/*.md via a wildcard
-# (`references/*.md` / `cp references/*.md`), so a per-file catalog check against them would false-fail on every
-# reference; they are covered structurally by the wildcard instead and are deliberately not registered here.
+# requires to carry a per-file row when a reference is added — all of them, since the two client-adapter surfaces
+# the rule once also named were retired on 2026-10-07.
 CATALOGS: dict[str, tuple[str, str]] = {
     "RUNBOOK.md": ("references", "*.md"),
     "SKILL.md": ("references", "*.md"),
@@ -123,17 +121,20 @@ CONDITIONAL_PATHS: frozenset[str] = frozenset({
     # Fragments of this package's own canonical absolute path, quoted in prose about where it lives.
     "specialists/project",
     "skills_stuff/specialists/project/skill-smc",
-    "graphify-out/GRAPH_REPORT.md",       # generated; this pack has no graphify-out/ yet
-    "graphify-out/graph.json",
     "memory-bank/activeContext.md",       # this pack uses SCRATCHPAD.md, not a memory-bank
     "memory-bank/progress.md",
     "memory-bank/decisionLog.md",
     "Taskfile.yml",                       # no Task/Make/Node toolchain here
     "Makefile",
     "package.json",
-    "justfile",                           # no root justfile; scripts/ has two scoped ones
-    "adapter.md",                         # shorthand in prose for exports/claude_code/project/skill-smc/adapter.md
-    "install.md",                         # shorthand in prose for exports/claude_code/project/skill-smc/install.md
+    # Retired 2026-10-07: the profile, the dedicated-agent prompt and the exports/ client adapter. CHANGELOG and
+    # SCRATCHPAD history still name them; these entries keep that record readable without restating it as live.
+    "PROFILE.md",
+    "SYSTEM_PROMPT.md",
+    "adapter.md",
+    "install.md",
+    "exports/claude_code/project/skill-smc/adapter.md",
+    "exports/claude_code/project/skill-smc/install.md",
     "manifest-version-discipline.rule.md",  # shorthand in prose for .archcore/rules/manifest-version-discipline.rule.md
     # Archcore files renamed to the <slug>.<type>.md form on 2026-10-07 (v0.1.99). CHANGELOG and SCRATCHPAD history name the old
     # paths; these entries keep that record readable without restating it as a live claim.
@@ -161,7 +162,7 @@ CONDITIONAL_PATHS: frozenset[str] = frozenset({
 
 # Surfaces scanned for a stray hardcoded pack-version stamp, per manifest-version-discipline.rule.md's explicit list
 # ("not RUNBOOK.md, not SKILL.md, not any references/*.md file") plus the other agent-facing governance surfaces.
-# CHANGELOG.md and install.md are deliberately excluded — both are append-only history logs where a past version
+# CHANGELOG.md is deliberately excluded — it is an append-only history log where a past version
 # number is a historical fact, not a live claim, per the "do not enforce history" doctrine. The check matches only
 # THIS pack's current major.minor line (read from manifest.json at run time), not any semver-shaped number — a bare
 # `\d+\.\d+\.\d+` pattern collided with unrelated software versions mentioned in the references (ClamAV 0.103.11,
@@ -304,9 +305,8 @@ def check_version_single_source() -> None:
 
     Rule: .archcore/rules/manifest-version-discipline.rule.md. A second hardcoded copy drifts because no other rule
     updates it on a bump — this happened twice already (RUNBOOK.md header carried a stale 0.1.28 against manifest's
-    0.1.29; SKILL.md's Source footer carried the same risk), both fixed 2026-09-08. CHANGELOG.md and install.md are
-    deliberately excluded: both are append-only history logs where a past version number is a historical fact, not
-    a live claim.
+    0.1.29; SKILL.md's Source footer carried the same risk), both fixed 2026-09-08. CHANGELOG.md is deliberately
+    excluded: it is an append-only history log where a past version number is a historical fact, not a live claim.
     """
     manifest = read("manifest.json")
     if manifest is None:

@@ -41,6 +41,10 @@ nav-upgrade` per project.
 
 ## Open items
 
+- [ ] **2026-10-07, proposed, not decided:** `upgrade_navigation_control_layer.py` appends its CHANGELOG entry at the end of the file. Newest-first CHANGELOGs with a
+  Contents block (skill-smc, skill-cambium) need a manual move to the top plus a TOC line on every refresh (skill-smc 2026-09-08 and 2026-10-07). Candidate fix: detect
+  ordering from the first two dated headings, insert accordingly, and add the Contents line when one exists.
+
 - [ ] **Dogfood the checker on this package** — `just nav-validate` now warns that `skill-ai-it` itself has no `scripts/check_governance.py`. The package has real invariants worth asserting: every
   file in the layout tree exists, `templates/` and `patterns/` members are registered in `README.md` / `AI_NAVIGATION.md` / `context-map.yaml`, and `VERSION` is identical across all 11 surfaces that
   restate it. That last one is a textbook duplicated-fact-sync check and this session drifted it by hand.

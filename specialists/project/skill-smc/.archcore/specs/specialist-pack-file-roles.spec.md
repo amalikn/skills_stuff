@@ -9,17 +9,22 @@ provenance: promoted from AI_NAVIGATION.md + exports/claude_code/project/skill-s
 
 Defines the role and install treatment of every file in the skill-smc specialist pack.
 
+> **Amended 2026-10-07.** The profile file, the dedicated-agent system prompt and the `exports/claude_code/` adapter were retired: their facts moved into
+> `references/`, and the install became a symlink, so there is nothing left for an adapter to describe. The pack gained a root `justfile`, `.mise.toml`,
+> `.markdownlint-cli2.jsonc` and `.gitignore`. Everything else below still stands.
+
 ## File role table
 
 | File | Role | Installed to clients? | Notes |
 |---|---|---|---|
-| `SKILL.md` | Agent-facing activation surface | Yes — `~/.claude/skills/skill-smc/SKILL.md` | Primary skill file loaded by Claude Code |
-| `RUNBOOK.md` | Navigation index only | Yes — `~/.claude/skills/skill-smc/RUNBOOK.md` | 48-line routing table; not a content source |
-| `references/01_` – `13_` | Numbered content source files | Yes — `~/.claude/skills/skill-smc/references/` | Load on demand per task |
+| `SKILL.md` | Agent-facing activation surface | Yes | Primary skill file loaded by Claude Code; kept short, detail lives in references |
+| `RUNBOOK.md` | Navigation index only | Yes | 48-line routing table; not a content source |
+| `references/01_` – `16_` + registries | Numbered content source files, YAML/CSV registries | Yes | Load on demand per task |
 | `manifest.json` | Machine-readable specialist metadata | No | Consumed by skill tooling; not needed at runtime |
-| `PROFILE.md` | Background context; canonical source | No | Content summarised in SKILL.md and references/01_overview.md |
-| `SYSTEM_PROMPT.md` | Dedicated agent mode prompt | No (default) | Use only when deploying skill-smc as a dedicated agent |
-| `exports/claude_code/` | Client adapter and install docs | No | Governance only; describes what gets installed and how |
+| `scripts/` | Read-only diagnostics, governance checker, scoped justfiles | Yes | Catalogued with safety labels in `scripts/README.md` |
+| `justfile` | Task catalog | No (pack tooling) | Python recipes use the venv pinned by `.mise.toml` |
+| `.mise.toml` | Runtime pin (Python) | No (pack tooling) | Copied into the working-cache peer by `just bootstrap` |
+| `.markdownlint-cli2.jsonc` | Markdown lint config | No (pack tooling) | 200-column prose, tables and code exempt |
 | `AGENTS.md` | Agent policy for pack maintenance | No | Governs contributors, not end-users |
 | `CLAUDE.md` | Claude Code governance wrapper | No | Pack maintenance only |
 | `AI_NAVIGATION.md` | Human-readable context router | No | Pack maintenance only |
@@ -37,15 +42,5 @@ Defines the role and install treatment of every file in the skill-smc specialist
 
 ## Install surface
 
-The Claude Code install surface is exactly:
-```
-~/.claude/skills/skill-smc/
-├── SKILL.md
-├── RUNBOOK.md
-└── references/
-    ├── 01_overview.md
-    ├── ...
-    └── 13_known-issues.md
-```
-
-All other pack files stay in the canonical source (`skills_stuff/specialists/project/skill-smc/`) and are not copied to the install surface.
+`~/.claude/skills/skill-smc` is a symlink to the canonical folder (`skills_stuff/specialists/project/skill-smc/`), so every file is present; "installed: yes" above means an
+agent at runtime is expected to read it, "no" means it serves pack maintenance only. There is no copy step to keep in sync.

@@ -65,6 +65,10 @@ resulting port uniquely identifies one site fleet-wide, regardless of which proj
 **Script:** `../scripts/backdoor-watch.sh <site> [check|history|watch]` does steps 1-2 and the listener check without opening a shell; `watch` polls for a box that
 only holds the tunnel briefly (2026-10-07).
 
+**Never report a box as unreachable until this path has been checked** (operator, 2026-10-07). A box missing from `tsh ls` is not enough. On the project bastion
+(`apn-teleport01` / `cw-teleport01`), `ss -tln | grep 127.0.0.1:<50000+site_eclipse_siteid>`: listening means the box is alive, so SSH in through it. Not listening: grep the
+bastion's `/var/log/auth.log*` for `cannot listen to port: <port>` (a stale session is holding the port), and poll the listener to catch a box that comes up only briefly.
+
 **Procedure**:
 1. Find `site_eclipse_siteid` for the target site (`host_vars`/`group_vars`) and add 50000 to get its port.
 2. `tsh ssh --proxy=<cluster-fqdn> root@<bastion>` — reach the bastion via Teleport (this hop still needs a working `tsh` session, but to the *bastion*, not the hung site).
@@ -570,6 +574,12 @@ Note: `mcp-grafana` (`monitoring.apn.net.au:3000`) is central NOC Grafana — do
 lsof -nP -iTCP:63000 -sTCP:LISTEN   # nbn cluster
 lsof -nP -iTCP:53000 -sTCP:LISTEN   # apn cluster
 ```
+
+**Setup** (from the retired Claude Code install doc, config location verified 2026-10-07). Both entries run one binary, built from
+`/Volumes/Data/_ai/_mcp/mcp_stuff/mcp-grafana` (`go build -o dist/mcp-grafana ./cmd/mcp-grafana`) and copied to `/Volumes/Data/_ai/_mcp/mcp-working-cache/mcp-grafana/mcp-grafana`.
+They are global MCP servers in `~/.claude.json` `mcpServers`, not `~/.claude/settings.json`, each with `GRAFANA_URL` as in the table and a `GRAFANA_SERVICE_ACCOUNT_TOKEN`.
+Smoke test: `query_prometheus` for `node_memory_MemAvailable_bytes`. SSH to an SMC uses no MCP at all: `tsh ssh root@<host>` directly, after the operator has run `tsh login`
+against the right cluster.
 
 **Dashboard inventory (confirmed live 2026-08-03).** The two instances are not mirrors — `mcp-grafana-apn` has 20 dashboards vs 9 on `mcp-grafana-nbn`. Both share a common "smc"-tagged core (Alerts,
 Heatmaps, Disk Wear and Tear, Internet Speed Analysis, SMC Disk Life Time, SMC Home, SMC Network, SMC System, Speedtest Exporter). `mcp-grafana-apn` additionally carries dashboards with no NBN

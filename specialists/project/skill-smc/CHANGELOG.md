@@ -2,7 +2,8 @@
 
 ## Contents
 
-- [20261007_1625 — skill-ai-it refresh: navigation and scripts managed blocks to template-sourced-blocks-v1 (v0.1.98 -> v0.1.99)](#20261007_1625--skill-ai-it-refresh-navigation-and-scripts-managed-blocks-to-template-sourced-blocks-v1-v0198---v0199)
+- [20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)](#20261007_1637--layout-brought-in-line-with-the-newer-project-packs-skillmd-slimmed-profile-system-prompt-and-exports-adapter-retired-v0199---v01100)
+- [20261007_1625 — skill-ai-it refresh: managed blocks to template-sourced-blocks-v1; Archcore filenames to the <slug>.<type>.md form (v0.1.98 -> v0.1.99)](#20261007_1625--skill-ai-it-refresh-managed-blocks-to-template-sourced-blocks-v1-archcore-filenames-to-the-slugtypemd-form-v0198---v0199)
 - [20261007_1623 — rct site addressing from ansible-wifi vs the Mk3 diagram (v0.1.97 -> v0.1.98)](#20261007_1623--rct-site-addressing-from-ansible-wifi-vs-the-mk3-diagram-v0197---v0198)
 - [20261007_1229 — Backdoor-first rule for unreachable boxes, backdoor-watch.sh, kupungarri re-check (v0.1.91 -> v0.1.92)](#20261007_1229--backdoor-first-rule-for-unreachable-boxes-backdoor-watchsh-kupungarri-re-check-v0191---v0192)
 - [20261007_1150 — Graylog AWS path, cert dependency, log-gap triage, wh dark-box update, alert gap (v0.1.90 -> v0.1.91)](#20261007_1150--graylog-aws-path-cert-dependency-log-gap-triage-wh-dark-box-update-alert-gap-v0190---v0191)
@@ -109,7 +110,38 @@
 
 ---
 
-## 20261007_1625 — skill-ai-it refresh: navigation and scripts managed blocks to template-sourced-blocks-v1 (v0.1.98 -> v0.1.99)
+## 20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)
+
+### Added
+
+- Root `justfile` (`bootstrap`, `runtimes`, `check`, `preflight`, `context-pack`, `lint-md`, `fleet`, `routing`, `nav-*`), `.mise.toml` (Python 3.14),
+  `.markdownlint-cli2.jsonc` (skill-ai-it template plus `evidence/` ignores), `.gitignore` (`.staleness-audit/`), and `.archcore/index.guide.md`.
+- `requirements.txt` with PyYAML only: the `nav-*` recipes call skill-ai-it's navigation validator, which parses `context-map.yaml`. Once Python came from the venv,
+  `just nav-validate` failed on that undeclared import, which the host interpreter had been supplying. The pack's own scripts stay standard library only.
+- Working-cache venv built: `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv`, Python 3.14.5. Both scoped justfiles under `scripts/` now run Python through
+  it (`{{py}}`) instead of the host interpreter via each script's shebang.
+
+### Changed
+
+- `SKILL.md` 247 -> 144 lines. The inline decision tree, alerts table, Ansible rules, communication flows and runtime notes are replaced by "What This Pack Covers",
+  "Access in One Paragraph" and a five-step "Diagnosis Decision Tree" that point into the references, as in skill-cambium and skill-mikrotik. The references already held
+  that content in more detail; the alerts table in `SKILL.md` still called `sbdm` a Samsung SSD alert, corrected in `06_failure-modes.md` on 2026-07-13.
+- Facts that existed only in `SKILL.md` moved: the backdoor-first rule and the bastion `cannot listen to port` stale-session check to `03_communication-flows.md`;
+  the backdoor-first and outage-classification preamble to `05_troubleshooting.md` Tier 1; corrected runtime paths to `08_ansible-authoring.md` §Skill Runtime Paths
+  (its old text named two venvs that do not exist).
+- Facts that existed only in the retired files moved: Grafana MCP build and config location to `03_communication-flows.md` (the install doc said `~/.claude/settings.json`;
+  the entries are in `~/.claude.json`, checked 2026-10-07); the `topology_vars` plugin outputs to `08_ansible-authoring.md` §Canonical Source Rules.
+- `.archcore/specs/specialist-pack-file-roles.spec.md` amended (dated note, file table, install surface is a symlink); `.archcore/rules/reference-update-discipline.rule.md`
+  narrowed from six surfaces to four. `ARCHITECTURE.md`, `README.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `repomix.config.json`, `AGENTS.md`, `scripts/README.md`
+  updated to match. Three cross-references to `SKILL.md` sections in references 05, 06 and 13 repointed.
+- `scripts/check_governance.py`: dropped the stale `justfile` and `graphify-out/` exemptions (both exist now); retired filenames registered as history.
+
+### Removed
+
+- The profile file, the dedicated-agent system prompt, and `exports/claude_code/project/skill-smc/` (adapter and copy-based install doc). Install is the symlink
+  `~/.claude/skills/skill-smc` -> this folder. The empty repo-level `exports/claude_code/project/skill-smc/` directory was removed too.
+
+## 20261007_1625 — skill-ai-it refresh: managed blocks to template-sourced-blocks-v1; Archcore filenames to the <slug>.<type>.md form (v0.1.98 -> v0.1.99)
 
 <!-- skill-ai-it-upgrade: 2026-09-23-template-sourced-blocks-v1 -->
 
@@ -119,6 +151,12 @@
 - `context-map.yaml`: `skill_ai_it_version` restamped; one long `description` value re-wrapped by the YAML writer, same text.
 - `AI_NAVIGATION.md`: skipped, carries the `skill-ai-it:manual` opt-out. The generic `.proposed-navigation-block` file was discarded.
 - The upgrader appends its entry at the end of the file; moved here because this CHANGELOG is newest-first.
+- `AGENTS.md` item 12/14 re-upgraded after the skill-ai-it template fix: the audit/check sentence now opens item 14 instead of trailing item 12.
+- `.archcore/`: the ADR, 3 rules and spec renamed to `<slug>.<type>.md` (e.g. `manifest-version-discipline.rule.md`), as skill-cambium did on 2026-10-05.
+  `archcore status` now reports no issues. Live references updated in `SKILL.md`, `ARCHITECTURE.md`, `scripts/README.md`, the ADR and `scripts/check_governance.py`;
+  the old paths are registered in its `CONDITIONAL_PATHS` so history in this file and `SCRATCHPAD.md` still resolves.
+- A parallel session's commit `fbc0aff` (16:28) picked up most of this entry's file changes, including the manifest at 0.1.99, while its message says "skill-smc 0.1.98".
+  The message was left as it is.
 
 ## 20261007_1623 — rct site addressing from ansible-wifi vs the Mk3 diagram (v0.1.97 -> v0.1.98)
 

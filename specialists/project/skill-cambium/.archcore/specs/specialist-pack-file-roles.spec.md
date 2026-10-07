@@ -32,5 +32,6 @@ Defines the role and content-source status of every governance file in the skill
 
 ## Notes
 
-This pack is smaller than its sibling `skill-smc` (5 reference files versus skill-smc's 13, no `exports/` client-adapter layer yet, no dedicated-agent `PROFILE.md`/`SYSTEM_PROMPT.md`), so this spec
-omits rows for files that do not exist here. Add a row when a corresponding file is introduced.
+This pack has fewer reference files than its sibling `skill-smc`, and neither pack has a client-adapter layer or a dedicated-agent profile or system prompt: skill-smc
+retired all three on 2026-10-07, when its install became a symlink like this one's. This spec omits rows for files that do not exist here. Add a row when a corresponding
+file is introduced.

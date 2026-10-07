@@ -1,0 +1,7 @@
+# Third-party packages for skill-smc's working-cache venv (installed by `just bootstrap`).
+#
+# skill-smc's own scripts are standard-library only and must stay that way, including
+# scripts/check_governance.py: a governance gate that cannot run reads the same as one that passes.
+# PyYAML is here only because the nav-* recipes call skill-ai-it's validate_navigation_control_layer.py,
+# which parses context-map.yaml. Without it `just nav-validate` fails on an undeclared import (2026-10-07).
+PyYAML>=6.0.2

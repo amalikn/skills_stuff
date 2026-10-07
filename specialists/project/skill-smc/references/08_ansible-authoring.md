@@ -977,18 +977,19 @@ change to fleet behavior.
 
 ### Skill Runtime Paths
 
-For local skill tooling consistency, use these dedicated working-cache venvs:
-- ansible-wifi venv: `/Volumes/Data/_ai/_skills/skills-working-cache/ansible-wifi/venv`
-- skill-smc venv: `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/venv`
-- ephemeral logs, pid files, and sockets: `/Volumes/Data/_ai/_skills/skills-runtime/<skill>/`
-
-When executing validation commands from this reference, prefer invoking tools from the ansible-wifi working-cache venv to avoid host-level version drift.
+- **skill-smc's own scripts** run from `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv`, built by `just bootstrap` at the pack root from the `.mise.toml` pin
+  (Python 3.14.5 when built, 2026-10-07). `just runtimes` prints what the recipes resolve to.
+- **ansible-wifi has no venv here** (verified 2026-09-26): the checkout has none and no working-cache venv exists for it. Homebrew provides `/opt/homebrew/bin/ansible-playbook`
+  (core 2.21.4), `ansible-lint` and `yamllint`. Use those until an ansible-wifi venv is built, and build one before relying on pinned tool versions.
+- Ephemeral logs, pid files and sockets go under `/Volumes/Data/_ai/_skills/skills-runtime/<skill>/`.
 
 ### Canonical Source Rules
 
 1. `inventories/*/topology_vars/<site>.yml` — canonical topology source. Edit these.
 2. `inventories/*/topology_vars/.<site>.yml` — generated cache (mtime-gated). Never edit.
 3. `roles/smc_generate_smc_files/templates/` — future-site generator templates. Changes here must stay consistent with manual edits to existing sites.
+4. The `topology_vars` vars plugin turns each canonical file into `topology_interfaces`, `topology_bridges` and `topology_vrfs` per host. A `group_vars` or plugin change
+   reaches every flavor; one `topology_vars/<site>.yml` reaches one site.
 
 ### Design Assessment: Do Not Use Helm for `generic_big.yml` (2026-10-02)
 

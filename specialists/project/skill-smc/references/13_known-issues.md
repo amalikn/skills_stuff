@@ -181,7 +181,7 @@ assuming `cw`/`apn`/`rct`/`wh` are ungated by design.
 |                                  |   aggregated like the Starlink rule (one-of-many internet links being down is expected/tolerable and shouldn't |                                                  |
 |                                  |   page immediately, but a sustained single-device failure — 30-60+ minutes — should), modeled closely on the   |                                                  |
 |                                  |   Starlink rule's structure but per-device instead of aggregated, with a threshold realistic for this fleet's  |                                                  |
-|                                  |   known link flakiness. See `SKILL.md` "Key Prometheus Alerts Reference" — that table lists                    |                                                  |
+|                                  |   known link flakiness. See `06_failure-modes.md` "Key Prometheus Alerts" — that table lists                   |                                                  |
 |                                  |   `NodeStarlinkInterfacecheckPacketLoss` but has no `role="internet"` row; do not read its absence there as    |                                                  |
 |                                  |   evidence the coverage exists elsewhere.                                                                      |                                                  |
 

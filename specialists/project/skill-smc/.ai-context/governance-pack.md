@@ -28,7 +28,7 @@ The content is organized as follows:
 ## Notes
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Only files matching these patterns are included: AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, README.md, ARCHITECTURE.md, SKILL.md, RUNBOOK.md, PROFILE.md, SYSTEM_PROMPT.md, manifest.json, CHANGELOG.md, context-map.yaml, SCRATCHPAD.md, exports/**/*.md, references/**/*.md, scripts/README.md, .archcore/**/*.md, .archcore/**/*.json
+- Only files matching these patterns are included: AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, README.md, ARCHITECTURE.md, SKILL.md, RUNBOOK.md, manifest.json, CHANGELOG.md, context-map.yaml, SCRATCHPAD.md, justfile, .mise.toml, references/**/*.md, scripts/README.md, .archcore/**/*.md, .archcore/**/*.json
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
 - Files are sorted by Git change count (files with more changes are at the bottom)
@@ -37,20 +37,15 @@ The content is organized as follows:
 ````
 .archcore/
   adr/
-    adr-progressive-disclosure-structure.md
+    progressive-disclosure-structure.adr.md
   rules/
-    rule-manifest-version-discipline.md
-    rule-progressive-disclosure-loading.md
-    rule-reference-update-discipline.md
+    manifest-version-discipline.rule.md
+    progressive-disclosure-loading.rule.md
+    reference-update-discipline.rule.md
   specs/
-    spec-specialist-pack-file-roles.md
+    specialist-pack-file-roles.spec.md
+  index.guide.md
   settings.json
-exports/
-  claude_code/
-    project/
-      skill-smc/
-        adapter.md
-        install.md
 references/
   01_overview.md
   02_service-map.md
@@ -70,24 +65,24 @@ references/
   16_tplink-site-switches.md
 scripts/
   README.md
+.mise.toml
 AGENTS.md
 AI_NAVIGATION.md
 ARCHITECTURE.md
 CHANGELOG.md
 CLAUDE.md
 context-map.yaml
+justfile
 manifest.json
-PROFILE.md
 README.md
 RUNBOOK.md
 SCRATCHPAD.md
 SKILL.md
-SYSTEM_PROMPT.md
 ````
 
 # Files
 
-## File: .archcore/adr/adr-progressive-disclosure-structure.md
+## File: .archcore/adr/progressive-disclosure-structure.adr.md
 ````markdown
 ---
 title: Progressive Disclosure Reference Structure
@@ -134,11 +129,11 @@ Split RUNBOOK.md into 13 numbered focused reference files under `references/`:
 ## Enforcement
 
 See rules:
-- `.archcore/rules/rule-progressive-disclosure-loading.md`
-- `.archcore/rules/rule-reference-update-discipline.md`
+- `.archcore/rules/progressive-disclosure-loading.rule.md`
+- `.archcore/rules/reference-update-discipline.rule.md`
 ````
 
-## File: .archcore/rules/rule-manifest-version-discipline.md
+## File: .archcore/rules/manifest-version-discipline.rule.md
 ````markdown
 ---
 title: Manifest Version Discipline
@@ -166,7 +161,7 @@ own `## Source` footer carried the same risk until fixed the same day. If a file
 **Rationale:** `manifest.json` is the machine-readable specialist metadata consumed by install tooling and skill validators. A stale `updated_at` misleads automated freshness checks.
 ````
 
-## File: .archcore/rules/rule-progressive-disclosure-loading.md
+## File: .archcore/rules/progressive-disclosure-loading.rule.md
 ````markdown
 ---
 title: Progressive Disclosure Loading
@@ -189,7 +184,7 @@ Loading multiple references is only justified when the task genuinely spans mult
 **Rationale:** The 13 reference files total ~1700+ lines. Loading all up front consumes context that could be used for the actual task and degrades response quality on focused questions.
 ````
 
-## File: .archcore/rules/rule-reference-update-discipline.md
+## File: .archcore/rules/reference-update-discipline.rule.md
 ````markdown
 ---
 title: Reference Update Discipline
@@ -205,21 +200,21 @@ After editing any `references/` file, verify consistency with the index layer in
 - Check `SKILL.md` References section — description must match file content
 - Check `RUNBOOK.md` routing table — task-to-file mapping must still be accurate
 
-After **adding** a new reference file, update all six surfaces in the same commit/session:
+After **adding** a new reference file, update all four surfaces in the same commit/session:
 
 1. `RUNBOOK.md` routing table — add row for new file
 2. `SKILL.md` References section — add bullet for new file
-3. `exports/claude_code/project/skill-smc/adapter.md` — add row to source→install mapping
-4. `exports/claude_code/project/skill-smc/install.md` — add file to copy step
-5. `AI_NAVIGATION.md` reference routing table and Project context files table — add row for new file
-6. `context-map.yaml` routing section — add a routing entry for the new domain
+3. `AI_NAVIGATION.md` reference routing table and Project context files table — add row for new file
+4. `context-map.yaml` routing section — add a routing entry for the new domain
 
-**Rationale:** The routing index (RUNBOOK.md), skill entrypoint (SKILL.md), client adapter docs, and the two pack-maintenance routers (AI_NAVIGATION.md, context-map.yaml) all restate the same
+**Rationale:** The routing index (RUNBOOK.md), skill entrypoint (SKILL.md) and the two pack-maintenance routers (AI_NAVIGATION.md, context-map.yaml) all restate the same
 task-to-file mapping in different formats. Updating one without the others causes navigation failures and install drift. This list was widened from four to six surfaces on 2026-09-08 after an audit
 found AI_NAVIGATION.md and context-map.yaml were never in scope for this rule even though the pack's own `AGENTS.md` Tier 2 checklist already expected them to be kept current.
+On 2026-10-07 it narrowed from six to four: the two client-adapter documents were retired when the install became a symlink, so there was no longer a copy step to
+drift. All four remaining surfaces are enforced by `scripts/check_governance.py`'s catalog check.
 ````
 
-## File: .archcore/specs/spec-specialist-pack-file-roles.md
+## File: .archcore/specs/specialist-pack-file-roles.spec.md
 ````markdown
 ---
 title: Specialist Pack File Roles
@@ -232,17 +227,22 @@ provenance: promoted from AI_NAVIGATION.md + exports/claude_code/project/skill-s
 
 Defines the role and install treatment of every file in the skill-smc specialist pack.
 
+> **Amended 2026-10-07.** The profile file, the dedicated-agent system prompt and the `exports/claude_code/` adapter were retired: their facts moved into
+> `references/`, and the install became a symlink, so there is nothing left for an adapter to describe. The pack gained a root `justfile`, `.mise.toml`,
+> `.markdownlint-cli2.jsonc` and `.gitignore`. Everything else below still stands.
+
 ## File role table
 
 | File | Role | Installed to clients? | Notes |
 |---|---|---|---|
-| `SKILL.md` | Agent-facing activation surface | Yes — `~/.claude/skills/skill-smc/SKILL.md` | Primary skill file loaded by Claude Code |
-| `RUNBOOK.md` | Navigation index only | Yes — `~/.claude/skills/skill-smc/RUNBOOK.md` | 48-line routing table; not a content source |
-| `references/01_` – `13_` | Numbered content source files | Yes — `~/.claude/skills/skill-smc/references/` | Load on demand per task |
+| `SKILL.md` | Agent-facing activation surface | Yes | Primary skill file loaded by Claude Code; kept short, detail lives in references |
+| `RUNBOOK.md` | Navigation index only | Yes | 48-line routing table; not a content source |
+| `references/01_` – `16_` + registries | Numbered content source files, YAML/CSV registries | Yes | Load on demand per task |
 | `manifest.json` | Machine-readable specialist metadata | No | Consumed by skill tooling; not needed at runtime |
-| `PROFILE.md` | Background context; canonical source | No | Content summarised in SKILL.md and references/01_overview.md |
-| `SYSTEM_PROMPT.md` | Dedicated agent mode prompt | No (default) | Use only when deploying skill-smc as a dedicated agent |
-| `exports/claude_code/` | Client adapter and install docs | No | Governance only; describes what gets installed and how |
+| `scripts/` | Read-only diagnostics, governance checker, scoped justfiles | Yes | Catalogued with safety labels in `scripts/README.md` |
+| `justfile` | Task catalog | No (pack tooling) | Python recipes use the venv pinned by `.mise.toml` |
+| `.mise.toml` | Runtime pin (Python) | No (pack tooling) | Copied into the working-cache peer by `just bootstrap` |
+| `.markdownlint-cli2.jsonc` | Markdown lint config | No (pack tooling) | 200-column prose, tables and code exempt |
 | `AGENTS.md` | Agent policy for pack maintenance | No | Governs contributors, not end-users |
 | `CLAUDE.md` | Claude Code governance wrapper | No | Pack maintenance only |
 | `AI_NAVIGATION.md` | Human-readable context router | No | Pack maintenance only |
@@ -260,18 +260,56 @@ Defines the role and install treatment of every file in the skill-smc specialist
 
 ## Install surface
 
-The Claude Code install surface is exactly:
-```
-~/.claude/skills/skill-smc/
-├── SKILL.md
-├── RUNBOOK.md
-└── references/
-    ├── 01_overview.md
-    ├── ...
-    └── 13_known-issues.md
-```
+`~/.claude/skills/skill-smc` is a symlink to the canonical folder (`skills_stuff/specialists/project/skill-smc/`), so every file is present; "installed: yes" above means an
+agent at runtime is expected to read it, "no" means it serves pack maintenance only. There is no copy step to keep in sync.
+````
 
-All other pack files stay in the canonical source (`skills_stuff/specialists/project/skill-smc/`) and are not copied to the install surface.
+## File: .archcore/index.guide.md
+````markdown
+---
+title: Archcore index — skill-smc
+status: accepted
+tags: [index]
+---
+
+Durable pack truth: decisions that are settled, rules that are enforced, contracts other work must satisfy. All five documents were promoted on 20260626 from `AGENTS.md`,
+`AI_NAVIGATION.md` and the CHANGELOG, accepted on 20260908, and renamed to the `<slug>.<type>.md` form on 20261007. This index was added on 20261007 to match the
+other project packs.
+
+An accepted document is not immutable: amend it in place with a dated note naming what changed and what still stands, rather than deleting it.
+
+## Contents
+
+- [Decisions](#decisions)
+- [Rules](#rules)
+- [Contracts](#contracts)
+- [Proposing another](#proposing-another)
+
+## Decisions
+
+| Document                                                                         | Governs                                                                     |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| [Progressive disclosure reference structure](adr/progressive-disclosure-structure.adr.md) | Why the pack is split into numbered references behind a routing index |
+
+## Rules
+
+| Document                                                                    | Enforced by                                                                          |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| [Manifest version discipline](rules/manifest-version-discipline.rule.md)    | `scripts/check_governance.py` version-stamp check (no duplicate of the pack version) |
+| [Progressive disclosure loading](rules/progressive-disclosure-loading.rule.md) | Operator review: `RUNBOOK.md` stays an index, never a content source              |
+| [Reference update discipline](rules/reference-update-discipline.rule.md)    | `scripts/check_governance.py` catalog check across the four index surfaces          |
+
+## Contracts
+
+| Document                                                             | Defines                                                  |
+| -------------------------------------------------------------------- | -------------------------------------------------------- |
+| [Specialist pack file roles](specs/specialist-pack-file-roles.spec.md) | Role and install treatment of every file in this pack |
+
+## Proposing another
+
+1. Write the candidate into the source it belongs to first: `AGENTS.md`, `SCRATCHPAD.md` (marked `KEEP`), or a reference file.
+2. Run `/skill-ai-it refresh` to regenerate a candidate queue, or add the document here directly with a provenance header, starting at `status: proposed`.
+3. Apply the test: would it still read as true after the next real SMC incident or ansible-wifi change? If not, it belongs in `SCRATCHPAD.md` or a reference.
 ````
 
 ## File: .archcore/settings.json
@@ -279,208 +317,6 @@ All other pack files stay in the canonical source (`skills_stuff/specialists/pro
 {
   "sync": "none"
 }
-````
-
-## File: exports/claude_code/project/skill-smc/adapter.md
-````markdown
-# skill-smc: Claude Code Adapter
-
-## What This Exports
-
-Maps the canonical specialist package to the Claude Code installed skill format.
-
-## Source → Install Mapping
-
-| Canonical source | Installed location | Notes |
-|---|---|---|
-| `SKILL.md` | `~/.claude/skills/skill-smc/SKILL.md` | Primary skill file; loaded as context |
-| `RUNBOOK.md` | `~/.claude/skills/skill-smc/RUNBOOK.md` | Navigation index and reference routing |
-| `references/*.md` | `~/.claude/skills/skill-smc/references/*.md` | Focused progressive-disclosure references |
-| `scripts/*` | `~/.claude/skills/skill-smc/scripts/*` | Reusable diagnostic + ansible-lint gate scripts, `chmod +x` on install (see `scripts/README.md`) |
-| `PROFILE.md` | Not installed | Content summarised in SKILL.md and references/01_overview.md |
-| `SYSTEM_PROMPT.md` | Not installed by default | Use when deploying as a dedicated agent |
-| `manifest.json` | Not installed | Consumed by skill tooling; not needed at agent runtime |
-| `README.md` | Not installed | Pack orientation; canonical source only |
-| `ARCHITECTURE.md` | Not installed | Pack structure doc; canonical source only |
-| `AGENTS.md` | Not installed | Pack maintenance policy; not for end-users |
-| `CLAUDE.md` | Not installed | Claude Code governance wrapper; pack maintenance only |
-| `AI_NAVIGATION.md` | Not installed | Context router; pack maintenance only |
-| `context-map.yaml` | Not installed | Machine-readable routing; pack maintenance only |
-| `SCRATCHPAD.md` | Not installed | Agent working memory; pack maintenance only |
-| `repomix.config.json` | Not installed | Context bundle config; pack maintenance only |
-| `.archcore/` | Not installed | Durable rules, ADR, spec; canonical source only |
-
-## Skill Activation
-
-Claude Code activates the skill via `~/.claude/skills/skill-smc/SKILL.md`.
-
-**SKILL.md frontmatter trigger:**
-```yaml
-description: Use when working on ansible-wifi repo, developing or troubleshooting SMC (Site Management Controller) boxes, or investigating live SMC appliance issues.
-```
-
-The skill is auto-loaded when context matches: ansible-wifi repo, SMC troubleshooting, live appliance investigation.
-
-## MCP Integration (Phase 2 — execution layer)
-
-Live SSH access uses **no MCP at all** — every SMC is reached by running `tsh ssh root@<hostname>`
-directly (Bash/shell tool), with `tsh login` arranged manually by the operator against whichever
-Teleport cluster matches the flavor/site (`teleport.apn.au`, `teleport.communitywifi.net.au`, and
-possibly others not yet fully mapped — see `references/13_known-issues.md`). There is no
-`ssh-manager` MCP, no `ssh-config.toml`, nothing to configure for SSH access.
-
-This skill pairs with one MCP configured in `~/.claude/settings.json` for the metrics side of the execution layer:
-
-| MCP | Role | Config |
-|---|---|---|
-| `mcp-grafana-nbn` | Prometheus metrics — nbn_accelerate, nbn_wh (read-only) | `GRAFANA_URL=http://127.0.0.1:63000` (tunnel required) |
-| `mcp-grafana-apn` | Prometheus metrics — rcp, rct, wh (read-only) | `GRAFANA_URL=http://127.0.0.1:53000` (tunnel required) |
-
-Note: `mcp-grafana` (`monitoring.apn.net.au:3000`) is central NOC Grafana — not for SMC box work.
-
-Without `mcp-grafana`, Prometheus queries fall back to manual checklists; SSH access is always direct `tsh ssh`, MCP or not.
-
-## Canonical Source
-
-`/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/`
-````
-
-## File: exports/claude_code/project/skill-smc/install.md
-````markdown
-# skill-smc: Claude Code Installation Instructions
-
-## Contents
-
-- [Prerequisites](#prerequisites)
-- [Install Steps](#install-steps)
-- [Update (re-install from canonical source)](#update-re-install-from-canonical-source)
-- [Execution Layer Configuration (Phase 2)](#execution-layer-configuration-phase-2)
-- [Verification](#verification)
-- [Install History](#install-history)
-
----
-
-## Prerequisites
-
-- Claude Code CLI installed and configured
-- `~/.claude/skills/` directory exists (created by Claude Code on first run)
-
-## Install Steps
-
-### 1. Create skill directory
-
-```bash
-mkdir -p ~/.claude/skills/skill-smc/references
-```
-
-### 2. Copy SKILL.md
-
-```bash
-cp /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/SKILL.md \
-   ~/.claude/skills/skill-smc/SKILL.md
-cp /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/RUNBOOK.md \
-   ~/.claude/skills/skill-smc/RUNBOOK.md
-```
-
-### 3. Copy references
-
-```bash
-cp /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/references/*.md \
-   ~/.claude/skills/skill-smc/references/
-```
-
-### 4. Copy scripts
-
-```bash
-mkdir -p ~/.claude/skills/skill-smc/scripts
-cp /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/scripts/* \
-   ~/.claude/skills/skill-smc/scripts/
-chmod +x ~/.claude/skills/skill-smc/scripts/*.sh ~/.claude/skills/skill-smc/scripts/*.py
-```
-
-### 5. Verify
-
-```bash
-ls -la ~/.claude/skills/skill-smc/
-# Expected:
-#   SKILL.md
-#   RUNBOOK.md
-#   references/
-#     01_overview.md
-#     ...
-#     13_known-issues.md
-#   scripts/
-#     README.md, collect-smc-evidence.sh, analyse-routing-drift.py,
-#     analyse-topology-interface-match.py, routing-diagnostics.justfile,
-#     lint-baseline-refresh.sh, ansible-lint-delta-gate.sh
-```
-
-## Update (re-install from canonical source)
-
-Re-run steps 2 through 4 to pick up changes from the canonical source.
-
-## Execution Layer Configuration (Phase 2)
-
-After installing the skill, configure the execution layer for live troubleshooting.
-
-### Live SSH access — direct `tsh ssh`, no MCP
-
-**No `ssh-manager` (or any other SSH-wrapping) MCP is used for SMC access.** Every SMC box is reached by running `tsh ssh root@<hostname>` directly (via the Bash/shell tool), not through an MCP tool
-call. There is no `ssh-config.toml`/`SSH_CONFIG_PATH` to configure and nothing to install here.
-
-1. The operator arranges `tsh login` manually as needed, targeting whichever Teleport cluster matches the flavor/site currently being worked:
-
-   | Flavors                          | Teleport domain                 |
-   | -------------------------------- | ------------------------------- |
-   | `rcp`, `rct`, `wh`, `apn`        | `teleport.apn.au`               |
-   | `nbn_accelerate`, `nbn_wh`, `cw` | `teleport.communitywifi.net.au` |
-
-Do not assume a single hardcoded domain — see `references/01_overview.md` "Remote Access".
-2. Once `tsh login` is active for the right cluster, run commands directly:
-   ```bash
-   tsh ssh root@<hostname> '<command>'
-   ```
-3. No MCP configuration step is needed for this. If a future session considers adding an SSH-wrapping MCP, it would need to invoke `tsh ssh` itself (a bare host/port SSH client config cannot
-   authenticate against Teleport) — but as of this pack's current state, none is in use.
-
-### mcp-grafana (Prometheus metrics — read-only)
-
-**Read-only:** Never write, modify, or create anything in Grafana via MCP. Use the flavor-specific instance, not `mcp-grafana` (central NOC, unrelated to SMC boxes).
-
-1. Build binary: `cd /Volumes/Data/_ai/_mcp/mcp_stuff/mcp-grafana && go build -o dist/mcp-grafana ./cmd/mcp-grafana`
-2. Copy to: `/Volumes/Data/_ai/_mcp/mcp-working-cache/mcp-grafana/mcp-grafana`
-3. Add flavor-specific entries to `mcpServers` in `~/.claude/settings.json`:
-   ```json
-   "mcp-grafana-nbn": {
-     "command": "/Volumes/Data/_ai/_mcp/mcp-working-cache/mcp-grafana/mcp-grafana",
-     "env": {
-       "GRAFANA_URL": "http://127.0.0.1:63000",
-       "GRAFANA_SERVICE_ACCOUNT_TOKEN": ""
-     }
-   },
-   "mcp-grafana-apn": {
-     "command": "/Volumes/Data/_ai/_mcp/mcp-working-cache/mcp-grafana/mcp-grafana",
-     "env": {
-       "GRAFANA_URL": "http://127.0.0.1:53000",
-       "GRAFANA_SERVICE_ACCOUNT_TOKEN": "<token>"
-     }
-   }
-   ```
-Requires active Teleport SSH tunnel port-forwarding 63000 (nbn) or 53000 (apn) before use.
-
-## Verification
-
-After install and MCP configuration, restart Claude Code and confirm:
-- `tsh login` succeeds against the target cluster, then `tsh ssh root@malik-rct01 'echo OK && hostname'` returns `OK\nmalik-rct01`
-- `query_prometheus` with `node_memory_MemAvailable_bytes` returns current metrics (mcp-grafana)
-
-## Install History
-
-Point-in-time log of installation milestones — not a live version tracker. For the pack's current version, read `manifest.json` `version` in the canonical source.
-
-- Installed: 2026-04-15 (Phase 1)
-- MCP wired: 2026-04-17 (Phase 2), canonical version 0.1.6 at that time
-- Re-synced: 2026-09-08, canonical version 0.1.30 at that time
 ````
 
 ## File: references/01_overview.md
@@ -1144,6 +980,10 @@ resulting port uniquely identifies one site fleet-wide, regardless of which proj
 **Script:** `../scripts/backdoor-watch.sh <site> [check|history|watch]` does steps 1-2 and the listener check without opening a shell; `watch` polls for a box that
 only holds the tunnel briefly (2026-10-07).
 
+**Never report a box as unreachable until this path has been checked** (operator, 2026-10-07). A box missing from `tsh ls` is not enough. On the project bastion
+(`apn-teleport01` / `cw-teleport01`), `ss -tln | grep 127.0.0.1:<50000+site_eclipse_siteid>`: listening means the box is alive, so SSH in through it. Not listening: grep the
+bastion's `/var/log/auth.log*` for `cannot listen to port: <port>` (a stale session is holding the port), and poll the listener to catch a box that comes up only briefly.
+
 **Procedure**:
 1. Find `site_eclipse_siteid` for the target site (`host_vars`/`group_vars`) and add 50000 to get its port.
 2. `tsh ssh --proxy=<cluster-fqdn> root@<bastion>` — reach the bastion via Teleport (this hop still needs a working `tsh` session, but to the *bastion*, not the hung site).
@@ -1650,6 +1490,12 @@ lsof -nP -iTCP:63000 -sTCP:LISTEN   # nbn cluster
 lsof -nP -iTCP:53000 -sTCP:LISTEN   # apn cluster
 ```
 
+**Setup** (from the retired Claude Code install doc, config location verified 2026-10-07). Both entries run one binary, built from
+`/Volumes/Data/_ai/_mcp/mcp_stuff/mcp-grafana` (`go build -o dist/mcp-grafana ./cmd/mcp-grafana`) and copied to `/Volumes/Data/_ai/_mcp/mcp-working-cache/mcp-grafana/mcp-grafana`.
+They are global MCP servers in `~/.claude.json` `mcpServers`, not `~/.claude/settings.json`, each with `GRAFANA_URL` as in the table and a `GRAFANA_SERVICE_ACCOUNT_TOKEN`.
+Smoke test: `query_prometheus` for `node_memory_MemAvailable_bytes`. SSH to an SMC uses no MCP at all: `tsh ssh root@<host>` directly, after the operator has run `tsh login`
+against the right cluster.
+
 **Dashboard inventory (confirmed live 2026-08-03).** The two instances are not mirrors — `mcp-grafana-apn` has 20 dashboards vs 9 on `mcp-grafana-nbn`. Both share a common "smc"-tagged core (Alerts,
 Heatmaps, Disk Wear and Tear, Internet Speed Analysis, SMC Disk Life Time, SMC Home, SMC Network, SMC System, Speedtest Exporter). `mcp-grafana-apn` additionally carries dashboards with no NBN
 counterpart:
@@ -1839,6 +1685,13 @@ devices, and sends WhatsApp installer and Teams NOC alerts. Recorded by the unif
 
 ### Tier 1: Box Unreachable
 
+**Check the autossh backdoor before calling a box unreachable** (operator, 2026-10-07): `scripts/backdoor-watch.sh <site> [check|history|watch]`, procedure and stale-port check in
+`03_communication-flows.md` §Backdoor SSH Access.
+
+**Classify the outage before calling it a hang** (2026-10-07): `scripts/fleet-reboot-timeline.py 90 'site="<site>"'` separates ordinary reboots, dark-then-boot (power loss, or a
+hang that was power-cycled) and WAN-only gaps. Solar sites lose power every winter morning, and a Pi undervoltage storm shows only in Graylog `kern.log`, not in Prometheus
+(`06_failure-modes.md`). The RISE watchdog reboots only on overlay >= 80%, and `auto_reboot: 0` does not stop it.
+
 ```
 1. autossh tunnel up?
    systemctl status autossh-teleport-openssh
@@ -2022,7 +1875,7 @@ provisioning, check `roles/smc_cnmaestro_provisioning` and CNMaestro cloud conne
 ```
 1. Textfile collectors stale?
    ls -la /var/lib/node_exporter/textfile_collector/
-   # Check mtime vs max staleness (see Section 2 table)
+   # Check mtime vs max staleness (02_service-map.md collector table)
 
    # Manually run stale collector:
    sudo python3 /opt/rise/sbdm.py
@@ -2706,7 +2559,7 @@ worse, observed at `galiwinku-smc01` (`nbn_accelerate`), 2026-09-08.
 | Not yet         | A consecutive-failure counter/backoff so the script stops restarting `dhclient` after 2-3 consecutive failed cycles and instead just reports via the existing                      |
 | implemented     | `my_node_interfacecheck_success` Prometheus metric — restarting a client can't fix a problem that isn't a stale-lease problem (e.g. an upstream ARP failure), and                  |
 |                 | continuing to kick a link that's mid-flap risks compounding a transient issue into a harder one                                                                                    |
-| Relationship to | The `HostInterfacecheckTextfileCollectorNotUpdated` alert (`SKILL.md` / `06_failure-modes.md` Key Prometheus Alerts) only detects the script itself going stale — it says          |
+| Relationship to | The `HostInterfacecheckTextfileCollectorNotUpdated` alert (this file's Key Prometheus Alerts table) only detects the script itself going stale — it says                           |
 | monitoring gap  | nothing about a single interface repeatedly failing and being repeatedly restarted while the script keeps running fine. See `13_known-issues.md` "Fleet-Wide Architecture          |
 |                 | Risks" for the related per-device `role: internet` alerting gap that let this class of failure go undetected until manual SSH diagnosis                                            |
 
@@ -4728,18 +4581,19 @@ change to fleet behavior.
 
 ### Skill Runtime Paths
 
-For local skill tooling consistency, use these dedicated working-cache venvs:
-- ansible-wifi venv: `/Volumes/Data/_ai/_skills/skills-working-cache/ansible-wifi/venv`
-- skill-smc venv: `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/venv`
-- ephemeral logs, pid files, and sockets: `/Volumes/Data/_ai/_skills/skills-runtime/<skill>/`
-
-When executing validation commands from this reference, prefer invoking tools from the ansible-wifi working-cache venv to avoid host-level version drift.
+- **skill-smc's own scripts** run from `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv`, built by `just bootstrap` at the pack root from the `.mise.toml` pin
+  (Python 3.14.5 when built, 2026-10-07). `just runtimes` prints what the recipes resolve to.
+- **ansible-wifi has no venv here** (verified 2026-09-26): the checkout has none and no working-cache venv exists for it. Homebrew provides `/opt/homebrew/bin/ansible-playbook`
+  (core 2.21.4), `ansible-lint` and `yamllint`. Use those until an ansible-wifi venv is built, and build one before relying on pinned tool versions.
+- Ephemeral logs, pid files and sockets go under `/Volumes/Data/_ai/_skills/skills-runtime/<skill>/`.
 
 ### Canonical Source Rules
 
 1. `inventories/*/topology_vars/<site>.yml` — canonical topology source. Edit these.
 2. `inventories/*/topology_vars/.<site>.yml` — generated cache (mtime-gated). Never edit.
 3. `roles/smc_generate_smc_files/templates/` — future-site generator templates. Changes here must stay consistent with manual edits to existing sites.
+4. The `topology_vars` vars plugin turns each canonical file into `topology_interfaces`, `topology_bridges` and `topology_vrfs` per host. A `group_vars` or plugin change
+   reaches every flavor; one `topology_vars/<site>.yml` reaches one site.
 
 ### Design Assessment: Do Not Use Helm for `generic_big.yml` (2026-10-02)
 
@@ -6920,7 +6774,7 @@ assuming `cw`/`apn`/`rct`/`wh` are ungated by design.
 |                                  |   aggregated like the Starlink rule (one-of-many internet links being down is expected/tolerable and shouldn't |                                                  |
 |                                  |   page immediately, but a sustained single-device failure — 30-60+ minutes — should), modeled closely on the   |                                                  |
 |                                  |   Starlink rule's structure but per-device instead of aggregated, with a threshold realistic for this fleet's  |                                                  |
-|                                  |   known link flakiness. See `SKILL.md` "Key Prometheus Alerts Reference" — that table lists                    |                                                  |
+|                                  |   known link flakiness. See `06_failure-modes.md` "Key Prometheus Alerts" — that table lists                   |                                                  |
 |                                  |   `NodeStarlinkInterfacecheckPacketLoss` but has no `role="internet"` row; do not read its absence there as    |                                                  |
 |                                  |   evidence the coverage exists elsewhere.                                                                      |                                                  |
 
@@ -8354,15 +8208,15 @@ a venv's `bin/` directory, same convention both scripts share).
 ### `check_governance.py`
 
 ```bash
-python3 scripts/check_governance.py
+just check        # from the pack root; runs the pinned venv's Python
 ```
 
 Two check families, tuned to this pack's stated rules (see the file's own CONFIG section for the exact registries and per-entry exemption reasons):
 
 - **Catalog coverage** — every `references/*.md` file is named in `RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, and `context-map.yaml` (the four surfaces
-  `.archcore/rules/rule-reference-update-discipline.md` requires a per-file row in), and every script in `scripts/` is named in this file. Fails in both directions — a stale catalog entry, or an
+  `.archcore/rules/reference-update-discipline.rule.md` requires a per-file row in), and every script in `scripts/` is named in this file. Fails in both directions — a stale catalog entry, or an
   uncataloged new file.
-- **Version single-source** — no governance surface hardcodes a duplicate of this pack's own version number (`.archcore/rules/rule-manifest-version-discipline.md`); `manifest.json` is the sole
+- **Version single-source** — no governance surface hardcodes a duplicate of this pack's own version number (`.archcore/rules/manifest-version-discipline.rule.md`); `manifest.json` is the sole
   version-of-record. The check derives the current major.minor line from `manifest.json` at run time rather than matching any semver-shaped number, so it does not collide with unrelated software
   versions mentioned in the references (ClamAV, ansible-lint, etc.).
 
@@ -8763,7 +8617,8 @@ just -f fleet-health.justfile pin-audit
 ## Requirements
 
 - `tsh` logged in to the relevant Teleport cluster (`tsh login`).
-- `just` (optional — only needed if using the justfile template), `bash`, Python 3 (standard library only — no third-party imports).
+- `just`, `bash`, and the pack's Python venv: run `just bootstrap` once at the pack root. It builds `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv`
+  from the `.mise.toml` pin; every Python recipe, in the root `justfile` and both scoped justfiles here, runs through it. Scripts are standard library only.
 - A local clone of `ansible-wifi` at `/Volumes/Data/_ansible/ansible-wifi` for the topology comparisons.
 
 ## Evidence retention
@@ -8807,6 +8662,12 @@ reusable knowledge and tooling, not case-specific evidence. See the parent repo'
 <!-- END MANAGED: skill-ai-it:scripts -->
 ````
 
+## File: .mise.toml
+````toml
+[tools]
+python = "3.14"
+````
+
 ## File: AGENTS.md
 ````markdown
 @../../../AGENTS.md
@@ -8836,13 +8697,13 @@ Summary: Agent guidance for maintaining and using the skill-smc specialist pack.
 
 - `SKILL.md` is the agent-facing activation surface — it defines triggers, inline quick-reference, and pointers to `references/`.
 - `RUNBOOK.md` is the navigation index — it maps task types to specific numbered reference files. Do not use it as a content source.
-- `references/01_` through `references/13_` are the content source files. Load only the one needed for the task.
+- The numbered `references/<nn>_*.md` files (plus the YAML/CSV registries) are the content source files. Load only the one needed for the task.
 - `manifest.json` is the machine-readable specialist metadata. Update `version` and `updated_at` when any content file changes.
-- `PROFILE.md` is canonical context not installed to clients. Content is summarised in `SKILL.md` and `references/01_overview.md`.
-- `SYSTEM_PROMPT.md` is for dedicated agent deployments only — not loaded in normal skill invocations.
-- `exports/claude_code/` contains the Claude Code adapter and install docs. Update these when the installed structure changes.
+- `~/.claude/skills/skill-smc` is a symlink to this folder; there is no copy step or adapter document to keep in sync (retired 2026-10-07).
+- Keep `SKILL.md` short: detail belongs in the reference that owns it, and `SKILL.md` keeps only what decides which reference to open.
+- Run Python through the pack-root `justfile` (`just bootstrap` once, then `just check` etc.); recipes use the `.mise.toml`-pinned working-cache venv.
 - After editing any `references/` file, check `SKILL.md` References section and `RUNBOOK.md` routing table for consistency.
-- After adding a new reference file, update the `RUNBOOK.md` routing table, `SKILL.md` References section, `adapter.md` source mapping, and `install.md` copy steps in the same pass.
+- After adding a new reference file, update the `RUNBOOK.md` routing table, `SKILL.md` References section, `AI_NAVIGATION.md` tables and `context-map.yaml` routing in the same pass.
 - Follow naming convention for time-bound docs: `<slug>-YYYYMMDD_hhmm.md`.
 - Keep `CHANGELOG.md` current — append entries when content or structure changes.
 
@@ -8936,10 +8797,10 @@ Before answering, planning, editing, or creating files in this project:
 10. Do not treat Graphify (`graphify-out/`) or Repomix (`.ai-context/`) output as canonical truth. These are generated support artifacts only, always rebuildable.
 11. Before running scripts or automation, inspect `justfile`, `scripts/README.md`, `Taskfile.yml`, `Makefile`, and `package.json` when present. Prefer `just --list` and `just <task>` when a `justfile`
     exists.
-12. Treat uncataloged scripts as `unknown` safety until inspected. Run defined audit/check commands before completing work.
+12. Treat uncataloged scripts as `unknown` safety until inspected.
 13. When adding, modifying, or removing scripts or tasks, update `scripts/README.md` to reflect the change — purpose, inputs, outputs, safety label, and idempotency.
-14. If `scripts/check_governance.py` exists, run it before claiming any durable change is complete. When it fails, fix the project, not the check. Adding a new artifact class, generated output, or a
-    constant restated across files requires extending its registries in the same pass.
+14. Run defined audit/check commands before completing work. Where `scripts/check_governance.py` exists, that includes it — and when it fails, fix the project, not the check.
+    Adding a new artifact class, generated output, or a constant restated across files requires extending its registries in the same pass.
 15. After making changes, update `CHANGELOG.md` for all durable governance/navigation changes.
 16. Preserve user-authored content outside managed sections. Do not rewrite custom project notes.
 
@@ -8975,7 +8836,7 @@ The check count is a coverage signal, not a score. It is expected to rise as the
   the next agent has no way to discover.
 - **A new check must be able to fail.** Prove it by breaking the pack deliberately and watching it go red.
 - **Text matching does not verify behavior.** Where a check must verify behavior, execute the behavior and assert on the result, not grep for a keyword.
-- **Do not enforce history.** `CHANGELOG.md` and `install.md` are append-only history logs; a past fact recorded there is evidence, not a live claim, and is exempt from the checks above by design.
+- **Do not enforce history.** `CHANGELOG.md` is an append-only history log; a past fact recorded there is evidence, not a live claim, and is exempt from the checks above by design.
 
 Doctrine, the seven check families, and the artifact-to-check inference table: [the governance-checks
 pattern](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/governance-checks.md).
@@ -9020,7 +8881,7 @@ Before answering, planning, editing, or creating files:
 1. **Check `.ai-context/governance-pack.md`** — if current (< 7 days), read as primary context load. Regenerate if stale: `repomix --config repomix.config.json`.
 2. If pack unavailable, read:
    - `AGENTS.md`
-   - `SKILL.md` — activation surface and quick-reference
+   - `SKILL.md` — activation surface and decision tree
    - `RUNBOOK.md` — navigation index for references
    - `CHANGELOG.md` — recent changes
 3. Then load the specific `references/*.md` file relevant to the task.
@@ -9030,12 +8891,11 @@ Before answering, planning, editing, or creating files:
 When sources conflict:
 
 1. `manifest.json` — machine-readable specialist metadata (version, scope, stable facts)
-2. `SKILL.md` — agent-facing activation surface and inline quick-reference
+2. `SKILL.md` — agent-facing activation surface and decision tree
 3. `RUNBOOK.md` — navigation index
 4. `references/<nn>_*.md` — numbered content source files
-5. `PROFILE.md` — background context (not installed to clients)
-6. `CHANGELOG.md` — history
-7. `SCRATCHPAD.md` — temporary only
+5. `CHANGELOG.md` — history
+6. `SCRATCHPAD.md` — temporary only
 
 ## Reference routing (task → file)
 
@@ -9069,8 +8929,6 @@ When sources conflict:
 | `SKILL.md`                                         | Agent-facing activation surface                                         | High        |
 | `RUNBOOK.md`                                       | Navigation index — task-to-reference routing                            | High        |
 | `manifest.json`                                    | Specialist metadata, scope, stable facts                                | High        |
-| `PROFILE.md`                                       | Background context; not installed to clients                            | Medium      |
-| `SYSTEM_PROMPT.md`                                 | Dedicated agent mode prompt; not loaded in normal invocations           | Medium      |
 | `references/01_overview.md`                        | SMC box definition, flavors, access, APN vs NBN Accelerate differences  | Content     |
 | `references/02_service-map.md`                     | 50+ services, units, config paths                                       | Content     |
 | `references/03_communication-flows.md`             | Inbound/outbound paths                                                  | Content     |
@@ -9090,8 +8948,7 @@ When sources conflict:
 | `references/snmp-oid-registry-tplink.yaml`         | Verified TP-Link switch OIDs the controller uses (machine-readable)     | Content     |
 | `references/tplink-site-switches.yaml`             | One record per TP-Link switch, with structured evidence                 | Content     |
 | `references/tplink-snmp-enablement-survey-*.csv`   | TP-Link SNMP enablement per switch                                      | Content     |
-| `exports/claude_code/project/skill-smc/adapter.md` | Claude Code source→install mapping                                      | Adapter     |
-| `exports/claude_code/project/skill-smc/install.md` | Claude Code installation steps                                          | Adapter     |
+| `justfile`                                         | Task catalog; Python recipes use the pinned working-cache venv          | High        |
 | `CHANGELOG.md`                                     | Pack version history and governance changes                             | Medium-high |
 | `SCRATCHPAD.md`                                    | Temporary working notes                                                 | Low         |
 | `.ai-context/governance-pack.md`                   | Generated context bundle                                                | Generated   |
@@ -9101,7 +8958,7 @@ When sources conflict:
 | Change type                   | Update                                                                                  |
 | ----------------------------- | --------------------------------------------------------------------------------------- |
 | New operational knowledge     | Add/update `references/<nn>_*.md`; update `RUNBOOK.md` routing; check `SKILL.md`        |
-| New reference file            | Update `RUNBOOK.md` routing table + `SKILL.md` References + `adapter.md` + `install.md` |
+| New reference file            | Update `RUNBOOK.md` routing + `SKILL.md` References + `AI_NAVIGATION.md` + `context-map.yaml` |
 | Structural change             | Bump `manifest.json` version + `updated_at`; append `CHANGELOG.md`                      |
 | Scope boundary change         | Update `manifest.json` `scope_boundary`; review `SKILL.md` Use When                     |
 | Stable fact confirmed/changed | Update `manifest.json` `stable_facts`; update relevant reference                        |
@@ -9129,8 +8986,7 @@ When changing a source file, update its companions in the same pass:
 
 | File changed                                 | Companions to update                                                                                                                                  |
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `references/<nn>_*.md` (new or restructured) | `RUNBOOK.md` routing table, `SKILL.md` References section,                                                                                            |
-|                                              |   `exports/claude_code/project/skill-smc/adapter.md`, `exports/claude_code/project/skill-smc/install.md`                                              |
+| `references/<nn>_*.md` (new or restructured) | `RUNBOOK.md` routing table, `SKILL.md` References section, `AI_NAVIGATION.md` tables, `context-map.yaml` routing                                      |
 | Any `references/*.md` content change         | `manifest.json` `version` + `updated_at`; `CHANGELOG.md` entry                                                                                        |
 | `AI_NAVIGATION.md` or `context-map.yaml`     | keep the other in sync — same routing, same file roles                                                                                                |
 | New script added                             | `scripts/README.md`, `AGENTS.md` if it changes a working rule                                                                                         |
@@ -9155,19 +9011,18 @@ After context compaction, rebuild agent context in this order:
 
 ## Overview
 
-skill-smc is a multi-file specialist pack following the canonical `specialists/project/` pattern. It separates an agent-facing activation surface (SKILL.md) from a progressive-disclosure reference layer (references/01–13) via a navigation index (RUNBOOK.md). Client adapter docs in `exports/` describe what gets installed and where. Durable pack rules, the structural ADR, and a file-roles spec live in `.archcore/`.
+skill-smc is a multi-file specialist pack following the canonical `specialists/project/` pattern. It separates an agent-facing activation surface (SKILL.md) from a progressive-disclosure reference
+layer (references/01–13) via a navigation index (RUNBOOK.md). Durable pack rules, the structural ADR, and a file-roles spec live in `.archcore/`.
 
 ## Components
 
 | Component | Role |
 |---|---|
-| `SKILL.md` | Agent activation surface: trigger conditions, inline quick-reference tables, and pointers to numbered references |
+| `SKILL.md` | Agent activation surface: triggers, the write-back contract, a short access paragraph and decision tree, and pointers to numbered references |
 | `RUNBOOK.md` | Navigation index: 48-line table mapping task types to specific reference files. Not a content source. |
 | `references/01_overview.md` – `references/13_known-issues.md` | Numbered progressive-disclosure content files. Each covers one domain. Loaded on demand. |
 | `manifest.json` | Machine-readable specialist metadata: version, scope boundary, stable facts, known constraints |
-| `PROFILE.md` | Background context (hardware, flavors, access pattern). Content summarised in SKILL.md and 01_overview.md. Not installed to clients. |
-| `SYSTEM_PROMPT.md` | Dedicated agent mode prompt. Not loaded in normal skill invocations. |
-| `exports/claude_code/` | Claude Code adapter: source→install mapping (`adapter.md`) and install steps (`install.md`) |
+| `justfile` + `.mise.toml` | Task catalog; recipes run Python from the working-cache venv pinned by `.mise.toml` (`just bootstrap`, `just check`) |
 | `.archcore/` | Durable pack truth: 3 rules, 1 ADR, 1 spec |
 | `AGENTS.md` | Pack maintenance policy for contributors |
 | `AI_NAVIGATION.md` | Human-readable context router for agents working on the pack |
@@ -9176,34 +9031,24 @@ skill-smc is a multi-file specialist pack following the canonical `specialists/p
 
 ## Information flow
 
-```
+```text
 Agent invoked with SMC task
-  └── reads SKILL.md (activation surface, inline quick-ref)
+  └── reads SKILL.md (activation surface, decision tree)
         └── reads RUNBOOK.md (navigation index, identifies relevant reference)
               └── reads references/<nn>_*.md (focused content for the task)
 ```
 
 ## Installed surface (Claude Code)
 
-```
-~/.claude/skills/skill-smc/
-├── SKILL.md
-├── RUNBOOK.md
-└── references/
-    ├── 01_overview.md
-    ├── 02_service-map.md
-    ├── ...
-    └── 13_known-issues.md
-```
-
-Everything else (PROFILE.md, SYSTEM_PROMPT.md, manifest.json, exports/, .archcore/, governance files) stays in the canonical source at `skills_stuff/specialists/project/skill-smc/` and is not installed to clients.
+`~/.claude/skills/skill-smc` is a symlink to this canonical folder, so the whole pack is visible to Claude Code; `SKILL.md` is what activates, everything else loads on demand. There is no copy step
+and no separate adapter document; those, the profile file and the dedicated-agent system prompt were retired on 2026-10-07.
 
 ## Key decisions
 
-- **Progressive disclosure (ADR v0.1.2):** monolithic RUNBOOK.md split into 13 numbered references to reduce per-task token cost. See [.archcore/adr/adr-progressive-disclosure-structure.md](.archcore/adr/adr-progressive-disclosure-structure.md).
-- **RUNBOOK.md as index only:** never holds content; is always a routing table. See [.archcore/rules/rule-progressive-disclosure-loading.md](.archcore/rules/rule-progressive-disclosure-loading.md).
-- **PROFILE.md not installed:** content is summarised in SKILL.md and 01_overview.md to avoid a dangling reference in the client install surface.
-- **manifest.json not installed:** consumed by skill tooling at build/validate time, not needed at agent runtime.
+- **Progressive disclosure (ADR v0.1.2):** monolithic RUNBOOK.md split into 13 numbered references to reduce per-task token cost. See
+  [.archcore/adr/progressive-disclosure-structure.adr.md](.archcore/adr/progressive-disclosure-structure.adr.md).
+- **RUNBOOK.md as index only:** never holds content; is always a routing table. See [.archcore/rules/progressive-disclosure-loading.rule.md](.archcore/rules/progressive-disclosure-loading.rule.md).
+- **SKILL.md stays short (2026-10-07):** detail lives in the reference that owns it; SKILL.md keeps only what decides which reference to open.
 
 ## Related workspaces
 
@@ -9221,7 +9066,8 @@ Everything else (PROFILE.md, SYSTEM_PROMPT.md, manifest.json, exports/, .archcor
 
 ## Contents
 
-- [20261007_1625 — skill-ai-it refresh: navigation and scripts managed blocks to template-sourced-blocks-v1 (v0.1.98 -> v0.1.99)](#20261007_1625--skill-ai-it-refresh-navigation-and-scripts-managed-blocks-to-template-sourced-blocks-v1-v0198---v0199)
+- [20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)](#20261007_1637--layout-brought-in-line-with-the-newer-project-packs-skillmd-slimmed-profile-system-prompt-and-exports-adapter-retired-v0199---v01100)
+- [20261007_1625 — skill-ai-it refresh: managed blocks to template-sourced-blocks-v1; Archcore filenames to the <slug>.<type>.md form (v0.1.98 -> v0.1.99)](#20261007_1625--skill-ai-it-refresh-managed-blocks-to-template-sourced-blocks-v1-archcore-filenames-to-the-slugtypemd-form-v0198---v0199)
 - [20261007_1623 — rct site addressing from ansible-wifi vs the Mk3 diagram (v0.1.97 -> v0.1.98)](#20261007_1623--rct-site-addressing-from-ansible-wifi-vs-the-mk3-diagram-v0197---v0198)
 - [20261007_1229 — Backdoor-first rule for unreachable boxes, backdoor-watch.sh, kupungarri re-check (v0.1.91 -> v0.1.92)](#20261007_1229--backdoor-first-rule-for-unreachable-boxes-backdoor-watchsh-kupungarri-re-check-v0191---v0192)
 - [20261007_1150 — Graylog AWS path, cert dependency, log-gap triage, wh dark-box update, alert gap (v0.1.90 -> v0.1.91)](#20261007_1150--graylog-aws-path-cert-dependency-log-gap-triage-wh-dark-box-update-alert-gap-v0190---v0191)
@@ -9328,7 +9174,38 @@ Everything else (PROFILE.md, SYSTEM_PROMPT.md, manifest.json, exports/, .archcor
 
 ---
 
-## 20261007_1625 — skill-ai-it refresh: navigation and scripts managed blocks to template-sourced-blocks-v1 (v0.1.98 -> v0.1.99)
+## 20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)
+
+### Added
+
+- Root `justfile` (`bootstrap`, `runtimes`, `check`, `preflight`, `context-pack`, `lint-md`, `fleet`, `routing`, `nav-*`), `.mise.toml` (Python 3.14),
+  `.markdownlint-cli2.jsonc` (skill-ai-it template plus `evidence/` ignores), `.gitignore` (`.staleness-audit/`), and `.archcore/index.guide.md`.
+- `requirements.txt` with PyYAML only: the `nav-*` recipes call skill-ai-it's navigation validator, which parses `context-map.yaml`. Once Python came from the venv,
+  `just nav-validate` failed on that undeclared import, which the host interpreter had been supplying. The pack's own scripts stay standard library only.
+- Working-cache venv built: `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv`, Python 3.14.5. Both scoped justfiles under `scripts/` now run Python through
+  it (`{{py}}`) instead of the host interpreter via each script's shebang.
+
+### Changed
+
+- `SKILL.md` 247 -> 144 lines. The inline decision tree, alerts table, Ansible rules, communication flows and runtime notes are replaced by "What This Pack Covers",
+  "Access in One Paragraph" and a five-step "Diagnosis Decision Tree" that point into the references, as in skill-cambium and skill-mikrotik. The references already held
+  that content in more detail; the alerts table in `SKILL.md` still called `sbdm` a Samsung SSD alert, corrected in `06_failure-modes.md` on 2026-07-13.
+- Facts that existed only in `SKILL.md` moved: the backdoor-first rule and the bastion `cannot listen to port` stale-session check to `03_communication-flows.md`;
+  the backdoor-first and outage-classification preamble to `05_troubleshooting.md` Tier 1; corrected runtime paths to `08_ansible-authoring.md` §Skill Runtime Paths
+  (its old text named two venvs that do not exist).
+- Facts that existed only in the retired files moved: Grafana MCP build and config location to `03_communication-flows.md` (the install doc said `~/.claude/settings.json`;
+  the entries are in `~/.claude.json`, checked 2026-10-07); the `topology_vars` plugin outputs to `08_ansible-authoring.md` §Canonical Source Rules.
+- `.archcore/specs/specialist-pack-file-roles.spec.md` amended (dated note, file table, install surface is a symlink); `.archcore/rules/reference-update-discipline.rule.md`
+  narrowed from six surfaces to four. `ARCHITECTURE.md`, `README.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `repomix.config.json`, `AGENTS.md`, `scripts/README.md`
+  updated to match. Three cross-references to `SKILL.md` sections in references 05, 06 and 13 repointed.
+- `scripts/check_governance.py`: dropped the stale `justfile` and `graphify-out/` exemptions (both exist now); retired filenames registered as history.
+
+### Removed
+
+- The profile file, the dedicated-agent system prompt, and `exports/claude_code/project/skill-smc/` (adapter and copy-based install doc). Install is the symlink
+  `~/.claude/skills/skill-smc` -> this folder. The empty repo-level `exports/claude_code/project/skill-smc/` directory was removed too.
+
+## 20261007_1625 — skill-ai-it refresh: managed blocks to template-sourced-blocks-v1; Archcore filenames to the <slug>.<type>.md form (v0.1.98 -> v0.1.99)
 
 <!-- skill-ai-it-upgrade: 2026-09-23-template-sourced-blocks-v1 -->
 
@@ -9338,6 +9215,12 @@ Everything else (PROFILE.md, SYSTEM_PROMPT.md, manifest.json, exports/, .archcor
 - `context-map.yaml`: `skill_ai_it_version` restamped; one long `description` value re-wrapped by the YAML writer, same text.
 - `AI_NAVIGATION.md`: skipped, carries the `skill-ai-it:manual` opt-out. The generic `.proposed-navigation-block` file was discarded.
 - The upgrader appends its entry at the end of the file; moved here because this CHANGELOG is newest-first.
+- `AGENTS.md` item 12/14 re-upgraded after the skill-ai-it template fix: the audit/check sentence now opens item 14 instead of trailing item 12.
+- `.archcore/`: the ADR, 3 rules and spec renamed to `<slug>.<type>.md` (e.g. `manifest-version-discipline.rule.md`), as skill-cambium did on 2026-10-05.
+  `archcore status` now reports no issues. Live references updated in `SKILL.md`, `ARCHITECTURE.md`, `scripts/README.md`, the ADR and `scripts/check_governance.py`;
+  the old paths are registered in its `CONDITIONAL_PATHS` so history in this file and `SCRATCHPAD.md` still resolves.
+- A parallel session's commit `fbc0aff` (16:28) picked up most of this entry's file changes, including the manifest at 0.1.99, while its message says "skill-smc 0.1.98".
+  The message was left as it is.
 
 ## 20261007_1623 — rct site addressing from ansible-wifi vs the Mk3 diagram (v0.1.97 -> v0.1.98)
 
@@ -11103,12 +10986,6 @@ authority_order:
 - path: references
   type: content_source
   authority: high
-- path: PROFILE.md
-  type: background_context
-  authority: medium
-- path: exports
-  type: client_adapter
-  authority: medium
 - path: CHANGELOG.md
   type: project_history
   authority: medium_high
@@ -11193,17 +11070,16 @@ routing:
       constraints, APN vs NBN Accelerate cluster structural comparison.
     read:
     - references/01_overview.md
-    - PROFILE.md
   pack_maintenance:
-    description: Adding/updating references, bumping version, updating export adapters.
+    description: Adding/updating references, bumping version, running the governance checker.
     read:
     - AGENTS.md
     - AI_NAVIGATION.md
     - context-map.yaml
     - CHANGELOG.md
     - manifest.json
-    - exports/claude_code/project/skill-smc/adapter.md
-    - exports/claude_code/project/skill-smc/install.md
+    - justfile
+    - scripts/check_governance.py
 generated_context_policy:
   regenerate_after:
   - new_reference_file
@@ -11293,6 +11169,82 @@ update_rules:
       - justfile
 ````
 
+## File: justfile
+````
+# just task catalog for skill-smc.
+# Usage: just --list | just <task>
+#
+# Recipes go through {{py}}, never a bare interpreter — see skill-ai-it's Runtime isolation doctrine.
+# The two scoped runners under scripts/ (fleet-health.justfile, routing-diagnostics.justfile) keep
+# their own recipes; `just fleet <recipe>` and `just routing <recipe>` reach them from here.
+
+set dotenv-load := false
+
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc"
+py := wc + "/.venv/bin/python"
+
+# skill-ai-it package, for the nav-* recipes. Override: just skill_dir=/path/to/skill-ai-it nav-validate
+skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
+
+# List available tasks
+default:
+    @just --list
+
+# Build the working-cache venv from the mise-pinned runtime. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @test -f requirements.txt && {{py}} -m pip install --quiet --upgrade pip -r requirements.txt || true
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Fail early rather than falling back to the host interpreter
+_require-venv:
+    @test -x "{{py}}" || { echo "venv missing at {{py}} — run: just bootstrap" >&2; exit 1; }
+
+# Report which runtime the recipes will actually use
+runtimes:
+    @printf 'python  '; {{py}} -c "import sys; print(sys.version.split()[0], sys.executable)" 2>/dev/null || echo "MISSING — run: just bootstrap"
+
+# Governance coherence checks — must exit 0 before durable work is called complete.
+check: _require-venv
+    @{{py}} scripts/check_governance.py
+
+# Run safe local preflight checks
+preflight: runtimes check
+
+# Regenerate the Repomix governance pack (.ai-context/governance-pack.md) — generated support, not truth
+context-pack:
+    @repomix --config repomix.config.json
+
+# Lint Markdown files when markdownlint-cli2 is available
+lint-md:
+    @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
+    @markdownlint-cli2 '**/*.md'
+
+# Fleet hardware/service-health audit (read-only). Example: just fleet collect
+fleet *args:
+    @just -f scripts/fleet-health.justfile {{args}}
+
+# WAN-routing diagnostics template (read-only). Copy into an investigation folder before real use.
+routing *args:
+    @just -f scripts/routing-diagnostics.justfile {{args}}
+
+# --- skill-ai-it navigation-control layer -------------------------------------------------------
+
+nav-upgrade-dry-run: _require-venv
+    @{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
+
+nav-upgrade: _require-venv
+    @{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
+
+nav-validate: _require-venv
+    @{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
+
+nav-check-diff: _require-venv
+    @{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
+````
+
 ## File: manifest.json
 ````json
 {
@@ -11325,8 +11277,8 @@ update_rules:
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "20261007_1625",
-  "version": "0.1.99",
+  "updated_at": "20261007_1637",
+  "version": "0.1.100",
   "dependencies": [],
   "known_constraints": [
     "SMC boxes run overlayroot \u2014 changes do not persist across reboot unless lower dir is remounted rw",
@@ -11498,57 +11450,6 @@ update_rules:
 }
 ````
 
-## File: PROFILE.md
-````markdown
-# PROFILE
-
-## Subject
-- Type: project
-- Name: smc
-- Slug: skill-smc
-
-## What an SMC Box Is
-An SMC (Site Management Controller) box is a managed Linux appliance deployed as a WiFi hotspot and network gateway. Hardware is either an **x86 PC** or an **ARM64 Raspberry Pi** (aarch64), running
-**Ubuntu 20.04+ (22.04 seen in production)**. All remote management access goes through **Teleport** via a persistent autossh reverse SSH tunnel. The port used on the Teleport server is `50000 +
-site_eclipse_siteid`.
-
-## Inventory Flavors
-The `ansible-wifi` repo manages 7 flavors:
-
-| Flavor         | Description                                |
-| -------------- | ------------------------------------------ |
-| apn            | APN network hotspots                       |
-| cw             | NBN Accelerate cluster — central infra hub |
-| rcp            | RCP network                                |
-| rct            | RCT (Raspberry Pi-based)                   |
-| wh             | WH network                                 |
-| nbn_accelerate | NBN Accelerate broadband                   |
-| nbn_wh         | NBN WH                                     |
-
-## Related Workspaces
-
-| Path                                                          | Role                                                                         |
-| ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `/Volumes/Data/_ansible/ansible-wifi`                         | Canonical SMC Ansible source: roles, inventory, topology, service deployment |
-| `/Volumes/Data/_ansible/ansible-malik`                        | Operator SMC playbooks, including URL-capture PCAP fetch/process             |
-| `/Volumes/Data/_ai/_scripts/scripts_stuff/python/dns_query`   | DNS query processing and reporting for SMC URL-capture PCAPs                 |
-| `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi` | Local-only SMC plans, reports, OPA artifacts, and investigation notes        |
-
-## Overlayroot
-All SMC boxes run with overlayroot enabled:
-- Lower dir (real filesystem, read-only at runtime): `/media/root-ro`
-- Upper dir (tmpfs, volatile): `/media/root-rw/overlay`
-- Workdir: `/media/root-rw/overlay-workdir/_`
-- Mount: `overlay / overlay rw,relatime,lowerdir=/media/root-ro,...`
-- **Consequence**: file writes at runtime go to RAM and are lost on reboot. Ansible changes only persist if the lower dir is remounted rw before changes are made.
-
-## Stable Facts
-- Root AGENTS.md thin wrapper over .agents/ docs.
-- Ansible connects to SMC boxes via `ansible_host = {{inventory_hostname}}.teleport.<project>.au` (splits by project — APN, nbn_accelerate — not by flavor).
-- Topology plugin generates `topology_interfaces`, `topology_bridges`, `topology_vrfs` per host.
-- 7 inventory flavors; group_vars structure separates: teleport, prometheus, jenkins, aws, per-user, all.
-````
-
 ## File: README.md
 ````markdown
 # skill-smc
@@ -11557,12 +11458,13 @@ Canonical specialist pack for SMC (Site Management Controller) box operations an
 
 ## Purpose
 
-Provides structured operational knowledge for SMC appliances (x86 PC and ARM64 Raspberry Pi), the ansible-wifi repo, and related SMC workflows. Covers live incident triage, Ansible authoring, URL-capture PCAP processing, captive portal, content filtering, and hardware/overlayroot behavior.
+Provides structured operational knowledge for SMC appliances (x86 PC and ARM64 Raspberry Pi), the ansible-wifi repo, and related SMC workflows. Covers live incident triage, Ansible authoring,
+URL-capture PCAP processing, captive portal, content filtering, and hardware/overlayroot behavior.
 
 ## Folder index
 
-- [references/](references/) — 13 numbered progressive-disclosure reference files (content source)
-- [exports/](exports/) — client adapter and install documentation
+- [references/](references/) — numbered progressive-disclosure reference files (`01_` to `16_`) plus machine-readable registries (content source)
+- [scripts/](scripts/) — read-only diagnostics and the governance checker; catalog in [scripts/README.md](scripts/README.md)
 - [.archcore/](.archcore/) — durable rules, ADR, and spec for this pack
 
 ## Governance pointers
@@ -11579,15 +11481,15 @@ Provides structured operational knowledge for SMC appliances (x86 PC and ARM64 R
 
 | File | Role |
 |---|---|
-| [SKILL.md](SKILL.md) | Agent activation surface — triggers, quick-reference, reference pointers |
+| [SKILL.md](SKILL.md) | Agent activation surface — triggers, access, decision tree, reference pointers |
 | [RUNBOOK.md](RUNBOOK.md) | Navigation index — maps task types to numbered reference files |
-| [PROFILE.md](PROFILE.md) | SMC box background context (not installed to clients) |
-| [SYSTEM_PROMPT.md](SYSTEM_PROMPT.md) | Dedicated agent mode prompt |
+| [justfile](justfile) | Task catalog: `just bootstrap`, `just runtimes`, `just check`, `just fleet`, `just routing` |
 | [manifest.json](manifest.json) | Machine-readable metadata: version, scope, stable facts, constraints |
 
 ## Install
 
-See [exports/claude_code/project/skill-smc/install.md](exports/claude_code/project/skill-smc/install.md).
+`~/.claude/skills/skill-smc` is a symlink to this canonical folder, so the whole pack is visible to Claude Code; `SKILL.md` is what activates, everything else loads on demand. To install on a new
+machine: `ln -s <this folder> ~/.claude/skills/skill-smc`, then `just bootstrap`.
 ````
 
 ## File: RUNBOOK.md
@@ -11713,6 +11615,11 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 
 ## Current state
 
+**2026-10-07 16:43 `KEEP` — v0.1.100, layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav-validate`,
+`just fleet …`, `just routing …`), `.mise.toml`, `requirements.txt` (PyYAML for the nav validator only), lint config, `.gitignore`, `.archcore/index.guide.md`. `SKILL.md` is a short router
+(144 lines); detail lives in references. The profile file, the dedicated-agent prompt and the `exports/` adapter are retired; install is the symlink `~/.claude/skills/skill-smc`.
+`AGENTS.md` is local-only (`.git/info/exclude`), so its rule edits never appear in git. Checks: governance 320/320, nav 0/0, archcore 0 issues.
+
 **2026-10-02 16:41 KEEP, scoped topology-design update:** the local RCP plan covers Kapitan/CUE/Jsonnet and three inventory integration paths; the corrected design summary is in
 `references/08_ansible-authoring.md`. Metadata version: 0.1.80. Evidence branch: `unc-virtual-smc-malik-rcp01`, clean production tree at start. No implementation or live changes. Open decisions:
 authoritative `generic-big01` DHCP baseline, integration path and runnable tool comparison. Prior KEEP entries below remain historical; this entry does not resolve unrelated open items.
@@ -11756,10 +11663,14 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Open items
 
+- [ ] **2026-10-07 `KEEP`:** commit `fbc0aff` (parallel session) is labelled "skill-smc 0.1.98" but committed manifest 0.1.99 — amend only if unpushed and the operator wants it.
+- [ ] **2026-10-07 `KEEP`, proposed, not decided:** skill-ai-it's upgrader appends its CHANGELOG entry at the end of the file; this pack's CHANGELOG is newest-first, so every refresh needs a
+  manual move (2026-09-08 and 2026-10-07). Fix belongs in skill-ai-it (detect ordering, insert at top, add the TOC line); recorded in skill-ai-it's SCRATCHPAD.
+
 - [ ] **2026-09-24 `KEEP`:** push `d5566c2` + `8db6d56`; fleet read-only `table_fulls` survey (offered); find the `gc_thresh1` = 1 setter; live-test the enable-password, already-privileged,
   `--shell` and `--write` paths of `tplink-switch.sh` when a suitable switch appears; fix the two pre-existing governance failures.
 
-- [ ] Install v0.1.15 to `~/.claude/skills/skill-smc/` — run steps in `exports/claude_code/project/skill-smc/install.md` (now also copies `scripts/` and documents tsh-ssh-only access)
+- [x] ~~Install v0.1.15 per the copy-based install doc~~ — obsolete 2026-10-07: `~/.claude/skills/skill-smc` is a symlink to the canonical pack and the install doc is retired.
 - [x] ~~Investigate root cause of the `clamav-freshclam` CDN-block~~ — resolved 2026-08-03: **ClamAV 0.103.x reached end-of-life for database updates on 2025-09-14; the CDN now hard-blocks any 0.103.x
   client.** This fleet runs 0.103.11/.12 uniformly. Verified via `WebSearch` against `blog.clamav.net` and the Cisco-Talos/clamav GitHub issue tracker — not a cw-cluster network/firewall issue, a
   documented upstream EOL enforcement. Fix (not yet done): upgrade to 1.0 or 1.4 LTS fleet-wide.
@@ -11929,8 +11840,10 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Session history (summaries)
 
+- **2026-10-07 (16:37) — Layout parity with the newer project packs (v0.1.99 -> v0.1.100).** Root `justfile`, `.mise.toml`, lint config, `.gitignore`, Archcore index added;
+  `SKILL.md` slimmed to the cambium/mikrotik shape with SKILL-only facts moved into references 03/05/08; profile, system prompt and exports adapter retired.
 - **2026-10-07 (16:25) — skill-ai-it refresh (v0.1.98 -> v0.1.99).** `AGENTS.md` and `scripts/README.md` managed blocks upgraded to `2026-09-23-template-sourced-blocks-v1`;
-  `AI_NAVIGATION.md` stays project-managed. Upstream template defect noted, not fixed here: item 12 of the navigation block absorbs "Run defined audit/check commands".
+  `AI_NAVIGATION.md` stays project-managed. Template item 12/14 defect fixed in skill-ai-it and re-applied; `.archcore/` files renamed to `<slug>.<type>.md`, `archcore status` clean.
 - **2026-09-24 (10:44–12:25) — TP-Link switches + neighbour table** (from unified-network-controller). Switch access worked out and scripted; neighbour-table overflow found on mornington;
   gc_thresh1 attribution corrected in v0.1.54. Detail: memory-keeper channel `unc`, keys `unc.tplink-*`, `unc.neighbour-table.20260924`. `KEEP`
 
@@ -12142,12 +12055,13 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Next actions
 
+- On a new machine: `ln -s` the pack to `~/.claude/skills/skill-smc`, then `just bootstrap`; run `just check` and `just nav-validate` before calling any change done.
+- New reference file: update the four index surfaces (`RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, `context-map.yaml`); the checker fails until all four name it.
 - Root-cause the new-looma-smc01 31h outage (2026-08-01→2026-08-03) next time `tsh ssh` access to that site is available — check WAN/backhaul/power logs; confirm or rule out any link to the still-open
   `my_node_network_device_info` gap
 - Explore the remaining unreviewed Grafana dashboards flagged 2026-08-03 (Data Backlog, RW-backlog pair, Servers Network/System Information, RISE Dashboard `rise-stage0_5`) next time Grafana access is
   used — see Open Items
 - Cross-reference the RW-backlog dashboards against `autossh-prometheus-federation` in `02_service-map.md` once reviewed — may reveal federation-pipeline health signals not currently documented
-- Install v0.1.17 to `~/.claude/skills/skill-smc/` per `install.md` (not yet done — same open item since v0.1.2)
 - Propose/plan a fleet-wide ClamAV upgrade to 1.0 or 1.4 LTS next time remediation authorization is available — root cause confirmed 2026-08-03, no automated pipeline exists to do this without a
   deliberate rollout
 - Fix mechanism found 2026-08-03 (memory-only so far, not yet in `references/13_known-issues.md`): `roles/smc_clamav/tasks/ubuntu.yml` installs with `state: present` (never upgrades an
@@ -12168,6 +12082,12 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 ---
 
 ## Memory pointers (navigation only)
+
+- 2026-10-07 16:43: memory-keeper `skill-smc` keys `skill-smc.progress.skill-ai-it-refresh-v0199-20261007`, `skill-smc.finding.skill-ai-it-template-item12-20261007`,
+  `skill-smc.progress.archcore-rename-20261007`, `skill-smc.error.concurrent-commit-fbc0aff-20261007`, `skill-smc.progress.layout-parity-v01100-20261007`,
+  `skill-smc.finding.content-moved-on-slim-20261007`, `skill-smc.error.venv-missing-pyyaml-20261007`, `skill-smc.progress.cambium-spec-fix-20261007`,
+  `skill-smc.decision.layout-parity-and-commit-scope-20261007`; project-context `0bf38158` note + decision; checkpoint `slurp-20261007-skill-smc-layout-parity`
+  (memory-keeper `8ab3b9e2`, project-context `709e1015`). `KEEP`
 
 - 2026-09-24 12:25: memory-keeper `unc` keys `unc.tplink-switch-access.20260924`, `unc.tplink-tooling.20260924`, `unc.neighbour-table.20260924`, `unc.errors.20260924-tplink`; project-context
   `0bf38158` note; checkpoint `slurp-20260924-tplink-switches-neigh-table` (`98c3a99e`). `KEEP`
@@ -12222,13 +12142,10 @@ metadata:
 
 - [Use When](#use-when)
 - [Standing Write-Back Contract (applies no matter which project invoked this skill)](#standing-write-back-contract-applies-no-matter-which-project-invoked-this-skill)
-- [What an SMC Box Is](#what-an-smc-box-is)
+- [What This Pack Covers](#what-this-pack-covers)
+- [Access in One Paragraph](#access-in-one-paragraph)
+- [Diagnosis Decision Tree](#diagnosis-decision-tree)
 - [Related Workspaces](#related-workspaces)
-- [Troubleshooting Decision Tree](#troubleshooting-decision-tree)
-- [Key Prometheus Alerts Reference](#key-prometheus-alerts-reference)
-- [Ansible Authoring: Key Rules](#ansible-authoring-key-rules)
-- [Communication Flows (Quick Reference)](#communication-flows-quick-reference)
-- [Runtime Environments](#runtime-environments)
 - [References](#references)
 - [Related Skills](#related-skills)
 - [Source](#source)
@@ -12236,7 +12153,9 @@ metadata:
 ---
 
 ## Use When
+
 Invoke for any of:
+
 - Working on the `ansible-wifi` Ansible repo (roles, templates, inventory, topology vars)
 - Working on `/Volumes/Data/_ansible/ansible-malik` SMC operator playbooks, especially URL-capture PCAP fetch/process workflows
 - Working on `/Volumes/Data/_ai/_scripts/scripts_stuff/python/dns_query` when the change depends on SMC URL-capture PCAP layout, capture cadence, or reporting assumptions
@@ -12263,16 +12182,34 @@ remind you; invoking this skill at all carries that obligation, including the fi
 - A project's own `AGENTS.md`/`CLAUDE.md` MAY restate this obligation with project-specific detail (its own routing-table rows, its own verification rule number) — that's reinforcement, not the source
   of the rule. A project that says nothing about skill-smc at all still carries this obligation the moment it invokes this skill.
 
-## What an SMC Box Is
-An SMC box is an **x86 PC** or **ARM64 Raspberry Pi** running **Ubuntu 20.04+ (22.04 in production)**, deployed as a managed WiFi hotspot and network gateway. All remote access routes through
-**Teleport** via a persistent `autossh` reverse SSH tunnel. SSH port on Teleport server = `50000 + site_eclipse_siteid`. Ansible connects via `ansible_host =
-{{inventory_hostname}}.teleport.<project>.au` — the domain splits by **project** (APN, nbn_accelerate), not by flavor; each project has multiple flavors nested under it (see `01_overview.md` "Remote
-Access").
+## What This Pack Covers
 
-**Critical — Overlayroot (RPi and WH boxes only; operator, 2026-09-22):** overlayroot runs on the Raspberry Pi and WH boxes (`rct`, `wh`, and `nbn_wh` once rolled out), not on x86. On those, writes go
-to tmpfs (`/media/root-rw/overlay`) and are **lost on reboot**; Ansible changes only persist if the lower dir (`/media/root-ro`) is remounted read-write first, so check overlayroot status before
-assuming a change persisted. x86 boxes (e.g. `rcp`, `nbn_accelerate`) have a plain ext4 root, where an `apt install` persists, and keep volatile data on tmpfs mounts instead. Which paths are tmpfs
-varies by box: `/tmp` is tmpfs on mowanjum-smc01 but ext4 on hope-vale-smc01; `/run` is tmpfs everywhere (see `references/07_hardware-overlay.md`).
+SMC boxes and the `ansible-wifi` repo that builds them. An SMC is an x86 PC (`rcp`, `nbn_accelerate`) or an ARM64 Raspberry Pi (`rct`, `wh`, `nbn_wh`) on Ubuntu 22.04, acting as
+a site's WiFi hotspot and gateway: DHCP, DNS, captive portal, filtering, monitoring exporters, sometimes VoIP and HA. Seven inventory flavors in two projects (`references/01_overview.md`).
+
+**Overlayroot runs on the Pi and WH boxes only** (operator, 2026-09-22): writes there land in tmpfs and vanish on reboot unless the lower dir is remounted read-write. x86 boxes have a
+plain ext4 root. Check before assuming a change persisted (`references/07_hardware-overlay.md`).
+
+It does not own the MikroTik or Cambium devices behind the SMC, or the Nautobot/OpenWISP platforms: see Related Skills.
+
+## Access in One Paragraph
+
+Everything goes through Teleport: `tsh ssh root@<host>` after the operator has logged in, and Ansible's `ansible_host` is `{{inventory_hostname}}.teleport.<project>.au`, split by
+project (APN, nbn_accelerate), not flavor. Every box also holds a raw `autossh` reverse tunnel to its project bastion on port `50000 + site_eclipse_siteid`, independent of the Teleport
+agent. **Never report a box as unreachable until that backdoor has been checked** (operator, 2026-10-07): `scripts/backdoor-watch.sh <site>`. Details:
+`references/03_communication-flows.md` §All Inbound Access and §Backdoor SSH Access.
+
+## Diagnosis Decision Tree
+
+1. **Box unreachable?** Backdoor first (above), then classify the outage with `scripts/fleet-reboot-timeline.py`: reboot, dark-then-boot (power or a power-cycled hang), or WAN-only.
+   `references/05_troubleshooting.md` Tier 1; solar-site power loss and Pi undervoltage in `references/06_failure-modes.md`.
+2. **Alert firing?** `references/06_failure-modes.md` §Key Prometheus Alerts gives trigger and first check for each. There is no per-device `role="internet"` loss alert
+   (`references/13_known-issues.md`).
+3. **Service down, or DHCP/DNS/WiFi/VoIP/HA misbehaving?** `references/05_troubleshooting.md` Tiers 2–6. DNS differs by host: Unbound + Stubby on most boxes, BIND on the `smc_ltp`
+   low-touch sites, and the box's own resolution bypasses both.
+4. **Metrics missing?** Tier 7: textfile collectors have staleness windows (`references/02_service-map.md`), and federation rides its own autossh tunnel.
+5. **Changing Ansible?** `references/08_ansible-authoring.md` first: edit `topology_vars/<site>.yml`, never the hidden `.<site>.yml` cache; a `group_vars` or plugin change reaches all
+   flavors; one inventory per run (`-i A -i B` loses B's topology vars); validate with yamllint, ansible-lint, ansible-inventory, then `--syntax-check`.
 
 ## Related Workspaces
 
@@ -12292,125 +12229,8 @@ When behavior, layout, or troubleshooting assumptions change in one of these sur
 **project-coherence scope**: When running `project-coherence` on `ansible-wifi`, `RUNBOOK.md` and the focused files under `references/` are external governed artifacts and must be included in the
 coherence Tier 3 pass — check that they reflect any new findings, fixes, or architecture decisions from the session.
 
----
-
-## Troubleshooting Decision Tree
-
-### Tier 1: Box Unreachable
-
-**Never report a box as unreachable until the autossh backdoor has been checked** (operator, 2026-10-07). Teleport absent from `tsh ls` is not enough. On the project bastion (`apn-teleport01` /
-`cw-teleport01`): `ss -tln | grep 127.0.0.1:<50000+site_eclipse_siteid>`; if listening, `ssh -p <port> root@127.0.0.1`. If not, grep the bastion's `/var/log/auth.log*` for `cannot listen to port:
-<port>` (a stale session is holding the port) and poll the listener to catch a box that comes up briefly. Procedure: `references/03_communication-flows.md` §Backdoor SSH Access. Script: `scripts/backdoor-watch.sh <site> [check|history|watch]`.
-
-**Classify the outage before calling it a hang** (2026-10-07): `scripts/fleet-reboot-timeline.py 90 'site="<site>"'` separates ordinary reboots, dark-then-boot (power loss, or a
-hang that was power-cycled) and WAN-only gaps. Solar sites lose power every winter morning, and a Pi undervoltage storm shows only in Graylog kern.log, not in Prometheus
-(`references/06_failure-modes.md`). The RISE watchdog reboots only on overlay >= 80%, and `auto_reboot: 0` does not stop it.
-
-| Check          | Command                                          | What to look for                       |
-| -------------- | ------------------------------------------------ | -------------------------------------- |
-| Backdoor port  | bastion: `ss -tln \| grep :<50000+siteid>`       | Listening = box alive; SSH in via it   |
-| autossh tunnel | `systemctl status autossh-teleport-openssh`      | Active/failed; check last restart time |
-| Network route  | Prometheus: `NodeNetworkDefaultRouteInstability` | 4+ route changes in 60min              |
-| Overlayroot    | `mount \| grep overlay`                          | Lower dir must be mounted              |
-| Teleport node  | `systemctl status teleport`                      | Failed = no new sessions possible      |
-
-### Tier 2: Service Down (systemd failed)
-1. `journalctl -u <service> --since "1h ago"` — what caused the failure
-2. `systemctl list-units --state=failed` — other failed units
-3. Check disk: `HostOutOfDiskSpace` (< 10%) / `HostOutOfInodes`
-4. Config error? Check last Ansible playbook run output
-
-### Tier 3: DHCP / DNS Not Serving Clients
-- DHCP: `dhcpd -t -cf /etc/dhcp/dhcpd.conf` (config test); `grep -i error /var/log/syslog`
-- DNS, non-`smc_ltp` hosts (all flavors — Unbound + Stubby, client path only): `unbound-checkconf`; `unbound-control status`; `systemctl status stubby`; config at `/etc/unbound/`, DoT upstream config
-  at `/etc/stubby/stubby.yml` (Stubby listens on `127.0.0.1@60053`, single upstream `127.0.0.1@60853` via autossh local forward, no failover)
-- DNS, `smc_ltp` hosts only (static `rcp` group; the operator gives 8 production sites, 2026-10-06 — `pia` is not low touch although `big_push` lists it — `guda-guda`, `pia`, `umoona`, `warburton`,
-  `beagle-bay`, `pandanus-park`, `new-looma`, `old-looma`, `yakanarra` (nine on `big_push`, re-read 2026-09-27: `pia` and `yakanarra` had been missing from this list) — all "low touch"-onboarded
-  sites; also runs CNMaestro Cambium backhaul provisioning, see `references/08_ansible-authoring.md`): `named-checkconf`; `rndc status`; verify zones loaded in `/etc/bind/`
-- DNS, host's own resolution (separate from the two rows above — see `references/02_service-map.md`): `resolvectl status`; `systemctl status systemd-resolved`; `DNSStubListener=no` by default means
-  the box's own `getaddrinfo()` bypasses Unbound/Stubby/BIND entirely
-
-### Tier 4: WiFi AP Issues
-- hostapd: `journalctl -u hostapd --since "1h ago"`
-- CNMaestro provisioning: `systemctl status cnmaestro-provisioning`; check Redis: `redis-cli ping`; daemon log at `/var/log/cnmaestro-provisioning/`
-
-### Tier 5: VoIP / Asterisk Issues
-- `asterisk -rvvv` — Asterisk CLI
-- Check generated extension config: `/etc/asterisk/extensions.conf`
-- `asterisk -rx "dialplan show"` — verify dialplan loaded
-
-### Tier 6: HA / Failover Issues
-- VIP assignment: `ip addr show` — VIP should be on active node
-- VRRP state: `journalctl -u keepalived --since "1h ago"`
-- Conntrack limit: `cat /proc/sys/net/netfilter/nf_conntrack_count` vs `nf_conntrack_max`
-
-### Tier 7: Monitoring Gaps
-- Textfile collectors must update within their staleness window:
-  - `sbdm.py` → `/var/lib/node_exporter/textfile_collector/sbdm.prom` — max 5400s (90min)
-  - `smartmon.py` → `smartmon.prom` — max 5400s
-  - `interfacecheckv2.sh` → `my_node_interfacecheck_success.prom` — max 450s
-  - `apt_info.py` → `apt_info.prom` — max 450s
-- Prometheus federation: check `autossh-prometheus-federation` tunnel service
-
----
-
-## Key Prometheus Alerts Reference
-
-| Alert                                  | Trigger                | First check                             |
-| -------------------------------------- | ---------------------- | --------------------------------------- |
-| `HostOutOfDiskSpace`                   | < 10% free             | `/var/log`, overlayroot upper dir fills |
-| `HostOutOfInodes`                      | < 10% inodes           | small file accumulation in `/tmp`, logs |
-| `HostDiskWillFillIn24Hours`            | predict_linear         | find write rate source                  |
-| `HostSystemdServiceCrashed`            | unit state = failed    | `journalctl -u <unit>`                  |
-| `HostClockSkew`                        | offset > ±0.05s        | `chronyc tracking`                      |
-| `HostConntrackLimit`                   | > 80% conntrack        | `ss -s`; check for connection leak      |
-| `NodeNetworkDefaultRouteInstability`   | 4+ route changes/60min | VRRP flap, overlay issue                |
-| `NodeStarlinkInterfacecheckPacketLoss` | 100% loss 60min        | starlink interface down                 |
-| `sbdm_device_health_status == 0`       | Samsung SSD degraded   | SSD replacement needed                  |
-| `smartmon_device_smart_healthy == 0`   | SMART failure          | drive health critical                   |
-
-**This table is not complete coverage — known gap:** there is no per-device `role="internet"` equivalent of `NodeStarlinkInterfacecheckPacketLoss`. A single dead internet-role link can run undetected
-indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `references/13_known-issues.md` "No per-device `role: internet` Prometheus alert exists".
-
----
-
-## Ansible Authoring: Key Rules
-
-1. **Canonical source** = `inventories/*/topology_vars/<site>.yml`. Hidden `.*.yml` files are generated cache — never edit them directly.
-2. **Cross-flavor impact**: group_vars or plugin change → all 7 flavors affected. Single topology_vars file → one flavor only.
-3. **Validation order**: `yamllint` → `ansible-lint` → `ansible-inventory --list` → `ansible-inventory --host <site>` → `ansible-playbook --syntax-check`.
-4. **Cache coherence**: delete `inventories/*/topology_vars/.<site>.yml` to force plugin regeneration (git checkout changes mtimes, making stale cache appear current).
-5. **Generator drift**: when changing a topology pattern, check `roles/smc_generate_smc_files` templates — future site generation must stay consistent with current site changes.
-6. **Overlayroot impact on Ansible**: changes deployed via `smc_bases.yml` only persist if the playbook remounts the lower dir rw. Verify with `mount | grep overlay` on the target.
-7. **One inventory per run**: `vars_plugins/topology_vars.py` caches only the first inventory's `topology_vars/` (OPEN bug, 2026-10-07), so `-i A -i B` leaves B's hosts without `topology_*` vars. See
-   `references/08_ansible-authoring.md`.
-
----
-
-## Communication Flows (Quick Reference)
-
-**All inbound access** → Teleport proxy → autossh reverse tunnel → port 22 (SSH)
-
-**Outbound from SMC:**
-- `autossh` → `teleport.<project>.au` (persistent reverse tunnel)
-- Prometheus federation → central Prometheus (via dedicated federation tunnel)
-- `cnmaestro-provisioning` → CNMaestro WiFi Dashboard API
-- `rsyslog` → Graylog (UDP syslog)
-- `speedtest_exporter` → Ookla servers
-- NBN Accelerate API (broadband management)
-
-**Alerts:** Prometheus alertmanager → Teams (NOC webhook + dev webhook)
-
----
-
-## Runtime Environments
-- **Neither working-cache venv exists on this Mac (verified 2026-09-26)**: the ansible-wifi and skill-smc venvs this section used to name under the skills working cache are absent, and the
-  ansible-wifi checkout has no venv of its own. What runs ansible-wifi here is Homebrew: `/opt/homebrew/bin/ansible-playbook` (core 2.21.4), `ansible-lint`, `yamllint`. Create the working-cache venv
-  before relying on it; until then, use the Homebrew tools.
-- Ephemeral logs, pid files, and sockets belong under `/Volumes/Data/_ai/_skills/skills-runtime/<skill>/`.
-- Prefer the working-cache venvs when running SMC validation tooling (`ansible-lint`, `yamllint`, `ansible-inventory`, `ansible-playbook`) to keep versions stable across sessions.
-
 ## References
+
 - `RUNBOOK.md` — navigation index and reference-routing table.
 - `references/01_overview.md` — SMC definition, inventory flavors, remote access, satellite constraints, APN vs NBN Accelerate cluster differences.
 - `references/02_service-map.md` — service names, units, config paths, monitoring collectors, RCT/x86 differences.
@@ -12436,9 +12256,8 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
   in `skill-cambium` — see Related Skills below.
 - `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture, the `SNMP-<location>` read-write
   community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/tplink-switch.sh`.
-- `scripts/` — reusable read-only diagnostic tooling for WAN-routing/topology-drift investigations (evidence capture, the "hook covers netplan" drift analyser, and a topology_vars-vs-live-hardware
-  cross-check), fleet hardware/service-health + portal-FQDN-status audit, captive-portal pin-activation diagnosis, plus generic ansible-lint pre-push/CI gate scripts (baseline refresh + delta gate);
-  see `scripts/README.md`.
+- `scripts/` — read-only diagnostics (backdoor check, outage classification, fleet health, WAN-routing drift, pin activation, Prometheus/Graylog query helpers) and the
+  ansible-lint pre-push gate; catalogued with safety labels in `scripts/README.md`. Run them through the pack-root `justfile` (`just --list`).
 
 ## Related Skills
 
@@ -12453,48 +12272,8 @@ indefinitely even though `interfacecheckv2.sh` is faithfully reporting it. See `
   entry.
 
 ## Source
+
 - specialist_type: project
 - slug: skill-smc
-- version: see `manifest.json` in the canonical source (not duplicated here — see `rule-manifest-version-discipline.md`)
-````
-
-## File: SYSTEM_PROMPT.md
-````markdown
-# skill-smc System Prompt
-
-Use this when skill-smc is loaded as agent context (e.g., a dedicated SMC troubleshooting agent).
-
----
-
-You are an expert on SMC (Site Management Controller) boxes and the SMC-related working surface:
-`ansible-wifi`, `ansible-malik` SMC operator playbooks, `dns_query` PCAP/reporting scripts,
-and local SMC knowledge under `local-knowledge-ansible/ansible-wifi`.
-
-An SMC box is an x86 PC or ARM64 Raspberry Pi running Ubuntu 20.04+ (22.04 confirmed in production), deployed as a managed WiFi hotspot and network gateway. All remote access routes through Teleport. All SMC boxes run overlayroot — writes go to a tmpfs overlay and are lost on reboot.
-
-You have deep knowledge of:
-- SMC box architecture: 50+ running services, systemd unit names, config paths, flavor differences (RCT vs x86)
-- Troubleshooting: structured tiers covering unreachable boxes, service failures, DHCP/DNS issues, WiFi/AP, VoIP, HA failover, and monitoring gaps
-- Communication flows: Teleport tunnels, Prometheus federation, CNMaestro, Graylog, NBN API, speedtest
-- Prometheus alerts: known alerts with first-check guidance
-- Ansible authoring: topology_vars plugin, cache coherence, cross-flavor blast radius, overlayroot persistence
-- Cross-repo SMC workflows: URL-capture deployment in `ansible-wifi`, PCAP fetch/process in `ansible-malik`, DNS workbook/report processing in `dns_query`, and local-only SMC plans/reports in `local-knowledge-ansible/ansible-wifi`
-
-When troubleshooting:
-1. Follow the tiered decision tree — do not skip tiers.
-2. Check overlayroot status before assuming any change persisted.
-3. Distinguish RCT (ARM64, Unbound+Stubby, zram, no asterisk, no keepalived) from x86 (BIND/named, traditional swap, Asterisk, keepalived).
-4. If SSH execution tools are available, run commands rather than producing manual checklists.
-
-When authoring Ansible:
-1. Treat `inventories/*/topology_vars/*.yml` as canonical source.
-2. Delete `.*.yml` cache files to force plugin regeneration after checkout.
-3. Always check cross-flavor impact before committing group_vars or plugin changes.
-
-Reference RUNBOOK.md for the reference-routing table. Load focused references on demand:
-- `references/02_service-map.md` — service names, config paths, flavor differences
-- `references/03_communication-flows.md` — inbound/outbound paths
-- `references/04_dependency-tree.md` — dependency relationships
-- `references/05_troubleshooting.md` — live incident triage
-- `references/06_failure-modes.md` — known failure signatures and fix patterns
+- version: see `manifest.json` in the canonical source (not duplicated here — see `manifest-version-discipline.rule.md`)
 ````

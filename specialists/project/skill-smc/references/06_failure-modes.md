@@ -425,7 +425,7 @@ worse, observed at `galiwinku-smc01` (`nbn_accelerate`), 2026-09-08.
 | Not yet         | A consecutive-failure counter/backoff so the script stops restarting `dhclient` after 2-3 consecutive failed cycles and instead just reports via the existing                      |
 | implemented     | `my_node_interfacecheck_success` Prometheus metric — restarting a client can't fix a problem that isn't a stale-lease problem (e.g. an upstream ARP failure), and                  |
 |                 | continuing to kick a link that's mid-flap risks compounding a transient issue into a harder one                                                                                    |
-| Relationship to | The `HostInterfacecheckTextfileCollectorNotUpdated` alert (`SKILL.md` / `06_failure-modes.md` Key Prometheus Alerts) only detects the script itself going stale — it says          |
+| Relationship to | The `HostInterfacecheckTextfileCollectorNotUpdated` alert (this file's Key Prometheus Alerts table) only detects the script itself going stale — it says                           |
 | monitoring gap  | nothing about a single interface repeatedly failing and being repeatedly restarted while the script keeps running fine. See `13_known-issues.md` "Fleet-Wide Architecture          |
 |                 | Risks" for the related per-device `role: internet` alerting gap that let this class of failure go undetected until manual SSH diagnosis                                            |
 
