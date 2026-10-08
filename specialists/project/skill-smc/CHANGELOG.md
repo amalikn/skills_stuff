@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261009_0120 — TP-Link bridge port mapping on 5.30.1, LLDP per switch, MAC tables read from the SMC down (v0.2.5 -> v0.2.6)](#20261009_0120--tp-link-bridge-port-mapping-on-5301-lldp-per-switch-mac-tables-read-from-the-smc-down-v025---v026)
 - [20261008_1544 — TP-Link MAC table, SMC per-VLAN MACs and VLAN 500 bridging for cable finding (v0.2.4 -> v0.2.5)](#20261008_1544--tp-link-mac-table-smc-per-vlan-macs-and-vlan-500-bridging-for-cable-finding-v024---v025)
 - [20261008_1452 — topology_vars uplink names do not say the provider (v0.2.3 -> v0.2.4)](#20261008_1452--topology_vars-uplink-names-do-not-say-the-provider-v023---v024)
 - [20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)](#20261008_1206--pi-identity-probe-and-rct-site-ata-settings-reader-promoted-to-scripts-v022---v023)
@@ -116,6 +117,13 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261009_0120 — TP-Link bridge port mapping on 5.30.1, LLDP per switch, MAC tables read from the SMC down (v0.2.5 -> v0.2.6)
+
+- `references/snmp-oid-registry-tplink.yaml`: dot1qTpFdbPort answers bridge port N on 5.30.1, which is gigabitEthernet 1/0/N (91 of 92 rows against
+  the CLI, hope-vale Switch1); hope-vale's switches have no lldpRemTable.
+- `references/13_known-issues.md` (INFO): reading which unit is on which port from the SMC down; the VLAN 500 bridge is not a cable; keep only known
+  MACs. From unified-network-controller's D10 link discovery, 2026-10-08/09.
 
 ## 20261008_1544 — TP-Link MAC table, SMC per-VLAN MACs and VLAN 500 bridging for cable finding (v0.2.4 -> v0.2.5)
 

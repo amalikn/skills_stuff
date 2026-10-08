@@ -13,17 +13,25 @@
 - [An R195P no vault entry logs in to (2026-09-29)](#an-r195p-no-vault-entry-logs-in-to-2026-09-29)
 - [Redaction missed `PWD` keys (fixed 2026-09-30)](#redaction-missed-pwd-keys-fixed-2026-09-30)
 - [Dashboard bots monitor AP reachability by pinging from the SMC over Teleport (2026-09-30)](#dashboard-bots-monitor-ap-reachability-by-pinging-from-the-smc-over-teleport-2026-09-30)
+- [Fleet SNMP identity gaps (measured 2026-10-05)](#fleet-snmp-identity-gaps-measured-2026-10-05)
+- [R195P reports every Wi-Fi client as IPv4 0.0.0.0 to cnMaestro (2026-10-05)](#r195p-reports-every-wi-fi-client-as-ipv4-0000-to-cnmaestro-2026-10-05)
+- [`wh` flavour: first device contact (laramba, canteen-creek, 2026-10-07)](#wh-flavour-first-device-contact-laramba-canteen-creek-2026-10-07)
+- [Central SMC logs missing in Graylog 2026-09-12 to 2026-10-07 (cross-reference, 2026-10-07)](#central-smc-logs-missing-in-graylog-2026-09-12-to-2026-10-07-cross-reference-2026-10-07)
 
 ---
 
 ## Knowledge Gaps (by design — require execution layer)
 
-| Gap                                                           | Why                                                | Mitigation                                                               |
-| ------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------ |
-| `hardware_revision` for all 17 catalogued models              | Requires a real cnMaestro export or device session | Pending — `cambium-swap` walk-before-run gate flagged this as unverified |
-| Which specific serials are on the legacy (`-legacy`) password | Registers don't record credential state per device | Try primary vault entry, fall back to `-legacy` per device               |
-| XV2 hardware variant (2T0 vs 22H) at Burringurrah             | That register has no `Model` column for XV2 rows   | Left as bare `XV2` in `device-inventory.csv` — don't guess the variant   |
-| R195P `interfaces` schema keyed by interface name              | RESOLVED 2026-09-24 | `schema_tool` contracts map keys by role (`MAP_ROLES`, schema `x-roles`); all 11 observations conform; see `schemas/README.md` "Map-shaped responses" |
+| Gap                                                           | Why                                   | Mitigation                                                                                   |
+| ------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `hardware_revision` for all 17 catalogued models              | Requires a real cnMaestro export or   | Pending — `cambium-swap` walk-before-run gate flagged this as unverified                     |
+|                                                               |   device session                      |                                                                                              |
+| Which specific serials are on the legacy (`-legacy`) password | Registers don't record credential     | Try primary vault entry, fall back to `-legacy` per device                                   |
+|                                                               |   state per device                    |                                                                                              |
+| XV2 hardware variant (2T0 vs 22H) at Burringurrah             | That register has no `Model` column   | Left as bare `XV2` in `device-inventory.csv` — don't guess the variant                       |
+|                                                               |   for XV2 rows                        |                                                                                              |
+| R195P `interfaces` schema keyed by interface name             | RESOLVED 2026-09-24                   | `schema_tool` contracts map keys by role (`MAP_ROLES`, schema `x-roles`); all 11             |
+|                                                               |                                       |   observations conform; see `schemas/README.md` "Map-shaped responses"                       |
 
 ## Coverage Gaps (partial knowledge)
 
@@ -175,122 +183,152 @@ at once, three rounds: 15 of 15 logged in, 1.5 s each (about 4 s under `sshpass`
 
 ## An R195P no vault entry logs in to (2026-09-29)
 
-> **Resolved 2026-09-30:** the unit's SSH (Dropbear 2020.81) rejected the correct `cnpilot-r-series` password while its web UI accepted it;
-> a reboot restored SSH logins. When an R195P refuses SSH but its web UI works, reboot it before trying other vault entries.
+> **Resolved 2026-09-30:** the unit's SSH (Dropbear 2020.81) rejected the correct `cnpilot-r-series` password while its web UI accepted it; a reboot restored SSH logins. When an R195P refuses SSH but
+> its web UI works, reboot it before trying other vault entries.
 
-daniel-test-nbn's R195P `HOR-R195P-1001` (serial WFXK0CTQRQBW, 4.7.3-R21, a unit carrying a horn-island name) refuses `cambium-devices/cnpilot-r-series` over SSH
-(`Permission denied (publickey,password)`), and the vault has no R-series `-legacy` entry to fall back to, so it has no config backup. SNMP reads and writes
-work with the apn communities. Not retried: one login attempt per read, lockout behaviour of the family not established.
+daniel-test-nbn's R195P `HOR-R195P-1001` (serial WFXK0CTQRQBW, 4.7.3-R21, a unit carrying a horn-island name) refuses `cambium-devices/cnpilot-r-series` over SSH (`Permission denied
+(publickey,password)`), and the vault has no R-series `-legacy` entry to fall back to, so it has no config backup. SNMP reads and writes work with the apn communities. Not retried: one login attempt
+per read, lockout behaviour of the family not established.
 
 ## Redaction missed `PWD` keys (fixed 2026-09-30)
 
-The adapters' `REDACT_KEY_PATTERN` (`pass|psk|secret|key|...`) did not match `PWD`, so the R195P reader returned `nvram.DBID_TR_ACS_PWD`,
-`DBID_TR_CONNECT_PWD` and `DBID_UPGRADE_FTP_PWD` unredacted (found by unified-network-controller's provisioning template derivation). All four
-adapters now match `pwd`. Consumers that stored a backup before the fix hold those values (unified-network-controller: the tjuntjuntjara R195P
-Golden Config backups, re-taken except 1006, plus Nautobot's change log). Side effect: ePMP `systemConfigFactoryResetKeepPwd` and
+The adapters' `REDACT_KEY_PATTERN` (`pass|psk|secret|key|...`) did not match `PWD`, so the R195P reader returned `nvram.DBID_TR_ACS_PWD`, `DBID_TR_CONNECT_PWD` and `DBID_UPGRADE_FTP_PWD` unredacted
+(found by unified-network-controller's provisioning template derivation). All four adapters now match `pwd`. Consumers that stored a backup before the fix hold those values
+(unified-network-controller: the tjuntjuntjara R195P Golden Config backups, re-taken except 1006, plus Nautobot's change log). Side effect: ePMP `systemConfigFactoryResetKeepPwd` and
 `wirelessPMPWDSUnknownMACFlood` now redact too (harmless).
 
 
 ## Dashboard bots monitor AP reachability by pinging from the SMC over Teleport (2026-09-30)
 
-Both production dashboards check AP reachability the same way. A Teleport bot user runs `ping -c 1 <AP management IP>` on the site's SMC through
-`teleport exec`, one command per AP per poll. There is no direct device API or SNMP poll on this path; the SMC is the jump host. Counts are from
-each box's teleport journal over 24h, read 2026-09-30:
+Both production dashboards check AP reachability the same way. A Teleport bot user runs `ping -c 1 <AP management IP>` on the site's SMC through `teleport exec`, one command per AP per poll. There is
+no direct device API or SNMP poll on this path; the SMC is the jump host. Counts are from each box's teleport journal over 24h, read 2026-09-30:
 
-| Cluster | Bot user | Sites polled (commands/24h) |
-|---|---|---|
-| nbn_accelerate (`teleport.communitywifi.net.au`) | `bot-cw-dashboard` (54.66.73.128) | koonibba 1,314 pings, indulkana 540, warakurna 456, ampilatwatja 432, aurukun-smc03 286, hope-vale 258, arawerr 83, galiwinku 10, doomadgee 2 |
-| rcp (`teleport.apn.au`) | `bot-apn-dashboard` | kalumburu 644, mowanjum 423, tjuntjuntjara 378, bidyadanga 204, wujal-wujal 68, horn-island 54, wangkatjungka 43, yakanarra 21 |
+| Cluster                                          | Bot user                  | Sites polled (commands/24h)                                                                                           |
+| ------------------------------------------------ | ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| nbn_accelerate (`teleport.communitywifi.net.au`) | `bot-cw-dashboard`        | koonibba 1,314 pings, indulkana 540, warakurna 456, ampilatwatja 432, aurukun-smc03 286, hope-vale 258, arawerr 83,   |
+|                                                  |   (54.66.73.128)          |   galiwinku 10, doomadgee 2                                                                                           |
+| rcp (`teleport.apn.au`)                          | `bot-apn-dashboard`       | kalumburu 644, mowanjum 423, tjuntjuntjara 378, bidyadanga 204, wujal-wujal 68, horn-island 54, wangkatjungka 43,     |
+|                                                  |                           |   yakanarra 21                                                                                                        |
 
 Targets seen: nbn `10.255.0.x` and `10.255.3.x` (e.g. indulkana `10.255.3.60/.61/.110`, koonibba `10.255.0.11-.62`).
 
 Implications for the device layer:
 
-- **Only some sites are polled.** 9 of 31 nbn SMCs and 8 of 18 rcp SMCs had any poll in the window. Dashboard AP status for the other sites does not
-  come from this path. Where it does come from is unverified.
-- **A failed SMC or Teleport path looks like a down AP.** A dead Teleport agent on the SMC, or a missing `ping`, would most likely show the site's
-  APs as down while they are fine. That is the same class of false negative as the `snmpget` finding in skill-smc (2026-09-20). Unverified for these
-  dashboards.
-- **The nbn bot does more than ping.** At koonibba and amata it also runs a "usage fix" routine that restarts the SMC firewall and wipes every
-  device's access mark. That is SMC-layer and recorded in skill-smc `references/13_known-issues.md` (2026-09-30). It is cross-referenced here because anyone reading
-  `bot-cw-dashboard` activity for AP monitoring will see those commands in the same journal.
+- **Only some sites are polled.** 9 of 31 nbn SMCs and 8 of 18 rcp SMCs had any poll in the window. Dashboard AP status for the other sites does not come from this path. Where it does come from is
+  unverified.
+- **A failed SMC or Teleport path looks like a down AP.** A dead Teleport agent on the SMC, or a missing `ping`, would most likely show the site's APs as down while they are fine. That is the same
+  class of false negative as the `snmpget` finding in skill-smc (2026-09-20). Unverified for these dashboards.
+- **The nbn bot does more than ping.** At koonibba and amata it also runs a "usage fix" routine that restarts the SMC firewall and wipes every device's access mark. That is SMC-layer and recorded in
+  skill-smc `references/13_known-issues.md` (2026-09-30). It is cross-referenced here because anyone reading `bot-cw-dashboard` activity for AP monitoring will see those commands in the same journal.
 
-Source: read-only surveys, `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/koonibba-usage-drop/mark-watch/` (`bot-survey-20260930/`,
-`rcp-survey-20260930/`). RCP journals only reach 2026-09-28/29, so its counts cover about 1-2 days.
+Source: read-only surveys, `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/koonibba-usage-drop/mark-watch/` (`bot-survey-20260930/`, `rcp-survey-20260930/`). RCP journals only reach
+2026-09-28/29, so its counts cover about 1-2 days.
 
 ## Fleet SNMP identity gaps (measured 2026-10-05)
 
-Source: UNC capture corpus: newest discovery sweep per site (43 sites, about 4,000 hosts, 2026-09-23 to 2026-09-30) and 44 identify reads, aggregated read-only on 2026-10-05. Counts, not samples; read before trusting SNMP alone for identity or naming.
+Source: UNC capture corpus: newest discovery sweep per site (43 sites, about 4,000 hosts, 2026-09-23 to 2026-09-30) and 44 identify reads, aggregated read-only on 2026-10-05. Counts, not samples; read
+before trusting SNMP alone for identity or naming.
 
-- **ePMP default sysName.** 349 ePMP units answer `sysName` = `CambiumNetworks` (Force 300-16 223 of 899, Force 300-25 97 of 491, 3000L 29 of 131). Never
-  name or match a unit on it; use the DNS A record, the asset register name or the device API.
-- **No serial over SNMP.** The sweep's SNMP read returned no serial for every E500 (87 of 87) and E430H (5 of 5), while every XV2 returned one; also for 21 of
-  1,176 R195P units. Take those serials from the device API (Enterprise Wi-Fi) or leave the field empty; cnWave V-series is already recorded in
-  `snmp-oid-registry.yaml`.
-- **MAC notation differs by adapter.** cnPilot and cnWave identify reads return lowercase colon MACs, Enterprise Wi-Fi dash-separated, ePMP upper-case
-  colon. Normalise before comparing.
-- **Unknown-family units.** Two units with the Cambium OUI `00:04:56` answer with the net-snmp `sysObjectID` `.1.3.6.1.4.1.8072.3.2.10` and no model,
-  so the family cannot be told from SNMP. Identify them with the device API before landing them. UNVERIFIED which product they are.
+- **ePMP default sysName.** 349 ePMP units answer `sysName` = `CambiumNetworks` (Force 300-16 223 of 899, Force 300-25 97 of 491, 3000L 29 of 131). Never name or match a unit on it; use the DNS A
+  record, the asset register name or the device API.
+- **No serial over SNMP.** The sweep's SNMP read returned no serial for every E500 (87 of 87) and E430H (5 of 5), while every XV2 returned one; also for 21 of 1,176 R195P units. Take those serials
+  from the device API (Enterprise Wi-Fi) or leave the field empty; cnWave V-series is already recorded in `snmp-oid-registry.yaml`.
+- **MAC notation differs by adapter.** cnPilot and cnWave identify reads return lowercase colon MACs, Enterprise Wi-Fi dash-separated, ePMP upper-case colon. Normalise before comparing.
+- **Unknown-family units.** Two units with the Cambium OUI `00:04:56` answer with the net-snmp `sysObjectID` `.1.3.6.1.4.1.8072.3.2.10` and no model, so the family cannot be told from SNMP. Identify
+  them with the device API before landing them. UNVERIFIED which product they are.
 
 ## R195P reports every Wi-Fi client as IPv4 0.0.0.0 to cnMaestro (2026-10-05)
 
-Symptom: cnMaestro's Wireless Clients list shows `0.0.0.0` in IPv4 Address for every client of a cnPilot R195P (kalumburu screenshot, operator 2026-10-05,
-suspected fleet-wide). It is a reporting gap, not a DHCP failure.
+Symptom: cnMaestro's Wireless Clients list shows `0.0.0.0` in IPv4 Address for every client of a cnPilot R195P (kalumburu screenshot, operator 2026-10-05, suspected fleet-wide). It is a reporting gap,
+not a DHCP failure.
 
-- **SMC DHCP is healthy.** At 10 sites (6 apn, 4 nbn) the last hour of `isc-dhcp-server` showed ACKs, no NAKs and no "no free leases". At kalumburu all 8
-  screenshot MACs held a lease and 6 were REACHABLE in the SMC's ARP on `bridge_501`.
-- **The AP itself has no client IP.** On KAL-R195P-1014 (4.7.3-R21) `/tmp/stahost`, written by `/bin/device-agent` (the cnMaestro agent), lists every
-  client as `0.0.0.0` while `/var/log/wireless_sta.log` shows up to about 100 MB per client. The sibling table `/tmp/allhost` (Mac, IP, AuthState, IfName,
-  IpMode, ...) is empty: it is the R195P's own router-mode LAN host table.
-- **Regression, not design (operator, 2026-10-05: cnMaestro showed client IPs before).** Nothing changed on the SMC (kalumburu `dhcpd.conf` dated
-  2026-02-13) or in the R195P TFTP config (all 150 kalumburu files dated 2026-09-02, still `cns_static_url=https://cloud.cambiumnetworks.com`,
-  `mwan_bridge_type=ip_br`). The unit is nonetheless connected to `52.64.230.196:443`, apn-cnmaestro01: Cloud redirected it during the move to
-  on-prem (about 2026-09-26). That move is the one fleet-wide change on record, so it is the lead suspect. UNVERIFIED: how Cloud obtained the IP while
-  the agent's `/tmp/stahost` holds none, and the date IPs disappeared. It holds on every firmware seen (4.7-R9, 4.7.2-R10, 4.7.3-R21, 4.8.1-R4), which
-  also points away from the unit.
-- **Fleet sample:** 12 R195Ps with clients at kalumburu, burringurrah, horn-island, jigalong, mowanjum and tjuntjuntjara: every client `zero_ip`, every MAC
-  leased on the SMC.
-- **Not settled:** whether Enterprise Wi-Fi APs report client IPs. The one E500 client seen (kalumburu, VLAN 500) had no lease, so its `0.0.0.0` was
-  correct. XV2 prints nothing for a non-interactive `show wireless clients`; check an nbn site's client list in cnMaestro instead.
-- **Tool:** `just client-ip-sweep <site>-smc01 <apn|nbn>` (`scripts/client-ip-sweep.sh`) for the three-layer check. For a client's IP, use the SMC lease
-  (`dhcpd.leases`), not cnMaestro.
+- **SMC DHCP is healthy.** At 10 sites (6 apn, 4 nbn) the last hour of `isc-dhcp-server` showed ACKs, no NAKs and no "no free leases". At kalumburu all 8 screenshot MACs held a lease and 6 were
+  REACHABLE in the SMC's ARP on `bridge_501`.
+- **The AP itself has no client IP.** On KAL-R195P-1014 (4.7.3-R21) `/tmp/stahost`, written by `/bin/device-agent` (the cnMaestro agent), lists every client as `0.0.0.0` while
+  `/var/log/wireless_sta.log` shows up to about 100 MB per client. The sibling table `/tmp/allhost` (Mac, IP, AuthState, IfName, IpMode, ...) is empty: it is the R195P's own router-mode LAN host
+  table.
+- **Regression, not design (operator, 2026-10-05: cnMaestro showed client IPs before).** Nothing changed on the SMC (kalumburu `dhcpd.conf` dated 2026-02-13) or in the R195P TFTP config (all 150
+  kalumburu files dated 2026-09-02, still `cns_static_url=https://cloud.cambiumnetworks.com`, `mwan_bridge_type=ip_br`). The unit is nonetheless connected to `52.64.230.196:443`, apn-cnmaestro01:
+  Cloud redirected it during the move to on-prem (about 2026-09-26). That move is the one fleet-wide change on record, so it is the lead suspect. UNVERIFIED: how Cloud obtained the IP while the
+  agent's `/tmp/stahost` holds none, and the date IPs disappeared. It holds on every firmware seen (4.7-R9, 4.7.2-R10, 4.7.3-R21, 4.8.1-R4), which also points away from the unit.
+- **Fleet sample:** 12 R195Ps with clients at kalumburu, burringurrah, horn-island, jigalong, mowanjum and tjuntjuntjara: every client `zero_ip`, every MAC leased on the SMC.
+- **Not settled:** whether Enterprise Wi-Fi APs report client IPs. The one E500 client seen (kalumburu, VLAN 500) had no lease, so its `0.0.0.0` was correct. XV2 prints nothing for a non-interactive
+  `show wireless clients`; check an nbn site's client list in cnMaestro instead.
+- **Tool:** `just client-ip-sweep <site>-smc01 <apn|nbn>` (`scripts/client-ip-sweep.sh`) for the three-layer check. For a client's IP, use the SMC lease (`dhcpd.leases`), not cnMaestro.
 
 ## `wh` flavour: first device contact (laramba, canteen-creek, 2026-10-07)
 
-Until 2026-10-07 this pack held nothing about `wh` sites; `site-addressing.yaml` still has no `wh` flavour. Read-only, through `tsh ssh -N -L` port-forwards via each SMC,
-evidence in `local-knowledge-ansible/ansible-wifi/issues/wh-fleet/cambium-wh-20261007_1457/` (VERIFIED-OBSERVED 2026-10-07):
+Until 2026-10-07 this pack held nothing about `wh` sites; `site-addressing.yaml` still has no `wh` flavour. Read-only, through `tsh ssh -N -L` port-forwards via each SMC, evidence in
+`local-knowledge-ansible/ansible-wifi/issues/wh-fleet/cambium-wh-20261007_1457/` (VERIFIED-OBSERVED 2026-10-07):
 
-| Site | IP (mgmt VLAN 500) | OUI | Identified as | How | Result |
-| --- | --- | --- | --- | --- | --- |
-| laramba | `10.255.0.20` | `bc:a9:93` | Enterprise Wi-Fi XV2-2T0, `Laramba_XV2_AP1_IP0_20`, 6.6.0.3-r9, cnMaestro `apn-cnmaestro01` connected | `scripts/cambium_xv2_adapter.py`, `enterprise-wifi` entry | OK; uptime 34 h while the site switch had 123 d and the SMC 11 d |
-| canteen-creek | `10.255.0.20` | `bc:a9:93` | XV2-2T0, `Canteen_Creek_Central_XV2T0`, 6.6.0.3-r9 | same | OK; uptime 68 d, equal to the site switch's |
-| canteen-creek | `10.255.0.21` | `00:04:56` | ePMP 1000 Hotspot; web UI is the Falcon stack (`falcon-ng-client-2.0.0`), same as Enterprise Wi-Fi | web `POST /api/login` via `scripts/cambium_xv2_adapter.py` | **No login found.** 403 (wrong password) for `epmp-ap`, `enterprise-wifi` and the MikroTik entry; 404 for `enterprise-wifi-legacy` and `epmp-ap-legacy`, possibly the unit refusing after failures. SSH with `epmp-ap` neither refused nor produced output. Stopped after five web attempts |
-| canteen-creek | `10.255.0.10` | `00:04:56` | ePMP point-to-point **AP** (`cambiumDeviceMode 1`), firmware 4.7.0.1, SSID `A8bridge` | SSH `show dashboard`, `epmp-ap-legacy` (`epmp-ap` rejected) | OK |
-| canteen-creek | `10.255.0.11` | `00:04:56` | ePMP point-to-point **SM** (`cambiumDeviceMode 2`), firmware 4.7.0.1, associated to `00:04:56:D3:FA:C6` (`.10`) | same | OK |
-| glen-hill | `10.255.0.20` | not read | Enterprise Wi-Fi XV2-2T0, serial `WLYM113B7GGM`, hostname `XV2_Hotspot0_GlenHill`, 6.6.0.3-r9 | unified-network-controller `identify` (`enterprise-wifi` REST) | OK, 2026-10-08; landed Staged in Nautobot under controller `apn-cnmaestro01` |
+| Site          | IP (mgmt VLAN 500) | OUI        | Identified as                                      | How                                       | Result                                            |
+| ------------- | ------------------ | ---------- | -------------------------------------------------- | ----------------------------------------- | ------------------------------------------------- |
+| laramba       | `10.255.0.20`      | `bc:a9:93` | Enterprise Wi-Fi XV2-2T0,                          | `scripts/cambium_xv2_adapter.py`,         | OK; uptime 34 h while the site switch had 123 d   |
+|               |                    |            |   `Laramba_XV2_AP1_IP0_20`, 6.6.0.3-r9, cnMaestro  |   `enterprise-wifi` entry                 |   and the SMC 11 d                                |
+|               |                    |            |   `apn-cnmaestro01` connected                      |                                           |                                                   |
+| canteen-creek | `10.255.0.20`      | `bc:a9:93` | XV2-2T0, `Canteen_Creek_Central_XV2T0`, 6.6.0.3-r9 | same                                      | OK; uptime 68 d, equal to the site switch's       |
+| canteen-creek | `10.255.0.21`      | `00:04:56` | ePMP 1000 Hotspot; web UI is the Falcon stack      | web `POST /api/login`                     | **No login found.** 403 (wrong password) for      |
+|               |                    |            |   (`falcon-ng-client-2.0.0`), same as              |   via `scripts/cambium_xv2_adapter.py`    |   `epmp-ap`, `enterprise-wifi` and the MikroTik   |
+|               |                    |            |   Enterprise Wi-Fi                                 |                                           |   entry; 404 for `enterprise-wifi-legacy` and     |
+|               |                    |            |                                                    |                                           |   `epmp-ap-legacy`, possibly the unit refusing    |
+|               |                    |            |                                                    |                                           |   after failures. SSH with `epmp-ap` neither      |
+|               |                    |            |                                                    |                                           |   refused nor produced output. Stopped after five |
+|               |                    |            |                                                    |                                           |   web attempts                                    |
+| canteen-creek | `10.255.0.10`      | `00:04:56` | ePMP point-to-point **AP** (`cambiumDeviceMode 1`), | SSH `show dashboard`, `epmp-ap-legacy`    | OK                                                |
+|               |                    |            |   firmware 4.7.0.1, SSID `A8bridge`                |   (`epmp-ap` rejected)                    |                                                   |
+| canteen-creek | `10.255.0.11`      | `00:04:56` | ePMP point-to-point **SM** (`cambiumDeviceMode 2`), | same                                      | OK                                                |
+|               |                    |            |   firmware 4.7.0.1, associated to                  |                                           |                                                   |
+|               |                    |            |   `00:04:56:D3:FA:C6` (`.10`)                      |                                           |                                                   |
+| glen-hill     | `10.255.0.20`      | not read   | Enterprise Wi-Fi XV2-2T0, serial `WLYM113B7GGM`,   | unified-network-controller `identify`     | OK, 2026-10-08; landed Staged in Nautobot under   |
+|               |                    |            |   hostname `XV2_Hotspot0_GlenHill`, 6.6.0.3-r9     |   (`enterprise-wifi` REST)                |   controller `apn-cnmaestro01`                    |
+| engawala      | `10.255.0.10`      | `00:04:56` | ePMP **AP** (`cambiumDeviceMode 1`,                | SSH `show dashboard`                      | OK, 2026-10-08. No partner on the SMC bridge;     |
+|               |                    |            |   `cambiumSubModeType 1` TDD, not a PTP sub-mode), |   (`scripts/device-login-probe.sh`),      |   HTTP only (443 closed), so the HTTPS REST       |
+|               |                    |            |   firmware 4.7.0.1, serial `E8TA05B3JFPR`, name    |   `epmp-ap` (`epmp-ap-legacy` rejected:   |   adapter fails with a TLS EOF before login       |
+|               |                    |            |   `Direction Engawala (no omni)`, SSID `A8bridge`, |   the reverse of canteen-creek)           |                                                   |
+|               |                    |            |   5750 MHz, **0 connected SMs**, uptime 127 d,     |                                           |                                                   |
+|               |                    |            |   cnMaestro `apn-cnmaestro01` connected            |                                           |                                                   |
+| engawala      | `10.255.0.20`      | `bc:a9:93` | Enterprise Wi-Fi (web UI `cnPilot {{modelname}}`,  | unauthenticated `GET /` only; not         | Model UNVERIFIED until `identify` reads it        |
+|               |                    |            |   Falcon stack), presumably the `wh` XV2 at `.20`  |   logged in                               |                                                   |
 
 - At both sites `.20` is the Cambium AP, not a MikroTik: on `rct` the same address is a MikroTik Metal 52 ac (skill-mikrotik).
-- **2026-10-08 (VERIFIED-OBSERVED, Teleport apn):** glen-hill's `.20` is a third `wh` XV2-2T0 on 6.6.0.3-r9, behind the site's MikroTik RB450Gx4 switch (skill-mikrotik
-  `references/01_overview.md`); areyonga's `.20` did not answer. So the `wh` pattern holds at three of four sites read: a Cambium XV2-2T0 AP at `.20` behind a MikroTik switch.
+- **2026-10-08 (VERIFIED-OBSERVED, Teleport apn):** glen-hill's `.20` is a third `wh` XV2-2T0 on 6.6.0.3-r9, behind the site's MikroTik RB450Gx4 switch (skill-mikrotik `references/01_overview.md`);
+  areyonga's `.20` did not answer. So the `wh` pattern holds at three of four sites read: a Cambium XV2-2T0 AP at `.20` behind a MikroTik switch.
 - XV2 `ETH1` `rx_bytes`/`tx_bytes` read `4294967295` on laramba: 32-bit counters pinned at their maximum. Do not compute rates from them.
-- **Point-to-point bridges (operator, 2026-10-07):** `rct` sites have none, a single AP each (the MikroTik Metal, skill-mikrotik); most `wh` sites have a single AP and
-  only a handful have an ePMP point-to-point bridge. Known `wh` sites with a bridge: **canteen-creek** (`10.255.0.10` AP, `10.255.0.11` SM, VERIFIED-OBSERVED
-  2026-10-07). Add each new one here with its addresses when found.
-- canteen-creek `.10` and `.11` print the login banner "change the default SNMP Read-Only Community string" and "... Read-Write Community string":
-  both bridge units still run the factory SNMP communities (VERIFIED-OBSERVED 2026-10-07, value not read). Needs an operator decision before any change.
+- **Point-to-point bridges (operator, 2026-10-07):** `rct` sites have none, a single AP each (the MikroTik Metal, skill-mikrotik); most `wh` sites have a single AP and only a handful have an ePMP
+  point-to-point bridge. Known `wh` sites with a bridge: **canteen-creek** (`10.255.0.10` AP, `10.255.0.11` SM, VERIFIED-OBSERVED 2026-10-07). Add each new one here with its addresses when found.
+  **engawala** (2026-10-08) has only the bridge's AP half: `.10`, SSID `A8bridge` like canteen-creek's pair, no SM associated and none on the site subnet, so there is no live link to read there.
+- **ePMP 4.7.0.1 serves HTTP only** (engawala `.10`, 2026-10-08: ports 80 and 22 open, 443 closed). `scripts/cambium_epmp_adapter.py` builds `https://` URLs and fails with `SSL:
+  UNEXPECTED_EOF_WHILE_READING` before any login, so no login is spent; read such units over SSH (`show dashboard`).
+- canteen-creek `.10` and `.11` print the login banner "change the default SNMP Read-Only Community string" and "... Read-Write Community string": both bridge units still run the factory SNMP
+  communities (VERIFIED-OBSERVED 2026-10-07, value not read). Needs an operator decision before any change.
 - Login probe: `scripts/device-login-probe.sh` (one attempt per entry, client on the Mac; an empty session is reported as UNCONFIRMED, not accepted).
 - Gaps: the ePMP 1000 Hotspot login (canteen-creek `.21`); the rest of the `wh` fleet; a `wh` block in `site-addressing.yaml`.
 
 ## Central SMC logs missing in Graylog 2026-09-12 to 2026-10-07 (cross-reference, 2026-10-07)
 
-Owned by skill-smc (`references/13_known-issues.md` 2026-10-07; `03_communication-flows.md` "Graylog Backend Path in AWS"). Recorded here because
-device-layer investigations read SMC-side logs.
+Owned by skill-smc (`references/13_known-issues.md` 2026-10-07; `03_communication-flows.md` "Graylog Backend Path in AWS"). Recorded here because device-layer investigations read SMC-side logs.
 
-- The ACM cert on `gl.aws.apn.au` expired 2026-09-12 09:59:59 AEST. Every SMC's fluent-bit (`tls.verify On`) stopped shipping until about
-  11:15 AEDT on 2026-10-07. Logs were not backfilled, so **Graylog holds almost no SMC-originated messages for that window**.
-- The gap matters for Cambium work wherever the evidence is SMC-side logs: `isc-dhcp-server` leases and ACK/NAK for AP clients, AP or SM syslog
-  sent to the SMC (`syslogServerIPFirst` is the SMC management address on ePMP SMs, see `06_device-api-cli-reference.md`), and dashboard-bot activity.
-  Whether AP/SM syslog received by the SMC lands in a file fluent-bit tails is UNVERIFIED. If it does, it is in the same gap.
-- For that window use on-box files (SMC `/var/log`, AP `/tmp` and logs) or Prometheus. The 2026-10-05 R195P 0.0.0.0 investigation above used
-  on-box evidence and is unaffected.
+- The ACM cert on `gl.aws.apn.au` expired 2026-09-12 09:59:59 AEST. Every SMC's fluent-bit (`tls.verify On`) stopped shipping until about 11:15 AEDT on 2026-10-07. Logs were not backfilled, so
+  **Graylog holds almost no SMC-originated messages for that window**.
+- The gap matters for Cambium work wherever the evidence is SMC-side logs: `isc-dhcp-server` leases and ACK/NAK for AP clients, AP or SM syslog sent to the SMC (`syslogServerIPFirst` is the SMC
+  management address on ePMP SMs, see `06_device-api-cli-reference.md`), and dashboard-bot activity. Whether AP/SM syslog received by the SMC lands in a file fluent-bit tails is UNVERIFIED. If it
+  does, it is in the same gap.
+- For that window use on-box files (SMC `/var/log`, AP `/tmp` and logs) or Prometheus. The 2026-10-05 R195P 0.0.0.0 investigation above used on-box evidence and is unaffected.
 - Do not read Graylog silence for a site in that window as the site being down. Check Prometheus `up` instead (skill-smc `06_failure-modes.md`).
+
+## Which subscriber an R195P is cabled to cannot be read from the units (2026-10-09)
+
+The R195P sends no LLDP; the Force 300 SM it hangs from has no bridge, Q-BRIDGE or ARP table over SNMP, and its REST bridge table lists only itself
+(snmp-oid-registry.yaml, force-300-16 negative result). A site switch learns the R195P's MAC on the AP's port, through the radio, so the switch says
+"beyond this AP", not "on this SM". unified-network-controller places an R195P behind the Force 300 whose name carries the same EXTnnnn number only when
+that Force 300 is registered to the AP the R195P is learnt behind (or to an AP behind it): 85 of 106 kalumburu R195Ps have a numbered pair. Do not
+retry the SM's tables to prove it; a proof would need the R195P's own WAN neighbour or a site record.
+
+## A low-touch install leaves the installer's record in sysDescr (2026-10-09)
+
+At old-looma (rcp, low-touch) 57 of 60 ePMP radios answer sysDescr `.1.3.6.1.2.1.1.1.0` (the unit's `snmpSystemDescription`) with a JSON record the
+install wrote: `lotno`, `lat`, `lon`, `confirmed: true`, `align` (e.g. `-64/1`), `test` (e.g. `75/20`) and `variables` (`preferred_ssid`, `seqid`,
+`frequency`, `power`, `antenna_gain`). The position equals the unit's typed-in Device Location within 4 m. At non-low-touch hope-vale the fields are
+empty. A reader must unescape net-snmp's `\"` before parsing. unified-network-controller uses it for Premises Locations (topology/sources.py
+`installer_record`). cnWave controllers' topology also carries sites with a configured position; at old-looma the tower sites lie within 30 m of the
+3000L GPS fixes.

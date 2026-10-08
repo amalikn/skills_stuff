@@ -401,3 +401,13 @@ my_app/tests/__init__.py  test_api.py                           (section 11)
 
 Build order: config, model, `makemigrations`, filterset, serializer, API viewset and `api/urls.py`, forms and table, UI viewset and `urls.py`, navigation, tests. Check each step with `nautobot-server
 check`, then `nautobot-server test my_app`. Each file's content is the block in the named section, with the model imported (`from my_app.models import Widget`) where the blocks use it.
+
+> **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `nautobot/core/ui/object_detail.py` (`Tab`, `DistinctViewTab` with
+> `url_name`, `related_object_attribute`, `hide_if_empty`), `components/tab/label_wrapper_distinct_view.html` (active when `active_tab == tab_id`), and a
+> deployed app tab on dcim.location answering 200 · Falsifier: a 3.2.x DistinctViewTab rendered without its view supplying `object_detail_content`
+> A tab of an app on a core object's page: a TemplateExtension with `object_detail_tabs = [DistinctViewTab(tab_id=..., label=..., url_name=...)]`, and a
+> view at that URL (taking the object's pk) that renders a template extending `generic/object_retrieve.html` with `object`, `verbose_name`,
+> `active_tab` equal to the tab_id, and the core viewset's `object_detail_content` (e.g. `LocationUIViewSet.object_detail_content`) so the tab row
+> draws. Static files an app ships are served most simply by its own small view reading them from the package, which does not depend on
+> `collectstatic` having run in the image. `nautobot-server makemigrations --check` keeps `choices` out of migrations, so adding a choice needs no
+> migration.

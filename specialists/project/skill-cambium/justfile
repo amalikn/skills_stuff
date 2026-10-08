@@ -91,6 +91,10 @@ preflight: runtimes check
 login-probe smc ip cmd +entries:
     scripts/device-login-probe.sh {{smc}} {{ip}} '{{cmd}}' {{entries}}
 
+# One ePMP unit's fields, set or empty, values withheld; --installer decodes the low-touch record (read-only REST, one login)
+epmp-fields node proxy ip *flags:
+    {{py}} scripts/epmp_field_probe.py --node {{node}} --proxy {{proxy}} --ip {{ip}} {{flags}}
+
 # Which Cambium units give a GPS position (read-only SNMP from the SMC; coordinates never printed). PLAN is the JSON described in scripts/gps_probe.py
 gps-probe plan: _require-venv
     {{py}} scripts/gps_probe.py '{{plan}}'

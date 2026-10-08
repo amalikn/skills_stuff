@@ -2,6 +2,10 @@
 
 ## Contents
 
+- [20261009_0207 — epmp_field_probe.py: an ePMP unit's fields with values withheld, and the installer's record (v0.6.48 -> v0.6.49)](#20261009_0207--epmp_field_probepy-an-epmp-units-fields-with-values-withheld-and-the-installers-record-v0648---v0649)
+- [20261009_0153 — Installer record in sysDescr, Force 300 position fields, coarse range, cnWave sites (v0.6.47 -> v0.6.48)](#20261009_0153--installer-record-in-sysdescr-force-300-position-fields-coarse-range-cnwave-sites-v0647---v0648)
+- [20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)](#20261009_0120--station-table-range-and-angle-force-300-has-no-mac-table-r195p-attachment-not-readable-v0646---v0647)
+- [20261008_2333 — engawala ePMP AP read; ePMP 4.7.0.1 is HTTP only, adapter takes scheme (v0.6.45 -> v0.6.46)](#20261008_2333--engawala-epmp-ap-read-epmp-4701-is-http-only-adapter-takes-scheme-v0645---v0646)
 - [20261008_1341 — E-series port MACs by SNMP, port order proved (v0.6.44 -> v0.6.45)](#20261008_1341--e-series-port-macs-by-snmp-port-order-proved-v0644---v0645)
 - [20261008_1324 — Enterprise fallback passwords in the credential chain (v0.6.43 -> v0.6.44)](#20261008_1324--enterprise-fallback-passwords-in-the-credential-chain-v0643---v0644)
 - [20261008_1319 — XV2 per-port MACs from device-summary port_status; cnWave nic naming (v0.6.42 -> v0.6.43)](#20261008_1319--xv2-per-port-macs-from-device-summary-port_status-cnwave-nic-naming-v0642---v0643)
@@ -90,6 +94,35 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261009_0207 — epmp_field_probe.py: an ePMP unit's fields with values withheld, and the installer's record (v0.6.48 -> v0.6.49)
+
+- `scripts/epmp_field_probe.py`, recipe `just epmp-fields`: the read-only REST field check run by hand on 2026-10-09 (Force 300 position fields at hope-vale and old-looma), made persistent: one login, coordinates and secrets never printed, `--installer` decodes the low-touch record. Smoke-tested on old-looma sm-33.
+
+## 20261009_0153 — Installer record in sysDescr, Force 300 position fields, coarse range, cnWave sites (v0.6.47 -> v0.6.48)
+
+- `references/snmp-oid-registry.yaml`: Force 300 typed-in position fields (no azimuth); sysDescr holds the installer's JSON record at
+  low-touch sites; station range is coarse (149 m steps at old-looma).
+- `references/05_known-issues.md`: the installer's record (old-looma 57 of 60 radios) and cnWave controller sites. From
+  unified-network-controller's D10 work.
+
+## 20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)
+
+- `references/snmp-oid-registry.yaml`: cambiumAPConnectedSTAEntry column 29 is often 0 (not ranged); no column is an angle and the 3000L has no angle
+  of arrival (2x2 MIMO, external antenna; product page read 2026-10-09); subscriber MACs are the record's + 1 with the address agreeing. Force
+  300-16: no BRIDGE, Q-BRIDGE or ARP MIB over SNMP, REST bridge table lists only itself (kalumburu, 2026-10-09).
+- `references/05_known-issues.md`: which subscriber an R195P is cabled to cannot be read from the units; the two-fact chain rule used instead.
+  From unified-network-controller's D10 link discovery.
+
+## 20261008_2333 — engawala ePMP AP read; ePMP 4.7.0.1 is HTTP only, adapter takes scheme (v0.6.45 -> v0.6.46)
+
+- engawala `10.255.0.10` (wh, read-only, unified-network-controller): ePMP AP, TDD sub-mode, SSID `A8bridge`, 0 SMs connected, firmware 4.7.0.1,
+  serial `E8TA05B3JFPR`; `epmp-ap` logs in, `epmp-ap-legacy` is rejected. `.20` is Enterprise Wi-Fi by its web page, not logged in.
+  `references/05_known-issues.md` wh table and point-to-point bridges note.
+- ePMP 4.7.0.1 serves the LuCI API on port 80 only (443 closed). `scripts/cambium_epmp_adapter.py` takes `scheme="http"` (default `https`,
+  anything else raises ValueError); unified-network-controller identify reads such units with it (`rest_epmp_http`), proved live on `.10`.
+- Open: the ePMP REST contract carries no model (`schemas/epmp-ap/facts.schema.json` has none; SNMP supplies it), so an SNMP-silent ePMP is identified
+  without one. The `status` key holding the model on 4.7.0.1 is not yet known.
 
 ## 20261008_1341 — E-series port MACs by SNMP, port order proved (v0.6.44 -> v0.6.45)
 

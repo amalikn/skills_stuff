@@ -323,3 +323,23 @@ Gotcha: a Status, Role or Tag must list the model's content type or it is reject
 Source: `nautobot/extras/models/contacts.py:49-125`, `nautobot/extras/models/statuses.py:23-46`, `nautobot/extras/models/roles.py:21`, `nautobot/extras/models/tags.py:32,53`,
 `nautobot/dcim/models/devices.py:1401-1433,1500-1514`; `docs/user-guide/core-data-model/extras/contact.html`, `docs/user-guide/core-data-model/dcim/softwareversion.html`,
 `docs/user-guide/core-data-model/dcim/softwareimagefile.html`.
+
+> **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's ORM (`Interface.objects.filter(cable__isnull=False)` raised
+> FieldError listing `cable_termination` among the fields; `Interface._meta.get_field("cable_termination")` is a OneToOneRel to
+> `nautobot.dcim.models.cables.CableToCableTermination`, fields id, cable, cable_end, interface, ..., connector) · Falsifier: a 3.2.x Interface with a `cable` field
+> An Interface no longer has a `cable` field in 3.2: a Cable's ends are `CableToCableTermination` rows. Find the Cables touching a set of devices with
+> `CableToCableTermination.objects.filter(interface__device__in=...).values_list("cable_id")`, then read each Cable's ends through its
+> `termination_a` / `termination_b` properties, which 3.2 keeps for compatibility (connector 1).
+
+> **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's nbshell (`Location.descendants(include_self=True).count()` raised
+> ProgrammingError "missing FROM-clause entry for table __tree") · Falsifier: a 3.2.x `descendants()` queryset that counts or filters without tree fields
+> `Location.descendants()` is a django-tree-queries queryset that needs its tree fields; used as a subquery (`location__in=loc.descendants(...)`) or
+> counted directly it fails. When the tree below a Location is one level (a Location Type that is not nestable), name it:
+> `Q(location=loc) | Q(location__parent=loc)`. The REST `location` filter on Devices is a tree filter (`TreeNodeMultipleChoiceFilter`) and does include
+> descendants.
+
+> **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: `Device._meta.get_fields()` in one deployment (only `position`, a rack unit, and
+> `vc_position`); `Location` has `latitude` and `longitude` · Falsifier: a 3.2.x Device with its own coordinate fields
+> A Device has no coordinates of its own; a position belongs to its Location. To place units on a map natively, give the towers or poles their own
+> Location Type below the site (not nestable, holding `dcim.device`) with latitude and longitude, and move the units into it. Code that compares a
+> device's Location with its site must then compare the site (the Location or its parent), or a moved unit looks like it is at another site.

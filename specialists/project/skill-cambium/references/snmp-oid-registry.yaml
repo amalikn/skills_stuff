@@ -73,6 +73,12 @@ device_types:
                   38: sm_model (undocumented in MIB), 43: sm_firmware (undocumented in MIB)}
         note: "live agent returns columns through .43; the MIB mirror documents 29"
         verified: {date: "2026-09-20", unit: HOP_3000L_T1_Omni0_20, site: hope-vale, firmware: 4.7.0.1, method: walk}
+        # 2026-10-09 (kalumburu Tower1_Omni 1, hope-vale): column 29 distance_m reads 0 for many subscribers; 0 means not ranged, never a distance.
+        # No column is an angle: 30 and 31 hold the antenna type ("Sector"). The 3000L is 2x2 MIMO on an external sector or omni antenna
+        # (cambiumnetworks.com ePMP 3000L page, read 2026-10-09), so there is no angle of arrival to read; a subscriber's position from the AP is a
+        # ring at the measured range, never a point. A subscriber MAC here is the unit's recorded MAC + 1 for 22 of 23 hope-vale units, and its
+        # column 10 address equals the record's for all 23: two facts that identify it (unified-network-controller topology/correlate.py).
+        # Range is coarse: old-looma 2026-10-09 read 149 m for 9 of 10 short links whose positions are 128-282 m apart; treat it as near or far.
     not_answering: [{unit: MOW_3000L_E_IP_0-20, site: mowanjum, date: "2026-09-22", note: "timeout on apn-snmp-ro: SNMP off or another community"}]
 
   xv2-22h:
@@ -144,6 +150,15 @@ device_types:
   # MIB-II identity triple per Cambium candidate from kalumburu-smc01 with apn-snmp-ro. Model-level sysObjectID is what a sweep
   # identifies a unit by before any login. Read-only: no SET was tried on these types.
   force-300-16:
+    # Negative result 2026-10-09 (kalumburu, Force300_EXT1002/1004/1005/1009, apn-snmp-ro): BRIDGE-MIB dot1dTpFdb .1.3.6.1.2.1.17.4.3, Q-BRIDGE
+    # dot1qTpFdb .1.3.6.1.2.1.17.7.1.2.2 and ipNetToMedia .1.3.6.1.2.1.4.22 answer No Such Object. Over REST (get_param status, EXT1020 and EXT1048)
+    # cambiumSTABridgeTable lists only the unit's own MAC (camSTABrTabDevPort "Own") and cambiumArpTable only what it last spoke to. Nothing on the SM
+    # records which unit is cabled to its LAN port: an R195P behind it is placed by its name's EXT number agreeing with the AP it is learnt behind.
+    # Typed-in position fields (REST config, 2026-10-09): systemDeviceLocLatitude, systemDeviceLocLongitude, systemDeviceLocHeight, sysLocation and
+    # snmpSystemDescription; no azimuth, tilt or heading (wirelessMUMIMOSoundingAzimuthCycle is a sounding timer). Empty at hope-vale; at low-touch
+    # old-looma sysDescr (.1.3.6.1.2.1.1.1.0, = snmpSystemDescription) holds the installer's JSON record: lotno, lat, lon, confirmed, align, test,
+    # variables (preferred_ssid, seqid, frequency, power, antenna_gain); 57 of 60 radios, every one confirmed, its position equal to
+    # systemDeviceLoc* within 4 m. net-snmp prints it with escaped quotes.
     family: epmp-sm  # also runs as an ePMP AP / ePTP master (cambiumDeviceMode 1, cambiumSubModeType 5), same OID
     models: [Force 300-16]
     arm: ".1.3.6.1.4.1.17713.21 (pmpMibTree, CAMBIUM-PMP80211-MIB)"

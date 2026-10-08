@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 2026-10-09 Learned (from UNC, D10 link discovery): `references/data-model.md` an Interface has no `cable` field in 3.2 (CableToCableTermination); `Location.descendants()` fails as a subquery; a Device has no coordinates, a position belongs to its Location. `references/app-development.md` an app tab on a core object (DistinctViewTab and its view), app static served by its own view, choices kept out of migrations.
 - 2026-10-08: three Learned entries in `references/data-model.md` from unified-network-controller: list views omit many-to-many fields
   without `exclude_m2m=false`; a cable trace crosses a device only through front/rear ports and never a VLAN interface or a switch; a `Panel` can
   return `render_markdown` from `render_body_content`.

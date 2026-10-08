@@ -69,10 +69,31 @@ def redact(obj):
 
 
 class CambiumEPMPAdapter:
-    """Talks to one ePMP AP or ePMP SM's local LuCI-derived JSON API over HTTPS."""
+    """Talks to one ePMP AP or ePMP SM's local LuCI-derived JSON API, over HTTPS by default.
 
-    def __init__(self, host: str, username: str, password: str, verify_tls: bool = False) -> None:
-        self.base_url = f"https://{host}"
+    `scheme="http"` reaches units that serve the same API on port 80 only, with 443 closed: ePMP 4.7.0.1 (engawala `10.255.0.10`,
+    2026-10-08; references/05_known-issues.md). Over HTTPS such a unit fails with a TLS EOF before any login.
+    """
+
+    def __init__(self, host: str, username: str, password: str, verify_tls: bool = False, scheme: str = "https") -> None:
+        """Set up the session for one unit; no request is made until login().
+
+        Args:
+            host: `address[:port]` of the unit or of a local tunnel to it.
+            username: the device login name.
+            password: the device password, from the vault at the call site.
+            verify_tls: check the certificate (units present self-signed ones).
+            scheme: "https" (default) or "http".
+
+        Returns:
+            None.
+
+        Raises:
+            ValueError: `scheme` is neither "https" nor "http".
+        """
+        if scheme not in ("https", "http"):
+            raise ValueError(f"scheme must be https or http, not {scheme!r}")
+        self.base_url = f"{scheme}://{host}"
         self._username = username
         self._password = password
         self._stok: str | None = None

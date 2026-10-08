@@ -1091,3 +1091,15 @@ VERIFIED-OBSERVED 2026-10-08 over Teleport apn (20-mile, adjamarragu, areyonga, 
   first-hand. old-looma: `enp2s0` on Switch1 Gi1/0/1, `enp1s0` on Switch2 Gi1/0/1.
 - Tool: unified-network-controller `wc-local/scripts/site_onboarding/site_cables.py`.
 
+## 2026-10-09 — reading which unit is on which TP-Link port over SNMP (INFO)
+
+- **Bridge port N is port 1/0/N on 5.30.1.** `dot1qTpFdbPort` returns bridge port numbers (1 to 28) while `dot1dBasePortIfIndex` is indexed 49153 and
+  up, so the two do not join. Port N is `gigabitEthernet 1/0/N` (ifIndex 49152+N): 91 of 92 rows agreed with `show mac address-table` on hope-vale
+  Switch1, 2026-10-08.
+- **LLDP is per switch.** bidyadanga's switch answers lldpRemTable; hope-vale's three answer No Such Object. Do not rely on LLDP for SMC-site links.
+- **Read the MAC table from the SMC down.** A switch's up port is the one that learns the SMC; another switch's MAC on a non-up port is a
+  switch-to-switch link; a unit is on the one port where it is learnt that is neither. Because the SMC bridges VLAN 500 across its NICs, two switches on
+  different NICs each learn the other on their SMC-facing port: that is not a cable. Implemented in unified-network-controller
+  `wc-local/scripts/topology/correlate.py` (hope-vale: Switch3 is daisy-chained on Switch1 1/0/3, Switch2 is on the SMC's enp1s0).
+- **Never store a raw walk.** Keep only MACs the inventory knows (exactly or one apart); the table holds public Wi-Fi clients (VLAN 501).
+
