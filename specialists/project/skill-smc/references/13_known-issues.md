@@ -1067,3 +1067,15 @@ VERIFIED-OBSERVED 2026-10-08 over Teleport apn (20-mile, adjamarragu, areyonga, 
 - **The ATA web PIN is empty** on every unit read (adjamarragu, alamirra, akwalirrumanja, alice-well, alkngarrija). Open, not changed.
 - **Pi bootloaders are behind upstream and the package hides it:** EEPROM 2023-01-11 on all four, upstream default 2026-09-23; Ubuntu's `rpi-eeprom` reports "up to date" (`07_hardware-overlay.md`).
 - **No SNMP on the Pis,** by operator decision 2026-10-08 (`02_service-map.md`).
+
+## 2026-10-08 — topology_vars uplink names do not say the provider (OPEN)
+
+- **What:** an uplink's topology id (`internet01`, `internet02`, `starlink01`, `starlink02`, `internetNN`) is positional. An `internetNN` can be Sky Muster or
+  Starlink, and a backup `starlinkNN` can be Sky Muster (operator, 2026-10-08). VERIFIED-OBSERVED 20261008: at warburton, old-looma and umoona the
+  VLAN 52x uplinks named `internet03`... are Starlink and the VLAN 621 uplink named `starlink01` is a Sky Muster service.
+- **How to tell (read-only):** the public IP's ASN read from the uplink (AS14593 SpaceX = Starlink; AS38172 IPSTAR = Sky Muster), and for Starlink the
+  dish's own status call on 192.168.100.1:9200 (its id `ut...`). Locally, Starlink uplinks hold 100.64.0.0/10 behind 100.64.0.1; Sky Muster uplinks a
+  private /30 behind a `bc:4a:56` gateway. Tool: unified-network-controller `wc-local/scripts/smc/uplink_provider.py`.
+- **Impact:** anything that takes the provider from the name (a `role: starlink` reader, a renderer) is wrong at these sites. Fix: in ansible-wifi
+  (operator); until then, take the provider from the far side.
+

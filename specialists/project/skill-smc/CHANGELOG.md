@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261008_1452 — topology_vars uplink names do not say the provider (v0.2.3 -> v0.2.4)](#20261008_1452--topology_vars-uplink-names-do-not-say-the-provider-v023---v024)
 - [20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)](#20261008_1206--pi-identity-probe-and-rct-site-ata-settings-reader-promoted-to-scripts-v022---v023)
 - [20261008_1147 — Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)](#20261008_1147--raspberry-pi-smc-identity-and-ports-rct-site-ata-vendor-sources-linked-v021---v022)
 - [20261007_2124 — rct-tstik rails and satellite modem rechecked; Iridium rollout on rct (v0.2.0 -> v0.2.1)](#20261007_2124--rct-tstik-rails-and-satellite-modem-rechecked-iridium-rollout-on-rct-v020---v021)
@@ -114,6 +115,11 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261008_1452 — topology_vars uplink names do not say the provider (v0.2.3 -> v0.2.4)
+
+- `references/13_known-issues.md`: OPEN issue: `internetNN`/`starlinkNN` are positional; warburton, old-looma and umoona VLAN 52x `internet...` are Starlink
+  and VLAN 621 `starlink01` is Sky Muster (operator and VERIFIED-OBSERVED 20261008). Read the provider from the public IP's ASN and the dish's status call.
 
 ## 20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)
 
