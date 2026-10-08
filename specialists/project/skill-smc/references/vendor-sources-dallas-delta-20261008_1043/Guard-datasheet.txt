@@ -1,0 +1,194 @@
+GUA
+
+DOORSTATION
+
+12 Guard Doorstation is a interactive loud speaking telephone unit. It’s compact design (standard brick
+size) ideal for installation in office, light commercial and residential locations.
+
+Designed to be integrated any location that requires a loud speaking, hands-free telephone. It includes a
+vandal resistant front panel and weather resistant enclosure which offers reliable secure entry to any
+property. This user friendly unit will give you the ability to authorise access to welcomed visitors with
+door release activation.
+
+Australian designed and manufactured, The Guard unit is designed to withstand tough
+conditions and is built to be reliable, weather and vandal resistant.
+
+With a low-cost of ownership, the Guard Doorstation is the best choice for securing 4
+“pany property from unwanted entry. |
+
+igs
+
+is designed as a is designed for
+Flush Mount unit. It's size is deigned to fit neatly in the — surface mount installations. It comes already fitted with
+space of a standard house brick and is installed in a a Stainless Stee! Enclosure.
+wall-mount box enclosure.
+
+POWER OPTIONS
+
+LINE POWERED - Running off a PABX system or Service- VolP POWERED - By PoE or external power supply
+Carriers Telephone Line 50V (no power supply)
+
+EXTERNALLY POWERED - Unit is provided with a 12V
+DC Power supply
+
+4G Series - 12V DC Power supply
+n s RK Gp
+(7 222 $ ul
+Australian User Low Cost Vandal Weather
+Made Friendly Ownership Resistant Resistant
+
+Stainless Steel Enclosure Included Remote relay activation
+Telephone-line powered Remote programming facilities — )
+. Hands free operation Remote diagnostic testing .
+
+Loud speaker output: Extenally Powered: 1Watt, Self identification
+VoIP: 1Watt, LinePowered:78dBa/1 metre Vandal resistant
+
+S Remote level.control (for noisy environments) \, Weather Tough
+
+Auto dialling with alternate numbers Stainless steel hood s
+\ \
+\ Stainless steel push button Door release aN
+\ Push-to-talk option \ Firmware upgrade » +
+Speaker/microphone ' >
+(Vertical) > < (Horizontal)
+Stainless Steel | Zinc plated mild steel, Flush
+Weather Tough ). mount Wall box Enclosure
+
+Enclosure Included
+
+W 100mm H 225mm D 45mm
+
+Included
+W 240mm H 90mm D 50mm
+
+DallasDelta
+
+Corporation Pty. Ltd.
+
+GUA
+
+DOORSTATION
+
+Guard Doorstation
+Line Powered (LP)
+
+The Guard Doorstation Line Powered, only requiring a
+PSTN pair for power. Programming and setting up of
+the unit is via a remote touch tone phone or using a
+local keypad.
+
+The Guard microphone and speaker level can be
+adjusted remotely. As well as individually activating up
+to *two separate relays. Multiple call buttons can be
+fitted if requested.
+
+* Second relay available on request
+
+Guard Doorstation
+
+Externally Powered (DoorCom)
+
+Similar to the Line Powered (LP) the Externally
+Powered (DoorCom) version is more suited to noisy
+environment with a higher wattage output speaker.
+
+Programming and setting up of the unit is via a remote
+touch tone phone or using a local keypad.
+
+* Second relay available on request
+
+Guard Doorstation
+
+VoIP
+The Guard VoIP, connecting CAT5 cable with PoE is
+required for operation.
+
+The VoIP model is standard IP-based communications
+network and uses the SIP protocol for a fast and reliable
+
+Height 133 mm
+Width 275 mm
+Depth 85 mm
+
+< Weather Hood Enclosure
+
+Designed to help protect a flush mounted
+installed unit from weather and vandalism.
+
+connection to modern PBX systems. The Guard VoIP
+can be PoE or externally powered. It provides remote
+door/gate release feature.
+
+Programming is via a web browser interface on a
+connected network.
+
+* Second relay available on request
+
+VoIP Features
+Compatibility SIP Protocol, CCM, Asterisk PBX
+Dedicated VoIP chip set
+
+Firmware upgradable
+
+Only requiring a 10/100 base ethernet
+
+Multi codec selection
+
+1 on board relay with unique codes (optional 2nd)
+
+Either relay may be set to in-use function
+
+Relay “on” timer
+
+Remote relay activation (door/gate release)
+
+Hands-free up to 85dB @ 1Meter speaker output
+
+Handset model available
+Auto disconnect
+
+2 Modes of power over ethernet (PoE)
+
+Conversation timer
+
+All options set via web browser
+
+Non volatile memory
+Optional dual line LCD with back light
+
+Syslog relayed on events & at set intervals
+
+—~— 2 6S AK ae)
+
+Australian User Low Cost Vandal Weather
+Made Friendly Ownership Resistant Resistant
+External Powered (DoorCom) —_Line Powered (LP) VoIP 4G SERIES
+
+FEATURE
+
+Standby Current 10mA @ 12Vde <50UA 60mA @ 13Vde 60 mA @ 12v- Battery charged
+
+Relay Contacts Voltage free outputs Voltage free outputs. Voltage free outputs Voltage free outputs
+
+Dimensions Vertical W 100mm H 225mm D 45mm W 100mm H 225mm D 45mm W 100mm H 225mm D 45mm W 100mm H 225mm D 45mm
+
+Wall cutout (horizontal) ‘W 245mm H 95mm D 55mm W 245mm H 95mm D 55mm W 245mm H 95mm D 55mm W 245mm H 95mm D 55mm
+
+Speaker Level 80dB @ 1 Meter 75dB @ 0.5 Meter 80dB @ 1 Meter 78dB @ 1 Meter
+
+PoE Class Requirements NIA NIA PoE class 1 IEEE802.3af NIA
+
+Guard Doorstation (vertical) mkIl
+Dimensions (mm) 100 x 225 x 45
+
+Designed to be versitle in
+installation, it includes a vandal
+resistant, weather shielding | Guard Doorstation (horizontal) mkill
+
+stainless steel enclosure. Facia Dimensions (mm) 254 x 104 x 42
+(Surface mount installation) | Wall cutout (mm) 245 x 95 x 55
+
+Includes a flush-mount
+wall-mount box enclosure.
+

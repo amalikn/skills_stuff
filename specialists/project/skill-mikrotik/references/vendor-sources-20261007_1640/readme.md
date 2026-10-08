@@ -20,6 +20,9 @@ Current RouterOS channels on the retrieval date: stable 7.24.5, long-term 7.23.7
 
 All retrieved 2026-10-07.
 
+Firmware binaries (RouterOS 7.8, 7.12.2, 7.23.7, 7.24.5 for arm and mipsbe, added 2026-10-08) are not in this folder: they are in the pack's `firmware-files/<version>/`,
+indexed with size, sha256 and source URL in [../firmware-manifest.yaml](../firmware-manifest.yaml).
+
 - `mib-7.8/mikrotik.mib`: MIKROTIK-MIB shipped for RouterOS 7.8 (LAST-UPDATED 202112210000Z), as downloaded Source: https://download.mikrotik.com/routeros/7.8/mikrotik.mib.
 - `mib-7.8/mikrotik-mib-oid-index.tsv`: Derived: every object in the 7.8 MIB with resolved numeric OID, syntax, status (not a vendor file) Source: derived from `mib-7.8/mikrotik.mib`.
 - `mib-7.24.5/mikrotik.mib`: MIKROTIK-MIB for current stable RouterOS 7.24.5 (LAST-UPDATED 202607070000Z), as downloaded Source: https://download.mikrotik.com/routeros/7.24.5/mikrotik.mib.

@@ -125,6 +125,9 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
   in `skill-cambium` — see Related Skills below.
 - `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture, the `SNMP-<location>` read-write
   community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/tplink-switch.sh`.
+- `references/17_site-ata-dallas-delta.md` — the rct site ATA (Dallas Delta DDC_VoIP-m): address, web-UI-only management, no SNMP, SIP registration readout, site-unique settings.
+- `references/vendor-sources-raspberry-pi-20261008_1043/readme.md` and `references/vendor-sources-dallas-delta-20261008_1043/readme.md` — verbatim vendor documents, captures and firmware
+  manifests for the Raspberry Pi SMC and the site ATA; Pi EEPROM images in `firmware-files/raspberry-pi/`.
 - `scripts/` — read-only diagnostics (backdoor check, outage classification, fleet health, WAN-routing drift, pin activation, Prometheus/Graylog query helpers) and the
   ansible-lint pre-push gate; catalogued with safety labels in `scripts/README.md`. Run them through the pack-root `justfile` (`just --list`).
 

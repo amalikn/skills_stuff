@@ -36,6 +36,7 @@ pack's `AGENTS.md` Standing Write-Back Contract.
 | Coverage gaps, unverified assumptions, pack staleness risks                                                   | `references/05_known-issues.md`               |
 | Device REST API / SSH CLI data points per adapter method, config-backup source, write-ops boundary            | `references/06_device-api-cli-reference.md`   |
 | cnMaestro shows Wi-Fi clients with IPv4 0.0.0.0 — run `just client-ip-sweep <site>-smc01 <apn\|nbn>`          | `references/05_known-issues.md`               |
+| `wh` flavour sites: which Cambium unit is at `.20` (XV2-2T0 behind the MikroTik switch) and the ePMP bridges, per site | `references/05_known-issues.md` §`wh` flavour |
 
 **Do not write new operational content to this file** — it is a navigation index only. Write content to the matching reference file.
 

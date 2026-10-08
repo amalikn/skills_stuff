@@ -25,6 +25,9 @@ a retired or failed lifecycle object. An explicit policy may create a review tas
 Do not put secrets, raw polling payloads, high-rate time series, uncorroborated neighbour claims, or an external system's entire schema into Nautobot merely because it has an extension seam. Preserve
 only the durable intent or the bounded evidence needed to govern it.
 
+> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: nautobot/extras/models/customfields.py lines 775-779 in the installed source ("Key cannot be changed once created"); a rename carried out on one deployment the same day · Falsifier: a 3.2.x PATCH of a custom field's `key` that succeeds
+> A custom field's key cannot be renamed. A rename is: create the new field, copy every object's value to it (only where the new one is empty), switch every reader and writer, then delete the old field once nothing reads it. Choose the key's spelling to match the system the values come from before the first create (for example a source's own variable name), because the cost of changing it later is a migration, not an edit.
+
 ## Failure clues and acceptance
 
 Conflicting writers, a Location used to dodge IP uniqueness, a custom field carrying an independent lifecycle, and a monitoring process overwriting Status are modelling failures. Before acceptance,

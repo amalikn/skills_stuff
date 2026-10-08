@@ -14,6 +14,9 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 2026-10-08 Learned (from UNC): `references/data-model.md` the two-ended Cable POST works on 3.2.3, and interfaces have no `cabled` filter.
+- 2026-10-08 Learned (from UNC): `references/authority-and-modeling.md` custom field keys are immutable, a rename is copy then delete; `references/upgrade-and-troubleshooting.md` SSoT 4.7.0, DLM 4.2.0 and Capacity Metrics 4.1.1 on 3.2.3 / Python 3.13, and post_upgrade must run in the recreated container.
+- 2026-10-08 Learned (from UNC, Raspberry Pi SMC canary): `references/data-model.md` a host's radio takes a wireless interface type, decided from the host; `references/api-and-writers.md` get-or-create above a dry-run branch writes, and `custom_fields` ride on the create POST.
 - 20261005_1936 Governance follow-ups (operator): the `justfile` merges this bootstrap's recipes with a parallel session's `helpers` and probe recipes, and `bootstrap`
   installs root `requirements.txt` (`-r tests/requirements.txt`, one PyYAML pin); `AGENTS.md` is tracked with `git add -f` because the repo's git info/exclude file ignores it
   repo-wide (the exclude rule is unchanged, so later edits need `git add -f` again); all 6 `.archcore/` documents accepted.

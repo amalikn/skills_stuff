@@ -21,6 +21,9 @@ Version trigger: when the installed version differs from the `Verified against:`
 section the task relies on against the new installed source or versioned docs, then update that line and `compatibility.yaml`. Until then the cookbook is the old
 version's syntax.
 
+> **Learned 2026-10-08** · Nautobot 3.2.3 (image networktocode/nautobot:3.2.3-py3.13) · VERIFIED_PRIMARY · Source: PyPI metadata read 2026-10-08 and a live install on one deployment: image rebuilt, `nautobot-server post_upgrade`, 46 app migrations applied, 0 pending, core and every existing app version unchanged in `pip list` · Falsifier: one of these pins failing to install or migrate on 3.2.x with Python 3.13
+> nautobot-ssot 4.7.0 (nautobot >=3.1,<4; Python >=3.10,<3.15), nautobot-device-lifecycle-mgmt 4.2.0 and nautobot-capacity-metrics 4.1.1 (nautobot >=3.0,<4) install together beside Golden Config 3.0.7 without moving Nautobot or Django. Capacity Metrics is already pulled in as a Golden Config dependency, so enabling it is a PLUGINS line, not a new package. DLM registers six jobs on first start; set SSoT's `hide_example_jobs: True` to keep its demo jobs out of the job list. Recreate the web, worker and scheduler containers by service name before running `post_upgrade`: run in the old container, it migrates nothing new and reports success. `post_upgrade` also sends installation metrics to nautobot.cloud unless `INSTALLATION_METRICS_ENABLED = False`.
+
 ## Retrofit and rollback
 
 If upstream supplies a replacement for a patch, verify the replacement, retire the patch, preserve history, and test the new behavior. If a patch remains necessary, compare the original base to new

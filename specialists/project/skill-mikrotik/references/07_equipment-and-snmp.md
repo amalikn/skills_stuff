@@ -4,9 +4,9 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: The two MikroTik models in the fleet, their vendor specs, SNMP state and MIBs, firmware status, and the vendor sources kept in this pack
-Last reviewed: 2026-10-07
+Last reviewed: 2026-10-08
 Summary: >-
-  RB450Gx4 switch and Metal 52 ac AP: specs from MikroTik's pages, SNMP disabled on every unit checked, MIBs for RouterOS 7.8 and 7.24.5, no changelog fix for the
+  RB450Gx4 switch and Metal 52 ac AP: specs from MikroTik's pages, SNMP read-only on the canary units and off elsewhere, MIBs for RouterOS 7.8 and 7.24.5, no changelog fix for the
   IPQ-4019 kernel failures, and the cpu-frequency warning. The OID list is snmp-oid-registry.yaml.
 ---
 
@@ -44,10 +44,19 @@ Cambium AP instead, so a Metal is never fed 48 V there.
 
 ## SNMP
 
-- **Off by default, now on at one site.** RouterOS ships SNMP off (`ros-snmp.txt`: "enabled (yes | no; Default: no)") with a default `public` community
-  open to `::/0`, and the provisioning script never turns it on (06_provisioning.md). With operator approval it was enabled read-only on amuroona's
-  switch and AP (2026-10-07): `public` disabled, a vault community (`cambium-devices/apn-snmp-ro`) allowed only from the SMC (`10.255.0.1/32`), via
-  `just snmp_community`. Every other unit still has it off. Known issue 14.
+- **Off by default, now on at five sites.** RouterOS ships SNMP off (`ros-snmp.txt`: "enabled (yes | no; Default: no)") with a default `public` community
+  open to `::/0`, and the provisioning script never turns it on (06_provisioning.md). With operator approval it was enabled read-only, `public` disabled,
+  a vault community (`cambium-devices/apn-snmp-ro`) allowed only from the SMC (`10.255.0.1/32`), via `just snmp_community enable`, on:
+
+  | Site | Flavour | Switch serial | AP serial | Enabled |
+  | --- | --- | --- | --- | --- |
+  | amuroona | `rct` | `HEX096Y47WC` | (in `snmp-oid-registry.yaml`) | 2026-10-07 |
+  | 20-mile | `rct` | `HD4086NEMR1` | `HE208T81F2B` | 2026-10-08 |
+  | adjamarragu | `rct` | `HEX09ECNCCW` | `HEB08NQZHXD` | 2026-10-08 |
+  | areyonga | `wh` | `HEX098KSYZ8` | no MikroTik AP | 2026-10-08 |
+  | glen-hill | `wh` | `HEX097QBC2Y` | no MikroTik AP (Cambium XV2-2T0) | 2026-10-08 |
+
+  VERIFIED-OBSERVED 2026-10-08: each 2026-10-08 unit answered sysDescr and the mtxr serial from its SMC. Every other unit still has it off. Known issue 14.
 - **What answered** (read from the SMC with `just snmp`; full list with values in `snmp-oid-registry.yaml` `oids`): sysDescr gives the model
   ("RouterOS RB450Gx4", "RouterOS RBMetalG-52SHPacn"); sysObjectID is `.1.3.6.1.4.1.14988.1` for both, so it is not a model key; serial, RouterOS
   version and board name; IF-MIB names, status and 64-bit octets; per-port link-downs; PoE status on ether5. Health: the old scalars still answer on 7.8
@@ -77,6 +86,13 @@ Cambium AP instead, so a Metal is never fed 48 V there.
   (04_failure-modes.md) is not a known-fixed bug. Related entries: 7.10 "improved watchdog reporting in log after reboots for several ARM and ARM64
   devices"; 7.16 "improved watchdog and kernel panic reporting" and "routerboard - improved Etherboot stability for IPQ-40xx devices"; 7.22.3 fixed an
   IPQ-40xx switch-reset stability bug introduced in 7.22, which never affected 7.8. Known issue 8.
+- **Firmware files kept** (operator 2026-10-08: committed, not gitignored): 7.8, 7.12.2, 7.23.7 and 7.24.5 for arm (RB450Gx4) and mipsbe (Metal 52 ac):
+  `routeros`, `all_packages`, `wireless` (7.23.7 and 7.24.5; 7.8 and 7.12.2 bundle it) and `netinstall`, in `firmware-files/<version>/`, each with size, sha256
+  and source in `references/firmware-manifest.yaml`.
+- **Upgrade path from 7.8 needs a stop at 7.12.x** (VERIFIED-DOC, 7.13 changelog in `references/vendor-sources-20261007_1640/routeros-changelogs-7.8-to-7.24.5.txt`): 7.13 split the `wireless`
+  package out of the bundle, and an upgrade to 7.13 or later "must be done through 7.12 in order to convert wireless packages automatically"; Netinstall or a
+  manual package install is the exception. The intermediate image kept is **7.12.2** (2023-12-20), the last 7.12.x on the download host (7.12.3 returns 404),
+  so the path from these files is 7.8 -> 7.12.2 -> 7.23.7 or 7.24.5. MikroTik publishes no `.sha256` for 7.12.x; the files are checked by size and ETag md5.
 
 ## The cpu-frequency warning
 
@@ -96,4 +112,4 @@ and will be reused after a reboot", and "it is recommended to disable "auto-mac"
 
 `references/vendor-sources-20261007_1640/readme.md` indexes every file: the two MIBs (with derived OID index files), help.mikrotik.com pages saved as text (SNMP, Ethernet, Bridging,
 RouterBOARD, Device-mode, Health, Packages, WiFi), product pages and PDFs, the concatenated changelogs 7.8 to 7.24.5, and three forum threads (secondary).
-Refetch a doc page with `just fetch_doc <confluence-id> <out.txt>`.
+Refetch a doc page with `just fetch_doc <confluence-id> <out.txt>`. Firmware binaries are indexed separately in `references/firmware-manifest.yaml` (files in `firmware-files/`).

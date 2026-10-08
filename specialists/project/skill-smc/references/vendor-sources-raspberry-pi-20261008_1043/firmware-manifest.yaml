@@ -1,0 +1,62 @@
+# Raspberry Pi 4 Model B bootloader EEPROM and VL805 USB firmware files kept for the SMC site controllers.
+# Binaries are committed in skill-smc/firmware-files/raspberry-pi/. Retrieved 2026-10-08 from github.com/raspberrypi/rpi-eeprom.
+# Box readings: captures/<node>-20261008.txt (vcgencmd bootloader_version, rpi-eeprom-update), read-only, 2026-10-08 10:44 AEDT.
+device: Raspberry Pi 4 Model B Rev 1.5 8 GB (revision code d03115)
+firmware_dir: firmware-files/raspberry-pi/
+source_repo: https://github.com/raspberrypi/rpi-eeprom
+source_repo_head: a72213d02af27f2dc3b86f584988aec407e46378  # 2026-10-01T10:45:29Z
+release_notes: rpi-eeprom-firmware-2711-release-notes.md.txt
+files:
+  - filename: pieeprom-2023-01-11.bin
+    kind: bootloader EEPROM image
+    version: "2023-01-11, git 8ba17717, BUILD_TIMESTAMP 1673458852"
+    channel: "default/stable from 2023-01-18; archived from the repo 2025-07-03 (commit 37ee92a8b6a2)"
+    url: https://raw.githubusercontent.com/raspberrypi/rpi-eeprom/ac013de80e35/firmware-2711/default/pieeprom-2023-01-11.bin
+    sha256: a4b5a34e264907f3eb2d7156bdfc93c9db7d7d9388f5055a0021b808b4c1960b
+    size: 524288
+    retrieved: 2026-10-08
+    run_by: [20-mile-smc01, adjamarragu-smc01, areyonga-smc01, glen-hill-smc01]
+    match_evidence: "image strings VERSION:8ba17717 and BUILD_TIMESTAMP=1673458852 equal vcgencmd bootloader_version on all four boxes"
+  - filename: pieeprom-2026-09-23.bin
+    kind: bootloader EEPROM image
+    version: "2026-09-23"
+    channel: "current default (promoted 2026-09-27) and newest in latest"
+    url: https://raw.githubusercontent.com/raspberrypi/rpi-eeprom/a72213d02af27f2dc3b86f584988aec407e46378/firmware-2711/default/pieeprom-2026-09-23.bin
+    sha256: e7f0cf6f5fb50c68042e59af0a2c0d8b51a41e44e182ce33b5aeb9e05a19316f
+    size: 524288
+    retrieved: 2026-10-08
+    run_by: []
+    note: "firmware-2711/latest/pieeprom-2026-09-23.bin has the same sha256"
+  - filename: pieeprom-2026-05-17.bin
+    kind: bootloader EEPROM image
+    version: "2026-05-17"
+    channel: "previous default (promoted 2026-05-26), still in default/ and latest/"
+    url: https://raw.githubusercontent.com/raspberrypi/rpi-eeprom/a72213d02af27f2dc3b86f584988aec407e46378/firmware-2711/default/pieeprom-2026-05-17.bin
+    sha256: f1da1bda48c8f19d6eccd94f160a2c8da48fd0acdbfa47f0ac58353208d188c3
+    size: 524288
+    retrieved: 2026-10-08
+    run_by: []
+  - filename: recovery.bin
+    kind: EEPROM recovery / update loader (SD-card boot)
+    version: "as at repo head a72213d0 (2026-10-01)"
+    channel: "default (latest/recovery.bin has the same sha256)"
+    url: https://raw.githubusercontent.com/raspberrypi/rpi-eeprom/a72213d02af27f2dc3b86f584988aec407e46378/firmware-2711/default/recovery.bin
+    sha256: 86dad388a562e7706f424fca0b32eba61a69f4df46cc1681aa4100b13e337ef7
+    size: 101246
+    retrieved: 2026-10-08
+    run_by: []
+  - filename: vl805-000138c0.bin
+    kind: VL805 USB 3 controller firmware
+    version: "000138c0"
+    channel: "default and latest"
+    url: https://raw.githubusercontent.com/raspberrypi/rpi-eeprom/a72213d02af27f2dc3b86f584988aec407e46378/firmware-2711/default/vl805-000138c0.bin
+    sha256: 548581c70a71d4da17a8d0eb314db518a1d3592249e893e42c020c0a8f53a75f
+    size: 99352
+    retrieved: 2026-10-08
+    run_by: [20-mile-smc01, adjamarragu-smc01, areyonga-smc01, glen-hill-smc01]
+    match_evidence: "rpi-eeprom-update reports VL805 CURRENT 000138c0 (VL805_FW: Using bootloader EEPROM)"
+boxes:
+  os_firmware_packages: "rpi-eeprom 13.12-1ubuntu1, linux-firmware-raspi 6-0ubuntu3 (Ubuntu 22.04)"
+  gpu_firmware: "vcgencmd version: Nov 18 2021 16:16:49, version d9b293558b4cef6aabedcc53c178e7604de90788 (clean) (release) (start)"
+  packaged_latest_eeprom: "2022-01-25 (1643121041) in /lib/firmware/raspberrypi/bootloader/default; older than the 2023-01-11 image running, so rpi-eeprom-update reports up to date"
+  behind_upstream_default: "yes: running 2023-01-11, upstream default is 2026-09-23"

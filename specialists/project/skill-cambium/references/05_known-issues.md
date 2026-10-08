@@ -267,8 +267,11 @@ evidence in `local-knowledge-ansible/ansible-wifi/issues/wh-fleet/cambium-wh-202
 | canteen-creek | `10.255.0.21` | `00:04:56` | ePMP 1000 Hotspot; web UI is the Falcon stack (`falcon-ng-client-2.0.0`), same as Enterprise Wi-Fi | web `POST /api/login` via `scripts/cambium_xv2_adapter.py` | **No login found.** 403 (wrong password) for `epmp-ap`, `enterprise-wifi` and the MikroTik entry; 404 for `enterprise-wifi-legacy` and `epmp-ap-legacy`, possibly the unit refusing after failures. SSH with `epmp-ap` neither refused nor produced output. Stopped after five web attempts |
 | canteen-creek | `10.255.0.10` | `00:04:56` | ePMP point-to-point **AP** (`cambiumDeviceMode 1`), firmware 4.7.0.1, SSID `A8bridge` | SSH `show dashboard`, `epmp-ap-legacy` (`epmp-ap` rejected) | OK |
 | canteen-creek | `10.255.0.11` | `00:04:56` | ePMP point-to-point **SM** (`cambiumDeviceMode 2`), firmware 4.7.0.1, associated to `00:04:56:D3:FA:C6` (`.10`) | same | OK |
+| glen-hill | `10.255.0.20` | not read | Enterprise Wi-Fi XV2-2T0, serial `WLYM113B7GGM`, hostname `XV2_Hotspot0_GlenHill`, 6.6.0.3-r9 | unified-network-controller `identify` (`enterprise-wifi` REST) | OK, 2026-10-08; landed Staged in Nautobot under controller `apn-cnmaestro01` |
 
 - At both sites `.20` is the Cambium AP, not a MikroTik: on `rct` the same address is a MikroTik Metal 52 ac (skill-mikrotik).
+- **2026-10-08 (VERIFIED-OBSERVED, Teleport apn):** glen-hill's `.20` is a third `wh` XV2-2T0 on 6.6.0.3-r9, behind the site's MikroTik RB450Gx4 switch (skill-mikrotik
+  `references/01_overview.md`); areyonga's `.20` did not answer. So the `wh` pattern holds at three of four sites read: a Cambium XV2-2T0 AP at `.20` behind a MikroTik switch.
 - XV2 `ETH1` `rx_bytes`/`tx_bytes` read `4294967295` on laramba: 32-bit counters pinned at their maximum. Do not compute rates from them.
 - **Point-to-point bridges (operator, 2026-10-07):** `rct` sites have none, a single AP each (the MikroTik Metal, skill-mikrotik); most `wh` sites have a single AP and
   only a handful have an ePMP point-to-point bridge. Known `wh` sites with a bridge: **canteen-creek** (`10.255.0.10` AP, `10.255.0.11` SM, VERIFIED-OBSERVED

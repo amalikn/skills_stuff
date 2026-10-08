@@ -1,0 +1,83 @@
+
+Products
+Solutions
+Projects
+Support
+About
+
+Get in Touch
+
+Support/FAQ
+
+Help Centre
+FAQ
+Quick answers to common questions about our products, services, and support.
+What warranty do Dallas Delta products come with?
+Most Dallas Delta products come with a standard 12-month warranty from the date of purchase. For project-based orders, warranty terms may be negotiated separately as part of the contract. Contact us for specific warranty details regarding your purchase. To read about our Terms and Conditions of Sales, click here.
+Do your products connect with MS Teams?
+Our VoIP products can be configured to work with MS Teams. A guide on how to do this can be found here.
+Do you offer custom product configurations?
+Yes. Our engineering and manufacturing team can design custom products tailored to your exact requirements. This includes modified panel layouts, custom labelling, bespoke enclosures, and specialised connectivity configurations.
+What is the difference between DDUI and DDConnect?
+DDUI is our enterprise-grade PABX platform designed for large-scale deployments requiring full monitoring, server state visibility, MODBUS integration, call recording, and high availability failover. DDConnect is a lightweight PABX that is quick to set up and does not require an external VoIP provider.
+Are your products suitable for outdoor environments?
+Yes. Our WeatherTough range features IP65-rated cast aluminium enclosures that are dust-tight and protected against water jets. Our standard stainless steel panels are also highly weather-resistant.
+How do I submit a technical support request?
+You can submit a technical support request through our online portal at customertools.dallasdelta.com/support. For urgent issues, you can also call us directly at (03) 9387 7388 during business hours.
+What certifications do your products hold?
+Our products hold certifications including ACMA, AS/NZS 60950, AS/NZS CISPR22, EN55022, RCM, AS1670, AS4428.4, AS1428.5, ISO 9001, and ISO 45001.
+Do you ship internationally?
+While we primarily service the Australian market, we do fulfil international orders on a case-by-case basis. Contact our sales team to discuss international shipping options and lead times.
+What is the lead time for standard products?
+Lead times vary depending on the product and current demand. Standard products typically ship within 2-4 days. Custom configurations and large project orders may require longer lead times.
+How do I return a product?
+To initiate a return, submit a Return Authorisation request through our portal at customertools.dallasdelta.com/return. All returns must be authorised before shipping. Products must be returned in original packaging.
+Why is the door relay not activating when the remote party enters the release code?
+Ensure that the Relay in Use or Remote Trigger flag is enabled in the software settings. If the software is configured correctly, verify that the relay's physical wiring matches the "Normally Open" (NO) or "Normally Closed" (NC) requirements of your electronic lock.
+My 4GS / 4G unit is not responding to SMS commands or programming fails. What should I check?
+First, verify the signal strength; a reliable RSSI is typically -80 dBm or better. If the signal is weak, inspect the internal antenna cable for damage. Additionally, ensure the SIM card is active and the unit has appropriate network coverage.
+How can I extend the duration the intercom rings before it stops?
+This behaviour is controlled by the No Answer Timer. If the intercom is stopping the call too quickly, you can increase this value in the programming menu. Please refer to the manual for the command sequence to adjust these settings.
+Why is my VoIP unit failing to register with the SIP server?
+SIP registration issues are typically due to missing or incorrect credentials (SIP User ID Name, Authentication ID, Authentication PIN, and Proxy Address). Ensure your network allows traffic through the standard SIP ports (typically 5060/5061). Refer to the User Manual to ensure all mandatory fields in the web interface are populated correctly.
+What connectivity options are available for your door stations?
+Our door stations are available in multiple connectivity options including VoIP (Voice over IP), 4G Cellular, Analogue Line Powered (LP), and Analogue Externally Powered (EP/DCOM). The availability of each option varies by product model.
+Can't find what you're looking for?
+Contact Us
+Back to Support
+
+Melbourne Headquarters
+53 Barry Road, Campbellfield
+VICTORIA 3061 AUSTRALIA
+(03) 9387 7388
+www.dallasdelta.com
+[email protected]
+8:30am – 5pm Mon–Fri
+Products
+	•	Sentry
+	•	Sentinel
+	•	Customer Service Telephone (CST)
+	•	Guard
+	•	Weathertough
+	•	Hygienic
+	•	Polephone
+Solutions
+	•	DDUI
+	•	DDConnect
+	•	MFT
+Projects
+	•	Current
+	•	Completed
+Support
+	•	Technical Support
+	•	Return Request
+	•	Downloads
+	•	FAQ
+	•	Compliance
+Quick Links
+	•	About Us
+	•	Contact
+	•	Sign In
+Copyright © 2026 Dallas Delta Corporation. All rights reserved.
+ABN 11 005 617 532
+PrivacyTerms

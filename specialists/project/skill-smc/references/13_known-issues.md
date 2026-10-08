@@ -22,6 +22,9 @@
 - [2026-09-24 — neighbour table: mornington hits the 1024 hard cap (2,230 table-fulls); proposed `gc_thresh` standard (PROPOSAL, not applied)](#2026-09-24--neighbour-table-mornington-hits-the-1024-hard-cap-2230-table-fulls-proposed-gc_thresh-standard-proposal-not-applied)
 - [2026-09-30 — `bot-cw-dashboard` restarts netfilter-persistent on koonibba and amata, wiping every device's access mark (OPEN, owner outside this repo)](#2026-09-30--bot-cw-dashboard-restarts-netfilter-persistent-on-koonibba-and-amata-wiping-every-devices-access-mark-open-owner-outside-this-repo)
 - [2026-10-05 — cnMaestro shows Wi-Fi clients as 0.0.0.0: SMC DHCP is healthy, the gap is on the AP/controller side (OPEN)](#2026-10-05--cnmaestro-shows-wi-fi-clients-as-0000-smc-dhcp-is-healthy-the-gap-is-on-the-apcontroller-side-open)
+- [2026-10-07 — `gl.aws.apn.au` cert expiry stopped SMC log shipping for 25 days (RESOLVED; gap not recoverable)](#2026-10-07--glawsapnau-cert-expiry-stopped-smc-log-shipping-for-25-days-resolved-gap-not-recoverable)
+- [2026-10-07 — two-inventory runs lose topology variables; kernel unhold fails before the target kernel is installed](#2026-10-07--two-inventory-runs-lose-topology-variables-kernel-unhold-fails-before-the-target-kernel-is-installed)
+- [2026-10-08 — Raspberry Pi SMCs and the rct site ATA: gaps seen in a four-site read](#2026-10-08--raspberry-pi-smcs-and-the-rct-site-ata-gaps-seen-in-a-four-site-read)
 
 ---
 
@@ -1054,3 +1057,13 @@ The ACM cert on the Graylog ALB (`gl.aws.apn.au`) expired 2026-09-12 09:59:59 AE
   :2020 is scraped today was not checked.
 - **Graylog EC2 security groups are wide (observation, nothing changed):** `noc-sg-graylog` allows 80, 9000 and 27017 (MongoDB) from 0.0.0.0/0;
   `apn=graylog-backend-sg` allows 5044, 12202 and udp/514 from 0.0.0.0/0. The instance has no public IP and no IGW route, so these are reachable only from inside the VPC or over the VPN.
+
+## 2026-10-08 — Raspberry Pi SMCs and the rct site ATA: gaps seen in a four-site read
+
+VERIFIED-OBSERVED 2026-10-08 over Teleport apn (20-mile, adjamarragu, areyonga, glen-hill; ATA reads at five more rct sites).
+
+- **kintore-smc01 is not registered in Teleport:** `subsystem request failed`, twice. Check the backdoor (`scripts/backdoor-watch.sh`) before calling it down.
+- **aeroplane-1's ATA drops the HTTP connection;** 20-mile's ATA never answers HTTP. The ATA's web UI is its only management surface (`17_site-ata-dallas-delta.md`).
+- **The ATA web PIN is empty** on every unit read (adjamarragu, alamirra, akwalirrumanja, alice-well, alkngarrija). Open, not changed.
+- **Pi bootloaders are behind upstream and the package hides it:** EEPROM 2023-01-11 on all four, upstream default 2026-09-23; Ubuntu's `rpi-eeprom` reports "up to date" (`07_hardware-overlay.md`).
+- **No SNMP on the Pis,** by operator decision 2026-10-08 (`02_service-map.md`).

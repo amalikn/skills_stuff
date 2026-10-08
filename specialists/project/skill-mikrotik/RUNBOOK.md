@@ -13,9 +13,10 @@ This file is the navigation index for `skill-mikrotik`. Load only the reference 
 | Logging in: KeePass entry, Teleport port-forward, read-only guard, why nothing secret runs on the SMC | `references/02_device-access.md`          |
 | Which RouterOS command shows what; field meanings; RouterOS 7 gotchas                                 | `references/03_routeros-cli-reference.md` |
 | A site is dark or flapping: known signatures and how they were confirmed                              | `references/04_failure-modes.md`          |
-| How new switches are built: the Pi provisioning script, what it sets, issues it puts on every unit | `references/06_provisioning.md` |
+| How new switches are built: the Pi provisioning script (`450gmk3_v1.1.py`, read-only), what it sets, its defects | `references/06_provisioning.md` |
 | Model specs, SNMP state and MIBs, firmware status, cpu-frequency warning, vendor sources | `references/07_equipment-and-snmp.md` |
 | SNMP OIDs per model (candidates from the 7.8 MIB until verified), equipment facts, the list tools read | `references/snmp-oid-registry.yaml` |
+| Firmware files kept (RouterOS 7.8, 7.12.2, 7.23.7, 7.24.5; arm, mipsbe): sizes, sha256, source URLs; binaries in `firmware-files/` | `references/firmware-manifest.yaml` |
 | Gaps, unverified assumptions, things not yet surveyed                                                 | `references/05_known-issues.md`           |
 | Scripts and their safety class                                                                        | `scripts/README.md`                       |
 

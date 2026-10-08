@@ -532,6 +532,36 @@ read-write community), and refuses to write if the login or enable password or a
 | `tplink_cli_driver.py`  | Runs on the SMC; SSH to one switch                      | `external-network`,             | Never run directly from the workstation; fed by `tplink-switch.sh`                |
 |                         |                                                         |   `requires-credentials`        |                                                                                   |
 
+### `pi_identity_probe.sh` and `ata_settings_read.py`
+
+Promoted 2026-10-08 from a unified-network-controller session that read the Raspberry Pi SMCs and the rct site ATAs. Both take the Teleport proxy as a
+required argument and never guess it, because a node name can exist on both clusters as different boxes.
+
+`pi_identity_probe.sh --proxy <proxy> <node>...` prints, per Pi SMC, the device-tree model and serial-number, cpuinfo Serial/Revision/Model, dmidecode
+(empty on a Pi: no DMI), os-release, arch and kernel, each physical NIC with MAC, driver and speed, bridges, VLAN interfaces and memory. The remote command
+set is fixed in the script; it takes node names only. Exits 1 when any node is unreachable or does not finish the probe. Interpretation (serial as the
+identity anchor, the single-port layout, `Revision` decoding) is in `../references/07_hardware-overlay.md`, Raspberry Pi SMC identity.
+
+`ata_settings_read.py --proxy <proxy> <node>...` sends a small stdlib agent (Python 3.10, embedded in the script) to each SMC through `tsh ssh`. The agent
+logs in to the Dallas Delta DDC_VoIP-m web UI at `--ip` (default `192.168.5.253`) with the **empty PIN**, which is what the units in service have
+(operator, 2026-10-08: try it), reads the `settings`, `phonebook` and `digitmap` pages and returns `{page: {field: value}}`. Any field named like
+`pin|pass|pwd|pw|secret` is dropped on the SMC and again locally, so no PIN, password or SIP secret is printed or stored. It tolerates the unit's short
+body (`IncompleteRead`: 43 bytes less than `Content-Length`). `_registered` is the settings page's `Registered : Yes|No`, the SIP registration state.
+With several nodes it lists, per page, how many fields are identical and the values of every field that differs; `--json` prints everything, and
+`--local HOST[:PORT]` runs the agent on the workstation (lab unit or test server). Exits 1 when any node or unit could not be read. Facts and the
+site-unique field list: `../references/17_site-ata-dallas-delta.md`.
+
+```bash
+just pi_identity_probe teleport.apn.au 20-mile-smc01 adjamarragu-smc01
+just ata_settings_read teleport.apn.au adjamarragu-smc01 akwalirrumanja-smc01 alamirra-smc01
+just ata_settings_read teleport.apn.au --json adjamarragu-smc01
+```
+
+| Script                 | Touches                                              | Safety                            | Notes                                                                                                   |
+| ---------------------- | ---------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `pi_identity_probe.sh` | Live Pi SMC appliances via `tsh ssh`                 | **read-only**                     | Fixed command set, node names only; idempotent; proxy required                                          |
+| `ata_settings_read.py` | `tsh ssh` to SMCs; HTTP from the SMC to the site ATA | **read-only**, `external-network` | One login POST per page read with the empty PIN, never a form submission; secret-named fields dropped on the box; idempotent; proxy required |
+
 ## Usage
 
 ```bash

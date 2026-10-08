@@ -1,0 +1,115 @@
+
+Products
+Solutions
+Projects
+Support
+About
+
+Get in Touch
+
+Support/Compliance/Security Details
+
+Cyber Security
+Security Details
+Detailed information on firmware remediation, product security features, vulnerability reporting, and our product lifecycle policy.
+
+Remediation
+Firmware Remediation Updates
+Dallas Delta provides remediation updates in accordance with our Firmware Support Lifecycle Policy. All firmware and security updates are documented and published via our VoIP Compliance & Security Lifecycle page. Critical updates will be communicated to registered customers and are intended to maintain product security and functionality throughout the 10-year support period.
+
+Security
+Product Security at Dallas Delta
+At Dallas Delta, we take product security seriously. Our VoIP devices are designed with modern security controls to help protect your network, your users, and your data.
+Built-In Security Features
+Our devices include:
+Mandatory Password Change
+Users are required to change the default password on first login.
+Strong Password Rules
+Minimum length and complexity requirements are enforced.
+Restricted Configuration Access
+Access to device configuration settings is controlled and restricted.
+Controlled Provisioning
+Provisioning features are locked down to reduce unauthorised access.
+These measures are designed to reduce unauthorised access and improve network security.
+
+Updates
+Firmware & Security Updates
+We provide firmware updates for supported products, including updates that address confirmed security vulnerabilities.
+Each product's support period and firmware availability window is published on our website.
+We recommend keeping devices updated with the latest available firmware.
+
+Vulnerability Reporting
+Reporting a Security Issue
+If you believe you have found a security vulnerability, please let us know. You can contact us in either of the following ways:
+Email
+[email protected]
+For reporting potential security vulnerabilities
+Support Form
+Submit a Support Request
+Select "Security Issue" as the enquiry type
+We aim to acknowledge reports within 2 business days and will work with you to investigate the issue.
+
+Product Lifecycle
+Firmware Support & Product Lifecycle
+Dallas Delta publishes clear support timeframes for all VoIP products so customers know exactly what to expect.
+How Long Are Products Supported?
+Unless otherwise stated:
+Hardware Support
+10 Years
+From the product's First Sale Date
+Firmware Support
+10 Years
+Including security updates, from First Sale Date
+What Does Hardware Support Mean?
+	•	Spare parts may be available
+	•	Paid repair services may be offered
+	•	Technical assistance is available
+What Does Firmware Support Mean?
+	•	Firmware updates may be released
+	•	Security vulnerabilities may be addressed
+	•	Stability improvements may be issued
+Not all updates are feature upgrades. Updates are released based on operational and security requirements.
+Security Updates
+Security updates are firmware releases that address confirmed vulnerabilities. Security updates are available only within the published firmware support period for each product model.
+End of Support
+	•	No further firmware updates will be released
+	•	Security updates will no longer be provided
+	•	Devices may continue operating, but upgrade planning is recommended
+For security-sensitive environments, we recommend planning device replacement before the end-of-support date. Support dates, firmware versions, and downloads are listed on the Compliance page.
+Back to Compliance
+
+Melbourne Headquarters
+53 Barry Road, Campbellfield
+VICTORIA 3061 AUSTRALIA
+(03) 9387 7388
+www.dallasdelta.com
+[email protected]
+8:30am – 5pm Mon–Fri
+Products
+	•	Sentry
+	•	Sentinel
+	•	Customer Service Telephone (CST)
+	•	Guard
+	•	Weathertough
+	•	Hygienic
+	•	Polephone
+Solutions
+	•	DDUI
+	•	DDConnect
+	•	MFT
+Projects
+	•	Current
+	•	Completed
+Support
+	•	Technical Support
+	•	Return Request
+	•	Downloads
+	•	FAQ
+	•	Compliance
+Quick Links
+	•	About Us
+	•	Contact
+	•	Sign In
+Copyright © 2026 Dallas Delta Corporation. All rights reserved.
+ABN 11 005 617 532
+PrivacyTerms

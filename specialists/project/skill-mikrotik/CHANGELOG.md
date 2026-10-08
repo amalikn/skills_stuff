@@ -1,5 +1,46 @@
 # Changelog
 
+## 20261008_1227 — the team's provisioning script added as a read-only reference (v0.1.20 -> v0.1.21)
+
+- `450gmk3_v1.1.py` (pack root): the Pi script the team uses to build RB450Gx4 switches, supplied by the operator. Read-only: never edited; a change goes
+  into our own version under `scripts/` (operator, 2026-10-08). The operator chose to commit it as is, admin password included (2026-10-08); not yet committed.
+- `references/06_provisioning.md` corrected against the script: firmware goes over **SFTP**, not TFTP; first contact is the factory `192.168.88.1` with an
+  empty password; new *The script file* (path, sha256, dependencies, files it needs) and *Defects visible in the code* sections, and the full step list
+  (bench setup, re-run detection and reset offer, RB450Gx4 check, the v1.1 changelog file it leaves on flash as a version marker, RouterOS and RouterBoard 7.8,
+  read-back checks). The two command batches match the documented ones exactly (39 and 32 commands).
+- `references/05_known-issues.md`: 12 partly closed (script and first contact known; owner and AP provisioning open); 13 corrected (the password is now in
+  a file, the reference script); new 16 (which script version built each switch, via the flash marker) and 17 (two `str`-in-`bytes` checks that would
+  crash under Python 3, from reading the code).
+- `RUNBOOK.md`, `SKILL.md`: routing names the script; the pack's local `AGENTS.md` carries the read-only rule.
+
+## 20261008_1226 — reset-mac-address tested on one switch (known issue 11)
+
+- glen-hill-switch01 (operator approved): `/interface ethernet reset-mac-address [find]` works on RouterOS 7.8; ports back to their factory MACs and the
+  `auto-mac` bridges followed without a reboot; no outage seen. `references/05_known-issues.md` #11 and `references/01_overview.md` updated. Version 0.1.20.
+
+## 20261008_1207 — RouterOS 7.12.2 firmware files, the required stop from 7.8 (v0.1.18 -> v0.1.19)
+
+- `firmware-files/7.12.2/`: `routeros` (arm, mipsbe), `all_packages` (arm, mipsbe) and `netinstall` (.zip, .tar.gz) for 7.12.2 (2023-12-20), the last 7.12.x on
+  download.mikrotik.com (7.12.3 returns 404). The 7.13 changelog requires an upgrade from before 7.12 to pass through 7.12.x, so the path is 7.8 -> 7.12.2 ->
+  7.23.7 or 7.24.5. No separate `wireless` package (bundled; the host serves a 0-byte placeholder) and no published `.sha256` for 7.12.x.
+- `references/firmware-manifest.yaml`: six 7.12.2 entries with size, sha256, md5 and ETag check; header notes the intermediate step.
+- `references/07_equipment-and-snmp.md` (Firmware): 7.12.2 is kept; the "no 7.12.x image" sentence replaced. `SKILL.md`, `RUNBOOK.md` and the vendor-sources readme list 7.12.2.
+- `manifest.json`: 0.1.18 -> 0.1.19.
+
+## 20261008_1149 — SNMP on four more sites, identical MACs on wh, bridge host table, firmware files and the 7.12 stop (v0.1.17 -> v0.1.18)
+
+VERIFIED-OBSERVED 2026-10-08 from unified-network-controller work over Teleport apn.
+
+- `references/07_equipment-and-snmp.md` (SNMP): read-only SNMP enabled (`just snmp_community enable`, the vault read-only community, allowed from the SMC only, `public` disabled) on the
+  20-mile switch and AP, adjamarragu switch and AP, areyonga switch and glen-hill switch; a table lists every enabled unit with its serial. Each answered sysDescr and the mtxr serial.
+- `references/07_equipment-and-snmp.md` (Firmware, Vendor sources): firmware files for 7.8, 7.23.7, 7.24.5 in `firmware-files/` with `references/firmware-manifest.yaml` (committed, operator
+  2026-10-08); upgrade from 7.8 needs a stop at 7.12.x for the wireless package conversion (VERIFIED-DOC, 7.13 changelog). Manifest linked from the vendor-sources readme, RUNBOOK and SKILL.md.
+- `references/05_known-issues.md` #14: the enabled units listed.
+- `references/01_overview.md`: identical port MACs at 20-mile and areyonga (`wh`), identity `450Gx4` / `AP1` everywhere, so serial is the only identity; `wh` row adds areyonga and glen-hill
+  (glen-hill's `.20` is a Cambium XV2-2T0, areyonga's did not answer); which unit is on each port from the bridge host table, `ethN-vlanV` naming, the ATA cross-reference to skill-smc.
+- `references/03_routeros-cli-reference.md`: `/interface bridge host print where !local` and the empty `/ip neighbor print`.
+- `manifest.json`: 0.1.17 -> 0.1.18.
+
 ## 20261007_2034 — arrkapa switch log: clock and retention read correctly (v0.1.16 -> v0.1.17)
 
 - `references/04_failure-modes.md`: the arrkapa switch clock ran about 8 h 25 min slow and its log times go backwards around crashes; take the loop cadence

@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)](#20261008_1206--pi-identity-probe-and-rct-site-ata-settings-reader-promoted-to-scripts-v022---v023)
+- [20261008_1147 — Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)](#20261008_1147--raspberry-pi-smc-identity-and-ports-rct-site-ata-vendor-sources-linked-v021---v022)
 - [20261007_2124 — rct-tstik rails and satellite modem rechecked; Iridium rollout on rct (v0.2.0 -> v0.2.1)](#20261007_2124--rct-tstik-rails-and-satellite-modem-rechecked-iridium-rollout-on-rct-v020---v021)
 - [2026-10-07 — deterministic navigation-control upgrade](#2026-10-07--deterministic-navigation-control-upgrade)
 - [20261007_1645 — Version scheme: patch runs 0 to 9, then the minor bumps; renumbered to 0.2.0 (v0.1.100 -> v0.2.0)](#20261007_1645--version-scheme-patch-runs-0-to-9-then-the-minor-bumps-renumbered-to-020-v01100---v020)
@@ -112,6 +114,36 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)
+
+Promoted from a 2026-10-08 unified-network-controller session (scratchpad originals, generalised).
+
+- New `scripts/pi_identity_probe.sh`: read-only Raspberry Pi SMC identity probe over Teleport; `--proxy` required, node names only, exits 1 on an unreachable
+  node. Recipe `just pi_identity_probe <proxy> <node>...`. Smoke-tested 2026-10-08 on 20-mile-smc01 (teleport.apn.au) and a non-existent node (rc 1).
+- New `scripts/ata_settings_read.py`: reads the Dallas Delta DDC_VoIP-m settings, phonebook and digitmap pages through each SMC with the empty PIN,
+  drops secret-named fields on the SMC and again locally, tolerates the short body, reports `Registered`, and compares units. Recipe
+  `just ata_settings_read <proxy> <node>...`. Smoke-tested offline against a local fake unit (short body, secret fields absent from output) and live on
+  adjamarragu, akwalirrumanja and alamirra: all `Registered : Yes`, 86 of 92 settings fields identical, digitmap `m003` differs at akwalirrumanja.
+- `scripts/README.md`: both catalogued with safety labels. `justfile`: the two recipes.
+- `references/17_site-ata-dallas-delta.md` and `references/07_hardware-overlay.md` (Raspberry Pi SMC identity) link the scripts; 17 records the digitmap difference.
+- `manifest.json`: 0.2.2 -> 0.2.3.
+
+## 20261008_1147 — Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)
+
+VERIFIED-OBSERVED 2026-10-08, read-only over Teleport apn on 20-mile and adjamarragu (`rct`), areyonga and glen-hill (`wh`), from unified-network-controller work.
+
+- `references/07_hardware-overlay.md`: new section, Raspberry Pi SMC identity, ports and bootloader. No DMI; model from `/proc/device-tree/model`, revision `d03115` (4B Rev 1.5, 8 GB, Sony UK);
+  SoC serial as the identity anchor; eth0 MAC not derived from the serial on the Pi 4; one wired port `eth0` carrying the WAN `/30` and VLANs 500, 501, 521, 522; `wlan0` AP on areyonga; no snmpd
+  (operator: no SNMP on the Pis for now); EEPROM 2023-01-11 vs upstream 2026-09-23 and the misleading `rpi-eeprom-update`. Links the vendor-sources folder and `firmware-files/raspberry-pi/`.
+  Contents also gains the two 2026-10-07 sections it was missing.
+- `references/03_communication-flows.md` (rct Site Addressing): `bridge_500` holds both management addresses live; the `[10.255.0.0/24, 192.168.5.0/24]` pair is in every rct, wh and nbn_wh
+  topology file and no x86 one; the four site VLANs.
+- `references/02_service-map.md` (snmpd on the SMC): Pi boxes have no agent, by decision.
+- New `references/17_site-ata-dallas-delta.md`: the rct site ATA (DDC_VoIP-m `042112` at `192.168.5.253`), web UI only, empty PIN, no SSH or SNMP, SIP `Registered` readout, 83 of 93 settings
+  identical, the short `Content-Length`, unreachable units. Routed from RUNBOOK, SKILL.md, AI_NAVIGATION.md and context-map.yaml, with both vendor-sources folders.
+- `references/13_known-issues.md`: 2026-10-08 entry (kintore-smc01 not in Teleport, aeroplane-1 and 20-mile ATAs, empty ATA PIN, Pi bootloaders behind); Contents gains the missing 2026-10-07 lines.
+- `manifest.json`: 0.2.1 -> 0.2.2.
 
 ## 20261007_2124 — rct-tstik rails and satellite modem rechecked; Iridium rollout on rct (v0.2.0 -> v0.2.1)
 

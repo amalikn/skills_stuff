@@ -1,0 +1,52 @@
+PIN Reset Request form.cdr                                                                               QA2010-003
+
+
+                                                                     PIN reset request form
+                                                                       please address all design change requests to:
+          dallas    delta
+           corporation pty. ltd.
+                                                                            Dallas Delta Corporation Pty. Ltd.
+                                                                                          Service Department
+             www.dallasdelta.com                                                102 Albert St. East Brunswick
+                sales@dallasdelta.com                                                 Victoria, Australia 3057
+                                                                                             tel: (+613) 9387 7388
+ submission date :                      /     /                                                fax: (+613) 9387 3128
+
+
+
+                                            product details
+ part / document code :
+ product description :
+ phone no of product :
+
+
+                                            owner’s details
+ company name :
+ contact person :
+ phone no. (business) :
+ phone no. (mobile) :
+ email address :
+ reason for change :
+
+
+
+
+                                        requestee’s details
+                  if you are not the owner of the product please supply your details below
+
+ company name :
+ contact person :
+ phone no. (business) :
+ phone no. (mobile) :
+ email address :
+
+
+                                             declaration
+   By signing this form, I declare that I am an authorised person to permit Dallas Delta Corporation Pty. Ltd.
+   to reset the factory default settings and/or Programming PIN of the listed product and to then notify me or
+   my nominated representatives of the new changes and or PIN.
+
+ requestee’s signature :
+
+ last modified: 2010-09-11                    revision number: 1.0                          modified by: Nigel Villella
+

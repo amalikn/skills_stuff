@@ -1,0 +1,812 @@
+                           DDC VoIP V2
+                               HANDS FREE or HANDSET
+                                   VOICE OVER IP
+                               HELP POINT TELEPHONE
+
+      SENTRY Doorstation
+
+                                               GUARD
+                                                  Doorstation MK III
+
+
+
+
+                                                                       PRESS BUTTON
+                                                                       FOR ATTENTION
+                                                                                                                                        ABC        DEF
+                                                                                                                                1        2         3
+        PRESS FOR                                                            DALLAS DELTA CORPORATION P/L   E3585
+                                                                                                                                GHI     JKL        MNO
+        ATTENTION                                                                                                               4        5         6
+                                                                                                                               PRS      TUV        WXY
+                                                                                                                                7        8         9
+                                                                                                                                        QZ
+                                                                                                                        END              0         #      CALL
+                                                                                                                                *
+
+                                             SENTRY
+                                                Doorstation
+                                                                                       ABC     DEF
+                                                                               1       2        3
+                                                                               GHI     JKL     MNO
+                                                                               4       5        6
+                                                                               PRS     TUV     WXY
+                                                                               7       8        9
+DALLAS DELTA CORPORATION P/L   E3585
+                               N722                                                                                 DALLAS DELTA CORPORATION P/L       E3585
+                                                                                       QZ
+                                                                                       0        #
+                                                                               *                     ON/OFF
+
+
+                                                                          PRESS # THEN DIAL NUMBER
+                                                                             PRESS # TO END CALL
+
+                                                                             DALLAS DELTA CORPORATION P/L   E3585
+
+
+
+
+                                       Dallas Delta Corporation Pty.Ltd.
+                                         102 Albert St. East Brunswick, 3057 Vic.
+                                         Tel: 613 93877388 Fax: 613 93873128
+                                               Email: sales@dallasdelta.com
+                                                   www.dallasdelta.com
+                                    INDEX
+Features         ..................................                                     3
+
+Operation          ..................................                                   4
+      Relay Control      ...............................                                4
+      Call initiated relay control . . . . . . . . . . . . . . . . . . . . . . . . .    4
+
+Keypad Functions           .............................                                5
+      Resetting the IP address   .........................                              5
+      Making a test call     ............................                               5
+      Volume control . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      5
+
+Programming         .................................                                   6
+     Logging in . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       6
+     NetWork setup . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        7
+     Voice Menu      ................................                                   8
+     SIP Proxy Settings  .............................                                  9
+     Call Functions    ...............................                                  10
+     System Settings . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        11
+
+Phone Number Menu          ............................                                 13
+     Button Input assignment . . . . . . . . . . . . . . . . . . . . . . . . . .        13
+     Relay Codes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      13
+     Special Commands . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         13
+Dial Plan Menu             ............................                                 14
+     Dial Plan setting . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      14
+Changing Ring Tone Menu . . . . . . . . . . . . . . . . . . . . . . . .                 15
+     Ring Tone Update . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       15
+
+Wiring     .....................................                                        16
+
+Pcb Layout       ..................................                                     17
+
+Specifications . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        18
+      Specifications  ...............................                                   18
+      Warning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     18
+
+Connection Details           ............................                               19
+
+
+
+
+Dallas Delta Corporation Pty.Ltd.                                                      Page 2
+                        PRODUCT INFORMATION
+                        HELP POINT TELEPHONE
+                           Model DDC VoIP
+The Sentry VoIP Doorstation is an ethernet connected telephone and provides voice over internet
+Protocol (VoIP) communication technology.
+Giving you the power of our PSTN base units in a IP format. Using a SIP protocol standard (IAX2
+available soon), it provides an easy connection to most VoIP based equipment.
+The DoorStation is a loud speaker, hands-free unit. It is well suited for homes, hotels, hospitals and
+universities as well as many business and commercial settings and providing remote gate access
+guarding you against unwanted entry onto your property.
+This document outlines the units Features, Operation, Programming instructions and Installation
+procedures.
+
+
+
+
+DDC VoIP FEATURES
+> Dedicated VoIP chip set
+> Firmware up-gradable
+> Only requiring a 10 Base-T ethernet
+> SIP standard protocol
+> Multi CODEC selection
+> Up to 16 direct dial button inputs
+> 2 on board relays with unique codes (optional)
+> Either relay may be set for in-use function
+> Relay on timer
+> Hands-free with 1 Watt rms speaker output
+> Handset model available
+> Auto disconnect
+> 2 modes of Power over Ethernet (PoE)
+> Conversation timer
+> All options set via HTTP
+> Non volatile memory
+> Asterisk PBX compatibility
+> Optional dual line LCD with back light
+> Remote relay activation (door/gate release)
+> Vandal resistant
+> Weather shielded (optional)
+
+
+
+
+         Dallas Delta Corporation Pty.Ltd.                                            Page 3
+OPERATION
+The DDC_VoIP telephone operates like a standard hands free telephone with many added features.
+When the call button is pressed, the unit will establish a call to a preset number.
+Repressing the call button during a conversation period will terminate the call.
+A call duration period may be set, if a limit is required.
+The unit can be configured to auto-answer call or redirect then to a forwarding number if not
+answered within the preset period.
+During ring, the unit can be answered by pressing any for the buttons.
+Handset models can be supplied with or without a keypad, and they can be setup to hotline (call a
+number) when the handset is pickup.
+Calls made to a busy number or if the number if not answered can be re-direct to 2 other alternative
+numbers.
+
+Relay Control
+Two on board relays may be fitted to the door station, each may be switched on during conversation
+by the remote operator or either one can be configured to be activated when the call is initiated.
+(refer to Relay Inuse on page 11 for more on this function).
+
+Remote relay control:
+The DDC_VoIP phone is currently ship fitted with one relay as standard (the second relay on
+request).
+The remote operator may activate the on board relay/s by entering the code set for that relay.
+For example, if relay 1 code is set to 95, then remotely typing 95 will activate it, (refer to page 11).
+
+A response beep will indicate that the code was correct and the relay has activated. No response
+tone indicates an error in the code and the process should be repeated after a minium 3 second
+delay.
+(NB, as relay 2 is optionally fitted, the response will be the same whether the relay is installed or
+not.) This remote control requires RFC2833 dtmf protocol set throughout the system.
+
+Call initiated relay control:
+Either one of the relays may be configured to switch on after the call button is pressed. This function
+may be used to control an external camera, light or to initiate an alarm, etc.
+The relay will stay on for the duration of the call, unless the remote operator re-activates it by
+entering the code, then the relay will switch off after the Relay On timer period.
+(again, see page 11 for more details).
+
+
+
+
+WARNING
+This telephone can not be used for emergency purposes
+during power failure unless fitted with a backup 12 volt
+battery!
+and only if network connection is guaranteed.
+
+          Dallas Delta Corporation Pty.Ltd.                                            Page 4
+Keypad Functions
+The keypad on the rear of the unit provides the installer access to:
+Listen to the current IP address or reset it to a default IP and subnet MASK address. Make test
+calls and control speaker level during the call.
+
+
+Get current IP address;
+During standby, press ‘C’ on the rear keypad to retrieve the current IP address.
+The address will continue to repeated, press ‘D’ to end the cycle and return the unit to
+standby mode.
+Resetting the IP address
+To reset the address, connect the power (via the power jack or Ethernet PoE lead).
+Wait about 10-20 seconds,
+then enter *# *# 7*1, this will set address mode to Static the IP address to 192.168.1.100,
+set the subnet mask to 255.255.0.0 and clear the Administration Password.
+OR enter *# *# 7*2, this will set address mode to Dynamic IP and also clear the admin
+password.
+Making a test call.
+To test if the unit has been successfully registered, press ‘D’ to loop the line, then dial the
+number required plus #. If all is well, a connection will be made.
+Press D again to go off line. If the line is engaged or the other party hangs up the unit will
+automatically disconnect.
+Calling a phone by its IP address can be done by entering a * between each group of digits
+and the port number. IE, if a phone you wish to call is on IP 192.168.1.117:5060, type
+D 192*168*1*117*5060 #. (note not all phones can be called using this technique).
+If the default port is 5060 for the remote phone, then it may not be required when calling.
+
+Volume control ‘B’ & ‘C’
+During conversation, the speaker volume may be increased by pressing B or decreased by
+pressing C. These adjustments only remain as set for the duration of the call and do not
+affect the default level.
+To set the default level refer to System Settings on page 11.
+
+
+
+
+         Dallas Delta Corporation Pty.Ltd.                                            Page 5
+PROGRAMMING
+Login page
+
+The DDC_VoIP door station is programmed by logging into the phones web page.
+Use a standard web browser (Firefox, Internet Explorer for example), enter the phones IP
+address into the “URL Location Bar” at the top of the screen.
+If you don’t know the IP of the phone, then refer to page 5 on ‘Get / Resetting the IP address’.
+At the login page, select one of the following;
+       ‘Settings Menu’ to set network and telephone parameter.
+       ‘Button Call Number Assignment’ to set the phones number for each button input.
+       ‘Dial Plan’ telephone number masks used for units fitted with front panel keypads.
+       ‘Upgrade’ option if you required to change the ring tone.
+type in the password and click the Enter key, (units are generally delivered with no password).
+
+
+
+
+                                                                            URL Location Bar
+
+
+
+
+         Dallas Delta Corporation Pty.Ltd.                                        Page 6
+SETTING MENU
+On entering the Settings Menu, the current parameters of the telephone will be displayed.
+Submenu’s are shown on the left of the WEB page, the first section is for ‘Network settings’ and
+will enable you to change IP address, subnet mask and gateway and option to set DNS server
+setting. The other sections are describe in the following pages of this manual.
+
+
+
+
+Network Settings
+  The Connection Type enables the unit to be connected via a STATIC IP, DHCP or PPPoE
+address.
+  If the connection is DHCP then the IP address, Mask and Gateway are automatically
+assigned by the server.
+   When set to a Static IP, a suitable IP address, Subnet Mask and Gateway address will be
+required to suit the local area network.
+   Alternatively, if connection is via a Internet Service Provider (ISP) then select PPPoE and set
+the user ID and PIN as supplied to you from your ISP.
+
+  Note that for some servers, the connection type may need to be set to DHCP.
+  If you change the IP address you are then required to restart by logging in using the new IP
+address. Do not click on ‘go back one page’ of the browser (usually in the top left corner).
+   In most cases the DNS Server IP can remain set to Auto DNS, in this mode the DHCP sever
+will assign the DNS automatically. If however, it is required, enable Manual DNS and set the
+Primary and Secondary DNS address.
+  If the network switch provides QoS traffic control, then set the Layer 2 & 3 QoS values to
+match.
+
+
+         Dallas Delta Corporation Pty.Ltd.                                          Page 7
+Voice
+In this section, select the order and preferred CODEC’s, plus the amount of frames per packet to
+sent for each.
+Also, select the options that effect the different codecs used and DTMF sending method and
+payloads.
+
+
+
+
+  When selecting the codecs consider the data rate that will be required by your network. As a
+guild the list here show the data bit rate required for each codec, if the network is via a low
+speed ADSL then the PCMu/a may not be a suitable choice.
+Table 1. Codec comparison
+Codec                       bit rate (kbit/s)
+G.711(PCMu /a)              64
+G726-32                     32
+GSM                         13.2
+iLBC 20ms                   15.2
+iLBC 30ms                   13.3
+Speex                       2.15 - 24.6
+G.729                       8
+
+   If the iLBC or SPEEX codecs are used, then set the following for each,
+a) iLBC codec, select the frame size your network requires to 20mS or 30mS.
+b) SPEEX codec, select a suitable bit rate for best quality available, the range
+    is from 2.15kBits/s to 24.6kBits/s.
+   The Frames per TX selects how many blocks of data (10mS segments) are transmitted with
+each packet sent over the network. (note the higher the number, the more the delay), 2 - 4 is
+recommended.
+   The Send DTMF type selects how the unit will send DTMF digits over the network (only
+required for unit fitted with a front panel keypad and if digits are dialled during a conversation).
+   The remaining options set the payload required for each protocol and it is recommend that
+the default values be used.
+
+
+
+
+         Dallas Delta Corporation Pty.Ltd.                                             Page 8
+SIP Proxy
+The parameters on this page will identify the server that will be used for a call setup to and from
+the DCC_VoIP phone. Your ISP or network administrator will provide the necessary information
+to be used here.
+
+
+
+
+  If SIP registration is required with the server then set this switch to Yes. If the phone is
+configured to dial a direct IP location then this switch can be set to No.
+   Type the Server address and the port (usually 5060 for SIP) into the next 2 input boxes. The SIP
+Domain is the address where an outgoing call information is sent to, and if the domain is via the
+internet then it will require the Outbound Proxy to be set to Yes.
+   The user ID’s, and PIN are supplied by the ISP/Network administrator, this information is case
+sensitive and should be typed in correctly. The User Name is relayed to the connecting IP
+telephone as a caller ID and is optional.
+   Local SIP and RTP port numbers are sent to the router/firewall and are use to provide paths for
+voice and control data to and from the phone.
+  The Register Expiration and the Keep Alive timers keep the SIP server mapping and NAT
+ports open, these interval are generally set to 60 and 20 seconds respectively.
+  If a Provisional Response Acknowledge PRACK is required within your network, then enable the
+Support PRACK(100rel,RFC3262) option.
+   The SIP Proxy Required field may need to be set for Nortel MCS servers, if so, set this field to
+“com.nortelnetworks.firewall”
+   If the network server is behind a NAT, then enable the NAT Traversal and set either the NAT IP
+or STUN server address and port.
+
+         Dallas Delta Corporation Pty.Ltd.                                           Page 9
+Calling Functions
+This section controls the way the unit makes and receives calls.
+Select options, as to what should happen when calls are made to the unit, whether to accept or
+redirect it, during the different modes of operation.
+When making calls, numbers may be screened (via the dial plan) or prefix digits can be added.
+Also, call divert, on busy or no answer.
+
+
+
+
+    Forward-to Number will set the telephone number that will be called when calls are redirected by one of
+three methods:
+1) if the Forward unconditionally is set to yes (any calls made to the phone will be immediately redirected).
+2) if, ‘When on busy’ is set to yes, then any attempt to call the unit when the phone is in use will be
+redirected to the Forward to Number.
+3) Any un-answered call will also be redirected to this number when the Forward When No Answer switch
+is set to yes and the Incoming, No Answer Timeout period has elapsed.
+  The Incoming, No Answer Timeout period is also used the in conjunction with the Auto Answer switch.
+Set this option to 0 if the phone is not required to auto-answer.
+   When the DDC_VoIP phone is making a call via a button press procedure, then it is possible to divert the
+call to 2 alternative numbers if the other party is busy or doesn’t answer. To enable this function, enter the
+Divert Numbers and set the Outgoing, No Answer Period the a value in second the phone should wait for
+a pickup by the remote operator prior to diverting.
+   If call waiting, (audible tones transmitted to the speaker when an incoming call arrive during
+conversation) is required then click Yes to Enable Call Waiting.
+   The number in the Dial Prefix are added to the number dialled via the keypad or the preprogrammed
+button numbers. (Also refer to page 13).
+   For DDC_VoIP phones that have a handset, a hotline number (dialled when the handset is pickup),
+maybe programmed in the field Hot Line Number.
+   If the unit is supplied with a keypad, then use the Dial Plan option to restrict numbers that can be called.
+To enable this feature select yes for the Use Dial Plan option and set the dial plan fields, refer to page 14.
+   The Dialling Timeout period sets how long to wait after the last digit pressed before dialling the number.
+Note, If the dial plan option is on and the number type matches, then the number will be dialled without
+delay. The other option is to enable the Use # to Call to initiate dialling.
+   When a call button is pressed, the audible tones of each digit dialled may be muted. This option may be
+preferred if the number is long or for security reasons. If this feature is desired, then select the Yes option to
+Dial Button Numbers Silently.
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                    Page 10
+System Settings
+Set the DDC_VoIP phone audio levels, relay options, Syslog details and time of day functions in
+this section. Audio levels for each phone should be recheck on site.
+The on board relay/s may be use for gate access control, back ground lighting / camera. They
+can be remotely activated or enable when the DDC_VoIP phone is in use.
+
+
+
+
+                                                  ACA level = 5 for handset, 7 for hands-free
+                                                  ACA level = 25
+
+
+
+
+  The Administration Password is used to gain access to these web pages. For added
+security set and document this password. The phone is supplied with this field cleared.
+   The microphone used by the handset (if fitted) and in the hands-free circuit, is adjusted to suit
+site background noise, when possible keep this level low, as un-necessary noise will be
+transmitted back to the remote operator.
+   The Handset and speaker phone levels are also set to suit back ground noise. Whilst in
+conversation, this level may be temporary altered by pressing the ‘B’ and ‘C’ key on the back of
+the unit to increase or decrease the level respectively.
+  Set the Ringer Volume level to suit site conditions.
+  The onboard relay may be activated remotely by dialling the digits that matches the fields for
+Relay 1 & Relay 2 code. Note that relay 2 is optionally fitted.
+  The period the relay will stay active is set in the Relay on timer field. Setting this field to 0, will
+cause the relay to remain on for the duration of the call.
+   Either one of the relays may be configured to switch on when the phone is in use. If this is
+required then set the Relay Inuse option to On and select one of the available relays. Note, that
+when this option is used the Relay on timer period is bypassed.
+  Conversation period may be limited if desired, to set this, enter a period in minutes into the
+Conversation Timer field. If no timer is required then enter a 0 to disable this function.
+  NOTE: ACA maximum levels for:
+          handset models be set 5 for microphone and 25 for handset output.
+          hands-free microphone level to be set to 7.
+
+          Dallas Delta Corporation Pty.Ltd.                                                     Page 11
+System Settings continue.
+  For some installation, it may be required to record events that occur at the phone.
+These events may include;
+"             which button is pressed
+
+"             when a relay is activated remotely
+
+"             when the handset is on or off hook
+
+"             on ringing (incoming call)
+
+"             system reboot
+
+"             start of call and at auto answer
+
+"             at the end of a call
+
+"             and a status of it’s current state, ie Logged-on or not at set intervals.
+
+  This information is stored at an allocated server and the protocol used is SYSLOG. Although
+generally on a Linux and Unix systems, SYSLOG programmes can be sought for the Windows
+system as well.
+   Each event is timed stamp with the phone ID and IP address. To enable this function set the
+IP of the SYSLOG enabled server and the intervals into the next 2 fields.
+   The DDC_VoIP phone outputs general debugging information on a continuous basis, If high
+traffic is a concern then set the Enable Debug output option to No.
+   The SNTP Server (simple network time protocol) provides ‘time of day’ that is uses by the unit
+for sysloging events. Most PC on the network with port ‘123’ open on the firewall will do this or if
+
+
+
+
+         Dallas Delta Corporation Pty.Ltd.                                                Page 12
+PROGRAMMING (Phone Number menu)
+Button Call Number Assignment
+The DDC_VoIP phone can be configured with up to 16 buttons, each may be assigned to dial
+a different telephone number.
+Click on the Button Call Number Assignment radio button and input the access code, then
+click ‘Enter’.
+
+
+
+
+   Each Button, (if fitted) may be set to dial a different phone number. The Name field giving
+to each input is for internal reference only and is not required.
+   The phone number may be an IP address/port number, ie 192.168.1.123:5060.
+   Sometimes, it may be required to dial this number without each DTMF tone played out of
+the speaker, especially so, for long phone numbers like an IP address, to enable silence
+dialling click Yes to the option Dial numbers silently in the System section, see page 9.
+
+
+
+
+Special commands within the phone number,
+  The DDC_VoIP unit can be configured to connect to a PSTN/PBX via a ATA. In this scenario the
+unit calls the ATA and then, on answer, the DDC_VoIP phone then dials the PBX number.
+  To archive this, enter the first part of the number (the section that call the ATA) followed by a pipe
+character ‘|’, and the PBX telephone number to call. (the PBX number may include a pause by
+adding a comma ‘,’). Example, if the ATA number is 1234 and the PBX number is 9,91234567, then
+you would enter 1234|9,91234567.
+   Note that the ATA number can be loaded in the Dial Prefix location, if all buttons calls are made
+via the ATA, then set the Dial Prefix to ‘1234|’.
+  Note that the ATA number could well be an IP address.
+
+
+         Dallas Delta Corporation Pty.Ltd.                                           Page 13
+PROGRAMMING (Dial Plan menu)
+Dial Plan
+The DDC_VoIP phone can be supplied with a handset and/or a front panel keypad. With this
+configuration the user may dial any combination of digits, therefore you may wish to screen the
+phone numbers that can be dialled. This section describes the techniques to accomplish this.
+Click on the Dial Plan radio button, input the Password and click ‘Enter’.
+
+
+
+
+   Each index dial plan shows a possible group of digits that are allowed, in all there are 20
+groups.
+  To enable dial plan control, select Yes for Use Dial Plan, in the Calling function section of the
+Settings Menu, please refer to page 10 for more details.
+  When making a call, numbers that are accepted must match one of the groups above.
+   Digits 0 to 9 that are shown in each group will be tested, whereas the ‘x’ within the group
+indicates that any digit is accepted.
+   Digits within the square brackets [ ], indicate a range that are allowed at that location within the
+group. For instance, 03[02-6], means that the first two digits must be 03, the next digit can be 0 or
+any digits 2 to 6, therefore 1,7,8,9 are not allowed.
+  Another example, 037[189] indicates that only digits 1,8 and 9 are allowed after the 037
+combination is entered.
+  When the number dialled match one of the groups in the dial plan, the unit will make a call as
+soon a match has occurred.
+   The Dialling Timeout option (see page 10) set a period to automatically dial the number, if a ‘#’
+is not entered to end the sequences of digits OR a match did not occur in the dial plan.
+
+          Dallas Delta Corporation Pty.Ltd.                                            Page 14
+PROGRAMMING (Ring Tone)
+Changing The Ring Tone
+When a call is made to the DDC_VoIP telephone, the audible sound heard (ringing signal)
+may be changed to an alternative tone or perhaps a voice message or warning alarm.
+To change this tone, select the Change Ring Tone option, enter the access Password and
+click ‘Enter’.
+
+
+
+
+  The ring tone sound file needs to be in the correct format. Wave and MPG-3 files etc. need to
+be converted before it is loaded into the unit. Conversion programs are available that can do this,
+CoolEdit pro is a good example.
+   The sound file used MUST comply with the following specifications:
+"The file length MUST not exceed 390 kBytes AND a maximum length of 48 seconds.
+"Must be 8000 bit/s sampling rate, Mono, PCM raw 8 bit format using muLaw codec.
+"Save the file with a ‘.DAT’ extension.
+  Once the file has been created, select Browse, and pick the file to be loaded, then click on the
+Start button.
+  Within approximately 10 seconds the phone should response with a successfully update
+message.
+
+         Dallas Delta Corporation Pty.Ltd.                                         Page 15
+WIRING
+Power Over Ethernet (PoE)
+The DDC_VoIP telephone may be powered from the 2 way connector marked ‘Power’ on the
+side of the unit, see page 19. The polarity to this connector must be correct for the unit to
+function. (Note that NO damage will occur if it is connected incorrectly).
+The voltage input to this connection may be from 9 to 48 Volts.
+
+The alternative way to power the DDC_VoIP telephone is via the Ethernet connector using a
+PoE switch.
+The DDC_VoIP telephone is adapted to use a class 1 form of power source.
+
+There are two methods that power can be supplied from a Ethernet Switch,
+" Mode A, supply power over the Tx/Rx pair, (TX pair pins 1&2 and RX pair pins 3&6).
+" Mode B, via the spare pairs 4&5 and 7&8.
+                                                      pins               pins
+                                                      1
+                                                                         1 = TXP
+                                                      2                  2 = TXN
+                                                      3                                    mode A
+                                                      4
+                                                      5                  3 = RXP           PoE
+                                                      6
+                                                      7                  6 = RXN
+                                                      8
+
+                                                                         4,5 = Spare       mode B
+                                                                         7,8 = Spare       PoE
+                      RJ45 Ethernet connector
+
+
+   The figure above shows a typical RJ45 connector with the pins side facing up.
+Note, In mode B, that the spare wires 4 and 5 are linked together within the PCB, the same for
+pins 7 and 8.
+  The polarity on pins 4,5 or 7,8 is not critical and is generally set within the Switch, (if used).
+  The DDC_VoIP telephone is configure to draw power from the PoE in class 1 (0.44-3.84 Watt)
+and should be connected to a IEEE 802.3af compatible PSE power unit .
+
+
+
+
+         Dallas Delta Corporation Pty.Ltd.                                             Page 16
+DDC_VoIP PCB Layout
+The DDC_VoIP PCB connection may be different from the diagram shown, The layout is of a generic
+configuration, some items may not be installed and/or not required.
+
+
+
+
+    RELAY 1+2                                                          KEYPAD
+    NO/NC LINK                                                         CONNECTOR
+                 LK1 AND LK2
+
+
+
+                   NO/NC NO/NC
+                                                                                                                    BUTTON INPUTS
+                                                                                                                       bank1
+                                                                                               J7
+  RELAY 2
+                                                                                               J15
+                                                                                                                       bank2
+  RELAY 1
+
+                                                                                                                    BUTTON 2
+ BUTTON 1                                                                        LCD PORT
+                                                                                                                    BUTTON 1
+SUPPLY   -
+12-48V   +
+                                 DALLAS DELTA CORP
+
+  NETWORK
+  INPUT                                                                      +     MIC
+  (and PoE)
+                                                                 SPK
+
+
+                                                                                       -
+                                                                                           +
+                                                                       EXT.
+
+                                                                                               HANDSET
+                                                                       SPEAKER    EXT. MIC
+
+     LK1 and LK2 relay links are used to select the
+     normal state of the output contacts.                                                                BANK1
+                                                                                                                 BUTTON 1
+                                                                                                                 BUTTON 2
+                                                                                                                 BUTTON 3
+              Relay linked for normally closed contacts                                                          BUTTON 4
+                                                                                                                 BUTTON 5
+                                                                                                                 BUTTON 6
+                                                                                                                 BUTTON 7
+              Relay linked for normally open contacts                                                            BUTTON 8
+
+
+
+                                                                                                                 BUTTON 16
+                                                            BUTTON 2                                             BUTTON 15
+                                                                                                                 BUTTON 14
+                                                                                                                 BUTTON 13
+                                                                                                                 BUTTON 12
+                                                                                                                 BUTTON 11
+                                               BUTTON 1                                                          BUTTON 10
+                                                                                                                 BUTTON 9
+                                                                                                         BANK2
+                                      Button Contact                                             J7 and J15 Button
+                                      Details                                                          inputs
+
+                                                      BUTTON 9
+
+
+
+
+         Dallas Delta Corporation Pty.Ltd.                                                                  Page 17
+SPECIFICATIONS
+
+
+power:               input voltage            9 Volts (minimum) - 50 Volts (maximum)
+
+
+current              -idle mode               60mA @ 13Vdc           (0.8 Watts)
+consumption:         -on call                 100mA @ 13Vdc          (1.3 Watts) normally
+                                              <300mA @ 13Vdc         (3.9Watts)
+                                              (maximum volume into a 8ohms speaker )
+
+
+relay contacts:      switching maximum        1A @ 60Vdc / 40Vac SELV or TNV (non inductive load)
+                                              voltage free outputs
+
+temperature:         operating range          0ºC to +50ºC
+
+SPL:                 ringer output level      >80dBa @ 1 metre (32 steps)
+
+communication:       Ethernet                 10 BASE-T
+                     Connection protocol      SIP
+                     CODECs                   G711 (uLaw, aLaw), Speex, iLBC, G726-32
+                                              GSM, G.729
+
+                                              Sentry               Guard(brick)             Guard(Vertical)
+physical:            panel dimensions (mm)    270 x 130`            255 x 104               100 x 227 x 46
+                     wall cut-out (mm)        225 x 115 x 40        246 x 94 x 50           surface mount
+                     weight (kg)              approx. 1             approx. 1.02            approx. 0.9
+                                                                   (std brick cut out)
+
+
+
+
+ WARNING
+ This telephone can not be used for emergency purposes during power failure unless fitted with a
+ backup 12 volt battery AND network connection guaranteed.
+ To be installed and maintained by authorised service personnel only.
+
+ "ACA optimum handset levels
+            Microphone = 5, handset output = 25.
+            Microphone = 7 for hands-free.
+
+
+
+
+            Dallas Delta Corporation Pty.Ltd.                                                Page 18
+          CONNECTION DETAILS
+
+          ELECTRICAL WIRING
+                                                                                                                          Note: On units fitted with external
+                                                                                                                          microphone and speaker, the Speaker and
+   Microphone                                                                                                             microphone are to be mounted no less than
+                                                                                                                          100 mm apart and sealed well to the panel.
+                         OD 17 mm
+
+                         ID 10 mm
+      Grommet dimensions
+
+
+
+
+                                                           Menu / Cancel               Volume down
+                                                                                                                                 HANDSET
+
+
+                                                                           Volume up
+          Optional External Speaker and Mic.
+                                                                                                                                 (optional)   Microphone (optional)
+                                                                                                      On/off
+          The microphone may be mounted using
+          two methods, either mount the grommet                                                                                               Note the polarity of the
+          to panel by applying an adhesive
+                                                                                                                           +     EXT. MIC.
+                                                                                                                                              microphone connection.
+          to the grommet face, or mount into a                                                                                                (Shield is negative)
+          13.5mm diameter hole.                            A               B           C              D
+
+                      Method 1
+                                                                                                                            EXT. SPK.
+                                                           3               6           9              #
+                          Apply adhesive
+                          to grommet face.                 2               5           8              0
+
+                          Microphone inserted              1               4           7              *
+                          into grommet.                                                                                                        Speaker.(optional).
+  Panel                   The microphone must
+                          be properly sealed
+                          to the panel surface.
+
+                                                                                                                                      57mm
+                    Method 2
+           Panel
+                    The panel hole is to
+
+
+                                                                                              POWER
+                    be 13.5 mm to fit the
+                    microphone grommet.
+
+
+                                                                                         +                                                                90mm
+
+                                                                                                                                                                     Speaker Box Dimensions:
+                                                                                                                                                                     Length      : 97 mm
+                                                                                                                                                                     Width       : 83 mm
+                                                                                                           Ethernet                                                  Height      : 35 mm
+Relay contacts are rated as follows :                                                                      NetWork 10baseT
+1 A @ 50 V DC Non-inductive                                                                                (with PoE optional)
+1 A @ 30 V AC Non-inductive
+N/O or N/C                                                                                                     Note that power to the unit may be either supplied
+switch set by                  RELAY 1 & 2                                                                     through the Ethernet connection or via the 12 Volt
+jumper LK1 / LK2                                                                                               Power Pak,
+                                                                                                               Ethernet power can be induced over the Tx/Rx data
+                                      Emergency                                                                pair or the spare pairs 4,5 and 7,8.
+                                       button                                                                  Pins 4,5 are connected together and so are pins 7,8
+                                                                                                               on the PCB.
+                                                                                                               The polarity of this connection is NOT critical.
+
+
+                                                  POWER PAK
+                                                    optional
+
+
+               WARNING
+               This telephone can not be used for emergency purposes during power failure
+               unless fitted with a backup 12 volt battery AND network connection guaranteed.
+
+               Note: All wiring is to be routed away from high EMI radiating devices,
+               such as transformers, fluorescent lighting etc.
+
+                     Dallas Delta Corporation Pty.Ltd.                                                                                                   Page 19
+                             Dallas Delta Corporation
+                                    Pty.Ltd.
+                              102 Albert St. East Brunswick, 3057 Vic.
+                              Tel: 613 93877388 Fax: 613 93873128
+
+                                   Email: sales@dallasdelta.com
+                                      www.dallasdelta.com
+
+
+
+
+             Manufacturers of:
+ Emergency Lift Telephones                  Prisoner Telephones
+ Emergency Telephone Systems                Prisoner Phone Monitor Systems
+ Emergency Services Telephones              Security Door phones
+ Industrial Telephones                      Door phones
+ Hygienic Environment Telephones            Loud Ringer Horns
+ Freeway Telephones                         High Voltage Line Isolators
+ Rugged Environment Telephones              Loudspeaking Telephones
+ Hotel Telephones
+
+
+
+                    and
+               they’re
+                    All
+DDC_VoIP_m_v4.cdr            15/ 12/ 2015
+

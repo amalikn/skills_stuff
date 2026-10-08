@@ -1,0 +1,1152 @@
+Australian     User          Low Cost        Vandal        Weather
+Made           Friendly      Ownership       Resistant     Resistant
+
+
+
+
+VoIP CAM                   User’s Manual
+                                 Voice Over IP Doorstation & Camera
+
+
+
+
+             102 Albert Steet Brunswick East VIC Australia 3057
+                  tel: (+613) 9387 7388 | fax: (+613) 9387 3128
+                 sales@dallasdelta.com | www.dallasdelta.com
+                                                          INDEX
+1.1 Basic Features ........................................................................................................................3
+1.2 Operation Modes ....................................................................................................................3
+1.3 Video Features .......................................................................................................................3
+1.4 Audio Features .......................................................................................................................4
+1.5 Network and Security .............................................................................................................4
+2.1 Configuration ..........................................................................................................................5
+         2.1.1 Keypad Configuration ...............................................................................................5
+                   2.1.1.1 Get Current IP Address ...............................................................................5
+                   2.1.1.2 Factory Default Settings ..............................................................................5
+                   2.1.1.3 Reboot Device ............................................................................................5
+3.1 Web Interface .........................................................................................................................6
+         3.1.1 Login .........................................................................................................................6
+         3.1.2 Status ........................................................................................................................7
+         3.1.3 Administration ...........................................................................................................7
+         3.1.4 Internet Port (WAN) ................................................................................................10
+         3.1.5 Network Advanced ..................................................................................................11
+         3.1.6 Preferences ............................................................................................................13
+         3.1.7 Features .................................................................................................................15
+         3.1.8 Contacts .................................................................................................................16
+                   3.1.8.1 Phone Book ..............................................................................................16
+                   3.1.8.2 Access Control ..........................................................................................16
+         3.1.9 Dial Plan .................................................................................................................17
+         3.1.10 Account .................................................................................................................18
+         3.1.11 Audio .....................................................................................................................20
+         3.1.12 Video .....................................................................................................................20
+         3.1.13 Advance Settings ..................................................................................................21
+4.1 Wiring - Power Over Ethernet (POE) ....................................................................................24
+4.2 Wiring - Connection Details ..................................................................................................25
+4.3 Wiring - PCB Layout .............................................................................................................26
+5.0 Specifications .......................................................................................................................27
+
+
+
+
+            Dallas Delta Corporation Pty.Ltd.                                                                            Page 2
+                       PRODUCT INFORMATION
+                       HELP POINT TELEPHONE
+                         Model DDC Cam VoIP
+The Sentry IP Video Door Station is an Ethernet connected telephone which provides voice and video over internet
+protocol (VoIP) communication technology. Giving you the power of our PSTN base units in a IP format. Using a
+SIP protocol standard, it provides an easy connection to most VoIP based equipment. The Door Station is a loud
+speaker, wide angle camera hands-free unit. It is well suited for homes, hotels, hospitals and universities as well as
+many business and commercial settings and providing remote gate access guarding you against unwanted entry
+onto your property.
+
+
+1.1   Basic Features
+      Ø
+      Secured door access intercom for business, residential and multi-tenant premises.
+      Ø
+      For use at places like hospitals, universities and hotels where several different dialling options may be
+      available.
+      Ø
+      Larger commercial premises (including government organisations) will benefit from the increased security
+      the Sentry door station will deliver.
+      Ø
+      Manufactured from stainless steel to ensure durability in environments with harsh weather conditions or
+      where there may be a vandalism risk.
+      Ø
+      Designed to be flush mounted into an existing wall / facia.
+      Ø
+      Programming the unit is done via a web browser or an easy to use keypad on the rear of the unit. The
+      keypad means a field technician can easily re-program the unit without the need for a laptop.
+      Ø
+      Automatically dials a set number when the button is pushed.
+      Ø
+      Automatically detects when the call has been terminated and will hang-up the unit (using SIP based call
+      progress detection).
+      Ø
+      Includes a DTMF activated relay which can be used as a remote gate / door release. This product can be
+      used with up to 2 relays.
+      Ø
+      Works with open standards based SIP based call processing systems.
+
+
+1.2 Operation Modes
+
+      Ø
+      Standard single button unit which will dial a pre-programmed number when the button is pressed. Can be
+         programmed with up to 16 digits.
+      Ø
+      Hotline mode.
+
+
+1.3 Video Features
+    Ø   Video codec: H.264,H.263,VP8 and MPEG-4
+    Ø   Image codec: JPEG
+    Ø   Video call format: VGA/QVGA/CIF/QCIF
+    Ø   Frame rate selection: 10~30fps
+    Ø   Adaptive bandwidth adjustment
+
+
+WARNING
+This telephone can not be used for emergency purposes during power failure unless a network connection is
+guaranteed with Power Over Ethernet (PoE).
+
+
+
+           Dallas Delta Corporation Pty.Ltd.                                                        Page 3
+1.4 Audio Features
+    Ø  HD  voice: HD codec, HD speaker
+    Ø  Wideband codec: G.722,SPEEX,OPUS
+    Ø  Narrowband codec: G.711(A/µ), GSM,AMR-NB,G729 and iLBC
+    Ø  DTMF: Out-of-band(RFC 2833) and SIP INFO
+    Ø  Full-duplex hands-free speakerphone
+    Ø   Voice activity detection
+    Ø  Acoustic echo cancelling
+    Ø   Adaptive jitter buffers
+    Ø   Packet loss concealment
+
+
+1.5 Network and Security
+    Ø  Session Initiation Protocol, RFC 3261
+           o 8. General User Agent behaviour
+           o 9. Cancelling a request
+           o 10. Registrations
+           o 12. Dialogs
+           o 13. Initiating a session
+           o 14. Modifying an existing session
+           o 15. Terminating a session
+           o 17. Transactions
+           o 18. Transports
+           o 22.4 The Digest Authentication Scheme
+   Ø
+   Session Description Protocol, RFC 4566
+   Ø
+   An Offer/Answer Model with the Session Description Protocol (SDP), RFC 3264
+   Ø
+   An Extension to the Session Initiation Protocol (SIP), RFC 3581 (use of rport parameter)
+   Ø
+   Session Initiation Protocol (SIP) INFO Method and Package Framework, RFC 6086
+          o   4. The INFO Method
+   Ø
+   The Session Initiation Protocol (SIP) Refer Method, RFC 3515
+          o   2. The REFER Method
+   Ø
+   Session Description Protocol (SDP) Security Descriptions for Media Streams, RFC 4568
+   Ø
+   Session Initiation Protocol (SIP)-Specific Event Notification, RFC 3265
+   Ø
+   A Presence Event Package for the Session Initiation Protocol (SIP), RFC 3856
+   Ø
+   Session Initiation Protocol (SIP) Extension for Event State Publication, RFC 3903 (Creation of PUBLISH
+   requests)
+   Ø
+   SIP/UDP, SIP/TCP, SIP/TLS
+   Ø
+   Session Traversal Utilities for NAT (STUN), RFC 5389 (Basic procedures)
+   Ø
+   RTP: A Transport Protocol for Real-Time Applications, RFC 3550
+          o   5. RTP Data Transfer Protocol
+          o   6.4 Sender and Receiver Reports
+          o   6.5 SDES: Source Description RTCP Packet
+          o   6.6 BYE: Goodbye RTCP Packet
+          o   6.7 APP: Application-Defined RTCP Packet
+
+
+
+
+         Dallas Delta Corporation Pty.Ltd.                                                    Page 4
+    Ø
+    RTP Profile for Audio and Video Conference with Minimal Control, RFC 3551
+    Ø
+    Symmetric RTP / RTP Control Protocol (RTCP), RFC 4961
+    Ø
+    Secure Real Time Transport Protocol (SRTP, RFC 3711)
+    Ø
+    ZRTP, RFC 6189
+    Ø
+    ICE, RFC 5245 & RFC 6336
+    Ø
+    IP assignment: static/DHCP
+    Ø
+    HTTP/HTTPS web server
+    Ø
+    SysLog relayed on events & at set intervals
+    Ø
+    Time and date synchronization
+    Ø
+    QoS: 802.1 tagging (VLAN) , and DSCP
+
+
+
+
+2.1 Configuration
+The unit can be configured either through a web interface as described in the Web Interface subsection or by
+pushing a combination of the keypad buttons. Most of the settings are configured through an integrated
+administration web server.
+
+2.1.1 Keypad Configuration
+The keypad on the rear of the unit provides the installer access to:
+        ·      Listen to the current IP address
+        ·      Reset the unit to the factory default settings
+        ·      Reboot the unit.
+
+       2.1.1.1 Get current IP address
+During standby, press 'C' on the rear keypad to retrieve the current IP address.
+
+        2.2.1.2 Factory default settings
+To default the unit to its factory settings, connect the power (via the power jack or Ethernet PoE lead). Wait about
+20 seconds (You will hear a start-up tone).
+Then press *#*#7*2, this will reboot the unit and will set address mode to Static, the IP address to 192.168.1.100,
+the subnet mask to 255.255.255.0 and the administrator(admin) password to admin.
+
+          2.2.1.3 Reboot device
+This function is used for device restarting in case of changes of some configuration parameters, namely network
+settings, administration web interface settings and some SIP configuration parameters. Any change of the settings
+will not be saved permanently on the device until the unit is rebooted.
+To reboot the device press *#*#7*1.
+
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                         Page 5
+3.1 Web Interface
+The Sentry IP Video Door Station is configured over an integrated administration web server, which can currently
+only be controlled or changed using Google Chrome web browser.
+The DDC VoIP CAM door station is programmed by logging into the phones web page.
+Use Google Chrome, enter the phones IP address into the “URL Location Bar” at the top of the screen.
+If you don’t know the IP of the phone, press the “C” key on the rear keypad of the unit. The unit’s voice prompt
+will tell you the current IP address of the unit. (The default factory IP address is 192.168.1.100)
+To log in to the programming page type in the name and password and click the Login button, (units are generally
+delivered with the default username “admin” and password “admin”).
+
+
+
+                                                URL Location Bar
+
+
+
+
+3.1.1 Login
+In the web browser enter the Sentry IP Video Door Station. Subsequently, a login screen will be displayed. The
+default login username and password are as follows:
+                                                  Name: admin
+                                                Password: admin
+
+
+Note: Currently the VoIP CAM only supports the three default codecs as listed in the Enabled CODECS.
+
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                      Page 6
+3.1.2 Status
+In this subsection you will find the basic information on the respective Sentry system. The phone status is displayed
+on the first page of the web user interface.
+
+
+
+
+                  Field                                          Description
+
+           Hardware Version     The Sentry hardware version
+
+           Software Version     The Sentry software version
+
+           WAN Port Type        DHCP status – displays the mode of obtaining the IP address :
+                                From the DHCP server or manual STATIC
+
+           WAN IP Address       The current IP address of Sentry IP.
+
+           Subnet Mask          The current subnet mask
+
+           MAC Address          The Ethernet interface address
+
+           Registered           Describe registration status the current Sentry IP -to-SIP proxy registration
+                                status:
+                                - In progress – registration in progress.
+                                - Registered – Sentry IP is registered to the SIP proxy.
+                                - Not registered – Sentry IP is not registered to the SIP proxy.
+
+3.1.3 Administration
+
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                              Page 7
+         Field                                       Description
+
+Factory Default    This will set the default factory settings and reboot the unit it will set address
+                   mode to Static, the IP address to 192.168.1.100, the subnet mask to
+                   255.255.255.0 and the administrator (admin) password to admin.
+
+Setup Wizard       N/A
+
+Reboot             Reboot the unit and store the settings permanently.
+
+Upgrade            N/A
+
+Old Password       Enter the old password.
+
+New Password       Enter the new password.
+
+Confirm Password   Enter the new password again to confirm.
+
+
+
+
+Dallas Delta Corporation Pty.Ltd.                                                             Page 8
+            This page has intentionally been left blank.
+
+
+
+
+Dallas Delta Corporation Pty.Ltd.                          Page 9
+3.1.4 Internet Port (WAN)
+This subsection is used for setting the Sentry IP network parameters. A change of any of these parameters will take
+effect immediately, and the web browser will be redirected to the new IP address however you need to restart
+Sentry IP for the configuration to be stored.
+
+
+
+
+                  Field                                           Description
+
+           DHCP                 Obtain network parameters through DHCP server
+
+           Static IP Address    Set the network parameters manually.
+
+           IP address           Set the IP address assigned by your LAN administrator
+
+           Network mask         Set the network mask
+
+           Default gateway      Set the default network gateway
+
+           Primary DNS          Set the primary Domain Name Server IP address for your LAN
+
+           Secondary DNS        Set the secondary Domain Name Server IP address for your LAN
+
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                       Page 10
+3.1.5 Network Advanced
+
+
+
+
+             Field                        Description                  Values          Default
+
+      VLAN               Configures the VLAN ID that                 0-4094
+                         associates with the particular
+                         VLAN.
+
+      VID                Enable/Disable tag VLAN ID in the packets   Enabled       Disabled
+                         sent                                        Disabled
+
+      USRPRIORITY        Specifies the priority used for             0-7           0
+                         transmitting VLAN packets.
+
+      SIP DSCP           Differentiated Services Code Point (DSCP)   Number in     0x1a
+                         value in hexadecimal for the SIP Protocol   hexadecimal
+
+
+      Audio DSCP         Differentiated Services Code Point (DSCP)   Number in     0x2e
+                         value in hexadecimal for the Audio RTP      hexadecimal
+                         Stream
+
+
+
+
+       Dallas Delta Corporation Pty.Ltd.                                                  Page 11
+ Video DSCP          Differentiated Services Code Point (DSCP)    Number in     0x0
+                     value in hexadecimal for the Video RTP       hexadecima
+                     Stream                                       l
+
+ MTU                 Network's Maximum Transmission Unit          Number        1300
+                     (MTU). Use 0 to allow automatic
+                     discovery, otherwise set to a number of
+                     bytes.This parameter is only meaningful
+                     with video streams for which RTP packets
+                     are big
+
+ Adaptive rate       Turn on/off Adaptive Rate Control            On            On
+ control                                                          Off
+
+ Upload BW           Estimated upload bandwidth in kbit/s         Number        0
+
+ Download BW         Estimated download bandwidth in kbit/s       Number        0
+
+ Firewall Policy     No NAT: assume there is no Network           No NAT        No NAT
+                     Address Translators (NAT).                   Gateway
+                     Gateway: use firewall address supplied in    STUN
+                     Server field below (discouraged).            ICE
+                     STUN: Use Session Traversal Utilities for
+                     NAT (STUN) server in Server field below
+                     to discover its own public IP address and
+                     ports.
+                     ICE: Interactive Connectivity
+                     Establishment (ICE) is a technique used in
+                     computer networking involving (NATs) in
+                     Internet applications of Voice over
+                     Internet Protocol
+
+ NAT Sever Address   Firewall address to use when in firewall
+                     policy=Gateway, or STUN server address
+                     to use when in firewall policy=STUN
+
+ Time Zone           Set the Time zone                                          AUS/Melbour
+                                                                                ne
+
+ Primary NTP         Set the IP address of the Primary NTP        IP address/
+                     server for time synchronisation              Domain
+                                                                  name
+
+ Secondary NTP       Set the IP address of the Secondary NTP      IP address/
+                     server for time synchronisation              Domain
+                                                                  name
+
+ Web Server HTTP     Set the web server communication port                      80
+
+ Web Server HTTPS    Set the Secure web server                                  443
+                     communication port
+
+ SysLog IP Address   Remote SysLog IP address                     IP address/
+                                                                  Domain
+                                                                  name
+
+ SysLog Port         Remote SysLog Port                           Number
+
+
+
+Dallas Delta Corporation Pty.Ltd.                                                        Page 12
+3.1.6 Preferences
+This subsection manages the dial process, the type and the duration of the call. The on-board relays may be
+activated remotely by dialling the digits that matches the fields for Relay 1 & Relay 2 code.
+
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                      Page 13
+        Field                      Description                        Values        Default
+
+Silent Dial         Turn On/Off dial and keypad tones                     On        Off
+                                                                          Off
+
+Dial Plan           A dial plan establishes the expected                  On        Off
+                    sequence of digits dialled, This option will          Off
+                    turn On/Off this feature
+
+Direct IP Call      Enable/Disable the use of IP address                  On        On
+                    digits dialling                                       Off
+
+Use '#' To Call     Enable/Disable the use of the HASH key                On
+                    to establish a call after dialling                    Off
+
+Send Key Function   The function of the (# key)                         Normal      Normal
+                    Normal: Acts as a normal key.                       ON/Off
+                    Phone on/off: Configured to turn the                 Off
+                    phone on/off (establish and terminate a
+                    call).
+                     Phone off: Configured to turn off the
+                    phone (terminate a call).
+
+Keypad Speed-Dial   Configure the keypad speed dial, dial                           Disable
+                    memory location( phonebook)                       0 = disable
+                    immidiatley after number of digits being          Any integer
+                    pressed, if keys being pressed are less              value
+                    than number of digits it will dial after a
+                    timeout period,0 will disable this feature.
+
+Dialling Timeout    Time in seconds to establish a call, This      Time (seconds)   4
+                    will be ignored if the send key is
+                    configured to establish a dial
+
+Hot Line Number                                                         Number
+
+Relay Inuse         Enable/Disable the relay switch                       On        Off
+                                                                          Off
+
+Relay Code          The code to turn on the relay                       Number
+
+Relay On Timer      Time in seconds to keep the relay on for             Time
+                                                                       (seconds)
+
+
+
+
+  Dallas Delta Corporation Pty.Ltd.                                                           Page 14
+3.1.7 Feature
+This section controls the way the unit makes and receive calls. Select options, as to what should happen when calls
+are made to the unit, whether to accept or reject it, during different modes of operation.
+
+
+
+
+               Field                                Description                          Values       Default
+
+
+      Always Forward          Enable/Disable Always Forward feature. If On all the        On          Off
+                              incoming calls will be forwarded to the target number       Off
+
+
+      Busy Forward            Enable/Disable Busy Forward feature. If On and the          On          Off
+                              phone in a busy state the call will be forwarded to the     Off
+                              phone target
+
+      No Answer               Enable/Disable No Answer Forward feature. If On and         On          Off
+      Forward                 the has not being answered after a chosen timeout           Off
+                              period the call will be forwarded to the target number
+
+
+      Auto Answer             Enable/Disable Auto Answer feature. If On the call will     On          Off
+                              be answered after a chosen timeout period                   Off
+
+      No Answer Period        Timeout period in seconds. This is for the call forward     T i m e     0
+                              and the auto answer features.                               (seconds)
+
+
+      Phone Target            The phone number to forward the call                        Number
+
+
+      Call Waiting            Enable/Disable Call Waiting feature                         T i m e     4
+                                                                                          (seconds)
+
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                        Page 15
+         Divert No Answer                  Enable/Disable Divert No Answer feature                                    On                 Off
+                                                                                                                      Off
+
+         No Answer Period                  Time in seconds before an outgoing call can be diverted                    T i m e
+                                           to another number                                                          (seconds)
+
+
+         Primary Divert                    The primary phone number to divert if the outgoing call                    Number
+                                           is not successful
+
+         Secondary Divert                  The Secondary phone number to divert if the outgoing                       Number
+                                           call from the primary number is not successful
+
+
+
+3.1.8 Contacts
+3.1.8.1 Phone Book
+In this section the user can store the phone numbers into specific memory locations (Speed Dial), which will allow
+the user to make a call to a specific phone destination from the front keypad or call button.
+To enable this feature set the ‘KeyPad Speed-Dial’ digits to zero (0) value in the Preferences section.
+
+
+
+   Note:
+   When entering values into fields
+   you must press the enter/return
+   key to register your new entry.
+
+
+
+
+             Field                               Description                    Master/Slave feature:
+
+ Location                          Speed dial memory location. Must be an       When using this mode you can call extension numbers
+                                   integer.                                     from different SIP URI accounts. This enables complete
+                                                                                separation of two SIP URI accounts within the one unit.
+ Name                              Any given name. Any characters.              The example above shows that the ‘Office’ can be called
+                                                                                on extension ‘900’ via the SIP URI account
+ Phone Number                      Phone number, extension number, IP           ‘192.168.1.190’ using the Master unit’s microphone for
+                                   address or SIP URI (’ext’@’SIPaddress)       communication.
+                                                                                ‘Sales’ can be called on extension ‘800’ via the SIP URI
+ MIC                               INT selects internal MASTER microphone       account ‘192.168.1.200’ using the Slave unit’s
+ (for using Master/Slave option)
+                                   EXT selects external SLAVE microphone        microphone for communication.
+                                                                                Please refer to section 4.2 Wiring - Connection Details for Master/Slave setup.
+
+3.1.8.2 Access Control
+The Access control table allows the user to assign keyless entry codes and set the access time.
+Currently the Access Control table is configured to use Relay1 timer (section...).
+
+
+
+
+                Dallas Delta Corporation Pty.Ltd.                                                                                 Page 16
+                                         Field                            Description
+
+                               Key                          Keyless entry code. Must be an integer.
+                                                            For keyless entry, press ‘*’ then ‘code’
+
+                               Start Time                   Start access time. 24 hour format.
+                                                            Eg: 00:00 - 23:59
+
+
+                               End Time                     End access time. 24 hour format.
+                                                            Eg: 00:00 - 23:59
+
+
+
+3.1.9 Dial Plan
+A dial plan establishes the expected sequence of digits dialled on the Sentry IP Video Door Station. To enable the
+dial plan select yes on the Preferences (3.1.6) subsection. When making a call, numbers that are accepted must
+match one of the group patterns in the dial plan.
+
+
+
+
+The following syntax used to identify a dial plan in a digit map is adapted from [RFC 2705].
+
+
+                To specify a                Enter the following                                Result
+
+            Digit                    0123456789*                           Identifies a specific digit (do not use #)
+
+            Range                    [digit-digit]                         Identifies any digit dialed that is included in
+                                                                           the range
+
+            Range                    [digit-digit, digit]                  Specifies a range as a comma separated list
+
+            Wild Card                X                                     x matches any single digit that is dialled
+
+            Wild Card                .                                     . matches an arbitrary number of digits
+
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                                        Page 17
+Some dial plan examples using the above syntax look as follows:
+
+
+                               For calls to                                            Dial plan
+
+            Internal Extension                                   xx
+
+            Mobile Number                                        04XXXXXXXX
+
+            interstate numbers                                   0[2-9]xxxxxxxx
+
+
+3.1.10 Account
+Two separate SIP accounts can be used within the one unit.
+The example below shows that ‘Account 1’ is set as the default SIP account, so if an extension is called without the full SIP address
+making a call to extension 900 via account 2, (eg. 900@192.168.1.190) then the call will be made via the default SIP Account 1
+(192.168.1.200).
+
+
+
+
+           Dallas Delta Corporation Pty.Ltd.                                                                    Page 18
+        Field                     Description                          Values         Default
+
+ Default Account    Select the default VoIP account              No Account     No Account
+                                                                 Account 1
+                                                                 Account 2
+
+ Display Name       Enter the authorisation ID to be used
+                    for authorisation
+
+ Register Name      Set the user ID for registration
+
+ Password           Enter the password to be used for
+                    authorisation during registration and
+                    calling
+
+ Domain             The domain name or IP address of the
+                    server to be used for calling
+
+ Outbound Proxy     Set SIP server address to send all
+                    outgoing SIP requests. It is usually left
+                    blank, otherwise it is commonly used
+                    to as outbound proxy
+
+ Registration       Expiration period of the registration in     Time           3600 (seconds)
+ Duration           seconds                                      (seconds)
+
+ Register           Set whether should register with the         ON             On
+                    SIP proxy or not                             Off
+
+ Publish Presence   Send a PUBLISH request to the proxy          ON             Off
+                    to notify about presence information         Off
+
+ Media Encryption   -None no encryption                          None           None
+ Type               -SRTP is Secure Real-time Transport          SRTP
+                    Protocol. It is a security profile for RTP   ZRTP
+                    protocol
+                    -ZRTP is a cryptographic key-
+                    agreement protocol to negotiate the
+                    keys for encryption between two end
+                    points.
+                    It uses Diffie–Hellman key exchange
+                    and uses SRTP for encryption
+
+ Mandatory          Enforce Encryption when using SRTP           ON             Off
+ Encryption                                                      Off
+
+
+
+
+Dallas Delta Corporation Pty.Ltd.                                                           Page 19
+3.1.11 Audio
+This subsection is used to enable or disable audio codecs.
+The codec priorities are determined by the sequence: the top codec in the sequence has the highest priority.
+
+
+
+
+3.1.12 Video
+This subsection is used to set the video camera resolution, the codec properties and parameters.
+The codec priorities are determined by the sequence: the first codec in the sequence has the highest priority.
+You can set the codecs parameters in such a manner that the video transmitted conforms to the needs of the
+opponent.
+The codec format parameters are string to be sent in SDP for this codec, which normally corresponds usually to
+what we prefer to receive.
+
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                        Page 20
+3.1.13 Advanced Settings
+
+
+
+
+         Dallas Delta Corporation Pty.Ltd.   Page 21
+         Field                         Description                          Values    Default
+
+ SIP Port              SIP UDP Port to be used                        Number         5060
+
+ SIP TCP Port          SIP TCP Port to be used                        Number         0
+
+ DTMF Type             Defines how DTMF signalling should be          RFC2833        RFC2833
+                       received and sent                              SIP INFO
+
+ Keepalive Period      Keepalive period in milliseconds for           Time (ms)      10000
+                       sending out SIP UDP keepalive to the
+                       proxies.
+
+ Audio RTP Port        Audio RTP (UDP) port                           Number         7078
+
+ Video RTP Port        Video RTP (UDP) port                           Number         9078
+
+ Audio Jitter Buffer   Nominal audio jitter buffer size in            Time (ms)      60
+ Size                  milliseconds
+
+ Video Jitter Buffer   Nominal video jitter buffer size in            Time (ms)      60
+ Size                  milliseconds
+
+ No RTP Timeout        Set the time limit for receiving audio         Time           30
+                       stream RTP packets during a call. When the     (Seconds)
+                       limit is exceeded, the call is terminated.
+
+ Echo Canceller        Turn on/off echo cancellation                  On             On
+ Inuse                                                                Off
+
+ Delay                 Expected delay of echo in milliseconds. This   Time (ms)      0
+                       allows to reduce the tail length of the echo
+                       canceller, which speeds up convergence
+                       and reduces complexity of computations
+
+ Tail Length           Tail length of echo canceller in               Number         0
+                       milliseconds. Ideally it should be no more
+                       than the expected duration of the echo
+
+ Frame Size            Frame size for AU-MDF echo canceller           Number         80
+                       algorithm. This is a parameter internal to
+                       the echo canceller, recommended is too
+                       keep to its default value
+
+ Echo limiter Inuse    Turn on/off the echo limiter.                  On             Off
+                       The echo limiter is an algorithm that          Off
+                       consists in lowering the gain of the MIC
+                       input when the speaker is talking.
+                       Combined with the noise gate (see next
+                       section) it gives good results when the
+                       echo canceller no more works, because of
+                       non-linear distortion (saturation) of the
+                       echo path. Its drawback is that it turns the
+                       call in a kind of automatic half-duplex
+                       mode, which makes impossible to interrupt
+                       the person who is talking.
+
+
+
+
+Dallas Delta Corporation Pty.Ltd.                                                           Page 22
+ Speed                Gain changes are smoothed with this            Number        0.03
+                      coefficient. It's a value between 0 and 1.
+                      0.1 is already very fast, 0.001 is very low
+                      default value is 0.03. Recommendation is
+                      to keep it unchanged.
+
+ Echo limiter         Threshold above which the system               Number        0.1
+ Threshold            becomes active. It is a normalized power,
+                      between 0 and 1. Default value is 0.1 A
+                      smaller value can be better
+
+ MIC Attenuation      The proportional coefficient controlling the   Number        0
+                      MIC attenuation. Default value is 10
+
+ Attenuation Period   Time in milliseconds for which the             Time (ms)     100
+                      attenuation is kept unchanged after
+                      resuming from speech to silence on the
+                      network->speaker channel. The purpose of
+                      the parameter is to keep the MIC
+                      attenuated for some time until the echo of
+                      the audio buffers is finished. 100 ms is a
+                      reasonable value to start, can be higher
+
+ Noise gate Inuse     Turn on/off the noise gate.                    On            Off
+                      The goal of the noise gate is to remove (or    Off
+                      attenuate a lot) the background noise
+                      heard by the microphone. Noise and
+                      speech are distinguished using an energy
+                      threshold. The use of the noise gate can
+                      prevent feedback to produce between two
+                      devices running our VoIP system
+
+ Noise gate           Noise gate threshold in linear power           Number        0.05
+ Threshold            between 0 and 1: Above this threshold the
+                      noise gate becomes bypass.
+
+ Floor Gain           Gain applied to the signal when its energy     Number        0.0005
+                      is below the threshold. It is expect to be
+                      low so that noise is attenuated.
+
+ AGC Inuse            Automatic gain control (of MIC input) -        On            Off
+                      turns on or off                                Off
+
+ MIC Gain             Static software gain (linear scale) to be      Number        0000
+                      applied to microphone signal
+
+ Playback gain        Static software gain (log scale) to be         Number        0000
+                      applied to signal sent to speaker
+
+ DC Removal           Enable or disable DC removal of the MIC        On            Off
+                      input                                          Off
+
+ Equalizer Inuse      A parametric equalizer can be used to          On            Off
+                      recover from speakers with bad spectral        Off
+                      response. The frequency response of the
+                      equalizer is entirely configurable.
+
+ Gains                Equalizer gains. It is a list of triplets ::   Triplets ::   300:01.10
+                                                                                   1
+
+
+
+Dallas Delta Corporation Pty.Ltd.                                                         Page 23
+4.1 Wiring - Power Over Ethernet (PoE)
+
+
+  The DDC_VoIP telephone may be powered from the 2 way connector marked ‘Power’ on the side of the unit,
+  see page 26. The polarity to this connector must be correct for the unit to function. (Note that NO damage
+  will occur if it is connected incorrectly).
+  The voltage input to this connection may be from 9 to 48 Volts.
+
+  The alternative way to power the DDC_VoIP telephone is via the Ethernet connector using a PoE switch.
+  The DDC_VoIP telephone is adapted to use a class 0 form of power source.
+
+  There are two methods that power can be supplied from a Ethernet Switch,
+  Mode A, supply power over the Tx/Rx pair, (TX pair pins 1&2 and RX pair pins 3&6).
+  Mode B, via the spare pairs 4&5 and 7&8.
+
+
+
+
+                                                                pins                  pins
+                                                                1
+                                                                                      1 = TXP
+                                                                2                     2 = TXN
+                                                                3                                        mode A
+                                                                4
+                                                                5                     3 = RXP            PoE
+                                                                6
+                                                                7                     6 = RXN
+                                                                8
+
+                                                                                      4,5 = Spare        mode B
+                                                                                      7,8 = Spare        PoE
+                           RJ45 Ethernet connector
+
+
+  The figure above shows a typical RJ45 connector with the pins side facing up.
+Note, In mode B, that the spare wires 4 and 5 are linked together within the PCB, the same for pins 7 and 8.
+
+   The polarity on pins 4,5 or 7,8 is not critical and is generally set within the Switch, (if used).
+
+   The DDC_VoIP telephone is configure to draw power from the PoE in class 1 (0.44-3.84 Watt) and should be
+connected to a IEEE 802.3af compatible PSE power unit .
+
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                             Page 24
+4.2 Wiring - Connection Details
+
+
+   Microphone
+
+                           OD 17 mm
+
+                           ID 10 mm
+          Grommet dimensions
+
+
+
+
+                                                            Menu / Cancel   Volume up   Volume down
+          Optional External Speaker and Mic.
+
+
+                                                                                                       On/off
+          The microphone may be mounted using
+          two methods, either mount the grommet
+          to panel by applying an adhesive
+          to the grommet face, or mount into a
+          13.5mm diameter hole.                             A               B           C              D
+
+                       Method 1                             3               6           9              #
+                            Apply adhesive
+                            to grommet face.                2               5           8              0
+
+                           Microphone inserted              1               4           7              *
+                           into grommet.
+
+
+  Panel                    The microphone must
+                           be properly sealed
+                           to the panel surface.
+
+                     Method 2
+            Panel
+                     The panel hole is to
+
+
+                                                                                               POWER
+                     be 13.5 mm to fit the
+                     microphone grommet.
+
+
+                                                                                          +
+
+
+Relay contacts are rated as follows : 1 A                                                                   Ethernet
+                                                                                                            NetWork 10baseT
+@ 50 V DC Non-inductive                                                                                     (with PoE optional)
+1 A @ 30 V AC Non-inductive
+N/O or N/C                                                                                                      Note that power to the unit may be either supplied
+switch set by                     RELAY 1 & 2                                                                   through the Ethernet connection or via the 12 Volt
+jumper LK1 / LK2                                                                                                Power Pak,
+                                                                                                                Ethernet power can be induced over the Tx/Rx
+                                                                                                                data pair or the spare pairs 4,5 and 7,8.
+                                                                                                                Pins 4,5 are connected together and so are pins 7,8
+                                                                                                                on the PCB.
+                                                                                                                The polarity of this connection is NOT critical.
+
+
+                                                   POWER PAK
+                                                     optional
+
+
+
+
+WARNING
+This telephone can not be used for emergency purposes during power failure unless a network connection is
+guaranteed with Power Over Ethernet (PoE).
+
+
+          Note: All wiring is to be routed away from high EMI radiating devices,
+          such as transformers, fluorescent lighting etc.
+
+
+               Dallas Delta Corporation Pty.Ltd.                                                                                                 Page 25
+4.2 Wiring - Connection Details continued...
+
+MASTER/SLAVE WIRING DIAGRAM
+
+Below is how to wire up the VoIP units in Master/Slave configuration.
+
+
+
+              dallas    delta
+               corporation pty. ltd.
+                                                                                           dallas    delta
+                                                                                            corporation pty. ltd.
+                                   RELAY 2                                                  102 Albert St. East Brunswick, 3057 Vic.
+                                  1A @ 50Vdc                                                Tel: 613 93877388 Fax: 613 93873128
+                                    (Optional)                                                    Email: sales@dallasdelta.com
+                                                                                                      www.dallasdelta.com
+                                       RELAY 1
+                                  1A @ 50Vdc
+
+
+                                       POWER       -
+                           9-20Vdc @ 300mA
+                                                 +                                                1. Mic +
+                                                                                                  2. Mic -
+                         1. Mic +
+                         2. Mic -
+                                                                                                  3. Button 3
+                                                                                                  4. BCOM
+                                                                                                  5. Button 4
+                                                                                                                   From
+           From          3. Button 3
+                         4. BCOM
+                         5. Button 4
+                                                                                                  6. BCOM
+                                                                                                  7. Speaker
+                                                                                                  8. Speaker
+                                                                                                                 Master Unit
+         Slave Unit      6. BCOM
+                         7. Speaker
+                         8. Speaker
+
+
+
+
+         DDC CAM                             ACK                                    DDC CAM
+           VoIP V1.2                         TX                                        VoIP V1.2
+      MASTER UNIT LABEL                                                             SLAVE UNIT LABEL
+                                             E3585                                                                           E3585
+
+                                                       Network connection
+4.3 Wiring - PCB Layout
+
+The DDC CamVoIP PCB connection may be different from the diagram shown, The layout is of a generic
+configuration, some items may not be installed and/or not required.
+    RELAY 1+2                                                               KEYPAD
+    NO/NC LINK                                                              CONNECTOR    BUTTON 2                BUTTON 1
+                      LK1 AND LK2
+
+
+
+
+  RELAY 2               NO/NC            NO/NC
+
+  RELAY 1
+
+
+BUTTON 1
+
+SUPPLY    -
+12-48V    +
+                                 DALLAS DELTA CORP
+
+ NETWORK
+ INPUT
+ (and PoE)
+                                                                                   SPK                          MIC
+
+                                                                                                                  +
+
+
+                                                                                             HANDSET
+     LK1 and LK2 relay links are used to select the
+     normal state of the output contacts.
+
+              Relay linked for normally closed contacts
+
+              Relay linked for normally open contacts
+
+
+
+          Dallas Delta Corporation Pty.Ltd.                                                                        Page 26
+5.0 Specifications
+
+power:                input voltage                  12 Volts (minimum) - 50 Volts (maximum)
+
+
+current               -idle mode                     60mA @ 13Vdc           (0.8 Watts)
+consumption:          -on call                       100mA @ 13Vdc          (1.3 Watts) normally
+                                                     <300mA @ 13Vdc         (3.9Watts)
+                                                     (maximum volume into a 8ohms speaker )
+
+
+relay contacts:       switching maximum              1A @ 60Vdc / 40Vac SELV or TNV (non inductive load)
+                                                     voltage free outputs
+
+temperature:          operating range                0ºC to +50ºC
+
+SPL:                  ringer output level            >80dBa @ 1 metre (32 steps)
+
+communication:        Ethernet                       10 / 100
+                      Connection protocol            SIP
+                      Audio CODECs                   G711 (uLaw, aLaw), Speex (narrow and wide band),
+                                                     G.722, Opus, GSM, G.729
+                      Video CODECs                   VP8 (WebM) ,HH.263-1998, mpeg-4,
+                                                     H.264 with resolutions from QCIF (176x144) to VGA (640x480)
+
+                                                     Sentry               Guard(brick)             Guard(Vertical)
+physical:             panel dimensions (mm)          270 x 130`            255 x 104               100 x 227 x 46
+                      wall cut-out (mm)              225 x 115 x 40        246 x 94 x 50           surface mount
+                      weight (kg)                    approx. 1             approx. 1.02            approx. 0.9
+                                                                          (std brick cut out)
+
+
+
+
+WARNING
+This telephone can not be used for emergency purposes during power failure unless a network connection is
+guaranteed with Power Over Ethernet (PoE).
+
+To be installed and maintained by authorised service personnel only.
+
+
+
+
+            Dallas Delta Corporation Pty.Ltd.                                                      Page 27
+                                                             102 Albert Street   T: +613 9387 7388
+                                                             Brunswick East      E: sales@dallasdelta.com
+                                                             VIC Australia       F: +613 9387 3128
+                                                             3057                www.dallasdelta.com
+
+
+
+
+                       Manufacturing Communication Products
+                      Analogue | VoIP | GSM | Fibre
+                Designing Customised Communication Systems
+
+
+
+      Security Door Telephones
+                                                Rugged Environment Telephones
+                     GSM/3G Wireless Intercoms
+                                 Emergency Services Telephones
+                                                                     High Voltage Line Isolators
+      Apartment Intercom Systems
+                                             Emergency Lift Telephones
+
+
+
+                                                                             Industrial Telephones
+  Motorway Telephones
+                 Emergency Telephone Systems
+          Loud-Speaking Telephones
+
+                    Hygienic Environment Telephones
+                                                                 Prisoner Telephones
+      VoIP Telephones
+
+
+
+
+                                                                                               E3585
+manual-VoIP-CAM-IR-Class0-v1.3.cdr                                                          02-02-2018
+

@@ -63,6 +63,12 @@ practical.
 | Reusable read-only scripts: WAN-routing/topology-drift investigation tooling (evidence capture, drift analyser, topology/hardware cross-check),     | `scripts/README.md`                            |
 |   plus ansible-lint pre-push/CI gate scripts, fleet hardware/service-health + portal-FQDN-status audit, and pin-activation diagnosis                |                                                |
 | Cambium asset-register naming grammar, per-site drift, `rcp`-vs-`nbn_accelerate` R195P rule, R195P IP-derivation formula, extraction gotchas        | `references/15_cambium-asset-registers.md`     |
+| Raspberry Pi SMC (`rct`, `wh`): identity without DMI (device-tree model, SoC serial), the one-port `eth0` layout, `wlan0` AP, no snmpd, bootloader EEPROM | `references/07_hardware-overlay.md`            |
+|   vs upstream (`rpi-eeprom-update` misreports "up to date")                                                                                           |   §Raspberry Pi SMC identity                   |
+| Raspberry Pi vendor sources: product brief, datasheet, BCM2711, revision codes, EEPROM docs and release notes, per-box captures, firmware manifest;   | `references/vendor-sources-raspberry-pi-20261008_1043/readme.md` |
+|   EEPROM images in `firmware-files/raspberry-pi/`                                                                                                     |                                                |
+| rct site ATA (Dallas Delta DDC_VoIP-m at `192.168.5.253`): web UI only, no SNMP or SSH, SIP `Registered` readout, site-unique settings, read quirks   | `references/17_site-ata-dallas-delta.md`       |
+| Dallas Delta vendor sources: manuals, datasheets, web pages, IANA/IEEE excerpts, firmware note                                                        | `references/vendor-sources-dallas-delta-20261008_1043/readme.md` |
 
 ## Runtime Paths
 

@@ -1,0 +1,78 @@
+Australian   User        Low Cost       Vandal      Weather
+Made         Friendly    Ownership      Resistant   Resistant
+
+
+
+
+MS-Teams Setup
+       VoIP phone setup guide
+
+
+
+
+             53 Barry road, Campbellfield VIC Australia 3061
+              tel: (+613) 9387 7388 | fax: (+613) 9387 3128
+             sales@dallasdelta.com | www.dallasdelta.com
+                                                                         MS-Teams Set up
+
+
+Teams Set up for Dallas Delta VoIP phones
+Your teams system must be enabled with a SIP Gateway.
+See Microsoft reference for how to configure your Teams SIP Gateway and your SIP phones.
+https://learn.microsoft.com/en-us/microsoftteams/sip-gateway-configure
+
+By using Teams admin center
+To enable SIP Gateway in the Teams admin center, follow these steps:
+      1.     Go to the Teams admin center
+      2.     At the left, under Voice, select Calling policies.
+      3.     At the right under Manage policies, select the appropriate calling policy assigned to
+             users or, if necessary, create a new calling policy and assign it to the required users.
+      4.     Select Manage policies, select a policy, and then select Edit.
+      5.     Turn on the setting for SIP devices can be used for calls, and then select Save.
+
+Set the SIP Gateway provisioning server URL
+You can set the SIP Gateway provisioning server's URL in your Dynamic Host Configuration
+Protocol (DHCP) server. Users who work remotely must configure it manually.
+
+Using DHCP
+For each SIP device, the following SIP Gateway provisioning server URLs:
+       -     PAC: http://apac.ipp.sdg.teams.microsoft.com
+Add SIP devices to your Teams organization by configuring the above SIP Gateway provisioning
+server URL in your DHCP server.
+
+Users who work remotely must manually configure the provisioning server URL into their SIP device
+by using the following steps:
+       1.     Open Settings n the device and get the device's IP address.
+       2.     Open a browser window, enter the device’s IP address, log in (if necessary) and
+              configure the provisioning server’s URL in the device's web utility.
+       3.     Under Settings or Advanced settings on the web utility, enter the provisioning server
+              URL shown above.
+
+
+
+
+                                                                     TeamsSetUp.pdf                 1
+Example Configuration
+A connection made using the “Ringcentral” (example shown) server as a SBC/
+Gateway, to connect a 3rd party SIP device to the “MS-Teams server”.
+Please consult with other cloud base SIP providers if a connect can be made to the
+Teams sever via there system.
+ IE: https://expertittelco.com.au
+      https://www.aussiebroadband.com.au
+
+
+
+
+                                                               DDC VoIP-S11 setup
+
+
+
+
+                                                                TeamsSetUp.pdf       2
+DDC_VoIP-ms setup
+
+
+
+
+TeamsSetUp.pdf   3
+

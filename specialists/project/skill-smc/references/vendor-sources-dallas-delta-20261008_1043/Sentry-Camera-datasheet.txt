@@ -1,0 +1,143 @@
+SENTRY CAMERA
+                                 Optional Stainless
+                  Night vision    Steel Enclosure
+                    camera                            The SENTRY CAMERA
+                                                      series outdoor doorstations
+                                                      are engineered for extreme
+  Vandal                                              durability and vandal
+ resistant                                            resistance, featuring a robust
+   glass                                              front panel made from high-
+                                                      grade stainless steel that
+                                                      resists impacts, scratches,
+                                                      corrosion, and deliberate
+                                                      damage – making longevity
+                                                      and security the top priorities
+                                                      in every design decision.
+ Aluminium                                            Fully weatherproof to IP65,
+ Lens Guard                                           the SENTRY can withstand
+                                                      rain and temperature
+                                                      extremes while the panel,
+                                                      impact-resistant buttons.
+                                                      Thanks to the vandal-resistant
+                                                      stainless steel construction
+                                                      and customizable user
+Stainless Steel
+                                                      interface, layouts can be
+   Buttons                                            supplied ready-made or
+                                                      fully defined by the user –
+                                                      perfectly adapted for gate
+                                                      or door entry, information
+                                                      kiosks, emergency call points,
+                                                      control desks, or internal
+                                                      communication stations.
+ Loud speaker
+                                                      Designed to suit any high-
+                                                      traffic, high-risk locations
+                                                      where durability and security
+                                                      cannot be compromised.
+
+
+
+
+“Designed to suit any high-traffic, high-risk locations where
+durability and security cannot be compromised.”
+                                    Australian                   User                           Low Cost                   Vandal      Weather
+                                    Made                         Friendly                       Ownership                  Resistant   Resistant
+
+
+
+
+  Choose from vertical stainless steel panels, 1 , 2, 4 buttons & keypad
+
+
+
+
+                          Stainless Steel    Acrylic Enclosure    Stainless Steel Enclosure    Stainless Steel   Flush Mount
+                            Enclosure        (Weather shield)    Inside an Acrylic Enclosure   Hood Enclosure      Wall Box
+
+
+
+
+ENCLOSURE OPTIONS
+Choose the right enclosure to suit the location, our                           - Stainless Steel Surface Mount with Acrylic Enclosure
+range includes:                                                                - Stainless Steel Weather Hood
+- Stainless Steel Surface Mount Enclosure                                      - Flush Mount Wall Box (internal zinc plated mild steel)
+SENTRY CAMERA
+                                                             Additional Features
+The Sentry Doorstation ranges from one to six
+buttons and can be expanded up to sixteen buttons on
+a custom panel. The standard panel (130mm X 270mm)           Speed dialer option
+is made from 304 stainless steel. The metal buttons
+                                                             Vandal resistant buttons or keypad
+and keypad (4x3) are made to be vandal resistant.
+                                                             Battery backup and solar panel (optional)
+Panels are available in either vertical or horizontal,
+                                                             Remote programming facilities
+and can be anodised aluminium or stainless steel. If
+you require the panel to be made of different material       Remote operating features
+(ie. Brass, gold-plated, etc), this too is available upon    Remote diagnostic testing
+request.
+                                                             Remote relay activation
+With programmable auto dial buttons, the Sentry              Self identification
+doorstations are a user friendly solution for controlled
+                                                             Push to talk for noisy environments
+entry. In the event of noisy environments a push-to-
+talk feature can be implemented in order to overcome         Up to 10 keyless entries
+the background noise level while on a call. (Available       Low power operation mode
+on all models).
+                                                             Handset or hands-free operation
+
+Options / Upgrades                                           Keypad or button operation (up to 24 buttons)
+The Master / Slave configuration, designed for two           Stores up to 12 phone numbers (primary numbers)
+units to run at different heights for a combined car &       Two alternative numbers per primary number (local alt. number)
+truck gate entrance.
+                                                             1000-number Caller Line Identification (CLI) for door access control
+Two gate release option, when you require a remote
+                                                             Two global alternative numbers if required (over-rides local alt. numbers)
+release of two independent gates or doors from a single
+unit. This option is the inclusion of an additional relay,
+which can be fitted on request.
+Engraving is a permanent way to label a call destination
+next to each button, or include the company logo.
+                                                    Australian             User             Low Cost            Vandal      Weather
+                                                    Made                   Friendly         Ownership           Resistant   Resistant
+
+
+
+
+Line Powered                                                             VoIP
+A completely PSTN line powered unit that will supply                     An Ethernet connected doorstation that provides Voice over
+sufficient audio level for low noise environments. It features           Internet communication technology. Giving you the power
+easy programming for quick installation.                                 of our PSTN base units in an IP format.
+
+Externally Powered                                                       4G/GSM
+Designed for general purpose situations, a PSTN doorstation              A wireless mobile phone intercom system using the 4G
+featuring an interactive voice prompt for quick and easy                 network. Powered by external 12V DC Power supply or
+programming (power pack supplied).                                       Battery & Solar Powered.
+
+
+
+             			                  Line Powered		                 Externally powered         VoIP 					
+   FEATURE 		                     																	
+   Power Requirements 		          Line Powered 24-50dc 100mA     PSU 9-20Vdc 250mA 		       PoE / PSU 9-50Vdc 300mA 		
+
+   Standby Current 			            22mA(minimum) 		               10mA @ 18Vdc 			           60mA @ 13Vdc 				
+
+   Off Hook Current 		            PABX dependant 		              40mA @ 18Vdc 			           300mA @ 13Vdc 			
+
+   Relay Rating 			               0.5A@60Vdc/40Vac SELVorTNV     1A@50Vdc/30Vac SELVorTNV   1A@60Vdc/40Vac SELVorTNV
+   (Non Inductive Voltage Free)
+   Dimensions Vertical Units      H 270mm W 130mm D 45mm         H 270mm W 130mm D 45mm     H 270mm W 130mm D 45mm		
+
+   Dimensions Horizontal Units    H 130mm W 270mm D 45mm         H 130mm W 270mm D 45mm     H 130mm W 270mm D 45mm		
+
+   Wall Cut-Out (mm)		            225 x 115 x 40			              225 x 115 x 40			          225 x 115 x 40				
+
+   SPL Ringer Output Level 		     >78dBa @ 1 metre 		            >85dBa @ 1 metre 		        >85dBa @ 1 metre 			
+
+   REN 				                       0.7 				                       <1 				                    N/A 				
+
+   Operating Temperature Range    -10 to +60 			                 -10 to +60 			             0ºC to +50ºC 				
+
+   Maximum Call Buttons 		        6 				                         8 				                     16 (custom panel) 			
+

@@ -112,6 +112,18 @@ routing:
     - references/tplink-site-switches.yaml
     - references/tplink-snmp-enablement-survey-20260930.csv
     - scripts/tplink-switch.sh
+  site_ata:
+    description: The rct site ATA (Dallas Delta DDC_VoIP-m at 192.168.5.253) -- web UI
+      only, no SNMP or SSH, SIP registration readout, site-unique settings, read quirks.
+    read:
+    - references/17_site-ata-dallas-delta.md
+    - references/vendor-sources-dallas-delta-20261008_1043/readme.md
+  raspberry_pi_smc:
+    description: Raspberry Pi SMC (rct, wh) identity without DMI, one-port eth0 layout,
+      no snmpd, bootloader EEPROM vs upstream; vendor sources and firmware manifest.
+    read:
+    - references/07_hardware-overlay.md
+    - references/vendor-sources-raspberry-pi-20261008_1043/readme.md
   smcbox_basics:
     description: SMC box definition, inventory flavors, Teleport access pattern, satellite
       constraints, APN vs NBN Accelerate cluster structural comparison.

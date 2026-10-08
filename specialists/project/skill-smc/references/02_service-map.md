@@ -304,3 +304,6 @@ management address on all three. Still a hand install, not an ansible-wifi role;
 recorded:** feeding the community as the first stdin line to `ssh host sh -s` executes it as a command and echoes it in stderr; carry it inside the script body (a quoted here-doc) instead. That
 mistake printed both read-only communities into one agent session's transcript on 2026-09-24 01:20; rotation of the two RO communities is recommended.
 
+**Raspberry Pi boxes: no agent, by decision (operator, 2026-10-08).** VERIFIED-OBSERVED 2026-10-08: no `snmpd` on 20-mile, adjamarragu (`rct`), areyonga or glen-hill (`wh`); the root is
+overlayroot, so a hand install would not survive a reboot. The operator decided no SNMP on the Pis for now. Details: `07_hardware-overlay.md`, Raspberry Pi SMC identity.
+

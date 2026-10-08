@@ -1,0 +1,938 @@
+  Australian     User          Low Cost       Vandal        Weather
+  Made           Friendly      Ownership      Resistant     Resistant
+
+
+
+
+VoIP Sentinel S11             User’s Manual
+                                       VoIP Sentinel Doorstaion Phone
+
+
+
+
+               102 Albert Steet Brunswick East VIC Australia 3057
+                    tel: (+613) 9387 7388 | fax: (+613) 9387 3128
+                   sales@dallasdelta.com | www.dallasdelta.com
+ Custom Communication Solutions
+
+
+
+
+Dallas Delta Corporation Pty. Ltd. is an established and respected provider of
+specialist communications equipment.
+
+We design and manufacture our products in Melbourne and have many thousands of
+satisfied customers within Australia and internationally.
+
+Our aim is to supply customers with a quality product and great service for the life of
+their product. We believe in a good customer relationship which gives our clients the
+support they need in order to establish and build their business.
+
+
+
+                www.dallasdelta.com
+
+
+                sales@dallasdelta.com
+
+                sales | services | spares
+                +61 3 9387 7388
+
+                fascimile
+                +61 3 9387 3128
+
+
+                dallasdelta
+
+                head office | repairs
+                Dallas Delta Corporation Pty. Ltd.
+                102 Albert Street
+                Brunswick East VIC Australia 3057                                    E3589
+Copyright Notice
+All rights reserved. No part of this publication may be reproduced, transmitted or stored in a retrieval
+system in any form or by any means, electronic, mechanical, photocopying, recording, or otherwise,
+without the prior written permission of Dallas Delta Corporation Pty. Ltd.
+Dallas Delta Corporation Pty. Ltd. reserves the right to make changes to features and specifications
+at any time without prior notification in the interest of ongoing product development and improvement.
+© 2017 Dallas Delta Corporation ABN 11 005 617 532
+                                           Contents
+1.0   Introduction ......................................................................... 5
+
+
+
+2.0   How to Use This Manual .................................................... 5
+
+
+
+3.0   Quick Start Guide ............................................................... 6
+
+
+            3.1 Getting Started - Basic Procedures .......................... 6
+
+            3.2 Logging On to the Home Page ................................. 6
+
+            3.3 Web Page Access ..................................................... 7
+
+            3.4 Settings ................................................................... 8
+
+                      3.4.1 Network Settings ...................................................... 8
+
+                      3.4.2 Voice Codecs ......................................................... 8
+
+                      3.4.3 SIP Proxy Settings .................................................. 9
+
+                      3.4.4 Call Functions ......................................................... 10
+
+                      3.4.5 System Settings ...................................................... 11
+
+                      3.4.6 Configurations ..........................................................12
+
+                      3.4.7 Keyless Codes ........................................................ 13
+
+                      3.4.8 LCD Messages ....................................................... 13
+
+                      3.4.9 Phone Numbers ..................................................... 14
+
+
+
+
+                                                                                                          3
+                                         Contents
+4.0 Programming Instructions .................................................... 15
+      Network settings. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    15
+      Voice          ................................                                  16
+      SIP Proxy Settings . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     17
+      Calling Functions . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      18
+      System Settings . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      19
+      Configurations    ..............................                                 21
+      Keyless Codes       ..............................                               22
+      Phone Numbers       ..............................                               23
+
+5.0 Client DataBase . . . . . . . . . . . . . . . . . . . . . . . . . . . .            24
+
+
+6.0 PCB Layout . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         26
+
+7.0 Specifications         .................. ...........                              26
+
+
+8.0 Release Notes         .............................                                27
+       Warning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+
+
+
+                                                                                            4
+                                                                  i        1.0 Introduction
+
+Thanks you for choosing Dallas Delta products. We hope that our product will meet the demands of
+your application needs and it will give you many years of trouble free use.
+
+The VoIP Sentinel is an ethernet connected telephone that provides voice over internet Protocol
+(VoIP) communication technology.
+Giving you the power of our PSTN base units in a IP format. Using a SIP protocol standard, it provides an
+easy connection to most VoIP based equipment.
+The Sentinel is a loud speaker, hands-free unit. It is well suited for homes, hotels, hospitals and
+universities as well as many business and commercial settings and providing remote gate access
+guarding you against unwanted entry onto your property.
+This document outlines the units Features, Operation, Programming instructions and Installation
+procedures.
+
+
+
+
+                                                2.0 How to Use this Manual
+
+This manual is set out with the intended use of both installers and end users in mind. It will give you
+the ease and quick turn-around time of installation required to get the job done efficiently and will also
+give you a very detailed understanding of the unit you are installing and putting into real-world use.
+
+It is very important that installation of this unit is carried out by a qualified personnel to avoid damage
+of the unit and correct functionality of the product. It will also ensure that safely requirements are met
+for everyday use of this electrical product.
+
+When installing this product for the first time, it is critical to follow the quick start guide to begin with.
+This will ensure that your new product is up and running in a very simple and easy manner with as
+minimal time as possible.
+
+It is then recommended that the manual be read from cover to cover to allow you to fully understand
+the capabilities of your product and be able to obtain the most of this unit.
+
+
+
+
+                                                                                                                 5
+                                                         3.0 Quick Start Guide
+3.1 Getting Started - Basic Procedures
+There are a few basic procedures that will need to be completed in order to get your VoIP Doorstation
+working immediately. Please follow these simple procedures in order before attempting to use your
+phone:
+
+      > Log on to your VoIP Doorstation
+      > Enter basic ‘SIP Proxy’ parameters
+      > Enter basic ‘Systems’ parameters
+      > Enter basic ‘Network’ parameters
+      > Program your customer database numbers for each client.
+
+Below are very simple to follow step-by-step procedures to getting your VoIP Doorstation up and
+running:
+
+
+3.2 Logging On to the Home Page
+In order to begin setting up your VoIP Doorstation you must first log into the unit via a web browser
+(such as Google Chrome, Firefox, MS Edge, etc.). log into your VoIP doorstation by typing in the IP
+address of the phone in the address bar.
+
+
+
+
+                               VoIP Doorstation Home Page
+
+
+Note: No password is programmed when dispatched from factory setup.
+
+To obtain the IP address from a unit enter *#*#7*0 and the address will be shown on the LCD.
+
+The phone can be set to DHCP or Static LAN.
+
+To configure for DHCP, enter *#*#7*2
+or to set the unit to STATIC IP enter *#*#7*1 This will set the phone to 192.168.1.100.
+
+
+                                                                                                        6
+                                                         3.0 Quick Start Guide
+3.3 Web page Access
+Sentinel web pages are in 2 sections. The first is for setting up the phone VoIP registration and
+functional parameters necessary for the operation of the phone.
+The 2nd section is the database for each client (up to 1024). Requiring Room numbers, Phone
+number and Relay codes for gate access.
+
+To access the phone via the Ethernet will require the phone’s IP address.
+This can done by following the key sequence as shown below.
+When retrieving the IP address, it can either return a IP if set the Static or Dynamic mode
+ or it can return 0.0.0.0 if set to DHCP and there is no DHCP server on the LAN.
+If it does return 0.0.0.0, then set the phone up for Static IP step 3.3.2
+
+
+                  3.3.1 Retrieving the IP Address
+                  To check the IP address of the phone,
+
+                  Enter         *#*#7*0
+                  on the keypad during standby mode and it will play back a
+                  voice message with the current IP address.
+
+
+                   3.3.2 Reset Static IP Address
+                   This will set the address is 192.168.1.100
+                   To set the phone to Static IP address, use the following key
+                   sequence:
+
+                                  *#*#7*1
+
+                   3.3.3 Reset DHCP IP Address Range
+                   To set the phone’s IP address to the DHCP range, use the
+                   following key sequence:
+
+                                  *#*#7*2
+
+                   3.3.4 Reset the phone back to factory defaults
+                   To reset the phone’s parameter back to a clean start (factory
+                   reset). Enter the following key sequence:
+
+                                  *#*#7*9
+                   Note: This will reset the IP address to static. 192.168.1.100
+                         VLAN to 0.
+                         Clear the Admin PIN. and
+                         Erase the all SIP proxy details.
+
+
+
+
+                                                                                                    7
+                                                         3.0 Quick Start Guide
+3.4 Settings
+3.4.1 Network Settings
+Note changing the network settings at this stage will required you to re-log back into the phone if the
+IP address is changed. If so, follow the steps outlined in 3.2 Logging on to the Home Page.
+                                  This page will show the current status of the registration, MAC ID,
+                                  and version number of the F/W.
+
+                                  If your phone does require a static IP location, then verify with the
+                                  IP department which Address can be used. Else leave the phone in
+                                  DHCP mode to obtain an IP automatically.
+                                  If DHCP is selected, then most likely to leave the DNS to AUTO.
+                                  Care should be taken when setting the VLAN data, Refer to the IP
+                                  department for these settings.
+                                  The Status is updated every 8 seconds.
+
+
+
+
+                                 3.4.2 Voice Codec
+                                 Most PBX phone systems today will work with the codec set to G711
+                                 (PCMA or PCMU). Select preference and the order as required.
+                                 Note: The PBX can over-ride this settings to match the other party
+                                 as part of the SIP protocol. If a match can not be made the call will
+                                 terminate.
+                                 The RTP voice frame is in 10mS segments and sent with a network
+                                 packet. How many frames are sent with each packet is set by the
+                                 ‘Frames/Packet’ option.
+                                 For most cases you would normally send 2-3 frames/packet.
+
+
+
+
+                                                                                                          8
+                                                        3.0 Quick Start Guide
+
+                                3.4.3 SIP Proxy Settings
+                                Select ‘SIP Proxy’ on the side menu to open up the SIP Proxy
+                                settings page.
+                                To setup a basic SIP Registration you will need details setting from
+                                the site SIP PBX.
+                                The PBX needs to be configured for a 3rd party SIP profile.
+                                Then fill in the minimum required fields to complete the registration
+                                as follows:
+
+
+Critical items that are required for SIP registrations are:-
+SIP Server: & SIP Domain: If the Outbound Proxy has a different address to the Domain, then set the
+Outbound Proxy in the SIP Server field, and enable the ‘Use the SIP Server As Outbound Proxy:’ option.
+and
+SIP User ID_Name: , SIP Authentication ID: & SIP Authentication PIN: (Note, This password is sometimes
+refer to as Digest KEY).
+
+Other options need to be checked with the IT department.
+
+Complete the necessary fields then click “OK” to save. Then return to the Network Page and view the
+“Phone Status” to confirm if the phone does register correctly.
+
+
+
+
+                          VoIP Doorstation SIP Proxy Settings Page
+
+
+
+
+                                                                                                        9
+                                                3.0 Quick Start Guide
+
+                       3.4.4 Call Functions
+                       In this section select what should occur for various in-comming or
+                       out-going calls. Generally, tenants would not be calling the Sentinel.
+                       This should only be done by a selected few.
+
+                       If the option ‘Enable White List’ is ticked then only the numbers
+                       listed in the ‘Phone Number’ table can call the Sentinel.
+
+                        If It is required to divert all calls to a central location, IE the
+                        caretaker, then set the ‘Divert numbers’ and the ‘Timeout’ as
+                        required.
+The call forwarding conditions will call the ‘Forward-to Number’ for the event set by
+Unconditionally, Busy or No-Answer. If none of those events are set and the ‘No Answer
+period’ is set, then the phone will Auto-anwer if set or terminate the in-comming call.
+
+The ‘Dial Prefix’ is only used for unit that have Call buttons installed.
+
+
+
+
+                       VoIP Doorstation Call Functions Page
+
+
+
+
+                                                                                           10
+                                                         3.0 Quick Start Guide
+                                      3.4.5 System Settings
+                                      In this section you should set the Administration Password
+                                      used to access these web pages.
+                                      It is very important to document this PIN with the site
+                                      administrator.
+
+                                      For units that are installed with a Handset, set the option to on
+                                      and the volume levels as required.
+                                      For ‘loud-speaker’ type phones set the volume levels as best
+                                      suited to the site.
+
+                                      The ‘conversation period’ will terminate the call when it expires
+                                      This is set to limit the call duration.
+Each tenant will have there own codes to access/active the relays. If the setup prefers to use the
+same relays code for all tenants then set these code here and enable the global relay option switch.
+
+When a call is made to the phone or if a call is diverted, then the person here would use the
+‘in-coming & divert’ relay codes to grant access.
+The relay on-time is used for all relay activations.
+
+The Sentinel can record all events made to a Sys-log Server, One should be set-up for security.
+The Syslog-IP should be set to this sever.
+
+The Time of day that maybe displayed on the LCD is set by the NTP server. If the phone does not
+have access to the internet then set this server to the SIP server.
+
+
+
+
+                                   VoIP Doorstation System Settings Page
+
+                                                                                                     11
+                                               3.0 Quick Start Guide
+
+                            3.4.6 Configuration
+                            If the on board relays are not used to grant access to 2 gates.
+                            Then setting one relay to activate whenever the phone is being
+                            used for a purpose of lighting or a camera can be achieved by
+                            selecting the ‘Relay Inuse’ option.
+
+                            The option ‘Dial Number Silently’ will mute the digits dialled
+                            when calling the tenant number.
+
+                            If it is preferred to end the call after a relay code is accepted
+                            then enable the ‘Disconnect After Gate open’ option.
+The SNMP server maybe used to log events from the phone (this is an alternative to the
+Sys-log server), The IP address, here will collect trap events. It uses version 2c SMNPtraps
+which requires a ‘Community Name’.
+
+
+
+
+                                                                                                12
+                  3.0 Quick Start Guide
+
+3.4.7 Keyless Codes
+Emergency services or site administrators can use the keyless
+system to gain access. They will need to enter a * plus the one
+of the codes. This will activate either relay for the matching
+group.
+
+For security these codes should be 6 or more digits long.
+The LCD will indicate ‘Welcome’ when there is a match.
+
+
+
+
+3.4.8 LCD Messages
+The 2 line LCD display on the Sentinel may be set to display
+either the time of day or a fixed 16 character message.
+Alternatively scroll a 63 characters long message.
+
+If line 1 is blank and not used for a scrolling message, then the
+time of day is displayed here.
+Scrolling messages display rate is set by the speed option.
+
+
+
+
+                                                               13
+                   3.0 Quick Start Guide
+
+3.4.9 Phone Number
+For Sentinels that are also fitted with buttons then the number
+called is set within this section.
+Note, that prefix digits that are set in section 3.4.4 are added to
+the beginning of these number.
+
+The numbers in this table can also be used to restrict who can
+call the phone.
+This is enabled by setting the ‘Enable White List’ option and
+add these numbers here.
+
+
+
+
+                                                                14
+                                    4.0 Programming Instructions
+Network Settings
+Phone Status will be display Model, MAC address and the SIP Registering status, (this is
+updated every 8 seconds).
+And the submenu’s are shown on the left of the WEB page.
+The ‘Network settings’ will enable you to change IP address, subnet mask and gateway and the
+DNS server.
+
+
+
+
+Use the Connection Type to set either STATIC IP or DHCP address for the phone.
+If the connection is DHCP then the IP address, Mask and Gateway are automatically assigned
+by the network DHCP server.
+When set to a Static IP, Set the IP address, Subnet Mask and Gateway address that will suit the
+local area network (LAN).
+If you change the IP address you are then required to restart by logging in using the new IP
+address.
+If the site does have a DHCP sever the ‘DNS Server IP’ can be set to Auto DNS. In this mode
+the DHCP sever will assign the DNS automatically.
+If not, enable Manual DNS and set the Primary and Secondary DNS address.
+If the network switch provides QoS traffic control, then set the Layer 2 & 3 QoS values to
+match, else leave these values to ‘0’.
+For Layer 3 QoS, a value in the field of 46 equals EF (Expedited Forwarding).
+
+Set the VLAN tag option for networks with VLAN option enabled.
+Take care here as once this is set then the PC/Laptop you are using may not have the VLAN
+option enabled. You will not be able to communicate with the phone.
+
+
+
+
+                                                                                                  15
+                                      4.0 Programming Instructions
+Voice
+In this page, select the order and preferred codecs, plus the amount of frames per packet to sent
+for each codec type.
+
+
+
+
+When selecting the codecs consider the data rate that will be required by your network.
+As a guild the list here show the data bit rate required for each codec, if the network is via a low
+speed ADSL then the PCMu/a may not be a suitable choice.
+Table 1. Codec comparison
+Codec                       bit rate (kbit/s)
+G.711(PCMu /a)              64
+G726-32                     32
+G.729                       8
+G.722                       32
+
+The Frames/Packet selects how many blocks of voice data (10mS segments) are transmitted
+with each packet sent over the network, typically 2 - 4 is recommended.
+The Send DTMF selects how the unit will send DTMF digits over the network.
+There are 2 protocols available, RFC2833 and INFO.
+
+The remaining options set the payload required for each protocol and it is recommend that the
+default values be used.
+
+
+
+
+                                                                                                       16
+                                    4.0 Programming Instructions
+SIP Proxy
+The parameters on this page will identify the SIP server and SIP authentication details.
+Your ISP or network administrator will provide the necessary information to be used here.
+
+
+
+
+SIP Server1 will be the main running location and the SIP Server2 can be the fail over location if
+available. The User detail will be the same in both servers
+When SIP registration is required with the server then enable this option. If the phone is configured
+to dial a direct IP location and no SIP server is used then leave this option disabled.
+If the server is via an Outbound Proxy, then use the SIP Server field for this proxy and enable the
+option Use SIP Server as the Outbound Proxy.
+The user ID’s, and PIN are supplied by the ISP/Network administrator, this information is case
+sensitive and should be typed in correctly. The Displayed Name is relayed to the connecting IP
+telephone as a caller ID and is optional. (Not all PBX relay this field).
+SIP and RTP port numbers are sent to the router/firewall and are use to provide paths for voice and
+control data to and from the phone.
+The Register Expiration and the Keep Alive timers keep the SIP server mapping and NAT ports
+open. The Registration Attempts sets how many failed attempts before rebooting the phone, this
+maybe preferred to re- obtain a new IP from the DHCP server and start from fresh.
+If a Provisional Response Acknowledge PRACK is required within your network, then enable the
+Support PRACK(100rel,RFC3262) option.
+When network server is behind a NAT, enable the NAT Traversal and set either the NAT IP or
+STUN server address and port as required.
+
+                                                                                                  17
+                                         4.0 Programming Instructions
+ Calling Functions
+ This section controls the way the unit makes and receives calls.
+
+
+
+
+Forward to Number will set the telephone number that will be called when calls are redirected by one of three
+methods:
+1) if the Forward unconditionally is set to yes (any calls made to the phone will be immediately redirected).
+2) When on busy is set, then any attempt to call the unit when the phone is in use will be redirected.
+3) Any un-answered call will also be redirected to this number when the Forward When No Answer switch is
+set and the Incoming, No Answer Timeout period has elapsed. (The Auto-answer option needs to be
+disable, for this to function).
+
+The Incoming, No Answer Timeout period will set how long the phone will ring for.
+If the Auto Answer switch is disabled then the in-coming call is terminated after that period.
+
+An option to restrict in-comming calls to a limited list can be enabled by selecting the Enable White List
+This will only allow calls from the numbers within the phone book. You may add these numbers in any location
+within the Phone Number section.
+
+The digits in the Dial Prefix are added to the any number dialled via the preprogrammed button numbers.
+
+For DDC_VoIP phones that have a handset, a hotline number (dialled when the handset is pickup), maybe
+programmed in the field Hot Line Number field.
+
+When the DDC_VoIP phone is making a call, it is possible to divert the call to 2 alternative numbers if the other
+party is busy or doesn’t answer.
+To enable this function, enter the Divert Numbers and set the Outgoing, No Answer Period a value in
+second.
+The Divert for buttons only is used if your unit has both buttons and a keypad installed.
+
+
+
+                                                                                                             18
+                                      4.0 Programming Instructions
+ System Settings
+ The DDC_VoIP phone audio levels, relay options, Syslog details and time of day functions is set
+ in this section. Audio levels for the phone should be re-check on site.
+ The on board relay/s may be use for gate access control, back ground lighting / camera. They
+ can be remotely activated or enable when the phone is in use.
+
+
+
+
+The Administration Password is used to gain access to the web page. For added security set and
+document this password. The phone is supplied with no password set.
+The microphone and the speaker levels for the handset (if fitted) and in the hands-free circuit, is
+adjusted to suit site background noise, when possible keep these level low, as un-necessary noise
+will be transmitted back to the remote operator.
+If the phone does have a handset installed, then enable the option and set the audio levels as
+required for the handset.
+    NOTE: ACA maximum levels:
+               Do not exceed the handset maximum levels, for conformity and comfort keep
+               handset levels to a minimum.
+
+Set the Ringer Volume and Dial Tone levels to suit site conditions.
+Conversation period may be limited if desired, to set this, enter a period in minutes into the
+Conversation Timer field. If no timer is required then enter a 0 to disable this function.
+The onboard relay may be activated remotely when the remote operator dials the digits that matches
+the codes for Relay 1 & Relay 2.
+
+‘Global Relay Codes’ if enabled will be used by all tenants, these codes will override the codes set
+in the data-base. But only for the calls they receive. Client codes are till used for keyless access.
+
+
+                                                                                                    19
+                                       4.0 Programming Instructions
+System Settings            continue.
+Use the Relay on timer field for the duration required. Or set it to 0, to remain on for the duration of
+the call.
+
+Remote Relay Module
+Remote Relay option (if installed) will be use to active a relay via the LAN ethernet. The remote
+relay device can activate 1 of 3 relays. If required set the IP address of the ‘Remote relay
+controller’ and the relay ‘code’. This code PLUS a relay number is used by the operator to trigger
+the relay. IE, If the code is 5, then to set the relay, the operator would enter 5 plus the digit 1-3 to
+active relay 1 to 3. Note that the Remote Relay Controller may not be installed with all the relays.
+Also please refer to the manual supplied with the relay module.
+The remote relay module may also be used to activate a relay whenever the phone is in-use
+If this is required select this option and the relay to active.
+
+Debug Options:
+Debugging can be enabled by Syslog and/or broadcast UDP. If this is not required then disable
+these options.
+  For some installation, it may be required to record events that occur at the phone.
+These events may include;
+          which button is pressed
+          when a relay is activated remotely
+          when the handset is on or off hook
+          on ringing (incoming call)
+          system reboot
+          start of call and at auto answer
+          at the end of a call
+          and a status of it’s current state, ie Logged-on or not at set intervals.
+
+This information is stored at an allocated server and the protocol used is SYSLOG on port 514.
+Although generally on a Linux systems, SYSLOG programmes can be sought for the Windows
+system as well.
+Each event is timed stamp with the phone ID and IP address. To enable this function set the IP of
+the SYSLOG server and the intervals.
+The DDC_VoIP phone outputs general debugging information on a continuous basis on port UDP
+8225. If high traffic is a concern then disable the Enable Debug output option.
+The ‘time of day’ used within the phone and for Syslog is set either from the SNTP server or the SIP
+server.
+
+SNTP Time Server
+The SNTP Server (simple network time protocol) provides ‘time of day’ for syslog events.
+SNTP is on port ‘123’. If the phone is connected to the internet then a site like ‘time.windows.com’
+or ‘0.au.pool.ntp.org’ may be used and in many cases the SIP Server.
+Select your the State in the Time Zone option and whether to use ‘DayLight saving’ time adjust in
+the next 2 fields.
+If the LAN does not have access to a SNTP server then set this field to 0.0.0.0
+
+
+
+
+                                                                                                      20
+                                              4.0 Programming Instructions
+Configuration
+This configuration section control some of the hardware and functions of the phone.
+
+The ‘Relay inuse’ will allow either relay to switch on whenever the phone is being used. It will set the relay on when
+making and receiving a calls and stay on for the duration of the call.
+
+When a call is made by pressing the button or via the Speed-Dial key, the tones of each digit may be muted, very useful
+for long phone number. If this suits, then enable the ‘Dial Number Silently’ option.
+
+
+
+
+Set the option ‘Disconnect after gate open’ if needed.
+Generally, after the relay has been activate remotely there is no further reason to continue in conversation, the phone can
+be set to terminate the call automatically by enabling this option.
+
+In addition to the other debugging options, this product also can send SNMP traps to a server.
+It uses v2c protocol, This protocol requires your community name as well as one or two servers IP addresses. It has an
+enterprises code of 1.3.6.1.4.1.45255.1.1.1.0 to .10.
+A typical Get command would be ‘snmpget -v2c -c DDCVoIP 192.168.1.100 1.3.6.1.4.1.45255.1.1.1.0’.
+
+The Auto Provisioning Server maybe set up if the company has many phones on the network, allowing the admin
+officer to make changes to the phone as an alternative method to accessing them via the web page. Generally, for few
+phones the web access is an easier method.
+Auto-provioning sets the parameter in the settings menu and does not set any options in the Client database.
+
+Hardware Settings
+Setting the Relay1 Default State to N/C (normally closed) will provide the ability to keep the access door closed, but in
+case there is a power failure to the phone the relay will open.
+
+The Temperature output seen on the Status section can be offset by adding to the ‘Temperature Calibration’ value.
+Note that this value is only an approximation of +/-5 DegC, and only to be used as an indication of the site temperature.
+
+
+
+
+                                                                                                                         21
+                                     4.0 Programming Instructions
+Keyless Codes
+
+
+
+
+Keyless Entry Codes.
+
+These codes would not normally be used by tenants. The tenant should use there own code for
+security.
+It’s function is mainly for emergency or site administrators to gain access.
+This will activate the relay if there is a match for that group. The same code can not be used in both
+groups.
+The period that the relay stays on for is the same as that set in the relay option section.
+Ensure that this period is set.
+
+The user is required to enter * and the code to open the gate.
+
+For sites that require an Emergency Services access, then it maybe advisable to use a code that is
+8 to 10 digits long. As it may not be changed that easily once the code is supplied to the services
+personal.
+
+
+
+
+                                                                                                    22
+                                      4.0 Programming Instructions
+Phone Numbers
+The DDC_VoIP phone can be configured with up to 16 buttons,
+
+Each Button, (if fitted) may be set to dial a different phone number. The Name field giving to each
+input is for internal reference only and is not required.
+The phone number may be an IP address/port number, ie 192.168.1.123:5060. If the unit is not
+registered to a SIP server.
+
+Each number maybe set to a URI location like ‘912345678@mysipproxy.org’
+
+The phone numbers within this list maybe used to restrict who can call the DDC_VoIP phone. Refer
+to the ‘Enable White-list’ option in the Call Function section.
+
+
+
+
+Special commands within the phone number,
+The DDC_VoIP unit can be configured to connect to a PSTN/PBX via a ATA. In this scenario the unit
+calls the ATA and then, on answer, the phone then dials the PBX number.
+To do this, enter the number or the IP address of the ATA, followed by a pipe character ‘|’, and then
+PSTN telephone number to call. (the PBX number may include a pause by adding a comma ‘,’).
+Example, if the ATA number is 1234 and the PBX number is 9,91234567, then you would enter
+1234|9,91234567.
+Note, if all Button calls are made via the ATA, then the number can be loaded in the Dial Prefix
+location, In this case the Dial Prefix number would be ‘1234|’.
+
+It may be required to dial this number without each DTMF tone played out over the speaker,
+especially so, for long phone numbers like an IP address, to mute dialling, enable the option Dial
+numbers silently.
+
+
+
+
+                                                                                                      23
+                                                               5.0 Client DataBase
+ The DDC Sentinel VoIP phone can store up to 1024 tenants.
+
+ Calls maybe established in 2 ways;
+ a) by scrolling through the names via the UP - DOWN arrow buttons, or,
+ b) by entering the Room Number followed by a # key.
+
+ Each room number field can be up to 6 digits, and a telephone number field of 32 digits.
+ The client has access to both relays, each 4 digits long.
+ The Name field is displayed on the LCD (16 character max).
+
+
+
+
+To edit the Clients data, login to the Sentinel’s web page as described earlier in the manual and
+select ‘Client DataBase’ from the login page.
+Enter the password if it was previously set, then click ‘Enter’.
+The data base is shown in groups of 128 records, there are 8 table to make the capacity of 1024
+records.
+Used the navigation keys at the top of each table << or >>, to display all records.
+
+To the left of the tables there are 2 buttons to access data from PC storage and 2 to access data from
+the phone storage.
+
+Before any writes to the phone, it will be required to save the data to the PC first.
+
+Ensure that All data is saved prior to clicking Exit or Clear All.
+
+The file is saved to the PC storage as a CSV.
+Be careful when access this data from a common spread sheet program as they will usually
+tend to modified the format of the data. This may make it unsuitable to re-load back into the
+web page.
+
+
+ WARNING
+ This telephone can not be used for emergency purposes during power failure unless fitted with a
+ backup 12 volt battery AND network connection guaranteed.
+ To be installed and maintained by authorised service personnel only.
+
+
+
+                                                                                                    24
+                                                                5.0 Client DataBase
+
+
+
+
+In this section, fill in the corresponding fields,
+The first column ‘Name’ will be displayed on the LCD to the user. It should indicate the tenant name
+or unit number.
+The Room Number column is a number that can be entered at the phone to call the tenant and can
+only be numerical digits 0-9, upto 6 digits long.
+Note that if you have more than one locations with the same room number, that the first one on the
+list is used.
+
+The 3rd column is the Phone Number is the clients telephone number, any number can be used
+here If the PBX allows mobile or land line numbers, else they will need to be PBX extensions
+numbers for each apartment.
+
+The next two columns Relay Code 1 & 2 will be the relay access codes (4 digits each). These codes
+are used to in two ways.
+Firstly, when in conversation with the phone the tenant can enter the code on there phones keypad to
+let the visitor in.
+Secondly, The tenant can use it as a keyless access at the gate. this is done by pressing
+   ‘# roomNumber # code’.
+This event is also sent to Syslog and SNMP servers if enabled, to record for security purposes.
+
+The last column is used in conjunction with a lift controller if one is installed, it indicates which level
+to send the lift. If this is not used then leave this column to 0.
+
+Save the table to computers storage as data is entered by clicking Save CSV, and before it can be
+uploaded to the Phone Storage by clicking Write.
+Note that ALL data is sorted in alphabetical order (the Name column) prior to Save and Write.
+
+
+
+                                                                                                        25
+                                                                                                    6.0 PCB Layout
+ DDC_VoIP S_11 PCB Layout
+ The DDC_VoIP PCB connection may be different from the diagram shown, The layout is of a generic
+ configuration, some items may not be installed and/or not required.
+                                                                                                                           BUTTON INPUTS
+                                                                                                                          Bank2 loc 9 to 16
+                                                                                                                          Common to both banks
+              RELAY 1+2                                                           KEYPAD                                  Bank1 loc 1 to 8
+              NO/NC LINK                                                          CONNECTOR
+                                                                                                                J6   J2         Mem loc 1
+                           LKR1 AND LKR2
+
+
+
+                             NO/NC NO/NC
+                                                 RELAY 2
+                                                                                                                              BUTTON 1
+            RELAY 2
+                                                 RELAY 1
+            RELAY 1                                                                                                           BUTTON 2
+
+                                                                                                                               Mem loc 16
+         BUTTON 1
+                                                                                  LCD PORT
+
+         SUPPLY   -
+         12-48V    +
+                                           DALLAS DELTA CORP
+
+            NETWORK
+            INPUT                                                       SPK MIC
+            (and PoE)                                                                         +
+
+
+
+                                                                                  +-
+                                                                        EXT.
+
+                                                                                   EXT. MIC           HANDSET
+ LKR1 and LKR2 relay links are used to select the
+ normal state of the output contacts.                                   SPEAKER
+
+         Relay linked for normally closed contacts
+
+         Relay linked for normally open contacts
+
+
+
+                                                                                              7.0 Specifications
+power:                     input voltage                       9 Volts (minimum) - 50 Volts (maximum)
+
+PoE supply:                Class requirements                  IEEE 802.3af, Class 0. (0.44 Watts to 12 Watts)
+
+12V Supply current         -idle mode                          125mA @ 12Vdc                      (1.5 Watts)
+consumption:               -on call                            <250mA @ 12Vdc                     (3 Watts)
+                                                               <1300mA @ 12Vdc                    (15 Watts) max volume into a 8ohms speaker
+
+relay contacts:            switching maximum                   1A @ 60Vdc / 40Vac SELV or TNV (non inductive load)
+                                                               voltage free outputs
+
+temperature:               operating range                     0ºC to +50ºC
+
+SPL:                       ringer output level                 >80dBa @ 1 metre
+
+communication:             Ethernet                            100 BASE-T    /       SIP Protocol
+                           CODECs                              G711 (uLaw, aLaw), G726-32, G722, G729
+
+                                                               Vertical and Horizontal
+physical:                  panel dimensions (mm)               270 x 130
+                           wall cut-out (mm)                   225 x 115 x 40
+                           weight (kg)                         approx. 1
+
+
+                                                                                                                                                 26
+                                                             8.0 Release Notes
+
+
+  DATE:           VERSION:                REVISION NOTES:
+  1/5/19          PCB: S_11               Quick Start Guide and Manual
+  14/1/20         PCB: S_11_R             Remote relay option
+  14/5/20         PCB: S_11_Sent          Sentinel phone option
+
+
+
+
+WARNING
+This telephone can not be used for emergency purposes during power failure unless fitted with a
+backup 12 volt battery AND network connection guaranteed.
+To be installed and maintained by authorised service personnel only.
+
+
+
+                                                                                                  27
+                       Manufacturing Communication Products
+                       Analogue | VoIP | GSM | Fibre
+               Designing Customised Communication Systems
+
+
+
+
+                                                         E3589
+
+                                            102 Albert Street   T: +613 9387 7388
+                                            Brunswick East      E: sales@dallasdelta.com
+                                            VIC Australia       F: +613 9387 3128
+                                            3057                www.dallasdelta.com
+Manual-VoIP-s11_S r1                                                      28-05-2020
+

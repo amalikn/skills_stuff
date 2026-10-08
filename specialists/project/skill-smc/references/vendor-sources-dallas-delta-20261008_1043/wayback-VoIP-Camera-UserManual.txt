@@ -1,0 +1,347 @@
+VOIP CAMERA DOORSTATION
+User Manual
+
+
+
+
+                                                              Australian Made
+
+
+                                                              Vandal Resistant
+
+
+This user manual includes a step by quick start guide, Item   Weather Resistant
+checklist, diagrams and specifications.
+CONTENTS
+  1 1.SAFETY   AND CARE INFORMATION
+        Safety and care information . ............................................................................... 3
+                 Important Warning......................................................................................................3
+
+       2         QUICK START GUIDE
+                 2.0 Quick start Guide ................................................................................................. 4
+
+       3         PRODUCT DESCRIPTION
+                 3.0 Product Description ............................................................................................ 5
+
+       4         PRODUCT FEATURES
+                 4.0 Product Features ................................................................................................. 5
+                 4.1 Operation Modes and features ......................................................................... 5
+                 4.2 Video Features ..................................................................................................... 5
+                 4.3 Audio Features . ................................................................................................... 5
+                 4.4 Network Security Features ................................................................................. 6
+
+       5         INSTALLATION
+                 5.1 Prior to installation . ............................................................................................ 7
+                 5.2 Important information . ...................................................................................... 7
+                 5.3 Configuration ....................................................................................................... 7
+                 5.4 Keypad Configuration ......................................................................................... 8
+                 5.5 Get current IP address ........................................................................................ 8
+                 5.6 Factory default settings ...................................................................................... 8
+                 5.7 Reboot device . ..................................................................................................... 8
+                 5.8 Web Interface . ..................................................................................................... 8
+                 5.9 Login . .................................................................................................................... 9
+
+
+
+
+2
+1. SAFETY AND CARE INFORMATION
+Please read these instructions thoroughly before starting installation. This product must be
+installed and maintained only by competent personnel familiar with electrical and telephone
+installation.
+IMPORTANT! This phone, like any VoIP phone, operates using ethernet network, which cannot
+guarantee connection in all conditions. Therefore, you should never rely solely upon for
+essential communications (e.g. medical emergencies).
+Remember, to make or receive any calls, the phone must be switched on, appropriately
+configured and in an area with adequate ethernet network. Emergency calls may not be possible
+on all phone networks, when certain network services or phone features are in use or on
+phones without a full keypad unless an auto-dial button is programmed to call an emergency
+number.
+
+
+
+
+                        WARNING
+                        • This telephone can not be used for emergency purposes during
+                        power failure unless a network connection is guaranteed with Power
+                        Over Ethernet (PoE).
+
+
+
+
+                                                                                               3
+    2.0 QUICK START GUIDE
+
+                    1. Power Up
+                    Power the VoIP CAM via either:
+                    a.  15 V DC Power Supply
+                    b.  802.11af Compatible PoE Switch or Injector
+
+
+
+
+                    2. Wait for initalization
+                    Once the VoIP CAM is ready, it will speak “System Ready”
+
+
+
+
+        1   2 3 A   3. Read out the IP Address
+        4   5 6 B   Press ‘C’ on the rear keypad to hear the DHCP IP Address
+        7   8 9 C
+        #   0
+             *  D
+
+
+
+                    4. Connect
+                    Using a modern web browser, browse to the IP Address
+                    of the phone using http://IPADDRESS
+
+
+
+
+                    5. Login & Configure
+                    Log in using the default username “admin” with a
+                    password “admin”
+
+                    Click the “Help” button at the top for more information
+                    on each page
+4
+3. PRODUCT DESCRIPTION
+The Sentry IP Video Door Station is an Ethernet connected telephone which provides voice and
+video over internet protocol (VoIP) communication technology. Giving you the power of our
+PSTN base units in a IP format. Using a SIP protocol standard, it provides an easy connection to
+most VoIP based equipment. The Door Station is a loud speaker, wide angle camera hands-free
+unit. It is well suited for homes, hotels, hospitals and universities as well as many business and
+commercial settings and providing remote gate access guarding you against unwanted entry
+onto your property.
+
+
+4. PRODUCT FEATURES
+●● Secured door access intercom for business, residential and multi-tenant premis-es. For use
+   at places like hospitals, universities and hotels where several different dialling options may
+   be available.
+●● Manufactured from stainless steel to ensure durability in environments with harsh weather
+   conditions or where there may be a vandalism risk.
+●● Designed to be flush mounted into an existing wall / facia.
+●● Programming the unit is done via a web browser or an easy to use keypad on the rear of the
+   unit. The keypad means a field technician can easily re-program the unit without the need for
+   a laptop.
+●● Automatically dials a set number when the button is pushed.
+●● Automatically detects when the call has been terminated and will hang-up the unit (using SIP
+   based call progress detection).
+●● Includes a DTMF activated relay which can be used as a remote gate / door re-lease. This
+   product can be used with up to 2 relays.
+●● Works with open standards based SIP based call processing systems.
+
+
+  4.1 Operation Modes Features
+●● Standard single button unit which will dial a pre-programmed number when the button is
+   pressed. Can be programmed with up to 16 digits.
+●● Hotline mode.
+
+  4.2 Video Features
+●● Video codec: H.264
+●● Frame rate selection: 10~30fps
+●● Adaptive bandwidth adjustment
+
+
+  4.3 Audio Features
+●● HD voice: HD codec, HD speaker
+●● Wideband codec: G.722,SPEEX,OPUS
+
+
+                                                                                                     5
+    ●● Narrowband codec: G.711(A/μ), GSM, G729
+    ●● DTMF: Out-of-band(RFC 2833) and SIP INFO
+    ●● Full-duplex hands-free speakerphone
+    ●● Voice activity detection
+    ●● Acoustic echo cancelling
+    ●● Adaptive jitter buffers
+    ●● Packet loss concealment
+
+
+      4.4 Network and Security Features
+    ●● Session Initiation Protocol, RFC 3261
+          8. General User Agent behaviour
+          9. Cancelling a request
+          10. Registrations
+          12. Dialogs
+          13. Initiating a session
+          14. Modifying an existing session
+          15. Terminating a session
+          17. Transactions
+          18. Transports
+          22.4 The Digest Authentication Scheme
+    ●● Session Description Protocol, RFC 4566
+    ●● An Offer/Answer Model with the Session Description Protocol (SDP), RFC 3264
+    ●● An Extension to the Session Initiation Protocol (SIP), RFC 3581 (use of rport pa-rameter)
+    ●● Session Initiation Protocol (SIP) INFO Method and Package Framework, RFC 6086
+       4. The INFO Method
+    ●● The Session Initiation Protocol (SIP) Refer Method, RFC 3515
+       2. The REFER Method
+    ●● Session Description Protocol (SDP) Security Descriptions for Media Streams, RFC 4568
+    ●● Session Initiation Protocol (SIP)-Specific Event Notification, RFC 3265
+    ●● A Presence Event Package for the Session Initiation Protocol (SIP), RFC 3856
+    ●● Session Initiation Protocol (SIP) Extension for Event State Publication, RFC 3903 (Creation of
+       PUBLISH requests)
+    ●● SIP/UDP, SIP/TCP, SIP/TLS
+    ●● Session Traversal Utilities for NAT (STUN), RFC 5389 (Basic procedures)
+    ●● RTP: A Transport Protocol for Real-Time Applications, RFC 3550
+          - 5. RTP Data Transfer Protocol
+          - 6.4 Sender and Receiver Reports
+          - 6.5 SDES: Source Description RTCP Packet
+          - 6.6 BYE: Goodbye RTCP Packet
+          - 6.7 APP: Application-Defined RTCP Packet
+    ●● RTP Profile for Audio and Video Conference with Minimal Control, RFC 3551
+6
+●● Symmetric RTP / RTP Control Protocol (RTCP), RFC 4961
+●● Secure Real Time Transport Protocol (SRTP, RFC 3711)
+●● IP assignment: static/DHCP
+●● HTTP web server
+●● Time and date synchronization
+●● QoS: 802.1 tagging (VLAN) , and DSCP
+
+
+5. INSTALLATION
+  5.1        Prior to installation
+Please perform the following before beginning installation:
+
+
+5.2 Important Information
+●● Qualified Personnel Only
+●● Door station and roadside phones can be supplied with power supply options, which may
+   require connection of the power supply to an AC mains supply. Qualified personnel must
+   only perform installation and maintenance. Contact Dallas Delta if installation is required.
+●● Test tools required
+●● During testing and commissioning of the telephone it is recommended to use a laptop to
+   connect to the internal USB port. Configuration can also be performed via the keypad fitted
+   on the rear, or via SMS text messages.
+●● Avoid contamination during installation
+●● All possible measures must be taken to ensure water, fluid or dust does not contaminate
+   the internal components of the telephone whilst unpacking, preparing and installing the
+   telephone. Failure to do so may invalidate your warranty. Please retain and screws removed
+   during installation or maintenance – make sure the correct screws are refitted to ensure the
+   integrity of any seals.
+●● Emergency Services warning
+●● If the telephone is configured so that it cannot make a direct call to emergency services,
+   check with your telephone service provider or infrastructure maintainer whether it is
+   necessary to warn users and if so, provide a suitable warning notice.
+
+  5.3 Configuration
+The unit can be configured through a web interface as described in the Web Interface
+subsection.
+
+
+
+
+                                                                                                  7
+      5.4 Keypad Configuration
+    The keypad on the rear of the unit provides the installer access to:
+    ●● Listen to the current IP address
+    ●● Reset the unit to the factory default settings
+    ●● Reboot the unit.
+
+
+
+      5.5 Get current IP address
+    During standby, press ’C’ on the rear keypad to retrieve the current IP address.
+
+
+      5.6 Factory default settings
+    To default the unit to its factory settings, connect the power (via the power jack or Ethernet PoE
+    lead). Wait about 20 seconds (You will hear a start-up tone).
+
+
+    You can chose to reset the network settings to static (192.168.1.100) or dynamic (DHCP).
+    To reset to static, press *#*#7*1.
+    To reset to DHCP, press *#*#7*2.
+
+
+    This will reboot the unit and will set requested network address mode, with the adminis-trator
+    (admin) password reset to admin.
+
+      5.7 Reboot device
+    To reboot the device press *#*#7*3.
+
+      5.8 Web Interface
+    The Sentry IP Video Door Station is configured via an integrated administration web server.
+    The DDC VoIP CAM door station is programmed by logging into the web page.
+    Use a web browser, enter the IP address of the phone into the address bar at the top of the
+    screen.
+
+
+    If you do not know the IP address of the phone, press the “C” key on the rear keypad of the unit.
+    The unit’s voice prompt will tell you the current IP address.
+
+
+    To log in to the programming page type in the name and password and click the Login button,
+    (units are generally delivered with the default username “admin” and password “admin”).
+
+
+
+
+8
+  5.9 Login
+The default login username and password are as follows:
+Username: admin
+Password: admin
+
+
+Login page:
+
+
+
+
+Configuring device via the Dashboard page:
+
+
+
+
+For additional help there are instructions available in the web interface by clicking on the “Help”
+button on the menu bar at the top. The “Help” button will show up with different instructions for
+each individual page.
+
+
+
+
+                                                                                                 9
+10
+11
+           CUSTOM                          COMMUNICATION                                  SOLUTIONS
+We have forty years experience in        Our    communications    products        If there is a product you require and
+development of innovative custom         cover a broad range of applications      it does not exist, we will design and
+communications equipment.                from entry control to emergency          manufacture it for you.
+We meet the customers requirements       communication networks.                  We will work with our clients to ensure
+and custom build the units to any        Using technologies that include:         that the correct product is made to
+size, material & button configuration.   VoIP, GSM, Fibre and Analogue.           the requirements & standard.
+
+
+
+     MANUFACTURING COMMUNICATIONS PRODUCTS
+     Remote Gate Acceess                       Emergency Services                   High Voltage Line Isolators
+      Apartment Intercom                              Industrial                                Prisons
+      Rugged envirments                             Clean Room                               High Security
+      Roadside Emergency                           Police Stations                         Control Centres
+
+
+                     CERTIFICATIONS AND COMPLIANCE
+       AS/NZS 60950.1:2011                 GCF-CC (v3.40.2), NAPRD03 (v5.6)               FCC Part 22.917(b),
+        AS/CA S042.1:2011                             FCC OET 65                          FCC Part 24.238(b)
+       AS/ACIF S042.3:2005               FCC CFR Title 47 Part 2, TIA/EIA 603-C   FCC Part 15 Subpart B: 2008 Class B
+        AS/CA S042.4:2011                      FCC Part 22 Subpart H,                      ANSI C63.4:2009
+  RSS-132 Issue 2, RSS-133 Issue 5              FCC Part 24 Subpart E               SGS Report No: EG/2013/80025
+
+
+
+
+                              102 Albert St, Brunswick East, VICTORIA 3057
+                                Tel.: +613 9387 7388 ● Fax: +613 9387 3128
+                               sales@dallasdelta.com ● www.dallasdelta.com
+
+
+
+
+© DallasDelta 2020                                                                                    E3589
+

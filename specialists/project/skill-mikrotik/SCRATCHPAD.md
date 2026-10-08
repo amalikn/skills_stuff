@@ -16,7 +16,8 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 - First `rct` fleet survey done (294/297 switches, 289/297 APs): `local-knowledge-ansible/ansible-wifi/issues/rct-fleet/mikrotik-survey-20261007_1421/` (survey.csv, summary.txt).
 - `wh` canary (laramba, canteen-creek): RB450Gx4 on 48 V, no MikroTik AP.
 - All 294 `rct` switches carry cloned MACs set by the Pi provisioning script (`references/06_provisioning.md`). Remedy written up, not applied; waiting on operator go-ahead.
-- Provisioning (operator, 2026-10-07): a Pi pushes RouterOS 7.8 over TFTP and two SSH batches (`references/06_provisioning.md`); the Mk3 connection diagram
+- Provisioning: the team's Pi script `450gmk3_v1.1.py` is in the pack root as a read-only reference (operator, 2026-10-08); it upgrades to RouterOS 7.8
+  over SFTP (not TFTP, corrected v0.1.21) and sends two SSH batches (`references/06_provisioning.md`); the Mk3 connection diagram
   (`references/mk3-connection-diagram-v0.5.pdf`) shows what is on each port, `rct` and `wh` alike apart from the ATA and the AP.
 - Vendor sources, MIBs and the OID registry in `references/` (v0.1.11); UNC carries the vendor. SNMP read-only on amuroona's switch and AP only
   (2026-10-07): 25 and 21 OIDs verified, write test done (sysName applies, sysLocation ignored); GPS: neither model (v0.1.13-0.1.14).

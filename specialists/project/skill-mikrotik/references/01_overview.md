@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Models, firmware, port and VLAN layout, power, and fleet ranges for the MikroTik devices behind SMC boxes
-Last reviewed: 2026-10-07
+Last reviewed: 2026-10-08
 Summary: rct sites run an RB450Gx4 switch and a Metal 52 ac AP on RouterOS 7.8 from a ~24-28 V bus; wh sites run the same switch on ~48 V with no MikroTik AP. Port map, VLANs and fleet ranges.
 ---
 
@@ -22,7 +22,7 @@ Summary: rct sites run an RB450Gx4 switch and a Metal 52 ac AP on RouterOS 7.8 f
 | Flavor                            | Switch (`10.255.0.5`)                           | AP (`10.255.0.20`)                                  | Evidence                                    |
 | --------------------------------- | ----------------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
 | `rct`                             | RB450Gx4 r2, RouterOS 7.8 (294 of 297 reached)  | Metal 52 ac, RouterOS 7.8 (289 of 297 reached)      | VERIFIED-OBSERVED, fleet survey 2026-10-07  |
-| `wh`                              | RB450Gx4, RouterOS 7.8 (laramba, canteen-creek) | Cambium XV2-2T0 at `.20` (verified 2026-10-07, see skill-cambium) | VERIFIED-OBSERVED, 2-site canary 2026-10-07 |
+| `wh`                              | RB450Gx4, RouterOS 7.8 (laramba, canteen-creek, areyonga, glen-hill) | Cambium XV2-2T0 at `.20` (verified 2026-10-07; glen-hill 2026-10-08; areyonga's `.20` did not answer; see skill-cambium) | VERIFIED-OBSERVED, 2026-10-07 and 2026-10-08 |
 | `nbn_wh`, `rcp`, `nbn_accelerate` | not checked                                     | not checked                                         | see `05_known-issues.md`                    |
 
 Every surveyed device ran RouterOS 7.8 (stable, build 2023-02-24); RB450Gx4 factory firmware 6.48.6/6.48.7. One login (KeePass `Network/mikrotik switch & metal ap`) works on every `rct` switch and AP
@@ -42,6 +42,12 @@ VERIFIED-OBSERVED on delye 2026-10-07 (`/interface bridge port print`, `/ip addr
 
 The provisioning script builds exactly this layout (`06_provisioning.md`). Management address `10.255.0.5/24` on `bridge-vlan500`. The SMC side of the same trunk is `eth0` with `eth0.500`, `eth0.501`, `vlan521`, `vlan522` (skill-smc). The two `wh` switches also carry a VLAN
 502 sub-interface on ether1; their full layout is not captured yet.
+
+**Which unit is on each port** (VERIFIED-OBSERVED, 20-mile switch, 2026-10-08). `/ip neighbor print` is empty (discovery is limited to the empty `LAN` list),
+so read the bridge host table instead: `/interface bridge host print where !local`. ether1 shows the SMC's eth0 MAC; `eth5-vlan500` and `eth5-vlan501` show
+the AP's MAC; ether4 the ATA's MAC; ether2 (in `bridge-vlan521`) the satellite modem's MAC (`BC:4A:56:4F:AF:41` at 20-mile). VLAN sub-interfaces are named
+`ethN-vlanV` and sit on the physical port `etherN`, so strip the suffix to get the port. unified-network-controller records Nautobot Cables from this table
+(`site_cables.py`). The ATA on ether4 is a Dallas Delta DDC_VoIP-m; its facts live in skill-smc `references/17_site-ata-dallas-delta.md`.
 
 ### Site design (Mk3 connection diagram)
 
@@ -90,6 +96,10 @@ Every surveyed switch has a different serial number (294 unique) but the same po
 canteen-creek answer ARP for `10.255.0.5` from `6c:3b:6b:53:f0:d8` exactly as `rct` switches do. Harmless inside a site, but any inventory, DHCP reservation,
 monitoring or cnMaestro-style tool keyed on MAC will see one device. Identify switches by SMC host plus serial, never by MAC.
 
+VERIFIED-OBSERVED 2026-10-08: the same five port MACs (ether1 `6C:3B:6B:53:F0:D5` to ether5 `...:D9`) at 20-mile (`rct`) and areyonga (`wh`), and the identity
+is the factory default `450Gx4` on all four switches read that day (20-mile, adjamarragu, areyonga, glen-hill); the APs' identity is `AP1`. Neither MAC nor
+identity names a unit: the serial is the only identity.
+
 ### Cause and remedy
 
 - **Cause** (USER_STATED, operator 2026-10-07, with the script's commands): the Raspberry Pi provisioning script ends part 1 with
@@ -105,6 +115,7 @@ monitoring or cnMaestro-style tool keyed on MAC will see one device. Identify sw
     `auto-mac=no admin-mac=<that unit's ether1 orig MAC>` may be needed). The docs show `reset-mac-address` for wireless (`/interface/wireless
     reset-mac-address`) and list `orig-mac-address` for Ethernet; the Ethernet form is unconfirmed on a device (known issue 11), so the first switch is also
     the test.
+    Tested 2026-10-08 on glen-hill (known issue 11): the command works on 7.8 and the bridges follow without a reboot or `admin-mac`.
   - **Rollout:** the change moves the switch's MAC on every VLAN, so the SMC and APs re-learn it (ARP), a brief blip. One switch first, then a small canary,
     then the fleet.
 

@@ -33,23 +33,32 @@ wraps an item across rows.
    failures (07_equipment-and-snmp.md). Close: choose a target version and test it on one switch; upgrades need operator approval.
 9. **rollah switch ether1 (SMC trunk): 1,987 link-downs**, the only fleet outlier (median 7). Same signature as delye's flapping. Close: capture rollah's switch log and the SMC's kernel link log.
 10. **kwala switch and AP temperatures read 0–2 C.** Faulty sensor or reporting. Close: re-read and compare with the SMC's CPU temperature.
-11. **Cloned-MAC remedy untested on a device.** `/interface ethernet reset-mac-address` is documented for Ethernet (07_equipment-and-snmp.md) but with no version, so
-    7.8 is unconfirmed; and
-    whether the `auto-mac=yes` bridges pick up the factory MAC without a reboot is unknown. Why: the fleet fix in `01_overview.md` depends on both. Close: with
-    operator approval, run it on one switch, record `/interface ethernet print detail` and `/interface bridge print detail` before and after, then update
-    `01_overview.md`.
-12. **Provisioning script: location, owner, first contact, APs.** The operator described the Pi script and pasted its commands (2026-10-07), but where it
-    lives, who maintains it, the address part 1 first connects to, how the Metal APs are provisioned, and whether ether4 sits unused on `wh` (no ATA there) are not recorded. Why: the new-switch MAC fix is an
-    edit to that script. Close: ask the operator; record the path in `06_provisioning.md`.
+11. **Cloned-MAC remedy: CLOSED for the method, 2026-10-08 (VERIFIED-OBSERVED, glen-hill, operator approved).** `/interface ethernet reset-mac-address [find]`
+    exists on RouterOS 7.8 and returned each port to its `orig-mac-address` (glen-hill-switch01, serial HEX097QBC2Y: ether1-ether5 `6C:3B:6B:53:F0:D5`-`D9` became
+    `78:9A:18:3A:53:36`-`3A`). All four `auto-mac=yes` bridges followed at once, no reboot: `bridge-vlan500` (the management address) took ether4's
+    `78:9A:18:3A:53:39`, `bridge-vlan501` and `bridge-vlan521` ether1's, `bridge-vlan522` ether3's. The SMC re-learned the switch by ARP within three
+    minutes, switch and AP answered ping throughout, the SMC did not reboot. Open: the other 293 switches (one at a time, read back each), and new switches
+    need the five `mac-address=` lines removed from our own version of the provisioning script.
+12. **Provisioning script: owner and APs.** Partly closed 2026-10-08: the script is `450gmk3_v1.1.py` (read-only reference in this pack's root,
+    `06_provisioning.md`); part 1 first connects to the factory `192.168.88.1` with an empty password. Still open: who owns the script and the Pi, how
+    the Metal APs are provisioned, and whether ether4 sits unused on `wh` (no ATA there). Why: the new-switch MAC fix is a change to that script, made
+    in our own version, never the reference. Close: ask the operator.
 13. **Security settings every switch gets from the script.** One admin password on every unit, held in clear text in the script; MAC Winbox and MAC Telnet
     allowed on all interfaces, including the NTD and second-WAN ports; HTTP on with no address limit; `protected-routerboot=disabled` (`06_provisioning.md`).
-    Not yet read back from a device. The operator pasted that password into a chat transcript on 2026-10-07; it is in no file, and rotating it is the
-    operator's call. Close: `/tool mac-server print`, `/tool mac-server mac-winbox print`, `/ip service print` on one switch; propose
+    Not yet read back from a device. The password is in clear text in the reference script `450gmk3_v1.1.py` in this pack's root (2026-10-08), to be
+    committed as is to the private repo (operator, 2026-10-08; not yet committed); the operator decided no rotation is needed (2026-10-07). Close: `/tool mac-server print`, `/tool mac-server mac-winbox print`, `/ip service print` on one switch; propose
     hardening (per-unit passwords from the vault, MAC access limited to VLAN 500, `www` off) for operator approval.
-14. **SNMP off on every MikroTik except amuroona's switch and AP**, enabled read-only there 2026-10-07 with operator approval (default `public` disabled,
-    vault community allowed from the SMC only); results in `snmp-oid-registry.yaml`. RouterOS ships SNMP off with a `public` community open to `::/0`,
+14. **SNMP off on every MikroTik except the canary units**, enabled read-only with operator approval (default `public` disabled, vault community allowed from
+    the SMC only): amuroona switch and AP (2026-10-07; results in `snmp-oid-registry.yaml`); 20-mile and adjamarragu switch and AP, areyonga and glen-hill
+    switch (2026-10-08, each answered sysDescr and serial; serials in `07_equipment-and-snmp.md`). RouterOS ships SNMP off with a `public` community open to `::/0`,
     so an enable must disable `public` first; RouterOS 7.8 has no `snmp-set`, and the SMC has Python but no net-snmp (`scripts/snmp_via_smc.py`). Why it
-    matters: no collector can read the other units. Write test done 2026-10-07 (sysName applies, sysLocation is accepted and ignored). Open: the fleet rollout, and a line in the Pi script. Close: operator decision on the rollout; `just snmp_community <smc> <ip> enable <entry>`
+    matters: no collector can read the remaining units. Write test done 2026-10-07 (sysName applies, sysLocation is accepted and ignored). Open: the fleet rollout, and a line in the Pi script. Close: operator decision on the rollout; `just snmp_community <smc> <ip> enable <entry>`
     per unit.
 15. **RB450Gx4 `cpu not running at default frequency` warning** on every switch read (716 MHz fixed; nominal 448–896 MHz auto). Effect unknown; secondary sources
     say setting it to auto clears it. Close: compare `/system routerboard settings print` with a factory unit; any change needs operator approval.
+16. **Which script version built each switch.** The script writes `450g-changelog_v1.1.txt` to flash, and its re-run path treats a switch without it
+    as "likely v1.0" (`06_provisioning.md`). What v1.0 set differently, and how many fleet switches it built, is unknown. Close: `/file print` in the
+    next read-only fleet survey, counting units with and without the marker; ask the operator for the v1.0 differences.
+17. **Two script checks would crash under Python 3** (`str` tested against `bytes`), from reading the code (`06_provisioning.md`, *Defects visible in
+    the code*). If confirmed, provisioning has been stopping after the configuration is applied but before the serial is logged, so
+    `mikrotik/450g.log` on the Pi would lack serials. Close: ask which Python the Pi runs, or read that log.

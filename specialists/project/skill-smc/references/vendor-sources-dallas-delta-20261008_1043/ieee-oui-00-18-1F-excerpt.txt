@@ -1,0 +1,5 @@
+00-18-1F   (hex)		Palmmicro Communications
+00181F     (base 16)		Palmmicro Communications
+				Room 0611, Bldg.B Tsinghua Tongfang Technology Plaza
+				Beijing    100083
+				CN

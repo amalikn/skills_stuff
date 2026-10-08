@@ -1,0 +1,202 @@
+s
+01 Back-Lit
+Low Powered
+LoD 04 one Touch
+Call
+
+y
+
+@
+
+05 Complete
+Hands Free |
+Auto Answer
+
+8 «)
+
+~ 02 Hands Free
+Loud Speaker
+& Mic
+ee TS eo,
+— =
+me
+03 call List y;
+Directory
+06 Preset
+Speed dial
+_
+ie
+
+Designed for a clean room hygienic work space. It features easy to use large buttons,
+with one press Speed-Dial. A Loud speaker & Microphone that filters out background
+L noise and Auto answer / Auto Hang-up. _|
+
+POWER
+
+VoIP POWERED - By PoE or external power supply.
+
+An Ethernet connected doorstation that provides Voice over Internet communication technology.
+Giving you the power of our PSTN base units in a IP format.
+“ 323 $ PS
+O1 Australian Q2 User 03 Low Cost QO4 Chemical
+Made Friendly Ownership Resistant
+
+he Hygienic telephone is designed to meet the communication needs of
+pharmaceutical, medical, and clean-room facilities.
+
+The front panel’s polyurethane cover makes it resistant to harsh cleansers and most other
+chemicals used in a laboratory.
+
+It’s flat surface is easy to clean and does not have projecting buttons and crevices that
+can retain residues and become contaminated.
+
+“Complete hands-free functions... |
+L Auto answer to Auto hang-up” |
+
+The Hygienic telephone has a number of presets and automatic features to minimise the
+touching of the unit. With hands-free functions like auto answer and auto hang-up.
+
+To make a call, use the one-touch speed-dialling keypad to ten preset telephone numbers.
+(Auto-Redial’s three times if the number is engaged)
+
+Easy to program mode where the LCD will prompt you with instructions step by step. Or
+if the Hygienic Telephone is installed in a restricted area where a service people can’t gain
+aes access. The unit can then be remotely programmed.
+
+FEATURES
+Hand-free operation
+—— Auto Answer / Hang-up / Redial
+Speed Dial - Multi-number dialling option 10 direct memories
+Loud speaker output 78DbA/1metre
+
+Chemical resistant Polyurethane Panel
+
+Easy Cleaning Flat smooth Panel (no protrusions)
+
+Flash transfer
+
+Remote level control speaker / microphone
+
+Remote relay activation door release
+
+Remote programming facilities
+
+Remote diagnostic testing
+
+Switching circuitry to screen out constant background industrial noise
+
+DallasDelta
+
+Corporation Pty. Ltd.
+
+HY GIE
+
+“NIC
+
+CLEAN ROOM TELEPHONE
+
+Functions
+
+1 Volume down / Menu Down key
+
+2 Yes / Enter key
+3 No / Cancel key
+4 Volume Up / Menu Up key
+
+5 Microphone position
+
+6 Mute / Mute on Answer / PABX Pause entry key
+7 Flash / Transfer key
+
+8 Redial key
+
+9 Auto Answer function ON / OFF
+
+10 ON /OFF key
+
+11 Number entry keypad.
+
+12 Speed dial memory directory
+13 LCD display.
+14 Speaker
+
+VoIP Model
+
+The Hygienic VoIP, connecting using CAT5 cable with
+PoE required for operation.
+
+The VoIP model is standard IP-based communications
+network and uses the SIP protocol for a fast and reliable
+connection to modern PBX systems.
+
+Programming is via a web browser interface on a
+connected network.
+
+Additional Features
+
+VoIP-H FEATURES
+
+Dedicated VoIP chip set
+
+Firmware up-gradable
+
+Only requiring a 10 Base-T ethernet
+
+Compatibility SIP Protocol, CCM, Asterisk PBX ect.
+Multi CODEC selection
+
+10 One Touch Speed dial locations plus last number redial
+Hands-free with 1 Watt RMS speaker output
+
+Auto disconnect
+
+2 modes of Power over Ethernet (PoE) or separate power input
+
+Conversation timer
+
+Auto Answer on/off and may be selectable locally
+
+Auto Mute on Auto Answer, selectable on/off
+
+Adjustable speaker volume control (during a call)
+All options set via HTTP Web GUI
+
+Non volatile memory
+
+Dual line LCD with back light
+
+On board relays with unique codes (optional 2nd relay)
+
+Either relay may be set for in-use function
+
+Remote relay activation (door/gate release)
+
+Relay on timer
+“—e 2 = OS RK Gp
+
+Australian User Low Cost Vandal Weather
+Made Friendly Ownership Resistant Resistant
+
+VoIP Model
+FEATURE
+Power: == sInputvoltage = 9 Volts (minimum)-50Volts(maximum)
+Current consumption: Idle mode 60mA @ 13Vdc (0.8 Watts)
+On call 100mA @ 13Vdc (1.3 Watts) normally
+
+<300mA @ 13Vdc (3.9Watts) (maximum volume into a 8ohms speaker)
+
+Temperature: Operating range 0°C to +50°C
+
+Communication: Ethernet 10 BASE-T SIP
+Connection protocol G711 (uLaw, aLaw), Speex, iLBC, G726-32
+CODECs GSM, G.729
+
+4 Step Installation
+
+@ Using the supplied paper template, level and place in a location
+away from studs or cables. Then cut and drill as marked on template.
+
+@) Install flush-mount bracket
+@) Connect required cables
+) Push unit into cavity and clip into brackets
+

@@ -545,6 +545,14 @@ malik, generic and similar test entries). Compared with the Mk3 connection diagr
 - `192.168.100.50` reaches the satellite modem's own scope (`192.168.100.0/24`, NTD at `.1`) over `bridge-vlan521`, for installer mode.
 - Where the diagram and ansible differ, ansible-wifi is what the SMC runs; the diagram is a v0.5 design drawing.
 
+VERIFIED-OBSERVED 2026-10-08 on the boxes (20-mile and adjamarragu `rct`, areyonga and glen-hill `wh`, Teleport apn):
+
+- `bridge_500` holds both addresses live, `10.255.0.1/24` and `192.168.5.100/24`. In topology_vars this is `layer3.links.management.subnets: [10.255.0.0/24, 192.168.5.0/24]` with addresses
+  `[+1, +100]`, paired by position. Every `rct` (319), `wh` (28) and `nbn_wh` (3) topology file carries this pair; no x86 file does. `192.168.5.100` is the gateway kept for the rct site ATA at
+  `192.168.5.253` (`17_site-ata-dallas-delta.md`).
+- topology_vars defines the same four site VLANs on every Pi site checked: 500 management, 501 public, 521 nbn_modem, 522 internet02.
+- All of them ride the Pi's one wired port, `eth0` (`07_hardware-overlay.md`, Raspberry Pi SMC identity).
+
 ### Alert Flows
 
 ```

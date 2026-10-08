@@ -1,0 +1,147 @@
+
+Products
+Solutions
+Projects
+Support
+About
+
+Get in Touch
+
+Support/Compliance
+
+Cyber Security
+Compliance
+Software release notes, product support periods, and our commitment to ACMA cyber security compliance.
+
+ACMA Compliance
+Cyber Security Commitment
+Dallas Delta Corporation is committed to meeting ACMA's cyber security requirements for telecommunications equipment. Our products are designed with security in mind and receive ongoing firmware updates to address emerging threats.
+
+Firmware Security Updates
+All VoIP and 4G products receive regular firmware security patches in compliance with ACMA's cyber security framework. Critical vulnerabilities are patched within 30 days of disclosure.
+
+Default Password Policy
+All Dallas Delta products ship with unique default credentials per unit. Users are prompted to change passwords on first login. No products use universal or blank default passwords.
+
+End-of-Life Disclosure
+We provide a minimum of 12 months' notice before ending security support for any product. End-of-life dates are published on this page and communicated to registered customers.
+
+Vulnerability Reporting
+Security vulnerabilities can be reported to [email protected]. We acknowledge reports within 48 hours and aim to provide fixes or mitigations within 90 days.
+
+Product Security & Firmware Lifecycle
+For detailed information on firmware remediation, built-in security features, vulnerability reporting, and our product lifecycle policy.
+View Details
+
+Release Notes
+Software Release Notes
+Product
+Version
+Date
+Type
+Notes
+VoIP S11
+s11.2512.12
+12/12/2025
+Patch
+Fixed bug with auto answer feature
+VoIP S11
+s11.2604.01
+01/04/2026
+Security
+VoIP Cyber Security Compliance
+VoIP S11
+s11.2604.09
+09/04/2026
+Patch
+Bug fixes
+VoIP S11 Sentinel
+s11.2308.21
+21/08/2023
+Patch
+Fixed registration issue with DNS-SRV
+VoIP Cam
+v2504.04 r2359
+04/04/2025
+Patch
+Buf fixes
+DDConnect
+1.4.0
+12/05/2026
+Patch
+Bug fixes
+VoIP Cam
+v2605.14 r2405
+22/05/2026
+Security
+VoIP Cyber Security Compliance
+VoIP S11 Sentinel
+s11.2606.09
+09/06/2026
+Security
+VoIP Cyber Security Compliance
+
+Lifecycle
+Support Periods
+The following table shows the current support status and expected end-of-security-support dates for our product firmware and software.
+Product
+Current Version
+Support Until
+Status
+VoIP S11
+s11.2604.09
+12/12/2035
+Active
+VoIP S11 Sentinel
+s11.2606.09
+21/08/2033
+Active
+VoIP Cam
+v2605.14 r2403
+04/04/2035
+Active
+DDConnect
+1.4.0
+30/01/2035
+Active
+
+Security Questions?
+For security-related enquiries or to report a vulnerability, contact our team.
+Get in Touch
+Back to Support
+
+Melbourne Headquarters
+53 Barry Road, Campbellfield
+VICTORIA 3061 AUSTRALIA
+(03) 9387 7388
+www.dallasdelta.com
+[email protected]
+8:30am – 5pm Mon–Fri
+Products
+	•	Sentry
+	•	Sentinel
+	•	Customer Service Telephone (CST)
+	•	Guard
+	•	Weathertough
+	•	Hygienic
+	•	Polephone
+Solutions
+	•	DDUI
+	•	DDConnect
+	•	MFT
+Projects
+	•	Current
+	•	Completed
+Support
+	•	Technical Support
+	•	Return Request
+	•	Downloads
+	•	FAQ
+	•	Compliance
+Quick Links
+	•	About Us
+	•	Contact
+	•	Sign In
+Copyright © 2026 Dallas Delta Corporation. All rights reserved.
+ABN 11 005 617 532
+PrivacyTerms

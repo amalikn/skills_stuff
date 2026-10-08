@@ -91,8 +91,10 @@ locally with `sshpass -e`, so the password never appears in a command that runs 
 - `references/03_routeros-cli-reference.md` — the read-only commands this pack uses, what each field means, RouterOS 7 gotchas.
 - `references/04_failure-modes.md` — signatures seen in the fleet and how they were confirmed.
 - `references/05_known-issues.md` — gaps, unverified assumptions, staleness risks.
-- `references/06_provisioning.md` — the Pi provisioning script: firmware, the two SSH command batches, what they set, and the cloned MACs they cause.
+- `references/06_provisioning.md` — the Pi provisioning script (`450gmk3_v1.1.py` in the pack root, the team's copy, read-only): its steps, the two SSH
+  command batches, what they set, the cloned MACs they cause, and defects visible in the code.
 - `references/07_equipment-and-snmp.md` — vendor specs for both models, SNMP state and MIBs, firmware status, vendor sources in `references/vendor-sources-20261007_1640/`.
+- `references/firmware-manifest.yaml` — RouterOS 7.8, 7.12.2, 7.23.7 and 7.24.5 files kept in `firmware-files/` (arm and mipsbe), with sha256 and source; 7.8 to 7.13+ goes through 7.12.2.
 - `references/snmp-oid-registry.yaml` — per-model OIDs (candidates until SNMP is enabled and verified) and equipment facts, the list tools read.
 - `scripts/README.md` — script catalogue with safety classification.
 

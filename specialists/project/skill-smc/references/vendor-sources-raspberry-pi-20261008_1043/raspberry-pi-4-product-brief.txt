@@ -1,0 +1,157 @@
+Raspberry Pi | Raspberry Pi 4 Model B   Product Brief
+
+
+
+
+Raspberry Pi 4 Model B
+Published October 2026
+
+
+
+
+Raspberry Pi Ltd
+Raspberry Pi 4 Model B
+
+
+
+
+Overview
+
+
+
+
+Raspberry Pi 4 Model B features a high-performance 64-bit quad-core processor, dual-display support
+at resolutions up to 4K via a pair of micro HDMI® ports, hardware video decode at up to 4Kp60, up to
+8GB of RAM, dual-band 2.4/5.0 GHz wireless LAN, Bluetooth 5.0, Gigabit Ethernet, USB 3.0, and PoE
+capability (via a separate PoE HAT add-on). For the end user, Raspberry Pi 4 Model B provides desktop
+performance comparable to entry-level x86 PC systems.
+
+
+This product retains backwards compatibility with the prior-generation Raspberry Pi 3 Model B+ and
+has similar power consumption, while offering substantial increases in processor speed, multimedia
+performance, memory, and connectivity.
+
+
+The dual-band wireless LAN and Bluetooth have modular compliance certification, allowing the board to
+be designed into end products with significantly reduced compliance testing, improving both cost and
+time to market.
+
+
+
+
+Overview                                                                                           1
+Raspberry Pi 4 Model B
+
+
+
+
+Specification
+
+
+Processor                             Broadcom BCM2711, quad-core Cortex-A72 (Arm v8) 64-bit SoC @
+                                      1.8GHz
+
+Memory                                1GB, 2GB, 3GB, 4GB or 8GB LPDDR4 (depending on model) with on-
+                                      die ECC
+
+Connectivity                          2.4 GHz and 5.0 GHz IEEE 802.11b/g/n/ac wireless LAN, Bluetooth
+                                      5.0, BLE
+                                      Gigabit Ethernet
+                                      2 × USB 3.0 ports
+                                      2 × USB 2.0 ports
+
+GPIO                                  Standard 40-pin GPIO header (fully backwards-compatible)
+
+Video and sound                       2 × micro HDMI ports (up to 4Kp60 supported)
+                                      2-lane MIPI DSI display port
+                                      2-lane MIPI CSI camera port
+                                      4-pole stereo audio and composite video port
+
+Multimedia                            H.265 (4Kp60 decode); H.264 (1080p60 decode, 1080p30 encode)
+                                      OpenGL ES, 3.0 graphics
+
+SD card                               microSD card slot for loading operating system and data storage
+
+Input power                           5V DC via USB-C connector (minimum 3A1)
+                                      5V DC via GPIO header (minimum 3A1)
+                                      Power over Ethernet (PoE)–enabled (requires separate PoE HAT)
+
+Operating temperature                 0ºC to 50ºC
+
+MTBF2 Ground Benign                   211 000 hours
+
+Production lifetime                   Raspberry Pi 4 Model B will remain in production until at least January
+                                      2034
+
+Compliance                            For a full list of local and regional product approvals, please visit
+                                      pip.raspberrypi.com
+
+List price                            1GB          $35
+                                      2GB          $67.50
+                                      3GB          $83.75
+                                      4GB          $100
+                                      8GB          $165
+1 A good-quality 2.5A power supply can be used if downstream USB peripherals consume less than 500mA in total.
+
+2 Mean Time Between Failure
+
+
+
+
+Specification                                                                                                    2
+Raspberry Pi 4 Model B
+
+
+
+
+Physical specification
+
+
+
+
+Physical specification   3
+Raspberry Pi 4 Model B
+
+
+
+
+Safety warnings
+
+To avoid malfunction or damage to this product, please observe the following:
+
+• This product should only be connected to an external power supply rated at 5V/3A DC or 5.1V/3A
+  DC minimum (see ‘Specification’). Any external power supply used with Raspberry Pi 4 Model B shall
+  comply with relevant regulations and standards applicable in the country of intended use.
+• This product should be operated in a well ventilated environment, and if used inside a case, the case
+  should not be covered.
+• While in use, this product should be firmly secured or should be placed on a stable, flat, non-conductive
+  surface, and should not be contacted by conductive items.
+• The connection of incompatible devices to Raspberry Pi 4 Model B may affect compliance, result in
+  damage to the unit, and invalidate the warranty.
+• All peripherals used with this product should comply with relevant standards for the country of use
+  and be marked accordingly to ensure that safety and performance requirements are met. These
+  articles include but are not limited to keyboards, monitors, and mice when used in conjunction with
+  Raspberry Pi.
+• Where peripherals are connected that do not include the cable or connector, the cable or connector must
+  offer adequate insulation and operation in order that the relevant performance and safety requirements
+  are met.
+• Do not expose to water or moisture, or place on a conductive surface while in operation.
+• Do not expose to heat from any source; Raspberry Pi 4 Model B is designed for reliable operation at
+  normal ambient room temperatures.
+• Store in a cool, dry location.
+• Take care while handling to avoid mechanical or electrical damage to the printed circuit board and
+  connectors.
+• While it is powered, avoid handling the printed circuit board, or handle it only by the edges, to minimise
+  the risk of electrostatic discharge damage.
+
+
+
+
+Safety warnings                                                                                           4
+          Raspberry Pi
+Raspberry Pi is a trademark of Raspberry Pi Ltd
+
+
+
+Raspberry Pi Ltd
+

@@ -55,6 +55,9 @@
   - [rsyslogd spread is 6.7× and unexplained](#rsyslogd-spread-is-67-and-unexplained)
 - [AAEON DMI serials follow the BIOS build, not the OS (fleet survey 2026-09-29)](#aaeon-dmi-serials-follow-the-bios-build-not-the-os-fleet-survey-2026-09-29)
 - [Cambium radio and AP estate by flavour (operator-stated 2026-09-14)](#cambium-radio-and-ap-estate-by-flavour-operator-stated-2026-09-14)
+- [What fills the WH overlay tmpfs, and the fixes (laramba, mimbi, canteen-creek, 2026-10-07)](#what-fills-the-wh-overlay-tmpfs-and-the-fixes-laramba-mimbi-canteen-creek-2026-10-07)
+- [RISE journald is sized against the SD card, not the overlay (honeymoon-bay-smc01, 2026-10-07)](#rise-journald-is-sized-against-the-sd-card-not-the-overlay-honeymoon-bay-smc01-2026-10-07)
+- [Raspberry Pi SMC identity, ports and bootloader (rct and wh, 2026-10-08)](#raspberry-pi-smc-identity-ports-and-bootloader-rct-and-wh-2026-10-08)
 
 - Hardware differences: x86 vs Raspberry Pi
 - NBN Accelerate / NBN WH hardware inventory (first live fleet sweep)
@@ -66,6 +69,7 @@
 - Verifying 12-fix parity on-box (probe gotchas + healthy-node write profile)
 - rcp disk write profile
 - Legacy url_capture disk-write behavior
+- Raspberry Pi identity (no DMI), single-port layout, no snmpd, bootloader EEPROM
 
 ## 7. Hardware Differences: x86 vs Raspberry Pi
 
@@ -921,3 +925,29 @@ Repo-search gotcha: `grep` on this Mac is aliased to ugrep, which ignores `--inc
 **Correction (2026-10-07):** after overlayroot is on, journald does not keep the 4G ceiling: it sizes against the filesystem holding `/var/log/journal`,
 which is then the tmpfs upper layer (default about 10% of 3.9G, ~390M; see the 2026-09-03 jarlmadangah-burru measurement). The 200M pin is still the
 tighter, deterministic bound and is what clears the preflight.
+
+## Raspberry Pi SMC identity, ports and bootloader (rct and wh, 2026-10-08)
+
+VERIFIED-OBSERVED 2026-10-08, read-only over Teleport apn on 20-mile-smc01 and adjamarragu-smc01 (`rct`) and areyonga-smc01 and glen-hill-smc01 (`wh`). Vendor documents, the per-box captures and the
+firmware manifest are in [vendor-sources-raspberry-pi-20261008_1043/](vendor-sources-raspberry-pi-20261008_1043/readme.md); the EEPROM images are committed (not gitignored, operator 2026-10-08) in
+[firmware-files/raspberry-pi/](../firmware-files/raspberry-pi/).
+
+**Identity.** There is no DMI: `dmidecode` prints nothing. The model is in `/proc/device-tree/model` (`Raspberry Pi 4 Model B Rev 1.5`) and `/proc/cpuinfo` `Revision: d03115`, which the official
+revision-codes table decodes as Model 4B, Revision 1.5, 8 GB, Sony UK, BCM2711. The SoC serial is in `/proc/device-tree/serial-number` and equals the cpuinfo `Serial` (for example
+`10000000624bb9a3`); it is unique per box, so it is the identity anchor in place of the x86 baseboard serial. The eth0 MAC (OUI `D8:3A:DD`) is not derived from the serial on the Pi 4 (serial
+`...624bb9a3`, eth0 `d8:3a:dd:29:4f:7f`), contrary to the older Pi assumption that the MAC repeats the serial's low bytes. OS: Ubuntu 22.04.1 LTS, kernel `5.15.0-1078-raspi`, aarch64, about 7 GB RAM.
+
+**Ports.** One wired port, `eth0` (`bcmgenet`, 1 Gb/s), plus `wlan0` (`brcmfmac`). `eth0` carries the untagged WAN `/30` address and the tagged `eth0.500` (in `bridge_500`), `eth0.501` (in
+`bridge_501`), `vlan521` (`192.168.100.50/24`, the nbn_modem link) and `vlan522` (internet02). The x86 cabling convention in `02_service-map.md` (ports 1-2 internet, 3-4 switch trunks) does not apply:
+everything rides the one port into the MikroTik switch (skill-mikrotik). On areyonga `wlan0` is up as a 5 GHz access point (channel 36, 20 MHz, SSID `A8_Management`, type AP; `hostapd` and
+`wpa_supplicant` both active).
+
+**Probe.** [`scripts/pi_identity_probe.sh`](../scripts/pi_identity_probe.sh) (`just pi_identity_probe <proxy> <node>...`) reads all of the above in one read-only
+pass: device-tree model and serial, cpuinfo, dmidecode, os-release, NICs with MAC, driver and speed, bridges, VLANs and memory. Name the proxy; it is never guessed.
+
+**SNMP.** No `snmpd` on any of the four (20-mile has only the net-snmp client package, `snmp` 5.9.1). The root is overlayroot, so a plain `apt install snmpd` would vanish at the next
+reboot (section 8). Operator decision 2026-10-08: no SNMP agent on the Pis for now; the x86 canary in `02_service-map.md` (snmpd on the SMC) stays x86 only.
+
+**Bootloader.** All four run bootloader EEPROM 2023-01-11 (VL805 `000138c0`). Upstream's default channel is 2026-09-23. Ubuntu's `rpi-eeprom` package carries only the 2022-01-25 image, older than what
+the boxes run, so `rpi-eeprom-update` wrongly reports "up to date"; compare `vcgencmd bootloader_version` with the manifest instead. Read the 2026-09-23 release notes (MFG-version check) before any
+update.

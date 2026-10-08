@@ -63,6 +63,7 @@ When sources conflict:
 | Pin validity (mangle) vs pin issuance (Apache access log) diagnosis, marks-≠-activations pitfalls                    | `references/14_pin-activation-diagnosis.md` |
 | Cambium asset-register — ansible-wifi site_name join point (full content moved to skill-cambium)                     | `references/15_cambium-asset-registers.md`  |
 | TP-Link site switches: access, SSH quirks, enable cases, discovery, config capture, SNMP community, Nautobot        | `references/16_tplink-site-switches.md`     |
+| rct site ATA (Dallas Delta DDC_VoIP-m): web UI, no SNMP, SIP registration, site-unique settings                      | `references/17_site-ata-dallas-delta.md`    |
 | SMC box definition, inventory flavors, Teleport access pattern, APN vs NBN Accelerate cluster differences            | `references/01_overview.md`                 |
 
 ## Project context files

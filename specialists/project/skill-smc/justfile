@@ -57,6 +57,14 @@ fleet *args:
 routing *args:
     @just -f scripts/routing-diagnostics.justfile {{args}}
 
+# Raspberry Pi SMC identity probe over Teleport (read-only). Example: just pi_identity_probe teleport.apn.au 20-mile-smc01
+pi_identity_probe proxy +nodes:
+    @bash scripts/pi_identity_probe.sh --proxy "{{proxy}}" {{nodes}}
+
+# rct site ATA settings through each SMC, compared across units (read-only). Example: just ata_settings_read teleport.apn.au adjamarragu-smc01 alamirra-smc01
+ata_settings_read proxy +nodes: _require-venv
+    @{{py}} scripts/ata_settings_read.py --proxy "{{proxy}}" {{nodes}}
+
 # --- skill-ai-it navigation-control layer -------------------------------------------------------
 
 nav_upgrade_dry_run: _require-venv

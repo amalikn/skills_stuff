@@ -1,0 +1,46 @@
+# Dallas Delta Corp (DDC) VoIP firmware manifest.
+# Binaries, when obtained, are committed in skill-smc/firmware-files/dallas-delta/. None was publicly downloadable on 2026-10-08:
+# the "Software / Firmware" section of https://dallasdelta.com/support/downloads lists no firmware file, and the compliance page
+# lists versions only. Entries below record versions with no file (filename, url, sha256, size null).
+vendor: Dallas Delta Corporation Pty Ltd
+retrieved: 2026-10-08
+firmware:
+  - model: DDC_VoIP-m
+    version: "042112"
+    filename: null
+    url: null
+    sha256: null
+    size: null
+    retrieved: 2026-10-08
+    notes: >-
+      Version read from the unit's settings page ("Version No.: 042112"; HTML comment "Dallas Delta Corp VoIP telephone Feb 2009 ver2.0").
+      No vendor source names this version or offers an image. The 2015 manual (DDC_VoIP_m_v4) says "Firmware up-gradable", but its web
+      Upgrade page only loads ring-tone .DAT files.
+  - model: VoIP S11
+    version: s11.2604.09
+    filename: null
+    url: null
+    sha256: null
+    size: null
+    retrieved: 2026-10-08
+    notes: >-
+      Current per https://dallasdelta.com/support/compliance (patch 09/04/2026, bug fixes; supported until 12/12/2035). Earlier: s11.2604.01
+      (01/04/2026, security, "VoIP Cyber Security Compliance"), s11.2512.12 (12/12/2025, auto-answer fix). Successor generation, not the DDC_VoIP-m.
+  - model: VoIP S11 Sentinel
+    version: s11.2606.09
+    filename: null
+    url: null
+    sha256: null
+    size: null
+    retrieved: 2026-10-08
+    notes: Current per compliance page (09/06/2026, security). Earlier s11.2308.21 (21/08/2023, DNS-SRV registration fix). Supported until 21/08/2033.
+  - model: VoIP Cam
+    version: v2605.14 r2405
+    filename: null
+    url: null
+    sha256: null
+    size: null
+    retrieved: 2026-10-08
+    notes: >-
+      Release notes list v2605.14 r2405 (22/05/2026, security); the lifecycle table lists v2605.14 r2403 as current, supported until 04/04/2035.
+      Earlier v2504.04 r2359 (04/04/2025).

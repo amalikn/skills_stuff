@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261008_1149 — glen-hill wh XV2-2T0 identified and landed Staged (v0.6.41 -> v0.6.42)](#20261008_1149--glen-hill-wh-xv2-2t0-identified-and-landed-staged-v0641---v0642)
 - [20261007_1910 — GPS position per device type, gps_probe.py (v0.6.40 -> v0.6.41)](#20261007_1910--gps-position-per-device-type-gps_probepy-v0640---v0641)
 - [20261007_1641 — File-roles spec no longer says skill-smc has an exports adapter (v0.6.39 -> v0.6.40)](#20261007_1641--file-roles-spec-no-longer-says-skill-smc-has-an-exports-adapter-v0639---v0640)
 - [20261007_1205 — SMC logs missing in Graylog 2026-09-12 to 2026-10-07; trigger for SMC-side evidence (v0.6.35 -> v0.6.36)](#20261007_1205--smc-logs-missing-in-graylog-2026-09-12-to-2026-10-07-trigger-for-smc-side-evidence-v0635---v0636)
@@ -86,6 +87,14 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261008_1149 — glen-hill wh XV2-2T0 identified and landed Staged (v0.6.41 -> v0.6.42)
+
+- `references/05_known-issues.md` (`wh` flavour): VERIFIED-OBSERVED 2026-10-08 over Teleport apn, glen-hill `10.255.0.20` is an Enterprise Wi-Fi XV2-2T0, serial `WLYM113B7GGM`,
+  firmware 6.6.0.3-r9, hostname `XV2_Hotspot0_GlenHill`, read by unified-network-controller `identify` (`enterprise-wifi` REST) and landed Staged in Nautobot under controller
+  `apn-cnmaestro01`; areyonga's `.20` did not answer. The site switch is a MikroTik RB450Gx4 (skill-mikrotik `references/01_overview.md`).
+- `RUNBOOK.md`: routing row for `wh` flavour sites.
+- `manifest.json`: 0.6.41 -> 0.6.42.
 
 ## 20261007_1910 — GPS position per device type, gps_probe.py (v0.6.40 -> v0.6.41)
 

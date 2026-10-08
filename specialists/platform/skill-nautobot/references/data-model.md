@@ -168,6 +168,9 @@ Gotcha: `tagged-all` carries every VLAN, so do not also list `tagged_vlans`. An 
 Source: `nautobot/dcim/choices.py:778-850,1147-1156`, `nautobot/dcim/models/device_components.py:1037-1074,1197-1440`, `nautobot/dcim/api/serializers.py:712-768`;
 `docs/user-guide/core-data-model/dcim/interface.html`.
 
+> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: nautobot/dcim/choices.py lines 845, 850, 1028 and 1033 in the installed source; eight interfaces and one template created with `ieee802.11ac` over REST on one deployment · Falsifier: a 3.2.x POST of an interface or interface template with type `ieee802.11ac` or `other-wireless` that is refused
+> A host's on-board radio (a Linux box's `wlan0`) is a physical interface with a wireless type, on the Device and on its type's interface template alike: `ieee802.11ac` (or the standard the radio runs), or `other-wireless` when the standard is not known. Decide "wireless" from what the host reports (`/sys/class/net/<nic>/wireless` exists), not from the name, and never default it to a copper type.
+
 ## 6. VLANs and VLAN Groups
 
 Decision: per the docs, model a distinct VLAN per Location when sites reuse the same VID for the same purpose; one VLAN linked to several Locations only for a genuinely stretched layer 2. A VLAN Group
@@ -275,6 +278,9 @@ Gotcha: a path is reachable only if every cable on it is `Connected`; do not ren
 trace_paths` rebuilds missing paths (`post_upgrade` runs it).
 
 Source: `nautobot/dcim/models/cables.py:471`, `nautobot/dcim/api/serializers.py:896-1110`, `nautobot/core/management/commands/post_upgrade.py:119`; `docs/user-guide/core-data-model/dcim/cable.html`.
+
+> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's REST API: four interface-to-interface Cables created with the `termination_a_type`/`termination_a_id` shape and status Connected, each interface's `cable` and `connected_endpoint` read back; `GET /api/dcim/interfaces/?cabled=true` answered HTTP 400 "Unknown filter field" · Falsifier: a 3.2.x interface list that accepts `cabled`
+> The legacy two-ended POST shape still creates a Cable on 3.2.3, and the far interface shows as `connected_endpoint` at once. There is no `cabled` filter on interfaces: to count a site's cables, list its interfaces (`?location=<id>`) and collect the distinct `cable` ids. Record a cable only on evidence of the far end, such as the exact MAC of a known physical interface in a switch's MAC table.
 
 ## 12. Contacts, Teams, Statuses, Roles, Tags, software
 
