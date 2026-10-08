@@ -90,11 +90,13 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Open items
 
-- [ ] **2026-10-07 `KEEP`:** commit `fbc0aff` (parallel session) is labelled "skill-smc 0.1.98" but committed manifest 0.1.99 — amend only if unpushed and the operator wants it.
-- [ ] **2026-10-07 `KEEP`, proposed, not decided:** skill-ai-it's upgrader appends its CHANGELOG entry at the end of the file; this pack's CHANGELOG is newest-first, so every refresh needs a
-  manual move (2026-09-08 and 2026-10-07). Fix belongs in skill-ai-it (detect ordering, insert at top, add the TOC line); recorded in skill-ai-it's SCRATCHPAD.
-
-- [ ] **2026-09-24 `KEEP`:** push `d5566c2` + `8db6d56`; fleet read-only `table_fulls` survey (offered); find the `gc_thresh1` = 1 setter; live-test the enable-password, already-privileged,
+- [ ] **2026-10-08 `KEEP`, proposed, not decided:** extend the 0–9 patch scheme (operator rule 2026-10-07, skill-smc only so far) to skill-cambium (0.6.45) and
+  skill-mikrotik (0.1.24), each with `check_version_format`. Asked 2026-10-07, no answer yet.
+- [x] **2026-10-07 `KEEP`:** commit `fbc0aff` is labelled "skill-smc 0.1.98" but committed manifest 0.1.99. Closed 2026-10-08: pushed, so it stays as a known
+  mislabel; CHANGELOG 20261007_1625 records the real content.
+- [x] **2026-10-07 `KEEP`:** ~~skill-ai-it's upgrader appends its CHANGELOG entry at the end~~ — fixed upstream in `cc0fa32` (2026-10-07 21:26): it now places the entry by
+  the file's order. Closed 2026-10-08.
+- [ ] **2026-09-24 `KEEP`:** ~~push `d5566c2` + `8db6d56`~~ (on origin, checked 2026-10-08); fleet read-only `table_fulls` survey (offered); find the `gc_thresh1` = 1 setter; live-test the enable-password, already-privileged,
   `--shell` and `--write` paths of `tplink-switch.sh` when a suitable switch appears; fix the two pre-existing governance failures.
 
 - [x] ~~Install v0.1.15 per the copy-based install doc~~ — obsolete 2026-10-07: `~/.claude/skills/skill-smc` is a symlink to the canonical pack and the install doc is retired.
@@ -511,6 +513,9 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 ---
 
 ## Memory pointers (navigation only)
+
+- 2026-10-08 14:27: memory-keeper `skill-smc.progress.slurp-delta-20261008`; project-context `0bf38158` note; checkpoint `slurp-20261008-skill-smc-version-delta`
+  (memory-keeper `84ffcf40`, project-context `f07a8367`). `KEEP`
 
 - 2026-10-07 16:43: memory-keeper `skill-smc` keys `skill-smc.progress.skill-ai-it-refresh-v0199-20261007`, `skill-smc.finding.skill-ai-it-template-item12-20261007`,
   `skill-smc.progress.archcore-rename-20261007`, `skill-smc.error.concurrent-commit-fbc0aff-20261007`, `skill-smc.progress.layout-parity-v01100-20261007`,

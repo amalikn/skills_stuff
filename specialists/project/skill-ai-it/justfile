@@ -113,6 +113,13 @@ nav_upgrade: _require-venv
 nav_validate: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
 
+# Docstring standard as a ratchet (global policy, 2026-10-08): report against the target's baseline; exit 1 on a regression
+#   just docstrings                                  # in the target project
+#   just docstrings --write-baseline                 # adopt: record today's counts
+#   just docstrings --roots scripts,src --list       # every shortfall
+docstrings *flags: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/docstring_ratchet.py" --project-root . {{flags}}
+
 # Check only expected files changed after upgrade (requires a git repo)
 nav_check_diff: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .

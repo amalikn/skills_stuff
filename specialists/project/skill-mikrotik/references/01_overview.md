@@ -40,7 +40,8 @@ VERIFIED-OBSERVED on delye 2026-10-07 (`/interface bridge port print`, `/ip addr
 | ether4 | Dallas Delta ATA UI (`rct` only), access 500 | untagged in `bridge-vlan500`; negotiates 10 Mbps half duplex                       |
 | ether5 | AP, PoE: Metal 52 ac (`rct`), Cambium (`wh`) | `eth5-vlan500/501` (trunk 500, 501)                                                |
 
-The provisioning script builds exactly this layout (`06_provisioning.md`). Management address `10.255.0.5/24` on `bridge-vlan500`. The SMC side of the same trunk is `eth0` with `eth0.500`, `eth0.501`, `vlan521`, `vlan522` (skill-smc). The two `wh` switches also carry a VLAN
+The provisioning script builds exactly this layout (`06_provisioning.md`). Confirmed identical on 20-mile, adjamarragu, areyonga and glen-hill 2026-10-08 (VERIFIED-OBSERVED); unified-network-controller records
+it as each port's 802.1Q mode and VLANs in Nautobot (its MikroTik port-VLAN script (wc-local/scripts/site_onboarding/mikrotik_port_vlans.py, in that project): a port in `bridge-vlanN` untagged in N, `ethX-vlanN` tagged on etherX). Management address `10.255.0.5/24` on `bridge-vlan500`. The SMC side of the same trunk is `eth0` with `eth0.500`, `eth0.501`, `vlan521`, `vlan522` (skill-smc). The two `wh` switches also carry a VLAN
 502 sub-interface on ether1; their full layout is not captured yet.
 
 **Which unit is on each port** (VERIFIED-OBSERVED, 20-mile switch, 2026-10-08). `/ip neighbor print` is empty (discovery is limited to the empty `LAN` list),

@@ -116,6 +116,15 @@ not overwrite the hand-built checker (521
 
 ## Session history
 
+### 20261007_2124 to 20261008_1428 — snake_case run finished, legacy blocks migrated, CHANGELOG placement, all committed
+
+- Upgrader: context-map edited as text, recipe renames reach the docs, legacy-layout gate, CHANGELOG entry placed by file order; new
+  `migrate_legacy_blocks.py` (`just nav_migrate_legacy`) moved the seven `2026-08-11` projects without losing project content. 29 self-tests.
+- Operator: commit and push everything, including other sessions' work, one commit per repo (done 2026-10-07). Upstream-clone submodules
+  (`diagram-design`, `anydoc-github`, `strategy-os`) keep local edits the parent cannot commit.
+- Evidence basis: memory-keeper `skill-ai-it.legacy-block-migration-20261007` (updated), `skill-ai-it.changelog-placement-20261007`,
+  `skills-stuff.commit-push-all-20261007`.
+
 ### 20261007_2017 — runtime isolation holes, snake_case naming, rewrap tool retired into the global one
 
 - `check_interpreter_pinning` now fails shebang-run recipes and bare interpreters inside `scripts/*.sh` (rule 4); `check_file_naming` enforces the
@@ -222,12 +231,11 @@ not overwrite the hand-built checker (521
   blocker (`governance/watchman-events/` runtime state) turned out not to exist — the directory held only `.gitkeep` in both locations, and watchman watches canonical, not the install. Backup of the
   former copy kept at the session scratchpad until the next session confirms the link is healthy.
 
-- Commit this session's work: the template-sourced-blocks fix, `scripts/selftest_blocks.py`, `scripts/check_governance.py`, `justfile`, `.mise.toml`, `requirements.txt`,
-  `.markdownlint-cli2.jsonc`, the `AUDIT-...md` move into `docs/archive/`, and the doc updates. Nothing from this session is committed.
-- Re-upgrade the other governed projects onto the current stamp (owned by `scripts/README.md` under Coupled Constants) — they will GAIN the nine restored navigation sections. Back up
-  `AI_NAVIGATION.md`, `AGENTS.md`,
-  `context-map.yaml`, `scripts/README.md` and `CHANGELOG.md` first: a dry-run names the files it will change but not what is lost inside a managed block.
-- Retry skills_stuff commit — policy guard passes; files staged (skill-ai-it/, skill-smc/, skills/, personal/, governance/plans/, README.md, SCRATCHPAD.md).
+- [x] ~~Commit the template-sourced-blocks work and re-upgrade the governed projects.~~ **Done 2026-10-07:** twelve projects on
+  the current stamp (seven through `migrate_legacy_blocks.py`), committed and pushed (skills_stuff `cc0fa32`, me `bd65bd4`,
+  me/japan `f186f35`, apn `e1ded9b`).
+- Other governed projects not in the snake_case run (llm-m2max, vocus-profitability, opticomm-profitability and any later stamp holdouts):
+  `just nav_upgrade_dry_run`; if it reports `refused-legacy-layout`, `just nav_migrate_legacy <project> --dry-run` from this package first.
 - Refresh OpenBB with updated skill and verify justfile/Graphify/Archcore active initialization works.
 - Refresh invoice-finance-analyst with updated skill.
 
@@ -248,3 +256,6 @@ Keys written this session:
 - `skills_stuff.governance-checker.scoping-lessons-20260923` — SURFACES scoping for a spec package, with the measured numbers
 - `skills_stuff.runtime-pinning.undeclared-host-deps-20260923` — PyYAML, and pin-versus-host
 - `skills_stuff.skill-eval-manager.governance-bootstrap-20260923`, `skills_stuff.task.skill-eval-manager-open-decisions-20260923`
+
+Slurp 20261008_1428 — memory-keeper channel `skill-ai-it` keys above; project-context `skills_stuff` delta note and the commit-all decision;
+checkpoint `slurp-20261008-snake-run-commits` in both backends.

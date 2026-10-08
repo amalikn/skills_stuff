@@ -4,33 +4,55 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: The Raspberry Pi provisioning script that builds each RB450Gx4 site switch, what it sets, and the issues it leaves on every unit
-Last reviewed: 2026-10-07
-Summary: A Pi pushes RouterOS 7.8 over TFTP and two SSH command batches to each new switch. The batches pin the cloned port MACs and set logging, time, services and PoE.
+Last reviewed: 2026-10-08
+Summary: A Pi script (450gmk3_v1.1.py, kept here as a read-only reference) upgrades each new switch to RouterOS 7.8 over SFTP and sends two SSH command batches. The batches pin the cloned port MACs and set logging, time, services and PoE.
 ---
 
 # How the MikroTik Site Switches Are Provisioned
 
 ## Contents
 
+- [The script file](#the-script-file)
 - [The process](#the-process)
 - [What the script sets](#what-the-script-sets)
 - [Issues the script puts on every switch](#issues-the-script-puts-on-every-switch)
+- [Defects visible in the code](#defects-visible-in-the-code)
 - [The commands](#the-commands)
 
 ---
 
+## The script file
+
+The team's provisioning script is [`450gmk3_v1.1.py`](../450gmk3_v1.1.py) in this pack's root, supplied by the operator on 2026-10-08 as **a read-only
+reference**: never edit it. A change the team needs goes into our own version under `scripts/`, with the reference left as the record of what the
+team runs (operator, 2026-10-08). sha256 `1f346831c028db5da2784c73d12e130e491fe46350d99858c024e110dca380cc`; a different hash means the team's copy
+moved and this page needs re-checking. It holds the admin password in clear text and is committed as is to the private repo (operator decision 2026-10-08, commit
+`471c970`; known issue 13); never quote that value into another file.
+
+It runs on the Raspberry Pi with `paramiko`, `ping3` and `colorama`, from a working directory holding `mikrotik/routeros-7.8-arm.npk` and
+`mikrotik/450g-changelog_v1.1.txt`, and appends each finished unit's serial number to `mikrotik/450g.log`. A `v1.0` existed before it.
+
 ## The process
 
-USER_STATED (operator, 2026-10-07), with the script's commands pasted by the operator:
+VERIFIED-SOURCE (read from `450gmk3_v1.1.py`, 2026-10-08):
 
-1. The new RB450Gx4 is plugged into a Raspberry Pi provisioning station. A script on the Pi pushes the firmware, `routeros-7.8-arm.npk`, over TFTP, then
-   connects over SSH and sends **part 1**.
-2. Part 1 strips the factory config and builds the VLAN bridges, then gives the switch `10.255.0.5/24` on `bridge-vlan500`.
-3. The script reconnects to `10.255.0.5` on VLAN 500 and sends **part 2**, which removes the factory `bridge` and its address and finishes the port, service
-   and system settings.
+1. **Bench setup** the script prints: the switch on its DC power cable, not PoE, and the Pi's Ethernet in **ether5**.
+2. **Find the switch.** It pings the factory address `192.168.88.1` until it answers. If `10.255.0.5` answers instead, the unit is already
+   provisioned: the script logs in with the fleet password, looks for `changelog_v1.1` in `/file print` to report v1.1 or "likely v1.0", and offers
+   `/system reset-configuration` (y) or asks for a different router (n).
+3. **Hardware check.** `/system resource print` must show `board-name: RB450Gx4`, or the script stops. The serial number is cut from that output.
+4. **Version marker.** SFTP-uploads `450g-changelog_v1.1.txt` to the switch's flash, so `/file print` on any switch shows which script version built it.
+5. **RouterOS.** Unless `/system package print` shows `routeros  7.8`, SFTP-uploads `routeros-7.8-arm.npk` and reboots to install it.
+6. **RouterBoard firmware.** Unless `current-firmware: 7.8`, runs `/system routerboard upgrade` and reboots.
+7. **Part 1** over SSH to `192.168.88.1` as `admin` with the factory empty password: strips the factory config, builds the VLAN bridges, gives the switch
+   `10.255.0.5/24` on `bridge-vlan500` and pins the port MACs.
+8. **Part 2** over SSH to `10.255.0.5` (VLAN 500 through ether5): removes the factory `bridge` and its address and sets ports, services, time, the admin
+   password and PoE.
+9. **Read-back checks**, each stopping the script on failure: RouterOS and RouterBoard firmware 7.8, time zone `Australia/Melbourne`, ether5
+   `forced-on`, the six VLAN interfaces, `10.255.0.5/24` present and no `192.168.88` address left. Then it logs the serial, rings the bell and waits for
+   the next switch.
 
-Not yet known: where the script lives and who owns it, the address it first connects to (presumably the factory `192.168.88.1`), and whether the Metal APs
-are provisioned the same way (their MACs are unique, so not with these MAC lines). Known issue 12.
+Still unknown: who owns the script and the Pi, and how the Metal APs are provisioned (their MACs are unique, so not with this script). Known issue 12.
 
 ## What the script sets
 
@@ -61,6 +83,18 @@ settings have not been read back from a device yet (known issues 3 and 4).
   reach the login prompt. Known issue 13.
 - **HTTP (`www`) on, with no address limit**, alongside `www-ssl`. The switch's only address is on VLAN 500, which limits the exposure. Known issue 13.
 - **Every switch is named `450Gx4`.** Identify a switch by SMC host plus serial number, never by identity or MAC.
+
+## Defects visible in the code
+
+From reading the code, not seen on a run (2026-10-08). Fix them only in our own version, never in the reference.
+
+- **Two checks compare text with bytes.** `'changelog_v1.1' in output` (re-run path) and `'current-firmware: 7.8' in output` (read-back) test a `str`
+  against the `bytes` paramiko returns, which raises `TypeError` in Python 3. If the Pi runs Python 3, a run would stop at the RouterBoard read-back,
+  after the configuration is applied but before the serial is logged, and a re-run on a configured unit would stop before offering the reset.
+- **The ten-minute timeout starts when the script starts.** Each "wait for reboot" loop ends on a ping reply **or** on that one deadline, and carries on
+  either way, so a slow second reboot is treated as a success and the next SSH step fails instead.
+- **The serial is a fixed byte slice** (`output[141:152]`) of `/system resource print`, so any change in that output's layout logs the wrong text.
+- **Every SSH step opens a new connection** and never closes it.
 
 ## The commands
 

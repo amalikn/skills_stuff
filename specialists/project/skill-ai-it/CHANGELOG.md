@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project](#20261008_2224--feat-docstring_ratchetpy-the-global-docstring-standard-as-a-ratchet-for-any-project)
 - [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
 - [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
 - [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
@@ -54,6 +55,16 @@
 - [20260812_1300](#20260812_1300)
 
 ---
+
+## 20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project
+
+- Operator (2026-10-08, in unified-network-controller): "create the docstrings for the code whenever you are creating or updating a script",
+  "specify what are the arguments passed and what is returned", "make it as a standard for all the scripts". The standard is in the global policy
+  and governance `categories/naming-and-file-summary-guide.md` (Code docstrings).
+- `scripts/docstring_ratchet.py` (recipe `just docstrings`): per-file shortfalls (absent docstring, a parameter not under `Args:`, a returned value
+  without `Returns:`) against `scripts/docstring-baseline.json`; `--write-baseline` adopts the standard on a project with legacy code. Same rule as
+  unified-network-controller's `check_docstrings`; on that project it reports the same 1737 shortfalls in 132 files and exits 0.
+- Not yet applied to this pack's own scripts (129 shortfalls in 7 files); adopting it here is a separate change.
 
 ## 20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order
 

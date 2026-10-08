@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261008_1544 — TP-Link MAC table, SMC per-VLAN MACs and VLAN 500 bridging for cable finding (v0.2.4 -> v0.2.5)](#20261008_1544--tp-link-mac-table-smc-per-vlan-macs-and-vlan-500-bridging-for-cable-finding-v024---v025)
 - [20261008_1452 — topology_vars uplink names do not say the provider (v0.2.3 -> v0.2.4)](#20261008_1452--topology_vars-uplink-names-do-not-say-the-provider-v023---v024)
 - [20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)](#20261008_1206--pi-identity-probe-and-rct-site-ata-settings-reader-promoted-to-scripts-v022---v023)
 - [20261008_1147 — Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)](#20261008_1147--raspberry-pi-smc-identity-and-ports-rct-site-ata-vendor-sources-linked-v021---v022)
@@ -115,6 +116,12 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261008_1544 — TP-Link MAC table, SMC per-VLAN MACs and VLAN 500 bridging for cable finding (v0.2.4 -> v0.2.5)
+
+- `references/13_known-issues.md` (INFO): `show mac address-table` through tplink-switch.sh; SMC uplink VLANs send from per-VLAN `72:77:77:xx` MACs and
+  bridges from the shared `72:77:77:00:00:01`; the SMC bridges VLAN 500 so each switch sees the other on its SMC-facing port. old-looma, warburton,
+  umoona 20261008.
 
 ## 20261008_1452 — topology_vars uplink names do not say the provider (v0.2.3 -> v0.2.4)
 

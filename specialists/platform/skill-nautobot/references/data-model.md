@@ -145,6 +145,25 @@ Source: `nautobot/dcim/models/devices.py:164-215` (DeviceType), `:495-652` (Devi
 > **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's REST API, an interface template added to a Device Type after a Device of that type existed: the Device's interface list did not gain it; nautobot/dcim/models/device_component_templates.py lines 399-414 (`InterfaceTemplate.instantiate`) in the installed source · Falsifier: a 3.2.x Device that gains an interface when a template is added to its existing Device Type
 > Adding an interface template to a Device Type changes only Devices created afterwards; existing Devices keep their interfaces. Back-fill them with `scripts/nautobot_template_sync.py` (plan, then `--apply`), which creates each missing interface as instantiation would: name, label, type, port_type, mgmt_only, speed, duplex and description from the template, status Active. An interface already present by name is left as it is.
 
+> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's REST API (`/dcim/interfaces/?...&depth=1` returned no `tagged_vlans` on a
+> trunk that carries twelve; the same call with `exclude_m2m=false` returned them) · Falsifier: a 3.2.x list view that includes many-to-many fields by default
+> REST **list** views leave many-to-many fields (`tagged_vlans`, tags and the like) out unless the request adds `exclude_m2m=false`. Reading a trunk's VLANs
+> from a list call without it makes every trunk look empty; add the flag, or read the object by its own URL.
+
+> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's cable trace API (`/dcim/interfaces/<id>/trace/`) on a switch port
+> cabled to a device's front port mapped to a rear port cabled to a Circuit termination · Falsifier: a trace that crosses a device between two interfaces
+> A cable trace follows Cables and crosses a device only through a front port mapped to a rear port (a pass-through); it ends at any interface, never
+> starts on a virtual interface (a VLAN interface cannot take a Cable) and never crosses a switch. To show a path that runs through a VLAN interface or a
+> switch, assemble it from Relationships, Cables and 802.1Q membership (for example an app panel), and model a pass-through box (a carrier's NTD) with
+> front and rear ports rather than two interfaces.
+
+> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `nautobot/core/ui/object_detail.py` (`Panel.render_body_content`) and
+> `nautobot/core/templatetags/helpers.py` (`render_markdown`: Markdown with `fenced_code` and `tables`, then `clean_html`) · Falsifier: a 3.2.x `Panel`
+> without `render_body_content`
+> An app's `TemplateExtension.object_detail_panels` can carry a `Panel` subclass that overrides `render_body_content(context)` and returns
+> `render_markdown(text)`: a computed Markdown table with links renders sanitised, built when the page opens (nothing stored). Job log messages render
+> Markdown too.
+
 ## 5. Interfaces: modes, VLANs and LAGs
 
 Decision: `type` says what the port is (`1000base-t`, `10gbase-x-sfpp`, `ieee802.11ax`, `virtual`, `lag`, `bridge`); `mode` says how it carries VLANs: `access`, `tagged` or `tagged-all`.

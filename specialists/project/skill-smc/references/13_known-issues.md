@@ -1079,3 +1079,15 @@ VERIFIED-OBSERVED 2026-10-08 over Teleport apn (20-mile, adjamarragu, areyonga, 
 - **Impact:** anything that takes the provider from the name (a `role: starlink` reader, a renderer) is wrong at these sites. Fix: in ansible-wifi
   (operator); until then, take the provider from the far side.
 
+## 2026-10-08 — finding which switch port an x86 SMC NIC is cabled to (INFO)
+
+- **TP-Link MAC table, read-only:** `scripts/tplink-switch.sh <site> <ip> "show mac address-table"` lists `MAC VLAN Port` with ports as `Gi1/0/N`
+  (Nautobot `gigabitEthernet 1/0/N`). VERIFIED-OBSERVED old-looma, warburton, umoona 20261008.
+- **The SMC's NIC MAC may never reach the switch:** uplink VLAN interfaces (`vlan521@enp2s0`...) send from their own locally administered MACs
+  (`72:77:77:xx`), and the bridges from the fleet-wide `72:77:77:00:00:01`; at warburton no NIC's burned-in MAC was in any switch table. A VLAN
+  interface's own MAC identifies its parent NIC; the bridge MAC identifies nothing (every SMC has it).
+- **Each switch sees the other on its SMC-facing port:** the SMC bridges VLAN 500 across both NICs (`enp1s0.500`, `enp2s0.500` in `bridge_500`), so a
+  port holding another switch's MAC is not by that alone a switch-to-switch link. Decide across all of a site's switches: a MAC learned on one port is
+  first-hand. old-looma: `enp2s0` on Switch1 Gi1/0/1, `enp1s0` on Switch2 Gi1/0/1.
+- Tool: unified-network-controller `wc-local/scripts/site_onboarding/site_cables.py`.
+

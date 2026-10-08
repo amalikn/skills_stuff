@@ -50,8 +50,8 @@ wraps an item across rows.
     in our own version, never the reference. Close: ask the operator.
 13. **Security settings every switch gets from the script.** One admin password on every unit, held in clear text in the script; MAC Winbox and MAC Telnet
     allowed on all interfaces, including the NTD and second-WAN ports; HTTP on with no address limit; `protected-routerboot=disabled` (`06_provisioning.md`).
-    Not yet read back from a device. The password is in clear text in the reference script `450gmk3_v1.1.py` in this pack's root (2026-10-08), to be
-    committed as is to the private repo (operator, 2026-10-08; not yet committed); the operator decided no rotation is needed (2026-10-07). Close: `/tool mac-server print`, `/tool mac-server mac-winbox print`, `/ip service print` on one switch; propose
+    Not yet read back from a device. The password is in clear text in the reference script `450gmk3_v1.1.py` in this pack's root (2026-10-08), committed
+    as is to the private repo (operator, 2026-10-08; commit `471c970`); the operator decided no rotation is needed (2026-10-07). Close: `/tool mac-server print`, `/tool mac-server mac-winbox print`, `/ip service print` on one switch; propose
     hardening (per-unit passwords from the vault, MAC access limited to VLAN 500, `www` off) for operator approval.
 14. **SNMP off on every MikroTik except the canary units**, enabled read-only with operator approval (default `public` disabled, vault community allowed from
     the SMC only): amuroona switch and AP (2026-10-07; results in `snmp-oid-registry.yaml`); 20-mile and adjamarragu switch and AP, areyonga and glen-hill

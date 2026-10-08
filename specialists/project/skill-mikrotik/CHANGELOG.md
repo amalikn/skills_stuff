@@ -1,5 +1,10 @@
 # Changelog
 
+## 20261008_1615 — port layout confirmed on four Pi sites and recorded in Nautobot (v0.1.24 -> v0.1.25)
+
+- `references/01_overview.md`: the one-bridge-per-VLAN layout read identical on 20-mile, adjamarragu, areyonga and glen-hill; unified-network-controller's
+  its MikroTik port-VLAN script (wc-local/scripts/site_onboarding/mikrotik_port_vlans.py, in that project) records it as 802.1Q mode and VLANs per port.
+
 ## 20261008_1316 — cloned MACs reset on three more switches; reset script waits out the Teleport drop (v0.1.23 -> v0.1.24)
 
 - Known issue 11: 20-mile, adjamarragu and areyonga switch01 reset to factory MACs (operator approved, unified-network-controller session); no reboot. The
@@ -32,7 +37,7 @@
 ## 20261008_1227 — the team's provisioning script added as a read-only reference (v0.1.20 -> v0.1.21)
 
 - `450gmk3_v1.1.py` (pack root): the Pi script the team uses to build RB450Gx4 switches, supplied by the operator. Read-only: never edited; a change goes
-  into our own version under `scripts/` (operator, 2026-10-08). The operator chose to commit it as is, admin password included (2026-10-08); not yet committed.
+  into our own version under `scripts/` (operator, 2026-10-08). Committed as is, admin password included, by operator decision (2026-10-08; commit `471c970`, made by the operator).
 - `references/06_provisioning.md` corrected against the script: firmware goes over **SFTP**, not TFTP; first contact is the factory `192.168.88.1` with an
   empty password; new *The script file* (path, sha256, dependencies, files it needs) and *Defects visible in the code* sections, and the full step list
   (bench setup, re-run detection and reset offer, RB450Gx4 check, the v1.1 changelog file it leaves on flash as a version marker, RouterOS and RouterBoard 7.8,

@@ -32,11 +32,17 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 3. Cloned-MAC remedy proven on glen-hill (known issue 11); the rest one switch at a time with `just mac_reset` (`--apply` per operator go-ahead).
 4. Decide with the operator on central monitoring for these devices (known issue 5).
 5. SNMP fleet rollout: operator decision (known issue 14); then add the enable to the Pi script. Candidates still open on the AP: ifHCIn/OutOctets.
-6. Ask the operator for the provisioning script's location and owner and how APs are provisioned (known issue 12); read back the script's security
+6. Ask the operator who owns the provisioning script and the Pi, and how APs are provisioned (known issue 12); read back the script's security
    settings on one switch (known issue 13).
+7. Ask which Python the Pi runs, or read `mikrotik/450g.log` there, to confirm or rule out the str/bytes crash (known issue 17); count v1.0 and v1.1
+   switches with `/file print` in the next read-only survey (known issue 16).
+8. Any change to the provisioning flow goes into our own script under `scripts/`; `450gmk3_v1.1.py` stays untouched (operator, 2026-10-08).
+9. Commit the v0.1.21 doc edits together with the concurrent session's work; keep `firmware-files/` (494 MB) out of git unless the operator decides how to
+   store it (GitHub rejects files over 100 MB).
 
 ## Recent decisions
 
+- 2026-10-08 — `450gmk3_v1.1.py` is a read-only reference, committed as is with its password (private repo; commit `471c970`, made by the operator).
 - 2026-10-07 — Separate pack modelled on skill-cambium and skill-smc, with a write-back loop; the device vendor decides the pack (operator).
 - 2026-10-07 — Read-only by default; secrets never run on the SMC (TCP port-forward, client on the Mac).
 - 2026-10-07 — Cloned-MAC remedy (text-export template for new switches; `reset-mac-address` for the fleet) is proposed, not decided.
@@ -50,6 +56,10 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
   `gps.device_types`); runtime pinning; function docs; snake_case renames. Incident: a `--rw` run printed the read-only community in the operator's
   terminal; redaction fixed; operator: no rotation needed (2026-10-07).
 
+- 2026-10-08 — Team provisioning script `450gmk3_v1.1.py` added as a read-only reference (v0.1.21): `references/06_provisioning.md` verified against the source
+  (SFTP not TFTP, factory first contact, flash version marker, firmware steps, code defects); known issues 16 and 17 opened. The commit was blocked for
+  the agent by Claude Code's auto-mode classifier; the operator committed it (`471c970`).
+
 ## Memory pointers
 
 - memory-keeper channel `skill-mikrotik`: `skill-mikrotik.origin-and-structure`, `.access-method`, `.rct-survey-20261007`, `.layout-and-wh`,
@@ -57,3 +67,5 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
   `skill-mikrotik-created-20261007`, `ansible-wifi.mikrotik.cloned-macs-keepass-rename-20261007`.
 - project-context project `skill-mikrotik` (`ee2796d9-6122-42c8-9aba-2d453b8a5f55`): one note, two decisions. Checkpoints `slurp-20261007-skill-mikrotik`, `slurp-20261007-mikrotik-provisioning`.
 - 2026-10-07 20:19: `skill-mikrotik.arrkapa-root-cause-20261007` (memory-keeper); checkpoint `slurp-20261007-arrkapa-root-cause`.
+- 2026-10-08 14:28: `skill-mikrotik.team-provisioning-script-20261008`, `skill-mikrotik.open-concurrent-session-20261008` (memory-keeper); project-context note
+  and decision (team script read-only, committed by operator); checkpoint `slurp-20261008-team-provisioning-script`.

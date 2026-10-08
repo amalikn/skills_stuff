@@ -14,6 +14,10 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 2026-10-08: three Learned entries in `references/data-model.md` from unified-network-controller: list views omit many-to-many fields
+  without `exclude_m2m=false`; a cable trace crosses a device only through front/rear ports and never a VLAN interface or a switch; a `Panel` can
+  return `render_markdown` from `render_body_content`.
+
 - 2026-10-08 Learned (from UNC): `references/data-model.md` §4 an interface template added to an existing Device Type does not reach its existing Devices (3.2.3); back-fill with the new helper.
 - 2026-10-08 promoted from UNC session code: `scripts/nautobot_template_sync.py` (missing template interfaces on existing Devices; plans unless `--apply`) and `scripts/nautobot_app_compat.py` (PyPI app metadata against a Nautobot and Python version, read-only), both stdlib-only with offline tests in `tests/test_helpers.py`; recipes `just template_sync` and `just app_compat`. Smoke: nautobot-ssot 4.7.0, nautobot-device-lifecycle-mgmt 4.2.0 and nautobot-capacity-metrics 4.1.1 all compatible with Nautobot 3.2.3 / Python 3.13.
 - 2026-10-08 Learned (from UNC): `references/data-model.md` the two-ended Cable POST works on 3.2.3, and interfaces have no `cabled` filter.
