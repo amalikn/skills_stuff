@@ -103,7 +103,8 @@ def events(path: pathlib.Path, since: str = ""):
         if d.get("type") == "user":
             if isinstance(content, str) or (isinstance(content, list) and any(b.get("type") == "text" for b in content if isinstance(b, dict))):
                 t = text_of(content).strip()
-                if t and not t.startswith("<") and not t.startswith("Base directory for this skill"):
+                if t and not t.startswith(("<", "Base directory for this skill", "(Re-invocation of")) and t not in seen:
+                    seen.add(t)   # a typed turn is also queued as a mid-turn message: keep one (2026-10-09)
                     yield ts, "user", t
             for b in content if isinstance(content, list) else []:
                 if isinstance(b, dict) and b.get("type") == "tool_result":

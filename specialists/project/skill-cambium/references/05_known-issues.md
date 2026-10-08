@@ -316,13 +316,22 @@ Owned by skill-smc (`references/13_known-issues.md` 2026-10-07; `03_communicatio
 - For that window use on-box files (SMC `/var/log`, AP `/tmp` and logs) or Prometheus. The 2026-10-05 R195P 0.0.0.0 investigation above used on-box evidence and is unaffected.
 - Do not read Graylog silence for a site in that window as the site being down. Check Prometheus `up` instead (skill-smc `06_failure-modes.md`).
 
-## Which subscriber an R195P is cabled to cannot be read from the units (2026-10-09)
+## Which SM an R195P is cabled to: the AP and the SMC say it, the units do not (2026-10-09)
 
-The R195P sends no LLDP; the Force 300 SM it hangs from has no bridge, Q-BRIDGE or ARP table over SNMP, and its REST bridge table lists only itself
-(snmp-oid-registry.yaml, force-300-16 negative result). A site switch learns the R195P's MAC on the AP's port, through the radio, so the switch says
-"beyond this AP", not "on this SM". unified-network-controller places an R195P behind the Force 300 whose name carries the same EXTnnnn number only when
-that Force 300 is registered to the AP the R195P is learnt behind (or to an AP behind it): 85 of 106 kalumburu R195Ps have a numbered pair. Do not
-retry the SM's tables to prove it; a proof would need the R195P's own WAN neighbour or a site record.
+The R195P sends no LLDP and answers no IF-MIB table over SNMP; its own ARP holds only the gateway, and its `br0` bridge (ports `eth2.1`,
+`eth2.501`, `rai0`, `rai1`, `ra0`) floods the site's public VLAN, so every router lists the same ~40 clients there. The Force 300 SM has no bridge,
+Q-BRIDGE or ARP table over SNMP, and its REST bridge table lists only itself. Two sources name the SM without any name (old-looma, 4.7.0.1):
+
+- **The 3000L's bridge table** (`cambiumAPBridgeTable`, snmp-oid-registry.yaml): each learnt MAC with the SM it came through. Units appear after
+  they pass traffic (ping them from the SMC, wait about 90 s) and age out; Cambium fixed missed and wrong entries in 4.7.1 and 5.11.0, so treat one
+  sighting as a sample.
+- **The router's own Wi-Fi clients and Option 82**: at low-touch sites the 3000L relays DHCP with Option 82 (`dhcpOption82: 1` on the AP, 0 on the
+  SM), and the Remote ID is the SM's radio MAC (its record + 1; ansible-wifi `cnmaestro-provisioning.py` `_remote_id_mac`). The SMC's dhcpd keeps it
+  in `/var/lib/dhcp/dhcpd.leases` (212 of 1,949 leases), for the public clients only: the routers' own leases carry none. The clients the router
+  learnt on its `ra*`/`rai*` ports, looked up there, name its SM: home-49's and home-17's clients came through sm-47 and sm-16, as the AP table said.
+
+Both disagree with the names for some routers (home-49 is behind sm-47, home-63 behind sm-61): the name number is a third, weaker fact.
+unified-network-controller reads all three (topology readers `epmp-ap-bridge`, `smc-dhcp-relay`, `r195p-wifi-clients`). None needs cnMaestro.
 
 ## A low-touch install leaves the installer's record in sysDescr (2026-10-09)
 

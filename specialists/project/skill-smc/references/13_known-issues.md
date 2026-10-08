@@ -1103,3 +1103,11 @@ VERIFIED-OBSERVED 2026-10-08 over Teleport apn (20-mile, adjamarragu, areyonga, 
   `wc-local/scripts/topology/correlate.py` (hope-vale: Switch3 is daisy-chained on Switch1 1/0/3, Switch2 is on the SMC's enp1s0).
 - **Never store a raw walk.** Keep only MACs the inventory knows (exactly or one apart); the table holds public Wi-Fi clients (VLAN 501).
 
+## 2026-10-09 — the DHCP leases name the SM a client came through (INFO)
+
+At low-touch (`smc_ltp`) sites the 3000L APs relay DHCP with Option 82, and the SMC's dhcpd passes `option agent.remote-id` to the provisioning hook
+(`/etc/dhcp/dhcpd.conf` `on commit`, `cnmaestro-provisioning.py`) and keeps it in `/var/lib/dhcp/dhcpd.leases` as `option agent.remote-id x:x:xx:...;`
+(leading zeros dropped). The Remote ID is the radio MAC of the SM the request came through (its record + 1). old-looma-smc01: 212 of 1,949 leases
+carry one, all public Wi-Fi clients; the R195Ps' own leases carry none. The file holds public client MACs: read it in memory and keep only what
+Nautobot knows, never store it raw (unified-network-controller topology reader `smc-dhcp-relay`; skill-cambium 05_known-issues for the join that
+places a router behind its SM). Nothing here depends on cnMaestro: the AP inserts the option and dhcpd records it.

@@ -696,6 +696,9 @@ Found while taking enterprise Wi-Fi end to end into OpenWISP (mowanjum E500 and 
   `eth1` is ETH2, proved by counters (AP9 REST ETH1 `rx_bytes` 1638284287 = SNMP `eth0` ifInOctets 1638284287; ETH2 = `eth1`); `eth0` carries `device_mac`.
   ifIndex is not fixed (`teql0`, `gre0` sit at 5 and 6), so match the walk by `ifDescr`. The mowanjum E500s, at an APN site, answer only the
   `nbn-snmp-ro` community: try the site's own read community, then the other programme's.
+- **A port's counters prove what it carries (2026-10-09, old-looma).** A 428 kB ICMP burst from the SMC to 3000L-ap-5 moved the tower 4 V3000's
+  `nic2` by +495 kB out and +455 kB in within 8 s, and moved it by under 100 kB during a control burst to another unit: ap-5 hangs off that CN's
+  `nic2`. cnWave IF-MIB counters are live; ePMP's lag (snmp-oid-registry.yaml). unified-network-controller `topology/burst_trace.py`.
 - **cnWave V3000 SNMP names its ports `nic1`-`nic3`** (wangkatjungka, 2026-10-08, IF-MIB `ifDescr`, MACs `00:04:56:...`), plus `terra0`-`terra15` and `br0`;
   a model that numbers them `nic0`-`nic2` does not match the unit. Which physical port each `nic` is: **UNVERIFIED**.
 

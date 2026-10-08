@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261009_0335 — SMC DHCP leases carry Option 82 Remote IDs naming the SM (v0.2.6 -> v0.2.7)](#20261009_0335--smc-dhcp-leases-carry-option-82-remote-ids-naming-the-sm-v026---v027)
 - [20261009_0120 — TP-Link bridge port mapping on 5.30.1, LLDP per switch, MAC tables read from the SMC down (v0.2.5 -> v0.2.6)](#20261009_0120--tp-link-bridge-port-mapping-on-5301-lldp-per-switch-mac-tables-read-from-the-smc-down-v025---v026)
 - [20261008_1544 — TP-Link MAC table, SMC per-VLAN MACs and VLAN 500 bridging for cable finding (v0.2.4 -> v0.2.5)](#20261008_1544--tp-link-mac-table-smc-per-vlan-macs-and-vlan-500-bridging-for-cable-finding-v024---v025)
 - [20261008_1452 — topology_vars uplink names do not say the provider (v0.2.3 -> v0.2.4)](#20261008_1452--topology_vars-uplink-names-do-not-say-the-provider-v023---v024)
@@ -117,6 +118,10 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261009_0335 — SMC DHCP leases carry Option 82 Remote IDs naming the SM (v0.2.6 -> v0.2.7)
+
+- 13_known-issues.md: where dhcpd keeps the Remote ID, what it means, and that the lease file holds public client MACs (never stored raw). From unified-network-controller D10, read-only at old-looma-smc01.
 
 ## 20261009_0120 — TP-Link bridge port mapping on 5.30.1, LLDP per switch, MAC tables read from the SMC down (v0.2.5 -> v0.2.6)
 
