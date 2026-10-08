@@ -28,8 +28,8 @@
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-10-07T03:22:00Z",
-  "updated_at": "20261008_1234",
-  "version": "0.1.22",
+  "updated_at": "20261008_1303",
+  "version": "0.1.23",
   "dependencies": [],
   "known_constraints": [
     "Devices are reachable only through the site SMC; no secret may appear in a command run on the SMC (Teleport audit log ships to Graylog).",

@@ -94,6 +94,17 @@ test: _require-venv
 helpers:
     @ls scripts/*.py | xargs -n1 basename
 
+# Plan (or with --apply create) the interfaces a Device Type's templates promise but its existing Devices lack; NAUTOBOT_URL and NAUTOBOT_TOKEN from the environment
+# e.g. just template_sync --device-type DDC_VoIP-m [--manufacturer "Dallas Delta Corp"] [--apply]
+[positional-arguments]
+template_sync *flags: _require-venv
+    @{{py}} scripts/nautobot_template_sync.py "$@"
+
+# Read-only: Nautobot apps' PyPI metadata against a Nautobot and Python version, e.g. just app_compat nautobot-ssot==4.7.0 --nautobot 3.2.3 --python 3.13
+[positional-arguments]
+app_compat *args: _require-venv
+    @{{py}} scripts/nautobot_app_compat.py "$@"
+
 # Regenerate the deterministic Repomix context pack (.ai-context/governance-pack.md). Generated support, not truth.
 context-pack:
     @command -v repomix >/dev/null || { echo 'repomix not installed; skipped'; exit 0; }

@@ -38,7 +38,8 @@ wraps an item across rows.
     `78:9A:18:3A:53:36`-`3A`). All four `auto-mac=yes` bridges followed at once, no reboot: `bridge-vlan500` (the management address) took ether4's
     `78:9A:18:3A:53:39`, `bridge-vlan501` and `bridge-vlan521` ether1's, `bridge-vlan522` ether3's. The SMC re-learned the switch by ARP within three
     minutes, switch and AP answered ping throughout, the SMC did not reboot. Open: the other 293 switches (one at a time, read back each), and new switches
-    need the five `mac-address=` lines removed from our own version of the provisioning script.
+    need the five `mac-address=` lines removed from our own version of the provisioning script. Tool for the rest: `scripts/mikrotik_mac_reset.py`
+    (`just mac_reset`), one switch per run, plan only unless `--apply`; it saves the before-state, reads back and prints a JSON summary.
 12. **Provisioning script: owner and APs.** Partly closed 2026-10-08: the script is `450gmk3_v1.1.py` (read-only reference in this pack's root,
     `06_provisioning.md`); part 1 first connects to the factory `192.168.88.1` with an empty password. Still open: who owns the script and the Pi, how
     the Metal APs are provisioned, and whether ether4 sits unused on `wh` (no ATA there). Why: the new-switch MAC fix is a change to that script, made

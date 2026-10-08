@@ -75,3 +75,9 @@ snmp_community smc ip action entry *flags: _require-venv
 [positional-arguments]
 firmware_fetch version *flags: _require-venv
     {{py}} scripts/routeros_firmware_fetch.py "$@"
+
+# WRITES with --apply only: return ONE switch's ports to their factory MACs (known issue 11); plan only by default, JSON summary on stdout.
+# e.g. just mac_reset glen-hill-smc01 10.255.0.5 <capture-dir> [--proxy teleport.communitywifi.net.au] [--apply]
+[positional-arguments]
+mac_reset smc ip outdir *flags: _require-venv
+    MT_PY={{py}} {{py}} scripts/mikrotik_mac_reset.py "$1" "$2" --out "$3" "${@:4}"

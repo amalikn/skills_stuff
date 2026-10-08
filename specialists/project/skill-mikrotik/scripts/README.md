@@ -30,6 +30,8 @@ Raw output goes to the investigation folder you name (under `local-knowledge-ans
 |                            |                                            |   `show` is read-only          |   `public`, turns SNMP on or off; needs operator approval per device                      |
 | `routeros_firmware_fetch.py` | download.mikrotik.com (web); writes only | **read-only** towards devices; | Fetches and resumes one version's files, verifies size, ETag md5 and published `.sha256`; |
 |                            |   into `firmware-files/<version>/`         |   `--verify-only` downloads nothing |   prints manifest YAML; stops on HTTP 429                                             |
+| `mikrotik_mac_reset.py`    | One switch's ports and bridges             | **writes** with `--apply` only; | `reset-mac-address [find]` (known issue 11): saves the before-state, reads back, verifies |
+|                            |                                            |   plan only by default         |   ports at `orig-mac-address` and auto-mac bridges on a factory MAC; JSON on stdout      |
 
 ## mikrotik_exec.sh
 
@@ -59,6 +61,19 @@ WAIT_UP=1 MAX_WAIT=86400 POLL=120 ./mikrotik_site_capture.sh arrkapa-smc01 <outd
 ```
 
 Capture before any power-cycle: the RouterOS log is in memory only.
+
+## mikrotik_mac_reset.py
+
+```bash
+just mac_reset glen-hill-smc01 10.255.0.5 <capture-dir>            # plan only: before-state saved, per-port mac vs orig-mac, nothing written
+just mac_reset glen-hill-smc01 10.255.0.5 <capture-dir> --apply    # reset, wait 20 s, read back (retried once), verify
+```
+
+One switch per run, by operator rule (2026-10-08); a list of hosts is refused. The remedy for the cloned port MACs of known issue 11, proven on glen-hill
+2026-10-08: RouterOS 7.8 has the command, the `auto-mac` bridges follow without a reboot and the SMC re-learns the switch by ARP. Each run writes
+the raw before, reset and after reads and the summary JSON to `<capture-dir>/mac-reset-<smc>-<ip>-<stamp>/`. The JSON (serial, before and after MAC per
+port and bridge, `result`: `nothing_to_do`, `planned`, `pass` or `fail`) is what an inventory update reads. Exit 1 on a failed verification; 4 when the
+port-forward did not come up twice. `--apply` needs the operator's go-ahead per switch.
 
 ## survey_summary.py
 

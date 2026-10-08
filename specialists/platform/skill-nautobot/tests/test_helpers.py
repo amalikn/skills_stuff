@@ -1,9 +1,11 @@
 """Offline tests for the promoted helpers in scripts/: the fail-closed paging guard, the IPAM mask rule, the mask planner and
-the site linkage engine."""
+the site linkage engine, the interface-template sync planner and the app compatibility check."""
 
 from __future__ import annotations
 
+import contextlib
 import importlib
+import io
 import shutil
 import subprocess
 import sys
@@ -18,6 +20,8 @@ network_mask, with_mask = _ipam.network_mask, _ipam.with_mask
 PagingError, listing, traverse = _paging.PagingError, _paging.listing, _paging.traverse
 _masks = importlib.import_module("nautobot_masks")
 _linkage = importlib.import_module("nautobot_linkage")
+_template_sync = importlib.import_module("nautobot_template_sync")
+_app_compat = importlib.import_module("nautobot_app_compat")
 
 
 def pages(*chunks, count=None):
@@ -271,6 +275,82 @@ class Linkage(unittest.TestCase):
         self.assertLess(text.index("[error] prefix.location x1"), text.index("[warn] graph.island x1"))
         self.assertIn(_linkage.ISLAND_DOC, text)
         self.assertIn("rules across the estate", text)
+
+
+class TemplateSync(unittest.TestCase):
+    """nautobot_template_sync: templates added to a type after its devices existed (seen on 3.2.3, 2026-10-08)."""
+
+    DEVICES = [{"id": "d1", "name": "ata-1", "device_type": {"id": "t-ata"}}, {"id": "d2", "name": "ata-2", "device_type": "t-ata"},
+               {"id": "d3", "name": "sw-1", "device_type": {"id": "t-sw"}}]
+    TEMPLATES = [{"name": "Ethernet", "device_type": {"id": "t-ata"}, "type": {"value": "other", "label": "Other"}, "mgmt_only": False,
+                  "description": "LAN port", "label": "", "port_type": "", "speed": None, "duplex": ""},
+                 {"name": "Phone 1", "device_type": "t-ata", "type": "other", "mgmt_only": False},
+                 {"name": "slot-port", "device_type": None, "module_type": {"id": "m1"}, "type": "1000base-t"}]
+
+    def test_plans_only_missing_templates_on_existing_devices(self):
+        interfaces = [{"device": {"id": "d1"}, "name": "Phone 1"}, {"device": "d2", "name": "Ethernet"}, {"device": "d2", "name": "Phone 1"}]
+        missing = _template_sync.plan(self.DEVICES, self.TEMPLATES, interfaces)
+        self.assertEqual([(d["name"], t["name"]) for d, t in missing], [("ata-1", "Ethernet")])
+
+    def test_existing_name_is_left_whatever_its_type_and_module_templates_are_ignored(self):
+        interfaces = [{"device": "d1", "name": "Ethernet", "type": "1000base-t"}, {"device": "d1", "name": "Phone 1"},
+                      {"device": "d2", "name": "Ethernet"}, {"device": "d2", "name": "Phone 1"}]
+        self.assertEqual(_template_sync.plan(self.DEVICES, self.TEMPLATES, interfaces), [])
+
+    def test_payload_copies_template_fields_like_instantiate(self):
+        missing = _template_sync.plan(self.DEVICES[:1], self.TEMPLATES, [])
+        bodies = _template_sync.payloads(missing, "st-active")
+        self.assertEqual(bodies[0], {"device": "d1", "status": "st-active", "name": "Ethernet", "type": "other", "mgmt_only": False,
+                                     "description": "LAN port"})
+        self.assertEqual(bodies[1], {"device": "d1", "status": "st-active", "name": "Phone 1", "type": "other", "mgmt_only": False})
+
+
+class AppCompat(unittest.TestCase):
+    """nautobot_app_compat against PyPI JSON recorded 2026-10-08 (trimmed to the fields read)."""
+
+    SSOT = {"info": {"name": "nautobot-ssot", "version": "4.7.0", "requires_python": "<3.15,>=3.10",
+                     "requires_dist": ["nautobot<4.0.0,>=3.1.0",
+                                       'nautobot-device-lifecycle-mgmt<5.0.0,>=4.0.0; extra == "all" or extra == "nautobot-device-lifecycle-mgmt"']},
+            "urls": [{"upload_time_iso_8601": "2026-09-24T14:10:03.354352Z"}, {"upload_time_iso_8601": "2026-09-24T14:09:59.571744Z"}]}
+    METRICS = {"info": {"name": "nautobot-capacity-metrics", "version": "4.1.1", "requires_python": "<3.15,>=3.10",
+                        "requires_dist": ["nautobot<4.0.0,>=3.0.0"]}, "urls": [{"upload_time_iso_8601": "2026-04-12T00:00:00Z"}]}
+
+    def test_specifiers(self):
+        s = _app_compat.satisfies
+        self.assertTrue(s("3.13", "<3.15,>=3.10"))
+        self.assertFalse(s("3.15", "<3.15,>=3.10"))
+        self.assertTrue(s("3.2.3", ">=3.0.0,<4.0.0"))
+        self.assertFalse(s("2.4.9", ">=3.0.0,<4.0.0"))
+        self.assertTrue(s("3.2.3", "==3.*"))
+        self.assertFalse(s("3.2.3", "!=3.2.3"))
+        self.assertTrue(s("3.2.3", "~=3.2"))
+        self.assertFalse(s("4.0", "~=3.2"))
+        self.assertTrue(s("3.13", ""))
+        self.assertIsNone(s("3.13", "===3.13"))
+
+    def test_nautobot_requirement_skips_extras_and_other_apps(self):
+        self.assertEqual(_app_compat.nautobot_requirement(self.SSOT["info"]["requires_dist"]), "<4.0.0,>=3.1.0")
+        self.assertEqual(_app_compat.nautobot_requirement(["nautobot (>=2.0,<3)"]), ">=2.0,<3")
+        self.assertIsNone(_app_compat.nautobot_requirement(["nautobot-golden-config>=3", "django>=4"]))
+
+    def test_assess_recorded_apps_on_3_2_3_python_3_13(self):
+        row = _app_compat.assess(self.SSOT, "3.2.3", "3.13")
+        self.assertEqual((row["version"], row["released"], row["nautobot_ok"], row["python_ok"], row["compatible"]),
+                         ("4.7.0", "2026-09-24", True, True, True))
+        self.assertIs(_app_compat.assess(self.METRICS, "2.4.0", "3.13")["compatible"], False)
+        self.assertIsNone(_app_compat.assess({"info": {"requires_dist": []}, "urls": []}, "3.2.3", "3.13")["compatible"])
+
+    def test_cli_reads_through_the_injected_fetch(self):
+        fetched = []
+
+        def fake(name, version):
+            """Recorded JSON in place of PyPI."""
+            fetched.append((name, version))
+            return {"nautobot-ssot": self.SSOT, "nautobot-capacity-metrics": self.METRICS}[name]
+
+        with contextlib.redirect_stdout(io.StringIO()):
+            rc = _app_compat.main(["nautobot-ssot==4.7.0", "nautobot-capacity-metrics", "--nautobot", "3.2.3", "--python", "3.13"], fetch=fake)
+        self.assertEqual((rc, fetched), (0, [("nautobot-ssot", "4.7.0"), ("nautobot-capacity-metrics", None)]))
 
 
 class Governance(unittest.TestCase):

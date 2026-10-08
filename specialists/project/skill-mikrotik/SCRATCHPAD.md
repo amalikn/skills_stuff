@@ -29,7 +29,7 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 
 1. arrkapa switch must be replaced (kernel-failure / watchdog reboot loop, found 16:02); build the spare with the Pi script minus its five `mac-address=` commands. Watch batavia-downs.
 2. Survey `wh` (known issue 2).
-3. With operator approval: test the cloned-MAC remedy on one switch (known issue 11), then a small canary.
+3. Cloned-MAC remedy proven on glen-hill (known issue 11); the rest one switch at a time with `just mac_reset` (`--apply` per operator go-ahead).
 4. Decide with the operator on central monitoring for these devices (known issue 5).
 5. SNMP fleet rollout: operator decision (known issue 14); then add the enable to the Pi script. Candidates still open on the AP: ifHCIn/OutOctets.
 6. Ask the operator for the provisioning script's location and owner and how APs are provisioned (known issue 12); read back the script's security

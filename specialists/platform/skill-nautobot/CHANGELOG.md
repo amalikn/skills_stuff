@@ -14,6 +14,8 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 2026-10-08 Learned (from UNC): `references/data-model.md` §4 an interface template added to an existing Device Type does not reach its existing Devices (3.2.3); back-fill with the new helper.
+- 2026-10-08 promoted from UNC session code: `scripts/nautobot_template_sync.py` (missing template interfaces on existing Devices; plans unless `--apply`) and `scripts/nautobot_app_compat.py` (PyPI app metadata against a Nautobot and Python version, read-only), both stdlib-only with offline tests in `tests/test_helpers.py`; recipes `just template_sync` and `just app_compat`. Smoke: nautobot-ssot 4.7.0, nautobot-device-lifecycle-mgmt 4.2.0 and nautobot-capacity-metrics 4.1.1 all compatible with Nautobot 3.2.3 / Python 3.13.
 - 2026-10-08 Learned (from UNC): `references/data-model.md` the two-ended Cable POST works on 3.2.3, and interfaces have no `cabled` filter.
 - 2026-10-08 Learned (from UNC): `references/authority-and-modeling.md` custom field keys are immutable, a rename is copy then delete; `references/upgrade-and-troubleshooting.md` SSoT 4.7.0, DLM 4.2.0 and Capacity Metrics 4.1.1 on 3.2.3 / Python 3.13, and post_upgrade must run in the recreated container.
 - 2026-10-08 Learned (from UNC, Raspberry Pi SMC canary): `references/data-model.md` a host's radio takes a wireless interface type, decided from the host; `references/api-and-writers.md` get-or-create above a dry-run branch writes, and `custom_fields` ride on the create POST.

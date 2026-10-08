@@ -142,6 +142,9 @@ Source: `nautobot/dcim/models/devices.py:164-215` (DeviceType), `:495-652` (Devi
 `docs/user-guide/core-data-model/dcim/devicefamily.html`,
 `docs/user-guide/core-data-model/dcim/devicetype.html`.
 
+> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's REST API, an interface template added to a Device Type after a Device of that type existed: the Device's interface list did not gain it; nautobot/dcim/models/device_component_templates.py lines 399-414 (`InterfaceTemplate.instantiate`) in the installed source · Falsifier: a 3.2.x Device that gains an interface when a template is added to its existing Device Type
+> Adding an interface template to a Device Type changes only Devices created afterwards; existing Devices keep their interfaces. Back-fill them with `scripts/nautobot_template_sync.py` (plan, then `--apply`), which creates each missing interface as instantiation would: name, label, type, port_type, mgmt_only, speed, duplex and description from the template, status Active. An interface already present by name is left as it is.
+
 ## 5. Interfaces: modes, VLANs and LAGs
 
 Decision: `type` says what the port is (`1000base-t`, `10gbase-x-sfpp`, `ieee802.11ax`, `virtual`, `lag`, `bridge`); `mode` says how it carries VLANs: `access`, `tagged` or `tagged-all`.

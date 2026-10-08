@@ -1,5 +1,16 @@
 # Changelog
 
+## 20261008_1303 — reset-mac-address script for one switch at a time (v0.1.22 -> v0.1.23)
+
+- `scripts/mikrotik_mac_reset.py` (stdlib only), from the glen-hill session of 2026-10-08 (known issue 11): for one `<smc> <ip>` it saves the before-state
+  (routerboard, ethernet and bridge `print detail`) to a capture folder, reports each port's `mac-address` against `orig-mac-address` and each bridge's MAC,
+  and plans only. With `--apply` it runs `/interface ethernet reset-mac-address [find]` through `scripts/mikrotik_exec.sh` with `MT_ALLOW_WRITE=1` for that call,
+  waits, reads back (retried once on a failed forward, exit 4) and verifies every port at its factory MAC and every `auto-mac` bridge on one of them. JSON
+  summary on stdout for an inventory update. Refuses a list of hosts (one switch at a time, operator 2026-10-08). Recipe `just mac_reset`; catalogued in
+  `scripts/README.md`; pointer added to `references/05_known-issues.md` #11.
+- Smoke test: `--help` clean; plan-only run against glen-hill-smc01 10.255.0.5 (already reset) reported all five ports at their factory MACs, all four
+  bridges on a factory MAC, `result: nothing_to_do`, exit 0, nothing written. `--apply` not run anywhere.
+
 ## 20261008_1234 — RouterOS firmware fetch and verify script promoted (v0.1.21 -> v0.1.22)
 
 - `scripts/routeros_firmware_fetch.py` (stdlib only), from two session scripts used for 7.8, 7.12.2, 7.23.7 and 7.24.5: fetches one version's `routeros`,
