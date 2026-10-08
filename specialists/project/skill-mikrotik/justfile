@@ -70,3 +70,8 @@ snmp smc ip entry +ops: _require-venv
 [positional-arguments]
 snmp_community smc ip action entry *flags: _require-venv
     MT_PY={{py}} {{py}} scripts/mikrotik_snmp_community.py "$@"
+
+# Fetch, resume and verify one RouterOS version's files into firmware-files/<version> (size, ETag md5, published .sha256); prints manifest YAML. e.g. just firmware_fetch 7.12.2 --verify-only
+[positional-arguments]
+firmware_fetch version *flags: _require-venv
+    {{py}} scripts/routeros_firmware_fetch.py "$@"

@@ -1,5 +1,15 @@
 # Changelog
 
+## 20261008_1234 — RouterOS firmware fetch and verify script promoted (v0.1.21 -> v0.1.22)
+
+- `scripts/routeros_firmware_fetch.py` (stdlib only), from two session scripts used for 7.8, 7.12.2, 7.23.7 and 7.24.5: fetches one version's `routeros`,
+  `all_packages`, `wireless` (mipsbe, skipped when the host serves the 0-byte pre-7.13 placeholder) and `netinstall` files, resumes truncated ones with HTTP
+  Range, verifies size, ETag md5 and the published `.sha256` (saved beside the file; none for 7.8 or 7.12.x), prints manifest-ready YAML, stops on HTTP 429.
+  `--verify-only` downloads nothing. Recipe `just firmware_fetch`; catalogued in `scripts/README.md`.
+- Smoke test: `--verify-only 7.12.2` reported all six files match (size and ETag md5; sha256 equal to the manifest's), no download; `--verify-only 7.23.7
+  --arch mipsbe` five of five including the published sha256; `--help` clean.
+- Linked from `references/07_equipment-and-snmp.md` (Firmware) and the `references/firmware-manifest.yaml` header.
+
 ## 20261008_1227 — the team's provisioning script added as a read-only reference (v0.1.20 -> v0.1.21)
 
 - `450gmk3_v1.1.py` (pack root): the Pi script the team uses to build RB450Gx4 switches, supplied by the operator. Read-only: never edited; a change goes

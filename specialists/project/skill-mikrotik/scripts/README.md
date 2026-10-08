@@ -4,7 +4,7 @@ Category: script-inventory
 Status: current
 Authority: local-supplement
 Scope: Reusable tooling for MikroTik devices behind SMC boxes
-Last reviewed: 2026-10-07
+Last reviewed: 2026-10-08
 Summary: Read-only RouterOS access through a Teleport port-forward, a fleet survey, a deep per-site capture, and the pack's governance checker.
 ---
 
@@ -28,6 +28,8 @@ Raw output goes to the investigation folder you name (under `local-knowledge-ans
 |                            |                                            |   op is given                  |   KeePass on stdin, never on a command line or printed                                    |
 | `mikrotik_snmp_community.py` | One device's SNMP settings               | **writes** (`enable`, `remove`); | Adds or removes a community from KeePass (value redacted in all output), disables         |
 |                            |                                            |   `show` is read-only          |   `public`, turns SNMP on or off; needs operator approval per device                      |
+| `routeros_firmware_fetch.py` | download.mikrotik.com (web); writes only | **read-only** towards devices; | Fetches and resumes one version's files, verifies size, ETag md5 and published `.sha256`; |
+|                            |   into `firmware-files/<version>/`         |   `--verify-only` downloads nothing |   prints manifest YAML; stops on HTTP 429                                             |
 
 ## mikrotik_exec.sh
 
@@ -66,3 +68,16 @@ Capture before any power-cycle: the RouterOS log is in memory only.
 
 A device whose uptime is more than a day shorter than its SMC's was power-cycled after the SMC booted (on `rct`, usually the TSTIK app). The AP shares the switch's
 uptime at every site surveyed, consistent with the AP being powered from the switch.
+
+## routeros_firmware_fetch.py
+
+```bash
+just firmware_fetch 7.24.5                       # fetch missing files, resume truncated ones, into firmware-files/7.24.5/
+just firmware_fetch 7.12.2 --verify-only         # HEAD requests only: compare local files with the host
+just firmware_fetch 7.24.5 --arch mipsbe --dest <folder>
+```
+
+Checks size against Content-Length, md5 against the ETag, and sha256 against MikroTik's `<url>.sha256` sidecar, saved beside the file where one is
+published (none for 7.8 or 7.12.x). A 0-byte `wireless-<v>-mipsbe.npk` before 7.13 is a placeholder and is skipped. The YAML on stdout pastes into
+`../references/firmware-manifest.yaml`; add the curated fields (channel, kind, models, firmware_type, retrieved) by hand. Exit 1 on any missing or
+mismatched file, 2 on HTTP 429.

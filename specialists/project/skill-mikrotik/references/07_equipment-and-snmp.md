@@ -89,6 +89,8 @@ Cambium AP instead, so a Metal is never fed 48 V there.
 - **Firmware files kept** (operator 2026-10-08: committed, not gitignored): 7.8, 7.12.2, 7.23.7 and 7.24.5 for arm (RB450Gx4) and mipsbe (Metal 52 ac):
   `routeros`, `all_packages`, `wireless` (7.23.7 and 7.24.5; 7.8 and 7.12.2 bundle it) and `netinstall`, in `firmware-files/<version>/`, each with size, sha256
   and source in `references/firmware-manifest.yaml`.
+  Fetch or re-verify a version with [`scripts/routeros_firmware_fetch.py`](../scripts/routeros_firmware_fetch.py) (`just firmware_fetch <version> [--verify-only]`),
+  which prints the manifest entries.
 - **Upgrade path from 7.8 needs a stop at 7.12.x** (VERIFIED-DOC, 7.13 changelog in `references/vendor-sources-20261007_1640/routeros-changelogs-7.8-to-7.24.5.txt`): 7.13 split the `wireless`
   package out of the bundle, and an upgrade to 7.13 or later "must be done through 7.12 in order to convert wireless packages automatically"; Netinstall or a
   manual package install is the exception. The intermediate image kept is **7.12.2** (2023-12-20), the last 7.12.x on the download host (7.12.3 returns 404),
