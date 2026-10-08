@@ -34,6 +34,8 @@ Vault: `~/Library/CloudStorage/OneDrive-Personal/A/APN_keepassDB.kdbx`, group `c
 | `cambium-devices/epmp-sm-legacy`      | Force 180; un-recredentialed Force 300 stragglers (old default)                                                                                              |
 | `cambium-devices/cnpilot-r-series`    | R195P                                                                                                                                                        |
 | `cambium-devices/cnwave-60ghz`        | V5000, V3000, V2000, V1000                                                                                                                                   |
+| `cambium-devices/enterprise-fallback-01` | Enterprise fallback password: tried after the family's own and `-legacy` entries are rejected, for any family (operator, 2026-10-08) |
+| `cambium-devices/enterprise-fallback-02` | Second enterprise fallback, tried after `-01`; not reached on ePMP (login budget, below) |
 | `cambium-devices/apn-snmp-ro`         | SNMPv2c read-only community, `rcp`-flavour sites (2026-09-17)                                                                                                |
 | `cambium-devices/apn-snmp-rw`         | SNMPv2c read-write community, `rcp`-flavour sites — SET proven 2026-09-22 (ePMP 3000L)                                                                     |
 | `cambium-devices/nbn-snmp-ro`         | SNMPv2c read-only community, `nbn_accelerate`-flavour sites                                                                                                  |
@@ -49,6 +51,13 @@ Every entry's username is `admin`. Don't create a fresh sub-group per family —
 
 A minority of individual Enterprise Wi-Fi (XV2) and ePMP SM (Force 300) field units were never re-credentialed from the old factory default to the standard password. There's no way (as of 2026-09-17)
 to tell which specific serials from the asset registers or family matrix alone — try the family's primary vault entry first, fall back to the matching `-legacy` entry per device if it fails.
+
+**Enterprise fallbacks (operator, 2026-10-08).** When the primary and `-legacy` entries are both rejected, try `enterprise-fallback-01` and then `-02` (user
+`admin`); a device none of them opens is highlighted, never skipped quietly. ePMP limits the chain: its fourth login inside about twenty minutes is refused even
+with the right password (below), so an ePMP read stops at own, `-legacy`, `-01`. Only a rejected login moves on; an unreachable unit is never tried with a second
+password. These entries are passwords, not SNMP communities: neither answered as a community on the mowanjum E500 (2026-10-08), which answered the
+`nbn-snmp-ro` community instead (an APN site, a unit keeping another programme's community). Implemented in unified-network-controller as
+`batch_push_devices.vault_chain` / `with_vault_chain`.
 
 ### What a rejected password looks like, per family (verified live 2026-09-22)
 

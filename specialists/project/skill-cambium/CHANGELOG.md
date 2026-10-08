@@ -2,6 +2,9 @@
 
 ## Contents
 
+- [20261008_1341 — E-series port MACs by SNMP, port order proved (v0.6.44 -> v0.6.45)](#20261008_1341--e-series-port-macs-by-snmp-port-order-proved-v0644---v0645)
+- [20261008_1324 — Enterprise fallback passwords in the credential chain (v0.6.43 -> v0.6.44)](#20261008_1324--enterprise-fallback-passwords-in-the-credential-chain-v0643---v0644)
+- [20261008_1319 — XV2 per-port MACs from device-summary port_status; cnWave nic naming (v0.6.42 -> v0.6.43)](#20261008_1319--xv2-per-port-macs-from-device-summary-port_status-cnwave-nic-naming-v0642---v0643)
 - [20261008_1149 — glen-hill wh XV2-2T0 identified and landed Staged (v0.6.41 -> v0.6.42)](#20261008_1149--glen-hill-wh-xv2-2t0-identified-and-landed-staged-v0641---v0642)
 - [20261007_1910 — GPS position per device type, gps_probe.py (v0.6.40 -> v0.6.41)](#20261007_1910--gps-position-per-device-type-gps_probepy-v0640---v0641)
 - [20261007_1641 — File-roles spec no longer says skill-smc has an exports adapter (v0.6.39 -> v0.6.40)](#20261007_1641--file-roles-spec-no-longer-says-skill-smc-has-an-exports-adapter-v0639---v0640)
@@ -87,6 +90,22 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261008_1341 — E-series port MACs by SNMP, port order proved (v0.6.44 -> v0.6.45)
+
+- `references/06_device-api-cli-reference.md`: E-series `eth0` = ETH1, `eth1` = ETH2 (counter match at mowanjum); walk by `ifDescr`; the mowanjum E500s answer
+  only `nbn-snmp-ro`. unified-network-controller's collector now writes E500 ETH1/ETH2 MACs this way (canary six units, three sites, both clusters).
+
+## 20261008_1324 — Enterprise fallback passwords in the credential chain (v0.6.43 -> v0.6.44)
+
+- `references/02_device-access-and-vault.md`: `enterprise-fallback-01`/`-02` rows; after the own and `-legacy` entries are rejected, try them, highlight a
+  device none opens; ePMP stops at three logins. They are not SNMP communities (mowanjum E500 answered `nbn-snmp-ro`). Operator rule, 2026-10-08.
+
+## 20261008_1319 — XV2 per-port MACs from device-summary port_status; cnWave nic naming (v0.6.42 -> v0.6.43)
+
+- `references/06_device-api-cli-reference.md`: XV2 `device-summary.port_status` carries ETH1/ETH2 MACs (equal to SNMP `eth0`/`eth1`, link state agreeing,
+  guda-guda/gan-gan/glen-hill 2026-10-08); ETH1's MAC is also the bridge's, so a cabled port is told by link state. cnWave V3000 SNMP names its ports
+  `nic1`-`nic3`; their physical mapping is unverified. From unified-network-controller's port-MAC work.
 
 ## 20261008_1149 — glen-hill wh XV2-2T0 identified and landed Staged (v0.6.41 -> v0.6.42)
 

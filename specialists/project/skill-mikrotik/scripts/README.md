@@ -66,7 +66,7 @@ Capture before any power-cycle: the RouterOS log is in memory only.
 
 ```bash
 just mac_reset glen-hill-smc01 10.255.0.5 <capture-dir>            # plan only: before-state saved, per-port mac vs orig-mac, nothing written
-just mac_reset glen-hill-smc01 10.255.0.5 <capture-dir> --apply    # reset, wait 20 s, read back (retried once), verify
+just mac_reset glen-hill-smc01 10.255.0.5 <capture-dir> --apply    # reset, wait 20 s, read back (retried every 30 s up to 10 min: the Teleport tunnel drops 4-5 min), verify
 ```
 
 One switch per run, by operator rule (2026-10-08); a list of hosts is refused. The remedy for the cloned port MACs of known issue 11, proven on glen-hill

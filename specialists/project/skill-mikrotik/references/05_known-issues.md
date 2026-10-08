@@ -37,7 +37,11 @@ wraps an item across rows.
     exists on RouterOS 7.8 and returned each port to its `orig-mac-address` (glen-hill-switch01, serial HEX097QBC2Y: ether1-ether5 `6C:3B:6B:53:F0:D5`-`D9` became
     `78:9A:18:3A:53:36`-`3A`). All four `auto-mac=yes` bridges followed at once, no reboot: `bridge-vlan500` (the management address) took ether4's
     `78:9A:18:3A:53:39`, `bridge-vlan501` and `bridge-vlan521` ether1's, `bridge-vlan522` ether3's. The SMC re-learned the switch by ARP within three
-    minutes, switch and AP answered ping throughout, the SMC did not reboot. Open: the other 293 switches (one at a time, read back each), and new switches
+    minutes, switch and AP answered ping throughout, the SMC did not reboot. **Three more, 2026-10-08 12:51-12:58 (VERIFIED-OBSERVED, operator approved):**
+    20-mile (`18:FD:74:A4:51:39`-`3D`), adjamarragu (`78:9A:18:3A:57:62`-`66`) and areyonga (`78:9A:18:3A:52:62`-`66`) went to factory the same way, bridges
+    following, no switch or SMC reboot. On all three the switch closes the SSH session of the reset itself ("closed by remote host") and **the SMC's
+    Teleport tunnel drops for 4-5 minutes** (rct and wh alike) while Prometheus kept its samples; plan for it, do not read it as an outage. The script's
+    read-back now retries for 10 minutes and judges the read-back, not the reset's exit code. Open: the other ~290 switches (one at a time, read back each), and new switches
     need the five `mac-address=` lines removed from our own version of the provisioning script. Tool for the rest: `scripts/mikrotik_mac_reset.py`
     (`just mac_reset`), one switch per run, plan only unless `--apply`; it saves the before-state, reads back and prints a JSON summary.
 12. **Provisioning script: owner and APs.** Partly closed 2026-10-08: the script is `450gmk3_v1.1.py` (read-only reference in this pack's root,

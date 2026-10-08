@@ -687,6 +687,17 @@ Found while taking enterprise Wi-Fi end to end into OpenWISP (mowanjum E500 and 
   XV2-22H only (the XV2-2T0 has two Ethernet ports), plus `VLAN501` on four of five units. `HOP_XV2_AP26_IP3_26` listed no `VLAN501`, although its `HopeVale_WiFi` WLAN is on VLAN 501 like the others.
   It is not the client count at read time: AP27 and AP35 had no clients and still listed it. The cause is **unverified**; a restart about 7 hours earlier on AP26 is one lead. Callers must iterate the
   interfaces a device reports, never assume a fixed set.
+- **Per-port MACs (VERIFIED-OBSERVED, guda-guda and gan-gan XV2-2T0, glen-hill, firmware `6.6.0.3-r9`, 2026-10-08).** `interface-summary` carries no MAC, but
+  `device-summary.port_status` lists each front port with its MAC: `{"device": "ETH1", "mac": "BC-A9-93-30-B9-E6", "link": 1, "speed": "1000M"}`, ETH2 the next
+  MAC up. They equal SNMP IF-MIB `ifPhysAddress` of kernel `eth0` (ETH1) and `eth1` (ETH2), link state agreeing (guda-guda-ent-1: ETH2 down = `eth1`
+  ifOperStatus 2). ETH1's MAC is also `device_mac` and `br0`'s, so a switch learns ETH1's MAC whichever port is cabled: tell the port by `port_status.link`,
+  not by the MAC alone. E-series (E500, E430) returns no `port_status`. unified-network-controller's collector writes these onto ETH1/ETH2.
+- **E-series port MACs come from SNMP (VERIFIED-OBSERVED, mowanjum E500 AP1 and AP9, 2026-10-08).** No `port_status`, so IF-MIB: kernel `eth0` is ETH1 and
+  `eth1` is ETH2, proved by counters (AP9 REST ETH1 `rx_bytes` 1638284287 = SNMP `eth0` ifInOctets 1638284287; ETH2 = `eth1`); `eth0` carries `device_mac`.
+  ifIndex is not fixed (`teql0`, `gre0` sit at 5 and 6), so match the walk by `ifDescr`. The mowanjum E500s, at an APN site, answer only the
+  `nbn-snmp-ro` community: try the site's own read community, then the other programme's.
+- **cnWave V3000 SNMP names its ports `nic1`-`nic3`** (wangkatjungka, 2026-10-08, IF-MIB `ifDescr`, MACs `00:04:56:...`), plus `terra0`-`terra15` and `br0`;
+  a model that numbers them `nic0`-`nic2` does not match the unit. Which physical port each `nic` is: **UNVERIFIED**.
 
 ## Capture-review notes (2026-10-05)
 

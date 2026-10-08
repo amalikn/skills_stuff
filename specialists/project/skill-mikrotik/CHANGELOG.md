@@ -1,5 +1,13 @@
 # Changelog
 
+## 20261008_1316 — cloned MACs reset on three more switches; reset script waits out the Teleport drop (v0.1.23 -> v0.1.24)
+
+- Known issue 11: 20-mile, adjamarragu and areyonga switch01 reset to factory MACs (operator approved, unified-network-controller session); no reboot. The
+  reset's own SSH session is closed by the switch, and the SMC's Teleport tunnel drops for 4-5 minutes on rct and wh sites alike.
+- `scripts/mikrotik_mac_reset.py`: read-back retried every 30 s up to `--readback-timeout` (default 600 s) instead of once after 10 s; the verdict is the
+  read-back's (`write_exit` recorded, not judged), since the reset's session always ends closed by the switch. Smoke test: plan-only run on
+  20-mile-smc01 10.255.0.5 (reset earlier) reported all ports and bridges factory, `result: nothing_to_do`, nothing written.
+
 ## 20261008_1303 — reset-mac-address script for one switch at a time (v0.1.22 -> v0.1.23)
 
 - `scripts/mikrotik_mac_reset.py` (stdlib only), from the glen-hill session of 2026-10-08 (known issue 11): for one `<smc> <ip>` it saves the before-state
