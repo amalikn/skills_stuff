@@ -1041,6 +1041,9 @@ The ACM cert on the Graylog ALB (`gl.aws.apn.au`) expired 2026-09-12 09:59:59 AE
   - `kupungarri-smc01` (wh): rebooted 2026-10-01 23:06 AEST (31 RISE status messages reached Graylog at boot). Before the last scrape at
     **2026-10-05 05:02 AEST**, `vlan522` failed every check and `eth0` was flapping (success 0/1 alternating). It is not in Teleport now. Likely a
     WAN or site problem, consistent with its power-quality history.
+    **Update 2026-10-09:** techs on site saw a solid red LED with no green and restarted it; the box online at 15:37 AEDT is a spare disk
+    (`generic-wh01-20240408`, no overlay, no RISE), not the unit that went dark. Detail: `06_failure-modes.md`, Silent Total Hang, kupungarri
+    2026-10-09. Open: SD card or whole unit swapped, get the old SD back, run RISE on the spare.
 - Other `wh` hosts not in Teleport on 2026-10-07: `generic-wh01`, `kintore-smc01`, `orrtipa-thurra-bonya-smc01`, `yuelamu-smc01` (not investigated).
 
 ## 2026-10-07 — two-inventory runs lose topology variables; kernel unhold fails before the target kernel is installed
@@ -1111,6 +1114,27 @@ At low-touch (`smc_ltp`) sites the 3000L APs relay DHCP with Option 82, and the 
 carry one, all public Wi-Fi clients; the R195Ps' own leases carry none. The file holds public client MACs: read it in memory and keep only what
 Nautobot knows, never store it raw (unified-network-controller topology reader `smc-dhcp-relay`; skill-cambium 05_known-issues for the join that
 places a router behind its SM). Nothing here depends on cnMaestro: the AP inserts the option and dhcpd records it.
+
+## 2026-10-09 — the provisioning hook's logs are the site's install-time pairing (INFO)
+
+`cnmaestro-provisioning.py` keeps one log per unit it provisioned, `/var/local/cnmaestro-provisioning/log.<MAC with dashes>` (`VAR_DIR`), from the
+day the site was built: old-looma-smc01 holds 146 (154 MB), 2026-07-16 to 07-23, read-only 2026-10-09. Each logs, at DEBUG, the DHCP vendor class
+(`self._vci`) and the Option 82 Remote ID (`self._remote_id`) it was called with, and the cnMaestro description it wrote, a JSON with `us` (the
+upstream unit's cnMaestro name, from cnMaestro's `parent_mac` or else the Remote ID), `lot no`, `ext`, `locid`, `mgmt_ip` and `name`.
+
+- **Routers.** 63 of old-looma's 66 R195P logs carry one SM's radio MAC as Remote ID and name that SM in `us`; no SM holds two routers. The other 3
+  (home-9, home-44, home-66) were provisioned with an empty Remote ID: the tower routers the as-built drawings show cabled to a Nano switch
+  (T2, T4) and to Switch 2 port 8 (T1), not behind an SM.
+- **Wi-Fi APs.** An XV2 behind an SM is recorded the same way (ap-4 behind sm-22 at lot 82). One beyond a PtP link carries the Remote ID of the
+  first SM on its path (ap-8: sm-45) while `us` names its real parent (sm-ep2p-1).
+- **Sites as built, not as now.** A unit replaced or moved after install has a new log, or none. The current `dhcpd.leases` no longer holds the
+  routers' provisioning leases (the entry above), so these logs are the only place the router's Remote ID survives.
+- **Read it reduced.** The logs are mostly polled cnMaestro response bodies. unified-network-controller reduces them on the SMC with an awk
+  program sent on stdin (`topology/sources.py` `PROVISIONING_AWK`, about 40 kB for old-looma) and reads them in every discovery run (reader
+  `smc-dhcp-relay`, correlate rule 4h). Ten units logged at old-looma were never landed in Nautobot (sm-11/home-12, sm-13/home-14, sm-19/home-20,
+  sm-20/home-21, sm-21/home-22, sm-43/home-45, sm-48/home-50, sm-50/home-52, sm-53/home-55, sm-63/home-65).
+- **Same-tower hint.** Provisioning hands out management addresses in order, so units installed together sit next to each other: old-looma's
+  3000L-ap-3 (.21) and home-9 (.20) two seconds apart, 3000L-ap-5 (.94) and home-44 (.95) one second apart. A hint for a person, not a rule.
 
 ## 2026-10-09 — low-touch addresses: DHCP to provision, then a configured management address (INFO)
 
@@ -1184,3 +1208,29 @@ is the router's only path to the SMC. From the SMC this means:
   without low touch use static addresses (operator), so neither the hook nor the address order exists there.
 - **Logs:** the SMs' Device Agent syslog reaches the SMC and Graylog; the routers send none as provisioned (entries above), so a router-side link
   drop is not recorded centrally.
+
+## 2026-10-09 — where an SMC's DHCP history is, and why it is not a unit's boot history (INFO)
+
+Read on old-looma-smc01 (`tsh ssh --proxy=teleport.apn.au`, read-only, 2026-10-09 14:1x AEDT; unified-network-controller pairing work):
+- isc-dhcp-server (`dhcpd -f -4 ... bridge_500 bridge_501 bridge_502`) logs to the systemd journal only; `/var/log/syslog` and its rotations hold
+  no DHCPDISCOVER line. The journal (200 MB on disk) reached back only about 13 hours (first entry 2026-10-09 01:09), dominated by public Wi-Fi
+  clients (~22,000 DHCP lines).
+- Prometheus on the SMCs keeps no per-unit up/down history: its remote_write allowlist (02_service-map.md) passes only `up`, node and RISE
+  families, none per subscriber unit.
+- A low-touch unit takes DHCP only while it is provisioned and then runs on a configured management address (12_ and 13_ entries above), so its
+  DHCP lines are not a reboot record. A unit's last boot is read from its own sysUpTime; history of who answered with whom has to be sampled
+  (unified-network-controller `topology.py uptime`).
+- The low-touch hook's per-unit logs (`/var/local/cnmaestro-provisioning/log.<MAC>`, one per unit provisioned, with the Option 82 Remote ID it
+  saw) exist only on the SMC; nothing ships them off the box, so a replaced or reimaged SMC loses the install-time pairing record. Read
+  2026-10-09 (`du -sm`, read-only): warburton 280 MB / 279 logs, beagle-bay 274 / 220, old-looma 154 / 146, guda-guda 46 / 29, yakanarra 18 / 77,
+  pandanus-park 17 / 74, umoona 5 / 19; about 800 MB compresses to 16 MB. Copies: unified-network-controller `just wc::provisioning-backup`
+  (archives committed in that project's `backups/`, verified, unchanged runs not stored twice). pia-smc01 and new-looma-smc01 were absent from Teleport on both clusters
+  that day.
+- Beyond the pairing (section "the provisioning hook's logs are the site's install-time pairing" above), each `log.<MAC>` dumps the unit's
+  provisioning state on every run (`_ip` on 192.168.11.x, `_variables`, `_configurations`, `_provisioning_defaults`, `_managed_account` = the
+  site, and `_client_secret`, the cnMaestro API secret, so any copy of the logs holds it) and logs events: onboarding initiated and done,
+  configuration loaded, `Using default configuration "<home|sm|ap|ent_outdoor|ap_ep2p>"`, `Using value "<v>" defined on device for "<var>"`
+  (`preferred_ssid`, `antenna_gain`, `poe_out`, `power`, `seqid`, `frequency`), `Replaced device mac` and `Upstream device "<MAC>" not yet fully
+  onboarded ... for device "<MAC>"`. That upstream MAC is the SM's own MAC, one below the Remote ID's radio MAC (old-looma 2026-10-09: 60 of 60).
+  An SM's `preferred_ssid` `WifiBridge_N` names its AP: it matched the SM's `us` `3000L-ap-N` on 59 of 59. Descriptions can also carry `align`,
+  `test`, `antenna_type`, `public_ip`, `prov_ip`. Parsed by unified-network-controller `topology/sources.py` `provisioning_logs()` (2026-10-09).

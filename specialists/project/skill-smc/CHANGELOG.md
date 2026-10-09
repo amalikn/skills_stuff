@@ -2,6 +2,11 @@
 
 ## Contents
 
+- [20261009_1714 — What else the low-touch hook logs record: state and secret, events, the SM by its own MAC, preferred_ssid names the AP (v0.3.4 -> v0.3.5)](#20261009_1714--what-else-the-low-touch-hook-logs-record-state-and-secret-events-the-sm-by-its-own-mac-preferred_ssid-names-the-ap-v034---v035)
+- [20261009_1705 — The provisioning hook's per-unit logs are a low-touch site's install-time pairing (v0.3.3 -> v0.3.4)](#20261009_1705--the-provisioning-hooks-per-unit-logs-are-a-low-touch-sites-install-time-pairing-v033---v034)
+- [20261009_1652 — Low-touch provisioning logs live only on the SMC; sizes per site, backup in UNC (v0.3.2 -> v0.3.3)](#20261009_1652--low-touch-provisioning-logs-live-only-on-the-smc-sizes-per-site-backup-in-unc-v032---v033)
+- [20261009_1552 — An SMC's DHCP history lives in a short journal and is not a unit's boot history (v0.3.1 -> v0.3.2)](#20261009_1552--an-smcs-dhcp-history-lives-in-a-short-journal-and-is-not-a-units-boot-history-v031---v032)
+- [20261009_1551 — kupungarri back on a spare disk; Pi identity probe gains swap checks (v0.3.1 -> v0.3.2)](#20261009_1551--kupungarri-back-on-a-spare-disk-pi-identity-probe-gains-swap-checks-v031---v032)
 - [20261009_1348 — A home's SM and router as the SMC sees them: dependency, failure states, provisioning order (site view) (v0.3.0 -> v0.3.1)](#20261009_1348--a-homes-sm-and-router-as-the-smc-sees-them-dependency-failure-states-provisioning-order-site-view-v030---v031)
 - [20261009_1341 — Unit syslog reaches Graylog only for program names the SMC's rsyslog lists (v0.2.9 -> v0.3.0)](#20261009_1341--unit-syslog-reaches-graylog-only-for-program-names-the-smcs-rsyslog-lists-v029---v030)
 - [20261009_1312 — Graylog 500: Data Node not restarted after an AWS scheduled reboot; backends without a pack come here (v0.2.8 -> v0.2.9)](#20261009_1312--graylog-500-data-node-not-restarted-after-an-aws-scheduled-reboot-backends-without-a-pack-come-here-v028---v029)
@@ -122,6 +127,38 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261009_1714 — What else the low-touch hook logs record: state and secret, events, the SM by its own MAC, preferred_ssid names the AP (v0.3.4 -> v0.3.5)
+
+- `references/13_known-issues.md`: beyond the 0.3.4 pairing section: the state dump, events, more description keys, and the cnMaestro client secret;
+  upstream-wait MAC = Remote ID - 1 (60 of 60); `preferred_ssid` `WifiBridge_N` = AP `3000L-ap-N` (59 of 59); measured on old-looma's logs.
+
+## 20261009_1705 — The provisioning hook's per-unit logs are a low-touch site's install-time pairing (v0.3.3 -> v0.3.4)
+
+- `references/13_known-issues.md`: new section "the provisioning hook's logs are the site's install-time pairing": what each `log.<MAC>` records
+  (vendor class, Option 82 Remote ID, the cnMaestro description with `us`, `lot no`, `ext`, `locid`); at old-looma 63 of 66 routers name one SM
+  and 3 tower routers have an empty Remote ID; an XV2 beyond a PtP link reports the first SM on its path; 10 logged units never landed in
+  Nautobot; read reduced on the box. Complements the 0.3.3 entry on where the logs live and their backup.
+- Write-back from unified-network-controller (CHANGELOG 20261009_1705, reader `smc-dhcp-relay`, correlate rule 4h).
+
+## 20261009_1652 — Low-touch provisioning logs live only on the SMC; sizes per site, backup in UNC (v0.3.2 -> v0.3.3)
+
+- `references/13_known-issues.md`: `/var/local/cnmaestro-provisioning` (one log per provisioned unit, Option 82 Remote ID included) is kept only
+  on the box; sizes read on seven low-touch SMCs; the copy is unified-network-controller `just wc::provisioning-backup` (operator, 2026-10-09:
+  keep them in case an SMC is replaced).
+
+## 20261009_1551 — kupungarri back on a spare disk; Pi identity probe gains swap checks (v0.3.1 -> v0.3.2)
+
+- failure-modes (Silent Total Hang): kupungarri 2026-10-05 dark, tech LED report (solid red, no green: powered, not running) and the evidence
+  that the box online 2026-10-09 is a `generic-wh01-20240408` spare without overlay or RISE; rule to probe after any tech reboot.
+- known-issues: kupungarri entry updated.
+- scripts: `pi_identity_probe.sh` prints `hostname`/`boot_hostname`, `root_fs`/`overlayroot`, `boot_now`, `journal_boots`, `prev_boot_end`;
+  README updated; smoke-run on kupungarri-smc01 (rc 0).
+
+## 20261009_1552 — An SMC's DHCP history lives in a short journal and is not a unit's boot history (v0.3.1 -> v0.3.2)
+
+- 13_known-issues.md: dhcpd logs to the journal only (about 13 hours at old-looma-smc01), Prometheus keeps no per-unit history, and low-touch
+  units leave DHCP after provisioning; read-only probe 2026-10-09 for unified-network-controller pairing.
 
 ## 20261009_1348 — A home's SM and router as the SMC sees them: dependency, failure states, provisioning order (site view) (v0.3.0 -> v0.3.1)
 

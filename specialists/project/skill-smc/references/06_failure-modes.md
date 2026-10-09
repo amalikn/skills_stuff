@@ -330,6 +330,22 @@ mount lands at 50% of RAM — consistent with the existing "`overlay.size_ratio`
 
 ---
 
+
+#### kupungarri, dark 2026-10-05: tech LED report, and the "reboot" was a spare disk (2026-10-09)
+
+- **On site (`USER_STATED`, operator relaying the techs, 2026-10-09):** solid red LED, no green, before the techs restarted it. On the Pi 4
+  (this site's board is a Pi 4 Model B Rev 1.5) red is the power LED and green is SD activity, so the board had power but the system was not
+  running. Read: a hang, not a lost supply (inference, `UNVERIFIED` against Raspberry Pi documentation).
+- **What came back was not the disk that went dark (`VERIFIED-OBSERVED`, Teleport + Prometheus, 2026-10-09).** The dark unit ran kernel
+  `5.15.0-1078-raspi` with overlayroot on `/`. The box online at boot 2026-10-09 15:37 AEDT booted as `generic-wh01-20240408` (2024 spare image,
+  kernel `1070`), root rw ext4, `/etc/overlayroot.conf` the package default (`overlayroot=""`), journal jumping from 2025-01-16 to today, and was
+  renamed by an `ansible-hostname` run at 15:41:22. RISE is not applied; `isc-dhcp-server6`, `rc-local` and `hciuart` failed at boot.
+  Whether only the SD card or the whole unit changed is unknown: no Pi serial was recorded for the old unit (the running one is `100000007bb53770`).
+- **Consequence:** no evidence from the hung boot. Its logs were in the tmpfs upper layer, Graylog had no SMC logs 2026-09-12 to 10-07, and
+  the old disk is off site.
+- **Rule:** after any tech "reboot" of a dark box, run `scripts/pi_identity_probe.sh` before trusting the box: `boot_hostname=generic-wh01-*`,
+  a different kernel, or `root_fs` on ext4 where RISE ran means a spare went in and RISE must be re-run. Ask the techs to return the old SD card.
+
 ### Daily Winter Power Loss at Solar Sites — dark before dawn, boots mid-morning (`wh`, 2026-10-07)
 
 Not a hang and not software. Report: `local-knowledge-ansible/ansible-wifi/issues/wh-fleet/wh-stability-reboot-analysis-20261007_1310.md`.

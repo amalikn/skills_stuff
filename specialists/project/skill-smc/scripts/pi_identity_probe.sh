@@ -7,14 +7,17 @@
 # The proxy is required and never guessed: a node name can exist on both clusters as different boxes (AGENTS.md, "Always name
 # the proxy"). Prints one `== <node>` block of key=value lines per box: device-tree model and serial-number, cpuinfo
 # Serial/Revision/Model, dmidecode (empty on a Pi, which has no DMI), os-release, arch, kernel, each physical NIC with MAC,
-# driver and speed, bridges, VLAN interfaces and memory. Only reads; writes nothing on the box or locally.
+# driver and speed, bridges, VLAN interfaces and memory, then the swap-check lines: hostname vs the hostname the box booted with,
+# root filesystem and overlayroot setting, boot time, journal boot count and when the previous journalled boot ended. After a site
+# visit, boot_hostname=generic-wh01-* or root_fs on ext4 where RISE runs means a spare disk or unit went in (kupungarri, 2026-10-09).
+# Only reads; writes nothing on the box or locally.
 # Exit status: 0 when every node answered, 1 when any node was unreachable or returned no probe output, 2 on bad usage.
 # Origin: unified-network-controller session 2026-10-08 (Pi identity, references/07_hardware-overlay.md).
 set -u
 
 usage() {
   # Print the header comment as help.
-  sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 proxy=""
@@ -41,6 +44,9 @@ for i in $(ls /sys/class/net); do [ -e /sys/class/net/$i/device ] && echo nic=$i
 echo bridges=$(ip -br link show type bridge | cut -d" " -f1 | tr "\n" " ")
 echo vlans=$(ip -br link show type vlan | cut -d" " -f1 | tr "\n" " ")
 echo mem=$(free -g | awk "/Mem/{print \$2}")G
+echo hostname=$(hostname) boot_hostname=$(journalctl -b 0 --no-pager -o cat 2>/dev/null | sed -n "s/^Hostname set to <\(.*\)>\.$/\1/p" | head -1)
+echo root_fs=$(findmnt -n -o SOURCE,FSTYPE / | tr -s " " ,) overlayroot_conf=$(grep -h "^overlayroot=" /etc/overlayroot.conf /media/root-ro/etc/overlayroot.conf 2>/dev/null | tail -1)
+echo boot_now=$(uptime -s) journal_boots=$(journalctl --list-boots --no-pager 2>/dev/null | grep -cE "^ *-?[0-9]+ ") prev_boot_end=$(journalctl --list-boots --no-pager 2>/dev/null | tail -2 | head -1 | sed "s/.*—//")
 echo probe_end=ok
 '
 

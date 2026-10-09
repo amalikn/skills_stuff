@@ -543,6 +543,10 @@ required argument and never guess it, because a node name can exist on both clus
 set is fixed in the script; it takes node names only. Exits 1 when any node is unreachable or does not finish the probe. Interpretation (serial as the
 identity anchor, the single-port layout, `Revision` decoding) is in `../references/07_hardware-overlay.md`, Raspberry Pi SMC identity.
 
+Since 2026-10-09 it also prints swap-check lines: `hostname` and `boot_hostname` (from this boot's journal), `root_fs` and the `overlayroot=`
+setting, `boot_now`, `journal_boots` and `prev_boot_end`. A `boot_hostname` of `generic-wh01-*`, or ext4 root on a RISE box, means a spare went in
+during a site visit (kupungarri, `../references/06_failure-modes.md`). Recipe unchanged: `just pi_identity_probe teleport.apn.au <node>`.
+
 `ata_settings_read.py --proxy <proxy> <node>...` sends a small stdlib agent (Python 3.10, embedded in the script) to each SMC through `tsh ssh`. The agent
 logs in to the Dallas Delta DDC_VoIP-m web UI at `--ip` (default `192.168.5.253`) with the **empty PIN**, which is what the units in service have
 (operator, 2026-10-08: try it), reads the `settings`, `phonebook` and `digitmap` pages and returns `{page: {field: value}}`. Any field named like
