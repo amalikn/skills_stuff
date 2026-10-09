@@ -2,6 +2,10 @@
 
 ## Contents
 
+- [20261009_1348 — A home's SM and router as the SMC sees them: dependency, failure states, provisioning order (site view) (v0.3.0 -> v0.3.1)](#20261009_1348--a-homes-sm-and-router-as-the-smc-sees-them-dependency-failure-states-provisioning-order-site-view-v030---v031)
+- [20261009_1341 — Unit syslog reaches Graylog only for program names the SMC's rsyslog lists (v0.2.9 -> v0.3.0)](#20261009_1341--unit-syslog-reaches-graylog-only-for-program-names-the-smcs-rsyslog-lists-v029---v030)
+- [20261009_1312 — Graylog 500: Data Node not restarted after an AWS scheduled reboot; backends without a pack come here (v0.2.8 -> v0.2.9)](#20261009_1312--graylog-500-data-node-not-restarted-after-an-aws-scheduled-reboot-backends-without-a-pack-come-here-v028---v029)
+- [20261009_1306 — Low-touch addressing: DHCP to provision, a configured management address after (v0.2.7 -> v0.2.8)](#20261009_1306--low-touch-addressing-dhcp-to-provision-a-configured-management-address-after-v027---v028)
 - [20261009_0335 — SMC DHCP leases carry Option 82 Remote IDs naming the SM (v0.2.6 -> v0.2.7)](#20261009_0335--smc-dhcp-leases-carry-option-82-remote-ids-naming-the-sm-v026---v027)
 - [20261009_0120 — TP-Link bridge port mapping on 5.30.1, LLDP per switch, MAC tables read from the SMC down (v0.2.5 -> v0.2.6)](#20261009_0120--tp-link-bridge-port-mapping-on-5301-lldp-per-switch-mac-tables-read-from-the-smc-down-v025---v026)
 - [20261008_1544 — TP-Link MAC table, SMC per-VLAN MACs and VLAN 500 bridging for cable finding (v0.2.4 -> v0.2.5)](#20261008_1544--tp-link-mac-table-smc-per-vlan-macs-and-vlan-500-bridging-for-cable-finding-v024---v025)
@@ -118,6 +122,34 @@
 - [0.1.0 — 2026-04-15](#010--2026-04-15)
 
 ---
+
+## 20261009_1348 — A home's SM and router as the SMC sees them: dependency, failure states, provisioning order (site view) (v0.3.0 -> v0.3.1)
+
+- known-issues: operator, 2026-10-09 (captured in both skill-cambium and skill-smc at the operator's request); measurements from
+  unified-network-controller old-looma.
+
+## 20261009_1341 — Unit syslog reaches Graylog only for program names the SMC's rsyslog lists (v0.2.9 -> v0.3.0)
+
+- known-issues: from unified-network-controller, old-looma (home-48 tested at the operator's shell; SMC read-only), 2026-10-09.
+- scripts/graylog-health.sh (+ `graylog-health` recipe, catalogue row): read-only check of every layer of the 2026-10-08/09 Graylog
+  outage; smoke run clean (exit 0) after the fix.
+
+## 20261009_1312 — Graylog 500: Data Node not restarted after an AWS scheduled reboot; backends without a pack come here (v0.2.8 -> v0.2.9)
+
+- 13_known-issues.md: Graylog answers 500 since 2026-10-08 because `graylog-datanode` on apn-datanode01 is disabled at boot and the host took an AWS
+  scheduled reboot at 14:01; target groups unhealthy, GELF not ingested; fix commands (operator's) and the lesson. Read-only diagnosis.
+- 03_communication-flows.md: the Graylog path now names the Data Node host and what its absence looks like.
+- SKILL.md: operator rule (2026-10-09) that facts about Graylog, Prometheus, Grafana or any deployed tool without its own pack are written back here.
+- 13_known-issues.md: Graylog resolved 13:13 (operator approved enabling the Data Node at boot); what Graylog holds of the units (SM syslog via
+  smc-groups/wifi.log, none from R195Ps).
+
+## 20261009_1306 — Low-touch addressing: DHCP to provision, a configured management address after (v0.2.7 -> v0.2.8)
+
+- 13_known-issues.md: at low-touch sites units provision by DHCP on 192.168.11.0/24 (the hook gets the Option 82 Remote ID there only), then run
+  on a management address the script allocates from smc_ltp.yml ranges and pushes in the template; dhcpd's management pool is 10.255.10.0-254.
+  Why dhcpd.leases has no router management lease; the address-after-its-SM pairing hint and its limit. Operator rule quoted: low touch is DHCP,
+  others static.
+- From unified-network-controller D10, read-only at old-looma-smc01 and ansible-wifi origin/big_push.
 
 ## 20261009_0335 — SMC DHCP leases carry Option 82 Remote IDs naming the SM (v0.2.6 -> v0.2.7)
 

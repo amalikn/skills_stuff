@@ -342,3 +342,49 @@ install wrote: `lotno`, `lat`, `lon`, `confirmed: true`, `align` (e.g. `-64/1`),
 empty. A reader must unescape net-snmp's `\"` before parsing. unified-network-controller uses it for Premises Locations (topology/sources.py
 `installer_record`). cnWave controllers' topology also carries sites with a configured position; at old-looma the tower sites lie within 30 m of the
 3000L GPS fixes.
+
+## 2026-10-09 — Force 300 SM: LLDP transmit failing, and no LLDP heard on the R195P (INFO)
+
+Graylog holds the SMs' syslog (skill-smc 13_known-issues, 2026-10-09). old-looma sm-55 (4.7.0.1) logs `DEVICE-AGENT send_lldp: SIOCG-IF-INDEX
+failed for eth1` (2026-09-12, 2026-10-08), so the agent's LLDP send fails on that interface, whatever the `networkLLDP` setting says. A 40 s and a
+70 s listen with the R195P's own `cdpd-cp -l -f <iface>` on home-48 (eth2.500, eth2) heard nothing. The R195P carries `/sbin/lldp_loop.sh` (runs
+`cdpd-cp` for LLDP-MED voice VLANs; not running in normal operation), `/sbin/simplesniffer` and a cut-down `/bin/tcpdump` wrapper that rejects
+`-c`, `-e`, `-v`. The R195P keeps no `logread` or `dmesg` link history and sends no syslog to the SMC. Documented SM CLI commands for a neighbour
+view: `show lldp-neighbors` (Cambium staff post; whether 4.7.0.1 has it is UNVERIFIED), `show arp`
+(unified-network-controller docs/reports/device-families/epmp-r195p-lldp-option82-20261009_1249.md).
+
+## 2026-10-09 — R195P: host keys and settings in RAM, remote syslog off, and a by-hand enable that does nothing (INFO)
+
+old-looma home-48, operator at the router's shell, 2026-10-09 (VERIFIED_PRIMARY unless marked):
+
+- **New SSH host key every boot.** `/` is read-only `squashfs`; `/etc`, `/var` and `/tmp` are `ramfs`. Dropbear's keys
+  (`/etc/dropbear/dropbear_{rsa,dss,ecdsa}_host_key`) are made at boot, so every reboot gives `REMOTE HOST IDENTIFICATION HAS CHANGED` on the next
+  login. Connect with `-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no` (as `cambium_r195p_adapter.py` does); a changed key on an
+  R195P after a reboot is expected, not an attack (skill-smc 01_overview covers the other cause, the same IP at another site).
+- **Remote syslog is off as provisioned:** `RemoteSyslogEnable=0`, `DBID_SYSLOG_SERVER` empty (low-touch samples, and home-48 live). Force 300 and
+  3000L are provisioned to `syslogServerIPFirst=10.255.0.1`. So the SMC and Graylog hold no router logs.
+- **Setting those two keys by hand does not enable it.** `nvram_set 2860 RemoteSyslogEnable 1` and `nvram_set 2860 DBID_SYSLOG_SERVER 10.255.0.1`,
+  then `reboot`: both values persisted, but the daemon came back with the same arguments (`syslog -L INFO -c /var/syslogd -f -l -a -m -i -n -k -D`,
+  no remote server) and a `logger -t unc-test` message never reached the SMC from any address. `/var/syslogd` is the daemon's socket, not a config
+  file. The user guide (cnPilot Home Router 4.5, cambium-swap ewifi/) sets it in Administration > System Log ("Remote Syslog Enable", "Remote Syslog
+  server", Save then Reboot); which keys or step that applies beyond these two is UNVERIFIED. The two keys are still set on home-48.
+- **Never run `syslog -h` on an R195P:** the daemon ignores `-h` and starts a second instance in the foreground (home-48, killed by hand).
+- `head` is not in the R195P's BusyBox.
+
+## 2026-10-09 — Force 300 SM and R195P: one to one, and the router powers the SM (operator; device view)
+
+Operator, 2026-10-09: every Force 300 SM has exactly one cnPilot R195P behind it. The R195P's PoE port powers the Force 300, and the Force 300's
+radio link to the 3000L is the R195P's only path to the SMC.
+
+| Event | SM | R195P | What the units show |
+|---|---|---|---|
+| Power cut at the premises, or the router's power fails | down, reboots | down, reboots | both boot together; the router's sysUpTime starts 124-162 s after the SM's (old-looma, 19 pairs) |
+| SM fault or reboot | down, reboots | stays powered, loses its path | SM much newer than the router (old-looma sm-55/home-57) |
+| Router software reboot | stays up if PoE holds | reboots | router much newer than the SM (old-looma home-51/sm-49; PoE holding is inferred, UNVERIFIED) |
+| SM online, router silent | up | powered but faulty | "faulty router" (old-looma sm-8/home-43) |
+
+So an online SM always has a powered router; an offline router with an online SM is a router fault, not a power cut; and an SM can be down while
+its router is up. Pairing a router to its SM uses these rules with evidence (the AP's bridge table, Option 82 on the router's clients, a burst
+trace, the boot window, one-to-one elimination inside the AP's sector), never the names (unified-network-controller `just wc::topology-boot`,
+D10 design correlation rules 4b-4f). Neither unit names the other: the R195P keeps no link log, sends no syslog as provisioned, and heard no LLDP
+from its SM (entries above).

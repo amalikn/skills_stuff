@@ -499,6 +499,7 @@ work as CLIs. Recipes: `just -f fleet-health.justfile stability-timeline|stabili
 | `fleet-reboot-timeline.py`    | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | 90d WH run takes about 1 minute                             |
 | `predark-snapshot.py`         | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` |                                                             |
 | `fleet-resource-profile.py`   | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | CSV to stdout; failed columns are reported on stderr        |
+| `graylog-health.sh`           | AWS ELB/EC2 (noc-admin), apn-graylog01 and apn-datanode01 via `tsh ssh`, Graylog API | **read-only**, `external-network` | Every layer of the 2026-10-08/09 outage; exit 1 on any failure; `just -f fleet-health.justfile graylog-health` |
 | `undervoltage-profile.py`     | Graylog (via `smc_graylog.py`)                   | **read-only**, `external-network` | `hourly` makes 24 queries per day; keep ranges short        |
 | `overlay-usage-breakdown.sh`  | Live SMC appliances via `tsh ssh`                | **read-only**                     | du/find under nice+ionice; `TSH_PROXY` for the CW cluster   |
 | `vlan-traffic-timeline.py`    | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | Per-interface rates, or counter deltas across a dark gap |

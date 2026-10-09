@@ -268,6 +268,8 @@ gl.aws.apn.au  Route 53 alias A (zone aws.apn.au Z06674973R861WSOMMI9V) -> apn-g
      listener HTTPS:443 only, TLS ends here (ACM cert, policy ELBSecurityPolicy-TLS-1-2-2017-01)
   -> plain HTTP inside VPC apn-vpc 10.240.0.0/18
   -> EC2 apn-graylog01 i-077c7d21df1872ccc 10.240.11.10 (c5.xlarge, private subnet 10.240.11.0/24, no public IP; egress via NAT, APN ranges via VGW)
+     Graylog 6.3.1 (graylog-server + mongod) stores through a Graylog Data Node on EC2 apn-datanode01 i-0e76ade1f8c75091c (a Teleport node; no
+     elasticsearch_hosts in server.conf). If the Data Node is down Graylog never opens 9000/12202 and every API path answers 500 (2026-10-09).
 ```
 
 | ALB rule | Match | Target group | Target port |

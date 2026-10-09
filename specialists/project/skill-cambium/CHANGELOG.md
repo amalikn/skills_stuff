@@ -2,6 +2,9 @@
 
 ## Contents
 
+- [20261009_1348 — Force 300 SM and R195P: one to one, PoE dependency and failure states (device view) (v0.7.0 -> v0.7.1)](#20261009_1348--force-300-sm-and-r195p-one-to-one-poe-dependency-and-failure-states-device-view-v070---v071)
+- [20261009_1341 — R195P host keys regenerated each boot (ramfs /etc); remote syslog off as provisioned; nvram enable does nothing (v0.6.52 -> v0.7.0)](#20261009_1341--r195p-host-keys-regenerated-each-boot-ramfs-etc-remote-syslog-off-as-provisioned-nvram-enable-does-nothing-v0652---v070)
+- [20261009_1315 — Force 300 SM LLDP transmit failing; R195P LLDP tooling and no central logs (v0.6.51 -> v0.6.52)](#20261009_1315--force-300-sm-lldp-transmit-failing-r195p-lldp-tooling-and-no-central-logs-v0651---v0652)
 - [20261009_1048 — An ePMP radio's role is its mode, not its model: cambiumSubModeType (v0.6.50 -> v0.6.51)](#20261009_1048--an-epmp-radios-role-is-its-mode-not-its-model-cambiumsubmodetype-v0650---v0651)
 - [20261009_0330 — Which SM an R195P hangs from: the 3000L bridge table and Option 82, not the units (v0.6.49 -> v0.6.50)](#20261009_0330--which-sm-an-r195p-hangs-from-the-3000l-bridge-table-and-option-82-not-the-units-v0649---v0650)
 - [20261009_0207 — epmp_field_probe.py: an ePMP unit's fields with values withheld, and the installer's record (v0.6.48 -> v0.6.49)](#20261009_0207--epmp_field_probepy-an-epmp-units-fields-with-values-withheld-and-the-installers-record-v0648---v0649)
@@ -96,6 +99,20 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261009_1348 — Force 300 SM and R195P: one to one, PoE dependency and failure states (device view) (v0.7.0 -> v0.7.1)
+
+- known-issues: operator, 2026-10-09 (captured in both skill-cambium and skill-smc at the operator's request); measurements from
+  unified-network-controller old-looma.
+
+## 20261009_1341 — R195P host keys regenerated each boot (ramfs /etc); remote syslog off as provisioned; nvram enable does nothing (v0.6.52 -> v0.7.0)
+
+- known-issues: from unified-network-controller, old-looma (home-48 tested at the operator's shell; SMC read-only), 2026-10-09.
+
+## 20261009_1315 — Force 300 SM LLDP transmit failing; R195P LLDP tooling and no central logs (v0.6.51 -> v0.6.52)
+
+- 05_known-issues.md: sm-55 `send_lldp: SIOCG-IF-INDEX failed for eth1`; R195P `cdpd-cp` listen heard nothing; R195P LLDP tooling; no router
+  logs centrally. From unified-network-controller D10, read-only at old-looma and through Graylog.
 
 ## 20261009_1048 — An ePMP radio's role is its mode, not its model: cambiumSubModeType (v0.6.50 -> v0.6.51)
 

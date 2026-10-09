@@ -45,6 +45,8 @@ work in **any** project, you discover a new fact, fix, access method, root cause
 remind you; invoking this skill at all carries that obligation, including the first time a brand-new project ever touches SMC work.
 
 - Pick the right file with `RUNBOOK.md`'s Domain → file routing table (add a row there if a genuinely new domain surfaces — don't force-fit into an existing one).
+- **Backends without a skill of their own come here too (operator, 2026-10-09).** Whatever is learned about Graylog, Prometheus, Grafana or any
+  other deployed tool that has no pack of its own is written back to this pack, even when found while working on another project.
 - Verify the update by **reading the file back** after writing, in the same session. A session-history note, a `SCRATCHPAD.md` claim, or a file timestamp is not proof the content is present — only
   reading the file body counts. (See any consuming project's own `RULE-007`-equivalent for the failure mode this guards against: a project claimed "skill-smc updated" across several sessions while the
   actual content was never added.)

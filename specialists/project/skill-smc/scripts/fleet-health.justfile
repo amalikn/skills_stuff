@@ -151,6 +151,10 @@ stability-profile selector='flavor="wh"' window="90d":
 predark site last_seen hours="8":
     {{py}} predark-snapshot.py {{site}} '{{last_seen}}' {{hours}}
 
+# [read-only] APN Graylog at every layer: AWS targets, services enabled at boot, ports, Data Node, indexer health, AWS events
+graylog-health:
+    ./graylog-health.sh
+
 # Pi undervoltage events from Graylog kern.log (mode: daily|hourly)
 undervoltage site from to mode="daily":
     {{py}} undervoltage-profile.py {{mode}} {{site}} {{from}} {{to}}
