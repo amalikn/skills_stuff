@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261009_1048 — An ePMP radio's role is its mode, not its model: cambiumSubModeType (v0.6.50 -> v0.6.51)](#20261009_1048--an-epmp-radios-role-is-its-mode-not-its-model-cambiumsubmodetype-v0650---v0651)
 - [20261009_0330 — Which SM an R195P hangs from: the 3000L bridge table and Option 82, not the units (v0.6.49 -> v0.6.50)](#20261009_0330--which-sm-an-r195p-hangs-from-the-3000l-bridge-table-and-option-82-not-the-units-v0649---v0650)
 - [20261009_0207 — epmp_field_probe.py: an ePMP unit's fields with values withheld, and the installer's record (v0.6.48 -> v0.6.49)](#20261009_0207--epmp_field_probepy-an-epmp-units-fields-with-values-withheld-and-the-installers-record-v0648---v0649)
 - [20261009_0153 — Installer record in sysDescr, Force 300 position fields, coarse range, cnWave sites (v0.6.47 -> v0.6.48)](#20261009_0153--installer-record-in-sysdescr-force-300-position-fields-coarse-range-cnwave-sites-v0647---v0648)
@@ -95,6 +96,13 @@
 - [20260918_1705 — Live get_config() verification across all 4 Cambium families completed; 4 real R195P bugs found and fixed; new secret-exposure incident found and closed](#20260918_1705--live-get_config-verification-across-all-4-cambium-families-completed-4-real-r195p-bugs-found-and-fixed-new-secret-exposure-incident-found-and-closed)
 
 ---
+
+## 20261009_1048 — An ePMP radio's role is its mode, not its model: cambiumSubModeType (v0.6.50 -> v0.6.51)
+
+- snmp-oid-registry.yaml: `cambiumSubModeType` (.1.3.6.1.4.1.17713.21.1.1.33.0; 4 ePTP Slave, 5 ePTP Master), and that an ePTP master answers the station
+  and bridge tables like a 3000L while the slave answers neither.
+- 05_known-issues.md: the "Force 300 has no bridge table" note scoped to the SM.
+- From unified-network-controller D10 at old-looma (read-only SNMP): an ePTP pair held as two PtMP SMs, so no reader read it.
 
 ## 20261009_0330 — Which SM an R195P hangs from: the 3000L bridge table and Option 82, not the units (v0.6.49 -> v0.6.50)
 

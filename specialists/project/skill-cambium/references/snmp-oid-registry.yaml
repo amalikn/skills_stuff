@@ -185,6 +185,8 @@ device_types:
          verified: {date: "2026-09-24", unit: MOR_F300-16SM_EXT1003_IP_21_3, site: mornington, firmware: "4.7.0.1", method: get}}
       - {oid: ".1.3.6.1.4.1.17713.21.1.2.18.0", name: cambiumSTADLSNR, access: ro, note: "SM-side downlink SNR in dB (54, 44, 36)",
          verified: {date: "2026-09-24", unit: MOR_F300-16SM_EXT1003_IP_21_3, site: mornington, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.1.1.33.0", name: cambiumSubModeType, access: ro, note: "the unit's mode: 1 TDD, 2 TDD PTP, 3 Standard WiFi, 4 ePTP Slave, 5 ePTP Master, 6 WLR (MIB cambiumGeneralStatus 33). The model never tells an ePTP end from a PtMP SM: old-looma's pair (Force 300-25, SSID WifiP2P_1) was held as two PtMP SMs; read the mode to decide the role. As an ePTP master the unit answers cambiumAPConnectedSTATable (its one slave) and cambiumAPBridgeTable (the units beyond the link, learnt through the slave); the slave answers neither",
+         verified: {date: "2026-10-09", unit: "old-looma-ap-ep2p-1 (5), old-looma-sm-ep2p-1 (4)", site: old-looma, firmware: "4.7.0.1", method: get}}
   e500:
     family: enterprise-wifi
     models: [E500]

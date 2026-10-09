@@ -320,7 +320,8 @@ Owned by skill-smc (`references/13_known-issues.md` 2026-10-07; `03_communicatio
 
 The R195P sends no LLDP and answers no IF-MIB table over SNMP; its own ARP holds only the gateway, and its `br0` bridge (ports `eth2.1`,
 `eth2.501`, `rai0`, `rai1`, `ra0`) floods the site's public VLAN, so every router lists the same ~40 clients there. The Force 300 SM has no bridge,
-Q-BRIDGE or ARP table over SNMP, and its REST bridge table lists only itself. Two sources name the SM without any name (old-looma, 4.7.0.1):
+Q-BRIDGE or ARP table over SNMP, and its REST bridge table lists only itself (as an ePTP master, `cambiumSubModeType` 5, it answers
+`cambiumAPBridgeTable` like a 3000L: old-looma ap-ep2p-1, 2026-10-09). Two sources name the SM without any name (old-looma, 4.7.0.1):
 
 - **The 3000L's bridge table** (`cambiumAPBridgeTable`, snmp-oid-registry.yaml): each learnt MAC with the SM it came through. Units appear after
   they pass traffic (ping them from the SMC, wait about 90 s) and age out; Cambium fixed missed and wrong entries in 4.7.1 and 5.11.0, so treat one
