@@ -367,7 +367,7 @@ old-looma home-48, operator at the router's shell, 2026-10-09 (VERIFIED_PRIMARY 
   then `reboot`: both values persisted, but the daemon came back with the same arguments (`syslog -L INFO -c /var/syslogd -f -l -a -m -i -n -k -D`,
   no remote server) and a `logger -t unc-test` message never reached the SMC from any address. `/var/syslogd` is the daemon's socket, not a config
   file. The user guide (cnPilot Home Router 4.5, cambium-swap ewifi/) sets it in Administration > System Log ("Remote Syslog Enable", "Remote Syslog
-  server", Save then Reboot); which keys or step that applies beyond these two is UNVERIFIED. The two keys are still set on home-48.
+  server", Save then Reboot); which keys or step that applies beyond these two is UNVERIFIED. The operator set both back (0, empty) and rebooted home-48 the same day.
 - **Never run `syslog -h` on an R195P:** the daemon ignores `-h` and starts a second instance in the foreground (home-48, killed by hand).
 - `head` is not in the R195P's BusyBox.
 
