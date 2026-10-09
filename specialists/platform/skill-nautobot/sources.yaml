@@ -161,7 +161,7 @@ claims:
     applies_to: [nautobot-unc-inspected-20261001]
     environment_id: nautobot-unc-inspected-20261001
     source_type: implementation_and_design
-    evidence: "UNC wc_ownership/models.py WirelessLink plus docs/architecture/wireless-links-design-20260928_2154.md; implemented model versus proposed feed; inspected 2026-10-01."
+    evidence: "UNC wc_ownership/models.py WirelessLink plus docs/architecture/topology/wireless-links-design-20260928_2154.md; implemented model versus proposed feed; inspected 2026-10-01."
     reference: references/discovery-and-topology.md
     test: N-S06
   - id: N-C16

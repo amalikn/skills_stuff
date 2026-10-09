@@ -355,6 +355,19 @@ empty. A reader must unescape net-snmp's `\"` before parsing. unified-network-co
 `installer_record`). cnWave controllers' topology also carries sites with a configured position; at old-looma the tower sites lie within 30 m of the
 3000L GPS fixes.
 
+**Who writes it: Sidekick** (read from the sidekick repository, 2026-10-09). APN's handheld Raspberry Pi installer logs into the ePMP unit by
+SSH at 169.254.1.1 (from 169.254.1.17), configures it over SSH and SNMP, and writes the record as JSON into `snmpSystemDescription`
+`.1.3.6.1.4.1.17713.21.3.5.4.0`. Field formats: `align` = `"<RSSI dBm>/<chain 0 to chain 1 difference dB>"` (P2MP aligned at manual TX power
+30); `test` = `"<DL Mbps>/<UL Mbps>"` from cnMaestro's link test (4 s, 1500-byte packets; results `.17713.21.6.1.7` and `.6`); `lat`/`lon` from the
+Sidekick's GPS, decimal-degree strings, on new SMs and P2P units only, never on AP P2MP (3000L and F400 use their own GPS), fix quality and age not
+checked; `lotno` up to 12 characters (hex digits and `/`); `sector_direction` (`OMNI` or `N/S/E/W/NE/SE/NW/SW_SECTOR`) on AP P2MP; `type`
+(new, replacement, reset) and `replaced_mac`; `config: sm_ep2p` on an ePTP SM; `variables.preferred_ssid` (`WifiBridge_<n>` or `WifiP2P_<n>`, the
+AP joined), `seqid`, `antenna_gain` (read from the SM; 10 omni or 18 sector on an AP), `frequency`, `bandwidth_mode` (1 = 20 MHz, 2 = 40 MHz),
+`power`, `country`. `confirmed: true` is set at the end and releases the SMC hook (skill-smc 13_known-issues). Sidekick identifies the model from
+`cambiumHWInfo` `.17713.21.1.1.2`: 36 or 39 Force 300-25 or 300-16 (SM modes only), 43 or 44 3000L and 53344 F400 GPS (AP P2MP only); anything
+else is refused. The chosen AP goes into the preferred-AP table `.17713.21.3.8.3.1.1.x`. A factory reset wipes the record. Full write-up:
+unified-network-controller `docs/reports/device-families/sidekick-field-installer-20261009_1804.md`.
+
 ## 2026-10-09 — Force 300 SM: LLDP transmit failing, and no LLDP heard on the R195P (INFO)
 
 Graylog holds the SMs' syslog (skill-smc 13_known-issues, 2026-10-09). old-looma sm-55 (4.7.0.1) logs `DEVICE-AGENT send_lldp: SIOCG-IF-INDEX

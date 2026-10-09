@@ -1234,3 +1234,19 @@ Read on old-looma-smc01 (`tsh ssh --proxy=teleport.apn.au`, read-only, 2026-10-0
   onboarded ... for device "<MAC>"`. That upstream MAC is the SM's own MAC, one below the Remote ID's radio MAC (old-looma 2026-10-09: 60 of 60).
   An SM's `preferred_ssid` `WifiBridge_N` names its AP: it matched the SM's `us` `3000L-ap-N` on 59 of 59. Descriptions can also carry `align`,
   `test`, `antenna_type`, `public_ip`, `prov_ip`. Parsed by unified-network-controller `topology/sources.py` `provisioning_logs()` (2026-10-09).
+
+## 2026-10-09 — Sidekick and the low-touch hook: what releases a unit (INFO)
+
+Sidekick is APN's handheld field installer: a Raspberry Pi with keypad, LCD, GPS and PoE out, deployed by its own ansible
+(`sidekick_provisioning`, `sidekick_teleport`; units `sidekick-v1-01` to `-20`, Teleport `teleport.apn.au`, label `flavor: sidekick`). It talks
+only to the unit in front of it (ePMP at 169.254.1.1 from 169.254.1.17; Enterprise AP 192.168.0.1; R195P 192.168.11.1 with a TFTP config, then
+.12.1) and never to the SMC or cnMaestro. The hook (`cnmaestro-provisioning.py` `is_ready()`) provisions an ePMP unit only when its sysDescr
+record has `confirmed: true` **and**, for an SM, the unit can no longer ping 169.254.1.17: confirm on the keypad, then unplug the Sidekick.
+Until then each DHCP event logs "Provisioning info not yet confirmed" or "Sidekick still connected", then "being provisioned by Sidekick.
+Sleeping 30 seconds", and exits. The hook copies `locid`, `tower` and `sector_direction` (as `antenna_type`) into the cnMaestro description and
+sends the record's lat/lon on approval, giving a router or XV2 behind an SM the SM's position; Sidekick writes `lotno` (not `locid`) and stopped
+writing `tower` on 2025-12-02, so neither reaches the description from Sidekick. Sidekick does not install or record the R195P beside an SM.
+Replace writes `type: replacement` and `replaced_mac` (ePMP), `location <mac>` (XV2) or the old MAC in `acsUsername` (R195P). The repository
+holds credentials in code and templates (not copied here). Device field formats: skill-cambium 05_known-issues; full write-up:
+unified-network-controller `docs/reports/device-families/sidekick-field-installer-20261009_1804.md`.
+

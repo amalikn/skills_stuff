@@ -291,7 +291,7 @@ dhcpd udp/67, stubby 127.0.0.1:60053, speedtest_exporter 127.0.0.1:9798, and the
 The internet VLAN interfaces (`vlan5NN`, not bridged) carry their own locally administered MACs (`72:77:77:...`), not their parent port's; the
 bridged `enpXs0.50N` sub-interfaces and the starlink ones carry the port's MAC; bridge_500 and bridge_501 share the set MAC 72:77:77:00:00:01.
 unified-network-controller's proposal for which of these Nautobot records:
-[smc-services-in-nautobot-proposal-20260930_1421.md](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/architecture/smc-services-in-nautobot-proposal-20260930_1421.md).
+[smc-services-in-nautobot-proposal-20260930_1421.md](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/architecture/site-model/smc-services-in-nautobot-proposal-20260930_1421.md).
 
 ## snmpd on the SMC (canary, 2026-09-24)
 
