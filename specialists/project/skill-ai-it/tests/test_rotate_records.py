@@ -79,5 +79,24 @@ class RotateTest(unittest.TestCase):
         self.assertIn("entry 0", archive)
 
 
+class TrackerTest(RotateTest):
+    """Old open items move to the live tracker, not to history; recent ones stay; the pointer is left behind."""
+
+    def test_old_open_items_go_to_the_tracker(self):
+        text = scratchpad(20).replace("# Scratchpad\n", "---\nTitle: Scratchpad\nOpen items tracker: docs/trackers/open-items.md\n---\n# Scratchpad\n", 1)
+        text = text.replace("- [ ] **20260901_0900** still open, never rotated", "- [ ] **20260901_0900** still open\n- [ ] undated open item\n- [ ] **20260905_0900** a\n- [ ] **20260906_0900** b\n- [ ] **20260907_0900** c")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            (root / "SCRATCHPAD.md").write_text(text)
+            subprocess.run([sys.executable, str(SCRIPT), "--project-root", str(root), "--apply", "SCRATCHPAD.md"], check=True, capture_output=True)
+            live = (root / "SCRATCHPAD.md").read_text()
+            tracker = (root / "docs/trackers/open-items.md").read_text()
+        self.assertIn("still open", tracker)
+        self.assertIn("undated open item", tracker)
+        self.assertNotIn("still open", live)
+        self.assertIn("open-items.md", live)
+
+
 if __name__ == "__main__":
     unittest.main()

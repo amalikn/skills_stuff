@@ -12,6 +12,11 @@ rotated data only when needed. So:
   default `Open items`) unless they say done, closed, resolved or superseded; and, in a working-state file, units whose stamp a live governance
   file (AGENTS.md, AI_NAVIGATION.md, context-map.yaml, target-map.yaml, ROADMAP.md, ARCHITECTURE.md, README.md) still cites. A log stamp cited
   elsewhere stays reachable through `--show`, and tools that need the whole log read the archives too.
+- **Open items are not history.** With an `Open items tracker:` key (UNC: `docs/trackers/open-items-<stamp>.md`), every unresolved
+  open item beyond the newest 3 moves verbatim to that live tracker (review due in two weeks, indexed in its folder readme), and the
+  working state keeps a pointer to it. Resolved items (`[x]`, done, closed) rotate to history like any entry.
+- **Per-section counts.** `Keep: Next actions=1, Memory pointers=1, ...` sets how many newest entries a section keeps; dated `##`
+  sections of one kind (nine "Residual risk <stamp>" sections) form one group and keep 1. Bullets and numbered items are units.
 - **Oldest first** until the file fits `Budget` (default 200 lines, 25 KB); it reports when protected units keep it over.
 - **No loss.** Units move verbatim except relative markdown links, rewritten for the archive's folder; before writing, every removed line must be
   found in the archive or the run stops. Git keeps the rest.
@@ -70,6 +75,7 @@ class Unit:
     stamp: str = ""
     keep_reason: str = ""
     moved: bool = False
+    to_tracker: bool = False
 
     @property
     def when(self) -> dt.datetime | None:
@@ -139,7 +145,7 @@ def parse(text: str, kind: str) -> Record:
                     items.extend(pending)
                     pending, sub_stamp = [line], first_stamp(line)
                     k += 1
-                elif line.startswith("- "):
+                elif line.startswith("- ") or re.match(r"^\d+[.)] ", line):
                     end = k + 1
                     while end < len(body) and (body[end].startswith("  ") or (body[end] == "" and end + 1 < len(body) and body[end + 1].startswith("  "))):
                         end += 1
@@ -206,8 +212,24 @@ def cited_stamps(root: pathlib.Path) -> set[str]:
     return found
 
 
+def group_key(kind: str, head: str) -> str:
+    """The group a unit's newest-entry count applies to.
+
+    Args:
+        kind: `log` or `state`.
+        head: the unit's `##` heading.
+
+    Returns:
+        `log` for a log; for a working-state file the heading, with dates and code marks removed when the heading is dated, so dated
+        sections of one kind (nine "Residual risk — staleness audit <stamp>" sections) form one group instead of nine groups of one.
+    """
+    if kind == "log":
+        return "log"
+    return re.sub(r"\s+", " ", STAMP.sub("", head).replace("`KEEP`", "")).strip(" #—-") if first_stamp(head) else head
+
+
 def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: int, pinned: set[str], cited: set[str],
-           budget: tuple[int, int], preview_len) -> tuple[int, int]:
+           budget: tuple[int, int], preview_len, section_keep: dict[str, int] | None = None, open_days: int | None = None) -> tuple[int, int]:
     """Mark the units to move, oldest first, until the live file fits its budget.
 
     Args:
@@ -220,6 +242,10 @@ def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: i
         cited: stamps live files cite.
         budget: (max lines, max bytes).
         preview_len: a function giving (lines, bytes) of the live file as currently marked.
+        section_keep: newest units to keep per group, by a substring of its heading (`Next actions=1`); others use min_keep, a group of
+            dated sections uses 1.
+        open_days: when set (a tracker is configured), unresolved open items beyond the newest of their section move to the open-items
+            tracker, not the archive.
 
     Returns:
         The live (lines, bytes) after marking.
@@ -228,30 +254,40 @@ def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: i
     for head, items in rec.blocks:
         for it in items:
             if isinstance(it, Unit):
-                groups.setdefault("log" if kind == "log" else head, []).append(it)
-    for units in groups.values():
+                groups.setdefault(group_key(kind, head), []).append(it)
+    for key, units in groups.items():
+        keep = next((n for k, n in (section_keep or {}).items() if k.lower() in key.lower()), None)
+        if keep is None:
+            keep = 1 if kind == "state" and key != units[0].section else min_keep
         dated = sorted((u for u in units if u.when), key=lambda u: u.when, reverse=True)
-        for u in dated[:min_keep]:
-            u.keep_reason = "newest"
+        tracked = open_days is not None and any(p in key for p in pinned)
+        for u in dated[:keep]:
+            # With a tracker, the newest open items stay in the working state and every other open item moves to the tracker.
+            u.keep_reason = "open item (newest)" if tracked else "newest"
     candidates = []
     for units in groups.values():
         for u in units:
             text = "\n".join(u.lines)
             if u.keep_reason:
                 continue
-            if not u.when:
+            open_item = any(p in u.section for p in pinned) and not RESOLVED.search(u.lines[0] if u.lines else "")
+            if open_item and open_days is not None:
+                u.moved = u.to_tracker = True  # still open: it moves to the live tracker, not to history
+            elif not u.when:
                 u.keep_reason = "undated"
             elif now - u.when < dt.timedelta(days=keep_days):
                 u.keep_reason = "recent"
             elif "PIN" in text or re.search(r"until resolved", text, re.I):
                 u.keep_reason = "pinned"
-            elif any(p in u.section for p in pinned) and not RESOLVED.search(u.lines[0] if u.lines else ""):
+            elif open_item:
                 u.keep_reason = "open item"
             elif kind == "state" and u.stamp and u.stamp in cited:
                 u.keep_reason = "cited by a live file"
             else:
                 candidates.append(u)
     for u in sorted(candidates, key=lambda u: u.when):
+        if u.moved:
+            continue
         size = preview_len()
         if size[0] <= budget[0] and size[1] <= budget[1]:
             break
@@ -286,6 +322,23 @@ def relink(lines: list[str], source_dir: str, archive_dir: str) -> list[str]:
         new = os.path.relpath(os.path.normpath(os.path.join(source_dir, path)), archive_dir)
         return f"]({new}{'#' + anchor if anchor else ''})"
     return [re.sub(r"\]\(([^)\s]+)\)", fix, l) for l in lines]
+
+
+def collapse_blanks(lines: list[str]) -> list[str]:
+    """Collapse runs of blank lines left where units were removed.
+
+    Args:
+        lines: the live file's lines.
+
+    Returns:
+        The lines with no two blank lines in a row.
+    """
+    out: list[str] = []
+    for line in lines:
+        if line.strip() == "" and out and out[-1].strip() == "":
+            continue
+        out.append(line)
+    return out
 
 
 def front_matter_update(preamble: list[str], keys: dict[str, str]) -> list[str]:
@@ -446,6 +499,97 @@ def find(root: pathlib.Path, live: str, term: str | None, stamp: str | None) -> 
     return 0 if hits else 1
 
 
+def archive_text(moved: list[Unit], title: str, live: str, stamp_now: str, now: dt.datetime, source_dir: str) -> str:
+    """The archive file for the units leaving the live record: front matter, an index, then the units verbatim (links relinked).
+
+    Args:
+        moved: the units going to history.
+        title: the record's title.
+        live: the record's project-relative path.
+        stamp_now: this run's stamp.
+        now: this run's moment.
+        source_dir: the record's folder, for relinking.
+
+    Returns:
+        The archive text.
+    """
+    dates = sorted(u.when for u in moved if u.when)
+    arc = ["---", f"Title: {title} archive {stamp_now}", "Category: archive", "Status: archived", f"Source: {live}",
+           f"Covers: {dates[0]:%Y-%m-%d %H:%M} to {dates[-1]:%Y-%m-%d %H:%M}", f"Last reviewed: {now:%Y-%m-%d}",
+           f"Summary: {len(moved)} entries rotated out of {live} on {stamp_now} to keep it within its budget; verbatim except relative links."
+           " Read the index first; open an entry only when a live record cites it or the history is the question.", "---", "",
+           f"# {title} archive {stamp_now}", "", "## Index", "", "| Stamp | Section | First line |", "| --- | --- | --- |"]
+    for u in sorted(moved, key=lambda u: u.when or dt.datetime.min):
+        first = re.sub(r"\s+", " ", (u.lines[1] if u.lines[0] == u.section and len(u.lines) > 1 else u.lines[0])).replace("|", "/")[:110]
+        arc.append(f"| {u.stamp} | {u.section.lstrip('# ').replace('|', '/')[:40]} | {first} |")
+    arc.append("")
+    by_section: dict[str, list[Unit]] = {}
+    for u in moved:
+        by_section.setdefault(u.section, []).append(u)
+    for section, units in by_section.items():
+        if units[0].lines[:1] != [section]:
+            arc += [section, ""]
+        for u in units:
+            arc += relink(u.lines, source_dir, ARCHIVE_DIR)
+        arc.append("")
+    return "\n".join(arc) + "\n"
+
+
+def write_archive(root: pathlib.Path, archive_rel: str, text: str, moved: list[Unit], live: str) -> None:
+    """Write the archive and add it to docs/history/readme.md.
+
+    Args:
+        root: the project root.
+        archive_rel: the archive's project-relative path.
+        text: its content.
+        moved: the units in it (for the index line's date range).
+        live: the record it came from.
+    """
+    (root / ARCHIVE_DIR).mkdir(parents=True, exist_ok=True)
+    (root / archive_rel).write_text(text, encoding="utf-8")
+    dates = sorted(u.when for u in moved if u.when)
+    index = root / ARCHIVE_DIR / "readme.md"
+    line = f"- [{pathlib.Path(archive_rel).name}]({pathlib.Path(archive_rel).name}) {len(moved)} entries from `{live}`, {dates[0]:%Y-%m-%d} to {dates[-1]:%Y-%m-%d}."
+    if index.is_file():
+        index.write_text(index.read_text(encoding="utf-8").rstrip("\n") + "\n" + line + "\n", encoding="utf-8")
+    else:
+        index.write_text("# History\n\nRecords rotated out of the live CHANGELOG and SCRATCHPAD to keep them within budget. Do not read these by default:"
+                         " search with `rotate_records.py --find` (`just history`) or print one entry with `--show <stamp>`.\n\n" + line + "\n",
+                         encoding="utf-8")
+    subprocess.run(["git", "-C", str(root), "add", "-N", archive_rel, f"{ARCHIVE_DIR}/readme.md"], check=False)
+
+
+def write_tracker(path: pathlib.Path, lines: list[str], live: str, stamp_now: str, now: dt.datetime) -> None:
+    """Append open items to the live open-items tracker, creating it with front matter the first time.
+
+    The tracker is a living document, not history: its Review by date makes doc_freshness ask for a review, which is where an item is
+    closed, decided or dropped.
+
+    Args:
+        path: the tracker file.
+        lines: the open items, verbatim (links relinked for the tracker's folder).
+        live: the record they came from.
+        stamp_now: this run's stamp.
+        now: this run's moment.
+    """
+    block = [f"## Moved from {live} on {stamp_now}", ""] + lines + [""]
+    index = path.parent / "readme.md"
+    if index.is_file() and path.name not in index.read_text(encoding="utf-8"):
+        index.write_text(index.read_text(encoding="utf-8").rstrip("\n") + f"\n- [{path.name}]({path.name}) Open items moved out of `{live}`"
+                         " (live tracker: review, close, decide or drop).\n", encoding="utf-8")
+    if path.is_file():
+        path.write_text(path.read_text(encoding="utf-8").rstrip("\n") + "\n\n" + "\n".join(block) + "\n", encoding="utf-8")
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    review = (now + dt.timedelta(days=14)).strftime("%Y-%m-%d")
+    head = ["---", "Title: Open items", "Category: living-tracker", "Status: current", f"Last reviewed: {now:%Y-%m-%d}", f"Review by: {review}",
+            f"Summary: Open items older than 7 days, moved verbatim from {live} so the working state stays small. Review: close, decide or drop;",
+            "  closed items are deleted here (git keeps them).", "---", "", "# Open items", "",
+            f"Items still open after a week leave `{live}` for this file (skill-ai-it rotate_records.py). Mark one done with `[x]`, or delete it",
+            "once closed and recorded in the CHANGELOG.", ""]
+    path.write_text("\n".join(head + block) + "\n", encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> int:
     """Plan or apply a rotation, or search the archives.
 
@@ -506,67 +650,56 @@ def main(argv: list[str] | None = None) -> int:
         Returns:
             (lines, bytes) of the live text with the new front matter.
         """
-        text = "\n".join(rebuild_contents(front_matter_update(rec.preamble, new_keys) + render(rec)[len(rec.preamble):]))
+        text = "\n".join(collapse_blanks(rebuild_contents(front_matter_update(rec.preamble, new_keys) + render(rec)[len(rec.preamble):])))
         return text.count("\n"), len(text.encode())
 
-    after = choose(rec, kind, now, keep_days, min_keep, pinned, cited_stamps(root), (budget_lines, budget_bytes), preview)
-    moved = [u for _, items in rec.blocks for u in items if isinstance(u, Unit) and u.moved]
-    kept = Counter(u.keep_reason for _, items in rec.blocks for u in items if isinstance(u, Unit) and not u.moved)
-    print(f"{live}: {original.count(chr(10))} lines -> {after[0]} lines, {after[1] // 1024} KB; {len(moved)} unit(s) to {archive_rel}")
+    section_keep = {k.strip(): int(v) for k, _, v in (p.partition("=") for p in head.get("keep", "").split(",")) if v.strip().isdigit()}
+    tracker_rel = head.get("open items tracker", "").split(" ")[0].strip("`")
+    after = choose(rec, kind, now, keep_days, min_keep, pinned, cited_stamps(root), (budget_lines, budget_bytes), preview,
+                   section_keep=section_keep, open_days=7 if tracker_rel else None)
+    units = [u for _, items in rec.blocks for u in items if isinstance(u, Unit)]
+    to_archive = [u for u in units if u.moved and not u.to_tracker]
+    to_tracker = [u for u in units if u.to_tracker]
+    if to_tracker:
+        # A pointer so the live file still says where its older open items are (undated, so it never rotates itself).
+        pointer = f"- Older open items are tracked in [{pathlib.Path(tracker_rel).name}]({os.path.relpath(tracker_rel, os.path.dirname(live) or '.')})."
+        for head_line, items in rec.blocks:
+            if any(p in head_line for p in pinned) and pointer not in items:
+                at = 1 if items[:1] == [""] else 0
+                items.insert(at, pointer)
+        after = preview()
+    kept = Counter(u.keep_reason for u in units if not u.moved)
+    print(f"{live}: {original.count(chr(10))} lines -> {after[0]} lines, {after[1] // 1024} KB; {len(to_archive)} unit(s) to {archive_rel}"
+          + (f", {len(to_tracker)} open item(s) to {tracker_rel}" if to_tracker else ""))
     print("  kept: " + ", ".join(f"{n} {r or 'within budget'}" for r, n in kept.most_common()))
     if after[0] > budget_lines or after[1] > budget_bytes:
         print(f"  note: still over {budget_lines} lines / {budget_bytes // 1024} KB because of kept units; review them or raise Budget")
-    if not moved:
+    if not to_archive and not to_tracker:
         return 0
-    removed = render(rec, moved_only=True)
     source_dir = os.path.dirname(live)
-    by_section: dict[str, list[Unit]] = {}
-    for u in moved:
-        by_section.setdefault(u.section, []).append(u)
-    dates = sorted(u.when for u in moved if u.when)
-    arc = ["---", f"Title: {title} archive {stamp_now}", "Category: archive", "Status: archived", f"Source: {live}",
-           f"Covers: {dates[0]:%Y-%m-%d %H:%M} to {dates[-1]:%Y-%m-%d %H:%M}", f"Last reviewed: {now:%Y-%m-%d}",
-           f"Summary: {len(moved)} entries rotated out of {live} on {stamp_now} to keep it within its budget; verbatim except relative links."
-           " Read the index first; open an entry only when a live record cites it or the history is the question.", "---", "",
-           f"# {title} archive {stamp_now}", "", "## Index", "", "| Stamp | Section | First line |", "| --- | --- | --- |"]
-    for u in sorted(moved, key=lambda u: u.when or dt.datetime.min):
-        first = re.sub(r"\s+", " ", (u.lines[1] if u.lines[0] == u.section and len(u.lines) > 1 else u.lines[0])).replace("|", "/")[:110]
-        arc.append(f"| {u.stamp} | {u.section.lstrip('# ').replace('|', '/')[:40]} | {first} |")
-    arc.append("")
-    for section, units in by_section.items():
-        if units[0].lines[:1] != [section]:
-            arc.append(section)
-            arc.append("")
-        for u in units:
-            arc += relink(u.lines, source_dir, ARCHIVE_DIR)
-        arc.append("")
-    arc_text = "\n".join(arc) + "\n"
-    live_text = "\n".join(rebuild_contents(front_matter_update(rec.preamble, new_keys) + render(rec)[len(rec.preamble):]))
-    # Verify the whole file: every content line (all but front matter and Contents links) is either still live or in the archive.
+    arc_text = archive_text(to_archive, title, live, stamp_now, now, source_dir) if to_archive else ""
+    tracker_dir = os.path.dirname(tracker_rel)
+    tracker_lines = [l for u in to_tracker for l in relink(u.lines, source_dir, tracker_dir)]
+    live_text = "\n".join(collapse_blanks(rebuild_contents(front_matter_update(rec.preamble, new_keys) + render(rec)[len(rec.preamble):])))
+    # Verify the whole file: every content line (all but front matter and Contents links) is still live, archived or in the tracker.
     lost = Counter(l for l in content_lines(original) if l.strip()) - Counter(l for l in content_lines(live_text) if l.strip())
-    archived = Counter(l for l in relink(removed, source_dir, ARCHIVE_DIR) if l.strip())
-    relinked = Counter(relink(list(lost.elements()), source_dir, ARCHIVE_DIR))
-    if relinked - archived:
-        print(f"refused: {sum((relinked - archived).values())} removed line(s) not found in the archive; nothing written", file=sys.stderr)
-        for line in list((relinked - archived))[:3]:
+    found = Counter(l for l in arc_text.split("\n") if l.strip()) + Counter(l for l in tracker_lines if l.strip())
+    missing = [l for l in lost.elements() if found[relink([l], source_dir, ARCHIVE_DIR)[0]] < 1 and found[relink([l], source_dir, tracker_dir)[0]] < 1]
+    if missing:
+        print(f"refused: {len(missing)} removed line(s) not found in the archive or tracker; nothing written", file=sys.stderr)
+        for line in missing[:3]:
             print(f"  missing: {line[:150]!r}", file=sys.stderr)
         return 1
     if not args.apply:
         print("plan only; add --apply to rotate")
         return 0
-    (root / ARCHIVE_DIR).mkdir(parents=True, exist_ok=True)
-    (root / archive_rel).write_text(arc_text, encoding="utf-8")
     path.write_text(live_text if live_text.endswith("\n") else live_text + "\n", encoding="utf-8")
-    index = root / ARCHIVE_DIR / "readme.md"
-    line = f"- [{pathlib.Path(archive_rel).name}]({pathlib.Path(archive_rel).name}) {len(moved)} entries from `{live}`, {dates[0]:%Y-%m-%d} to {dates[-1]:%Y-%m-%d}."
-    if index.is_file():
-        index.write_text(index.read_text(encoding="utf-8").rstrip("\n") + "\n" + line + "\n", encoding="utf-8")
-    else:
-        index.write_text("# History\n\nRecords rotated out of the live CHANGELOG and SCRATCHPAD to keep them within budget. Do not read these by default:"
-                         " search with `rotate_records.py --find` (`just history`) or print one entry with `--show <stamp>`.\n\n" + line + "\n",
-                         encoding="utf-8")
-    subprocess.run(["git", "-C", str(root), "add", "-N", archive_rel, f"{ARCHIVE_DIR}/readme.md"], check=False)
-    print(f"rotated: wrote {archive_rel}; {live} now {after[0]} lines")
+    if to_tracker:
+        write_tracker(root / tracker_rel, tracker_lines, live, stamp_now, now)
+        subprocess.run(["git", "-C", str(root), "add", "-N", tracker_rel], check=False)
+    if to_archive:
+        write_archive(root, archive_rel, arc_text, to_archive, live)
+    print(f"rotated: {live} now {after[0]} lines" + (f"; archive {archive_rel}" if to_archive else "") + (f"; tracker {tracker_rel}" if to_tracker else ""))
     return 0
 
 

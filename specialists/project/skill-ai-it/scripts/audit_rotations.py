@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit rotated records: every content line of a record before its first rotation is still live or in its archives. Stdlib plus git.
+"""Audit rotated records: every content line of a record before its first rotation is still live, archived, or in its open-items tracker. Stdlib plus git.
 
 Why (2026-10-10): an early rotate_records.py treated prose under a Contents list as navigation and dropped 424 lines in one project, while
 its own verification passed. This independent audit compares each record with its pre-rotation version in git, so a rotation bug cannot hide.
@@ -56,8 +56,11 @@ def audit(project: pathlib.Path, name: str) -> list[str] | None:
         return None
     have = Counter(l for l in rotate_records.content_lines((project / name).read_text()) if l.strip())
     have += Counter(l for a in archives for l in a.read_text().split("\n") if l.strip())
+    trackers = sorted((project / "docs" / "trackers").glob("open-items-*.md")) if name == "SCRATCHPAD.md" else []
+    have += Counter(l for t in trackers for l in t.read_text().split("\n") if l.strip())
     return [l for l in Counter(l for l in rotate_records.content_lines(before) if l.strip())
-            if have[l] < 1 and have[rotate_records.relink([l], "", "docs/history")[0]] < 1]
+            if have[l] < 1 and have[rotate_records.relink([l], "", "docs/history")[0]] < 1
+            and have[rotate_records.relink([l], "", "docs/trackers")[0]] < 1]
 
 
 def main(argv: list[str] | None = None) -> int:
