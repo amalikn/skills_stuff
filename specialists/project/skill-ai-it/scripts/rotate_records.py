@@ -48,7 +48,7 @@ _spec.loader.exec_module(file_headers)
 
 STAMP = re.compile(r"(20\d{2})(\d{2})(\d{2})_(\d{4})|(20\d{2})-(\d{2})-(\d{2})")
 LIVE_SURFACES = ("AGENTS.md", "AI_NAVIGATION.md", "context-map.yaml", "target-map.yaml", "ROADMAP.md", "ARCHITECTURE.md", "README.md")
-RESOLVED = re.compile(r"\b(done|closed|resolved|superseded|retired)\b", re.I)
+RESOLVED = re.compile(r"\b(done|closed|resolved|superseded|retired)\b|^- \[x\]|~~", re.I)
 ARCHIVE_DIR = "docs/history"
 #: Measured 2026-10-10 on UNC (about 30 log entries a day): age protects too much in an active project, so the newest units are kept by
 #: count and age is opt-in (`--keep-days`). A SCRATCHPAD section's newest entries supersede its older ones.
@@ -127,23 +127,34 @@ def parse(text: str, kind: str) -> Record:
         if kind == "log" or stamp:
             rec.blocks.append((head, [Unit(section=head, lines=[head] + body, stamp=stamp)]))
         else:
+            # Units are top-level bullets. A `###` subheading (and the blank lines after it) travels with its first bullet, and a bullet with
+            # no date of its own takes its subheading's, so dated session notes rotate while undated open items stay put.
             items: list[Unit | str] = []
+            pending: list[str] = []
+            sub_stamp = ""
             k = 0
             while k < len(body):
                 line = body[k]
-                if line.startswith("- ") or line.startswith("### "):
+                if line.startswith("### "):
+                    items.extend(pending)
+                    pending, sub_stamp = [line], first_stamp(line)
+                    k += 1
+                elif line.startswith("- "):
                     end = k + 1
-                    if line.startswith("### "):
-                        while end < len(body) and not body[end].startswith("### "):
-                            end += 1
-                    else:
-                        while end < len(body) and (body[end].startswith("  ") or (body[end] == "" and end + 1 < len(body) and body[end + 1].startswith("  "))):
-                            end += 1
-                    items.append(Unit(section=head, lines=body[k:end], stamp=first_stamp(line)))
+                    while end < len(body) and (body[end].startswith("  ") or (body[end] == "" and end + 1 < len(body) and body[end + 1].startswith("  "))):
+                        end += 1
+                    items.append(Unit(section=head, lines=pending + body[k:end], stamp=first_stamp(line) or sub_stamp))
+                    pending = []
                     k = end
+                elif pending and line == "":
+                    pending.append(line)
+                    k += 1
                 else:
+                    items.extend(pending)
+                    pending = []
                     items.append(line)
                     k += 1
+            items.extend(pending)
             rec.blocks.append((head, items))
         i = j
     return rec

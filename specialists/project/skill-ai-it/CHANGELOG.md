@@ -13,6 +13,7 @@ Last rotated: 20261010_1759
 
 ## Contents
 
+- [20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates](#20261010_1805--governed-file-tools-rotation-by-bullet-ticked-items-resolved-checker-standard-slurp-rotates)
 - [20261010_1830 — feat: doc_freshness.py; Graphify disabled](#20261010_1830--feat-doc_freshnesspy-graphify-disabled)
 - [20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project](#20261008_2224--feat-docstring_ratchetpy-the-global-docstring-standard-as-a-ratchet-for-any-project)
 - [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
@@ -20,6 +21,13 @@ Last rotated: 20261010_1759
 - [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
 - [20260529 — feat: AI navigation control-layer upgrade](#20260529--feat-ai-navigation-control-layer-upgrade)
 - [20260529_HHMM — deterministic navigation-control automation](#20260529_hhmm--deterministic-navigation-control-automation)
+
+## 20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates
+
+- `rotate_records.py`: SCRATCHPAD units are bullets (a `###` subheading travels with its first bullet; undated bullets take its date); `- [x]` and
+  `~~` count as resolved. UNC SCRATCHPAD 766 to 674 lines. skill-slurp-chat Step 7 runs `just rotate --apply` when a record is over budget.
+- Standard and tools of this day: `file_headers.py`, `doc_freshness.py` rules 4-5, `move_doc.py`, `split_checker.py`, `templates/govcheck/`,
+  `patterns/governance-checks.md` "Structure and growth" (reviewed). Why: UNC `docs/reports/knowledge-tooling/governance-surface-management-20261010_1745.md`.
 
 ## 20261010_1830 — feat: doc_freshness.py; Graphify disabled
 

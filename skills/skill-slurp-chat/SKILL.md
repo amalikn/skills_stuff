@@ -148,6 +148,10 @@ create_checkpoint(projectId, name="slurp-<YYYYMMDD>-<topic>")
 In the project's `SCRATCHPAD.md` (create via `/skill-ai-it` if missing), update only the sections this session changed, marked `KEEP`: Current state, Open items (add undecided proposals), Key anchors,
 Recent decisions, Session history (2–3 bullets), Next actions (replace), Memory pointers (keys, note and checkpoint IDs). No file-change lists, no task detail, no session logs.
 
+Then keep the records within budget (operator, 2026-10-10): `just rotate` (plan) and, when CHANGELOG.md or SCRATCHPAD.md is over 200 lines or
+25 KB, `just rotate --apply` (skill-ai-it `scripts/rotate_records.py`: moves the oldest entries to `docs/history/`, verified, never open items or
+pinned ones). A project without the recipe: run the script directly with `--project-root`. Write CHANGELOG entries short: what changed and where.
+
 Then regenerate the project's wiki page from those files (operator, 2026-10-10; the page is generated, never hand-written):
 `just -f /Volumes/Data/_ai/_wiki/wiki_stuff/justfile project_page <project-path>`. It rewrites only its generated block in
 `projects/<folder-name>.md` and appends to the wiki's `log.md`; add the page to `index.md` the first time it prints a note. Report it in the coverage table.
