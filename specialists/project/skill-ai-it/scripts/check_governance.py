@@ -156,7 +156,7 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
     # file stating the version without being registered here fails, so a fourth template or a fifth
     # doc cannot start carrying a stamp nobody syncs.
     "managed-block-version": {
-        "pattern": r"2026-10-07-snake-case-recipes-v1",
+        "pattern": r"2026-10-10-compact-v1",
         "surfaces": (
             "scripts/upgrade_navigation_control_layer.py",
             "scripts/validate_navigation_control_layer.py",

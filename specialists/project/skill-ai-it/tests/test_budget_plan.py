@@ -62,6 +62,11 @@ class BudgetPlanTest(unittest.TestCase):
         self.assertEqual(bp.main(["--project-root", str(root), "--apply"]), 1)
         self.assertEqual(len(list((root / "docs").glob("scratchpad-reference-*.md"))), 1)
 
+    def test_reference_like_sections_are_suggested_not_moved(self):
+        text = ("# A\n\n## Rules\n\n" + "".join(f"- You must never do thing {i} before checking.\n" for i in range(30))
+                + "\n## Hardware table\n\n" + "".join(f"| unit {i} | model {i} |\n" for i in range(30)))
+        self.assertEqual([h for h, _ in bp.reference_like(text)], ["Hardware table"])
+
 
 if __name__ == "__main__":
     unittest.main()

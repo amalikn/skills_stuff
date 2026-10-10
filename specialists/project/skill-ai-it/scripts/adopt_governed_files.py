@@ -203,6 +203,40 @@ def fix_agents(path: pathlib.Path) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+RECIPE_DOCS = {
+    "check": "`just check`: the project's governance checks, then document freshness. Read-only; `safe`.",
+    "stale": "`just stale`: stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only; `safe`.",
+    "docs": "`just docs [folder]`: one header line per file, to triage before opening. Read-only; `safe`.",
+    "history": "`just history <term>`: search rotated CHANGELOG (or SCRATCHPAD) entries in docs/history. Read-only; `safe`.",
+    "history-show": "`just history-show <stamp>`: print one rotated entry. Read-only; `safe`.",
+    "rotate": "`just rotate [--apply]`: move old CHANGELOG/SCRATCHPAD entries to docs/history, verified. Plan by default; `modifies-files`.",
+    "budget": "`just budget [--apply]`: bring governed files within budget (normalise, rotate, move reference sections, audit, check). Plan by default; `modifies-files`.",
+    "move-sections": "`just move-sections ...`: move named sections verbatim to an on-need reference doc. Plan by default; `modifies-files`.",
+}
+
+
+def document_recipes(readme: pathlib.Path, justfile_text: str) -> list[str]:
+    """Add a line to scripts/README.md for each skill recipe the justfile has and the README does not mention as `just <name>`.
+
+    A project whose checker requires every recipe to be documented failed after adoption added recipes (jdm, 2026-10-10).
+
+    Args:
+        readme: the project's scripts/README.md (left alone when it does not exist).
+        justfile_text: the justfile after adoption.
+
+    Returns:
+        The recipe names documented now.
+    """
+    if not readme.is_file():
+        return []
+    text = readme.read_text(encoding="utf-8")
+    missing = [r for r in RECIPE_DOCS if re.search(rf"^{re.escape(r)}\b", justfile_text, re.M) and f"just {r}" not in text]
+    if missing:
+        head = "" if "## Governance recipes (skill-ai-it)" in text else "\n## Governance recipes (skill-ai-it)\n\n"
+        readme.write_text(text.rstrip("\n") + "\n" + head + "".join(f"- {RECIPE_DOCS[r]}\n" for r in missing), encoding="utf-8")
+    return missing
+
+
 def main(argv: list[str] | None = None) -> int:
     """Report or apply adoption for one project.
 
@@ -245,6 +279,7 @@ def main(argv: list[str] | None = None) -> int:
         justfile.write_text(f"# Governance recipes from skill-ai-it templates/justfile (adopt_governed_files.py, {stamp}).\n"
                             f'py := "{sys.executable}"\n', encoding="utf-8")
     justfile.write_text(fix_justfile(justfile.read_text(encoding="utf-8")), encoding="utf-8")
+    document_recipes(root / "scripts" / "README.md", justfile.read_text(encoding="utf-8"))
     if agents_gap(root / "AGENTS.md"):
         fix_agents(root / "AGENTS.md")
     for name, kind in (("CHANGELOG.md", "log"), ("SCRATCHPAD.md", "state")):

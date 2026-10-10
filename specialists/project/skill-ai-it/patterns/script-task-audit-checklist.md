@@ -6,7 +6,7 @@ Before auditing script/task content, verify the governance block layer is intact
 
 - [ ] No duplicate `<!-- BEGIN MANAGED: skill-ai-it:<section-name> -->` blocks for the same section in the same file.
 - [ ] Active managed blocks use the current format: `<!-- BEGIN MANAGED: skill-ai-it:<section-name> -->`.
-- [ ] Version stamp exists in managed blocks where expected: `<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->`.
+- [ ] Version stamp exists in managed blocks where expected: `<!-- skill-ai-it-version: 2026-10-10-compact-v1 -->`.
 - [ ] Old-style markers (`<!-- BEGIN skill-ai-it:... -->` without `MANAGED:`) should only exist as **legacy detection targets** in audit patterns, not as active blocks. Flag any found in operational
   files.
 - [ ] Managed blocks are matched: every `BEGIN MANAGED:` has a corresponding `END MANAGED:`.
@@ -136,7 +136,7 @@ grep -rn "BEGIN skill-ai-it:" . --include="*.md" 2>/dev/null | grep -v "docs/arc
 
 # Version string presence
 echo "=== Version stamp ==="
-grep -rn "skill-ai-it-version: 2026-10-07-snake-case-recipes-v1" . --include="*.md" --include="*.yaml" 2>/dev/null || echo "(check expected files)"
+grep -rn "skill-ai-it-version: 2026-10-10-compact-v1" . --include="*.md" --include="*.yaml" 2>/dev/null || echo "(check expected files)"
 
 # Task runner discovery
 echo "=== Task runners ==="

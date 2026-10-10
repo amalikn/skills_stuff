@@ -8,8 +8,8 @@ section, then a hand-written script) was done by hand each time. This plans and,
 3. Still over: move whole sections that are not working state (anything but Contents, Current state, Open items, Next actions, Recent decisions,
    Session history, Memory pointers), largest first, verbatim to `docs/<record>-reference-<stamp>.md` with `move_sections.py`, until it fits.
 4. Audit with `audit_rotations.py` (nothing lost, nothing split), then run the project's `just check`.
-5. Report each file that is still over budget, with the section that holds it. AGENTS.md, CLAUDE.md and AI_NAVIGATION.md are only reported (their
-   largest sections listed): what is a rule and what is reference needs a reader.
+5. Report each file that is still over budget, with the section that holds it. AGENTS.md, CLAUDE.md, AI_NAVIGATION.md and SKILL.md are only
+   reported, with suggested `move-sections` commands for reference-like sections: what is a rule needs a reader.
 
 Usage:
     python scripts/budget_plan.py --project-root .            # plan
@@ -35,7 +35,7 @@ _spec.loader.exec_module(rr)
 BUDGET = (200, 25 * 1024)
 MAX_MOVES = 8
 RECORDS = ("SCRATCHPAD.md", "CHANGELOG.md")
-REPORT_ONLY = ("AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md")
+REPORT_ONLY = ("AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md", "SKILL.md")
 re_check = re.compile(r"(?m)^check\b")
 WORKING = re.compile(r"^## (Contents|Current state|Open items|Next actions|Recent decisions|Session history|Memory pointers|Reference loaded on need|Reference moved out|Key anchors and memory pointers)", re.I)
 
@@ -128,6 +128,37 @@ def index_line(root: pathlib.Path, dest: str, summary: str) -> None:
         index.write_text(index.read_text().rstrip("\n") + f"\n- [{name}]({name}) {summary}\n")
 
 
+RULE_WORDS = re.compile(r"\b(must|never|always|do not|don't|only|before|required?|forbidden|stop)\b", re.I)
+
+
+def reference_like(text: str, min_lines: int = 20) -> list[tuple[str, int]]:
+    """Sections of an instruction file that read as reference rather than rules: long, and mostly tables, code or plain facts.
+
+    A heuristic for a reader to confirm, never applied automatically: what is a rule needs judgment (operator, 2026-10-10).
+
+    Args:
+        text: the file's text.
+        min_lines: smallest section worth suggesting.
+
+    Returns:
+        [(heading text without '## ', lines)], largest first.
+    """
+    out = []
+    managed = re.search(r"<!-- BEGIN MANAGED: skill-ai-it:\w+ -->.*?<!-- END MANAGED: skill-ai-it:\w+ -->", text, re.S)
+    for head, n in sections(text):
+        if managed and managed.start() < text.find(head) < managed.end():
+            continue  # the managed block is refreshed by upgrade_navigation_control_layer.py, never moved
+        if n < min_lines or WORKING.match(head) or head.startswith("## AI navigation"):
+            continue
+        start = text.index(head)
+        nxt = text.find("\n## ", start + 1)
+        body = [l for l in text[start:nxt if nxt != -1 else len(text)].split("\n")[1:] if l.strip()]
+        ruled = sum(1 for l in body if RULE_WORDS.search(l))
+        if body and ruled / len(body) < 0.25:
+            out.append((head[3:], n))
+    return sorted(out, key=lambda x: -x[1])
+
+
 def handle_record(root: pathlib.Path, name: str, apply: bool, stamp: str) -> tuple[bool, list[str]]:
     """Plan or apply normalise, rotate and section moves for one record.
 
@@ -217,6 +248,14 @@ def main(argv: list[str] | None = None) -> int:
             top = sorted(sections(p.read_text()), key=lambda x: -x[1])[:4]
             print(f"{name}: {size(p)[0]} lines, {size(p)[1] // 1024} KB: OVER; largest sections: " + ", ".join(f"{h[3:]} ({n})" for h, n in top)
                   + ". Rules stay; move reference with move_sections.py.")
+            text = p.read_text()
+            if "skill-ai-it:navigation" in text and "skill-ai-it-version: 2026-10-10-compact" not in text:
+                print("  first: python <skill-ai-it>/scripts/upgrade_navigation_control_layer.py --project-root . (the managed block is now compact)")
+            for k, (head, n) in enumerate(reference_like(text)[:3], 1):
+                slug = name[:-3].lower().replace("_", "-")
+                print(f"  suggest (confirm it is reference, not rules): just move-sections --source {name} "
+                      f"--dest docs/{slug}-reference-{k}-{stamp}.md --title \"{root.name} {name[:-3]} reference {k}\" "
+                      f"--summary \"Reference moved verbatim from {name}\" \"{head}\"   # {n} lines")
             unfinished.append(name)
     if args.apply and (root / "docs" / "history" / "readme.md").exists():
         rc, out = run(["audit_rotations.py", str(root)])

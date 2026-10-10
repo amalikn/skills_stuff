@@ -20,7 +20,7 @@ from datetime import date
 
 # Bumping this stamps re-emitted managed blocks and makes validate_navigation_control_layer.py flag projects still carrying the previous block content. Keep it identical to the VERSION constant
 # in validate_navigation_control_layer.py — the two are a deliberate restatement, and drift between them silently disables the staleness signal.
-VERSION = "2026-10-07-snake-case-recipes-v1"
+VERSION = "2026-10-10-compact-v1"
 
 # Managed block constants
 BEGIN_OLD = "<!-- BEGIN skill-ai-it:navigation -->"
@@ -801,9 +801,10 @@ TEMPLATE_RECIPE_RENAMES = {
     "lint-md": "lint_md",
 }
 
-# Project docs that name template recipes, renamed alongside the justfile. Not CHANGELOG.md (history).
+# Project docs that name template recipes, renamed alongside the justfile. Not CHANGELOG.md or SCRATCHPAD.md: records state what was true then
+# (skill-ai-it's SCRATCHPAD said a justfile "still has `nav-upgrade`"; the rename made that sentence false, 2026-10-10).
 RECIPE_DOCS = ["scripts/README.md", "README.md", "AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md",
-               "SKILL.md", "RUNBOOK.md", "SCRATCHPAD.md", "ARCHITECTURE.md", "SETUP.md", "requirements.txt"]
+               "SKILL.md", "RUNBOOK.md", "ARCHITECTURE.md", "SETUP.md", "requirements.txt"]
 
 
 def upgrade_justfile_recipes(path, dry_run, report_data):

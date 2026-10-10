@@ -4,7 +4,7 @@ Runnable scripts for maintaining the **navigation control layer** in target proj
 explicitly.
 
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
-<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
+<!-- skill-ai-it-version: 2026-10-10-compact-v1 -->
 
 ## Execution Policy
 

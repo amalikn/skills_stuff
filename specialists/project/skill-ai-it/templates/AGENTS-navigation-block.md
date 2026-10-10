@@ -1,4 +1,4 @@
-<!-- BEGIN MANAGED: skill-ai-it:navigation --> <!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
+<!-- BEGIN MANAGED: skill-ai-it:navigation --> <!-- skill-ai-it-version: 2026-10-10-compact-v1 -->
 
 ## AI navigation and context preflight
 

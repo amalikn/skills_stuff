@@ -111,7 +111,7 @@ When adding repeat-refreshable content into existing files, wrap it with comment
 
 ```markdown
 <!-- BEGIN MANAGED: skill-ai-it:<section-name> -->
-<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
+<!-- skill-ai-it-version: 2026-10-10-compact-v1 -->
 ...managed content...
 <!-- END MANAGED: skill-ai-it:<section-name> -->
 ```
@@ -833,7 +833,7 @@ Summary: <One-line summary of what this policy governs.>
 - Keep [README.md](README.md) current when adding subfolders or significant documents.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
+<!-- skill-ai-it-version: 2026-10-10-compact-v1 -->
 
 ## AI navigation and context preflight
 
@@ -1112,7 +1112,7 @@ Purpose: this file is the project context entrypoint for AI agents. It tells age
 This file is a router, not the full knowledge store.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
+<!-- skill-ai-it-version: 2026-10-10-compact-v1 -->
 
 ## Mandatory read order
 
@@ -2044,7 +2044,7 @@ If this skill is being maintained as a reusable package, extract the embedded fa
 - `patterns/archcore-routing.md`
 - `patterns/memory-bank-structure.md`
 - `patterns/drift-audit.md`
-- `patterns/script-task-audit-checklist.md`
+- `patterns/script-task-audit-checklist.md`; `patterns/navigation/` (full routing tables and procedures behind the compact navigation block, one file per topic)
 - `CHANGELOG.md` as the skill-package governance history ledger
 
 After extraction, keep `SKILL.md` focused on orchestration logic and keep detailed reusable content in the template/pattern files.

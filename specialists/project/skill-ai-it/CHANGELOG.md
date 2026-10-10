@@ -13,6 +13,8 @@ Last rotated: 20261010_2017
 
 ## Contents
 
+- [20261010_2156 — Compact navigation template; reference split by topic; adopter documents recipes; budget suggestions](#20261010_2156--compact-navigation-template-reference-split-by-topic-adopter-documents-recipes-budget-suggestions)
+- [2026-10-10 — deterministic navigation-control upgrade](#2026-10-10--deterministic-navigation-control-upgrade)
 - [20261010_2135 — budget_plan and normalise_records; heading dates and time grouping; runaway incident and fix](#20261010_2135--budget_plan-and-normalise_records-heading-dates-and-time-grouping-runaway-incident-and-fix)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 - [20261010_1833 — Rotation made safe and complete; adopter; headers for every script and config](#20261010_1833--rotation-made-safe-and-complete-adopter-headers-for-every-script-and-config)
@@ -23,6 +25,29 @@ Last rotated: 20261010_2017
 - [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
 - [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
 - [20260529_HHMM — deterministic navigation-control automation](#20260529_hhmm--deterministic-navigation-control-automation)
+
+## 20261010_2156 — Compact navigation template; reference split by topic; adopter documents recipes; budget suggestions
+
+- Navigation template compacted (version `2026-10-10-compact-v1`): templates/AI_NAVIGATION.md 279 to 96 lines, all 13 required sections kept,
+  each a few lines linking to its topic file; the original text moved verbatim to `patterns/navigation/` (four files of 59 to 95 lines plus an index,
+  split so a reader opens only the topic it needs; operator). Graphify steps dropped from the block. Version restated in templates, SKILL.md,
+  context-map.yaml, patterns and the checker registry. Canary: skill-ai-it AI_NAVIGATION.md 254 to 79 lines; UNC 355 to 155, outside-block text identical.
+- upgrade_navigation_control_layer.py no longer renames recipe names inside SCRATCHPAD.md (it made a historical sentence false).
+- adopt_governed_files.py documents every recipe it adds in scripts/README.md (jdm requires it); budget_plan.py reports SKILL.md too, says to
+  run the navigation upgrade first, and prints `move-sections` suggestions for reference-like sections (outside managed blocks), never applied.
+- Tests 33 to 35, each negative-tested; selftest 29 pass.
+
+## 2026-10-10 — deterministic navigation-control upgrade
+
+<!-- skill-ai-it-upgrade: 2026-10-10-compact-v1 -->
+
+- Applied `skill-ai-it` deterministic navigation-control upgrade.
+- Upgraded managed navigation/scripts blocks to version `2026-10-10-compact-v1`.
+- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
+- Preserved user-authored content outside managed blocks.
+- Generated outputs remain support-only; no `.archcore/` promotion was performed.
+
+Applied to: AI_NAVIGATION.md, AGENTS.md, SCRATCHPAD.md
 
 ## 20261010_2135 — budget_plan and normalise_records; heading dates and time grouping; runaway incident and fix
 

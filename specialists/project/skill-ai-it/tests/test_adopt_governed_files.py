@@ -68,6 +68,18 @@ class AdoptTest(unittest.TestCase):
             (root / "SCRATCHPAD.md").symlink_to(Path(other) / "SCRATCHPAD.md")
             self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 1)
 
+    def test_added_recipes_are_documented_in_scripts_readme(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "scripts").mkdir()
+            (root / "scripts" / "README.md").write_text("# Scripts\n\n| `just stale` | x |\n")
+            (root / "justfile").write_text('py := "python3"\n\ncheck:\n    @echo c\n')
+            self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
+            readme = (root / "scripts" / "README.md").read_text()
+            for name in ("budget", "move-sections", "history-show", "check"):
+                self.assertIn(f"just {name}", readme)
+            self.assertEqual(readme.count("just stale"), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
