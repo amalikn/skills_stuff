@@ -531,7 +531,7 @@ def check_constant_sync() -> None:
             if not path.is_file() or path.suffix not in SCAN_SUFFIXES:
                 continue
             rel = path.relative_to(ROOT).as_posix()
-            if rel in registered or rel.startswith(".") or "/." in rel or rel == SELF:
+            if rel in registered or rel.startswith(".") or "/." in rel or rel == SELF or rel.startswith("docs/history/"):  # rotated records are dated history
                 continue
             counted()
             if pattern.search(without_code(path.read_text(encoding="utf-8", errors="ignore"))):

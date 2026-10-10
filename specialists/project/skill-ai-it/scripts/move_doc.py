@@ -122,6 +122,14 @@ def plan_link_edits(root: pathlib.Path, old: str, new: str, keep: set[str]) -> d
         count = 0
 
         def swap(m: re.Match) -> str:
+            """One path token, rewritten when it resolves to the moved file.
+
+            Args:
+                m: the match of a path-like token.
+
+            Returns:
+                The token, restyled to the new path, or unchanged.
+            """
             nonlocal count
             token = m.group(0)
             anchor = m.group(1) or ""

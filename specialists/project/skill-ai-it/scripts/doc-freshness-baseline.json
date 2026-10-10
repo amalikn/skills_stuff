@@ -1,3 +1,25 @@
 {
- "review-due:patterns/governance-checks.md": "2026-10-10"
+ "no-header:AI_NAVIGATION.md": "2026-10-10",
+ "no-header:ARCHITECTURE.md": "2026-10-10",
+ "no-header:ROADMAP.md": "2026-10-10",
+ "no-header:context-map.yaml": "2026-10-10",
+ "no-header:docs/fix-archcore-bootstrap-seeding-20260522_2331.md": "2026-10-10",
+ "no-header:docs/implement-archcore-candidate-reporting-20260522_2347.md": "2026-10-10",
+ "no-header:docs/replace-mise-with-just-20260522_1652.md": "2026-10-10",
+ "no-header:docs/review-coherence-audit-20260522_1401.md": "2026-10-10",
+ "no-header:patterns/archcore-routing.md": "2026-10-10",
+ "no-header:patterns/drift-audit.md": "2026-10-10",
+ "no-header:patterns/memory-bank-structure.md": "2026-10-10",
+ "no-header:patterns/navigation-control-automation.md": "2026-10-10",
+ "no-header:patterns/script-task-audit-checklist.md": "2026-10-10",
+ "no-header:templates/AGENTS-governance-checks-block.md": "2026-10-10",
+ "no-header:templates/AGENTS-navigation-block.md": "2026-10-10",
+ "no-header:templates/AI_NAVIGATION.md": "2026-10-10",
+ "no-header:templates/context-map.yaml": "2026-10-10",
+ "no-header:templates/context_preflight.sh": "2026-10-10",
+ "no-header:templates/repomix.config.json": "2026-10-10",
+ "no-header:templates/scripts-README.md": "2026-10-10",
+ "over-budget:AI_NAVIGATION.md": "lines=254 bytes=9202 AI_NAVIGATION.md: over its budget of 200 lines, 25 KB",
+ "over-budget:SKILL.md": "lines=2075 bytes=112306 SKILL.md: over its budget of 200 lines, 25 KB",
+ "over-budget:templates/AI_NAVIGATION.md": "lines=279 bytes=10445 templates/AI_NAVIGATION.md: over its budget of 200 lines, 25 KB"
 }

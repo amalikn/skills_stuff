@@ -1,3 +1,14 @@
+---
+Title: Scratchpad
+Category: working-state
+Status: current
+Summary: Current working state, newest first per section; superseded entries rotate to docs/history (search with --find).
+Kind: state
+Budget: 200 lines, 25 KB
+Archive: docs/history/ (`--find`, `--show`)
+Last rotated: 20261010_1759
+---
+
 # SCRATCHPAD
 
 Agent working memory for `skill-ai-it`.
@@ -17,8 +28,6 @@ Use for current state, open items, anchors, and short session summaries. Full se
 - [Session history](#session-history)
 - [Next actions](#next-actions)
 - [Memory pointers](#memory-pointers)
-
----
 
 ## Current state
 
@@ -99,18 +108,8 @@ not overwrite the hand-built checker (521
 - 2026-08-11 — **VERSION bumped despite the blast radius.** Emitted block content changed, so the stamp had to. Leaving two block contents under one stamp is the silent-drift anti-pattern the new
   pattern file documents — worse than three projects showing a true "needs re-upgrade" signal.
 
-- 2026-08-11 — **`validate_governance_checker()` warns, never fails.** The checker is adopted at refresh, not a precondition of the control layer; failing would mark every project bootstrapped before
-  the capability as broken. Present-but-unwired is still flagged.
 
-- 2026-05-22 — **mise removed from skill entirely.** `templates/mise.toml` deleted. Skill generates no mise files, detects no mise config, and references mise nowhere. `just` + `justfile` is the task
-  runner. Other existing runners (Taskfile.yml, Makefile, package.json) are still detected and respected.
 
-- 2026-05-22 — CHANGELOG heading format: `YYYYMMDD_HHMM` replaces `YYYY-MM-DD`.
-- 2026-05-22 — scripts/README.md must be created during refresh (not only bootstrap) when scripts/tasks exist and file is missing (circular dependency fix).
-- 2026-05-22 — Rule 12 added to navigation block: update scripts/README.md when scripts/tasks change (write-side obligation).
-- 2026-05-22 — Graphify runs `graphify update .` on every active-mode run. Required for full skill operation when CLI is available.
-- 2026-05-22 — Repomix runs `repomix --config repomix.config.json` on every active-mode run. Creates config from template if missing.
-- 2026-05-22 — Repo-local `scripts/context_preflight.sh` is explicit opt-in only; generic behavior stays maintained in `skill-ai-it`.
 
 ---
 
@@ -149,81 +148,6 @@ not overwrite the hand-built checker (521
   `skill-ai-it:scripts` markers — the exact mistake SKILL.md has warned about since 2026-09-18. Recovered from a pre-upgrade copy, now below the END marker.
 - Pinning the runtime exposed an undeclared PyYAML dependency in `validate_navigation_control_layer.py`; declared in `requirements.txt`. The other four scripts stay stdlib-only.
 - Lint wired: 245 findings → 0. `docs/**` exempted as time-bound records; `AUDIT-ai-navigation-control-layer.md` moved to `docs/archive/`.
-
-### 2026-08-11 — governance coherence checker capability + coherence sweep
-
-- Added the capability: `patterns/governance-checks.md` (doctrine — harness contract, three tiers, five check families, coverage self-policing, inference table), `templates/check_governance.py`
-  (stdlib-only seed, verified against a synthetic project: 5 failures across 5 families, then clean green), `templates/AGENTS-governance-checks-block.md` (the maintenance obligation).
-
-- Coherence sweep found the generator trap: `scripts/upgrade_navigation_control_layer.py` embeds the emitted managed blocks as string literals and was re-emitting the pre-change model. Fixed in the
-  emitted AI_NAVIGATION and AGENTS blocks, the companion update-rules table, and `templates/update_rules.yaml`.
-
-- `VERSION` bumped to `2026-08-11-governance-checks-layer-v1` and synced across 11 surfaces. `validate_navigation_control_layer.py` gained an advisory checker check (present / wired / referenced from
-  AGENTS.md) — `warn` not `fail`, so projects predating the capability are not marked broken. `check_expected_diff.py` allows `scripts/check_governance.py`.
-
-- Fixed the adoption gap the operator's question exposed: the `refresh` row said "extend registries", which would not have created a checker for a project that had none. Refresh is now explicitly the
-  adoption path.
-
-- Wired `refresh` to actually invoke the deterministic upgrade sequence. SKILL.md already called those scripts "the primary mechanism", but the documented commands used project-relative paths for
-  scripts that live in the skill package (so they failed in any target), the section had no inbound reference outside the TOC and sat after the Quality Check, and it predated the checker. Same path
-  bug in `templates/justfile` — worse, because that ships into projects, so every bootstrapped project got four `nav-*` recipes that fail on invocation. Now an overridable `skill_dir` variable.
-
-- Converted `~/.claude/skills/skill-ai-it` from copy to symlink — both installs now point at canonical and the copy-drift class is closed for this skill. The blocker recorded earlier the same session
-  (`governance/watchman-events/` runtime state) did not exist: the directory holds one `.gitkeep` in both locations, and watchman watches canonical only. The false blocker had already propagated to
-  three governance surfaces and both memory backends and survived the coherence sweep — a sweep checks that claims agree with each other, not that they are true.
-
-### 2026-05-29 — watchman integration + coherence sweep
-
-- Added `.watchmanconfig` (settle 100ms, ignores `.git`/`graphify-out`/`.ai-context`) and `governance/watchman-events/.gitkeep` directory.
-- Wired watchman into `context-map.yaml` (new `historical_context_recovery` routing section) and `AI_NAVIGATION.md` (context map table + Historical context recovery section).
-- Registered watchman root: `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it`.
-- Coherence sweep: fixed duplicate `templates/justfile` row in AI_NAVIGATION.md; added `navigation-control-automation.md` and `update_rules.yaml` to context map; updated README.md package layout.
-  CHANGELOG entry `20260529_0426` added.
-
-- Evidence basis: CHANGELOG entry 20260529_0142 + observation S1691.
-
-### 2026-05-22 — markdown guide enforcement + policy guard fixes + slurp
-
-- Added "Markdown quality rules" section to SKILL.md Phase 4 — enforces markdown-guide.md for every .md file created/updated: naming, TOC (>100 lines), links, quality pass.
-- Fixed policy_guard: corrected skills_stuff path; raised max_agents_lines 25→120 for mcp_stuff/skills_stuff/project_stuff; added qwen3.5:35b to ollama allowlist.
-- Slurped to MK (2 new keys, 1 updated) + PC; checkpoints: `slurp-20260522-skill-ai-it-markdown-guide`.
-
-### 2026-05-22 — mise-removal coherence cleanup + slurp
-
-- Cleaned SCRATCHPAD.md session history of stale mise operational references; remaining references are accurate history or labeled "(superseded)".
-- Answered justfile bootstrap policy: justfile created only when scripts/automation present AND no canonical runner exists — not for every project.
-- Slurped session to memory-keeper (3 new keys, 2 updated) + project-context; checkpoints: `slurp-20260522-skill-ai-it-mise-removal`.
-
-### 2026-05-22 — full mise excision
-
-- `templates/mise.toml` deleted; mise removed from all 15 operational package files (detection order, file-creation table, all mode behaviors, embedded blocks, templates, patterns, ARCHITECTURE,
-  README, AGENTS).
-
-- CHANGELOG entry `20260522_1900` added. `~/.claude/skills/skill-ai-it/SKILL.md` synced; `~/.agents/skills/skill-ai-it/` confirmed symlink (current).
-- Zero live mise references in operational files; CHANGELOG historical entries retained as accurate history.
-
-### 2026-05-22 — just-preferred task-runner refactor
-
-- Implemented 19-section spec from `docs/replace-mise-with-just-20260522_1652.md` (just-preferred / mise-optional pass — superseded by mise-removal session).
-- Added `templates/justfile`; initial intent was to keep `templates/mise.toml` optional — later fully deleted.
-- Updated 12 files; see CHANGELOG entry `20260522_1800`.
-
-### 2026-05-22 — coherence sweep + tool-stack active invocation
-
-- Ran full coherence audit and cleanup: SKILL.md Phase 4 split into three sections, SCRATCHPAD.md formalized, root hygiene, `.gitignore` created.
-- Changed passive tool policy to active orchestration: Graphify runs on every rerun; Repomix runs on every rerun.
-- Updated ARCHITECTURE.md (flow diagram, Graphify required, Repomix active), README.md (tool count, active descriptions).
-- All validation checks passed: 23 required files present, TOML/YAML/bash all valid.
-
-### 2026-05-22 — governance/tool-stack hardening (earlier session)
-
-- Promoted `CHANGELOG.md`, added `ARCHITECTURE.md`, and documented Archcore, Graphify, Repomix roles plus text flow diagrams.
-- Updated `SKILL.md` policy for Archcore initialization, optional local preflight scripts, and package navigation coherence.
-- Researched script/task tooling; initially implemented `mise tasks` as optional task layer (superseded — mise fully removed in later session).
-- Evidence basis: memory-keeper keys `skill-ai-it.maintenance.20260522`, `skill-ai-it.archcore.policy.20260522`, `skill-ai-it.preflight.policy.20260522`,
-  `skill-ai-it.script-inventory.research.20260522`.
-
----
 
 ## Next actions
 

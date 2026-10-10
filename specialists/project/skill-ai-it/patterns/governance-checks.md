@@ -3,8 +3,11 @@ Category: pattern
 Status: current
 Authority: skill-module
 Scope: Generating and maintaining a project-local `scripts/check_governance.py`
-Last reviewed: 2026-08-11
-Summary: How to infer, generate, and continuously extend an executable coherence checker so a project's governance claims stay true as the project grows.
+Last reviewed: 2026-10-10
+Review by: 2027-01-10
+Summary: >-
+  How to infer, generate and extend an executable coherence checker, and (since 2026-10-10) how it is structured so it grows by small registered
+  checks in family modules within size and runtime budgets instead of into one file.
 
 # Governance Coherence Checks
 
@@ -12,6 +15,7 @@ Summary: How to infer, generate, and continuously extend an executable coherence
 
 - [Why an executable checker](#why-an-executable-checker)
 - [The harness contract](#the-harness-contract)
+- [Structure and growth](#structure-and-growth)
 - [Tier model](#tier-model)
 - [The seven check families](#the-seven-check-families)
 - [Coverage self-policing](#coverage-self-policing)
@@ -66,7 +70,38 @@ Rules the skeleton must honor:
 
 ---
 
-## Tier model
+## Structure and growth
+
+Reviewed 2026-10-10 (operator: "the check governance doesn't go crazy indefinitely"; "apply the good coding logics ... so that these are not like
+separate check governance scripts"). A project's checker reached 1,820 lines in one file in four weeks; reading it to add a check cost about 26,000
+tokens. The structure below follows Scientific Python `repo-review` (small registered checks with a family, a docstring as the message) and ruff
+(family-prefixed rules, per-rule docs and fixtures), and the layering of the UNC code architecture target design (dependencies point one way, one
+seam per concern). Sources: `unified-network-controller/docs/reports/knowledge-tooling/governance-surface-management-sources-20261010_1745/`.
+
+```text
+scripts/check_governance.py      entry point only: python scripts/check_governance.py [--select FAMILY,...] [--json] [--timings]
+scripts/govcheck/core.py         the engine, identical in every project (templates/govcheck/core.py): fail, counted, run, reporters
+scripts/govcheck/config.py       this project's data: paths, registries, exemptions with their reasons; no logic
+scripts/govcheck/helpers.py      this project's shared readers (read, table rows, path resolution); imported by checks, never the reverse
+scripts/govcheck/checks/<family>.py   the checks, one module per family; CHECKS in checks/__init__.py fixes the run order
+```
+
+| Rule | Why |
+| --- | --- |
+| Imports point one way: `checks` -> `helpers` -> `config` -> `core`; a family never imports another family | No hidden coupling; a family can be read alone |
+| A check is a function `check_<name>()` with a docstring saying what it catches and why; it calls `counted()` per assertion and `fail(family, detail)` per defect | The docstring is the check's documentation; the count stays honest |
+| A family module stays under 400 lines; a check under 60 lines | An agent opens one small file to change one check |
+| Exceptions to the size rules are listed in `config.OVERSIZE` with their size, as a ratchet: they may shrink, never grow, and a new one fails | Old code is not rewritten to adopt the rule; new code meets it |
+| A new check lands with a negative test (`tests/test_govcheck_<family>.py`) that turns it red | A check that cannot fail is not coverage |
+| Data (lists of paths, exemptions, registries) lives in `config.py`, never inline in a check | One place to read what a project exempts and why |
+| The default output is unchanged: one line on a pass, one line per failure; `--json` and `--timings` for tools | Agent tokens do not grow with the number of checks |
+| The whole run stays under 10 seconds; `--timings` shows each family | Efficiency is part of done |
+| The `structure` family checks all of the above, so the checker polices its own shape | The rules hold without a reviewer |
+
+Adding a check: pick its family (the seven below, or `structure`/`records` for the checker and governed records), add `check_<name>` to that
+module with its docstring, add it to `CHECKS`, put any list it needs in `config.py`, write its negative test, run `just check`.
+
+
 
 | Tier | What it is | When generated |
 |---|---|---|

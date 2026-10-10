@@ -150,3 +150,8 @@ skills_registry root *args: _require-venv
 # How often agents touch a file, folder or command in recent Claude transcripts (keep or retire a navigation aid on evidence)
 agent_usage *args: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/agent_usage.py" {{args}}
+
+# Triage: one header line per file in a project (`just docs ../some-project docs/`)
+docs root *scopes: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/file_headers.py" --project-root {{root}} {{scopes}}
+

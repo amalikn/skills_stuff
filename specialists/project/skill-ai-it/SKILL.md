@@ -458,6 +458,20 @@ When enabled: run `graphify update .` whenever the `graphify` CLI is available, 
 
 ---
 
+### Governed files: headers, budgets, rotation and the checker's shape (operator, 2026-10-10)
+
+- **Headers.** Every governed file states its purpose in its type's native header (governance `naming-and-file-summary-guide.md`, "File
+  headers"); `scripts/file_headers.py` reads them all, and `just docs <folder>` is the triage view agents use before opening files.
+- **Budget.** A file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md, MEMORY.md) stays within
+  200 lines and 25 KB, one standard for every agent; `doc_freshness.py` holds over-budget files as a shrink-only ratchet. Move area rules into a file
+  read only before that work (as UNC's device and site rules) rather than growing the always-loaded file.
+- **Rotation.** `just rotate --apply` (`scripts/rotate_records.py`) moves old CHANGELOG and SCRATCHPAD entries to `docs/history/`; skill-slurp-chat
+  runs it; `just history <term>` and `just history-show <stamp>` recall on need. Tools that need the whole log read the archives too.
+- **Checker shape.** A project's checker follows `patterns/governance-checks.md` "Structure and growth": entry point, `govcheck/core.py` (this skill's
+  `templates/govcheck/core.py`, identical everywhere), `config.py`, `helpers.py`, `checks/<family>.py`, and the `structure` family
+  (`templates/govcheck/checks/structure.py`) policing it. A single-file checker over 800 lines is split with `scripts/split_checker.py` at its next
+  change; new projects start in the package layout.
+
 ### Document freshness (operator, 2026-10-10)
 
 Every governed project runs `scripts/doc_freshness.py` from this skill (not a copy): `just check` with `--check`, `just stale` to list. Rules, from the

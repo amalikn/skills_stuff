@@ -260,6 +260,14 @@ def relink(lines: list[str], source_dir: str, archive_dir: str) -> list[str]:
         The lines with `](relative)` targets recomputed; absolute, URL and anchor-only targets unchanged.
     """
     def fix(m: re.Match) -> str:
+        """One markdown link target, recomputed from the archive's folder.
+
+        Args:
+            m: the match of `](target)`.
+
+        Returns:
+            The link with its relative target rewritten, or unchanged.
+        """
         target = m.group(1)
         if re.match(r"^(https?:|mailto:|/|#)", target):
             return m.group(0)
@@ -426,6 +434,11 @@ def main(argv: list[str] | None = None) -> int:
                 "Last rotated": stamp_now}
 
     def preview() -> tuple[int, int]:
+        """The live file's size as currently marked.
+
+        Returns:
+            (lines, bytes) of the live text with the new front matter.
+        """
         text = "\n".join(front_matter_update(rec.preamble, new_keys) + render(rec)[len(rec.preamble):])
         return text.count("\n"), len(text.encode())
 

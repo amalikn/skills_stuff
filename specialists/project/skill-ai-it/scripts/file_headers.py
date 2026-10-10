@@ -143,7 +143,8 @@ def tracked(root: pathlib.Path, scopes: list[str]) -> list[pathlib.Path]:
     out = []
     for rel in rels:
         p = root / rel
-        if rel and (p.suffix in HEADER_TYPES or p.name == "justfile") and not any(s in "/" + rel for s in SKIP_PARTS):
+        if (rel and (p.suffix in HEADER_TYPES or p.name == "justfile") and not any(s in "/" + rel for s in SKIP_PARTS)
+                and not p.name.endswith("-baseline.json")):  # machine-written ratchet data
             out.append(p)
     return sorted(out)
 
