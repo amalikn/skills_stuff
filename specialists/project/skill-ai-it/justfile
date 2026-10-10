@@ -181,3 +181,13 @@ changelog-entry *ARGS: _require-venv
 [positional-arguments]
 move-sections *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"
+
+# Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
+[positional-arguments]
+outline *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . outline "$@"
+
+# Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
+[positional-arguments]
+section *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . section "$@"

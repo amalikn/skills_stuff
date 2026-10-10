@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261010_2207
+Last rotated: 20261011_0525
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix](#20261011_0525--section-level-markdown-reads-outline-section-and-adopter-attribute-fix)
 - [20261010_2346 — move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry](#20261010_2346--move_sections-link-repointing-and-shared-pointer-budget-tidy-step-add_changelog_entry)
 - [20261010_2332 — Reference reads measured (not split); tracker pointer no longer duplicates](#20261010_2332--reference-reads-measured-not-split-tracker-pointer-no-longer-duplicates)
 - [20261010_2227 — Memory pointers rotate; no upgrade hint for project-owned blocks; jdm within budget](#20261010_2227--memory-pointers-rotate-no-upgrade-hint-for-project-owned-blocks-jdm-within-budget)
@@ -27,7 +28,19 @@ Last rotated: 20261010_2207
 - [20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project](#20261008_2224--feat-docstring_ratchetpy-the-global-docstring-standard-as-a-ratchet-for-any-project)
 - [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
 - [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
-- [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
+
+## 20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix
+
+- New `scripts/md_sections.py` with recipes `just outline` (each heading with its line range and size) and `just section` (one section by exact
+  title, leading section number optional, `Parent > Child`, `#anchor` or `~substring`; an ambiguous selector exits 3 and lists every match). Idea
+  from lilmd (molefrog/lilmd), no code taken (it has no licence); exact by default because 44 of 123 numbered UNC headings collide under substring
+  matching. Read-only, stdlib only. Evidence: UNC `docs/reports/knowledge-tooling/lilmd-assessment-20261011_0517.md`.
+- `agent_usage.py --md-reads`: counts hand-built outline greps, recipe calls and whole/ranged Markdown Reads, subagent transcripts included.
+  UNC baseline (30 days): 182 transcripts, 748 outline greps in 99.
+- Fixed `adopt_governed_files.py` `split_recipes`: attribute lines (`[positional-arguments]`) and the comment above them were dropped when a
+  recipe was copied, so `"$@"` arrived empty (found when `just outline` got no file). Adopter now ships `outline` and `section` and names them in
+  the AGENTS line for new projects.
+- Tests 50 to 61 (md_sections 9, adopter regression 1, md_reads 1); `just check` 308 pass. Adopted here and in UNC (trial to 2026-10-25).
 
 ## 20261010_2346 — move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry
 
@@ -182,18 +195,3 @@ Applied to: AI_NAVIGATION.md, AGENTS.md, SCRATCHPAD.md
 - islam's `context-map.yaml` took the `update_rules` merge as a text edit (same data as the re-dump, comments kept), not the lossy re-dump.
 - Newest-first CHANGELOGs in skill-openwisp, skill-nautobot, skill-smc and skill-eval-manager had the upgrade entry moved to the top by hand; the open item on
   the upgrader's append position stands.
-
-## 20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs
-
-Found running `nav_upgrade` across the 12 projects still on kebab-case recipes, pilot first (skill-openwisp), then the rest.
-
-- **Data loss, caught in diff review.** Projects stamped `2026-08-11` hold their own content inside the managed blocks (the older layout). The stamp passed the provenance
-  gate, so the upgrade replaced the blocks wholesale: 171 lines from cambium-swap `scripts/README.md`, 113 from unified-network-controller `AGENTS.md`, and more across seven
-  projects. All seven were restored from git and given only the recipe renames. New gate 3 in `block_is_replaceable`: a block stamped before `LAYOUT_SINCE` (`2026-09-23`)
-  is refused as `legacy-layout`, exit 3, with `/skill-ai-it refresh` as the way forward. Three new self-tests.
-- **`context-map.yaml` lost every comment.** The upgrader re-dumped the parsed file, so a one-line stamp change churned 622 lines in skill-openwisp and dropped its 5 comments.
-  The file is now edited as text; only a nested `update_rules` merge re-dumps, and that path flags the run for review.
-- **Recipe renames stopped at the justfile.** `scripts/README.md` task tables kept the old names, and the project checkers failed on recipes that no longer exist. Renames now
-  also apply to `RECIPE_DOCS` (root governance docs, `scripts/README.md`, `SETUP.md`, `requirements.txt`); `CHANGELOG.md` is left as history.
-- Upgraded in full: skill-openwisp, skill-nautobot, skill-smc, skill-eval-manager, enterprise-strategy. Recipes renamed, blocks waiting for `refresh`: psy-assess, health,
-  islam, japan, atar, unified-network-controller, cambium-swap.

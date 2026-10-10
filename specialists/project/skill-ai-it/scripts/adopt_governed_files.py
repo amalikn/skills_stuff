@@ -5,7 +5,7 @@ Why (operator, 2026-10-10: "that skill is mostly used with bootstrap or refresh.
 the standard's tools only act where they are installed. skill-slurp-chat runs this at every close, so a project reached by any slurp adopts it.
 
 What it checks and, with --apply, adds:
-1. justfile: the `ai_it` variable, `doc_freshness.py --check` in the `check` recipe, and the recipes stale, docs, history, history-show, rotate, budget, changelog-entry, move-sections; a `check` recipe when there is none
+1. justfile: the `ai_it` variable, `doc_freshness.py --check` in the `check` recipe, and the recipes stale, docs, history, history-show, rotate, budget, changelog-entry, move-sections, outline, section; a `check` recipe when there is none
    (from skill-ai-it `templates/justfile`; a project without one gets a new justfile). Refuses when the governed files are symlinks.
 2. AGENTS.md: one line on triage, staleness and history, outside any managed block.
 3. CHANGELOG.md and SCRATCHPAD.md: front matter with Kind, Budget and, for SCRATCHPAD, Keep and an open-items tracker.
@@ -27,28 +27,29 @@ import subprocess
 import sys
 
 SKILL = pathlib.Path(__file__).resolve().parent.parent
-RECIPES = ("stale", "docs", "history", "history-show", "rotate", "budget", "changelog-entry", "move-sections")
+RECIPES = ("stale", "docs", "history", "history-show", "rotate", "budget", "changelog-entry", "move-sections", "outline", "section")
 AGENTS_MARK = "just docs <folder>"
 AGENTS_LINE = ("- Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries\n"
-               "  live in `docs/history/`, read only on need (`just history <term>`, `just history-show <stamp>`).\n")
+               "  live in `docs/history/`, read only on need (`just history <term>`, `just history-show <stamp>`). Large Markdown: `just outline <file>`,\n"
+               "  then `just section <file> \"<title>\"` or a ranged Read.\n")
 
 
 def template_recipes() -> str:
     """The recipe block to add, taken from the skill's justfile template so it never drifts.
 
     Returns:
-        The text of the stale, docs, history, history-show, rotate and move-sections recipes.
+        The text of the stale, docs, history, history-show, rotate, budget, changelog-entry, move-sections, outline and section recipes.
     """
     text = (SKILL / "templates" / "justfile").read_text(encoding="utf-8")
     start = text.index("# Session preflight: list stale docs")
-    last = "move-sections *ARGS:" if "move-sections *ARGS:" in text else "rotate *ARGS:"
+    last = next((m for m in ("section *ARGS:", "move-sections *ARGS:") if m in text), "rotate *ARGS:")
     end = text.index("\n\n", text.index(last)) if last in text else len(text)
     return text[start:end].rstrip("\n") + "\n"
 
 
 #: recipes that take free text (titles, heading names): `{{ARGS}}` is substituted unquoted, so a title with a semicolon ran as shell commands
 #: (2026-10-10). They take quoted positional arguments instead.
-FREE_TEXT = {"changelog-entry": "add_changelog_entry.py", "move-sections": "move_sections.py"}
+FREE_TEXT = {"changelog-entry": "add_changelog_entry.py", "move-sections": "move_sections.py"}  # outline and section ship quoted
 
 
 def make_free_text_safe(text: str) -> str:
@@ -133,7 +134,7 @@ def split_recipes(block: str) -> dict[str, str]:
         block: recipes as they appear in the template.
 
     Returns:
-        Recipe name to its text (comments, header and indented body).
+        Recipe name to its text (comments, attribute lines, header and indented body).
     """
     out: dict[str, str] = {}
     pending: list[str] = []
@@ -151,7 +152,8 @@ def split_recipes(block: str) -> dict[str, str]:
             out[m.group(1)] = "\n".join(pending + body) + "\n"
             pending = []
             continue
-        pending = pending + [line] if line.startswith("#") else []
+        # attribute lines (`[positional-arguments]`) belong to the recipe below; dropping them sent `"$@"` empty (outline, 2026-10-11)
+        pending = pending + [line] if line.startswith("#") or re.match(r"^\[[\w-]+(\(.*\))?\]\s*$", line) else []
         i += 1
     return out
 
@@ -236,6 +238,8 @@ RECIPE_DOCS = {
     "budget": "`just budget [--apply]`: bring governed files within budget (normalise, rotate, move reference sections, audit, check). Plan by default; `modifies-files`.",
     "changelog-entry": "`just changelog-entry --title ... --body-file ...`: add a CHANGELOG entry in this project's style, with its Contents line. Plan by default; `modifies-files`.",
     "move-sections": "`just move-sections ...`: move named sections verbatim to an on-need reference doc. Plan by default; `modifies-files`.",
+    "outline": "`just outline <file.md>`: each heading with its line range, to read one section instead of the file. Read-only; `safe`.",
+    "section": "`just section <file.md> \"<title>\"`: print one section (exact title, `Parent > Child`, `#anchor`, `~text`). Read-only; `safe`.",
 }
 
 

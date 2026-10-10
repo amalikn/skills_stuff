@@ -87,8 +87,17 @@ class AdoptTest(unittest.TestCase):
         fixed = adopt.fix_justfile(old)
         self.assertIn('[positional-arguments]\nmove-sections *ARGS: _require-venv\n    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"', fixed)
         self.assertIn('[positional-arguments]\nchangelog-entry *ARGS:', fixed)
-        self.assertEqual(fixed.count("[positional-arguments]"), 2)
+        self.assertEqual(fixed.count("[positional-arguments]"), 4)  # changelog-entry, move-sections, outline, section
         self.assertEqual(adopt.justfile_gaps(fixed), [])
+
+    def test_added_recipes_keep_their_comment_and_attribute(self):
+        """A recipe copied from the template keeps its comment and `[positional-arguments]` (lost before 2026-10-11, so `"$@"` was empty)."""
+        recipes = adopt.split_recipes(adopt.template_recipes())
+        for name in ("outline", "section", "changelog-entry"):
+            self.assertRegex(recipes[name], rf"^# .+\n\[positional-arguments\]\n{name} \*ARGS:")
+        fixed = adopt.fix_justfile('py := "python3"\nai_it := "/x"\n\ncheck:\n    @echo c doc_freshness.py\n')
+        self.assertIn('[positional-arguments]\noutline *ARGS:', fixed)
+        self.assertEqual(fixed.count("[positional-arguments]\n[positional-arguments]"), 0)
 
 
 if __name__ == "__main__":
