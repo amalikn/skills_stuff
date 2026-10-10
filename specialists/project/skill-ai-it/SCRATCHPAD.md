@@ -6,7 +6,7 @@ Summary: Current working state, newest first per section; superseded entries rot
 Kind: state
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261010_1759
+Last rotated: 20261010_1833
 Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
 Open items tracker: docs/trackers/open-items-20261010_1830.md
 ---
@@ -60,6 +60,7 @@ nav_upgrade` per project.
 
 ## Open items
 
+- Older open items are tracked in [open-items-20261010_1830.md](docs/trackers/open-items-20261010_1830.md).
 - [x] **2026-10-07, done (operator: fix it):** the upgrader's CHANGELOG entry now follows the file's order. `changelog_is_newest_first`
   reads the dated `##` headings; a newest-first file gets the entry on top and first in Contents, any other file gets it appended.
 
@@ -70,17 +71,9 @@ nav_upgrade` per project.
 - [ ] Pre-existing validator warnings (not caused by the governance-checks work): the package's `context-map.yaml` uses its own `update_rules` shape rather than the `governance_navigation` structure
   the validator expects. Decide whether the package should conform or whether the validator should recognise package-vs-target-project schemas.
 
-- [ ] Re-upgrade the three projects on the previous version stamp AND adopt the governance checker — **now the same single command** since refresh was wired to the deterministic sequence:
-  `/skill-ai-it refresh <project>` for `me/llm-m2max`, `apn/vocus-profitability`, `apn/opticomm-profitability`. It restamps managed blocks, adds missing context-map keys, creates the checker, and
-  regenerates the context pack. `just nav_upgrade` does NOT work in those projects — they have no local copy of the nav-control scripts. On `me/japan/tracks/jdm` (was `me/jdm` until 2026-08-18), do
 not overwrite the hand-built checker (521
   assertions); it is the reference implementation this capability was generalized from.
 
-- [ ] Watch for on first run: vocus-profitability's `scripts/README.md` gets an **inserted** managed block (it carries a stamp but no block) — review that diff; and `check_expected_diff.py` requires
-  the target to be a git repo with changes uncommitted.
-
-- [ ] Apply `/skill-ai-it refresh` to `/Volumes/Data/_ai/_tool/tools_stuff/openbb` and verify `.archcore/` initialization and Graphify/Repomix active invocation.
-- [ ] Apply `/skill-ai-it refresh` to `/Volumes/Data/_ai/_skills/skills_stuff/invoice-finance-analyst`.
 - [x] ~~Decide whether to add a governed script inventory / `mise` task policy to `skill-ai-it`.~~ Done 2026-05-22: implemented.
 - [x] ~~Decide whether `.DS_Store` and `codex_prompt_fix_skill_ai_it_changelog_governance.md` should remain.~~ Done 2026-05-22: archived/removed.
 
@@ -109,9 +102,6 @@ not overwrite the hand-built checker (521
 
 - 2026-08-11 — **VERSION bumped despite the blast radius.** Emitted block content changed, so the stamp had to. Leaving two block contents under one stamp is the silent-drift anti-pattern the new
   pattern file documents — worse than three projects showing a true "needs re-upgrade" signal.
-
-
-
 
 ---
 

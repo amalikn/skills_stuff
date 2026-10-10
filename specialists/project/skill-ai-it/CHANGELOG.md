@@ -13,6 +13,7 @@ Last rotated: 20261010_1759
 
 ## Contents
 
+- [20261010_1833 — Rotation made safe and complete; adopter; headers for every script and config](#20261010_1833--rotation-made-safe-and-complete-adopter-headers-for-every-script-and-config)
 - [20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates](#20261010_1805--governed-file-tools-rotation-by-bullet-ticked-items-resolved-checker-standard-slurp-rotates)
 - [20261010_1830 — feat: doc_freshness.py; Graphify disabled](#20261010_1830--feat-doc_freshnesspy-graphify-disabled)
 - [20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project](#20261008_2224--feat-docstring_ratchetpy-the-global-docstring-standard-as-a-ratchet-for-any-project)
@@ -21,6 +22,11 @@ Last rotated: 20261010_1759
 - [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
 - [20260529 — feat: AI navigation control-layer upgrade](#20260529--feat-ai-navigation-control-layer-upgrade)
 - [20260529_HHMM — deterministic navigation-control automation](#20260529_hhmm--deterministic-navigation-control-automation)
+
+## 20261010_1833 — Rotation made safe and complete; adopter; headers for every script and config
+
+- `rotate_records.py`: Contents is only its link lines (a 424-line prose block was dropped in vocus-profitability, restored); whole-file verification; open items beyond the newest 3 go to a live tracker; `Keep` per section; dated sections grouped; numbered items; git-blame dates for undated entries. `audit_rotations.py`: 39 records clean.
+- `adopt_governed_files.py` (slurp runs it), rule 6 `checker-size`, JSON exempt from headers, nested projects skipped. Rolled out to 25 projects.
 
 ## 20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates
 
