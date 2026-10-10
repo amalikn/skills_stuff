@@ -148,6 +148,10 @@ create_checkpoint(projectId, name="slurp-<YYYYMMDD>-<topic>")
 In the project's `SCRATCHPAD.md` (create via `/skill-ai-it` if missing), update only the sections this session changed, marked `KEEP`: Current state, Open items (add undecided proposals), Key anchors,
 Recent decisions, Session history (2–3 bullets), Next actions (replace), Memory pointers (keys, note and checkpoint IDs). No file-change lists, no task detail, no session logs.
 
+Then regenerate the project's wiki page from those files (operator, 2026-10-10; the page is generated, never hand-written):
+`just -f /Volumes/Data/_ai/_wiki/wiki_stuff/justfile project_page <project-path>`. It rewrites only its generated block in
+`projects/<folder-name>.md` and appends to the wiki's `log.md`; add the page to `index.md` the first time it prints a note. Report it in the coverage table.
+
 ## Step 8 — Closeout mode only
 One more memory-keeper `progress` entry, key `session.closeout.<YYYYMMDD>.<topic>`: Session / Workstream, Scope, Completed, Files Changed, Decisions, Open Issues, Next Actions, Persistence Status
 (memory-keeper, project-context, checkpoints, commits).

@@ -56,6 +56,22 @@
 
 ---
 
+## 20261010_1830 — feat: doc_freshness.py; Graphify disabled
+
+- **Added** `scripts/doc_freshness.py` (operator, 2026-10-10, option B of the OKF adoption assessment in unified-network-controller
+  `docs/reports/knowledge-tooling/okf-adoption-assessment-20261010_1700.md`): three rules (review due, superseded outside `archive/`, a `Depends on`
+  file changed after `Last reviewed`) as a baseline ratchet. Wired into `templates/justfile` (`check` runs `--check`; new `stale` recipe), the
+  embedded justfile in SKILL.md, this package's own justfile, SKILL.md "Document freshness" and the quality checklist. Negative-tested in
+  unified-network-controller (each rule fails, exit 1; removal clears it). This package's own finding (`patterns/governance-checks.md`, review due
+  2026-09-10) is baselined, not stamped: it needs a real review.
+- **Added** `scripts/agent_usage.py` (`just agent_usage <terms>`): counts agent tool calls naming a file or command in recent Claude transcripts;
+  promoted from the session that measured Graphify and wiki usage.
+- **Disabled** Graphify (operator): SKILL.md step 9, the mode table, "Graphify initialization and refresh", the embedded preflight and the
+  compaction-recovery step; `templates/context_preflight.sh` skips it unless `GRAPHIFY_ENABLED=1`; `templates/context-map.yaml` and
+  `upgrade_navigation_control_layer.py` say not to regenerate it. Text kept for re-enabling. Measured cause: 0 graph queries in 30 days against
+  thousands of rebuilds. The managed navigation block still names `graphify-out/` (changing it would put every governed project into drift); projects
+  exempt those paths in `CONDITIONAL_PATHS`.
+
 ## 20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project
 
 - Operator (2026-10-08, in unified-network-controller): "create the docstrings for the code whenever you are creating or updating a script",

@@ -23,7 +23,9 @@ else
 fi
 
 echo "[3/6] Running Graphify..."
-if command -v graphify >/dev/null 2>&1; then
+if [ "${GRAPHIFY_ENABLED:-0}" != 1 ]; then
+  echo "INFO: Graphify disabled (operator, 2026-10-10); set GRAPHIFY_ENABLED=1 to run"
+elif command -v graphify >/dev/null 2>&1; then
   if [ -f "graphify-out/graph.json" ]; then
     graphify update . || true
   elif graphify update . >/dev/null 2>&1; then

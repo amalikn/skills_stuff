@@ -87,7 +87,7 @@ test-phase phase:
 
 # Rebuild graphify knowledge graph
 graphify:
-    graphify update .
+    @if [ "${GRAPHIFY_ENABLED:-0}" = 1 ]; then graphify update .; else echo "graphify disabled (operator, 2026-10-10); set GRAPHIFY_ENABLED=1 to run"; fi
 
 # Rebuild repomix governance context pack
 repomix:

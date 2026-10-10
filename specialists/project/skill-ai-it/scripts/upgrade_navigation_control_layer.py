@@ -418,7 +418,7 @@ def get_context_map_keys():
             "procedure": [
                 "Read AI_NAVIGATION.md first for navigation map.",
                 "Load .archcore/ context if present (durable truth).",
-                "Regenerate graphify-out/ with: graphify update .",
+                "Graphify is disabled (operator, 2026-10-10): do not regenerate graphify-out/.",
                 "Regenerate .ai-context/ with: repomix --config repomix.config.json",
                 "Verify SCRATCHPAD.md has current state. If empty, populate from memory-keeper / mcp-project-context.",
                 "Verify CHANGELOG.md is current.",

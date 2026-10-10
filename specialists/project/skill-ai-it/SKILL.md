@@ -101,7 +101,7 @@ This skill must be safe to run many times on the same project.
    structured durable truth.
 
 8. Propose Archcore content changes rather than directly editing Archcore files unless the user explicitly authorizes the content change. `archcore init` itself is allowed when the CLI is available.
-9. Run Graphify and Repomix when their CLIs are available; treat their outputs (`graphify-out/`, `.ai-context/`, `repomix-output.md`) as disposable support, not canonical truth.
+9. Run Repomix when its CLI is available. **Graphify is disabled (operator, 2026-10-10)**: do not run it in any mode (see [Graphify initialization and refresh](#graphify-initialization-and-refresh)). Treat their outputs (`graphify-out/`, `.ai-context/`, `repomix-output.md`) as disposable support, not canonical truth.
 10. On conflict, stop and report the conflict instead of merging assumptions silently.
 11. Always report created, updated, skipped, and proposed files separately.
 
@@ -336,7 +336,7 @@ From inventory + content reads, determine:
 | `SCRATCHPAD.md`                | create/update                                        | update memory pointers              | append/protect KEEP                                     | check        |
 | `CHANGELOG.md`                 | create/update                                        | append navigation addition          | append refresh summary                                  | check        |
 | `.archcore/`                   | initialize if CLI available                          | initialize if CLI available         | initialize if CLI available                             | check        |
-| Graphify / `graphify-out/`     | run if CLI available                                 | run if CLI available                | run if CLI available                                    | check        |
+| Graphify / `graphify-out/`     | disabled (2026-10-10)                                | disabled (2026-10-10)               | disabled (2026-10-10)                                   | check        |
 | `repomix.config.json`          | initialize if CLI available                          | initialize if CLI available         | run to refresh context pack                             | check        |
 | `.markdownlint-cli2.jsonc`     | create unless a markdown lint config already exists  | create unless a markdown lint       | create unless a markdown lint config already exists     | check        |
 |                                |                                                      |   config already exists             |                                                         |              |
@@ -447,12 +447,31 @@ mentions in `CHANGELOG.md` do not fail path resolution once the file is gone —
 
 ### Graphify initialization and refresh
 
-Run `graphify update .` whenever the `graphify` CLI is available, in all active modes (`bootstrap`, `navigation-add`, `refresh`).
+**Disabled (operator, 2026-10-10).** Do not run `graphify update .` in any mode, and do not add Graphify recipes or hooks to a project. Measured that day: 0 `graphify query`/`path`/`explain` calls in 30 days of agent sessions against thousands of rebuilds, and most `graphify-out/` folders behind their project ([assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/reports/knowledge-tooling/okf-adoption-assessment-20261010_1700.md), section 5). The 25 existing `graphify-out/` folders were deleted the same day (operator); tracked ones through `git rm`, so history keeps them. Project recipes and `templates/context_preflight.sh` skip it unless `GRAPHIFY_ENABLED=1` is set. Re-enable only on the operator's decision, by removing this paragraph and the gates. The rules below are kept for that day.
+
+When enabled: run `graphify update .` whenever the `graphify` CLI is available, in all active modes (`bootstrap`, `navigation-add`, `refresh`).
 
 - If `graphify-out/` is missing and the CLI is available, `graphify update .` will initialize and populate it.
 - If `graphify-out/` already exists, `graphify update .` refreshes the graph on every run.
 - Treat `graphify-out/GRAPH_REPORT.md` and `graphify-out/graph.json` as disposable generated support — always regenerable, never canonical truth.
 - In `audit` mode: report whether Graphify would run, but do not invoke it unless the user requests changes.
+
+---
+
+### Document freshness (operator, 2026-10-10)
+
+Every governed project runs `scripts/doc_freshness.py` from this skill (not a copy): `just check` with `--check`, `just stale` to list. Rules, from the
+front-matter standard in governance `categories/naming-and-file-summary-guide.md` (freshness keys): a living document past `Review by` (default
+`Last reviewed` + 30 days; reports, reviews, audits and sources never expire), a `superseded` file outside `archive/`, a `Depends on` file committed
+after `Last reviewed`.
+
+- `bootstrap`, `navigation-add`, `refresh`: add the `ai_it` variable, the `--check` line and the `stale` recipe to the project's justfile (template
+  `templates/justfile`), run `just stale`, then adopt with `doc_freshness.py --project-root . --write-baseline` so existing findings are
+  grandfathered and only new ones fail. Add `just stale` to the project's preflight list in `AGENTS.md` (outside the managed block).
+- `audit`: run `just stale` and report the counts per rule; also report whether the project's LLM wiki page
+  (`/Volumes/Data/_ai/_wiki/wiki_stuff/projects/<folder>.md`) exists and is older than the project's newest CHANGELOG entry.
+- Prefer fixing over baselining: date an undated living document from its content, move a superseded file to `archive/` (update links and the
+  folder index in the same pass).
 
 ---
 
@@ -551,6 +570,7 @@ Node has no venv layer, so `mise exec -- node` **is** the explicit form for it. 
    ```just
    wc := "<the working-cache peer for this project>"
    py := wc + "/.venv/bin/python"
+ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
    nd := "mise exec -- node"
    ```
 
@@ -655,6 +675,11 @@ audit_scripts:
 # Governance coherence checks — must exit 0 before durable work is called complete
 check: _require-venv
     @{{py}} scripts/check_governance.py
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+
+# Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
+stale: _require-venv
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
 
 # Run safe local preflight checks
 preflight: runtimes audit_scripts check
@@ -1561,7 +1586,7 @@ generated_context_policy:
     - significant_code_restructure
 
   commands:
-    graphify: "graphify update ."
+    graphify: "graphify update ."  # disabled (operator, 2026-10-10); runs only with GRAPHIFY_ENABLED=1
     repomix_governance: "repomix --config repomix.config.json"
 
 answer_contract:
@@ -1658,7 +1683,9 @@ else
 fi
 
 echo "[3/5] Running Graphify..."
-if command -v graphify >/dev/null 2>&1; then
+if [ "${GRAPHIFY_ENABLED:-0}" != 1 ]; then
+  echo "INFO: Graphify disabled (operator, 2026-10-10); set GRAPHIFY_ENABLED=1 to run"
+elif command -v graphify >/dev/null 2>&1; then
   if [ -f "graphify-out/graph.json" ]; then
     graphify update . || true
   elif graphify update . >/dev/null 2>&1; then
@@ -1788,6 +1815,7 @@ After creating/updating files in the target folder:
 ## Quality Check Before Completing
 
 - [ ] All `@` import paths in AGENTS.md resolve to real files
+- [ ] The project's justfile runs `doc_freshness.py --check` in `check` and has a `stale` recipe; a baseline exists when findings predate adoption
 - [ ] CLAUDE.md contains only the `@AGENTS.md` import line + additions section
 - [ ] README.md Folder index links resolve to real subfolders
 - [ ] Parent README/AGENTS updated if they exist
@@ -1847,7 +1875,7 @@ When recovering agent context after compaction (e.g. new session, context window
 1. **Read `AI_NAVIGATION.md`** first — the navigation map tells you what files exist and what to read.
 2. **Read `context-map.yaml`** for machine-readable file registry and companion-file rules.
 3. **Load `.archcore/`** context if present (durable project truth).
-4. **Regenerate `graphify-out/`**: `graphify update .`
+4. **Skip `graphify-out/`**: Graphify is disabled (operator, 2026-10-10); do not regenerate it.
 5. **Regenerate `.ai-context/`**: `repomix --config repomix.config.json`
 6. **Verify `SCRATCHPAD.md`** has current state. If empty, populate from memory backends.
 7. **Verify `CHANGELOG.md`** is current with recent governance/navigation changes.

@@ -112,7 +112,7 @@ context-pack:
 # Refresh the code graph (graphify-out/: AST only, no LLM). Generated support, not truth.
 graph:
     @command -v graphify >/dev/null || { echo 'graphify not installed; skipped'; exit 0; }
-    @graphify update .
+    @if [ "${GRAPHIFY_ENABLED:-0}" = 1 ]; then graphify update .; else echo "graphify disabled (operator, 2026-10-10); set GRAPHIFY_ENABLED=1 to run"; fi
 
 # Run safe local preflight checks
 preflight: runtimes audit_scripts test check lint_md

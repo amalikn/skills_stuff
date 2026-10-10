@@ -45,6 +45,7 @@ set dotenv-load := false
 # Working-cache peer for this package (skills_stuff/specialists/project/<pkg> -> skills-working-cache/specialists/project/<pkg>).
 wc := "/Volumes/Data/_ai/_skills/skills-working-cache/specialists/project/skill-ai-it"
 py := wc + "/.venv/bin/python"
+ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 nd := "mise exec -- node"
 
 # Build the working-cache venv from the mise-pinned runtimes. Safe to re-run.
@@ -88,6 +89,11 @@ audit_scripts:
 # Governance coherence checks — assert this project's governance claims against reality
 check: _require-venv
     @{{py}} scripts/check_governance.py
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+
+# Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
+stale: _require-venv
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
 
 # Run safe local preflight checks
 preflight: runtimes audit_scripts check lint_md
@@ -140,3 +146,7 @@ nav_migrate_legacy target *flags: _require-venv
 # Skills list for a project area: check its skills.md against the skills its governance files name (exit 1 on drift)
 skills_registry root *args: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/skills_registry.py" --project-root "{{root}}" {{args}}
+
+# How often agents touch a file, folder or command in recent Claude transcripts (keep or retire a navigation aid on evidence)
+agent_usage *args: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/agent_usage.py" {{args}}
