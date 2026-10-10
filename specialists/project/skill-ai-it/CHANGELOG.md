@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261010_2017
+Last rotated: 20261010_2207
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261010_2207 — SKILL.md restructured: 2,074 to 198 lines, detail in references/ by topic](#20261010_2207--skillmd-restructured-2074-to-198-lines-detail-in-references-by-topic)
 - [20261010_2156 — Compact navigation template; reference split by topic; adopter documents recipes; budget suggestions](#20261010_2156--compact-navigation-template-reference-split-by-topic-adopter-documents-recipes-budget-suggestions)
 - [2026-10-10 — deterministic navigation-control upgrade](#2026-10-10--deterministic-navigation-control-upgrade)
 - [20261010_2135 — budget_plan and normalise_records; heading dates and time grouping; runaway incident and fix](#20261010_2135--budget_plan-and-normalise_records-heading-dates-and-time-grouping-runaway-incident-and-fix)
@@ -24,7 +25,18 @@ Last rotated: 20261010_2017
 - [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
 - [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
 - [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
-- [20260529_HHMM — deterministic navigation-control automation](#20260529_hhmm--deterministic-navigation-control-automation)
+
+## 20261010_2207 — SKILL.md restructured: 2,074 to 198 lines, detail in references/ by topic
+
+- SKILL.md restructured for progressive disclosure: 2,074 to 198 lines (112 KB to 16 KB), within the 200-line / 25 KB budget. Detail moved
+  verbatim with move_sections.py into 18 topic files under references/ (46 to 319 lines; index references/readme.md), each linked by one line at the
+  step that needs it; SKILL.md keeps use-when, inputs, modes, repeat-safety, the governed-file and freshness rules, workflow and a template and
+  pattern catalogue. Verified: all 13,844 words of the old file present (only the moved sections' Contents links dropped); in-page links repointed;
+  install symlink is whole-folder, so references/ resolves.
+- move_sections.py: moves `###` and `####` sections (to the next heading at their level); `--pointer-line` leaves one linked line instead of a
+  pointer section; relinks only links whose target exists (example links stay as written; 10 example lines restored after an over-eager relink);
+  Contents anchors keep double hyphens as GitHub and VS Code render them. Tests 35 to 37.
+- Larger references (files-context-map 319, files-ai-navigation 228, script-task-inventory 224 lines) are read on need; split them if they are often opened.
 
 ## 20261010_2156 — Compact navigation template; reference split by topic; adopter documents recipes; budget suggestions
 
@@ -152,38 +164,3 @@ Found running `nav_upgrade` across the 12 projects still on kebab-case recipes, 
   also apply to `RECIPE_DOCS` (root governance docs, `scripts/README.md`, `SETUP.md`, `requirements.txt`); `CHANGELOG.md` is left as history.
 - Upgraded in full: skill-openwisp, skill-nautobot, skill-smc, skill-eval-manager, enterprise-strategy. Recipes renamed, blocks waiting for `refresh`: psy-assess, health,
   islam, japan, atar, unified-network-controller, cambium-swap.
-
-## 20260529_HHMM — deterministic navigation-control automation
-
-### Added
-
-- `scripts/upgrade_navigation_control_layer.py` — deterministic, idempotent upgrade script for navigation/control-layer files. Upgrades old managed block markers, adds version stamps, adds missing
-  context-map.yaml keys (audit_checks, promotion_rules, context_recovery, update_rules). Supports --dry-run, --report-json, and .proposed fallback for risky YAML merges.
-
-- `scripts/validate_navigation_control_layer.py` — deterministic validation script. Checks governance file presence, managed block integrity, version consistency, YAML validity, required schema keys,
-  generated-output policy, context compaction recovery, script/task governance, companion consistency, and stale claim detection.
-
-- `scripts/check_expected_diff.py` — git-diff check that only expected governance files (AGENTS.md, AI_NAVIGATION.md, CHANGELOG.md, context-map.yaml, scripts/README.md) changed after an upgrade.
-  Detects accidental modifications to source files.
-
-- `templates/update_rules.yaml` — default companion-file update rules template (governance_navigation section with AGENTS.md, AI_NAVIGATION.md, context-map.yaml, scripts/README.md, new_script_added
-  relationships).
-
-- `patterns/navigation-control-automation.md` — explains why automation exists, when to run each script, how to interpret exit codes, how to handle .proposed files, and how this complements
-  patterns/drift-audit.md and patterns/script-task-audit-checklist.md.
-
-### Changed
-
-- `templates/justfile` — added 4 new targets: nav-upgrade-dry-run, nav-upgrade, nav-validate, nav-check-diff.
-- `templates/scripts-README.md` — added entries for the three new automation scripts in the Task Inventory table.
-- `SKILL.md` — added "Deterministic Navigation-Control Automation" section with recommended 6-step refresh order, key rules, and script table.
-- `README.md` — added "Deterministic navigation-control automation" section with component table and key rules.
-- `ARCHITECTURE.md` — added "Deterministic navigation-control automation" section with script table and references to templates/ and patterns/.
-
-### Notes
-
-- Scripts are the primary mechanism for existing-project upgrade. Markdown patterns are policy/explanation.
-- All scripts are idempotent and safe to rerun. --dry-run mode provides safe preview.
-- Upgrade script does not create .archcore/, .ai-context/, or graphify-out/.
-- Generated outputs remain support-only. No automatic promotion.
-- Fallback: .proposed files written when YAML merge is too risky.

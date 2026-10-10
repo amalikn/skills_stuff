@@ -96,8 +96,29 @@ class MoveSectionsTest(unittest.TestCase):
         self.assertEqual(ms.main(base + ["Rules"]), 1)
 
     def test_relative_links_resolve_from_the_destination(self):
-        rc, root = self.run_move(True)
+        root = Path(tempfile.mkdtemp())
+        (root / "AGENTS.md").write_text(SOURCE)
+        (root / "docs").mkdir()
+        (root / "docs" / "plan.md").write_text("# plan\n")  # a real target, so the link is relinked
+        ms.main(["--project-root", str(root), "--source", "AGENTS.md", "--dest", "docs/ref.md", "--title", "t", "--summary", "s",
+                 "--apply", "Key anchors"])
         self.assertIn("| plan | [plan](plan.md) |", (root / "docs/ref.md").read_text())
+
+    def test_nested_sections_and_pointer_line(self):
+        text = "# S\n\n## Phase 4\n\nIntro.\n\n### Big part\n\n#### A\n\nalpha\n\n#### B\n\nbeta\n\n### Small part\n\nkeep\n"
+        new, moved = ms.plan(text.split("\n"), ["Big part"], "references/big.md", "x", pointer_line=True)
+        self.assertEqual(moved[0][0], "### Big part")
+        self.assertIn("beta", moved[0])
+        joined = "\n".join(new)
+        self.assertIn("- Read [references/big.md](references/big.md) before that work (moved verbatim from here): Big part.", joined)
+        self.assertIn("### Small part", joined)
+        self.assertNotIn("alpha", joined)
+
+    def test_example_links_are_not_relinked(self):
+        root = Path(tempfile.mkdtemp())
+        (root / "AGENTS.md").write_text("# A\n\n## Example\n\nWrite [parent](../AGENTS.md) in the child README.\n")
+        ms.main(["--project-root", str(root), "--source", "AGENTS.md", "--dest", "docs/ex.md", "--title", "t", "--summary", "s", "--apply", "Example"])
+        self.assertIn("[parent](../AGENTS.md)", (root / "docs/ex.md").read_text())
 
 
 if __name__ == "__main__":

@@ -32,12 +32,14 @@ rr = importlib.util.module_from_spec(_spec)
 sys.modules.setdefault("rotate_records", rr)
 _spec.loader.exec_module(rr)
 
-HEADING = re.compile(r"^## (.+?)\s*$")
+HEADING = re.compile(r"^(#{2,4}) (.+?)\s*$")
 TOC_ENTRY = re.compile(r"^\s*- \[(.+?)\]\(#[^)]*\)\s*$")
 
 
 def sections(lines: list[str]) -> dict[str, tuple[int, int]]:
-    """Map each level-2 heading to its line span, ignoring headings inside fenced code.
+    """Map each `##`, `###` or `####` heading to its span (to the next heading at its level or above), ignoring headings inside fenced code.
+
+    A heading text that appears twice maps to its first occurrence.
 
     Args:
         lines: the file's lines.
@@ -45,17 +47,20 @@ def sections(lines: list[str]) -> dict[str, tuple[int, int]]:
     Returns:
         {heading text: (start index, end index exclusive)}.
     """
-    starts, fence = [], False
+    heads, fence = [], False
     for i, line in enumerate(lines):
         if line.lstrip().startswith("```"):
             fence = not fence
         elif not fence and HEADING.match(line):
-            starts.append(i)
-    ends = starts[1:] + [len(lines)]
-    return {HEADING.match(lines[a]).group(1): (a, b) for a, b in zip(starts, ends)}
+            heads.append((i, len(HEADING.match(line).group(1))))
+    out: dict[str, tuple[int, int]] = {}
+    for k, (a, level) in enumerate(heads):
+        b = next((j for j, lv in heads[k + 1:] if lv <= level), len(lines))
+        out.setdefault(HEADING.match(lines[a]).group(2), (a, b))
+    return out
 
 
-def plan(lines: list[str], names: list[str], dest: str, pointer: str) -> tuple[list[str], list[list[str]]]:
+def plan(lines: list[str], names: list[str], dest: str, pointer: str, pointer_line: bool = False) -> tuple[list[str], list[list[str]]]:
     """Build the new source text and the moved blocks.
 
     Args:
@@ -63,6 +68,7 @@ def plan(lines: list[str], names: list[str], dest: str, pointer: str) -> tuple[l
         names: headings of the sections to move, in the order they should appear in the destination.
         dest: the destination path as the source should link it.
         pointer: heading of the pointer section left in the source.
+        pointer_line: leave one linked line instead of a pointer section (for many moves out of one file, e.g. a SKILL.md).
 
     Returns:
         (the source's new lines, the moved blocks verbatim).
@@ -83,19 +89,24 @@ def plan(lines: list[str], names: list[str], dest: str, pointer: str) -> tuple[l
         moved.append(block)
         cut |= set(range(a, b))
     first = min(spans[n][0] for n in names)
-    ptr = [f"## {pointer}", "",
-           f"Read [{dest}]({dest}) before the work it covers. It holds these sections, moved verbatim from this file (a citation of a section",
-           "by name resolves there): " + "; ".join(names) + ".", ""]
-    out, toc_done = [], False
+    if pointer_line:
+        ptr = [f"- Read [{dest}]({dest}) before that work (moved verbatim from here): " + "; ".join(names) + ".", ""]
+    else:
+        ptr = [f"## {pointer}", "",
+               f"Read [{dest}]({dest}) before the work it covers. It holds these sections, moved verbatim from this file (a citation of a section",
+               "by name resolves there): " + "; ".join(names) + ".", ""]
+    out, toc_done = [], pointer_line
     for i, line in enumerate(lines):
         if i == first:
+            if out and out[-1].strip():
+                out.append("")
             out += ptr
         if i in cut:
             continue
         m = TOC_ENTRY.match(line)
         if m and m.group(1) in names:
             if not toc_done:
-                anchor = re.sub(r"-+", "-", re.sub(r"[^\w\- ]", "", pointer.lower()).replace(" ", "-"))
+                anchor = re.sub(r"[^\w\- ]", "", pointer.lower()).replace(" ", "-")
                 out.append(f"- [{pointer}](#{anchor})")
                 toc_done = True
             continue
@@ -119,9 +130,9 @@ def dest_text(moved: list[list[str]], source: str, title: str, summary: str, tod
     head = ["---", f"Title: {title}", "Category: reference", "Status: current", "Authority: local-supplement",
             f"Scope: On-need reference moved verbatim from {source}", f"Last reviewed: {today}", "Summary: >-", f"  {summary}", "---", "",
             f"# {title}", "", f"Moved verbatim from `{source}` on {today} to keep that file within its budget for files loaded whole.", ""]
-    names = [HEADING.match(b[0]).group(1) for b in moved]
+    names = [HEADING.match(b[0]).group(2) for b in moved]
     if sum(len(b) for b in moved) > 100:
-        head += ["## Contents", ""] + [f"- [{n}](#{re.sub(r'-+', '-', re.sub(r'[^\w\- ]', '', n.lower()).replace(' ', '-'))})" for n in names] + [""]
+        head += ["## Contents", ""] + [f"- [{n}](#{re.sub(r'[^\w\- ]', '', n.lower()).replace(' ', '-')})" for n in names] + [""]
     body: list[str] = []
     for b in moved:
         body += b + [""]
@@ -144,6 +155,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--title", required=True)
     ap.add_argument("--summary", required=True)
     ap.add_argument("--pointer", default="Reference loaded on need", help="heading of the pointer section left in the source")
+    ap.add_argument("--pointer-line", action="store_true", help="leave one linked line instead of a pointer section")
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("names", nargs="+", help="exact `##` headings to move")
     args = ap.parse_args(argv)
@@ -154,13 +166,39 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     lines = src.read_text().splitlines()
     try:
-        new, moved = plan(lines, args.names, args.dest, args.pointer)
+        new, moved = plan(lines, args.names, args.dest, args.pointer, args.pointer_line)
     except KeyError as exc:
         print(f"refused: section(s) not found in {args.source}: {exc}")
         return 1
     # relative links are rewritten for the destination's folder, as rotation does (cambium-swap's moved Key anchors broke, 2026-10-10)
     src_dir, dst_dir = (("" if d == "." else d) for d in (str(pathlib.Path(args.source).parent), str(pathlib.Path(args.dest).parent)))
-    moved = [rr.relink(b, src_dir, dst_dir) for b in moved]
+    root = pathlib.Path(args.project_root)
+
+    def relink_real(line: str) -> str:
+        """Relink only links whose target exists from the source's folder; example links (`../<folder>/README.md`) stay as written.
+
+        Args:
+            line: one moved line.
+
+        Returns:
+            The line with real relative links rewritten for the destination.
+        """
+        def one(m: re.Match) -> str:
+            """One markdown link, relinked when its target is a real file.
+
+            Args:
+                m: the link match (label, target).
+
+            Returns:
+                The link text to keep.
+            """
+            target = m.group(2).split("#")[0]
+            if not target or target.startswith(("/", "http", "mailto:")) or not (root / src_dir / target).exists():
+                return m.group(0)
+            return rr.relink([m.group(0)], src_dir, dst_dir)[0]
+        return re.sub(r"(\[[^\]]*\])\(([^)\s]+)\)", one, line)
+
+    moved = [[relink_real(l) for l in b] for b in moved]
     text = dest_text(moved, args.source, args.title, args.summary, dt.date.today().isoformat())
     lost = Counter(l for b in moved for l in b) - Counter(text.splitlines())
     if lost:
