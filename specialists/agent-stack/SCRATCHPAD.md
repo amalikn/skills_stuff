@@ -1,3 +1,14 @@
+---
+Title: Scratchpad
+Category: working-state
+Status: current
+Summary: Current working state, newest first per section; superseded entries rotate to docs/history (search with --find).
+Kind: state
+Budget: 200 lines, 25 KB
+Archive: docs/history/ (`--find`, `--show`)
+Last rotated: 20261010_1801
+---
+
 # SCRATCHPAD
 
 Agent working memory for Agent Stack. Use for: draft plans, terminal output, intermediate analysis, refactor outlines. Cleared between sessions unless content is explicitly marked KEEP.
@@ -12,12 +23,10 @@ Agent working memory for Agent Stack. Use for: draft plans, terminal output, int
 - [Open items](#open-items)
 - [Key anchors](#key-anchors)
 - [Recent decisions](#recent-decisions)
-- [Session history (summaries — full detail in memory-keeper)](#session-history-summaries-full-detail-in-memory-keeper)
-- [Residual risk — staleness audit 20260903_2200](#residual-risk-staleness-audit-20260903_2200)
+- [Session history (summaries — full detail in memory-keeper)](#session-history-summaries--full-detail-in-memory-keeper)
+- [Residual risk — staleness audit 20260903_2200](#residual-risk--staleness-audit-20260903_2200)
 - [Next actions](#next-actions)
-- [Memory pointers (navigation only — content is above)](#memory-pointers-navigation-only-content-is-above)
-
----
+- [Memory pointers (navigation only — content is above)](#memory-pointers-navigation-only--content-is-above)
 
 ## Current state
 
@@ -69,14 +78,7 @@ venv Python by path via `{{py}}` with a `_require-venv` guard, replacing an impl
   `atar-supplier` disagreement.
 - [x] ~~**Audit receipts blocking the next audit**~~ — archived 2026-09-02 to the working cache under an audit-archive folder dated 20260901, with a README recording that the gate ended FAILED and
   why; the stale `.gitignore` entry is removed. Not deleted: a failed gate is when the pre-audit state is worth keeping.
-- [x] ~~**Audit findings A1 and A2**~~ — CLOSED 2026-09-02. Sync apply is staged-then-promoted with atomic state writes ([ADR 0009](.archcore/adr/0009-sync-apply-is-atomic.md)); symlinks are refused
-  outright and containment is enforced on both source and destination ([rule 0010](.archcore/rules/0010-sync-refuses-symlinks.md)). Superseded detail: Sync apply is non-atomic, and sync follows
-  symlinks through `is_file`/`copy2` so a supplied symlink can escape the intended roots. Best fixed together; do them before calling Agent Stack broadly production-ready.
 
-- [x] ~~**`routing_rules` contradiction**~~ — RESOLVED 2026-09-02 (see the residual note below, now historical). Twelve rules made advisory, two renamed, two negative-tested guards added. It also
-  explained the `atar-supplier` disagreement.
-- [x] ~~**Archcore promotion**~~ — DONE 2026-09-02. Queue regenerated rather than promoted stale, 29 documents promoted, all accepted by the operator. `.archcore/` is highest authority;
-  `.archcore/README.md` is the index and carries the never-promote list.
 - [x] ~~**NEXT PHASE — evidence from outside the frozen 60**~~ — FIRST EVIDENCE IN, 20260902. The 24-case holdout is authored, executed and SPENT: 16/19 passed, 5 runner failures, 0 missed gates, 62
   over-asserted ones. Replay and shadow-mode remain. Superseded detail: Author an unseen holdout of 20–30 cases without reference to the development corpus; replay real historical project tasks; then
   shadow-mode routing alongside normal work. Only after that decide whether more routing taxonomy or personas are needed. See [plan 0001](.archcore/plans/0001-next-evaluation-phase.md).
@@ -241,46 +243,8 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
   external GitHub org/repo name (has a slash) or an external filename with a tracked suffix apart from a real local path. Hit writing a CHANGELOG.md entry for the best-of-agent-harnesses survey,
   naming the source list's own org/repo path and its data-file name in prose — both are external, neither is a local path. Fixed by not backticking either external name, matching the file's own
   existing precedent of backticking only a bare function like `_watch()`, never the repo name it belongs to. Working documents under `docs/` are unaffected — they aren't in SURFACES. `KEEP`
-- **2026-09-04 — When a commit hook blocks on a known, previously-bypassed issue, ask before repeating the bypass.** The global policy_guard.py blocker recurred; rather than silently reusing the prior
-  `--no-verify` exception, asked the operator, who chose to fix the root cause instead. Led to finding the checker predated the thin-wrapper + on-demand-playbook architecture split, fixed in
-  `scripts_stuff` (commit `df86024`) rather than duplicating content into three global files. `KEEP`
-- **2026-09-04 — "Do it on your own" does not waive the evidence-gate rule.** Asked to write an implementation-and-verification plan the agent "will do on their own," the request was read as
-  authorship/execution ownership, not as license to skip the operator-named-trigger + operator-approval requirement in the reliability adaptation proposal. Wrote the plan as a ready-to-execute
-  reference; explicitly did not treat writing it as permission to begin any phase. `KEEP`
-- **2026-09-04 — A markdown table needs single-line-under-200-char rows in this repo, or it must be re-read after every edit.** Second confirmed occurrence (first: the external-orchestrator-survey
-  table) of the repo's auto-wrap formatting hook silently corrupting a long-celled table by wrapping cells across physical rows. `just governance` does not catch this — it checks line length and
-  catalog coverage, not GFM table structure. Treat any new large table as at-risk until re-read and verified. `KEEP`
-- **2026-09-04 — Dated acceptance-batch counts are frozen at their date, not kept in sync.** README.md's "29 documents ACCEPTED... 20260902_0300" line stays as written even though six more documents
-  were accepted 2026-09-04 and the true count is higher — it is `count:asat`, a historical fact, not a live total. Do not restate it on a later acceptance pass. `KEEP`
-- **2026-09-04 — A token-optimization-doc row moves from candidate-verdict to adopted-record once its recommendation is actually implemented.** Applied to the Sentry Skills/Prompt Optimizer row after
-  rule 0013 landed, matching the earlier Token Optimizer row upgrade. Applies to any future row in that doc (e.g. Skill Optimizer's "PILOT cautiously") once acted on. `KEEP`
-- **2026-09-03 — External mechanisms are research leads, not a roadmap.** The source-level assessment of 25 repositories records an exact upstream file and symbol for every candidate or an explicit
-  no-component finding. No control is to be built until a named field/replay counterexample proves that the existing field log, run manifest, or evaluation provenance cannot answer the required
-  question. `KEEP`
-- **2026-09-03 — Any future normal-work receipt uses the existing JSONL stream.** Store one object per line in `evals/field-log.jsonl`, preferably as a `receipt` object in the run's existing row; do
-  not add a separate receipt store. The run manifest stays a per-run snapshot. `KEEP`
 
-- **2026-09-01 — Keep the route invariant and capability index despite Baseline v3's null result.** They cost nothing at inference and improve the model's initial route; a deterministic closure layer
-  supplements them rather than replacing them. Recorded explicitly so a future agent does not read "the invariant did not work" and delete it. `KEEP`
-- **2026-09-01 — Baseline v3 is a valid negative result, not a failed run.** Frozen, provenance-verified, measured on all 60. It rejects a specific hypothesis cleanly, which is worth as much as a
-  positive baseline and prevents the same prose fix being retried. `KEEP`
-- **2026-09-01 — The bottleneck is the contract, not the model.** One holdout case is a model-tier ceiling; ten fail on both production models. Do not optimise the router around Flash, and do not
-  change the corpus on a single model's disagreement. `KEEP`
-- **2026-09-01 — Capability annotations describe what a skill genuinely does, never what would raise the score.** All 22 candidates were checked and none relabelled; relabelling would destroy the
-  `analysis != independent challenge` invariant. `KEEP`
 
-- 2026-09-01 — Do **not** add `skill-slurp-chat` or `skill-project-coherence` to Agent Stack. A brief addition was fully reverted (commit `1201e42`). Library restored to 52 capabilities / 37 packages;
-  pre-existing standalone project-coherence links under Claude and Codex were preserved, and Claude's pre-existing one-file slurp-chat directory was restored.
-- 2026-09-01 — The revision deliberately did **not** rewrite the upstream-sync transaction model (audit A1/A2). Valid maintenance-layer work, kept separate from the persona/contract/routing goal.
-- 2026-09-01 — Gates use a **capability model**, not gate-to-persona. Operator rejected the first design: forcing `research-thompson` onto "check Cisco docs for feature X" when `cto-vogels` plus a
-  research skill suffices is exactly the inflation the `direct-adversarial` family punishes.
-- 2026-09-01 — Gates are enforced at **runtime** by the orchestrator, not eval-only. Leaving them in the harness would make the eval smarter than the system it measures.
-- 2026-09-01 — `runtime_required` is **computed**, never judged: it is a lookup against each selected skill's `execution` field.
-- 2026-09-01 — Maintenance venv relocated out of the source repo to the `skills-working-cache` peer, per the venv placement rule in [../../AGENTS.md](../../AGENTS.md).
-- 2026-09-01 — Operator approved `--force` on the routing-evals update: take the newer library content, re-apply the governance deltas on top. The update's base was the original zip, so a clean apply
-  was not available.
-- 2026-09-01 — Interpreters are addressed explicitly by path, never through `mise exec -- python`. The implicit form resolves correctly but hides the dependency at the call site and degrades silently
-  to the host interpreter; it also masked the in-repo venv violation for as long as that existed.
 
 ---
 
@@ -452,41 +416,6 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
   with `persona_mandatory = false`. Left unfixed deliberately; it is the top open item and a live explanation for the ten contract cases.
 - The exit gate is reported **FAILED** with two tool-vs-project residuals rather than engineered to pass, and the coherence pass reconciled four surfaces still describing the pre-capability model.
 
-### 2026-09-01 — Baselines v2 and v3, capability taxonomy, cross-model experiment `KEEP`
-
-- Resolved `persona_mandatory` capability-first, removed the direct-skill scorer penalty, and added four `[[precedence]]` ownership tie-breaks → **Baseline v2 33/60 (55.0%)**, with `wrong-owner` 6 → 3
-  and all three precedence targets landing. An early draft of one rule contradicted the corpus on security ownership and was caught before the run.
-- Classified all 22 unsatisfied failures **before** editing the catalogue: every one is a routing defect, none a mapping defect. Applied the capability taxonomy anyway for maintainability, and
-  `--rescore` confirmed the predicted zero movement (33/59 → 33/59).
-- Built route invariants and a derived capability index → **Baseline v3 34/60, a valid negative result**; then ran a three-way Flash/Pro/Claude holdout showing the target defect is model-invariant
-  (`unsatisfied` 7/6/7) and that ten of twenty failures are contract issues. Next work is deterministic closure.
-
-### 2026-09-01 — Gates applied; after-baseline 28/60; genuine failures analysed
-- Applied the gate definitions using the operator's **capability model** — a gate is an obligation discharged by a skill *or* a persona, with the persona mandatory only for `critic-gate` where
-  independence is the point. Provenance stamping, gate cross-reference validation (proven to fail), an orchestrator Step 6 rewrite, and a deterministic scorer (`runtime_required` computed, capability
-  satisfaction, prerequisites) landed alongside it.
-- **28/60 (46.7%), mean 80.6** — up from 23/60 / 76.4. The pass rate understates it: missing-gate failures went **43 -> 3**, replaced by a new `unsatisfied` class (0 -> 24). The defect moved from
-  "never set the flag" to "set it, then did not equip the route".
-- Analysed the 21 genuine failures: about a third are a contradiction we introduced (direct-skill vs `persona_mandatory`), not router defects. The real work is 7 cases needing ownership tie-break
-  rules.
-- Also fixed the shared `code_comment_rewrap` tool, which was merging aligned tables and runnable examples into prose in every repo. 7 regression tests added.
-
-### 2026-09-01 — First full routing baseline (60/60) and gate-definition proposal
-- Ran the complete corpus on Hermes/DeepSeek: **23/60 (38.3%), mean 76.4**. Split: **43 gate-flag** hard failures vs **19 genuine** routing errors. Excluding gate failures, 45/60 (75%) would pass —
-  the headline number is largely a measurement of the specification gap.
-- Per family: business-research 6/8 (zero real errors) · direct-adversarial 3/7 · atar-import 3/8 · software-ai-engineering 3/10 · networking-infrastructure 4/15 · jdm-import 4/12.
-- Confirmed validity despite an internet outage mid-session: Hermes' fallback to local `qwen3.5:35b` never fired.
-- Wrote `docs/routing-evaluation/gate-definitions-proposal-20260901_1600.md` with triggers derived from the corpus (not invented), the two prompt fixes, and four open policy questions. Nothing
-  applied.
-- Operational lesson: a foreground Bash timeout does **not** kill the process — an orphan ran 58 minutes and competed with a later run on the same family.
-
-### 2026-09-01 — Model connectivity for behavioural eval; gate-definition gap found
-- Added `scripts/eval_model_adapter.py` as a **protocol** adapter (OpenAI `/chat/completions`), not a provider one, so `ROUTING_EVALS.md`'s no-hardcoded-vendor rule holds. Recipes:
-  `routing-eval-ping`, `-local`, `-remote`, `-hermes`. Hermes is the cloud-DeepSeek route — it already holds the provider and key, and `hermes -z` prints only the answer.
-- Ran the first behavioural evals. Cross-model spread on 2 cases showed every model failing the *same* gate flags, which led to the root cause: 240 hard gate assertions in the corpus against **0**
-  definitions in `routing.toml`.
-- Launched the full 60-case corpus against Hermes in the background; results to the working cache.
-
 ### 2026-09-01 — Routing-evals update applied; interpreter resolution made explicit
 - Applied the delta update from `/Volumes/Data/_ai/_skills/skills_stuff/specialists/agent-stack-update` (50 files). Its base was the ORIGINAL zip, so it refused on 10 diverged files and was run with
   `--force` on explicit operator approval; the newer library content was taken and the governance deltas re-applied on top.
@@ -494,21 +423,6 @@ a shape to follow), then reference them from the prompt rules. Until that is clo
 - Promoted that lesson into the canonical `skill-ai-it` at `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it` — a SKILL.md rule plus checklist item, the justfile template's
   RUNTIME PINNING header, and a new Tier 2 `check_interpreter_pinning` in its checker template, so every future bootstrapped project inherits it.
 - Verified: 334 governance checks, 60-case routing corpus, 37 unit tests, all PASS. <!-- count:asat -->
-
-### 2026-09-01 — Governance bootstrap and venv routing fix
-- Ran `/skill-ai-it` in `bootstrap` mode: created AGENTS.md, CLAUDE.md, SCRATCHPAD.md, CHANGELOG.md, AI_NAVIGATION.md, context-map.yaml, ARCHITECTURE.md, scripts/README.md, and a tuned
-  `scripts/check_governance.py`.
-- Found and fixed a storage-routing violation: `.mise.toml` created the venv at `.venv` inside the repo. `.gitignore` hid it, so it was invisible to `git status` and to every existing check. Relocated
-  to the working-cache peer and added `check_venv_outside_repo()` as a regression guard.
-- Fixed two stale doc references that dropped the `skills/` path prefix on `skills/skill-creator/scripts/quick_validate.py`.
-- Verified: 32 unit tests PASS, `scripts/validate_agent_stack.py` PASS (52 capabilities; 15 personas; 37 skills). <!-- count:asat -->
-
-
-### 2026-09-01 — Agent Stack revision (prior session)
-- Expanded all 15 personas into operational judgement contracts; added `routing.toml`, `RUNTIME.md`, `SKILL_STANDARD.md`, root `.mise.toml`, and `scripts/validate_agent_stack.py`.
-- Evidence basis: memory-keeper keys `agent-stack.global-install`, `agent-stack.scope-decision`; `REVISION_NOTES.md`.
-
----
 
 ## Residual risk — staleness audit 20260903_2200
 

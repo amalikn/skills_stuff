@@ -20,6 +20,7 @@ These are **evidence and working artifacts, not policy.** Durable decisions live
 - [Routing evaluation](#routing-evaluation)
 - [Reliability adaptation](#reliability-adaptation)
 - [Off-topic](#off-topic)
+- [History](#history)
 
 Reorganised 2026-09-04 from a single flat table into these four subfolders, once the flat list passed a dozen files and grouping by content became more useful than one long table. Coverage is enforced
 recursively — a document added anywhere under `docs/` and not linked here fails the coverage check, the same guarantee the old flat layout gave.
@@ -60,5 +61,10 @@ Filed here at operator request even though it does not bear on Agent Stack's own
 | Document                                                   | What it is                                                                                 |
 | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | [off-topic/vertical-agent-framework-survey-20260903_2126.md](off-topic/vertical-agent-framework-survey-20260903_2126.md) | Fact-check of a separate proposed stack for building new vertical domain-specialist agents |
+
+## History
+
+[history/readme.md](history/readme.md) indexes old CHANGELOG and SCRATCHPAD entries rotated out by `just rotate --apply`. Do not read them by default: `just history <term>` or
+`just history-show <stamp>` when a live entry cites one. The rotation keeps that index, so the coverage check exempts the archives themselves.
 
 Add a document here and it must appear in this table — the coverage check fails until it does.

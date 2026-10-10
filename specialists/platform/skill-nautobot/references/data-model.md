@@ -145,20 +145,17 @@ Source: `nautobot/dcim/models/devices.py:164-215` (DeviceType), `:495-652` (Devi
 > **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's REST API, an interface template added to a Device Type after a Device of that type existed: the Device's interface list did not gain it; nautobot/dcim/models/device_component_templates.py lines 399-414 (`InterfaceTemplate.instantiate`) in the installed source · Falsifier: a 3.2.x Device that gains an interface when a template is added to its existing Device Type
 > Adding an interface template to a Device Type changes only Devices created afterwards; existing Devices keep their interfaces. Back-fill them with `scripts/nautobot_template_sync.py` (plan, then `--apply`), which creates each missing interface as instantiation would: name, label, type, port_type, mgmt_only, speed, duplex and description from the template, status Active. An interface already present by name is left as it is.
 
-> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's REST API (`/dcim/interfaces/?...&depth=1` returned no `tagged_vlans` on a
-> trunk that carries twelve; the same call with `exclude_m2m=false` returned them) · Falsifier: a 3.2.x list view that includes many-to-many fields by default
+> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's REST API (`/dcim/interfaces/?...&depth=1` returned no `tagged_vlans` on a trunk that carries twelve; the same call with `exclude_m2m=false` returned them) · Falsifier: a 3.2.x list view that includes many-to-many fields by default
 > REST **list** views leave many-to-many fields (`tagged_vlans`, tags and the like) out unless the request adds `exclude_m2m=false`. Reading a trunk's VLANs
 > from a list call without it makes every trunk look empty; add the flag, or read the object by its own URL.
 
-> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's cable trace API (`/dcim/interfaces/<id>/trace/`) on a switch port
-> cabled to a device's front port mapped to a rear port cabled to a Circuit termination · Falsifier: a trace that crosses a device between two interfaces
+> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's cable trace API (`/dcim/interfaces/<id>/trace/`) on a switch port cabled to a device's front port mapped to a rear port cabled to a Circuit termination · Falsifier: a trace that crosses a device between two interfaces
 > A cable trace follows Cables and crosses a device only through a front port mapped to a rear port (a pass-through); it ends at any interface, never
 > starts on a virtual interface (a VLAN interface cannot take a Cable) and never crosses a switch. To show a path that runs through a VLAN interface or a
 > switch, assemble it from Relationships, Cables and 802.1Q membership (for example an app panel), and model a pass-through box (a carrier's NTD) with
 > front and rear ports rather than two interfaces.
 
-> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `nautobot/core/ui/object_detail.py` (`Panel.render_body_content`) and
-> `nautobot/core/templatetags/helpers.py` (`render_markdown`: Markdown with `fenced_code` and `tables`, then `clean_html`) · Falsifier: a 3.2.x `Panel`
+> **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `nautobot/core/ui/object_detail.py` (`Panel.render_body_content`) and `nautobot/core/templatetags/helpers.py` (`render_markdown`: Markdown with `fenced_code` and `tables`, then `clean_html`) · Falsifier: a 3.2.x `Panel`
 > without `render_body_content`
 > An app's `TemplateExtension.object_detail_panels` can carry a `Panel` subclass that overrides `render_body_content(context)` and returns
 > `render_markdown(text)`: a computed Markdown table with links renders sanitised, built when the page opens (nothing stored). Job log messages render
@@ -324,22 +321,18 @@ Source: `nautobot/extras/models/contacts.py:49-125`, `nautobot/extras/models/sta
 `nautobot/dcim/models/devices.py:1401-1433,1500-1514`; `docs/user-guide/core-data-model/extras/contact.html`, `docs/user-guide/core-data-model/dcim/softwareversion.html`,
 `docs/user-guide/core-data-model/dcim/softwareimagefile.html`.
 
-> **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's ORM (`Interface.objects.filter(cable__isnull=False)` raised
-> FieldError listing `cable_termination` among the fields; `Interface._meta.get_field("cable_termination")` is a OneToOneRel to
-> `nautobot.dcim.models.cables.CableToCableTermination`, fields id, cable, cable_end, interface, ..., connector) · Falsifier: a 3.2.x Interface with a `cable` field
+> **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's ORM (`Interface.objects.filter(cable__isnull=False)` raised FieldError listing `cable_termination` among the fields; `Interface._meta.get_field("cable_termination")` is a OneToOneRel to `nautobot.dcim.models.cables.CableToCableTermination`, fields id, cable, cable_end, interface, ..., connector) · Falsifier: a 3.2.x Interface with a `cable` field
 > An Interface no longer has a `cable` field in 3.2: a Cable's ends are `CableToCableTermination` rows. Find the Cables touching a set of devices with
 > `CableToCableTermination.objects.filter(interface__device__in=...).values_list("cable_id")`, then read each Cable's ends through its
 > `termination_a` / `termination_b` properties, which 3.2 keeps for compatibility (connector 1).
 
-> **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's nbshell (`Location.descendants(include_self=True).count()` raised
-> ProgrammingError "missing FROM-clause entry for table __tree") · Falsifier: a 3.2.x `descendants()` queryset that counts or filters without tree fields
+> **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's nbshell (`Location.descendants(include_self=True).count()` raised ProgrammingError "missing FROM-clause entry for table __tree") · Falsifier: a 3.2.x `descendants()` queryset that counts or filters without tree fields
 > `Location.descendants()` is a django-tree-queries queryset that needs its tree fields; used as a subquery (`location__in=loc.descendants(...)`) or
 > counted directly it fails. When the tree below a Location is one level (a Location Type that is not nestable), name it:
 > `Q(location=loc) | Q(location__parent=loc)`. The REST `location` filter on Devices is a tree filter (`TreeNodeMultipleChoiceFilter`) and does include
 > descendants.
 
-> **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: `Device._meta.get_fields()` in one deployment (only `position`, a rack unit, and
-> `vc_position`); `Location` has `latitude` and `longitude` · Falsifier: a 3.2.x Device with its own coordinate fields
+> **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: `Device._meta.get_fields()` in one deployment (only `position`, a rack unit, and `vc_position`); `Location` has `latitude` and `longitude` · Falsifier: a 3.2.x Device with its own coordinate fields
 > A Device has no coordinates of its own; a position belongs to its Location. To place units on a map natively, give the towers or poles their own
 > Location Type below the site (not nestable, holding `dcim.device`) with latitude and longitude, and move the units into it. Code that compares a
 > device's Location with its site must then compare the site (the Location or its parent), or a moved unit looks like it is at another site.

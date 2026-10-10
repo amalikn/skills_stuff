@@ -325,25 +325,81 @@ def slug(heading: str) -> str:
     return re.sub(r"\s", "-", re.sub(r"[^\w\s-]", "", heading.strip().lower()))
 
 
+TOC_LINE = re.compile(r"^\s*[-*] \[.*\]\(#[^)]*\)\s*$|^<!-- toc")
+
+
+def contents_span(lines: list[str]) -> tuple[int, int] | None:
+    """Where a `## Contents` block sits: its heading and the contents-link lines under it, nothing else.
+
+    Prose after the links is record content, not navigation (vocus-profitability, 2026-10-10: 424 lines of text under a Contents list
+    were dropped when the block was taken to run to the next heading).
+
+    Args:
+        lines: a record's lines.
+
+    Returns:
+        (start, end) indices, end exclusive; None when there is no Contents heading.
+    """
+    if "## Contents" not in lines:
+        return None
+    start = lines.index("## Contents")
+    end = start + 1
+    while end < len(lines) and (lines[end].strip() == "" or TOC_LINE.match(lines[end])):
+        end += 1
+    while end > start + 1 and lines[end - 1].strip() == "":
+        end -= 1
+    return start, end
+
+
+def without_contents(lines: list[str]) -> list[str]:
+    """The lines without the Contents heading and its link lines.
+
+    Args:
+        lines: a record's lines.
+
+    Returns:
+        The lines with only the navigation removed.
+    """
+    span = contents_span(lines)
+    return lines if span is None else lines[:span[0]] + lines[span[1]:]
+
+
 def rebuild_contents(lines: list[str]) -> list[str]:
-    """Regenerate a `## Contents` list from the level-2 headings that remain.
+    """Regenerate the Contents links from the level-2 headings that remain, above the first entry.
 
     Args:
         lines: the live file's lines.
 
     Returns:
-        The lines with the bullet list under `## Contents` replaced; unchanged when there is no Contents heading.
+        The lines with the link list under `## Contents` replaced; unchanged when there is no Contents heading.
     """
-    try:
-        start = lines.index("## Contents")
-    except ValueError:
+    span = contents_span(lines)
+    if span is None:
         return lines
-    end = start + 1
-    while end < len(lines) and not lines[end].startswith("## "):
-        end += 1
-    heads = [l[3:] for l in lines[end:] if l.startswith("## ")]
-    block = ["## Contents", ""] + [f"- [{h}](#{slug(h)})" for h in heads] + [""]
-    return lines[:start] + block + lines[end:]
+    rest = lines[:span[0]] + lines[span[1]:]
+    if rest[span[0]:span[0] + 1] == [""] and span[0] > 0 and rest[span[0] - 1] == "":
+        del rest[span[0]]
+    first = next((i for i, l in enumerate(rest) if l.startswith("## ")), len(rest))
+    # A Contents list left below an entry (an entry inserted above it) goes back above the first entry; prose stays where it was.
+    first = min(first, span[0])
+    heads = [l[3:] for l in rest if l.startswith("## ")]
+    return rest[:first] + ["## Contents", ""] + [f"- [{h}](#{slug(h)})" for h in heads] + [""] + rest[first:]
+
+
+def content_lines(text: str) -> list[str]:
+    """A record's lines that carry content: everything except the top front matter and the Contents navigation.
+
+    Args:
+        text: the whole file.
+
+    Returns:
+        The lines, in order.
+    """
+    lines = text.split("\n")
+    if lines and lines[0].strip() == "---":
+        close = next((i for i in range(1, len(lines)) if lines[i].strip() == "---"), 0)
+        lines = lines[close + 1:]
+    return without_contents(lines)
 
 
 def archives_of(root: pathlib.Path, live: str) -> list[pathlib.Path]:
@@ -450,7 +506,7 @@ def main(argv: list[str] | None = None) -> int:
         Returns:
             (lines, bytes) of the live text with the new front matter.
         """
-        text = "\n".join(front_matter_update(rec.preamble, new_keys) + render(rec)[len(rec.preamble):])
+        text = "\n".join(rebuild_contents(front_matter_update(rec.preamble, new_keys) + render(rec)[len(rec.preamble):]))
         return text.count("\n"), len(text.encode())
 
     after = choose(rec, kind, now, keep_days, min_keep, pinned, cited_stamps(root), (budget_lines, budget_bytes), preview)
@@ -486,15 +542,14 @@ def main(argv: list[str] | None = None) -> int:
         arc.append("")
     arc_text = "\n".join(arc) + "\n"
     live_text = "\n".join(rebuild_contents(front_matter_update(rec.preamble, new_keys) + render(rec)[len(rec.preamble):]))
-    # Compare entry bodies only: the preamble (front matter, title, regenerated Contents) is navigation, not record content.
-    body_before = original.split("\n")[len(rec.preamble):]
-    live_lines = live_text.split("\n")
-    body_after = live_lines[next((i for i, l in enumerate(live_lines) if l.startswith("## ") and l != "## Contents"), len(live_lines)):]
-    lost = Counter(l for l in body_before if l.strip()) - Counter(l for l in body_after if l.strip())
+    # Verify the whole file: every content line (all but front matter and Contents links) is either still live or in the archive.
+    lost = Counter(l for l in content_lines(original) if l.strip()) - Counter(l for l in content_lines(live_text) if l.strip())
     archived = Counter(l for l in relink(removed, source_dir, ARCHIVE_DIR) if l.strip())
     relinked = Counter(relink(list(lost.elements()), source_dir, ARCHIVE_DIR))
     if relinked - archived:
         print(f"refused: {sum((relinked - archived).values())} removed line(s) not found in the archive; nothing written", file=sys.stderr)
+        for line in list((relinked - archived))[:3]:
+            print(f"  missing: {line[:150]!r}", file=sys.stderr)
         return 1
     if not args.apply:
         print("plan only; add --apply to rotate")

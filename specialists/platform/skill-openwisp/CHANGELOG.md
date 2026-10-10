@@ -14,6 +14,11 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261010_1805 Workspace standard (operator, 2026-10-10; skill-ai-it "Governed files: headers, budgets, rotation and the checker's shape"): `justfile` gains
+  `ai_it`, a second `check` line running skill-ai-it's `doc_freshness.py --check`, and the `stale`, `docs`, `history`, `history-show` and `rotate`
+  recipes; `AGENTS.md` Working rules gain the triage line (`just docs <folder>`, `just stale`, `just history`); `doc_freshness.py --write-baseline`
+  grandfathers existing findings (scripts/doc-freshness-baseline.json, 20 entries), so only new ones fail.
+- 20261010_1805 CHANGELOG.md (73) and SCRATCHPAD.md (94) are within budget; nothing rotated.
 - 20261007_1205 `references/health-alerts-notifications.md`: Learned 2026-10-07 (reusable_candidate, UNVERIFIED): agents with `verify_ssl` go silent
   fleet-wide when the controller certificate expires; alert on certificate expiry and fleet-wide freshness, classify as a transport cause.
 - 20261005_1936 Governance follow-ups (operator): the `justfile` merges this bootstrap's recipes with a parallel session's `helpers` and probe recipes, and `bootstrap`

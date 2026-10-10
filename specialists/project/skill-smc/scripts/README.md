@@ -604,6 +604,12 @@ reusable knowledge and tooling, not case-specific evidence. See the parent repo'
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
 <!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
 
+## doc-freshness-baseline.json
+
+Data, not a script: the findings skill-ai-it's `doc_freshness` grandfathered when this pack adopted the governed-file standard (2026-10-10).
+`just check` fails only on findings not in it; regenerate with `just stale` reviewed first, then `doc_freshness.py --project-root . --write-baseline`
+from the skill-ai-it package. A file over its budget may shrink, never grow.
+
 ## Execution Policy
 
 - Prefer the existing canonical task runner for this project.

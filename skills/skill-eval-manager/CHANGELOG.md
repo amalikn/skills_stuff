@@ -1,4 +1,24 @@
+---
+Title: Changelog
+Category: change-log
+Status: current
+Summary: Newest entries only; older ones rotate to docs/history (search with --find, print with --show).
+Kind: log
+Budget: 200 lines, 25 KB
+Archive: docs/history/ (`--find`, `--show`)
+Last rotated: 20261010_1806
+---
+
 # Changelog
+
+## 20261010_1805 — Governed-file standard: recipes, records rotated
+
+- Workspace standard (operator, 2026-10-10; skill-ai-it "Governed files: headers, budgets, rotation and the checker's shape"): `justfile` gains
+  `ai_it`, a second `check` line running skill-ai-it's `doc_freshness.py --check`, and the `stale`, `docs`, `history`, `history-show` and `rotate`
+  recipes; `AGENTS.md` Working rules gain the triage line (`just docs <folder>`, `just stale`, `just history`); `doc_freshness.py --write-baseline`
+  grandfathers existing findings (scripts/doc-freshness-baseline.json, 28 entries), so only new ones fail.
+- CHANGELOG.md rotated 247 -> 186 lines (two passes, the second after this entry; 5 entries) and SCRATCHPAD.md 205 -> 195 lines (7 entries),
+  all to `docs/history/`.
 
 ## 2026-10-07 — deterministic navigation-control upgrade
 
@@ -148,86 +168,6 @@ re-upgraded onto managed block version `2026-09-23-template-sourced-blocks-v1`, 
 The package-specific drift handling, update rules and answer-contract addition remain below the END marker as `###` subsections of *Package-specific routing*, so they extend the generic sections
 rather than colliding with them, and a future upgrade cannot reach them. Re-verified after the re-upgrade: `just check` 189 passed, `just nav-validate` 0 warnings and 0 failures, `just lint-md` 0
 errors, `just validate-all` green, and a second consecutive `just nav-upgrade` left `AI_NAVIGATION.md` byte-identical.
-
-## 0.1.5 — 2026-09-23
-
-### Changed
-
-- **The routing record is named `ledger.jsonl`** (operator, same day), matching the estate convention set by `skill-walk-before-run`. It shipped in 0.1.4 under a different name chosen specifically to
-  dodge a filename collision; the convention is worth more than the dodge, so the dodge loses. References updated across `AGENTS.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `scripts/README.md`,
-  `scripts/check_governance.py` and `scripts/record_writeback.py`. The 0.1.4 entry above now names the current file; this entry is the record that it moved.
-
-  **The consequence is real and worth stating plainly.** That filename is covered by the estate OPA guard, which hard-blocks any Bash command whose *text* mentions it — not merely a command that
-  writes it — and routes the author to `/Volumes/Data/_ai/_skills/skills_stuff/skills/skill-walk-before-run/scripts/append_entry.py`. For this package the guard is right in spirit and wrong in
-  destination: correct that nothing should hand-write the
-  record, incorrect that these rows belong in another pack's writer, which enforces a different schema. `scripts/record_writeback.py` is unaffected, because the filename appears inside the script
-  rather than in the invoking command. Append through it, never by shell redirection.
-
-## 0.1.4 — 2026-09-23
-
-### Added
-
-- **`ledger.jsonl` and `scripts/record_writeback.py`** — an append-only routing record for findings returned by consuming projects, with `scripts/check_governance.py` asserting it.
-
-  **It records where a finding went, not the finding.** That boundary is the whole design. A log you can write to and feel finished with would legitimise recording knowledge instead of incorporating
-  it — which is precisely the failure that motivated it, committed by this package on its own first write-back: the 0.1.3 session shipped a validator fix and a regression fixture, and left the method
-  knowledge behind them (the enclosing-document shape) in a memory backend, reaching nobody who clones this repo.
-
-  The load-bearing field is `incorporated_in`. `scripts/record_writeback.py` refuses a destination that does not exist, so a row cannot claim the knowledge landed before it did; `just check` then
-  fails if a recorded destination later stops existing, because a write-time check cannot see a file renamed afterwards and a stale row reads as a closed loop, which is worse than no row. A finding
-  with nowhere to go yet is recorded `--open`, which is reported on every run and never fails the build — an honest outstanding loop is a state, not an error. All three behaviours were proven by
-  deliberate breakage.
-
-  Backfilled with the three findings `unified-network-controller` produced on 2026-09-23. The package previously had no record at all of which project taught it what.
-
-- `schemas/write-back-entry.schema.json` — the record contract.
-
-### Changed
-
-- `references/02_defining-evals.md` gains **The enclosing document**: `schema_version` is the string `"0.1"`, `suite` is a mapping with `id` and `title`, `layers` is declared once and referenced
-  inline. Every shipped example had this right and no prose said so, which is what made the 0.1.3 crash reachable. This is the leaked finding, now incorporated.
-- The `SKILL.md` write-back contract gains step 6 (record the routing), and the `AGENTS.md` closeout self-check now names an artifact instead of asking three yes/no questions that can be answered
-  honestly while a finding still goes nowhere.
-
-## 0.1.3 — 2026-09-23
-
-### Fixed
-
-- **`scripts/validate_suite.py` raised `AttributeError` instead of reporting a malformed `suite` block, whenever `--history` was also given.** `validate_history()` resolved the suite id with
-  `suite.get("suite", {}).get("id")`, which assumes `suite["suite"]` is a mapping. History is validated in the same pass as the document, so a suite whose `suite` block is a bare string reached that
-  line and crashed. Without `--history` the same file produced the correct two errors, so the defect was invisible to anyone validating a suite on its own. The id is now resolved defensively and the
-  operator reads the structural error that `validate_suite()` already reports.
-
-  **Found on first real use**, writing the `unified-network-controller` A6 coverage suite — the first suite this package has validated outside its own examples. This is exactly the return the standing
-  write-back contract in `SKILL.md` exists to collect.
-
-### Changed
-
-- **`just validate-negatives` asserted only that a fixture exits non-zero.** A traceback also exits non-zero, so a crashing fixture was indistinguishable from a cleanly rejected one, and the
-  regression above would have passed the gate that exists to catch it. The loop now requires a non-zero exit, an `INVALID:` line, and the absence of `Traceback`. Proven by reverting the fix and
-  watching the fixture be caught as a crash.
-- Fixtures may now carry a `<name>.history.jsonl` sibling, which the loop passes with `--history`, so rejection paths that only run during history validation are covered at all.
-
-### Added
-
-- `examples/validation-failures/malformed-suite-block.yaml` and its paired empty history, cataloged in that folder's README.
-
-## 0.1.2 — 2026-09-23
-
-### Added
-
-- **Standing write-back contract** in [SKILL.md](SKILL.md), and its maintainer-facing form as a **cross-project write-back trigger** in [AGENTS.md](AGENTS.md). Any project that invokes this skill and
-  learns something about evaluation *method* — a validator gap, a falsifiability method the permitted six could not cover, a verdict the closed five could not express honestly, an oracle that looked
-  independent and was not — owes that knowledge back to this pack before the session closes, whether or not the calling project governance says so. Modelled on `skill-cambium` and `skill-smc`, which
-  carry the same contract for their own domains.
-- The contract states its own boundary: the consuming project keeps its suite, thresholds, executor wiring, schedule and results. Absorbing those would make this a platform, which
-  [.archcore/adr/skill-not-platform.adr.md](.archcore/adr/skill-not-platform.adr.md) rules out.
-
-### Changed
-
-- `scripts/check_governance.py` registers `SKILL.md` as a catalog over `references/*.md`, so a reference file that exists but is not routed from the References section fails the build. This is the
-  **only half of the write-back contract a checker can see**: knowledge that never leaves a consuming project is invisible from here. `AGENTS.md` states that limit rather than implying the rule is
-  enforced. Neither `skill-cambium` nor `skill-smc` enforces its own contract either, for the same reason. Checks rose from 224 to 239, proven red by adding an unrouted reference file.
 
 ## 0.1.1 — 2026-09-23
 

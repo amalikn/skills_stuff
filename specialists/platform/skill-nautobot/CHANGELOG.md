@@ -14,6 +14,11 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261010_1805 Workspace standard (operator, 2026-10-10; skill-ai-it "Governed files: headers, budgets, rotation and the checker's shape"): `justfile` gains
+  `ai_it`, a second `check` line running skill-ai-it's `doc_freshness.py --check`, and the `stale`, `docs`, `history`, `history-show` and `rotate`
+  recipes; `AGENTS.md` Working rules gain the triage line (`just docs <folder>`, `just stale`, `just history`); `doc_freshness.py --write-baseline`
+  grandfathers existing findings (scripts/doc-freshness-baseline.json, 22 entries), so only new ones fail.
+- 20261010_1805 CHANGELOG.md (84) and SCRATCHPAD.md (94) are within budget; nothing rotated.
 - 2026-10-09 Learned (from UNC, D10 link discovery): `references/data-model.md` an Interface has no `cable` field in 3.2 (CableToCableTermination); `Location.descendants()` fails as a subquery; a Device has no coordinates, a position belongs to its Location. `references/app-development.md` an app tab on a core object (DistinctViewTab and its view), app static served by its own view, choices kept out of migrations.
 - 2026-10-08: three Learned entries in `references/data-model.md` from unified-network-controller: list views omit many-to-many fields
   without `exclude_m2m=false`; a cable trace crosses a device only through front/rear ports and never a VLAN interface or a switch; a `Panel` can

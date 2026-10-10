@@ -1,3 +1,14 @@
+---
+Title: Scratchpad
+Category: working-state
+Status: current
+Summary: Current working state, newest first per section; superseded entries rotate to docs/history (search with --find).
+Kind: state
+Budget: 200 lines, 25 KB
+Archive: docs/history/ (`--find`, `--show`)
+Last rotated: 20261010_1801
+---
+
 # SCRATCHPAD
 
 Agent working memory for skill-eval-manager.
@@ -69,18 +80,6 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 - 2026-09-23 — A routing log for consuming-project feedback records **where** knowledge was incorporated, never the knowledge. The obvious design — a place to write findings down — would
   have legitimised recording instead of incorporating, which was the failure being fixed.
 
-- 2026-09-23 — Package-specific drift handling, update rules and answer-contract additions live as `###` subsections of *Package-specific routing*, below the managed END marker, so they extend the
-  generic sections rather than colliding with them and survive future upgrades.
-- 2026-09-23 — Verdict reasons split: `expired: older than <max_age>` and `invalidated: <trigger> (<reference>)` are reported separately, and both when both apply. Merging them hid two different
-  required actions.
-- 2026-09-23 — Basis hashing reserved in the schema but deliberately not implemented in v0.1. Now promoted as [defer-basis-hashing](.archcore/adr/defer-basis-hashing.adr.md) with its revisit trigger
-  stated.
-- 2026-09-23 — Eleven documents promoted to `.archcore/`, all `status: proposed` pending operator review. Five candidates were deliberately rejected and the reasoning carried
-  into [.archcore/index.guide.md](.archcore/index.guide.md), so the next scan does not re-propose them.
-- 2026-09-23 — `type: manual` is a first-class executor; a procedure can produce a recorded observation without being automated.
-- 2026-09-23 — Package version pointers in `SKILL.md` and `README.md` corrected forward from 0.1.0 to match the shipped [CHANGELOG.md](CHANGELOG.md) heading, and the three-surface restatement
-      registered in the governance
-  checker so the next bump cannot drift.
 
 ---
 
@@ -110,15 +109,6 @@ was promoted into `.archcore/` at 13:11; [.archcore/index.guide.md](.archcore/in
 - Two things corrected in this pack because the rename inverted them: the `scripts/record_writeback.py` docstring and the 0.1.4 changelog paragraph both *argued for* the old name.
 - Caught my own unfailable test: the exemption test stayed green after the exemption was removed, because its command never named a ledger file so the guard could not fire. Fixed; the canary
   now goes red. Testing an exemption means first proving the guarded condition was reachable.
-
-### 2026-09-23 — the write-back that half-landed, and the routing log it produced
-
-- Asked where consuming-project feedback is incorporated. Checking rather than quoting the contract showed `references/` — its **first** named destination — had never been touched: zero
-  commits, and both schema facts absent from it. The 0.1.3 write-back shipped the executable half (fix + regression fixture) and left the method knowledge in a memory backend.
-- Closed that leak in [references/02_defining-evals.md](references/02_defining-evals.md) (*The enclosing document*), then shipped v0.1.4: `ledger.jsonl`,
-  [scripts/record_writeback.py](scripts/record_writeback.py), [schemas/write-back-entry.schema.json](schemas/write-back-entry.schema.json) and `check_write_back_log`.
-- The log records **where** a finding went, never the finding — a log you can write to and feel finished with would legitimise the very failure it exists to catch. `incorporated_in` is
-  defended at write time (destination must exist) and at check time (it must still exist). `open` rows are reported, never fail the build. Checks 353 to 378.
 
 ### 2026-09-23 — first real suite, and the first write-back it produced
 

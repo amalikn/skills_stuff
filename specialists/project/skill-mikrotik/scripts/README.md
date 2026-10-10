@@ -96,3 +96,9 @@ Checks size against Content-Length, md5 against the ETag, and sha256 against Mik
 published (none for 7.8 or 7.12.x). A 0-byte `wireless-<v>-mipsbe.npk` before 7.13 is a placeholder and is skipped. The YAML on stdout pastes into
 `../references/firmware-manifest.yaml`; add the curated fields (channel, kind, models, firmware_type, retrieved) by hand. Exit 1 on any missing or
 mismatched file, 2 on HTTP 429.
+
+## doc-freshness-baseline.json
+
+Data, not a script: the findings skill-ai-it's `doc_freshness` grandfathered when this pack adopted the governed-file standard (2026-10-10).
+`just check` fails only on findings not in it; regenerate with `just stale` reviewed first, then `doc_freshness.py --project-root . --write-baseline`
+from the skill-ai-it package. A file over its budget may shrink, never grow.

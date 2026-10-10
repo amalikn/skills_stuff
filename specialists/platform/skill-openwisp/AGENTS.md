@@ -41,6 +41,9 @@ work complete.
 - memory-keeper channel for this pack is exactly `openwisp` (USER_STATED).
 - The package version lives only in the [CHANGELOG.md](CHANGELOG.md) release heading. Do not restate it in other governance files.
 - Time-bound notes use `<slug>-YYYYMMDD_hhmm.md`. <!-- path:example -->
+- Triage before opening: `just docs <folder>` gives one header line per file; run `just stale` before editing. Old CHANGELOG and SCRATCHPAD
+  entries are not read by default: `just history <term>` or `just history-show <stamp>` when a live entry cites one. Rotation
+  (`just rotate --apply`) creates their folder, `docs/history/`, the first time either record passes its budget. <!-- path:example -->
 
 ## Package contract
 

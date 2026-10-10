@@ -49,6 +49,10 @@ Run `just bootstrap` once before `just check` or `just test` — both need PyYAM
 
 When it fails, fix the project rather than the check. Extending its registries is part of adding a new artifact class, not a follow-up task.
 
+Since 2026-10-10 it is a thin entry point over the `scripts/govcheck/` package (skill-ai-it "Structure and growth"): `config.py` (registries), `helpers.py`,
+`core.py` (skill-ai-it's template, identical everywhere) and `checks/<family>.py` (paths, catalog, library, runtime, records, evidence, structure).
+`checks/structure.py` keeps each module under 400 lines and each check under 60. Add a check to its family module and to `CHECKS` in `checks/__init__.py`.
+
 ### `evaluate_routing.py`
 
 - **Purpose:** behavioural routing evaluator. `--validate-only` checks the 60-case corpus in `evals/routing-cases.toml` against `routing.toml` with no model call. `--command CMD` invokes a local

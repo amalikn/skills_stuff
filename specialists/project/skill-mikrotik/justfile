@@ -7,6 +7,7 @@ set dotenv-load := false
 # The venv lives in the working-cache peer, never in this repo; the shell scripts get it as MT_PY.
 wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-mikrotik"
 py := wc + "/.venv/bin/python"
+ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 
 # Show available recipes
 default:
@@ -31,6 +32,28 @@ runtimes:
 # Governance coherence checks (run before claiming a change to this pack is complete)
 check: _require-venv
     @{{py}} scripts/check_governance.py
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+
+# Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
+stale: _require-venv
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
+
+# Triage: one line per file (status, review date, summary) from its header, so a file is judged without being opened
+docs *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/file_headers.py" --project-root . {{ARGS}}
+
+# Rotated history on demand: `just history <term>` searches the CHANGELOG archives (SCRATCHPAD: `just history <term> SCRATCHPAD.md`)
+history TERM RECORD="CHANGELOG.md": _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --find "{{TERM}}" {{RECORD}}
+
+# Print one rotated entry by its stamp, when a live entry cites it: `just history-show 20260918_1200`
+history-show STAMP RECORD="CHANGELOG.md": _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
+
+# Keep CHANGELOG and SCRATCHPAD within budget: plan by default; `just rotate --apply` (slurp runs it)
+rotate *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
 
 # Run read-only RouterOS commands on one device behind an SMC, e.g. just exec delye-smc01 10.255.0.5 '/system health print'
 [positional-arguments]
