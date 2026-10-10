@@ -20,6 +20,6 @@
  "no-header:templates/repomix.config.json": "2026-10-10",
  "no-header:templates/scripts-README.md": "2026-10-10",
  "over-budget:AI_NAVIGATION.md": "lines=254 bytes=9202 AI_NAVIGATION.md: over its budget of 200 lines, 25 KB",
- "over-budget:SKILL.md": "lines=2075 bytes=112306 SKILL.md: over its budget of 200 lines, 25 KB",
+ "over-budget:SKILL.md": "lines=2074 bytes=112178 SKILL.md: over its budget of 200 lines, 25 KB",
  "over-budget:templates/AI_NAVIGATION.md": "lines=279 bytes=10445 templates/AI_NAVIGATION.md: over its budget of 200 lines, 25 KB"
 }
