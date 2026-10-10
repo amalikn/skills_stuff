@@ -1,3 +1,4 @@
+# Claims this skill makes, each with its kind, evidence status, lifecycle and source.
 claims:
   - id: O-C01
     statement: "OpenWISP Controller documents registration settings whose effective behaviour must be verified in the target deployment."

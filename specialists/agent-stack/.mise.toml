@@ -1,3 +1,4 @@
+# Runtime pins (mise): the interpreter versions this project's recipes use.
 min_version = "2024.9.5"
 
 [tools]

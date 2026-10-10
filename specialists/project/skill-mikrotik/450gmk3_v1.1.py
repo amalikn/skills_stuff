@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Vendor-era helper for the RB450Gx4 (paramiko SSH and ping3): connect, check reachability and log the result."""
 import paramiko
 from ping3 import ping, verbose_ping
 import time

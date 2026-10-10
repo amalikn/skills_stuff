@@ -1,3 +1,4 @@
+"""Behavioural tests for Agent Stack routing: requests route to the expected personas and skills."""
 import importlib.util
 import io
 import shutil

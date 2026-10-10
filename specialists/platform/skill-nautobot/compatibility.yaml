@@ -1,3 +1,4 @@
+# Environments this skill was verified against: product, version, components and when observed.
 environments:
   - id: nautobot-core-docs-3-2-2
     product: Nautobot core documentation

@@ -7,6 +7,8 @@ Kind: state
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Last rotated: 20261010_1759
+Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
+Open items tracker: docs/trackers/open-items-20261010_1830.md
 ---
 
 # SCRATCHPAD

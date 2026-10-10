@@ -1,3 +1,4 @@
+# Environments this skill was verified against: product, version, components and when observed.
 environments:
   - id: openwisp-unc-inspected-20261001
     product: UNC OpenWISP integration

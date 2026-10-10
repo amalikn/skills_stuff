@@ -1,3 +1,4 @@
+# Routing regression corpus for Agent Stack: representative real-world requests and the routing each should get.
 version = 2
 description = "Representative routing regression corpus for Agent Stack real-world workloads. Behavioral scoring is implemented by scripts/evaluate_routing.py."
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Context preflight for a governed project: check governance files, refresh generated context (Graphify only when enabled).
 set -euo pipefail
 
 mkdir -p .ai-context

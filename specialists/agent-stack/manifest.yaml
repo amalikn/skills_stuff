@@ -1,3 +1,4 @@
+# Agent Stack package manifest: name, routing catalogue, runtime contract and sources.
 version: 1
 name: agent-stack
 language: English

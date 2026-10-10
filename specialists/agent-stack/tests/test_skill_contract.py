@@ -1,3 +1,4 @@
+"""Contract tests for the Agent Stack skill package: required files and validators pass."""
 import subprocess
 import sys
 import unittest

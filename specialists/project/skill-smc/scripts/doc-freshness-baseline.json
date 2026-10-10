@@ -1,12 +1,8 @@
 {
  "no-header:.ai-context/governance-pack.md": "2026-10-10",
- "no-header:.archcore/settings.json": "2026-10-10",
- "no-header:.mise.toml": "2026-10-10",
  "no-header:AI_NAVIGATION.md": "2026-10-10",
  "no-header:ARCHITECTURE.md": "2026-10-10",
  "no-header:RUNBOOK.md": "2026-10-10",
- "no-header:context-map.yaml": "2026-10-10",
- "no-header:manifest.json": "2026-10-10",
  "no-header:references/01_overview.md": "2026-10-10",
  "no-header:references/02_service-map.md": "2026-10-10",
  "no-header:references/03_communication-flows.md": "2026-10-10",
@@ -23,6 +19,5 @@
  "no-header:references/14_pin-activation-diagnosis.md": "2026-10-10",
  "no-header:references/15_cambium-asset-registers.md": "2026-10-10",
  "no-header:references/16_tplink-site-switches.md": "2026-10-10",
- "no-header:repomix.config.json": "2026-10-10",
  "review-due:scripts/README.md": "2026-10-10"
 }

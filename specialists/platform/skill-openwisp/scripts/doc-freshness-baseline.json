@@ -1,11 +1,7 @@
 {
  "no-header:.ai-context/governance-pack.md": "2026-10-10",
- "no-header:.archcore/settings.json": "2026-10-10",
- "no-header:.mise.toml": "2026-10-10",
  "no-header:AI_NAVIGATION.md": "2026-10-10",
  "no-header:SCRATCHPAD.md": "2026-10-10",
- "no-header:compatibility.yaml": "2026-10-10",
- "no-header:context-map.yaml": "2026-10-10",
  "no-header:references/capability-extension.md": "2026-10-10",
  "no-header:references/customisation-and-upgrades.md": "2026-10-10",
  "no-header:references/evolution-and-write-back.md": "2026-10-10",
@@ -14,8 +10,6 @@
  "no-header:references/passive-ingestion.md": "2026-10-10",
  "no-header:references/topology-and-foss.md": "2026-10-10",
  "no-header:references/verification-and-troubleshooting.md": "2026-10-10",
- "no-header:repomix.config.json": "2026-10-10",
- "no-header:sources.yaml": "2026-10-10",
  "no-header:tests/eval-procedure.md": "2026-10-10",
  "no-header:tests/scenarios.md": "2026-10-10",
  "over-budget:AI_NAVIGATION.md": "lines=318 bytes=14213 AI_NAVIGATION.md: over its budget of 200 lines, 25 KB"

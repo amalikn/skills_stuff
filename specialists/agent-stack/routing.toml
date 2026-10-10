@@ -1,3 +1,4 @@
+# Canonical Agent Stack routing catalogue: which personas and skills a request routes to.
 version = 1
 purpose = "Canonical Agent Stack routing catalogue. Personas own judgement; skills provide repeatable procedures or tools."
 

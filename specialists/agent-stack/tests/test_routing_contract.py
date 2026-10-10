@@ -1,3 +1,4 @@
+"""Contract tests for routing.toml: its shape and the references it makes are valid."""
 import tomllib
 import unittest
 from pathlib import Path

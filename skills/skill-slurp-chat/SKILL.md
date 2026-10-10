@@ -130,6 +130,9 @@ Then the project's **companion rules**: list the files this session changed (`gi
 own update rules to each (`context-map.yaml` `update_rules`, AGENTS.md "update X in the same pass" rules, folder indexes, trackers and matrices the
 rules name, rendered views). A changed file whose companion was not updated is a gap, not a detail.
 
+Before that check, run skill-ai-it `scripts/adopt_governed_files.py --project-root <project> --apply` (operator, 2026-10-10): it adds any part
+of the governed-file standard the project lacks (recipes, freshness in `check`, records front matter, baseline) and does nothing when adopted.
+
 Run the project's own governance check (e.g. `scripts/check_governance.py`, `just check`) and any status validator afterwards. Fix the project, not the check.
 
 ## Step 6b — Self-audit before the report (mandatory)

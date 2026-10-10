@@ -13,7 +13,9 @@ loads whole keep growing, and a file without a header must be opened to be judge
 4. `over-budget`: a file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md, MEMORY.md, or
    any file with a `Budget` key) over 200 lines or 25 KB, one standard for every agent (operator, 2026-10-10). Rotate records with
    `rotate_records.py`; trim the others.
-5. `no-header`: a tracked markdown, Python, YAML, shell, justfile, TOML or JSON file with no summary in its native header form.
+5. `no-header`: a tracked markdown, Python, YAML, shell, justfile or TOML file with no summary in its native header form (JSON and
+   JSON-in-YAML are data and need none).
+6. `checker-size`: a single-file `scripts/check_governance.py` over 800 lines (split it into the govcheck package); a ratchet like rule 4.
 
 The baseline (JSON, {finding-key: value}) grandfathers what exists at adoption: rules 1-3 and 5 fail only on a new finding; rule 4 records
 the size and fails only when the file grows past it, so an over-budget file can shrink but never grow. `--write-baseline` records today's
@@ -47,6 +49,7 @@ LIVING_STATUSES = ("current", "draft", "proposed")
 POINT_IN_TIME = re.compile(r"report|review|audit|sources?\b|source-index|sources-index|evidence|capture|changelog|record|prompt|handoff|archive", re.I)
 BUDGET_NAMES = {"AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md", "SCRATCHPAD.md", "CHANGELOG.md", "SKILL.md", "MEMORY.md"}
 DEFAULT_BUDGET = (200, 25 * 1024)
+CHECKER_SPLIT_LINES = 800
 DATE = re.compile(r"(\d{4})-?(\d{2})-?(\d{2})")
 
 
@@ -149,6 +152,13 @@ def findings(root: pathlib.Path, today: dt.date, window_days: int) -> dict[str, 
                 out[f"dependency-changed:{rel}:{dep}"] = f"{rel}: Depends on {dep}, which no longer exists"
             elif changed and reviewed and changed > reviewed:
                 out[f"dependency-changed:{rel}:{dep}"] = f"{rel}: {dep} changed {changed.isoformat()}, after Last reviewed {reviewed.isoformat()}"
+    checker = root / "scripts" / "check_governance.py"
+    if checker.is_file() and not (root / "scripts" / "govcheck").is_dir():
+        n = checker.read_text(encoding="utf-8", errors="ignore").count("\n")
+        if n > CHECKER_SPLIT_LINES:
+            # Rule 6: a single-file checker past the split threshold (skill-ai-it patterns/governance-checks.md, "Structure and growth").
+            out["checker-size:scripts/check_governance.py"] = (f"lines={n} bytes=0 scripts/check_governance.py: {n} lines in one file; split it with "
+                                                                f"skill-ai-it scripts/split_checker.py (threshold {CHECKER_SPLIT_LINES})")
     return out
 
 
@@ -179,7 +189,7 @@ def regressions(found: dict[str, str], baseline: dict[str, str]) -> dict[str, st
     for key, msg in found.items():
         if key not in baseline:
             out[key] = msg
-        elif key.startswith("over-budget:"):
+        elif key.startswith(("over-budget:", "checker-size:")):
             now, then = sizes(msg), sizes(baseline[key])
             if now[0] > then[0] or now[1] > then[1]:
                 out[key] = f"{msg} (grew from {then[0]} lines, {then[1]} bytes)"
@@ -213,7 +223,7 @@ def main(argv: list[str] | None = None) -> int:
     base_path = root / args.baseline
     baseline: dict[str, str] = json.loads(base_path.read_text()) if base_path.exists() else {}
     if args.write_baseline:
-        kept = {k: (found[k] if k.startswith("over-budget:") else baseline.get(k, today.isoformat())) for k in sorted(found)}
+        kept = {k: (found[k] if k.startswith(("over-budget:", "checker-size:")) else baseline.get(k, today.isoformat())) for k in sorted(found)}
         base_path.parent.mkdir(parents=True, exist_ok=True)
         base_path.write_text(json.dumps(kept, indent=1) + "\n")
         print(f"baseline written: {len(kept)} finding(s) -> {args.baseline}")
