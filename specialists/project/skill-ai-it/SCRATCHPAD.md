@@ -105,6 +105,8 @@ not overwrite the hand-built checker (521
 
 ## Session history
 
+- **20261010_2216** `KEEP`: SKILL.md 2,074 to 198 lines (18 references/ topic files, no word lost); compact navigation template (patterns/navigation/);
+  move_sections nested headings and pointer lines. Next: split references over 200 lines if often opened.
 - **20261010_2135** `KEEP`: budget_plan.py and normalise_records.py; heading dates and time grouping; runaway loop in jdm fixed (MAX_MOVES, no-shrink stop).
   Next: operator runs the per-project commands; jdm by hand; AI_NAVIGATION template to budget; SKILL.md restructure.
 - **20261010_2014** `KEEP`: rotate_records explicit PIN marker, prose `###` units and lazy continuation; `move_sections.py`; SPLIT audit; adopter adds a
