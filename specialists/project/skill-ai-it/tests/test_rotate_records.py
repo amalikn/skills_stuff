@@ -129,6 +129,20 @@ class RotateTest(unittest.TestCase):
 class TrackerTest(RotateTest):
     """Old open items move to the live tracker, not to history; recent ones stay; the pointer is left behind."""
 
+    def test_the_tracker_pointer_is_written_once(self):
+        text = scratchpad(20).replace("# Scratchpad\n", "---\nTitle: Scratchpad\nOpen items tracker: docs/trackers/open-items.md\n---\n# Scratchpad\n", 1)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            for extra in ("- [ ] **20260902_0900** first old item", "- [ ] **20260903_0900** second old item"):
+                body = (root / "SCRATCHPAD.md").read_text() if (root / "SCRATCHPAD.md").exists() else text
+                body = body.replace("## Open items\n\n", "## Open items\n\n" + extra + "\n" + "".join(
+                    f"- [ ] **2026091{k}_0900** newer {k}\n" for k in range(4)), 1)
+                (root / "SCRATCHPAD.md").write_text(body)
+                subprocess.run([sys.executable, str(SCRIPT), "--project-root", str(root), "--apply", "SCRATCHPAD.md"], check=True, capture_output=True)
+            live = (root / "SCRATCHPAD.md").read_text()
+        self.assertEqual(live.count("Older open items are tracked in"), 1)
+
     def test_old_open_items_go_to_the_tracker(self):
         text = scratchpad(20).replace("# Scratchpad\n", "---\nTitle: Scratchpad\nOpen items tracker: docs/trackers/open-items.md\n---\n# Scratchpad\n", 1)
         text = text.replace("- [ ] **20260901_0900** still open, never rotated", "- [ ] **20260901_0900** still open\n- [ ] undated open item\n- [ ] **20260905_0900** a\n- [ ] **20260906_0900** b\n- [ ] **20260907_0900** c")

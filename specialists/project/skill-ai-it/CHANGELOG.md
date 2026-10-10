@@ -13,6 +13,7 @@ Last rotated: 20261010_2207
 
 ## Contents
 
+- [20261010_2332 — Reference reads measured (not split); tracker pointer no longer duplicates](#20261010_2332--reference-reads-measured-not-split-tracker-pointer-no-longer-duplicates)
 - [20261010_2227 — Memory pointers rotate; no upgrade hint for project-owned blocks; jdm within budget](#20261010_2227--memory-pointers-rotate-no-upgrade-hint-for-project-owned-blocks-jdm-within-budget)
 - [20261010_2207 — SKILL.md restructured: 2,074 to 198 lines, detail in references/ by topic](#20261010_2207--skillmd-restructured-2074-to-198-lines-detail-in-references-by-topic)
 - [20261010_2156 — Compact navigation template; reference split by topic; adopter documents recipes; budget suggestions](#20261010_2156--compact-navigation-template-reference-split-by-topic-adopter-documents-recipes-budget-suggestions)
@@ -26,6 +27,14 @@ Last rotated: 20261010_2207
 - [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
 - [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
 - [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
+
+## 20261010_2332 — Reference reads measured (not split); tracker pointer no longer duplicates
+
+- Reference reads measured (scripts/agent_usage.py, 30 days, 3,068 sessions): files-context-map, files-ai-navigation and script-task-inventory each had 0 real
+  reads (they date from today; skill-ai-it itself was invoked 13 times). Not split; re-measure on 2026-11-10 (SCRATCHPAD open item), split if read in more than 5 sessions.
+- rotate_records.py: the "Older open items are tracked in" pointer was treated as an open item on the next run, moved to the tracker and written again,
+  so pointers piled up (2 to 3 copies in 7 SCRATCHPADs, one stray in cambium-swap's tracker). It now stays in place, and the presence check compares
+  lines. Test added, negative-tested; this SCRATCHPAD deduplicated. The other projects' duplicates are left for the operator's per-project run.
 
 ## 20261010_2227 — Memory pointers rotate; no upgrade hint for project-owned blocks; jdm within budget
 

@@ -58,6 +58,7 @@ PIN_MARK = re.compile(r"`PIN`|<!--\s*PIN\b")
 LONG_DATE = re.compile(r"\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?,?\s+(20\d{2})\b")
 MONTHS = {m: i for i, m in enumerate("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(), 1)}
 TIME = re.compile(r"~?\b\d{1,2}[:.]\d{2}\s*(?:[ap]\.?m?\.?\b)?(?:\s*[–-]\s*\d{1,2}[:.]\d{2}\s*(?:[ap]\.?m?\.?\b)?)?", re.I)
+TRACKER_POINTER = "- Older open items are tracked in"
 RESOLVED = re.compile(r"\b(done|closed|resolved|superseded|retired)\b|^- \[x\]|~~", re.I)
 ARCHIVE_DIR = "docs/history"
 #: Measured 2026-10-10 on UNC (about 30 log entries a day): age protects too much in an active project, so the newest units are kept by
@@ -371,6 +372,9 @@ def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: i
         for u in units:
             text = "\n".join(u.lines)
             if u.keep_reason:
+                continue
+            if u.lines and u.lines[0].startswith(TRACKER_POINTER):
+                u.keep_reason = "tracker pointer"  # never an open item itself: moving it is how duplicates piled up (skill-ai-it, 2026-10-10)
                 continue
             open_item = any(p in u.section for p in pinned) and not RESOLVED.search(u.lines[0] if u.lines else "")
             if open_item and open_days is not None:
@@ -765,9 +769,11 @@ def main(argv: list[str] | None = None) -> int:
     to_tracker = [u for u in units if u.to_tracker]
     if to_tracker:
         # A pointer so the live file still says where its older open items are (undated, so it never rotates itself).
-        pointer = f"- Older open items are tracked in [{pathlib.Path(tracker_rel).name}]({os.path.relpath(tracker_rel, os.path.dirname(live) or '.')})."
+        pointer = f"{TRACKER_POINTER} [{pathlib.Path(tracker_rel).name}]({os.path.relpath(tracker_rel, os.path.dirname(live) or '.')})."
         for head_line, items in rec.blocks:
-            if any(p in head_line for p in pinned) and pointer not in items:
+            # the pointer, once written, parses back as a bullet Unit, not a string: compare lines or it is added on every run
+            present = any((x == pointer) or (isinstance(x, Unit) and pointer in x.lines) for x in items)
+            if any(p in head_line for p in pinned) and not present:
                 at = 1 if items[:1] == [""] else 0
                 items.insert(at, pointer)
         after = preview()

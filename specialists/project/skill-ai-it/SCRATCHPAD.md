@@ -60,7 +60,8 @@ nav_upgrade` per project.
 
 ## Open items
 
-- Older open items are tracked in [open-items-20261010_1830.md](docs/trackers/open-items-20261010_1830.md).
+- [ ] **20261010_2330** Re-measure reference reads on 2026-11-10: `python3 scripts/agent_usage.py --days 30 references/files-context-map.md
+  references/files-ai-navigation.md references/script-task-inventory.md`. Split a file only if read in more than 5 sessions; on 2026-10-10 each had 0 real reads.
 - Older open items are tracked in [open-items-20261010_1830.md](docs/trackers/open-items-20261010_1830.md).
 - [x] **2026-10-07, done (operator: fix it):** the upgrader's CHANGELOG entry now follows the file's order. `changelog_is_newest_first`
   reads the dated `##` headings; a newest-first file gets the entry on top and first in Contents, any other file gets it appended.
