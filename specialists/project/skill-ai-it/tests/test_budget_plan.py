@@ -67,6 +67,16 @@ class BudgetPlanTest(unittest.TestCase):
                 + "\n## Hardware table\n\n" + "".join(f"| unit {i} | model {i} |\n" for i in range(30)))
         self.assertEqual([h for h, _ in bp.reference_like(text)], ["Hardware table"])
 
+    def test_no_upgrade_hint_for_a_project_owned_block(self):
+        root = Path(tempfile.mkdtemp())
+        body = "".join(f"- line {i}\n" for i in range(220))
+        (root / "AI_NAVIGATION.md").write_text("<!-- BEGIN skill-ai-it:navigation --> <!-- skill-ai-it:manual reason=x -->\n" + body)
+        import io, contextlib
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            bp.main(["--project-root", str(root)])
+        self.assertNotIn("upgrade_navigation_control_layer", out.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()

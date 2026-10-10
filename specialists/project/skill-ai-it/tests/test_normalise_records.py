@@ -41,6 +41,11 @@ second line.
 ## Open items
 
 **2026-09-01** an open paragraph, left alone.
+
+## Memory pointers
+
+**Added 2026-09-03** (channel `japan`) `KEEP`
+| Key | What |
 """
 
 
@@ -55,6 +60,7 @@ class NormaliseTest(unittest.TestCase):
         self.assertIn("### Phase", added)
         self.assertTrue(any(a.startswith("### 2026-09-03 — verdict") and ")" not in a for a in added))
         self.assertFalse(any("2026-09-01" in a for a in added))  # Open items left alone
+        self.assertIn("### 2026-09-03 — Added", added)  # memory pointers are a dated log
         self.assertIn("Keep: Update log=0", new)
         it = iter(new.split("\n"))
         self.assertTrue(all(any(o == n for n in it) for o in TEXT.split("\n")))

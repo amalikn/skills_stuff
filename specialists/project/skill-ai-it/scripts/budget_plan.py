@@ -249,7 +249,8 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{name}: {size(p)[0]} lines, {size(p)[1] // 1024} KB: OVER; largest sections: " + ", ".join(f"{h[3:]} ({n})" for h, n in top)
                   + ". Rules stay; move reference with move_sections.py.")
             text = p.read_text()
-            if "skill-ai-it:navigation" in text and "skill-ai-it-version: 2026-10-10-compact" not in text:
+            if ("skill-ai-it:navigation" in text and "skill-ai-it-version: 2026-10-10-compact" not in text
+                    and "skill-ai-it:manual" not in text):  # a project-owned block is never replaced (jdm, 2026-10-10)
                 print("  first: python <skill-ai-it>/scripts/upgrade_navigation_control_layer.py --project-root . (the managed block is now compact)")
             for k, (head, n) in enumerate(reference_like(text)[:3], 1):
                 slug = name[:-3].lower().replace("_", "-")

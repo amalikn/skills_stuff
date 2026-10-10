@@ -10,7 +10,7 @@ over budget; ansible-wifi needed a hand-written script. This adds only heading l
    carrying it away inside the previous dated entry.
 3. Over a block of five or more dated `<!--` comment lines before the first section: `## Update log <first> to <last> (header comments)`, and
    `Update log=0` in the front matter's `Keep:` so the whole block rotates.
-Contents, Open items, Key anchors and Memory pointers are left alone, as are sections whose heading is already dated. Every original line must still be
+Contents, Open items and Key anchors are left alone, as are sections whose heading is already dated. Every original line must still be
 present, in order, or nothing is written.
 
 Usage:
@@ -31,7 +31,8 @@ rr = importlib.util.module_from_spec(_spec)
 sys.modules.setdefault("rotate_records", rr)
 _spec.loader.exec_module(rr)
 
-LEFT_ALONE = re.compile(r"^## (Contents|Open items|Key anchors|Memory pointers)", re.I)
+# Memory pointers are a dated log of sessions' memory keys: old blocks rotate like any history (jdm, 2026-10-10: 198 lines held it over budget)
+LEFT_ALONE = re.compile(r"^## (Contents|Open items|Key anchors)", re.I)
 BLOCK_START = ("- ", "* ", "#", "|", "```", "<!--", "---")
 
 

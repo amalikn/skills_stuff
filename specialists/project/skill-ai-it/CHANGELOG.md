@@ -13,6 +13,7 @@ Last rotated: 20261010_2207
 
 ## Contents
 
+- [20261010_2227 — Memory pointers rotate; no upgrade hint for project-owned blocks; jdm within budget](#20261010_2227--memory-pointers-rotate-no-upgrade-hint-for-project-owned-blocks-jdm-within-budget)
 - [20261010_2207 — SKILL.md restructured: 2,074 to 198 lines, detail in references/ by topic](#20261010_2207--skillmd-restructured-2074-to-198-lines-detail-in-references-by-topic)
 - [20261010_2156 — Compact navigation template; reference split by topic; adopter documents recipes; budget suggestions](#20261010_2156--compact-navigation-template-reference-split-by-topic-adopter-documents-recipes-budget-suggestions)
 - [2026-10-10 — deterministic navigation-control upgrade](#2026-10-10--deterministic-navigation-control-upgrade)
@@ -25,6 +26,14 @@ Last rotated: 20261010_2207
 - [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
 - [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
 - [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
+
+## 20261010_2227 — Memory pointers rotate; no upgrade hint for project-owned blocks; jdm within budget
+
+- normalise_records.py: Memory pointers are a dated log of memory keys, so their dated blocks get headings and rotate (jdm: 198 lines held its
+  SCRATCHPAD over budget). budget_plan.py: no "run the upgrade first" hint for a block carrying skill-ai-it:manual (the upgrader never replaces it).
+  Tests 37 to 38 plus a normaliser case, each negative-tested.
+- jdm brought within budget by hand on top of the tools: guard registries (gate surface, model-count skip) follow moved text; a blockquote is not a heading, so
+  the resolved readiness block was moved with a one-off verified cut; three pointer sections merged into one.
 
 ## 20261010_2207 — SKILL.md restructured: 2,074 to 198 lines, detail in references/ by topic
 
