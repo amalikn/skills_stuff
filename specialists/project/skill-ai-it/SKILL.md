@@ -463,10 +463,9 @@ When enabled: run `graphify update .` whenever the `graphify` CLI is available, 
 - **Headers.** Every governed file states its purpose in its type's native header (governance `naming-and-file-summary-guide.md`, "File
   headers"); `scripts/file_headers.py` reads them all, and `just docs <folder>` is the triage view agents use before opening files.
 - **Budget.** A file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md, MEMORY.md) stays within
-  200 lines and 25 KB, one standard for every agent; `doc_freshness.py` holds over-budget files as a shrink-only ratchet. Move area rules into a file
-  read only before that work (as UNC's device and site rules) rather than growing the always-loaded file.
-- **Rotation.** `just rotate --apply` (`scripts/rotate_records.py`) moves old CHANGELOG and SCRATCHPAD entries to `docs/history/`; skill-slurp-chat
-  runs it; `just history <term>` and `just history-show <stamp>` recall on need. Tools that need the whole log read the archives too.
+  200 lines and 25 KB for every agent; `doc_freshness.py` holds older ones as a shrink-only ratchet. Area rules go in a file read before that work.
+- **Rotation.** `just rotate --apply` (`scripts/rotate_records.py`) moves old CHANGELOG/SCRATCHPAD entries to `docs/history/`; slurp runs it,
+  then `scripts/audit_rotations.py` (fails on a lost line). Recall: `just history <term>`, `just history-show <stamp>`.
 - **Checker shape.** A project's checker follows `patterns/governance-checks.md` "Structure and growth": entry point, `govcheck/core.py` (this skill's
   `templates/govcheck/core.py`, identical everywhere), `config.py`, `helpers.py`, `checks/<family>.py`, and the `structure` family
   (`templates/govcheck/checks/structure.py`) policing it. A single-file checker over 800 lines is split with `scripts/split_checker.py` at its next

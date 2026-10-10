@@ -150,7 +150,7 @@ Recent decisions, Session history (2–3 bullets), Next actions (replace), Memor
 
 Then keep the records within budget (operator, 2026-10-10): `just rotate` (plan) and, when CHANGELOG.md or SCRATCHPAD.md is over 200 lines or
 25 KB, `just rotate --apply` (skill-ai-it `scripts/rotate_records.py`: moves the oldest entries to `docs/history/`, verified, never open items or
-pinned ones). A project without the recipe: run the script directly with `--project-root`. Write CHANGELOG entries short: what changed and where.
+pinned ones). A project without the recipe: run the script directly with `--project-root`. Then run skill-ai-it `scripts/audit_rotations.py <project>`; a `LOST` line stops the slurp until the record is restored from git. Write CHANGELOG entries short: what changed and where.
 
 Then regenerate the project's wiki page from those files (operator, 2026-10-10; the page is generated, never hand-written):
 `just -f /Volumes/Data/_ai/_wiki/wiki_stuff/justfile project_page <project-path>`. It rewrites only its generated block in
