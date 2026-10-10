@@ -5,7 +5,7 @@ Why (operator, 2026-10-10: "that skill is mostly used with bootstrap or refresh.
 the standard's tools only act where they are installed. skill-slurp-chat runs this at every close, so a project reached by any slurp adopts it.
 
 What it checks and, with --apply, adds:
-1. justfile: the `ai_it` variable, `doc_freshness.py --check` in the `check` recipe, and the recipes stale, docs, history, history-show, rotate, budget, move-sections; a `check` recipe when there is none
+1. justfile: the `ai_it` variable, `doc_freshness.py --check` in the `check` recipe, and the recipes stale, docs, history, history-show, rotate, budget, changelog-entry, move-sections; a `check` recipe when there is none
    (from skill-ai-it `templates/justfile`; a project without one gets a new justfile). Refuses when the governed files are symlinks.
 2. AGENTS.md: one line on triage, staleness and history, outside any managed block.
 3. CHANGELOG.md and SCRATCHPAD.md: front matter with Kind, Budget and, for SCRATCHPAD, Keep and an open-items tracker.
@@ -27,7 +27,7 @@ import subprocess
 import sys
 
 SKILL = pathlib.Path(__file__).resolve().parent.parent
-RECIPES = ("stale", "docs", "history", "history-show", "rotate", "budget", "move-sections")
+RECIPES = ("stale", "docs", "history", "history-show", "rotate", "budget", "changelog-entry", "move-sections")
 AGENTS_MARK = "just docs <folder>"
 AGENTS_LINE = ("- Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries\n"
                "  live in `docs/history/`, read only on need (`just history <term>`, `just history-show <stamp>`).\n")
@@ -44,6 +44,27 @@ def template_recipes() -> str:
     last = "move-sections *ARGS:" if "move-sections *ARGS:" in text else "rotate *ARGS:"
     end = text.index("\n\n", text.index(last)) if last in text else len(text)
     return text[start:end].rstrip("\n") + "\n"
+
+
+#: recipes that take free text (titles, heading names): `{{ARGS}}` is substituted unquoted, so a title with a semicolon ran as shell commands
+#: (2026-10-10). They take quoted positional arguments instead.
+FREE_TEXT = {"changelog-entry": "add_changelog_entry.py", "move-sections": "move_sections.py"}
+
+
+def make_free_text_safe(text: str) -> str:
+    """Give the free-text recipes `[positional-arguments]` and `"$@"` in place of `{{ARGS}}`.
+
+    Args:
+        text: the justfile.
+
+    Returns:
+        The justfile with those recipes quoted.
+    """
+    for name, script in FREE_TEXT.items():
+        text = re.sub(rf'(?m)^({re.escape(name)} \*ARGS:[^\n]*\n\s+@[^\n]*{re.escape(script)}" --project-root \. )\{{{{ARGS\}}}}',
+                      r'\1"$@"', text)
+        text = re.sub(rf"(?m)^(?<!\[positional-arguments\]\n)({re.escape(name)} \*ARGS:)", r"[positional-arguments]\n\1", text)
+    return text
 
 
 def justfile_gaps(text: str) -> list[str]:
@@ -63,6 +84,8 @@ def justfile_gaps(text: str) -> list[str]:
     elif "doc_freshness.py" not in text:
         gaps.append("freshness in check")
     gaps += [f"recipe {r}" for r in RECIPES if not re.search(rf"^{re.escape(r)}\b", text, re.M)]
+    if make_free_text_safe(text) != text:
+        gaps.append("free-text recipes take unquoted {{ARGS}}")
     return gaps
 
 
@@ -100,7 +123,7 @@ def fix_justfile(text: str) -> str:
         if not re.search(r"^_require-venv\b", text, re.M):
             block = block.replace(": _require-venv", ":")  # of-si has `py :=` but no _require-venv recipe (2026-10-10)
         text = text.rstrip("\n") + "\n\n" + block
-    return text
+    return make_free_text_safe(text)
 
 
 def split_recipes(block: str) -> dict[str, str]:
@@ -211,6 +234,7 @@ RECIPE_DOCS = {
     "history-show": "`just history-show <stamp>`: print one rotated entry. Read-only; `safe`.",
     "rotate": "`just rotate [--apply]`: move old CHANGELOG/SCRATCHPAD entries to docs/history, verified. Plan by default; `modifies-files`.",
     "budget": "`just budget [--apply]`: bring governed files within budget (normalise, rotate, move reference sections, audit, check). Plan by default; `modifies-files`.",
+    "changelog-entry": "`just changelog-entry --title ... --body-file ...`: add a CHANGELOG entry in this project's style, with its Contents line. Plan by default; `modifies-files`.",
     "move-sections": "`just move-sections ...`: move named sections verbatim to an on-need reference doc. Plan by default; `modifies-files`.",
 }
 

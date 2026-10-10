@@ -77,6 +77,17 @@ class BudgetPlanTest(unittest.TestCase):
             bp.main(["--project-root", str(root)])
         self.assertNotIn("upgrade_navigation_control_layer", out.getvalue())
 
+    def test_pointer_clutter_is_tidied(self):
+        root = Path(tempfile.mkdtemp())
+        (root / "docs" / "trackers").mkdir(parents=True)
+        ptr = "- Older open items are tracked in [open-items-1.md](docs/trackers/open-items-1.md)."
+        (root / "SCRATCHPAD.md").write_text(f"# S\n\n## Open items\n\n{ptr}\n{ptr}\n{ptr}\n- [ ] x\n")
+        (root / "docs" / "trackers" / "open-items-1.md").write_text(f"# T\n\n{ptr}\n- [ ] old\n")
+        self.assertEqual(bp.main(["--project-root", str(root), "--apply"]), 0)
+        self.assertEqual((root / "SCRATCHPAD.md").read_text().count(ptr), 1)
+        self.assertNotIn(ptr, (root / "docs" / "trackers" / "open-items-1.md").read_text())
+        self.assertIn("- [ ] old", (root / "docs" / "trackers" / "open-items-1.md").read_text())
+
 
 if __name__ == "__main__":
     unittest.main()

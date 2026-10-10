@@ -80,6 +80,16 @@ class AdoptTest(unittest.TestCase):
                 self.assertIn(f"just {name}", readme)
             self.assertEqual(readme.count("just stale"), 1)
 
+    def test_free_text_recipes_take_quoted_arguments(self):
+        old = ('py := "python3"\nai_it := "/x"\n\ncheck:\n    @echo c doc_freshness.py\n\n'
+               'move-sections *ARGS: _require-venv\n    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . {{ARGS}}\n')
+        self.assertIn("free-text recipes take unquoted {{ARGS}}", adopt.justfile_gaps(old))
+        fixed = adopt.fix_justfile(old)
+        self.assertIn('[positional-arguments]\nmove-sections *ARGS: _require-venv\n    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"', fixed)
+        self.assertIn('[positional-arguments]\nchangelog-entry *ARGS:', fixed)
+        self.assertEqual(fixed.count("[positional-arguments]"), 2)
+        self.assertEqual(adopt.justfile_gaps(fixed), [])
+
 
 if __name__ == "__main__":
     unittest.main()

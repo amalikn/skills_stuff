@@ -106,6 +106,8 @@ not overwrite the hand-built checker (521
 
 ## Session history
 
+- **20261011_0008** `KEEP`: gaps closed: shared pointer section and anchor repointing (move_sections), budget tidy step, add_changelog_entry (`just changelog-entry`);
+  free-text recipes quoted after a just {{ARGS}} injection. Canary cambium-swap. Next: operator runs the per-project commands.
 - **20261010_2216** `KEEP`: SKILL.md 2,074 to 198 lines (18 references/ topic files, no word lost); compact navigation template (patterns/navigation/);
   move_sections nested headings and pointer lines. Next: split references over 200 lines if often opened.
 - **20261010_2135** `KEEP`: budget_plan.py and normalise_records.py; heading dates and time grouping; runaway loop in jdm fixed (MAX_MOVES, no-shrink stop).

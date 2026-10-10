@@ -154,7 +154,8 @@ Recent decisions, Session history (2–3 bullets), Next actions (replace), Memor
 Then keep the records within budget (operator, 2026-10-10): `just budget` (plan) and `just budget --apply` (skill-ai-it `scripts/budget_plan.py`:
 normalises dated paragraphs, rotates to `docs/history/`, moves non-working-state sections to reference docs, audits for lost or split lines, runs
 `just check`). A project without the recipe: run the script with `--project-root`. A file it reports as still over budget is not done (operator,
-2026-10-10): list it, with the section it names, in the closeout as open work; never report it as within budget. Write CHANGELOG entries short: what changed and where.
+2026-10-10): list it, with the section it names, in the closeout as open work; never report it as within budget. Write CHANGELOG entries short: what changed and where, with `just changelog-entry --title ... --body-file ... --apply` (skill-ai-it
+`scripts/add_changelog_entry.py`: the project's own heading style and order, Contents line included).
 
 Then regenerate the project's wiki page from those files (operator, 2026-10-10; the page is generated, never hand-written):
 `just -f /Volumes/Data/_ai/_wiki/wiki_stuff/justfile project_page <project-path>`. It rewrites only its generated block in

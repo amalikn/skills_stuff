@@ -3,6 +3,7 @@
 
 Why (operator, 2026-10-10): after the first rollout, records stayed over 200 lines / 25 KB and the work to find out why (a size table per
 section, then a hand-written script) was done by hand each time. This plans and, with `--apply`, runs the whole sequence with the skill's tools:
+0. Tidy pointer clutter earlier runs left (duplicate tracker pointers, numbered pointer sections).
 1. Measure every file loaded whole (CHANGELOG.md, SCRATCHPAD.md, AGENTS.md, CLAUDE.md, AI_NAVIGATION.md) against its budget.
 2. For an over-budget SCRATCHPAD: `normalise_records.py` (headings so dated paragraphs rotate), then for both records `rotate_records.py`.
 3. Still over: move whole sections that are not working state (anything but Contents, Current state, Open items, Next actions, Recent decisions,
@@ -27,6 +28,10 @@ import subprocess
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
+_ms_spec = importlib.util.spec_from_file_location("move_sections", HERE / "move_sections.py")
+ms = importlib.util.module_from_spec(_ms_spec)
+sys.modules.setdefault("move_sections", ms)
+_ms_spec.loader.exec_module(ms)
 _spec = importlib.util.spec_from_file_location("rotate_records", HERE / "rotate_records.py")
 rr = importlib.util.module_from_spec(_spec)
 sys.modules.setdefault("rotate_records", rr)
@@ -159,6 +164,48 @@ def reference_like(text: str, min_lines: int = 20) -> list[tuple[str, int]]:
     return sorted(out, key=lambda x: -x[1])
 
 
+def tidy_pointers(root: pathlib.Path, apply: bool) -> list[str]:
+    """Remove pointer clutter earlier runs left: duplicate tracker pointers, tracker pointers inside trackers, numbered pointer sections.
+
+    Rotation before 2026-10-10 rewrote "Older open items are tracked in ..." on every run (2 to 3 copies in seven SCRATCHPADs, one inside a
+    tracker), and this script once left one "Reference moved out (n)" section per move. Exact duplicates go; distinct pointers stay.
+
+    Args:
+        root: the project root.
+        apply: write the files.
+
+    Returns:
+        One report line per file tidied.
+    """
+    out = []
+    for name in RECORDS:
+        path = root / name
+        if not path.is_file():
+            continue
+        lines = path.read_text().split("\n")
+        seen, kept, dropped = set(), [], 0
+        for line in lines:
+            if line.startswith(rr.TRACKER_POINTER):
+                if line in seen:
+                    dropped += 1
+                    continue
+                seen.add(line)
+            kept.append(line)
+        kept, merged = ms.consolidate(kept)
+        if dropped or merged:
+            out.append(f"  tidy {name}: {dropped} duplicate tracker pointer(s), {merged} numbered pointer section(s) merged")
+            if apply:
+                path.write_text("\n".join(kept))
+    for tracker in sorted((root / "docs" / "trackers").glob("open-items-*.md")):
+        lines = tracker.read_text().split("\n")
+        kept = [l for l in lines if not l.startswith(rr.TRACKER_POINTER)]
+        if len(kept) != len(lines):
+            out.append(f"  tidy {tracker.relative_to(root)}: {len(lines) - len(kept)} tracker pointer(s) removed from the tracker itself")
+            if apply:
+                tracker.write_text("\n".join(kept))
+    return out
+
+
 def handle_record(root: pathlib.Path, name: str, apply: bool, stamp: str) -> tuple[bool, list[str]]:
     """Plan or apply normalise, rotate and section moves for one record.
 
@@ -197,7 +244,7 @@ def handle_record(root: pathlib.Path, name: str, apply: bool, stamp: str) -> tup
         rc, out = run(["move_sections.py", "--project-root", str(root), "--source", name, "--dest", dest,
                        "--title", f"{root.name} {name[:-3].lower()} reference {moved + 1}",
                        "--summary", f"A section moved verbatim from {name} to keep it within budget; durable reference, not working state.",
-                       "--pointer", f"Reference moved out ({moved + 1})", "--apply", head])
+                       "--pointer-into", "Reference moved out", "--apply", head])
         lines.append(f"  move_sections: {head!r} ({n} lines) -> {dest}" + ("" if rc == 0 else f" REFUSED: {out[-200:]}"))
         if rc != 0:
             break
@@ -236,6 +283,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"refused: {', '.join(links)} are symlinks (into {(root / links[0]).resolve().parent}); run there with --project-root")
         return 1
     unfinished = []
+    tidy = tidy_pointers(root, args.apply)
+    if tidy:
+        print("\n".join(tidy))
     for name in RECORDS:
         if (root / name).is_file():
             still, report = handle_record(root, name, args.apply, stamp)

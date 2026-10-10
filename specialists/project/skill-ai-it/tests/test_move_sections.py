@@ -120,6 +120,75 @@ class MoveSectionsTest(unittest.TestCase):
         ms.main(["--project-root", str(root), "--source", "AGENTS.md", "--dest", "docs/ex.md", "--title", "t", "--summary", "s", "--apply", "Example"])
         self.assertIn("[parent](../AGENTS.md)", (root / "docs/ex.md").read_text())
 
+class PointerAndLinkTest(unittest.TestCase):
+    """One shared pointer section, legacy pointer merge, and links that cross a move."""
+
+    DOC = ("# A\n\n## Contents\n\n- [Rules](#rules)\n- [Anchors](#anchors)\n- [Hardware](#hardware)\n\n## Rules\n\nSee [anchors](#anchors) and"
+           " [hardware](#hardware).\n\n## Anchors\n\n| a | b |\n\nBack to [rules](#rules).\n\n## Hardware\n\n| unit | model |\n")
+
+    def project(self) -> Path:
+        """A temporary project holding DOC as AGENTS.md and a README that links into it.
+
+        Returns:
+            The project root.
+        """
+        root = Path(tempfile.mkdtemp())
+        (root / "AGENTS.md").write_text(self.DOC)
+        (root / "README.md").write_text("Read [the anchors](AGENTS.md#anchors) and [rules](AGENTS.md#rules).\n")
+        return root
+
+    def move(self, root: Path, name: str, dest: str) -> int:
+        """Move one section into the shared pointer section.
+
+        Args:
+            root: the project root.
+            name: the heading to move.
+            dest: the destination, project-relative.
+
+        Returns:
+            The exit status.
+        """
+        return ms.main(["--project-root", str(root), "--source", "AGENTS.md", "--dest", dest, "--title", "t", "--summary", "s",
+                        "--pointer-into", "Reference moved out", "--apply", name])
+
+    def test_two_moves_share_one_pointer_section(self):
+        root = self.project()
+        self.assertEqual(self.move(root, "Anchors", "docs/a.md"), 0)
+        self.assertEqual(self.move(root, "Hardware", "docs/h.md"), 0)
+        text = (root / "AGENTS.md").read_text()
+        self.assertEqual(text.count("## Reference moved out"), 1)
+        self.assertIn("- [docs/a.md](docs/a.md): Anchors.", text)
+        self.assertIn("- [docs/h.md](docs/h.md): Hardware.", text)
+        self.assertEqual(text.count("- [Reference moved out](#reference-moved-out)"), 1)
+
+    def test_in_page_links_cross_the_move_both_ways(self):
+        root = self.project()
+        self.move(root, "Anchors", "docs/a.md")
+        self.assertIn("See [anchors](docs/a.md#anchors)", (root / "AGENTS.md").read_text())
+        self.assertIn("Back to [rules](../AGENTS.md#rules).", (root / "docs/a.md").read_text())
+
+    def test_other_files_follow_the_moved_section(self):
+        root = self.project()
+        self.move(root, "Anchors", "docs/a.md")
+        readme = (root / "README.md").read_text()
+        self.assertIn("[the anchors](docs/a.md#anchors)", readme)
+        self.assertIn("[rules](AGENTS.md#rules)", readme)
+
+    def test_legacy_numbered_pointers_merge(self):
+        lines = ["# S", "", "## Contents", "", "- [Reference moved out (1)](#reference-moved-out-1)", "- [Reference moved out (2)](#reference-moved-out-2)",
+                 "", "## Reference moved out (1)", "", "Read [docs/x.md](docs/x.md) before the work it covers. It holds these sections, moved verbatim",
+                 "from this file (a citation of a section", "by name resolves there): Key anchors.", "", "## Current state", "", "now", "",
+                 "## Reference moved out (2)", "", "Read [docs/y.md](docs/y.md) before the work it covers. It holds these sections, moved verbatim",
+                 "from this file (a citation of a section", "by name resolves there): Residual risk.", ""]
+        new, n = ms.consolidate(lines)
+        self.assertEqual(n, 2)
+        text = "\n".join(new)
+        self.assertEqual(text.count("## Reference moved out"), 1)
+        self.assertIn("- [docs/x.md](docs/x.md): Key anchors.", text)
+        self.assertIn("- [docs/y.md](docs/y.md): Residual risk.", text)
+        self.assertNotIn("(#reference-moved-out-1)", text)
+        self.assertIn("- [Reference moved out](#reference-moved-out)", text)
+
 
 if __name__ == "__main__":
     unittest.main()

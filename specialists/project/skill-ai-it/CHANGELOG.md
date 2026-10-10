@@ -13,6 +13,7 @@ Last rotated: 20261010_2207
 
 ## Contents
 
+- [20261010_2346 — move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry](#20261010_2346--move_sections-link-repointing-and-shared-pointer-budget-tidy-step-add_changelog_entry)
 - [20261010_2332 — Reference reads measured (not split); tracker pointer no longer duplicates](#20261010_2332--reference-reads-measured-not-split-tracker-pointer-no-longer-duplicates)
 - [20261010_2227 — Memory pointers rotate; no upgrade hint for project-owned blocks; jdm within budget](#20261010_2227--memory-pointers-rotate-no-upgrade-hint-for-project-owned-blocks-jdm-within-budget)
 - [20261010_2207 — SKILL.md restructured: 2,074 to 198 lines, detail in references/ by topic](#20261010_2207--skillmd-restructured-2074-to-198-lines-detail-in-references-by-topic)
@@ -27,6 +28,20 @@ Last rotated: 20261010_2207
 - [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
 - [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
 - [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
+
+## 20261010_2346 — move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry
+
+- move_sections.py: `--pointer-into HEADING` adds a bullet to one shared pointer section (created when missing); in-page `#anchor` links that cross the
+  move are repointed in both files, and links from other project markdown to a moved section follow it; `consolidate()` merges legacy numbered pointer
+  sections. Replaces the hand-written link fixers and pointer merges of 2026-10-10.
+- budget_plan.py: a tidy step first (duplicate tracker pointers kept once, tracker pointers removed from trackers, numbered pointer sections merged);
+  moves go into one shared "Reference moved out" section.
+- New add_changelog_entry.py (`just changelog-entry`): the project's own heading style and order, Contents line, clock-read stamp, additions-only check.
+  Replaces the scratch entry helper used about 25 times. Smoke-tested in plan mode on all 23 governed CHANGELOGs (five styles, one oldest-first).
+- Adopter adds and documents the `changelog-entry` recipe; skill-slurp-chat step 7 names it. Tests 39 to 49, each new behaviour negative-tested.
+- Free-text recipes (`changelog-entry`, `move-sections`) take quoted positional arguments (`[positional-arguments]`, `"$@"`): `{{ARGS}}` is
+  substituted unquoted, and a title containing semicolons ran its fragments as shell commands (harmless here; caught on the first real use). The adopter
+  rewrites the unsafe form in adopted projects.
 
 ## 20261010_2332 — Reference reads measured (not split); tracker pointer no longer duplicates
 

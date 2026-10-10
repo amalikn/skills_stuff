@@ -172,6 +172,12 @@ rotate *ARGS: _require-venv
 budget *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root . {{ARGS}}
 
+# Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
+[positional-arguments]
+changelog-entry *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/add_changelog_entry.py" --project-root . "$@"
+
 # Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
+[positional-arguments]
 move-sections *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . {{ARGS}}
+    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"
