@@ -6,7 +6,7 @@ Summary: Current working state, newest first per section; superseded entries rot
 Kind: state
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261010_1833
+Last rotated: 20261010_2017
 Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
 Open items tracker: docs/trackers/open-items-20261010_1830.md
 ---
@@ -61,15 +61,13 @@ nav_upgrade` per project.
 ## Open items
 
 - Older open items are tracked in [open-items-20261010_1830.md](docs/trackers/open-items-20261010_1830.md).
+- Older open items are tracked in [open-items-20261010_1830.md](docs/trackers/open-items-20261010_1830.md).
 - [x] **2026-10-07, done (operator: fix it):** the upgrader's CHANGELOG entry now follows the file's order. `changelog_is_newest_first`
   reads the dated `##` headings; a newest-first file gets the entry on top and first in Contents, any other file gets it appended.
 
 - [ ] **Dogfood the checker on this package** — `just nav_validate` now warns that `skill-ai-it` itself has no `scripts/check_governance.py`. The package has real invariants worth asserting: every
   file in the layout tree exists, `templates/` and `patterns/` members are registered in `README.md` / `AI_NAVIGATION.md` / `context-map.yaml`, and `VERSION` is identical across all 11 surfaces that
   restate it. That last one is a textbook duplicated-fact-sync check and this session drifted it by hand.
-
-- [ ] Pre-existing validator warnings (not caused by the governance-checks work): the package's `context-map.yaml` uses its own `update_rules` shape rather than the `governance_navigation` structure
-  the validator expects. Decide whether the package should conform or whether the validator should recognise package-vs-target-project schemas.
 
 not overwrite the hand-built checker (521
   assertions); it is the reference implementation this capability was generalized from.
@@ -107,6 +105,8 @@ not overwrite the hand-built checker (521
 
 ## Session history
 
+- **20261010_2014** `KEEP`: rotate_records explicit PIN marker, prose `###` units and lazy continuation; `move_sections.py`; SPLIT audit; adopter adds a
+  missing `check` and reuses the project interpreter. 39 split tails repaired in five projects. Next: run the adopter across the rest; SKILL.md restructure.
 ### 20261007_2124 to 20261008_1428 — snake_case run finished, legacy blocks migrated, CHANGELOG placement, all committed
 
 - Upgrader: context-map edited as text, recipe renames reach the docs, legacy-layout gate, CHANGELOG entry placed by file order; new

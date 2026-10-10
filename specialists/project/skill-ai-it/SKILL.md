@@ -464,8 +464,9 @@ When enabled: run `graphify update .` whenever the `graphify` CLI is available, 
   headers"); `scripts/file_headers.py` reads them all, and `just docs <folder>` is the triage view agents use before opening files.
 - **Budget.** A file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md, MEMORY.md) stays within
   200 lines and 25 KB for every agent; `doc_freshness.py` holds older ones as a shrink-only ratchet. Area rules go in a file read before that work.
-- **Rotation.** `just rotate --apply` (`scripts/rotate_records.py`) moves old CHANGELOG/SCRATCHPAD entries to `docs/history/`; slurp runs it,
-  then `scripts/audit_rotations.py` (fails on a lost line). Recall: `just history <term>`, `just history-show <stamp>`.
+- **Rotation.** Slurp runs `just rotate --apply` (`scripts/rotate_records.py`, old entries to `docs/history/`) then `scripts/audit_rotations.py`;
+  recall `just history <term>`. Reference holding a file over budget: `just move-sections`. Pin with `` `PIN` `` or `<!-- PIN -->` (a bare PIN is
+  content). A record left over budget is unfinished, never reported done.
 - **Checker shape.** A project's checker follows `patterns/governance-checks.md` "Structure and growth": entry point, `govcheck/core.py` (this skill's
   `templates/govcheck/core.py`, identical everywhere), `config.py`, `helpers.py`, `checks/<family>.py`, and the `structure` family
   (`templates/govcheck/checks/structure.py`) policing it. A single-file checker over 800 lines is split with `scripts/split_checker.py` at its next
@@ -478,9 +479,8 @@ front-matter standard in governance `categories/naming-and-file-summary-guide.md
 `Last reviewed` + 30 days; reports, reviews, audits and sources never expire), a `superseded` file outside `archive/`, a `Depends on` file committed
 after `Last reviewed`.
 
-- `bootstrap`, `navigation-add`, `refresh`: add the `ai_it` variable, the `--check` line and the `stale` recipe to the project's justfile (template
-  `templates/justfile`), run `just stale`, then adopt with `doc_freshness.py --project-root . --write-baseline` so existing findings are
-  grandfathered and only new ones fail. Add `just stale` to the project's preflight list in `AGENTS.md` (outside the managed block).
+- `bootstrap`, `navigation-add`, `refresh`: `scripts/adopt_governed_files.py --project-root . --apply` (recipes incl. `check`, record keys,
+  baseline), then `just stale`; add `just stale` to the `AGENTS.md` preflight (outside the managed block).
 - `audit`: run `just stale` and report the counts per rule; also report whether the project's LLM wiki page
   (`/Volumes/Data/_ai/_wiki/wiki_stuff/projects/<folder>.md`) exists and is older than the project's newest CHANGELOG entry.
 - Prefer fixing over baselining: date an undated living document from its content, move a superseded file to `archive/` (update links and the

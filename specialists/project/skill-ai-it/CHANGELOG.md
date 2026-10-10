@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261010_1759
+Last rotated: 20261010_2017
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 - [20261010_1833 — Rotation made safe and complete; adopter; headers for every script and config](#20261010_1833--rotation-made-safe-and-complete-adopter-headers-for-every-script-and-config)
 - [20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates](#20261010_1805--governed-file-tools-rotation-by-bullet-ticked-items-resolved-checker-standard-slurp-rotates)
 - [20261010_1830 — feat: doc_freshness.py; Graphify disabled](#20261010_1830--feat-doc_freshnesspy-graphify-disabled)
@@ -20,8 +21,22 @@ Last rotated: 20261010_1759
 - [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
 - [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
 - [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
-- [20260529 — feat: AI navigation control-layer upgrade](#20260529--feat-ai-navigation-control-layer-upgrade)
 - [20260529_HHMM — deterministic navigation-control automation](#20260529_hhmm--deterministic-navigation-control-automation)
+
+## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
+
+- `rotate_records.py`: pins only on the explicit marker (`` `PIN` `` or `<!-- PIN -->`; a bare "PIN" substring had pinned ansible-wifi entries about
+  captive-portal PINs); a dated `###` subsection of prose rotates as one unit; wrapped items keep their unindented (lazy) continuation lines (before,
+  heads moved and tails stayed live: 39 tails in 5 projects, repaired). Over-budget note names `move_sections.py`.
+- New `move_sections.py` (+ `move-sections` recipe in justfile and template, catalogue row, tests): moves named `##` sections verbatim to an on-need
+  reference doc with a pointer; refuses on loss. Promoted from a hand-written session script (operator: logic belongs in the skill).
+- `audit_rotations.py`: reports SPLIT entries; counts sections moved by `move_sections.py` (provenance line) as kept.
+- `adopt_governed_files.py`: adds a `check` recipe when a project has none (smc-file-writing-analysis gated nothing); `move-sections` in the recipe set;
+  `ai_it` detected with aligned spacing (atar got a duplicate); new recipes reuse the project's interpreter (of-si `{{ai_py}}`) and drop `_require-venv`
+  when the project lacks it.
+- SKILL.md Rotation bullet and skill-slurp-chat step 7: a record left over budget is unfinished; reference goes out with `move-sections`. SKILL.md held
+  to its ratchet (2,074 lines, 67 bytes smaller) by replacing the hand-written freshness bootstrap steps with the adopter call.
+- Tests 14 to 22 (new: explicit pin, prose subsection, lazy continuation, move_sections x3, split audit x2, adopter x3), each negative-tested; check 229 pass.
 
 ## 20261010_1833 — Rotation made safe and complete; adopter; headers for every script and config
 
@@ -97,68 +112,6 @@ Found running `nav_upgrade` across the 12 projects still on kebab-case recipes, 
   also apply to `RECIPE_DOCS` (root governance docs, `scripts/README.md`, `SETUP.md`, `requirements.txt`); `CHANGELOG.md` is left as history.
 - Upgraded in full: skill-openwisp, skill-nautobot, skill-smc, skill-eval-manager, enterprise-strategy. Recipes renamed, blocks waiting for `refresh`: psy-assess, health,
   islam, japan, atar, unified-network-controller, cambium-swap.
-
-## 20260529 — feat: AI navigation control-layer upgrade
-
-### Added
-
-- **Context compaction recovery** — step-by-step procedure added to SKILL.md, AI_NAVIGATION.md (package and template), README.md, and ARCHITECTURE.md. Agents now have explicit instructions for
-  rebuilding context after compaction.
-
-- **context-map.yaml schema fields** — `audit_checks`, `promotion_rules`, and `context_recovery` added to both package and template context-map.yaml. Covers governance file presence, version
-  consistency, companion update completeness, generated-output policy, task-runner consistency, stale reference detection, archcore promotion gates, and post-compaction recovery.
-
-- **Drift audit expansion** — `patterns/drift-audit.md` rewritten from 11 shallow checkpoints to 13 comprehensive sections covering: governance file presence, managed block integrity, version
-  consistency, navigation map completeness, authority consistency, companion update verification, generated-output policy enforcement, archcore promotion gate verification, context compaction
-  recovery, script/task consistency, stale reference detection, repeat-run safety, and AI_NAVIGATION.md vs context-map.yaml cross-reference.
-
-- **Four-capabilities documentation** — README.md and ARCHITECTURE.md now document the four first-class capabilities: AI navigation map, file relationship/dependency logic, agent coherence/compliance
-  checks, and structured machine-readable context.
-
-- **Existing-project upgrade behavior** — detection matrix documented in README.md and ARCHITECTURE.md: file missing, exists with current/older/no managed block, user-authored content, conflicting
-  manual content, older schema.
-
-- **scripts/README.md freshness check** — added step 5 to `templates/context-preflight.sh`.
-
-### Changed
-
-- **Managed block standard** — all managed blocks updated from `<!-- BEGIN skill-ait:navigation -->` to `<!-- BEGIN MANAGED: skill-ai-it:<section-name> -->` with version stamping. Format: `<!--
-  skill-ai-it-version: 2026-05-29-ai-navigation-control-layer-v1 -->`. Files updated: SKILL.md, AGENTS.md, AI_NAVIGATION.md, templates/AI_NAVIGATION.md, templates/AGENTS-navigation-block.md.
-
-- **AGENTS.md navigation block** — expanded from 7 to 11 instructions including: inspect companion-file rules before edits, do not treat Graphify/Repomix output as canonical truth, run audit/check
-  commands before completion, update CHANGELOG.md for all governance/navigation changes, preserve user-authored content outside managed sections. Same expansion applied to
-  templates/AGENTS-navigation-block.md (from 12 to 15 rules).
-
-- **SKILL.md workflow** — added "Workflow: Applying This Skill to a Project" section with explicit 12-step process covering: read existing files, detect versions, detect customizations, read
-  context-map.yaml, check companion rules, generate updates in memory, apply managed blocks, create .proposed files, regenerate outputs only when stale, run validation, append CHANGELOG.md, report
-  result. Generated outputs explicitly labeled as support-only.
-
-- **templates/context-preflight.sh** — fixed numbering bug: `[5/5]` → `[6/6]` with added step 5 for context pack freshness check.
-- **context-map.yaml (package)** — fixed duplicate `templates/justfile` entry in `generated_templates.read`.
-
-### Files changed
-
-- `SKILL.md` — managed block pattern, embedded AGENTS navigation block, context compaction recovery section, workflow section
-- `AGENTS.md` — managed block markers, navigation block rules
-- `AI_NAVIGATION.md` — managed block markers, compaction recovery, audit procedure
-- `context-map.yaml` — duplicate fix, audit_checks/promotion_rules/context_recovery
-- `README.md` — four-capabilities table, managed block behavior, existing-project upgrade, compaction recovery, drift audit, TOC
-- `ARCHITECTURE.md` — four-capabilities table, managed block behavior, existing-project upgrade, compaction recovery, drift audit
-- `templates/AI_NAVIGATION.md` — managed block markers, compaction recovery, audit procedure
-- `templates/context-map.yaml` — audit_checks/promotion_rules/context_recovery
-- `templates/AGENTS-navigation-block.md` — managed block markers, expanded rules
-- `templates/context-preflight.sh` — numbering fix, freshness check step
-- `patterns/drift-audit.md` — full rewrite with 13 comprehensive sections
-- `CHANGELOG.md` — this entry
-
-### Notes
-
-- Generated outputs (`graphify-out/`, `.ai-context/`) remain support-only and are never automatically promoted to canonical truth.
-- `.archcore/` promotion still requires explicit authorization (promote mode only).
-- Existing projects generated by older versions of this skill will have managed blocks inserted without overwriting user-authored content.
-- Idempotency: re-running this upgrade twice will not duplicate managed blocks or CHANGELOG entries. Version strings prevent re-upgrade.
-
----
 
 ## 20260529_HHMM — deterministic navigation-control automation
 

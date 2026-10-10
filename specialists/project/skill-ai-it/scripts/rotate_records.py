@@ -8,7 +8,7 @@ rotated data only when needed. So:
 - **Units.** A log (`Kind: log`, CHANGELOG) rotates whole dated `## <stamp>` entries. A working-state file (`Kind: state`, SCRATCHPAD) rotates
   dated top-level bullets and `###` subsections inside each `##` section, and whole `##` sections whose heading carries a stamp.
 - **Never moved:** units with no date; the newest `--min-keep` units of each section (the whole log for CHANGELOG: 5; SCRATCHPAD: 3 per
-  section); units younger than `--keep-days` (0 by default); units containing `PIN`; units in a pinned section (`Pinned sections:` key; SCRATCHPAD
+  section); units younger than `--keep-days` (0 by default); units carrying the pin marker (`` `PIN` `` in backticks or `<!-- PIN -->`; a bare word such as a captive-portal PIN is content, not a pin); units in a pinned section (`Pinned sections:` key; SCRATCHPAD
   default `Open items`) unless they say done, closed, resolved or superseded; and, in a working-state file, units whose stamp a live governance
   file (AGENTS.md, AI_NAVIGATION.md, context-map.yaml, target-map.yaml, ROADMAP.md, ARCHITECTURE.md, README.md) still cites. A log stamp cited
   elsewhere stays reachable through `--show`, and tools that need the whole log read the archives too.
@@ -53,6 +53,8 @@ _spec.loader.exec_module(file_headers)
 
 STAMP = re.compile(r"(20\d{2})(\d{2})(\d{2})_(\d{4})|(20\d{2})-(\d{2})-(\d{2})")
 LIVE_SURFACES = ("AGENTS.md", "AI_NAVIGATION.md", "context-map.yaml", "target-map.yaml", "ROADMAP.md", "ARCHITECTURE.md", "README.md")
+#: an explicit pin; a bare "PIN" substring matched content such as "portal/PIN-activation" and kept history (ansible-wifi, 2026-10-10)
+PIN_MARK = re.compile(r"`PIN`|<!--\s*PIN\b")
 RESOLVED = re.compile(r"\b(done|closed|resolved|superseded|retired)\b|^- \[x\]|~~", re.I)
 ARCHIVE_DIR = "docs/history"
 #: Measured 2026-10-10 on UNC (about 30 log entries a day): age protects too much in an active project, so the newest units are kept by
@@ -111,6 +113,21 @@ def first_stamp(line: str) -> str:
     return m.group(0) if m else ""
 
 
+def lazy_continuation(line: str) -> bool:
+    """Whether a line continues the list item above it without indentation (markdown "lazy" continuation).
+
+    A wrapped item whose later lines start at column 0 was cut after its first line, leaving its tail behind as an orphan paragraph
+    (ansible-wifi SCRATCHPAD, 2026-10-10).
+
+    Args:
+        line: the line after a non-blank line of the item.
+
+    Returns:
+        True when it is plain text, not a blank line, list marker, heading, table row, rule, fence or comment.
+    """
+    return bool(line.strip()) and not (line.startswith(("- ", "* ", "#", "|", "```", "<!--", "---", ">")) or re.match(r"^\d+[.)] ", line))
+
+
 def parse(text: str, kind: str) -> Record:
     """Split a record into preamble, sections and units.
 
@@ -145,11 +162,23 @@ def parse(text: str, kind: str) -> Record:
                 line = body[k]
                 if line.startswith("### "):
                     items.extend(pending)
+                    nxt = next((x for x in body[k + 1:] if x.strip()), "")
+                    if first_stamp(line) and nxt and not (nxt.startswith(("- ", "### ")) or re.match(r"^\d+[.)] ", nxt)):
+                        # A dated `###` subsection written as prose is one unit to the next `###`; as loose lines it never rotated
+                        # (ansible-wifi's "Newest thread" paragraphs, 2026-10-10).
+                        end = k + 1
+                        while end < len(body) and not body[end].startswith("### "):
+                            end += 1
+                        items.append(Unit(section=head, lines=body[k:end], stamp=first_stamp(line)))
+                        pending, sub_stamp = [], ""
+                        k = end
+                        continue
                     pending, sub_stamp = [line], first_stamp(line)
                     k += 1
                 elif line.startswith("- ") or re.match(r"^\d+[.)] ", line):
                     end = k + 1
-                    while end < len(body) and (body[end].startswith("  ") or (body[end] == "" and end + 1 < len(body) and body[end + 1].startswith("  "))):
+                    while end < len(body) and (body[end].startswith("  ") or (body[end] == "" and end + 1 < len(body) and body[end + 1].startswith("  "))
+                                               or (body[end - 1] != "" and lazy_continuation(body[end]))):
                         end += 1
                     items.append(Unit(section=head, lines=pending + body[k:end], stamp=first_stamp(line) or sub_stamp))
                     pending = []
@@ -325,7 +354,7 @@ def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: i
                 u.keep_reason = "undated"
             elif now - u.when < dt.timedelta(days=keep_days):
                 u.keep_reason = "recent"
-            elif "PIN" in text or re.search(r"until resolved", text, re.I):
+            elif PIN_MARK.search(text) or re.search(r"until resolved", text, re.I):
                 u.keep_reason = "pinned"
             elif open_item:
                 u.keep_reason = "open item"
@@ -722,7 +751,7 @@ def main(argv: list[str] | None = None) -> int:
           + (f", {len(to_tracker)} open item(s) to {tracker_rel}" if to_tracker else ""))
     print("  kept: " + ", ".join(f"{n} {r or 'within budget'}" for r, n in kept.most_common()))
     if after[0] > budget_lines or after[1] > budget_bytes:
-        print(f"  note: still over {budget_lines} lines / {budget_bytes // 1024} KB because of kept units; review them or raise Budget")
+        print(f"  note: still over {budget_lines} lines / {budget_bytes // 1024} KB because of kept units; review them, move durable reference sections out with move_sections.py, or raise Budget")
     if not to_archive and not to_tracker:
         return 0
     source_dir = os.path.dirname(live)

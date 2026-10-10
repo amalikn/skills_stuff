@@ -66,6 +66,33 @@ class RotateTest(unittest.TestCase):
         self.assertEqual(missing, [])
         self.assertLessEqual(live.count("\n"), 220)
 
+    def test_a_dated_prose_subsection_rotates_whole(self):
+        """A `### <date>` subsection of paragraphs (no bullets) moves as one unit; the newest stay."""
+        lines = ["# Scratchpad", "", "## Current state", ""]
+        for i in range(60):
+            lines += [f"### 2026-0{1 + i % 8}-1{i % 10} — thread {i}", "", f"**Thread {i} paragraph.** detail {i}", f"second paragraph {i}", ""]
+        live, archive = self.rotate("SCRATCHPAD.md", "\n".join(lines) + "\n")
+        self.assertIn("**Thread 0 paragraph.** detail 0", archive)
+        self.assertIn("second paragraph 0", archive)
+        self.assertNotIn("second paragraph 0\n", live)
+        self.assertLessEqual(live.count("\n"), 220)
+
+    def test_a_wrapped_item_moves_with_its_unindented_continuation(self):
+        """Lines wrapped at column 0 under a dated item travel with it; none is left behind as an orphan paragraph."""
+        lines = ["# Scratchpad", "", "## Next actions", ""]
+        for i in range(80):
+            lines += [f"1. **2026-0{1 + i % 8}-1{i % 10}** action {i} starts here and", f"continues unindented {i}", f"and ends {i}.", ""]
+        live, archive = self.rotate("SCRATCHPAD.md", "\n".join(lines) + "\n")
+        self.assertIn("action 0 starts here and\ncontinues unindented 0\nand ends 0.", archive)
+        self.assertNotIn("continues unindented 0\n", live)
+
+    def test_only_an_explicit_marker_pins(self):
+        """A captive-portal "PIN" in content is not a pin; `PIN` in backticks is."""
+        text = scratchpad(120).replace("entry 0 with", "entry 0 `PIN` with").replace("entry 1 with", "entry 1 portal/PIN-activation outage with")
+        live, archive = self.rotate("SCRATCHPAD.md", text)
+        self.assertIn("entry 0 `PIN` with", live)
+        self.assertIn("entry 1 portal/PIN-activation outage with", archive)
+
     def test_open_item_stays_and_finished_item_may_move(self):
         live, _ = self.rotate("SCRATCHPAD.md", scratchpad(120))
         self.assertIn("still open, never rotated", live)

@@ -5,7 +5,7 @@ Why (operator, 2026-10-10: "that skill is mostly used with bootstrap or refresh.
 the standard's tools only act where they are installed. skill-slurp-chat runs this at every close, so a project reached by any slurp adopts it.
 
 What it checks and, with --apply, adds:
-1. justfile: the `ai_it` variable, `doc_freshness.py --check` in the `check` recipe, and the recipes stale, docs, history, history-show, rotate
+1. justfile: the `ai_it` variable, `doc_freshness.py --check` in the `check` recipe, and the recipes stale, docs, history, history-show, rotate, move-sections; a `check` recipe when there is none
    (from skill-ai-it `templates/justfile`; a project without a justfile is reported, not given one).
 2. AGENTS.md: one line on triage, staleness and history, outside any managed block.
 3. CHANGELOG.md and SCRATCHPAD.md: front matter with Kind, Budget and, for SCRATCHPAD, Keep and an open-items tracker.
@@ -27,7 +27,7 @@ import subprocess
 import sys
 
 SKILL = pathlib.Path(__file__).resolve().parent.parent
-RECIPES = ("stale", "docs", "history", "history-show", "rotate")
+RECIPES = ("stale", "docs", "history", "history-show", "rotate", "move-sections")
 AGENTS_MARK = "just docs <folder>"
 AGENTS_LINE = ("- Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries\n"
                "  live in `docs/history/`, read only on need (`just history <term>`, `just history-show <stamp>`).\n")
@@ -37,11 +37,12 @@ def template_recipes() -> str:
     """The recipe block to add, taken from the skill's justfile template so it never drifts.
 
     Returns:
-        The text of the stale, docs, history, history-show and rotate recipes.
+        The text of the stale, docs, history, history-show, rotate and move-sections recipes.
     """
     text = (SKILL / "templates" / "justfile").read_text(encoding="utf-8")
     start = text.index("# Session preflight: list stale docs")
-    end = text.index("\n\n", text.index("rotate *ARGS:")) if "rotate *ARGS:" in text else len(text)
+    last = "move-sections *ARGS:" if "move-sections *ARGS:" in text else "rotate *ARGS:"
+    end = text.index("\n\n", text.index(last)) if last in text else len(text)
     return text[start:end].rstrip("\n") + "\n"
 
 
@@ -55,9 +56,11 @@ def justfile_gaps(text: str) -> list[str]:
         Short names of the missing pieces.
     """
     gaps = []
-    if "ai_it :=" not in text:
+    if not re.search(r"^ai_it\s*:=", text, re.M):
         gaps.append("ai_it variable")
-    if re.search(r"^check\b", text, re.M) and "doc_freshness.py" not in text:
+    if not re.search(r"^check\b", text, re.M):
+        gaps.append("check recipe (nothing gates freshness)")  # smc-file-writing-analysis had none, so its adoption gated nothing (2026-10-10)
+    elif "doc_freshness.py" not in text:
         gaps.append("freshness in check")
     gaps += [f"recipe {r}" for r in RECIPES if not re.search(rf"^{re.escape(r)}\b", text, re.M)]
     return gaps
@@ -72,7 +75,7 @@ def fix_justfile(text: str) -> str:
     Returns:
         The updated justfile.
     """
-    if "ai_it :=" not in text:
+    if not re.search(r"^ai_it\s*:=", text, re.M):
         m = re.search(r"^py\s*:=.*$", text, re.M)
         line = f'ai_it := "{SKILL}"'
         text = text[:m.end()] + "\n" + line + text[m.end():] if m else line + "\n" + text
@@ -82,12 +85,20 @@ def fix_justfile(text: str) -> str:
             indent = re.match(r"[ \t]+", m.group(1)).group(0)
             py = "{{py}}" if "py :=" in text else "python3"
             text = text[:m.end()] + f'{indent}@{py} "{{{{ai_it}}}}/scripts/doc_freshness.py" --project-root . --check\n' + text[m.end():]
+    if not re.search(r"^check\b", text, re.M):
+        py = "{{py}}" if "py :=" in text else "python3"
+        text = text.rstrip("\n") + ("\n\n# Governance gate: document freshness (fails only on a finding the baseline does not excuse). Read-only.\n"
+                                     f'check:\n    @{py} "{{{{ai_it}}}}/scripts/doc_freshness.py" --project-root . --check\n')
     missing = [r for r in RECIPES if not re.search(rf"^{re.escape(r)}\b", text, re.M)]
     if missing:
         recipes = split_recipes(template_recipes())
         block = "\n".join(recipes[r] for r in missing if r in recipes)
-        if "py :=" not in text:
-            block = block.replace("{{py}}", "python3").replace(": _require-venv", ":")
+        used = re.search(r'@(\S+) "\{\{ai_it\}\}/scripts/', text)  # the interpreter the project's skill recipes already call (of-si: {{ai_py}})
+        interp = used.group(1) if used else "{{py}}" if re.search(r"^py\s*:=", text, re.M) else "python3"
+        if interp != "{{py}}":
+            block = block.replace("{{py}}", interp)
+        if not re.search(r"^_require-venv\b", text, re.M):
+            block = block.replace(": _require-venv", ":")  # of-si has `py :=` but no _require-venv recipe (2026-10-10)
         text = text.rstrip("\n") + "\n\n" + block
     return text
 
