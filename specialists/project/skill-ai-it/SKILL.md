@@ -464,9 +464,9 @@ When enabled: run `graphify update .` whenever the `graphify` CLI is available, 
   headers"); `scripts/file_headers.py` reads them all, and `just docs <folder>` is the triage view agents use before opening files.
 - **Budget.** A file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md, MEMORY.md) stays within
   200 lines and 25 KB for every agent; `doc_freshness.py` holds older ones as a shrink-only ratchet. Area rules go in a file read before that work.
-- **Rotation.** Slurp runs `just rotate --apply` (`scripts/rotate_records.py`, old entries to `docs/history/`) then `scripts/audit_rotations.py`;
-  recall `just history <term>`. Reference holding a file over budget: `just move-sections`. Pin with `` `PIN` `` or `<!-- PIN -->` (a bare PIN is
-  content). A record left over budget is unfinished, never reported done.
+- **Rotation.** `just budget --apply` (`scripts/budget_plan.py`): normalise, rotate to `docs/history/`, move non-working-state sections out,
+  audit, `just check`; it names what still holds a file over (unfinished, never reported done). Recall `just history <term>`. Pin with
+  `` `PIN` `` or `<!-- PIN -->`.
 - **Checker shape.** A project's checker follows `patterns/governance-checks.md` "Structure and growth": entry point, `govcheck/core.py` (this skill's
   `templates/govcheck/core.py`, identical everywhere), `config.py`, `helpers.py`, `checks/<family>.py`, and the `structure` family
   (`templates/govcheck/checks/structure.py`) policing it. A single-file checker over 800 lines is split with `scripts/split_checker.py` at its next

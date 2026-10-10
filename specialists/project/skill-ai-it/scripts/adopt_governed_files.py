@@ -5,8 +5,8 @@ Why (operator, 2026-10-10: "that skill is mostly used with bootstrap or refresh.
 the standard's tools only act where they are installed. skill-slurp-chat runs this at every close, so a project reached by any slurp adopts it.
 
 What it checks and, with --apply, adds:
-1. justfile: the `ai_it` variable, `doc_freshness.py --check` in the `check` recipe, and the recipes stale, docs, history, history-show, rotate, move-sections; a `check` recipe when there is none
-   (from skill-ai-it `templates/justfile`; a project without a justfile is reported, not given one).
+1. justfile: the `ai_it` variable, `doc_freshness.py --check` in the `check` recipe, and the recipes stale, docs, history, history-show, rotate, budget, move-sections; a `check` recipe when there is none
+   (from skill-ai-it `templates/justfile`; a project without one gets a new justfile). Refuses when the governed files are symlinks.
 2. AGENTS.md: one line on triage, staleness and history, outside any managed block.
 3. CHANGELOG.md and SCRATCHPAD.md: front matter with Kind, Budget and, for SCRATCHPAD, Keep and an open-items tracker.
 4. scripts/doc-freshness-baseline.json: written when absent, so existing findings are grandfathered and new ones fail.
@@ -27,7 +27,7 @@ import subprocess
 import sys
 
 SKILL = pathlib.Path(__file__).resolve().parent.parent
-RECIPES = ("stale", "docs", "history", "history-show", "rotate", "move-sections")
+RECIPES = ("stale", "docs", "history", "history-show", "rotate", "budget", "move-sections")
 AGENTS_MARK = "just docs <folder>"
 AGENTS_LINE = ("- Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries\n"
                "  live in `docs/history/`, read only on need (`just history <term>`, `just history-show <stamp>`).\n")
@@ -220,6 +220,11 @@ def main(argv: list[str] | None = None) -> int:
     if not root.is_dir():
         print(f"not a directory: {root}", file=sys.stderr)
         return 2
+    links = [n for n in ("AGENTS.md", "CHANGELOG.md", "SCRATCHPAD.md") if (root / n).is_symlink()]
+    if links:
+        # ansible-wifi's governed files are links into local-knowledge-ansible; edits made here land in the other repo (2026-10-10)
+        print(f"{root.name}: refused: {', '.join(links)} are symlinks; run with --project-root {(root / links[0]).resolve().parent}")
+        return 1
     justfile = root / "justfile"
     gaps: list[str] = []
     gaps += [f"justfile: {g}" for g in (justfile_gaps(justfile.read_text(encoding="utf-8")) if justfile.is_file() else ["no justfile"])]
@@ -235,8 +240,11 @@ def main(argv: list[str] | None = None) -> int:
     if not args.apply:
         return 1
     stamp = dt.datetime.now().strftime("%Y%m%d_%H%M")
-    if justfile.is_file():
-        justfile.write_text(fix_justfile(justfile.read_text(encoding="utf-8")), encoding="utf-8")
+    if not justfile.is_file():
+        # a governed project without a justfile gets one, so the recipes AGENTS.md names exist (ansible-wifi governance, 2026-10-10)
+        justfile.write_text(f"# Governance recipes from skill-ai-it templates/justfile (adopt_governed_files.py, {stamp}).\n"
+                            f'py := "{sys.executable}"\n', encoding="utf-8")
+    justfile.write_text(fix_justfile(justfile.read_text(encoding="utf-8")), encoding="utf-8")
     if agents_gap(root / "AGENTS.md"):
         fix_agents(root / "AGENTS.md")
     for name, kind in (("CHANGELOG.md", "log"), ("SCRATCHPAD.md", "state")):

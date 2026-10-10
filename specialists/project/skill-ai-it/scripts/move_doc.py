@@ -201,7 +201,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--project-root", default=".")
     ap.add_argument("--to", help="project-relative destination; default <folder>/archive/<name>")
     ap.add_argument("--moved-paths", default="", help="project-relative JSON map with a `moves` object to record the move in")
-    ap.add_argument("--keep-records", default="", help="comma-separated extra files never edited (dated records)")
+    ap.add_argument("--keep-records", action="append", default=[],
+                    help="extra files never edited (dated records): repeat the flag or give a comma-separated list")
     ap.add_argument("--apply", action="store_true")
     args = ap.parse_args(argv)
     root = pathlib.Path(args.project_root).resolve()
@@ -216,7 +217,8 @@ def main(argv: list[str] | None = None) -> int:
     if old not in tracked_files(root):
         print(f"refused: {old} is not tracked by git", file=sys.stderr)
         return 1
-    keep = {k.strip() for k in args.keep_records.split(",") if k.strip()}
+    # repeated flags used to keep only the last value, so two history archives were edited (smc-file-writing-analysis, 2026-10-10)
+    keep = {k.strip() for v in args.keep_records for k in v.split(",") if k.strip()}
     links = plan_link_edits(root, old, new, keep)
     indexes = index_edits(root, old, new)  # plan view; recomputed after the link edits are written so both apply
     print(f"move {old} -> {new}")

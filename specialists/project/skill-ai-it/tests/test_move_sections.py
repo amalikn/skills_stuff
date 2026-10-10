@@ -32,6 +32,7 @@ Keep this rule.
 | Anchor | Value |
 | --- | --- |
 | venv | `.venv` |
+| plan | [plan](docs/plan.md) |
 
 ```bash
 ## not a heading inside a fence
@@ -93,6 +94,10 @@ class MoveSectionsTest(unittest.TestCase):
         (root / "docs").mkdir()
         (root / "docs/ref.md").write_text("x")
         self.assertEqual(ms.main(base + ["Rules"]), 1)
+
+    def test_relative_links_resolve_from_the_destination(self):
+        rc, root = self.run_move(True)
+        self.assertIn("| plan | [plan](plan.md) |", (root / "docs/ref.md").read_text())
 
 
 if __name__ == "__main__":

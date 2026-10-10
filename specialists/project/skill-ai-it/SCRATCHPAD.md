@@ -105,6 +105,8 @@ not overwrite the hand-built checker (521
 
 ## Session history
 
+- **20261010_2135** `KEEP`: budget_plan.py and normalise_records.py; heading dates and time grouping; runaway loop in jdm fixed (MAX_MOVES, no-shrink stop).
+  Next: operator runs the per-project commands; jdm by hand; AI_NAVIGATION template to budget; SKILL.md restructure.
 - **20261010_2014** `KEEP`: rotate_records explicit PIN marker, prose `###` units and lazy continuation; `move_sections.py`; SPLIT audit; adopter adds a
   missing `check` and reuses the project interpreter. 39 split tails repaired in five projects. Next: run the adopter across the rest; SKILL.md restructure.
 ### 20261007_2124 to 20261008_1428 — snake_case run finished, legacy blocks migrated, CHANGELOG placement, all committed

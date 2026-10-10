@@ -13,6 +13,7 @@ Last rotated: 20261010_2017
 
 ## Contents
 
+- [20261010_2135 — budget_plan and normalise_records; heading dates and time grouping; runaway incident and fix](#20261010_2135--budget_plan-and-normalise_records-heading-dates-and-time-grouping-runaway-incident-and-fix)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 - [20261010_1833 — Rotation made safe and complete; adopter; headers for every script and config](#20261010_1833--rotation-made-safe-and-complete-adopter-headers-for-every-script-and-config)
 - [20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates](#20261010_1805--governed-file-tools-rotation-by-bullet-ticked-items-resolved-checker-standard-slurp-rotates)
@@ -22,6 +23,20 @@ Last rotated: 20261010_2017
 - [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
 - [20261007_2049 — fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs](#20261007_2049--fix-nav_upgrade-refuses-legacy-layout-blocks-context-map-edited-in-place-recipe-renames-reach-the-docs)
 - [20260529_HHMM — deterministic navigation-control automation](#20260529_hhmm--deterministic-navigation-control-automation)
+
+## 20261010_2135 — budget_plan and normalise_records; heading dates and time grouping; runaway incident and fix
+
+- New scripts/budget_plan.py (one entry point: measure, normalise, rotate, move non-working-state sections, index, audit, project check; reports what
+  still holds a file over; refuses symlinked records) and scripts/normalise_records.py (adds dated headings above bold-lead paragraphs, standing-fact
+  headings, an Update log heading over dated header comments; refuses if a line changes). `budget` recipe in justfile, template and adopter.
+- rotate_records.py: written dates in headings ("21 September 2026") date and group sections; time suffixes ("~1:35p") no longer split a group.
+- move_sections.py relinks relative links for the destination; adopt_governed_files.py refuses symlinked governed files and creates a missing
+  justfile; move_doc.py --keep-records can be repeated. Tests 22 to 33, each negative-tested.
+- Incident: an in-session loop over 23 projects (operator stopped it: "stop running batches"). In jdm the planner moved its own pointer section each
+  pass and wrote about 10,000 docs/scratchpad-reference-* files; jdm restored from git (clean before the run). Fixed: pointer headings are working
+  state, a move that does not shrink the file stops the loop, MAX_MOVES 8; test added. Canary of nine projects: eight within budget, audits clean;
+  jdm reverted (its guards need registry updates; a 199-line Memory pointers section holds it).
+- Operator rule: canary, then hand the operator per-project commands; never batch in-session.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

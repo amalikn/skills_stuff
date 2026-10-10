@@ -7,7 +7,7 @@ SCRATCHPAD fixes were done by hand. One run does it safely:
 1. Cut the named sections (heading to the next `##`) and write them, verbatim and in order, to the destination under a front-matter header.
 2. Leave one pointer section in the source naming each moved section, so a citation such as `AGENTS.md § Live Audit Procedure` still resolves.
 3. Drop the moved sections' Contents entries (matched by link text, so any anchor style works) and add one for the pointer section.
-4. Refuse to write if any moved line is missing from the destination.
+4. Rewrite relative links for the destination's folder; refuse to write if any moved line is missing from the destination.
 Without `--apply` it prints the plan and changes nothing. Index the destination in its folder `readme.md` afterwards (or run the project's
 index generator).
 
@@ -23,8 +23,14 @@ import argparse
 import datetime as dt
 import pathlib
 import re
+import importlib.util
 import sys
 from collections import Counter
+
+_spec = importlib.util.spec_from_file_location("rotate_records", pathlib.Path(__file__).resolve().parent / "rotate_records.py")
+rr = importlib.util.module_from_spec(_spec)
+sys.modules.setdefault("rotate_records", rr)
+_spec.loader.exec_module(rr)
 
 HEADING = re.compile(r"^## (.+?)\s*$")
 TOC_ENTRY = re.compile(r"^\s*- \[(.+?)\]\(#[^)]*\)\s*$")
@@ -152,6 +158,9 @@ def main(argv: list[str] | None = None) -> int:
     except KeyError as exc:
         print(f"refused: section(s) not found in {args.source}: {exc}")
         return 1
+    # relative links are rewritten for the destination's folder, as rotation does (cambium-swap's moved Key anchors broke, 2026-10-10)
+    src_dir, dst_dir = (("" if d == "." else d) for d in (str(pathlib.Path(args.source).parent), str(pathlib.Path(args.dest).parent)))
+    moved = [rr.relink(b, src_dir, dst_dir) for b in moved]
     text = dest_text(moved, args.source, args.title, args.summary, dt.date.today().isoformat())
     lost = Counter(l for b in moved for l in b) - Counter(text.splitlines())
     if lost:

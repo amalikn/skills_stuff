@@ -151,11 +151,10 @@ create_checkpoint(projectId, name="slurp-<YYYYMMDD>-<topic>")
 In the project's `SCRATCHPAD.md` (create via `/skill-ai-it` if missing), update only the sections this session changed, marked `KEEP`: Current state, Open items (add undecided proposals), Key anchors,
 Recent decisions, Session history (2–3 bullets), Next actions (replace), Memory pointers (keys, note and checkpoint IDs). No file-change lists, no task detail, no session logs.
 
-Then keep the records within budget (operator, 2026-10-10): `just rotate` (plan) and, when CHANGELOG.md or SCRATCHPAD.md is over 200 lines or
-25 KB, `just rotate --apply` (skill-ai-it `scripts/rotate_records.py`: moves the oldest entries to `docs/history/`, verified, never open items or
-pinned ones). A project without the recipe: run the script directly with `--project-root`. Then run skill-ai-it `scripts/audit_rotations.py <project>`; a `LOST` line stops the slurp until the record is restored from git. A record still over budget after rotation is not done (operator,
-2026-10-10): move durable reference sections (anchors, procedures) out with `just move-sections` (skill-ai-it `scripts/move_sections.py`), and
-list any `KEEP`-held remainder in the closeout as the operator's decision; never report it as within budget. Write CHANGELOG entries short: what changed and where.
+Then keep the records within budget (operator, 2026-10-10): `just budget` (plan) and `just budget --apply` (skill-ai-it `scripts/budget_plan.py`:
+normalises dated paragraphs, rotates to `docs/history/`, moves non-working-state sections to reference docs, audits for lost or split lines, runs
+`just check`). A project without the recipe: run the script with `--project-root`. A file it reports as still over budget is not done (operator,
+2026-10-10): list it, with the section it names, in the closeout as open work; never report it as within budget. Write CHANGELOG entries short: what changed and where.
 
 Then regenerate the project's wiki page from those files (operator, 2026-10-10; the page is generated, never hand-written):
 `just -f /Volumes/Data/_ai/_wiki/wiki_stuff/justfile project_page <project-path>`. It rewrites only its generated block in

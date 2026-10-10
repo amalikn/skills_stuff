@@ -35,6 +35,26 @@ def scratchpad(n_old: int) -> str:
     return "\n".join(lines) + "\n"
 
 
+class GroupKeyTest(unittest.TestCase):
+    """Dated sections of one kind form one group whatever time marker follows the date."""
+
+    def test_time_suffixes_do_not_split_a_group(self):
+        heads = ["## Residual risk register (staleness audit, 2026-09-14 ~1:35p)", "## Residual risk register (staleness audit, 2026-09-15 ~10:53a)",
+                 "## Residual risk register (staleness audit, 2026-09-20 ~12:11)", "## Residual risk — staleness audit 20261009_1816 `KEEP`"]
+        keys = {rr.group_key("state", h) for h in heads[:3]}
+        self.assertEqual(len(keys), 1, keys)
+        self.assertEqual(rr.group_key("state", heads[3]), "Residual risk — staleness audit")
+
+    def test_written_dates_in_headings_date_and_group(self):
+        a = "## Residual risk register — staleness audit, 21 September 2026 `KEEP`"
+        b = "## Residual risk register — staleness audit, 25 August 2026 `KEEP`"
+        self.assertEqual(rr.heading_stamp(a), "2026-09-21")
+        self.assertEqual(rr.group_key("state", a), rr.group_key("state", b))
+        rec = rr.parse("# S\n\n## Current state\n\n- contemporaneous note created 10 Jul 2026\n", "state")
+        units = [u for _, items in rec.blocks for u in items if isinstance(u, rr.Unit)]
+        self.assertEqual([u.stamp for u in units], [""])  # a written date in prose does not date a bullet
+
+
 class RotateTest(unittest.TestCase):
     """Run the real script on a temporary git repository and check what moved."""
 

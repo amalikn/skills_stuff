@@ -58,6 +58,16 @@ class AdoptTest(unittest.TestCase):
         self.assertIn('@{{ai_py}} "{{ai_it}}/scripts/move_sections.py"', fixed)
         self.assertNotIn("{{py}}", fixed)
 
+    def test_missing_justfile_is_created_and_symlinks_refused(self):
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as other:
+            root = Path(tmp)
+            (root / "AGENTS.md").write_text("# AGENTS\n")
+            self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
+            self.assertEqual(adopt.justfile_gaps((root / "justfile").read_text()), [])
+            (Path(other) / "SCRATCHPAD.md").write_text("# s\n")
+            (root / "SCRATCHPAD.md").symlink_to(Path(other) / "SCRATCHPAD.md")
+            self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

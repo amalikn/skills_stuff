@@ -168,6 +168,10 @@ rotate *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
 
+# Bring governed files within budget: normalise, rotate, move non-working-state sections out, audit, check. Plan by default; `--apply` to do it
+budget *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root . {{ARGS}}
+
 # Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
 move-sections *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . {{ARGS}}

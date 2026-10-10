@@ -55,6 +55,9 @@ STAMP = re.compile(r"(20\d{2})(\d{2})(\d{2})_(\d{4})|(20\d{2})-(\d{2})-(\d{2})")
 LIVE_SURFACES = ("AGENTS.md", "AI_NAVIGATION.md", "context-map.yaml", "target-map.yaml", "ROADMAP.md", "ARCHITECTURE.md", "README.md")
 #: an explicit pin; a bare "PIN" substring matched content such as "portal/PIN-activation" and kept history (ansible-wifi, 2026-10-10)
 PIN_MARK = re.compile(r"`PIN`|<!--\s*PIN\b")
+LONG_DATE = re.compile(r"\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?,?\s+(20\d{2})\b")
+MONTHS = {m: i for i, m in enumerate("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(), 1)}
+TIME = re.compile(r"~?\b\d{1,2}[:.]\d{2}\s*(?:[ap]\.?m?\.?\b)?(?:\s*[–-]\s*\d{1,2}[:.]\d{2}\s*(?:[ap]\.?m?\.?\b)?)?", re.I)
 RESOLVED = re.compile(r"\b(done|closed|resolved|superseded|retired)\b|^- \[x\]|~~", re.I)
 ARCHIVE_DIR = "docs/history"
 #: Measured 2026-10-10 on UNC (about 30 log entries a day): age protects too much in an active project, so the newest units are kept by
@@ -113,6 +116,24 @@ def first_stamp(line: str) -> str:
     return m.group(0) if m else ""
 
 
+def heading_stamp(line: str) -> str:
+    """The date of a `##` or `###` heading: a stamp, or a written date such as "21 September 2026" returned as `YYYY-MM-DD`.
+
+    Written dates count only in headings; in prose they are content (a status line saying "created 10 Jul 2026" is not an entry date).
+
+    Args:
+        line: the heading line.
+
+    Returns:
+        The stamp, or an empty string.
+    """
+    stamp = first_stamp(line)
+    if stamp:
+        return stamp
+    m = LONG_DATE.search(line)
+    return f"{m.group(3)}-{MONTHS[m.group(2)[:3]]:02d}-{int(m.group(1)):02d}" if m else ""
+
+
 def lazy_continuation(line: str) -> bool:
     """Whether a line continues the list item above it without indentation (markdown "lazy" continuation).
 
@@ -148,7 +169,7 @@ def parse(text: str, kind: str) -> Record:
         while j < len(lines) and not lines[j].startswith("## "):
             j += 1
         body = lines[i + 1:j]
-        stamp = first_stamp(head)
+        stamp = heading_stamp(head)
         if kind == "log" or stamp:
             rec.blocks.append((head, [Unit(section=head, lines=[head] + body, stamp=stamp)]))
         else:
@@ -163,17 +184,17 @@ def parse(text: str, kind: str) -> Record:
                 if line.startswith("### "):
                     items.extend(pending)
                     nxt = next((x for x in body[k + 1:] if x.strip()), "")
-                    if first_stamp(line) and nxt and not (nxt.startswith(("- ", "### ")) or re.match(r"^\d+[.)] ", nxt)):
+                    if heading_stamp(line) and nxt and not (nxt.startswith(("- ", "### ")) or re.match(r"^\d+[.)] ", nxt)):
                         # A dated `###` subsection written as prose is one unit to the next `###`; as loose lines it never rotated
                         # (ansible-wifi's "Newest thread" paragraphs, 2026-10-10).
                         end = k + 1
                         while end < len(body) and not body[end].startswith("### "):
                             end += 1
-                        items.append(Unit(section=head, lines=body[k:end], stamp=first_stamp(line)))
+                        items.append(Unit(section=head, lines=body[k:end], stamp=heading_stamp(line)))
                         pending, sub_stamp = [], ""
                         k = end
                         continue
-                    pending, sub_stamp = [line], first_stamp(line)
+                    pending, sub_stamp = [line], heading_stamp(line)
                     k += 1
                 elif line.startswith("- ") or re.match(r"^\d+[.)] ", line):
                     end = k + 1
@@ -302,7 +323,11 @@ def group_key(kind: str, head: str) -> str:
     """
     if kind == "log":
         return "log"
-    return re.sub(r"\s+", " ", STAMP.sub("", head).replace("`KEEP`", "")).strip(" #—-") if first_stamp(head) else head
+    if not heading_stamp(head):
+        return head
+    # times and their markers go too: "(staleness audit, 2026-09-14 ~1:35p)" and "(..., 2026-09-15 ~10:53a)" are one group (cambium-swap, 2026-10-10)
+    key = TIME.sub("", LONG_DATE.sub("", STAMP.sub("", head)).replace("`KEEP`", ""))
+    return re.sub(r"\s+", " ", re.sub(r"\(\s*[,;]?\s*\)|,\s*\)", ")", key)).strip(" #—-")
 
 
 def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: int, pinned: set[str], cited: set[str],
