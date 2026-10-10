@@ -4,9 +4,11 @@ Category: working-state
 Status: current
 Summary: Current working state, newest first per section; superseded entries rotate to docs/history (search with --find).
 Kind: state
+Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
+Open items tracker: docs/trackers/open-items-20261010_1821.md
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261010_1801
+Last rotated: 20261010_1821
 ---
 
 # SCRATCHPAD — skill-smc
@@ -99,41 +101,15 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Open items
 
+- Older open items are tracked in [open-items-20261010_1821.md](docs/trackers/open-items-20261010_1821.md).
 - [ ] **2026-10-08 `KEEP`, proposed, not decided:** extend the 0–9 patch scheme (operator rule 2026-10-07, skill-smc only so far) to skill-cambium (0.6.45) and
   skill-mikrotik (0.1.24), each with `check_version_format`. Asked 2026-10-07, no answer yet.
 - [x] **2026-10-07 `KEEP`:** commit `fbc0aff` is labelled "skill-smc 0.1.98" but committed manifest 0.1.99. Closed 2026-10-08: pushed, so it stays as a known
   mislabel; CHANGELOG 20261007_1625 records the real content.
 - [x] **2026-10-07 `KEEP`:** ~~skill-ai-it's upgrader appends its CHANGELOG entry at the end~~ — fixed upstream in `cc0fa32` (2026-10-07 21:26): it now places the entry by
   the file's order. Closed 2026-10-08.
-- [ ] **2026-09-24 `KEEP`:** ~~push `d5566c2` + `8db6d56`~~ (on origin, checked 2026-10-08); fleet read-only `table_fulls` survey (offered); find the `gc_thresh1` = 1 setter; live-test the enable-password, already-privileged,
-  `--shell` and `--write` paths of `tplink-switch.sh` when a suitable switch appears; fix the two pre-existing governance failures.
 
-- [ ] Live-validate the `smc_ltp` documentation (CNMaestro provisioning behavior, bind9/RPZ DNS switch) against one of the 7 real member hosts (`guda-guda`, `pandanus-park`, `old-looma`, `new-looma`,
-  `warburton`, `beagle-bay`, `umoona`) via `tsh ssh` — everything added 2026-08-03 is from Ansible source inspection only; these are `rcp` (APN cluster) sites, not reachable from the
-  `teleport.communitywifi.net.au` session used for the fleet sweep
-- [ ] Ask the operator (or check further afield — commit history, old design docs) whether "LTP" has a known expansion; currently documented as an open question, not guessed
-- [ ] Resolve the naming-collision question flagged 2026-08-03 in `04_dependency-tree.md`: is the generic "cnmaestro-provisioning"/`redis` Level-4 dependency row (RCT-oriented, `05_troubleshooting.md`
-  Tier 4) the same mechanism as `smc_ltp`'s `roles/smc_cnmaestro_provisioning` (no Redis observed), or two genuinely separate provisioning paths?
-- [ ] Confirm the `inventories/rcp/prod` `smc_ltp` group change (adding `warburton`/`beagle-bay`/`umoona`) gets committed to the `ansible-wifi` repo and run against those 3 sites — as of this update
-  it's a verified-but-uncommitted file-level change
-- [ ] Consider whether a lightweight enforcement check (e.g. a periodic `ansible-inventory` diff, or a checklist item) is worth proposing for future low-touch onboardings, given the mechanism is now
-  confirmed manual/unenforced — not this pack's call to implement, but worth flagging if asked
-- [ ] Re-check `mount | grep overlay` on `bungardi-smc01`/`darlngunaya-smc01` after the operator's planned `nbn_wh` overlay rollout lands, to confirm it took
-- [ ] Resolve the `nbn_wh` zram/swap discrepancy flagged 2026-08-03 in `07_hardware-overlay.md` (`Swap: 0B`, no `zram0` device on either `nbn_wh` host) against the platform table's universal "RPi →
-  zram" claim — may mean the claim itself needs re-checking against a live `rct`/`wh` host, never actually confirmed there either
-- [ ] `koonibba-smc01` flagged at 95% disk usage with the fleet's oldest kernel (`5.15.0-79-generic`) — worth a maintenance pass, not investigated further this sweep
-- [ ] Resolve the OPA `flavors.json`/`environments.json` coverage question flagged in `13_known-issues.md` (no `cw`/`apn`/`rct`/`wh` entries — intentional scoping or gap?) — needs whoever owns the OPA
-  policy layer
-- [ ] Validate `references/13_known-issues.md` entries against current ansible-wifi state when next working on that repo
 - [x] ~~Regenerate `.ai-context/governance-pack.md` after today's content + governance changes~~ — done, regenerated 3× today as content landed in stages
-- [ ] The bonding design (08_ansible-authoring.md, RCP/NBN-Accelerate doubled circuits) and the `smc_host_dns_mode: resolved_stub` DNS mitigation (06_failure-modes.md) are both unimplemented design
-  recommendations, not confirmed fixes — re-check their status next time this pack is touched and update the wording if either has since been canaried/adopted/rejected.
-- [ ] The apt-lock-race vs. apt-daily-upgrade-timer-mask duplicate-fix question flagged in `13_known-issues.md` (Skill Staleness Risks) needs resolving against actual ansible-wifi commits before
-  either fix's documentation can be fully trusted.
-- [ ] Grafana dashboards not yet explored in detail: "Data Backlog" (0 panels — appears unused/placeholder, confirm before assuming dead), the two Prometheus RW Receiver+Sender Backlog dashboards
-  (federation pipeline health — not yet cross-referenced against the `autossh-prometheus-federation` service row in `02_service-map.md`), "Servers Network"/"Servers System Information" (backend infra,
-  likely out of skill-smc scope but not confirmed), "RISE Dashboard" (`rise-stage0_5` — earlier-stage rollout view, not compared against the newer RISE SMC Table/Health Detail dashboards for
-  redundancy)
 
 ---
 
@@ -172,12 +148,6 @@ manual step someone has to remember**, with no tooling or enforcement — the co
   `—` placeholders in `02_service-map.md`, plus the offline-vs-pending fleet-rollup distinction (30d-seen-but-not-5m vs. series-never-existed). Documented in `02_service-map.md` (new RISE
   Health/Watchdog Framework subsection) and `03_communication-flows.md` (new Dashboard inventory subsection). Manifest bumped to v0.1.17.
 
-
-
-
-
-
-
 ---
 
 ## Session history (summaries)
@@ -186,8 +156,6 @@ manual step someone has to remember**, with no tooling or enforcement — the co
   `SKILL.md` slimmed to the cambium/mikrotik shape with SKILL-only facts moved into references 03/05/08; profile, system prompt and exports adapter retired.
 - **2026-10-07 (16:25) — skill-ai-it refresh (v0.1.98 -> v0.1.99).** `AGENTS.md` and `scripts/README.md` managed blocks upgraded to `2026-09-23-template-sourced-blocks-v1`;
   `AI_NAVIGATION.md` stays project-managed. Template item 12/14 defect fixed in skill-ai-it and re-applied; `.archcore/` files renamed to `<slug>.<type>.md`, `archcore status` clean.
-- **2026-09-24 (10:44–12:25) — TP-Link switches + neighbour table** (from unified-network-controller). Switch access worked out and scripted; neighbour-table overflow found on mornington;
-  gc_thresh1 attribution corrected in v0.1.54. Detail: memory-keeper channel `unc`, keys `unc.tplink-*`, `unc.neighbour-table.20260924`. `KEEP`
 
 ## Next actions
 
@@ -196,12 +164,6 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 - Explore the remaining unreviewed Grafana dashboards flagged 2026-08-03 (Data Backlog, RW-backlog pair, Servers Network/System Information, RISE Dashboard `rise-stage0_5`) next time Grafana access is
   used — see Open Items
 - Cross-reference the RW-backlog dashboards against `autossh-prometheus-federation` in `02_service-map.md` once reviewed — may reveal federation-pipeline health signals not currently documented
-- Propose/plan a fleet-wide ClamAV upgrade to 1.0 or 1.4 LTS next time remediation authorization is available — root cause confirmed 2026-08-03, no automated pipeline exists to do this without a
-  deliberate rollout
-- Fix mechanism found 2026-08-03 (memory-only so far, not yet in `references/13_known-issues.md`): `roles/smc_clamav/tasks/ubuntu.yml` installs with `state: present` (never upgrades an
-  already-installed package) + this fleet's already-documented masking of `unattended-upgrades`/`apt-daily` compound to explain why ClamAV never self-healed. Canary-first remediation plan proposed to
-  operator, not yet executed (offered a read-only `apt-cache policy clamav` check on a live host, awaiting go-ahead). If operator wants this folded into the pack's docs, run `project-coherence` — it
-  currently only lives in memory-keeper key `skill-smc.discovery.clamav-fix-mechanism-20260803`
 - Re-check `nbn_wh` overlayroot status after the operator's planned rollout lands
 - `cw` flavor still has no site-level hosts to check (central-infra only); `aurukun-smc03` still unreachable — note if either changes
 - Resolve the smc_ltp/generic-cnmaestro-provisioning naming-collision question flagged in `04_dependency-tree.md`
@@ -225,9 +187,6 @@ manual step someone has to remember**, with no tooling or enforcement — the co
   `skill-smc.finding.content-moved-on-slim-20261007`, `skill-smc.error.venv-missing-pyyaml-20261007`, `skill-smc.progress.cambium-spec-fix-20261007`,
   `skill-smc.decision.layout-parity-and-commit-scope-20261007`, `skill-smc.decision.version-scheme-patch-0-9-20261007`; project-context `0bf38158` note + decision; checkpoint `slurp-20261007-skill-smc-layout-parity`
   (memory-keeper `8ab3b9e2`, project-context `709e1015`). `KEEP`
-
-- 2026-09-24 12:25: memory-keeper `unc` keys `unc.tplink-switch-access.20260924`, `unc.tplink-tooling.20260924`, `unc.neighbour-table.20260924`, `unc.errors.20260924-tplink`; project-context
-  `0bf38158` note; checkpoint `slurp-20260924-tplink-switches-neigh-table` (`98c3a99e`). `KEEP`
 
 - memory-keeper channel: `skill-smc` / earlier keys: `skill-smc.structure.progressive-disclosure-20260626`, `skill-smc.audit.fixes-20260626`, `skill-smc.governance.bootstrap-20260626`,
   `skill-smc.governance.archcore-promote-20260626`, `skill-smc.docs.readme-architecture-20260626`, `skill-smc.coherence-sweep-20260626`

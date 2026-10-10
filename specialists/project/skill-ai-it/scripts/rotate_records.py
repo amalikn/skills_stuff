@@ -76,13 +76,15 @@ class Unit:
     keep_reason: str = ""
     moved: bool = False
     to_tracker: bool = False
+    start: int = -1
+    blamed: dt.datetime | None = None
 
     @property
     def when(self) -> dt.datetime | None:
-        """The unit's moment, from its stamp; None when undated."""
+        """The unit's moment: from its stamp, else from git blame of its first line; None when neither is known."""
         m = STAMP.search(self.stamp)
         if not m:
-            return None
+            return self.blamed
         if m.group(1):
             return dt.datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4)[:2]), int(m.group(4)[2:]))
         return dt.datetime(int(m.group(5)), int(m.group(6)), int(m.group(7)))
@@ -164,6 +166,52 @@ def parse(text: str, kind: str) -> Record:
             rec.blocks.append((head, items))
         i = j
     return rec
+
+
+def blame_dates(root: pathlib.Path, rel: str) -> dict[int, dt.datetime]:
+    """When each line of a committed file was written, from git blame.
+
+    Args:
+        root: the project root.
+        rel: the file, project-relative.
+
+    Returns:
+        0-based line index to author time; empty when the file is not in git. Uncommitted lines are absent (treated as new).
+    """
+    out = subprocess.run(["git", "-C", str(root), "blame", "--line-porcelain", "--", rel], capture_output=True, text=True)
+    dates: dict[int, dt.datetime] = {}
+    line_no = None
+    for row in out.stdout.split("\n"):
+        parts = row.split(" ")
+        if len(parts) >= 3 and len(parts[0]) == 40 and parts[1].isdigit():
+            line_no = int(parts[2]) - 1
+        elif row.startswith("author-time ") and line_no is not None:
+            dates[line_no] = dt.datetime.fromtimestamp(int(row.split(" ", 1)[1]))
+        elif row.startswith("author ") and "Not Committed Yet" in row:
+            line_no = None
+    return dates
+
+
+def date_undated(rec: Record, dates: dict[int, dt.datetime]) -> None:
+    """Give units without a stamp the git date of their first line, so an old undated entry can rotate.
+
+    Args:
+        rec: the parsed record (units updated in place).
+        dates: from blame_dates().
+    """
+    index = len(rec.preamble)
+    for head, items in rec.blocks:
+        whole = len(items) == 1 and isinstance(items[0], Unit) and items[0].lines[:1] == [head]
+        if not whole:
+            index += 1
+        for it in items:
+            if isinstance(it, Unit):
+                if not STAMP.search(it.stamp):
+                    first = next((i for i, l in enumerate(it.lines) if l.strip() and not l.startswith("### ")), 0)
+                    it.blamed = dates.get(index + first)
+                index += len(it.lines)
+            else:
+                index += 1
 
 
 def render(rec: Record, moved_only: bool = False) -> list[str]:
@@ -630,6 +678,7 @@ def main(argv: list[str] | None = None) -> int:
     original = path.read_text(encoding="utf-8")
     rec = parse(original, kind)
     assert "\n".join(render(rec)) == original, "parser did not round-trip the file; refusing to rotate"
+    date_undated(rec, blame_dates(root, live))
     now = dt.datetime.now()
     stamp_now = now.strftime("%Y%m%d_%H%M")
     archive_rel = f"{ARCHIVE_DIR}/{path.stem.lower()}-{stamp_now}.md"

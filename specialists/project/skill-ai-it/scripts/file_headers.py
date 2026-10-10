@@ -140,8 +140,13 @@ def tracked(root: pathlib.Path, scopes: list[str]) -> list[pathlib.Path]:
     """
     res = subprocess.run(["git", "-C", str(root), "ls-files", "--", *(scopes or ["."])], capture_output=True, text=True, check=False)
     rels = res.stdout.split("\n") if res.returncode == 0 else []
+    # A nested project (its own doc-freshness baseline) is checked on its own, never as part of its parent (japan and jdm, 2026-10-10).
+    nested = [b.parent.parent.relative_to(root).as_posix() + "/" for b in root.rglob("scripts/doc-freshness-baseline.json")
+              if b.parent.parent != root and ".git" not in b.parts]
     out = []
     for rel in rels:
+        if any(rel.startswith(n) for n in nested):
+            continue
         p = root / rel
         if (rel and (p.suffix in HEADER_TYPES or p.name == "justfile") and not any(s in "/" + rel for s in SKIP_PARTS)
                 and not p.name.endswith("-baseline.json")):  # machine-written ratchet data

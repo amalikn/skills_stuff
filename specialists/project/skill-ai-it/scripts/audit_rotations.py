@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import importlib.util
 import pathlib
+import re
 import subprocess
 import sys
 from collections import Counter
@@ -34,6 +35,18 @@ def git(root: pathlib.Path, *args: str) -> str:
         Its standard output.
     """
     return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True).stdout
+
+
+def text_only(line: str) -> str:
+    """A line with its markdown link targets blanked, so a relinked line still matches its original.
+
+    Args:
+        line: one line.
+
+    Returns:
+        The line with every `](target)` replaced by `]()`.
+    """
+    return re.sub(r"\]\([^)]*\)", "]()", line)
 
 
 def audit(project: pathlib.Path, name: str) -> list[str] | None:
@@ -58,9 +71,8 @@ def audit(project: pathlib.Path, name: str) -> list[str] | None:
     have += Counter(l for a in archives for l in a.read_text().split("\n") if l.strip())
     trackers = sorted((project / "docs" / "trackers").glob("open-items-*.md")) if name == "SCRATCHPAD.md" else []
     have += Counter(l for t in trackers for l in t.read_text().split("\n") if l.strip())
-    return [l for l in Counter(l for l in rotate_records.content_lines(before) if l.strip())
-            if have[l] < 1 and have[rotate_records.relink([l], "", "docs/history")[0]] < 1
-            and have[rotate_records.relink([l], "", "docs/trackers")[0]] < 1]
+    have = Counter(text_only(l) for l in have.elements())
+    return [l for l in Counter(l for l in rotate_records.content_lines(before) if l.strip()) if have[text_only(l)] < 1]
 
 
 def main(argv: list[str] | None = None) -> int:
