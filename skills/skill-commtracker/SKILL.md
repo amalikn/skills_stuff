@@ -351,6 +351,7 @@ python ~/.agents/scripts/commtracker/extract.py <eml-path> \
   [--attachments-dir <dir>]    # default: <eml-dir>/attachments/
   [--internal-domain <domain>] # e.g. apn.net.au
   [--save-signatures]          # include Outlook/Teams chrome (default: skip)
+  [--tz <IANA zone>]           # e.g. Australia/Sydney; Outlook saves Date in UTC, so pass it for local slugs
 ```
 
 Outputs JSON to stdout: `date_iso`, `date_human`, `slug`, `from/to/cc`, `subject`,

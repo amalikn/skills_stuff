@@ -16,6 +16,7 @@ python ~/.agents/scripts/commtracker/extract.py <eml-path> \
   [--internal-domain <domain>] # e.g. apn.net.au — marks external senders
   [--slug <YYYYMMDD_HHMM>]     # override timestamp slug for file naming
   [--save-signatures]          # include Outlook/Teams UI chrome (default: skip)
+  [--tz <IANA zone>]           # e.g. Australia/Sydney: date and slug in that zone (Outlook saves Date in UTC)
 ```
 
 **Output (stdout):** JSON with `date_iso`, `date_human`, `slug`, `from`, `to`, `cc`,

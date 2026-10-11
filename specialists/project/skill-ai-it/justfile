@@ -130,6 +130,10 @@ docstrings *flags: _require-venv
 nav_check_diff: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
 
+# After an upgrade, before commit: text outside the managed blocks must match HEAD (or REF). Read-only
+nav_check_blocks REF="HEAD": _require-venv
+	@{{py}} "{{skill_dir}}/scripts/check_outside_blocks.py" --project-root . --ref "{{REF}}"
+
 # Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
 # package's templates change, before trusting nav_upgrade to rewrite this project's blocks.
 nav_selftest: _require-venv

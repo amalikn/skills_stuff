@@ -224,6 +224,7 @@ def extract(
     internal_domain: str | None = None,
     slug_override: str | None = None,
     save_signatures: bool = False,
+    tz: str | None = None,
 ) -> dict:
     eml_path = Path(eml_path)
     if not eml_path.exists():
@@ -235,6 +236,10 @@ def extract(
     # --- Headers ---
     raw_date = msg.get("Date", "")
     dt = parse_date(raw_date)
+    # Outlook "Save as" writes Date in UTC (+0000); --tz converts to the reader's zone so slugs match local records.
+    if dt and tz:
+        from zoneinfo import ZoneInfo
+        dt = dt.astimezone(ZoneInfo(tz))
     slug = slug_override or (date_to_slug(dt) if dt else "00000000_0000")
     date_human = format_date_human(dt) if dt else raw_date
     date_iso = dt.isoformat() if dt else raw_date
@@ -366,6 +371,7 @@ def main():
     parser.add_argument("--slug", help="Override timestamp slug for file naming")
     parser.add_argument("--save-signatures", action="store_true",
                         help="Save Outlook/Teams signature chrome images (default: skip)")
+    parser.add_argument("--tz", help="IANA time zone for date and slug, e.g. Australia/Sydney (default: the header's own offset)")
     args = parser.parse_args()
 
     try:
@@ -375,6 +381,7 @@ def main():
             internal_domain=args.internal_domain,
             slug_override=args.slug,
             save_signatures=args.save_signatures,
+            tz=args.tz,
         )
         print(json.dumps(result, indent=2, ensure_ascii=False))
     except Exception as e:

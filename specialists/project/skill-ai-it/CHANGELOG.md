@@ -13,6 +13,7 @@ Last rotated: 20261012_0953
 
 ## Contents
 
+- [20261012_0958 — check_outside_blocks.py; upgrader Python floor; adopter and the outline trial](#20261012_0958--check_outside_blockspy-upgrader-python-floor-adopter-and-the-outline-trial)
 - [20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp](#20261012_0952--upgrader-changelog-heading-uses-the-yyyymmdd_hhmm-stamp)
 - [20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix](#20261011_0525--section-level-markdown-reads-outline-section-and-adopter-attribute-fix)
 - [20261010_2346 — move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry](#20261010_2346--move_sections-link-repointing-and-shared-pointer-budget-tidy-step-add_changelog_entry)
@@ -28,6 +29,15 @@ Last rotated: 20261012_0953
 - [20261010_1830 — feat: doc_freshness.py; Graphify disabled](#20261010_1830--feat-doc_freshnesspy-graphify-disabled)
 - [20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project](#20261008_2224--feat-docstring_ratchetpy-the-global-docstring-standard-as-a-ratchet-for-any-project)
 - [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
+
+## 20261012_0958 — check_outside_blocks.py; upgrader Python floor; adopter and the outline trial
+
+- `scripts/check_outside_blocks.py` (promoted from an enterprise-strategy upgrade check): each file with its managed blocks removed must match a git ref (default HEAD);
+  `just nav_check_blocks [REF]`; catalogued in scripts/README.md; three offline tests (block-only change passes, outside edit fails, dropped END marker fails); smoke on
+  enterprise-strategy at a5f2c33~1: AI_NAVIGATION.md identical, AGENTS.md and scripts/README.md differ by their deliberate outside-block edits. 66 tests pass.
+- Finding: the upgrader needs Python 3.10 or later (`str | None` in a signature); the host `python3` crashes on import. Use the project venv (`just nav_upgrade`) or python3.14.
+- Open, proposed not decided: `adopt_governed_files.py` adds the `outline` and `section` recipes to every project, which undoes the hold on them until the
+  unified-network-controller trial is re-measured (2026-10-25). A skip list or a trial flag would keep the hold.
 
 ## 20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp
 
