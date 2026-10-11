@@ -16,7 +16,7 @@ import json
 import os
 import sys
 import re
-from datetime import date
+from datetime import datetime
 
 # Bumping this stamps re-emitted managed blocks and makes validate_navigation_control_layer.py flag projects still carrying the previous block content. Keep it identical to the VERSION constant
 # in validate_navigation_control_layer.py — the two are a deliberate restatement, and drift between them silently disables the staleness signal.
@@ -715,7 +715,8 @@ def append_changelog(path, dry_run, report_data, upgrades_text):
         report_data["skipped_files"].append(relpath(path, root))
         return
 
-    heading = f"{date.today().isoformat()} — deterministic navigation-control upgrade"
+    # Same stamp as every other entry (YYYYMMDD_hhmm, local time), as add_changelog_entry.py writes it; a date-only heading broke the convention.
+    heading = f"{datetime.now().strftime('%Y%m%d_%H%M')} — deterministic navigation-control upgrade"
     entry = f"""
 ## {heading}
 

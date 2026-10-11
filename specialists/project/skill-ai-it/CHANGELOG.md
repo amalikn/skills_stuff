@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261011_0525
+Last rotated: 20261012_0953
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp](#20261012_0952--upgrader-changelog-heading-uses-the-yyyymmdd_hhmm-stamp)
 - [20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix](#20261011_0525--section-level-markdown-reads-outline-section-and-adopter-attribute-fix)
 - [20261010_2346 — move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry](#20261010_2346--move_sections-link-repointing-and-shared-pointer-budget-tidy-step-add_changelog_entry)
 - [20261010_2332 — Reference reads measured (not split); tracker pointer no longer duplicates](#20261010_2332--reference-reads-measured-not-split-tracker-pointer-no-longer-duplicates)
@@ -27,7 +28,13 @@ Last rotated: 20261011_0525
 - [20261010_1830 — feat: doc_freshness.py; Graphify disabled](#20261010_1830--feat-doc_freshnesspy-graphify-disabled)
 - [20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project](#20261008_2224--feat-docstring_ratchetpy-the-global-docstring-standard-as-a-ratchet-for-any-project)
 - [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
-- [20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated](#20261007_2102--feat-migrate_legacy_blockspy-the-refresh-step-for-pre-2026-09-23-blocks-the-seven-refused-projects-migrated)
+
+## 20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp
+
+- `scripts/upgrade_navigation_control_layer.py`: the CHANGELOG entry heading now carries the `YYYYMMDD_hhmm` stamp (local time), as `add_changelog_entry.py`
+  writes it, instead of an ISO date (`2026-10-12 — ...`), which broke the heading convention in every project it upgraded (found on enterprise-strategy, operator 12 Oct 2026).
+- `tests/test_upgrade_navigation_control_layer.py`: the heading is stamped and first in a newest-first log; a second run is idempotent. Red against the old code, green now; 63 tests pass.
+- Existing date-only upgrade headings in projects stay as written (history); rotation and order detection already read both forms.
 
 ## 20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix
 
@@ -181,17 +188,3 @@ Applied to: AI_NAVIGATION.md, AGENTS.md, SCRATCHPAD.md
   date inside a version heading) and compares the first two that differ; `place_changelog_entry` puts the entry above the first dated section and first in
   `## Contents` for newest-first files, and appends (last in Contents) otherwise, including when the order cannot be told.
 - Six new self-tests (29 in all). On the committed CHANGELOGs of the twelve projects in today's run, the detected order matches the hand judgement for each.
-
-## 20261007_2102 — feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated
-
-- **New `scripts/migrate_legacy_blocks.py`, recipe `nav_migrate_legacy <project> [--dry-run]`.** It rebuilds every block the skill emitted while the `2026-08-11`
-  stamp was current (builders and templates of 3ab6c94, 1567158, adcbea4 and 293c42b^) plus the current ones, and classifies each section of a project's legacy
-  block by comparing normalised text: skill text is dropped for the current block, project sections move outside it (above when they preceded every skill
-  section), and an edited skill section is copied verbatim under `## Moved from the managed block` and the run exits 3 until it is trimmed.
-- **Run on the seven refused projects:** psy-assess, islam and japan were mechanical. health and cambium-swap kept their scripts-README rules as *Project
-  execution notes*; atar's no-memory-bank routing became *Project deviations from the managed block*; unified-network-controller kept 113 rule lines above its
-  AGENTS block and its routing under *Project routing additions*. health and unified-network-controller registered `.ai-context/repo-pack.md` in
-  `CONDITIONAL_PATHS`. All twelve projects of the snake_case run are now on `2026-10-07-snake-case-recipes-v1`.
-- islam's `context-map.yaml` took the `update_rules` merge as a text edit (same data as the re-dump, comments kept), not the lossy re-dump.
-- Newest-first CHANGELOGs in skill-openwisp, skill-nautobot, skill-smc and skill-eval-manager had the upgrade entry moved to the top by hand; the open item on
-  the upgrader's append position stands.
