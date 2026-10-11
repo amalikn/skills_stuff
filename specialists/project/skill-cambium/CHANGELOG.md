@@ -13,6 +13,8 @@ Last rotated: 20261010_1801
 
 ## Contents
 
+- [20261011_1431 — Router-to-SM facts by site type; no CFM on ePMP (v0.7.7 -> v0.7.8)](#20261011_1431--router-to-sm-facts-by-site-type-no-cfm-on-epmp-v077---v078)
+- [20261011_1359 — Force 300 SM CLI: no neighbour or ARP view of its router (v0.7.6 -> v0.7.7)](#20261011_1359--force-300-sm-cli-no-neighbour-or-arp-view-of-its-router-v076---v077)
 - [20261010_1805 — Governed-file standard: recipes, CHANGELOG rotated (v0.7.5 -> v0.7.6)](#20261010_1805--governed-file-standard-recipes-changelog-rotated-v075---v076)
 - [20261009_1806 — Sidekick writes the ePMP installer record: field formats, write OIDs, model map (v0.7.4 -> v0.7.5)](#20261009_1806--sidekick-writes-the-epmp-installer-record-field-formats-write-oids-model-map-v074---v075)
 - [20261009_1705 — R195P to SM: the provisioning record, measured against every live source; towers boot together; V2000 answers SNMP (v0.7.3 -> v0.7.4)](#20261009_1705--r195p-to-sm-the-provisioning-record-measured-against-every-live-source-towers-boot-together-v2000-answers-snmp-v073---v074)
@@ -27,6 +29,18 @@ Last rotated: 20261010_1801
 - [20261009_0153 — Installer record in sysDescr, Force 300 position fields, coarse range, cnWave sites (v0.6.47 -> v0.6.48)](#20261009_0153--installer-record-in-sysdescr-force-300-position-fields-coarse-range-cnwave-sites-v0647---v0648)
 - [20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)](#20261009_0120--station-table-range-and-angle-force-300-has-no-mac-table-r195p-attachment-not-readable-v0646---v0647)
 - [20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)](#20260930_1221--terminology-paid-pin-corrected-to-access-mark-v0626---v0627)
+
+## 20261011_1431 — Router-to-SM facts by site type; no CFM on ePMP (v0.7.7 -> v0.7.8)
+
+- **Site-type differences for router-to-SM placement** (references/05_known-issues.md, new 2026-10-11 entry): boot order reversed at kalumburu
+  (router 1-167 s before its SM), an AP without Option 82 leaves the Remote ID empty while the description names the SM, the Omni 3000L bridge
+  table missing routers, PtP roles from the mode, and no CFM MIB on ePMP 4.7.0.1. Read-only; asked by unified-network-controller.
+
+## 20261011_1359 — Force 300 SM CLI: no neighbour or ARP view of its router (v0.7.6 -> v0.7.7)
+
+- **Force 300 SM CLI cannot name its router** (references/05_known-issues.md, 2026-10-09 LLDP entry): on old-looma sm-47 (4.7.0.1) `show lldp-neighbors`
+  returns an empty list and `show arp` holds only the SMC; `show ?` in a PTY hangs the probe. Read-only, two logins. Asked by unified-network-controller
+  (topology accuracy, step 5).
 
 ## 20261010_1805 — Governed-file standard: recipes, CHANGELOG rotated (v0.7.5 -> v0.7.6)
 

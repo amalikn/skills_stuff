@@ -378,6 +378,11 @@ failed for eth1` (2026-09-12, 2026-10-08), so the agent's LLDP send fails on tha
 view: `show lldp-neighbors` (Cambium staff post; whether 4.7.0.1 has it is UNVERIFIED), `show arp`
 (unified-network-controller docs/reports/device-families/epmp-r195p-lldp-option82-20261009_1249.md).
 
+**2026-10-11 follow-up, the SM's CLI (`VERIFIED_PRIMARY`, old-looma sm-47, 4.7.0.1, read-only over `device-login-probe.sh`):** `show lldp-neighbors`
+exists on this firmware and returns an empty list; `show arp` holds only the SMC (`10.255.0.1` on `br-lan.500`), since a bridging SM does not ARP
+for its router. `help show` is not a command, and `show ?` typed into a PTY session left the probe waiting until stopped. So neither the SM's
+SNMP, REST nor CLI names the router behind it; the AP's bridge table, Option 82 and the install record remain the sources.
+
 ## 2026-10-09 — R195P: host keys and settings in RAM, remote syslog off, and a by-hand enable that does nothing (INFO)
 
 old-looma home-48, operator at the router's shell, 2026-10-09 (VERIFIED_PRIMARY unless marked):
@@ -415,3 +420,26 @@ D10 design correlation rules 4b-4g). A site-wide outage boots dozens of units in
 names an SM only after an isolated premises reboot; there, one SM inside the window was the right one for all 16 proven pairs (at most three units
 booting within 10 minutes of the router; 18 of 18 with four). Neither unit names the other: the R195P keeps no link log, sends no syslog as provisioned, and heard no LLDP
 from its SM (entries above).
+
+## 2026-10-11 — Router-to-SM facts that differ by site type: boot order, Option 82, the AP bridge table, CFM (unified-network-controller)
+
+Measured read-only at beagle-bay (low-touch) and kalumburu (built before low touch; device configuration and naming differ, operator 2026-10-11).
+Evidence: unified-network-controller docs/reports/smc-and-site-network/topology-accuracy-uplift-assessment-20261011_1429.md and its sources folder.
+
+- **Boot order is per site type, not fixed** (`VERIFIED_PRIMARY`, sysUpTime over SNMP). At old-looma the router's sysUpTime starts 115-162 s
+  after its SM's (entry above). At kalumburu, of 65 pairs whose names share an extension (`Force300_EXT1014_IP2_14`, `KAL-R195P-1014`), 37
+  booted within 3 minutes and the router came up 1-167 s **before** the SM; 26 of them have no other SM in -100 to -10 s. Measure a site's
+  window before using one (`just wc::topology-boot --name-pairs`, negative bounds as `--low=-100`).
+- **An AP relaying without Option 82 leaves a router's Remote ID empty, not its SM unknown** (beagle-bay `3000L-ap-4`, 2026-10-11): every
+  router behind that AP logged an empty Remote ID while cnMaestro's description in the provisioning log named its SM (`us`) and the hook waited
+  on that SM's record MAC. An empty Remote ID means cabled only when the description names no SM. Kalumburu's Omni APs have `dhcpOption82` empty.
+- **A kalumburu Omni 3000L (4.7.0.1) learns customer devices through its SMs but not the routers**: after pinging all 57 Active routers from
+  the SMC, Tower4's `cambiumAPBridgeTable` held its 29 SMs, ten locally administered client MACs through SMs and 1 router, walked at once and
+  15 s later. The SMs bridge (`networkMode` 2, management VLAN 500); the SMC's ARP holds each router's own MAC. Cause open (4.7.0.1's missed
+  entries, which Cambium fixed in 4.7.1; the 3000L hardware variant; the routers' VLAN 500-only setup). At beagle-bay 35 of 78 pinged routers
+  were also missing, spread over all seven APs.
+- **Kalumburu's PtP radios read as ePTP masters and slaves** (`cambiumSubModeType` 5 and 4 over REST) but Nautobot held them as PtMP AP and
+  SM; one `_slave`-named unit (Tower8 `_IP_0_81`) runs TDD as an SM. Names are not the mode.
+- **No CFM**: ePMP 3000L and Force 300-16 (4.7.0.1) return nothing under IEEE8021-CFM-MIB (`.1.3.111.2.802.1.1.8`) or IEEE802171-CFM-MIB
+  (`.1.0.8802.1.1.2.1.5`). No 802.1ag Linktrace path through these radios is in sight; the burst trace on the SM's LAN counters stays the
+  active path test.
