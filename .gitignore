@@ -3,3 +3,6 @@
 specialists/project/skill-smc/.graylog-token
 specialists/project/skill-smc/evidence/
 specialists/project/skill-smc/evidence-full/
+# Python bytecode caches, rebuilt on import
+__pycache__/
+*.pyc
