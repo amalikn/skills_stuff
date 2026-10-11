@@ -13,6 +13,7 @@ Last rotated: 20261010_1801
 
 ## Contents
 
+- [20261011_1744 — Correction: SM bridge table shows the router (show bridge sta), intermittently (v0.7.8 -> v0.7.9)](#20261011_1744--correction-sm-bridge-table-shows-the-router-show-bridge-sta-intermittently-v078---v079)
 - [20261011_1431 — Router-to-SM facts by site type; no CFM on ePMP (v0.7.7 -> v0.7.8)](#20261011_1431--router-to-sm-facts-by-site-type-no-cfm-on-epmp-v077---v078)
 - [20261011_1359 — Force 300 SM CLI: no neighbour or ARP view of its router (v0.7.6 -> v0.7.7)](#20261011_1359--force-300-sm-cli-no-neighbour-or-arp-view-of-its-router-v076---v077)
 - [20261010_1805 — Governed-file standard: recipes, CHANGELOG rotated (v0.7.5 -> v0.7.6)](#20261010_1805--governed-file-standard-recipes-changelog-rotated-v075---v076)
@@ -29,6 +30,12 @@ Last rotated: 20261010_1801
 - [20261009_0153 — Installer record in sysDescr, Force 300 position fields, coarse range, cnWave sites (v0.6.47 -> v0.6.48)](#20261009_0153--installer-record-in-sysdescr-force-300-position-fields-coarse-range-cnwave-sites-v0647---v0648)
 - [20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)](#20261009_0120--station-table-range-and-angle-force-300-has-no-mac-table-r195p-attachment-not-readable-v0646---v0647)
 - [20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)](#20260930_1221--terminology-paid-pin-corrected-to-access-mark-v0626---v0627)
+
+## 20261011_1744 — Correction: SM bridge table shows the router (show bridge sta), intermittently (v0.7.8 -> v0.7.9)
+
+- **Correction: the Force 300 SM names its router on its LAN port, intermittently** (references/05_known-issues.md): `show bridge sta` on
+  4.7.0.1 (not `show bridge sm`), the same `cambiumSTABridgeTable` as the web UI, REST and SNMP; the table flushes, so sample repeatedly. The
+  2026-10-09 "only Own" and this morning's "no SM-side table" statements are corrected. Read-only, SNMP survey of 20 pairs plus 5 logins.
 
 ## 20261011_1431 — Router-to-SM facts by site type; no CFM on ePMP (v0.7.7 -> v0.7.8)
 

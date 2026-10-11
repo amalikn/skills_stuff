@@ -320,7 +320,7 @@ Owned by skill-smc (`references/13_known-issues.md` 2026-10-07; `03_communicatio
 
 The R195P sends no LLDP and answers no IF-MIB table over SNMP; its own ARP holds only the gateway, and its `br0` bridge (ports `eth2.1`,
 `eth2.501`, `rai0`, `rai1`, `ra0`) floods the site's public VLAN, so every router lists the same ~40 clients there. The Force 300 SM has no bridge,
-Q-BRIDGE or ARP table over SNMP, and its REST bridge table lists only itself (as an ePTP master, `cambiumSubModeType` 5, it answers
+Q-BRIDGE or ARP table over SNMP, and its REST bridge table listed only itself when read on 2026-10-09 (it flushes: see the 2026-10-11 correction, which shows LAN rows) (as an ePTP master, `cambiumSubModeType` 5, it answers
 `cambiumAPBridgeTable` like a 3000L: old-looma ap-ep2p-1, 2026-10-09). Three sources name the SM without any name (old-looma, 4.7.0.1):
 
 - **The 3000L's bridge table** (`cambiumAPBridgeTable`, snmp-oid-registry.yaml): each learnt MAC with the SM it came through. Units appear after
@@ -380,8 +380,18 @@ view: `show lldp-neighbors` (Cambium staff post; whether 4.7.0.1 has it is UNVER
 
 **2026-10-11 follow-up, the SM's CLI (`VERIFIED_PRIMARY`, old-looma sm-47, 4.7.0.1, read-only over `device-login-probe.sh`):** `show lldp-neighbors`
 exists on this firmware and returns an empty list; `show arp` holds only the SMC (`10.255.0.1` on `br-lan.500`), since a bridging SM does not ARP
-for its router. `help show` is not a command, and `show ?` typed into a PTY session left the probe waiting until stopped. So neither the SM's
-SNMP, REST nor CLI names the router behind it; the AP's bridge table, Option 82 and the install record remain the sources.
+for its router. `help show` is not a command, and `show ?` typed into a PTY session left the probe waiting until stopped. So `show arp` and
+`show lldp-neighbors` do not name the router; `show bridge sta` does, intermittently (correction below).
+
+**Correction, 2026-10-11: the SM does show the router on its LAN port, intermittently** (`VERIFIED_PRIMARY`, read-only). The same
+`cambiumSTABridgeTable` is read by the web UI (Monitor > Network > Bridge Table), REST status, SNMP (`.1.3.6.1.4.1.17713.21.1.2.50`) and the
+CLI, where on 4.7.0.1 the command is **`show bridge sta`** (`show bridge` completes to `ap  sta`; the v3.4.1 guide's `show bridge sm` is
+`Unknown command`; the CLI needs a real terminal to run a typed line). Rows are `Own` plus each MAC learnt on `LAN` with its age. Seen:
+old-looma sm-16 lists home-17's `BC:A9:93:47:E8:B1` on LAN (CLI); sm-9 lists home-10's base MAC `...48:E0` on LAN in one REST read and not
+the next; kalumburu EXT1014 lists `BC:A9:93:4E:5E:98/9A` (its named router `...5E:99` one either side) by REST. The table flushes: over SNMP,
+after a ping from the SMC, old-looma's routers appeared for 8 of 10 known pairs in the first of four reads 30 s apart and mostly not after;
+kalumburu showed 0 of 10 over SNMP and only own rows on two of three SMs by REST. A sighting is direct evidence (the MAC was learnt on that
+SM's Ethernet port); an absence proves nothing. Repeated sampling is how to use it.
 
 ## 2026-10-09 — R195P: host keys and settings in RAM, remote syslog off, and a by-hand enable that does nothing (INFO)
 
