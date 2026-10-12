@@ -220,21 +220,15 @@ Skip entirely if no attachments or inline images were found in Step 3.
 
 Example: `Email 3 - 20260226_1340 - Scope-limited medical details proposed`
 
-**Newly-discovered communications that predate or interleave with the existing sequence:** when a
-communication surfaces after the tracker is already built and numbered — an older foundational
-document, or a second item on the same day as an already-numbered entry — do not renumber the
-existing sequence to fit it in. Renumbering touches every cross-reference to those entries
-elsewhere in the project (chronology, case file, discussion log, skill/scratchpad state) and is
-error-prone. Instead:
-- If it predates entry 1 of its type: number it `0` (e.g. `Meeting 0`), matching the `Email 0a` /
-  `Email 0b` convention already used for pre-sequence items.
-- If it is a second item of the same type on the same day as an existing entry, or otherwise
-  needs to sit between two already-numbered entries without shifting them: append a letter
-  suffix (e.g. `Meeting 0b` immediately after `Meeting 0`, `Email 12a` between `Email 12` and
-  `Email 13`).
-- Insert the new entry at its correct chronological position in the document (see Step 6) even
-  though its number doesn't sort there numerically — the letter/zero suffix is what preserves
-  correct ordering without a renumber.
+**Newly-discovered communications that predate or interleave with the existing sequence:** number each type
+sequentially in chronological order (Meeting 1, 2, 3 …) and renumber the later entries of that type to make room.
+Do not use `0` or letter suffixes such as `2a` / `2b` (operator, 12 Oct 2026). When renumbering:
+- Map every old number to its new one in a single pass (use placeholders so `2 → 3` and `3 → 4` do not chain).
+- Update the heading, the Contents line and every in-file anchor and `[Meeting N]` reference, then check all `#anchor` links resolve.
+- Search the project for references to the old numbers outside the tracker (chronology, case file, scratchpad, skill state). Update live
+  documents; leave dated history such as CHANGELOG entries as written and record the old → new mapping in a new entry.
+- Insert the new entry at its correct chronological position (see Step 6). An entry with no known time goes where the evidence places it,
+  with the slug as `YYYYMMDD` and a note saying the position is inferred.
 
 ---
 
@@ -369,6 +363,17 @@ python ~/.agents/scripts/commtracker/reconcile.py <communications-dir>
 
 Compares `.eml` files in the folder against `communications-tracking.md`. Reports exact
 matches, AEST-timezone matches, same-date candidates, and genuinely untracked files.
+
+### apply_corrections.py — correct transcript dialogue after review
+
+```bash
+python ~/.agents/scripts/commtracker/apply_corrections.py <transcript.md> <corrections.tsv> [--table] [--dry-run]
+```
+
+For **Transcript source cleanup** when names and terms are misheard: review the transcript, write the corrections as a
+TSV (`transcribed<TAB>corrected`; `\n` splits a mis-attributed turn), then apply. Only the dialogue below `## Full…`
+changes; `--table` records every change so the original stays reconstructable. Correcting misheard words is a content
+change, so do it only when the user asks, and mark guesses `[?: …]`.
 
 ### toc.py — regenerate Contents TOC
 

@@ -86,6 +86,27 @@ python ~/.agents/scripts/commtracker/toc.py \
 
 ---
 
+## apply_corrections.py — Correct a transcript's dialogue from a reviewed list
+
+```bash
+python ~/.agents/scripts/commtracker/apply_corrections.py <transcript.md> <corrections.tsv> \
+  [--table]                    # insert a "Transcription corrections" table above the dialogue
+  [--dry-run]                  # report counts without writing
+  [--marker '^## Full']        # heading that starts the dialogue (default)
+```
+
+**Corrections file:** `transcribed<TAB>corrected`, one pair per line, applied in order (specific phrases before the
+generic ones they contain). `?` prefix = optional pair; `re:` prefix = regex; `\n` = newline (splits a mis-attributed
+speaker turn). Lines starting with `#` are comments.
+
+**Behaviour:** changes only text below the marker, so summaries and earlier tables stay as written. Exits 1 if a required
+pair matches nothing, 2 if the marker is missing. Mark guesses in the corrected text as `[?: …]` and lost phrases as
+`[unclear]` so they stay visible. Inputs: transcript + TSV; output: the transcript rewritten in place. Re-running on a
+corrected file reports unmatched pairs rather than double-applying, so run it against the original. Tests:
+`tests/test_apply_corrections.py`.
+
+---
+
 ## Integration with skill-commtracker
 
 When processing a new EML via skill-commtracker, run `extract.py` first:
