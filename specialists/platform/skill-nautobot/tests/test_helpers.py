@@ -22,6 +22,7 @@ _masks = importlib.import_module("nautobot_masks")
 _linkage = importlib.import_module("nautobot_linkage")
 _template_sync = importlib.import_module("nautobot_template_sync")
 _app_compat = importlib.import_module("nautobot_app_compat")
+_web_login = importlib.import_module("nautobot_web_login")
 
 
 def pages(*chunks, count=None):
@@ -374,6 +375,58 @@ class Governance(unittest.TestCase):
             result = self._run(copy)
         self.assertEqual(result.returncode, 1, result.stdout)
         self.assertIn("does-not-exist.md", result.stdout)
+
+
+class WebLoginTests(unittest.TestCase):
+    """nautobot_web_login against a local stand-in for Nautobot's login form: right password opens, wrong one does not."""
+
+    @classmethod
+    def setUpClass(cls):
+        import http.server
+        import threading
+        import urllib.parse as up
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *a):
+                pass
+
+            def do_GET(self):
+                if self.path.startswith("/login/"):
+                    body = b'<form><input name="csrfmiddlewaretoken" value="tok123"></form>'
+                    self.send_response(200)
+                    self.send_header("Set-Cookie", "csrftoken=tok123; Path=/")
+                else:
+                    body = b"home"
+                    self.send_response(200)
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def do_POST(self):
+                form = up.parse_qs(self.rfile.read(int(self.headers["Content-Length"])).decode())
+                good = form.get("password") == ["right"] and form.get("csrfmiddlewaretoken") == ["tok123"]
+                self.send_response(302)
+                self.send_header("Location", "/" if good else "/login/?failed=1")
+                if good:
+                    self.send_header("Set-Cookie", "sessionid=s1; Path=/")
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+
+        cls.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+        threading.Thread(target=cls.server.serve_forever, daemon=True).start()
+        cls.base = f"http://127.0.0.1:{cls.server.server_port}"
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+
+    def test_right_password_opens(self):
+        self.assertEqual(_web_login.check_login(self.base, "admin", "right"), (True, "/"))
+
+    def test_wrong_password_does_not(self):
+        opened, landed = _web_login.check_login(self.base, "admin", "wrong")
+        self.assertFalse(opened)
+        self.assertTrue(landed.startswith("/login"))
 
 
 if __name__ == "__main__":

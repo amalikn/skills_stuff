@@ -14,6 +14,8 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261012_1756 promoted from UNC (apn-unc01 deployment): `scripts/nautobot_web_login.py` and `just web_login`, a read-only check that a username and
+  password open the web UI through the login form (CSRF, session cookie); offline tests in `tests/test_helpers.py`; smoke-run against apn-unc01 (LOGIN OK).
 - 20261010_1805 Workspace standard (operator, 2026-10-10; skill-ai-it "Governed files: headers, budgets, rotation and the checker's shape"): `justfile` gains
   `ai_it`, a second `check` line running skill-ai-it's `doc_freshness.py --check`, and the `stale`, `docs`, `history`, `history-show` and `rotate`
   recipes; `AGENTS.md` Working rules gain the triage line (`just docs <folder>`, `just stale`, `just history`); `doc_freshness.py --write-baseline`

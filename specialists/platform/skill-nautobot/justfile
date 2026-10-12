@@ -128,6 +128,11 @@ template_sync *flags: _require-venv
 app_compat *args: _require-venv
     @{{py}} scripts/nautobot_app_compat.py "$@"
 
+# Read-only: does a username and password open Nautobot's web UI? e.g. just web_login --base-url http://host:8080 --username admin --password-cmd 'kp show -s -a Password "unc/x"'
+[positional-arguments]
+web_login *args: _require-venv
+    @{{py}} scripts/nautobot_web_login.py "$@"
+
 # Regenerate the deterministic Repomix context pack (.ai-context/governance-pack.md). Generated support, not truth.
 context-pack:
     @command -v repomix >/dev/null || { echo 'repomix not installed; skipped'; exit 0; }
