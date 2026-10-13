@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261014 Learned 2026-10-14 (UNC onboarding page, verified update): `references/app-development.md` gains four 3.2.3 seams: answering an approval stage from any page via its own approve/deny view with `return_url`, app banners, app Jinja filters for Job Button text, and htmx polling that stops itself.
 - 20261013 Learned 2026-10-13 (UNC app 0.8.6, verified update): `references/app-development.md` gains a site panel's Relationship query (`destination_id__in` an Interface `.values("pk")` subquery works on 3.2.3 where `descendants()` does not).
 - 20261013 Learned 2026-10-13 (reusable_candidate patterns from UNC, operator: write the out-of-the-box ideas back): `references/capability-extension.md` gains four: a host runner for Jobs that need reach the worker lacks; workflow state from Job log groupings with approval-held gate Jobs; a reference beside inventory as a Config Context with drift computed at read time; Django-free panel modules previewed in both themes.
 - 20261013 Learned 2026-10-13 (backlog from UNC 2026-10-12/13, verified update, recorded late after a write-back audit): `references/operations-and-recovery.md` (banner variables; health_check slower than the image timeout), `references/app-development.md` (no hyphen in app labels; overlayfs refuses a rename across layers), `references/data-model.md` (row colour from cable status only at default colours; Bridge field only on members; Circuit description 255; find Interfaces by name, not label).

@@ -418,3 +418,12 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 > destination_id__in=Interface.objects.filter(Q(device__location=site) | Q(device__location__parent=site)).values("pk"))`: the `.values("pk")` subquery works, where
 > `site.descendants()` used as a subquery fails on 3.2.3.
 
+> **Learned 2026-10-14** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `extras/views.py` (ApprovalWorkflowStageUIViewSet approve, deny, comment), `extras/plugins/__init__.py` (`banner_function = "banner.banner"`, `jinja_filters = "jinja_filters"`), `extras/templatetags/plugins.py` and `plugin_banners.html`, `extras/templates/extras/inc/jobresult_log_table_partial.html`; app-verify system check on 3.2.3 · Falsifier: a 3.2.x approve POST that ignores `return_url`, or a banner whose content is escaped
+> Four seams for page UX without custom models. (1) An approval stage is answered from any page by POSTing `comments`, the CSRF token and `return_url` to
+> `extras:approvalworkflowstage_approve` or `_deny` (pk = the pending stage, `approval_workflow.approval_workflow_stages.filter(state="Pending")`): the view
+> records the response and redirects to `return_url`; it allows the stage's approver group or a superuser only, so check the same before offering the button.
+> (2) An app's `banner.py` `banner(context)` returning `Banner(content, BannerClassChoices.CLASS_INFO)` renders at the top of every page with the page's
+> context; the content is marked safe, so escape every value, and return None fast on other pages. (3) An app's `jinja_filters.py` with
+> `@django_jinja.library.filter` is imported at start-up and usable in Job Button and custom link text; empty text hides the button. (4) Nautobot polls
+> with htmx (`hx-get`, `hx-trigger="every 3s"`, `hx-swap`) and stops by leaving the poller out of the response once nothing is pending.
+
