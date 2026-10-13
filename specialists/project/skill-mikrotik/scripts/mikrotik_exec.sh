@@ -36,7 +36,8 @@ SSHPASS=$(kp show -s -a Password "$entry" 2>/dev/null) || { echo "cannot read pa
 export SSHPASS
 
 port=$(( 20000 + RANDOM % 20000 ))
-tsh --proxy="$proxy" ssh -N -L "127.0.0.1:${port}:${ip}:22" "root@${smc}" >/dev/null 2>&1 &
+# TSH_IDENTITY (optional): a Machine ID identity file, for hosts that run tbot instead of a user login (2026-10-13, apn-unc01).
+tsh ${TSH_IDENTITY:+-i "$TSH_IDENTITY"} --proxy="$proxy" ssh -N -L "127.0.0.1:${port}:${ip}:22" "root@${smc}" >/dev/null 2>&1 &
 fwd=$!
 trap 'kill $fwd 2>/dev/null; wait $fwd 2>/dev/null' EXIT
 for _ in $(seq 1 30); do

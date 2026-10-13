@@ -68,7 +68,8 @@ CLUSTER="$(cluster_for_flavour "$FLAVOUR")"
 echo "# $SITE -> $SMC_HOST via $CLUSTER" >&2
 
 # Always --proxy=, never --cluster= (see references/01_overview.md, incident 2026-09-18).
-TSH=(tsh ssh --proxy="$CLUSTER" "root@$SMC_HOST")
+# TSH_IDENTITY (optional): a Machine ID identity file (`tsh -i`), for hosts that run tbot instead of a user login (2026-10-13, apn-unc01).
+TSH=(tsh ssh ${TSH_IDENTITY:+-i "$TSH_IDENTITY"} --proxy="$CLUSTER" "root@$SMC_HOST")
 
 if [ "$TARGET" = "--discover" ]; then
   # Ping-sweep the SMC's management subnet, then probe every live host's SSH banner for TP-Link's
