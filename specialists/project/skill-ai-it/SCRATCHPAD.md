@@ -165,18 +165,13 @@ not overwrite the hand-built checker (521
 
 ## Next actions
 
-- [x] ~~Convert `~/.claude/skills/skill-ai-it` from copy to symlink.~~ **Done 2026-08-11.** Both installs are now symlinks to canonical; the copy-drift class is closed for this skill. The recorded
-  blocker (`governance/watchman-events/` runtime state) turned out not to exist — the directory held only `.gitkeep` in both locations, and watchman watches canonical, not the install. Backup of the
-  former copy kept at the session scratchpad until the next session confirms the link is healthy.
-
-- [x] ~~Commit the template-sourced-blocks work and re-upgrade the governed projects.~~ **Done 2026-10-07:** twelve projects on
-  the current stamp (seven through `migrate_legacy_blocks.py`), committed and pushed (skills_stuff `cc0fa32`, me `bd65bd4`,
-  me/japan `f186f35`, apn `e1ded9b`).
-- Other governed projects not in the snake_case run (llm-m2max, vocus-profitability, opticomm-profitability and any later stamp holdouts):
-  `just nav_upgrade_dry_run`; if it reports `refused-legacy-layout`, `just nav_migrate_legacy <project> --dry-run` from this package first.
-- Refresh OpenBB with updated skill and verify justfile/Graphify/Archcore active initialization works.
-- Refresh invoice-finance-analyst with updated skill.
-
+- Operator: `git push` in skills_stuff (commit `d8c0df6`; the agent push was refused by auto mode). tools_stuff (all-scraper write-back,
+  parent AGENTS rule) and apn/cambium-swap (role-check canary) are uncommitted in their repos.
+- Roll the role check out: per project `adopt_governed_files.py --project-root . --apply && just check && just roles` (11 projects, CHANGELOG
+  `20261014_1002`); track with `just roles_fleet`; then work each baseline down (README quick start, dated ROADMAP phase, README status sections).
+- Decide whether `just check` runs `nav_validate` or a YAML parse of context-map.yaml (it missed a YAML error on 2026-10-14).
+- Stamp the 12 projects with an unstamped AI_NAVIGATION.md (`just nav_upgrade_dry_run` first); list in ROADMAP.
+- Refresh OpenBB and invoice-finance-analyst with the updated skill (Archcore and Repomix only; Graphify stays disabled).
 ---
 
 ## Memory pointers
