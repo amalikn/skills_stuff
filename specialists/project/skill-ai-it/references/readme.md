@@ -18,7 +18,7 @@ Last reviewed: 2026-10-10
 - [files-support.md](files-support.md) (187 lines) Conditional support files.
 - [finishing.md](finishing.md) (153 lines) Finishing: parent update, conventions, quality check, audit format.
 - [generation-policy.md](generation-policy.md) (160 lines) Generation policy and optional tools.
-- [governed-file-roles.md](governed-file-roles.md) (134 lines) What each governed root file is for, and the role check.
+- [governed-file-roles.md](governed-file-roles.md) (135 lines) What each governed root file is for, and the role check.
 - [governance-checker.md](governance-checker.md) (73 lines) Governance coherence checker.
 - [managed-blocks.md](managed-blocks.md) (69 lines) Managed block pattern.
 - [navigation-automation.md](navigation-automation.md) (83 lines) Deterministic navigation-control automation.

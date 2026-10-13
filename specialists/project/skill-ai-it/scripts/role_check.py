@@ -15,6 +15,9 @@ Rules (key `<rule>:<file>`):
 5. `roadmap-phase`: ROADMAP.md has no `## Current phase` section with a bold date (`**YYYY-MM-DD.**`).
 6. `roadmap-done`: ROADMAP.md keeps done items past the 7-day window (`roadmap_trim.py` would move them), or narrative under `## Completed`.
 7. `duplicate-section`: two root files carry the same `##`/`###` section (same title, bodies at least 80% alike); one fact has one home.
+8. `context-map-parse`: context-map.yaml does not parse, or repeats a key (YAML keeps the last and drops the rest silently). Operator,
+   2026-10-14: `nav_validate` stays manual (it fails every project on a skill version bump), but a broken map must fail `just check`; one did
+   that day and passed. Needs PyYAML (skill-ai-it requirements.txt); without it the rule is reported as skipped, never as passed.
 
 A baseline (`scripts/role-check-baseline.json`) records the findings on the day a project adopts the check; `--check` fails only on a finding
 the baseline does not hold, so existing breaches shrink without blocking work and new ones fail. `adopt_governed_files.py` writes it.
@@ -184,6 +187,52 @@ def duplicate_findings(texts: dict[str, str]) -> dict[str, str]:
     return out
 
 
+def context_map_findings(root: pathlib.Path) -> dict[str, str] | None:
+    """Rule 8: context-map.yaml parses, with no repeated key in any mapping.
+
+    Args:
+        root: the project root.
+
+    Returns:
+        Findings keyed by rule (empty when the map is valid or absent), or None when PyYAML is not installed and the rule could not run.
+    """
+    path = root / "context-map.yaml"
+    if not path.is_file():
+        return {}
+    try:
+        import yaml
+    except ImportError:
+        return None
+
+    class StrictLoader(yaml.SafeLoader):
+        """SafeLoader that refuses a mapping with a repeated key."""
+
+    def no_duplicates(loader, node, deep=False):
+        """Build a mapping, failing on a key it has already seen.
+
+        Args:
+            loader: the YAML loader.
+            node: the mapping node.
+            deep: build nested values now.
+
+        Returns:
+            The mapping.
+        """
+        keys = [loader.construct_object(k, deep=deep) for k, _ in node.value]
+        repeated = sorted({str(k) for k in keys if keys.count(k) > 1})
+        if repeated:
+            raise yaml.constructor.ConstructorError(None, None, f"repeated key(s) {', '.join(repeated)}", node.start_mark)
+        return loader.construct_mapping(node, deep)
+
+    StrictLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, no_duplicates)
+    try:
+        yaml.load(path.read_text(encoding="utf-8"), Loader=StrictLoader)
+    except yaml.YAMLError as exc:
+        first = " ".join(str(exc).split())[:160]
+        return {"context-map-parse": f"does not parse: {first}"}
+    return {}
+
+
 def findings(root: pathlib.Path, today: dt.date) -> dict[str, str]:
     """Every role finding for one project.
 
@@ -209,6 +258,11 @@ def findings(root: pathlib.Path, today: dt.date) -> dict[str, str]:
     if "ROADMAP.md" in texts:
         out |= {f"{k}:ROADMAP.md": f"ROADMAP.md: {v}" for k, v in roadmap_findings(texts["ROADMAP.md"], today).items()}
     out |= duplicate_findings(texts)
+    cmap = context_map_findings(root)
+    if cmap is None:
+        print("  note: context-map.yaml parse SKIPPED (PyYAML not installed in this interpreter), not passed", file=sys.stderr)
+    else:
+        out |= {f"{k}:context-map.yaml": f"context-map.yaml: {v}" for k, v in cmap.items()}
     return out
 
 

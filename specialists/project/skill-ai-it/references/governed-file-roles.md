@@ -129,6 +129,7 @@ work.
 | README links resolve                                                          | the project's `check_governance.py` `SURFACES`                                                    | Gate             |
 | ARCHITECTURE and SETUP reviewed when what they describe changes               | `Depends on` in their templates; `doc_freshness.py` flags a later commit                          | Gate once the    |
 |                                                                               |                                                                                                   |   key is set     |
+| context-map.yaml parses, no repeated key | `role_check.py` `context-map-parse` (PyYAML; reported skipped without it) | Gate, ratchet |
 | AI_NAVIGATION managed block current                                           | `just nav_validate` (not part of `check`; run after an upgrade)                                   | Manual           |
 | Nothing contradicted, no rules in ARCHITECTURE, no durable facts              | drift-audit section 14                                                                            | Manual           |
 |   in SCRATCHPAD                                                               |                                                                                                   |                  |

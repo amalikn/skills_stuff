@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261014_1027
+Last rotated: 20261014_1030
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)](#20261014_1030--role_check-context-mapyaml-must-parse-nav_validate-stays-manual)
 - [20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted](#20261014_1027--stamping-unstamped-projects-canary-on-agent-stack-failed-and-was-reverted)
 - [20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean](#20261014_1020--coherence-pass-architecture-key-decisions-sibling-skills-sweep-clean)
 - [20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes](#20261014_1018--staleness-audit-upgrader-header-derived-index-counts-links-indexes)
@@ -28,8 +29,14 @@ Last rotated: 20261014_1027
 - [20261012_0958 — check_outside_blocks.py; upgrader Python floor; adopter and the outline trial](#20261012_0958--check_outside_blockspy-upgrader-python-floor-adopter-and-the-outline-trial)
 - [20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp](#20261012_0952--upgrader-changelog-heading-uses-the-yyyymmdd_hhmm-stamp)
 - [20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix](#20261011_0525--section-level-markdown-reads-outline-section-and-adopter-attribute-fix)
-- [20261010_2346 — move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry](#20261010_2346--move_sections-link-repointing-and-shared-pointer-budget-tidy-step-add_changelog_entry)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)
+
+- **`role_check.py` rule 8, `context-map-parse`** (operator, 2026-10-14: "keep nav_validate manual, and add one rule to role_check:
+  context-map.yaml must parse"). Fails when the map does not parse or repeats a key; PyYAML absent reports SKIPPED, never passed. All 26
+  context-map.yaml files under project_stuff and specialists parse today, so no project turns red. Test added; proven on this package (a repeated
+  `version` key failed `just check`, restored green). `nav_validate` stays out of `check` (it fails every project on a skill version bump).
 
 ## 20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted
 
@@ -162,20 +169,6 @@ Last rotated: 20261014_1027
   recipe was copied, so `"$@"` arrived empty (found when `just outline` got no file). Adopter now ships `outline` and `section` and names them in
   the AGENTS line for new projects.
 - Tests 50 to 61 (md_sections 9, adopter regression 1, md_reads 1); `just check` 308 pass. Adopted here and in UNC (trial to 2026-10-25).
-
-## 20261010_2346 — move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry
-
-- move_sections.py: `--pointer-into HEADING` adds a bullet to one shared pointer section (created when missing); in-page `#anchor` links that cross the
-  move are repointed in both files, and links from other project markdown to a moved section follow it; `consolidate()` merges legacy numbered pointer
-  sections. Replaces the hand-written link fixers and pointer merges of 2026-10-10.
-- budget_plan.py: a tidy step first (duplicate tracker pointers kept once, tracker pointers removed from trackers, numbered pointer sections merged);
-  moves go into one shared "Reference moved out" section.
-- New add_changelog_entry.py (`just changelog-entry`): the project's own heading style and order, Contents line, clock-read stamp, additions-only check.
-  Replaces the scratch entry helper used about 25 times. Smoke-tested in plan mode on all 23 governed CHANGELOGs (five styles, one oldest-first).
-- Adopter adds and documents the `changelog-entry` recipe; skill-slurp-chat step 7 names it. Tests 39 to 49, each new behaviour negative-tested.
-- Free-text recipes (`changelog-entry`, `move-sections`) take quoted positional arguments (`[positional-arguments]`, `"$@"`): `{{ARGS}}` is
-  substituted unquoted, and a title containing semicolons ran its fragments as shell commands (harmless here; caught on the first real use). The adopter
-  rewrites the unsafe form in adopted projects.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

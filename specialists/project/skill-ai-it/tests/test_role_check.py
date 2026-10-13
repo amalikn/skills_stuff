@@ -78,6 +78,15 @@ class RoleCheckTest(unittest.TestCase):
                             "ARCHITECTURE.md": FM + f"# Arch\n\n## Managed block behavior\n\n{LONG}\n"}
             self.assertTrue(any(k.startswith("duplicate-section:") for k in rc.findings(project(tmp, files), TODAY)))
 
+    def test_context_map_must_parse_without_repeated_keys(self):
+        """2026-10-14: a `: ` inside a plain scalar broke context-map.yaml and `just check` passed."""
+        cases = {"broken": "a: b\n  description: x: y\n", "repeated": "audit_checks: 1\nrouting: 2\naudit_checks: 3\n"}
+        for name, text in cases.items():
+            with self.subTest(name), tempfile.TemporaryDirectory() as tmp:
+                self.assertIn("context-map-parse:context-map.yaml", rc.findings(project(tmp, GOOD | {"context-map.yaml": text}), TODAY))
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(rc.findings(project(tmp, GOOD | {"context-map.yaml": "version: 1\nrouting:\n  a: [b]\n"}), TODAY), {})
+
     def test_check_fails_only_on_unbaselined_findings(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = project(tmp, GOOD | {"README.md": FM + "# P\n\n## Purpose\n\nWhat it is.\n"})
