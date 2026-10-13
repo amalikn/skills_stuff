@@ -1,3 +1,15 @@
 [submodule "specialists/project/skill-mx02-migration"]
 	path = specialists/project/skill-mx02-migration
 	url = https://github.com/amalikn/skills-stuff-project-skill-mx02-migration.git
+[submodule "diagram-design"]
+	path = diagram-design
+	url = https://github.com/cathrynlavery/diagram-design.git
+	ignore = dirty
+[submodule "skills/skill-anydoc/anydoc-github"]
+	path = skills/skill-anydoc/anydoc-github
+	url = https://github.com/firecrawl/anydoc.git
+	ignore = dirty
+[submodule "strategy-os"]
+	path = strategy-os
+	url = https://github.com/BellaBe/strategy-os.git
+	ignore = dirty

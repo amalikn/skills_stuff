@@ -23,6 +23,9 @@ Each patch is `git diff` inside the submodule, taken against the base commit sho
 | [anydoc-github.patch](anydoc-github.patch) | `skills/skill-anydoc/anydoc-github/` | firecrawl/anydoc | `4a45add` | SKILL.md description edited |
 | [strategy-os.patch](strategy-os.patch) | `strategy-os/` | BellaBe/strategy-os | `8240090` | 8 SKILL.md descriptions on one line |
 
+The three are registered in `.gitmodules` with `ignore = dirty` (2026-10-14), so `git status` no longer lists them for these local edits; a
+new commit inside one still shows. `git -C <submodule> status` shows the edits.
+
 ## Reapply after an upstream update
 
 ```bash
