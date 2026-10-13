@@ -316,8 +316,8 @@ Enable a hardware watchdog on every flavor that lacks one:
   and `.timeout` defaults to that maximum. Any `RuntimeWatchdogSec` above it is clamped to the nearest supported value, so set it at or below 15 s.
 - **Persistence on overlayroot:** the `systemd` drop-in and any module-load config must be written to the lower dir (`/media/root-ro`) or they vanish on the first reboot — the reboot the watchdog
   itself causes. Not yet tested on any `wh` box.
-- The SMC resiliency plan in `apn/enterprise-strategy/workstreams/continuity/` scopes recovery from **failed updates** only; this hang is not update-related, so that plan as written does not cover it.
-  Options note: `smc-hang-recovery-options-20261006_1214.md` in that folder.
+- The SMC resiliency plan (since 2026-10-14 in the `apn/smc-resiliency` project) scopes recovery from **failed updates** only; this hang is not update-related, so that plan as written does
+  not cover it. Options note: `smc-resiliency/docs/recovery/smc-hang-recovery-options-20261006_1214.md`.
 
 ---
 
