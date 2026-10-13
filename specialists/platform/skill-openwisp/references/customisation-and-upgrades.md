@@ -98,3 +98,9 @@ for any core patch.
 
 Source: site-packages `openwisp_controller/config/models.py:1-35` and `swapper/__init__.py:9-21` in the dashboard image; runtime `django.conf.settings` read in the dashboard container (2026-10-05);
 https://openwisp.io/docs/26.09/controller/developer/extending.html (snapshot `documents/openwisp-26.09-controller-developer-extending.html`), steps 3, 4, 11-14.
+
+> **Learned 2026-10-13** · openwisp-utils 1.3 (docker-openwisp 26.09) · VERIFIED_SECONDARY · Source: observed; settings set from the environment in a custom Django settings file · Falsifier: the admin header unchanged after setting both and restarting the dashboard
+> `OPENWISP_ADMIN_SITE_TITLE` and `OPENWISP_ADMIN_SITE_HEADER` name the instance in the browser tab and the admin header; set them in the custom Django settings only when an environment variable is present, so each stack (production, test) says which it is. A notification type added by your own code (an external alarm class pushed into OpenWISP notifications) is registered when the processes start: every OpenWISP process that sends or renders notifications needs one restart before the type exists.
+
+> **Learned 2026-10-13** · OpenWISP 26.09 · UNVERIFIED · Source: unified-network-controller alarming (`wc-local/scripts/alarming/rules.py`, OpenWISP type per alarm class) · Falsifier: a second deployment where custom notification types per rule cannot carry suppression and runbook links
+> (reusable_candidate: proven in one deployment, not yet general) Pattern: OpenWISP notifications as the transport for alarms computed outside OpenWISP. An external rule engine (here a scheduled job over Nautobot and OpenWISP data) raises each alarm class as its own registered notification type, so operators get OpenWISP's per-user notification settings, read state and email for free, and each type links to its runbook; suppression (a site down hides its devices) stays in the rule engine.

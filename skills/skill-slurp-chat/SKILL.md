@@ -18,6 +18,7 @@ log, agent rules, status surfaces). Memory alone is not capture: the next agent 
 - [Step 4 — Zone A scan (light)](#step-4--zone-a-scan-light)
 - [Step 5 — Memory backends](#step-5--memory-backends)
 - [Step 5a — Persistent scripts (every slurp, unprompted; operator, 2026-10-09: "when slurp is called, scripts should be handled in it as well")](#step-5a--persistent-scripts-every-slurp-unprompted-operator-2026-10-09-when-slurp-is-called-scripts-should-be-handled-in-it-as-well)
+- [Step 5b — Skill write-backs (every slurp; operator, 2026-10-13)](#step-5b--skill-write-backs-every-slurp-operator-2026-10-13-whenever-the-skill-is-engaged-there-is-a-contract-to-write-back-as-part-of-the-slurp-all-the-writebacks-should-be-rechecked)
 - [Step 6 — Governed record (the step memory-only slurps skip)](#step-6--governed-record-the-step-memory-only-slurps-skip)
 - [Step 6b — Self-audit before the report (mandatory)](#step-6b--self-audit-before-the-report-mandatory)
 - [Step 7 — Checkpoints and SCRATCHPAD](#step-7--checkpoints-and-scratchpad)
@@ -110,6 +111,24 @@ those, and give every other one a line saying why not:
 Register each promoted script in every registry the project keeps (promotion register, script catalogue, tracker, tests index), then run the
 project's check. A slurp is not complete while a script judged worth keeping exists only in the scratchpad. Do not wait to be asked; do not promote one-offs.
 
+## Step 5b — Skill write-backs (every slurp; operator, 2026-10-13: "Whenever the skill is engaged, there is a contract to write back. As part of the slurp all the writebacks should be rechecked")
+A skill's write-back contract binds whether or not the skill was formally invoked: a session that touched a skill's domain engaged it. Missing it twice in
+one day (2026-10-13: platform work done without invoking skill-nautobot; a skill-smc entry left uncommitted from the session before) is why this step exists.
+
+1. **Engaged skills.** List every skill whose domain the session touched: those invoked, plus those the project's AGENTS.md routes the work to
+   ("invoke skill-X before Y work"). Name them in the report even when nothing is owed.
+2. **Facts owed.** Walk the Step 3 item list and the change-log entries written since the boundary; mark each fact that is true of any deployment
+   (vendor, device, platform or tool behaviour, a version quirk, an API limit) with its owning skill. A fact about this project stays in the project.
+3. **Present and read back.** For each owed fact, open the skill's reference and confirm the entry is there in the skill's own format (Learned
+   entry, known-issues entry, CHANGELOG line), reading the file body, not a session note. Missing: write it now, from the source the project cites.
+4. **Committed.** `git status` in the skills repo for every engaged skill. A write-back that is not committed is not done: commit it (and push
+   it when the session commits and pushes) as part of the write-back; the operator's "commit and push is single-repo scoped" limits the request,
+   not the skill contracts. Run the skill's own tests first.
+5. **Backlog.** Also check the window since the last slurp of each earlier session in the same project (its change log), not only this one:
+   facts left behind earlier are caught here.
+
+Report one line per engaged skill: facts owed, written, read back, committed (hash).
+
 ## Step 6 — Governed record (the step memory-only slurps skip)
 Find the project's governed surfaces before writing: its AGENTS.md or CLAUDE.md (change-log rule, working rules), `context-map.yaml` `update_rules`, and any status source of truth (a target map,
 tracker, roadmap). Then route every item:
@@ -140,6 +159,7 @@ Before reporting, check the capture against the conversation, not against the it
 - Every user message from pass 1 has a destination in the coverage table (or a stated reason it needs none).
 - Every side-effect action from pass 2 is in a change-log entry or the operational memory key.
 - Every repo with changes has its companions applied (Step 6) and its check passing.
+- Every engaged skill (Step 5b) has its owed facts present, read back and committed; a dirty skill file is a failed audit.
 - No row bundles unrelated items; one operator decision is one row and one `record_decision`.
 If any check fails, fix it and run the audit again. Report only when it passes; say in the report that it passed.
 
@@ -188,4 +208,6 @@ companion rules, the Step 6b result, and the last memory-keeper and project-cont
 | "I saved a summary earlier, so that work is done" | A mid-session note is not a slurp; the boundary is the last slurp (Step 2)     |
 | "The early part of the chat is covered"           | Walk it in order (Step 3); early incidents and ops are the ones that get lost |
 | "One row for all the decisions is enough"         | One decision, one row, one record_decision                                    |
+| "The skill was not invoked, so nothing is owed"   | Touching its domain engaged it; Step 5b applies                               |
+| "The skill file is written; committing is another repo" | Uncommitted is not written back; commit it in the skills repo (Step 5b)  |
 | "The changed file is recorded; its index can wait" | Companion rules are part of the slurp (Step 6)                               |

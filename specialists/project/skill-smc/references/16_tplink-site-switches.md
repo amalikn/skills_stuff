@@ -41,6 +41,28 @@ All 11 are SG2428P hardware 5.30; ten run firmware 5.30.1 Build 20240202, bidyad
 The pattern at most sites is `10.255.0.2` upward, directly after the SMC's own `bridge_500` address `10.255.0.1`. Galiwinku's WAN trunks name their switches `switch01`/`switch02` in topology_vars
 (`01_overview.md` "WAN Uplink Topology Pattern").
 
+## Central chassis port plan, from an as-built (rcp low-touch, old-looma, 2026-10-13)
+
+The as-built chassis drawing of old-looma (rcp, low-touch; unified-network-controller `docs/sites/old-looma/as-built/`, v1.0 2026-08-03) gives the central
+port plan; it is one site's, but low-touch builds follow one design, so check another site's drawing before assuming a difference. `SWP n` in a drawing is
+the TP-Link port `gigabitEthernet 1/0/n`.
+
+| Switch | Port | Drawn to | Checked against Nautobot cables / LLDP (2026-10-13) |
+| --- | --- | --- | --- |
+| Switch1 | SWP 1 | SMC LAN3 | agrees (SMC enp2s0) |
+| Switch1 | SWP 2, 3 | 3000L SouthEast / SouthWest sectors, each through a 30 V PoE injector (UPS) | no cable recorded: the injectors hide the radios from LLDP |
+| Switch1 | SWP 4 | AP1 (XV2) | agrees |
+| Switch1 | SWP 5 | V5000 (cnWave DN) | LLDP agrees; a switch-table sighting had cabled a remote XV2 there instead |
+| Switch1 | SWP 9-14 | Starlink Direct 1-6 NTDs, SMC VLAN interfaces `enp2s0.521`-`.526` (drawn as Internet 3-8) | SWP 9 agrees; 10 named one number off; 11-14 not found |
+| Switch1 | SWP 17 | nbn backup NTD (UNI-D1), SMC `enp2s0.621` | not found |
+| Switch1 | SWP 24 | the UPS (the drawing does not say whether its network card or Switch2) | - |
+| Switch2 | SWP 1 | SMC LAN4 | agrees (SMC enp1s0) |
+| Switch2 | SWP 8 | the central tower's router (R195P), cabled, no SM | agrees |
+| SMC | LAN1 `eno1`, LAN2 `enp3s0` | Internet 1 and 2 (Telstra Starlink), NTDs straight on the SMC | agrees |
+
+So an rcp low-touch central chassis carries two uplinks directly on SMC ports and the rest as VLAN sub-interfaces of the SMC's switch trunk, one switch
+access port per NTD; tower radios hang off Switch1, the tower router off Switch2.
+
 ## Credentials
 
 KeePass entry `/Network/tplink switch`, user `admin`; its Notes list `10.255.0.2` and `10.255.0.3`. Read with the `kp` wrapper, never printed: the script pipes the password over stdin to the SMC, so

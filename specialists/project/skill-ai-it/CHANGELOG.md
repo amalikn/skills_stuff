@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261012_0953
+Last rotated: 20261013_2230
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261013_2230 — Pitfall: the wrap hook runs on Write and Edit and reflows the whole file](#20261013_2230--pitfall-the-wrap-hook-runs-on-write-and-edit-and-reflows-the-whole-file)
 - [20261012_0958 — check_outside_blocks.py; upgrader Python floor; adopter and the outline trial](#20261012_0958--check_outside_blockspy-upgrader-python-floor-adopter-and-the-outline-trial)
 - [20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp](#20261012_0952--upgrader-changelog-heading-uses-the-yyyymmdd_hhmm-stamp)
 - [20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix](#20261011_0525--section-level-markdown-reads-outline-section-and-adopter-attribute-fix)
@@ -28,7 +29,11 @@ Last rotated: 20261012_0953
 - [20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates](#20261010_1805--governed-file-tools-rotation-by-bullet-ticked-items-resolved-checker-standard-slurp-rotates)
 - [20261010_1830 — feat: doc_freshness.py; Graphify disabled](#20261010_1830--feat-doc_freshnesspy-graphify-disabled)
 - [20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project](#20261008_2224--feat-docstring_ratchetpy-the-global-docstring-standard-as-a-ratchet-for-any-project)
-- [20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order](#20261007_2124--fix-the-upgrade-changelog-entry-follows-the-files-order)
+
+## 20261013_2230 — Pitfall: the wrap hook runs on Write and Edit and reflows the whole file
+
+- `references/pitfalls.md`: the Markdown wrap and contents hook runs on Write and Edit only and reflows the whole file (tables, split paths, joined
+  managed-block markers); shell edits bypass it. From unified-network-controller 2026-10-10/11, written back late after a write-back audit (2026-10-13).
 
 ## 20261012_0958 — check_outside_blocks.py; upgrader Python floor; adopter and the outline trial
 
@@ -190,11 +195,3 @@ Applied to: AI_NAVIGATION.md, AGENTS.md, SCRATCHPAD.md
   without `Returns:`) against `scripts/docstring-baseline.json`; `--write-baseline` adopts the standard on a project with legacy code. Same rule as
   unified-network-controller's `check_docstrings`; on that project it reports the same 1737 shortfalls in 132 files and exits 0.
 - Not yet applied to this pack's own scripts (129 shortfalls in 7 files); adopting it here is a separate change.
-
-## 20261007_2124 — fix: the upgrade CHANGELOG entry follows the file's order
-
-- `append_changelog` appended at the end of every CHANGELOG, so newest-first files needed the entry moved to the top by hand on every refresh (skill-smc,
-  skill-cambium, and four more in today's run). `changelog_is_newest_first` now reads the dates in the `##` headings (`YYYYMMDD_hhmm`, `YYYY-MM-DD`, or a
-  date inside a version heading) and compares the first two that differ; `place_changelog_entry` puts the entry above the first dated section and first in
-  `## Contents` for newest-first files, and appends (last in Contents) otherwise, including when the order cannot be told.
-- Six new self-tests (29 in all). On the committed CHANGELOGs of the twelve projects in today's run, the detected order matches the hand judgement for each.

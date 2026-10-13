@@ -13,6 +13,7 @@ Last rotated: 20261010_1801
 
 ## Contents
 
+- [20261013_2225 — Teleport Machine ID facts, site topology, two 2026-10-13 entries recorded (v0.3.7 -> v0.3.8)](#20261013_2225--teleport-machine-id-facts-site-topology-two-2026-10-13-entries-recorded-v037---v038)
 - [20261010_1805 — Governed-file standard: recipes, records rotated (v0.3.6 -> v0.3.7)](#20261010_1805--governed-file-standard-recipes-records-rotated-v036---v037)
 - [20261009_1806 — Sidekick and the low-touch hook: confirmed and unplugged releases a unit (v0.3.5 -> v0.3.6)](#20261009_1806--sidekick-and-the-low-touch-hook-confirmed-and-unplugged-releases-a-unit-v035---v036)
 - [20261009_1714 — What else the low-touch hook logs record: state and secret, events, the SM by its own MAC, preferred_ssid names the AP (v0.3.4 -> v0.3.5)](#20261009_1714--what-else-the-low-touch-hook-logs-record-state-and-secret-events-the-sm-by-its-own-mac-preferred_ssid-names-the-ap-v034---v035)
@@ -25,6 +26,19 @@ Last rotated: 20261010_1801
 - [20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)](#20260930_1202--bot-cw-dashboard-wipes-pin-marks-on-koonibbaamata-a-zero-eclipse_mark-count-is-not-normal-v0173---v0174)
 - [20260911_1120 — bungardi-smc01 confirmed as third broken site; Eclipse "PIN Last Issued" admin report documented as a third corroborating evidence source (v0.1.35 -> v0.1.36)](#20260911_1120--bungardi-smc01-confirmed-as-third-broken-site-eclipse-pin-last-issued-admin-report-documented-as-a-third-corroborating-evidence-source-v0135---v0136)
 - [20260626_1845 — v0.1.3: project-coherence checklist + references/10-13 content update](#20260626_1845--v013-project-coherence-checklist--references10-13-content-update)
+
+## 20261013_2225 — Teleport Machine ID facts, site topology, two 2026-10-13 entries recorded (v0.3.7 -> v0.3.8)
+
+- **Teleport Machine ID (tbot)** (`references/03_communication-flows.md`, new section under inbound access; from unified-network-controller apn-unc01,
+  2026-10-12/13): use the bot output as the ACL reader, never root (OpenSSH refuses the 0660-looking key for its owner); an IAM-joined bot re-joins at every
+  renewal, so its token needs a far-future `expires` (Teleport 12.4.34 `lib/auth/bot.go:183` reads expiry unconditionally); tctl 12.4.34 has no `bots update`
+  (rm, add, clear state); an IAM token's `aws_arn` wildcard is a trust boundary.
+- **Site topology** (`references/01_overview.md`, operator 2026-10-13, USER_STATED): no loop or ring except Kalumburu; a few routers cabled at towers.
+- **Recorded late** (written 2026-10-13, no entry then): `references/13_known-issues.md` uplink ids are role labels whose meaning inverted, and how UNC records
+  the drift (commit 2e12b87); `scripts/tplink-switch.sh` takes an optional `TSH_IDENTITY` (Machine ID bot identity) for hosts without a tsh login (791d787).
+- **Central chassis port plan from an as-built** (`references/16_tplink-site-switches.md`, new section; old-looma rcp low-touch, v1.0 drawing): SWP n =
+  gigabitEthernet 1/0/n; SMC, sectors via injectors, AP1, V5000, Starlink Direct NTDs on SMC VLANs enp2s0.521-526, nbn NTD enp2s0.621, tower router on
+  Switch2; two uplinks straight on SMC ports; each row checked against Nautobot cables and LLDP.
 
 ## 20261010_1805 — Governed-file standard: recipes, records rotated (v0.3.6 -> v0.3.7)
 

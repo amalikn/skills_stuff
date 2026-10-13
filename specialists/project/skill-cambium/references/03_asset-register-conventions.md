@@ -96,6 +96,28 @@ derived by a rule the operator supplied that is **not written anywhere in either
 numbers, all in the 1001–1099 range — re-verify before trusting it at a different `rcp` site or outside that range. The R195P's Force 300 backhaul radio *does* get an IP in the register, under the
 same `EXTnnnn`-named entry, in the "Tower + AP" sheet — don't double-count it as a second, IP-less device.
 
+## As-Built Sets — Site Drawings Beside the Register (2026-10-13)
+
+A deployed site may also have an **as-built set** from its build contractor, besides the asset register: first read at old-looma (FNCW - Looma
+Community, rcp low-touch, version 1.0, drawings 2026-08-03, map 2026-09-01; kept verbatim in unified-network-controller `docs/sites/old-looma/as-built/`).
+
+- **What a set holds:** a central chassis connectivity drawing (SMC, switches, UPS, uplinks with their SMC interfaces, switch ports to the tower radios and
+  APs), one connection drawing per tower (radios, mast heights, injectors, power, the tower's XV2 and any wired router), each as draw.io plus PDF; a KMZ
+  (one folder per tower: point, sector and omni coverage shapes, each XV2 and how it is fed, the cnWave and PtP links; carries no date); a coverage map
+  (InDesign plus PDF: lot, hardware, power, mast height and AP number per tower, and a hardware glossary). Towers without a drawing (old-looma T6-T8) are on
+  the map and KMZ only.
+- **Labels:** XV2s are numbered `APn` per tower (the map and KMZ, AP1 at the central tower); 3000L sectors and omnis carry `WifiBridge_n` (with a direction
+  for sectors, e.g. "SouthEast"); `F25` is the ePMP Force 300-25 (SM or PtP), `V5000/V3000/V2000` the cnWave units; `CIE`/`CEE` are central internal
+  (SMC plus switches) and external equipment; `SWP n` is a switch port; routers are drawn `R195P IAP (Ext XXXX)` with the extension left blank.
+- **Read the drawings as text** with unified-network-controller `just wc::asbuilt-read <folder>` (`wc-local/scripts/site_onboarding/asbuilt_read.py`): draw.io
+  pages are deflated base64 XML with HTML labels. A drawing's port labels (`SWP n`) are separate boxes beside the line, so which port a link uses is read from
+  the PDF by eye, not from the XML.
+- **Known flaws in v1.0:** tower drawings are copied from each other (old-looma T2's drawing carries T3's XV2 and omni labels; the map, KMZ and discovery
+  agree on T2 = AP3); a hardware list can name a unit discovery never finds (T4's F25); the KMZ and the map can disagree on mast height and power (T4).
+  Cross-check every drawing against the map and discovery; a corrected set arrives as a new version beside the old one, never over it.
+- **How it is used:** a deployed site's as-built is the reference for drift against what discovery finds; unified-network-controller holds it per site as
+  `docs/sites/<site>/as-built-reference.yaml` (format `unc-as-built/1`) and shows it in Nautobot's As built panel.
+
 ## Extraction Gotchas
 
 Two real bugs caught while building `cambium-swap/inventory/device-inventory.csv`, worth checking for at any future site:

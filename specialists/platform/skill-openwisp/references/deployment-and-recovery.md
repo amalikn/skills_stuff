@@ -242,3 +242,6 @@ unpacks `properties` and `geometry` on input (rest_framework_gis `to_internal_va
 Source: `$P/openwisp_controller/geo/utils.py` (`get_geo_urls`); `$P/openwisp_controller/geo/api/views.py:45-52` (`DevicePermission`), `:107-152` (`DeviceCoordinatesView`);
 `$P/openwisp_controller/geo/settings.py`; `$P/openwisp_controller/geo/api/serializers.py:135-140`; `$P/rest_framework_gis/serializers.py:196-221`; `$P/django_loci/base/models.py:17-155`;
 `$P/django_loci/storage.py`; `$P/django_loci/settings.py:5-20`.
+
+> **Learned 2026-10-13** · docker-openwisp 26.09 · VERIFIED_SECONDARY · Source: observed on a docker-openwisp stack after its containers were restarted out of order · Falsifier: openwisp-nginx following the API container to its new address without a restart
+> openwisp-nginx resolves the API container's address once, when nginx starts. Restart the API (or the whole set with `docker start`) and it can come back on another address while nginx keeps proxying to the old one: the dashboard answers 502 with the API healthy. Restart `openwisp-nginx` after the API, always, and read "502 with the API up" as this. Separately, after a host stop the OpenWISP Redis may answer MISCONF while it reloads a large snapshot; wait and retry the worker ping before declaring workers dead.

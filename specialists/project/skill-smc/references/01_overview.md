@@ -278,3 +278,7 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
 - **Who knows what.** Gravolin — level 2 engineer, primary on low touch. Germain — NOC, Cambium and the Wi-Fi dashboard. Brendan — the field team. Mark — NOC, desktop RF study for each
   deployment. Rob — electronics, new hardware and radio; main user of the UPS and battery data.
 
+- **Site topology (operator, 13 Oct 2026, `USER_STATED`).** No community has a loop or ring topology except Kalumburu: each site is a tree from its SMC
+  (switches, tower radios, subscribers, then each subscriber's router). A drawn loop anywhere else is a discovery error, typically a unit behind a
+  subscriber radio whose MAC a switch learnt on the port towards the tower. A few routers are cabled at towers rather than behind an SM (no Option 82
+  Remote ID; old-looma 3 of 66). unified-network-controller enforces this in its topology rules (`correlate.py`, `topology_push.py`).

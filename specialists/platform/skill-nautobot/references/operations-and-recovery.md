@@ -286,3 +286,9 @@ Source: `nautobot/core/urls.py:95`, `nautobot/core/views/__init__.py:290-295`, `
 
 > **Learned 2026-10-05** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: nautobot/core/settings.py line 177 reads NAUTOBOT_METRICS_AUTHENTICATED into METRICS_AUTHENTICATED · Falsifier: a 3.2.x release that reads a METRICS_AUTHENTICATION setting
 > The metrics authentication setting is `METRICS_AUTHENTICATED` (env `NAUTOBOT_METRICS_AUTHENTICATED`); the bundled Prometheus guide calls it `METRICS_AUTHENTICATION`, which has no effect. Check the setting name against settings.py.
+
+> **Learned 2026-10-13** · Nautobot 3.2.3 · VERIFIED_SECONDARY · Source: observed on a 3.2.3 Docker deployment (the image's `nautobot_config.py` has the banner lines commented out; the core settings it imports read the variables) · Falsifier: setting `NAUTOBOT_BANNER_TOP` in the container environment changes no page
+> An instance banner needs no config edit: `NAUTOBOT_BANNER_TOP` and `NAUTOBOT_BANNER_LOGIN` in the container environment are read by Nautobot's core settings (the image's own config only comments them), and show on every page and the login page. Useful to tell a production instance from a test stack at a glance.
+
+> **Learned 2026-10-13** · Nautobot 3.2.3 · VERIFIED_SECONDARY · Source: observed on a t3.xlarge (burstable, about half busy) · Falsifier: `nautobot-server health_check` returning within 10 s on a comparably loaded host
+> `nautobot-server health_check` can take about 17 s on a modest burstable host, longer than the image's own healthcheck timeout (10 s), so Docker marks a working worker or scheduler unhealthy. Give the healthcheck a longer timeout (45 s, 60 s interval, 120 s start period worked) rather than chasing a fault that is not there.

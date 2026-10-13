@@ -355,6 +355,11 @@ empty. A reader must unescape net-snmp's `\"` before parsing. unified-network-co
 `installer_record`). cnWave controllers' topology also carries sites with a configured position; at old-looma the tower sites lie within 30 m of the
 3000L GPS fixes.
 
+**Sidekick commissioning leaves no installer record (2026-10-12).** wangkatjungka was installed non-low-touch but commissioned and aligned with
+Sidekick: all 43 of its SMs answer a blank `snmpSystemDescription` (SNMP read, no login), as do mowanjum's and kalumburu's. Only the low-touch
+provisioning hook writes the JSON record; a Sidekick-commissioned site gives no lot or position from sysDescr, so placement there comes from live
+tables (SM registration, bridge tables) or the as-built. Source: unified-network-controller CHANGELOG 20261012_0019.
+
 **Who writes it: Sidekick** (read from the sidekick repository, 2026-10-09). APN's handheld Raspberry Pi installer logs into the ePMP unit by
 SSH at 169.254.1.1 (from 169.254.1.17), configures it over SSH and SNMP, and writes the record as JSON into `snmpSystemDescription`
 `.1.3.6.1.4.1.17713.21.3.5.4.0`. Field formats: `align` = `"<RSSI dBm>/<chain 0 to chain 1 difference dB>"` (P2MP aligned at manual TX power

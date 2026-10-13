@@ -36,3 +36,9 @@ the assertion in prose.
 
 **Agents may be unable to write `AGENTS.md`.** Some host agents treat agent-instruction files as protected and require explicit user approval. If a write is refused, do not route around it through a
 shell, a script or a direct file edit — leave the edit pending, report it, and let the checker keep failing on it. A green check bought by an unapproved edit is worse than a red one.
+
+**The Markdown wrap and contents hook runs on Write and Edit only, and reflows the whole file** (learned 2026-10-10/11 in unified-network-controller). An edit
+made from a shell (sed, a heredoc, a script) does not trigger it, so the file is left as written: wrap it yourself and run the checker. An Edit or Write
+triggers it, and it reflows every paragraph of the file, not just the one touched: it has rewrapped tables, split a path across table rows (failing the
+split-path check) and joined two managed-block marker comments onto one line. For a governed file with tables or managed blocks, edit through a script with
+a whitespace-tolerant match and an abort guard, then run the checker; restore from git if a hook pass damaged it.

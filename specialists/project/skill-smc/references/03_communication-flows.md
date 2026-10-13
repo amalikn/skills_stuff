@@ -37,6 +37,23 @@ SMC box — port 22 (SSH)
     └── Prometheus central (scrape via federation tunnel)
 ```
 
+### Teleport Machine ID (tbot) for unattended access (learned 2026-10-12/13 on apn-unc01, unified-network-controller)
+
+A host that reads SMCs without a person's `tsh login` runs one Machine ID bot per cluster (`tbot@apn`, `tbot@nbn`), joined by AWS IAM delegated join. Four
+behaviours cost time the first time (source: unified-network-controller `infra/apn-unc01/tbot/readme.md` and its CHANGELOG 20261013_1221, 20261012_1822):
+
+- **Use the bot output as a non-root reader.** The output directory is root-owned and the reader user gets it through POSIX ACLs, so `ls` shows the key as
+  0660 (the group bits are the ACL mask). OpenSSH checks a key's mode only when the key belongs to the user running ssh: root gets "UNPROTECTED PRIVATE KEY
+  FILE", the ACL reader does not. Run `ssh -F /opt/tbot-<c>/ssh_config root@<smc>.teleport.<domain>` as that user (e.g. `ubuntu`), never as root.
+- **An IAM-joined bot re-joins with its token at every renewal**, so a token with an expiry stops the bot when it lapses ("token expired or not found",
+  restart loop). Teleport 12.4.34 reads a token's expiry unconditionally in `tctl bots add --token` (`lib/auth/bot.go:183`), so such tokens get an expiry by
+  necessity; 13.4.24 reads it only when present (`bot.go:170-173`). Give a bot's IAM token `expires: "9999-12-31T23:59:59Z"`. VERIFIED_PRIMARY (Teleport source).
+- **tctl 12.4.34 has `bots ls`, `add` and `rm` only, no `bots update`**: changing a bot's roles means `bots rm` then `bots add`, then clearing the host's bot
+  state directory before restarting tbot, or it loads the old identity and fails on a `*.teleport.cluster.local` certificate.
+- **An IAM token's `aws_arn` pattern is a trust boundary.** A token allowing `<role>/*` lets any instance carrying that role's profile join as that bot; a
+  second host given the same profile could join as another service's bot (the `apn-dashboard-iam` token allows `teleport-ec2-bot-role-apn/*`). Give each
+  host its own role and token.
+
 ### Backdoor SSH Access (raw reverse tunnel, bypasses Teleport's node agent)
 
 Use this when `tsh ssh <site>` hangs, refuses to connect, or the box is registered in Teleport (shows up in `tsh ls`) but is unresponsive over it — the Teleport agent on the SMC has stalled, but the

@@ -14,6 +14,9 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261013 Learned 2026-10-13 (reusable_candidate patterns from UNC, operator: write the out-of-the-box ideas back): `references/capability-extension.md` gains four: a host runner for Jobs that need reach the worker lacks; workflow state from Job log groupings with approval-held gate Jobs; a reference beside inventory as a Config Context with drift computed at read time; Django-free panel modules previewed in both themes.
+- 20261013 Learned 2026-10-13 (backlog from UNC 2026-10-12/13, verified update, recorded late after a write-back audit): `references/operations-and-recovery.md` (banner variables; health_check slower than the image timeout), `references/app-development.md` (no hyphen in app labels; overlayfs refuses a rename across layers), `references/data-model.md` (row colour from cable status only at default colours; Bridge field only on members; Circuit description 255; find Interfaces by name, not label).
+- 20261013 Learned (UNC onboarding flow, verified update): `references/apps-jobs-validation.md` gains two Learned 2026-10-13 entries (a Job stopping at an approval by queuing a ScheduledJob; definitions, constraints and the shipped example; callable ChoiceVar, logger levels, JobButtonReceiver, time limits) and `references/api-and-writers.md` one (Cables by `location_id` are exact-location only; repeated device ids per query).
 - 20261012_1756 promoted from UNC (apn-unc01 deployment): `scripts/nautobot_web_login.py` and `just web_login`, a read-only check that a username and
   password open the web UI through the login form (CSRF, session cookie); offline tests in `tests/test_helpers.py`; smoke-run against apn-unc01 (LOGIN OK).
 - 20261010_1805 Workspace standard (operator, 2026-10-10; skill-ai-it "Governed files: headers, budgets, rotation and the checker's shape"): `justfile` gains
