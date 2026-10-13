@@ -30,8 +30,10 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   governed projects adopt at their next slurp; the per-project commands are in CHANGELOG `20261014_1002`. Then shrink each baseline by fixing
   README quick starts, dated ROADMAP phases and README status sections.
 - [ ] **Projects with AI_NAVIGATION.md but no version stamp** — skill-smc, skill-cambium, agent-stack, aws-to-local, equinix-cost-cutting,
-  voip-analysis, smc-file-writing-analysis, career, of-si, islam, llm-m2max, japan/tracks/jdm: run `just nav_upgrade` (dry run first) so audit and
-  refresh can see them.
+  voip-analysis, smc-file-writing-analysis, career, of-si, islam, llm-m2max, japan/tracks/jdm, of-si/skill-workplace-strategy. Not by
+  `nav_upgrade`: the 2026-10-14 canary on agent-stack re-serialised context-map.yaml (comments lost), refused AGENTS.md (pre-2026-09-23 block
+  with project content) and failed `just check`; reverted. 11 of 13 have a hand-written AI_NAVIGATION.md the upgrader only proposes over.
+  Each needs `/skill-ai-it refresh` by an agent, one project at a time, merging the proposed block by hand.
 
 ## Archcore
 

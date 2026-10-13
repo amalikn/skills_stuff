@@ -29,3 +29,4 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 - [rotation-audit-baseline.txt](rotation-audit-baseline.txt) record lines edited on purpose, accepted by `audit_rotations.py` (with the reason).
 - [changelog-20261014_1018.md](changelog-20261014_1018.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
 - [changelog-20261014_1020.md](changelog-20261014_1020.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
+- [changelog-20261014_1027.md](changelog-20261014_1027.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.

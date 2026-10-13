@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261014_1020
+Last rotated: 20261014_1027
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted](#20261014_1027--stamping-unstamped-projects-canary-on-agent-stack-failed-and-was-reverted)
 - [20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean](#20261014_1020--coherence-pass-architecture-key-decisions-sibling-skills-sweep-clean)
 - [20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes](#20261014_1018--staleness-audit-upgrader-header-derived-index-counts-links-indexes)
 - [20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)](#20261014_1006--graphify-confirmed-disabled-slurp-write-backs-token-budget-rule-roles_fleet)
@@ -28,8 +29,16 @@ Last rotated: 20261014_1020
 - [20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp](#20261012_0952--upgrader-changelog-heading-uses-the-yyyymmdd_hhmm-stamp)
 - [20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix](#20261011_0525--section-level-markdown-reads-outline-section-and-adopter-attribute-fix)
 - [20261010_2346 — move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry](#20261010_2346--move_sections-link-repointing-and-shared-pointer-budget-tidy-step-add_changelog_entry)
-- [20261010_2332 — Reference reads measured (not split); tracker pointer no longer duplicates](#20261010_2332--reference-reads-measured-not-split-tracker-pointer-no-longer-duplicates)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted
+
+- **Stamping unstamped projects: canary failed, reverted** (operator, 2026-10-14: "yes" to stamping the 13 projects whose AI_NAVIGATION.md
+  has no stamp). Dry run: 2 would update in place, 11 have hand-written AI_NAVIGATION.md and get only a `.proposed-navigation-block`. Canary
+  `nav_upgrade` on agent-stack re-serialised context-map.yaml (comments and quoting lost), refused AGENTS.md (block stamped before 2026-09-23
+  holds project content), left 2 `nav_validate` failures and 3 new freshness findings; reverted with `git checkout` (tree was clean), check green.
+  Stamping goes through `/skill-ai-it refresh` per project instead (ROADMAP). Finding for the upgrader: the update_rules merge rewrites the whole
+  context-map.yaml on a project with an older schema.
 
 ## 20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean
 
@@ -167,14 +176,6 @@ Last rotated: 20261014_1020
 - Free-text recipes (`changelog-entry`, `move-sections`) take quoted positional arguments (`[positional-arguments]`, `"$@"`): `{{ARGS}}` is
   substituted unquoted, and a title containing semicolons ran its fragments as shell commands (harmless here; caught on the first real use). The adopter
   rewrites the unsafe form in adopted projects.
-
-## 20261010_2332 — Reference reads measured (not split); tracker pointer no longer duplicates
-
-- Reference reads measured (scripts/agent_usage.py, 30 days, 3,068 sessions): files-context-map, files-ai-navigation and script-task-inventory each had 0 real
-  reads (they date from today; skill-ai-it itself was invoked 13 times). Not split; re-measure on 2026-11-10 (SCRATCHPAD open item), split if read in more than 5 sessions.
-- rotate_records.py: the "Older open items are tracked in" pointer was treated as an open item on the next run, moved to the tracker and written again,
-  so pointers piled up (2 to 3 copies in 7 SCRATCHPADs, one stray in cambium-swap's tracker). It now stays in place, and the presence check compares
-  lines. Test added, negative-tested; this SCRATCHPAD deduplicated. The other projects' duplicates are left for the operator's per-project run.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 
