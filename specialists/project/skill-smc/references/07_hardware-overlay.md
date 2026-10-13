@@ -951,3 +951,8 @@ reboot (section 8). Operator decision 2026-10-08: no SNMP agent on the Pis for n
 **Bootloader.** All four run bootloader EEPROM 2023-01-11 (VL805 `000138c0`). Upstream's default channel is 2026-09-23. Ubuntu's `rpi-eeprom` package carries only the 2022-01-25 image, older than what
 the boxes run, so `rpi-eeprom-update` wrongly reports "up to date"; compare `vcgencmd bootloader_version` with the manifest instead. Read the 2026-09-23 release notes (MFG-version check) before any
 update.
+
+**A/B boot support (2026-10-14, `VERIFIED_PRIMARY`):** the 2023-01-11 bootloader already supports partition-level A/B through `autoboot.txt` with
+`tryboot_a_b=1` (Pi 4 EEPROM beta 2022-10-18, default 2022-12-01): a one-shot `reboot "0 tryboot"` boots the other slot once and any later reboot returns
+to the committed one. Whether it honours `autoboot.txt` on a GPT card is not yet tested. Source and design: unified-network-controller
+`docs/reports/smc-and-site-network/pi-immutable-image-research-20261014_0850.md`.

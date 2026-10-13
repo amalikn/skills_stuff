@@ -13,6 +13,7 @@ Last rotated: 20261010_1801
 
 ## Contents
 
+- [20261014_0900 — Pi bootloader already supports tryboot A/B (v0.3.9 -> v0.3.10)](#20261014_0900--pi-bootloader-already-supports-tryboot-ab-v039---v0310)
 - [20261013_2352 — umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)](#20261013_2352--umoona-vlan621-dark-again-uplink-check-cost-v038---v039)
 - [20261013_2225 — Teleport Machine ID facts, site topology, two 2026-10-13 entries recorded (v0.3.7 -> v0.3.8)](#20261013_2225--teleport-machine-id-facts-site-topology-two-2026-10-13-entries-recorded-v037---v038)
 - [20261010_1805 — Governed-file standard: recipes, records rotated (v0.3.6 -> v0.3.7)](#20261010_1805--governed-file-standard-recipes-records-rotated-v036---v037)
@@ -27,6 +28,11 @@ Last rotated: 20261010_1801
 - [20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)](#20260930_1202--bot-cw-dashboard-wipes-pin-marks-on-koonibbaamata-a-zero-eclipse_mark-count-is-not-normal-v0173---v0174)
 - [20260911_1120 — bungardi-smc01 confirmed as third broken site; Eclipse "PIN Last Issued" admin report documented as a third corroborating evidence source (v0.1.35 -> v0.1.36)](#20260911_1120--bungardi-smc01-confirmed-as-third-broken-site-eclipse-pin-last-issued-admin-report-documented-as-a-third-corroborating-evidence-source-v0135---v0136)
 - [20260626_1845 — v0.1.3: project-coherence checklist + references/10-13 content update](#20260626_1845--v013-project-coherence-checklist--references10-13-content-update)
+
+## 20261014_0900 — Pi bootloader already supports tryboot A/B (v0.3.9 -> v0.3.10)
+
+- **Pi 4 bootloader A/B** (`references/07_hardware-overlay.md`, `VERIFIED_PRIMARY` from Raspberry Pi's release notes and docs): the fleet's 2023-01-11
+  EEPROM supports `autoboot.txt` with `tryboot_a_b=1` (default since 2022-12-01); GPT untested. From unified-network-controller's read-only Pi image research.
 
 ## 20261013_2352 — umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)
 
