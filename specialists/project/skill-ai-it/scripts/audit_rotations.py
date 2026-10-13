@@ -5,6 +5,10 @@ entry was split (its first line moved, its wrapped tail left live). Stdlib plus 
 Why (2026-10-10): an early rotate_records.py treated prose under a Contents list as navigation and dropped 424 lines in one project, while
 its own verification passed. This independent audit compares each record with its pre-rotation version in git, so a rotation bug cannot hide.
 
+A line edited on purpose after rotation (a rename, a rewritten KEEP entry) reads as lost. Accept it in the project's
+docs/history/rotation-audit-baseline.txt, one `<record>\t<line>` per row, `#` comments for the reason (added 2026-10-13); the audit then
+counts it as baselined, and a baseline row no longer lost is reported as stale so the file shrinks.
+
 Usage:
     python scripts/audit_rotations.py ROOT [ROOT ...]        # every project with docs/history/readme.md under the roots
 Exit: 0 when nothing is missing or split, 1 when a record lost lines or split an entry, 2 on bad arguments.
@@ -48,6 +52,35 @@ def text_only(line: str) -> str:
         The line with every `](target)` replaced by `]()`.
     """
     return re.sub(r"\]\([^)]*\)", "]()", line)
+
+
+BASELINE = "rotation-audit-baseline.txt"
+
+
+def baseline(project: pathlib.Path) -> dict[str, set[str]]:
+    """The lines a project has accepted as edited on purpose, per record.
+
+    Args:
+        project: the project folder.
+
+    Returns:
+        {record name: lines with link targets blanked}; empty when the project has no baseline file.
+
+    Raises:
+        ValueError: a non-comment row without a tab between record and line.
+    """
+    path = project / "docs" / "history" / BASELINE
+    out: dict[str, set[str]] = {}
+    if not path.exists():
+        return out
+    for n, row in enumerate(path.read_text().split("\n"), 1):
+        if not row.strip() or row.startswith("#"):
+            continue
+        if "\t" not in row:
+            raise ValueError(f"{path}:{n}: expected <record>\\t<line>")
+        name, line = row.split("\t", 1)
+        out.setdefault(name, set()).add(text_only(line))
+    return out
 
 
 def audit(project: pathlib.Path, name: str) -> list[str] | None:
@@ -125,6 +158,14 @@ def main(argv: list[str] | None = None) -> int:
                 missing = audit(project, name)
                 if missing is None:
                     continue
+                accepted = baseline(project).get(name, set())
+                kept = [m for m in missing if text_only(m) not in accepted]
+                stale = accepted - {text_only(m) for m in missing}
+                if stale:
+                    print(f"NOTE {project}/{name}: {len(stale)} baseline row(s) no longer lost; remove them from docs/history/{BASELINE}")
+                if len(kept) < len(missing):
+                    print(f"NOTE {project}/{name}: {len(missing) - len(kept)} line(s) baselined")
+                missing = kept
                 bad += bool(missing)
                 split = [m for m in missing if m.startswith("SPLIT: ")]
                 lost = [m for m in missing if not m.startswith("SPLIT: ")]

@@ -31,5 +31,27 @@ class SplitTest(unittest.TestCase):
         self.assertEqual(ar.split_tails(BEFORE, {"## Next actions", ""}, moved), [])
 
 
+class BaselineTest(unittest.TestCase):
+    """baseline() reads accepted lines per record and rejects a malformed row."""
+
+    def test_rows_comments_and_link_blanking(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            hist = Path(tmp) / "docs" / "history"
+            hist.mkdir(parents=True)
+            (hist / ar.BASELINE).write_text("# renamed wc_ to unc_\nCHANGELOG.md\t- see [x](a.md) now\n\nSCRATCHPAD.md\t- kept\n")
+            self.assertEqual(ar.baseline(Path(tmp)), {"CHANGELOG.md": {"- see [x]() now"}, "SCRATCHPAD.md": {"- kept"}})
+
+    def test_missing_file_and_bad_row(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(ar.baseline(Path(tmp)), {})
+            hist = Path(tmp) / "docs" / "history"
+            hist.mkdir(parents=True)
+            (hist / ar.BASELINE).write_text("CHANGELOG.md no tab\n")
+            with self.assertRaises(ValueError):
+                ar.baseline(Path(tmp))
+
+
 if __name__ == "__main__":
     unittest.main()
