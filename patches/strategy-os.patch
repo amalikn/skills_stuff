@@ -1,0 +1,118 @@
+diff --git a/.claude/skills/gap-computing-ledger/SKILL.md b/.claude/skills/gap-computing-ledger/SKILL.md
+index f19bd5f..7f087a7 100644
+--- a/.claude/skills/gap-computing-ledger/SKILL.md
++++ b/.claude/skills/gap-computing-ledger/SKILL.md
+@@ -1,10 +1,6 @@
+ ---
+ name: gap-computing-ledger
+-description: >
+-  Computes desired-current state deltas, quantifies component scores, and
+-  produces a ranked gap ledger. Use when evaluating hypothesis register
+-  state to determine where the largest gaps exist between desired and
+-  current conditions.
++description: "Compute desired-vs-current state deltas into a ranked gap ledger."
+ license: Complete terms in LICENSE.txt
+ serves: gap-definer
+ domain: gap-analysis
+diff --git a/.claude/skills/gap-enforcing-decisions/SKILL.md b/.claude/skills/gap-enforcing-decisions/SKILL.md
+index 34c3bf9..d92d0f0 100644
+--- a/.claude/skills/gap-enforcing-decisions/SKILL.md
++++ b/.claude/skills/gap-enforcing-decisions/SKILL.md
+@@ -1,10 +1,6 @@
+ ---
+ name: gap-enforcing-decisions
+-description: >
+-  Applies the 10 decision rules, reclassifies confidence and support
+-  states, sets readiness gates, and generates execution queue entries
+-  and governor escalations. Use when gap computation and destruction
+-  are complete and decisions must be enforced.
++description: "Apply the 10 decision rules, set readiness gates, generate execution queue."
+ license: Complete terms in LICENSE.txt
+ serves: gap-definer
+ domain: decision-enforcement
+diff --git a/.claude/skills/gap-running-destruction/SKILL.md b/.claude/skills/gap-running-destruction/SKILL.md
+index f3ef471..3b50d38 100644
+--- a/.claude/skills/gap-running-destruction/SKILL.md
++++ b/.claude/skills/gap-running-destruction/SKILL.md
+@@ -1,10 +1,6 @@
+ ---
+ name: gap-running-destruction
+-description: >
+-  Adversarially attacks the current register state through pre-mortem,
+-  red-team response, constraint inversion, evidence concentration
+-  analysis, and kill signal audit. Use when a gap pass requires
+-  adversarial validation of hypotheses and proposals.
++description: "Adversarially attack register state: pre-mortem, red-team, constraint inversion."
+ license: Complete terms in LICENSE.txt
+ serves: gap-definer
+ domain: adversarial-analysis
+diff --git a/.claude/skills/stg-analyzing-competition/SKILL.md b/.claude/skills/stg-analyzing-competition/SKILL.md
+index c7a2088..a9804de 100644
+--- a/.claude/skills/stg-analyzing-competition/SKILL.md
++++ b/.claude/skills/stg-analyzing-competition/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: stg-analyzing-competition
+-description: Maps competitive landscape, identifies positioning gaps, and assesses competitor response capability for red-team input. Use when researching competition during BUILD phase 1 or feeding destruction phase.
++description: "Map competitive landscape and positioning gaps for BUILD phase 1/red-team."
+ serves: strategist
+ domain: competitive-analysis
+ affects: problem-hypothesis, unit-economics-hypothesis, solution-design-section
+diff --git a/.claude/skills/stg-designing-channels/SKILL.md b/.claude/skills/stg-designing-channels/SKILL.md
+index 9a2faf2..5f77495 100644
+--- a/.claude/skills/stg-designing-channels/SKILL.md
++++ b/.claude/skills/stg-designing-channels/SKILL.md
+@@ -1,11 +1,6 @@
+ ---
+ name: stg-designing-channels
+-description: >
+-  Selects GTM acquisition channels, estimates per-channel CAC, designs
+-  channel mix with investment allocation, and sequences channels by
+-  phase. Constrained by ACV-channel viability from pricing and growth
+-  architecture from solutions. Produces channel strategy for unit
+-  economics hypothesis.
++description: "Select GTM channels, estimate CAC, design channel mix and investment sequence."
+ serves: strategist
+ domain: channel-strategy
+ affects: unit-economics-hypothesis
+diff --git a/.claude/skills/stg-designing-gtm/SKILL.md b/.claude/skills/stg-designing-gtm/SKILL.md
+index ee7a2f2..ce37dab 100644
+--- a/.claude/skills/stg-designing-gtm/SKILL.md
++++ b/.claude/skills/stg-designing-gtm/SKILL.md
+@@ -1,11 +1,6 @@
+ ---
+ name: stg-designing-gtm
+-description: >
+-  Designs the complete GTM plan for the hypothesis register. Sequences
+-  channels by phase with gate criteria, builds messaging framework from
+-  value proposition, sets target KPIs per phase, derives operational
+-  constraints from all hypotheses, and defines success/kill criteria.
+-  Use when constructing register section 7 (GTM Plan) during BUILD.
++description: "Designs GTM plan (channels, messaging, KPIs) for register section 7, BUILD."
+ serves: strategist
+ domain: go-to-market-strategy
+ affects: gtm-plan-proposal
+diff --git a/.claude/skills/stg-extracting-insights/SKILL.md b/.claude/skills/stg-extracting-insights/SKILL.md
+index 6146ae5..490040c 100644
+--- a/.claude/skills/stg-extracting-insights/SKILL.md
++++ b/.claude/skills/stg-extracting-insights/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: stg-extracting-insights
+-description: Processes governor-provided expert sources into structured, tier-labeled insights that feed the hypothesis register as evidence. Use when governor provides a book, article, video, or podcast for processing.
++description: "Process expert sources (book/article/video) into tier-labeled register insights."
+ serves: strategist
+ domain: knowledge-extraction
+ affects: all-hypotheses
+diff --git a/.claude/skills/stg-scoring-problems/SKILL.md b/.claude/skills/stg-scoring-problems/SKILL.md
+index 1e016c2..c5ee6c9 100644
+--- a/.claude/skills/stg-scoring-problems/SKILL.md
++++ b/.claude/skills/stg-scoring-problems/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: stg-scoring-problems
+-description: Scores problem candidates using four-property framework (frequency, severity, breadth, alternatives' inadequacy) with compression-model elimination. Use when constructing problem hypothesis during BUILD phase 2.
++description: "Score problem candidates via frequency/severity/breadth/alternatives framework."
+ serves: strategist
+ domain: problem-validation
+ affects: problem-hypothesis
