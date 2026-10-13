@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261013_2230
+Last rotated: 20261013_2241
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261013_2241 — Pitfall: enforce skill invocation with a hook, not a rule](#20261013_2241--pitfall-enforce-skill-invocation-with-a-hook-not-a-rule)
 - [20261013_2230 — Pitfall: the wrap hook runs on Write and Edit and reflows the whole file](#20261013_2230--pitfall-the-wrap-hook-runs-on-write-and-edit-and-reflows-the-whole-file)
 - [20261012_0958 — check_outside_blocks.py; upgrader Python floor; adopter and the outline trial](#20261012_0958--check_outside_blockspy-upgrader-python-floor-adopter-and-the-outline-trial)
 - [20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp](#20261012_0952--upgrader-changelog-heading-uses-the-yyyymmdd_hhmm-stamp)
@@ -28,7 +29,11 @@ Last rotated: 20261013_2230
 - [20261010_1833 — Rotation made safe and complete; adopter; headers for every script and config](#20261010_1833--rotation-made-safe-and-complete-adopter-headers-for-every-script-and-config)
 - [20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates](#20261010_1805--governed-file-tools-rotation-by-bullet-ticked-items-resolved-checker-standard-slurp-rotates)
 - [20261010_1830 — feat: doc_freshness.py; Graphify disabled](#20261010_1830--feat-doc_freshnesspy-graphify-disabled)
-- [20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project](#20261008_2224--feat-docstring_ratchetpy-the-global-docstring-standard-as-a-ratchet-for-any-project)
+
+## 20261013_2241 — Pitfall: enforce skill invocation with a hook, not a rule
+
+- `references/pitfalls.md`: enforce "invoke skill X before Y work" with a PreToolUse hook (transcript Skill calls, owned-path map, Bash only when it writes,
+  fail open, off switch); a project `.claude/settings.json` created mid-session took effect at once. From unified-network-controller 2026-10-13.
 
 ## 20261013_2230 — Pitfall: the wrap hook runs on Write and Edit and reflows the whole file
 
@@ -185,13 +190,3 @@ Applied to: AI_NAVIGATION.md, AGENTS.md, SCRATCHPAD.md
   `upgrade_navigation_control_layer.py` say not to regenerate it. Text kept for re-enabling. Measured cause: 0 graph queries in 30 days against
   thousands of rebuilds. The managed navigation block still names `graphify-out/` (changing it would put every governed project into drift); projects
   exempt those paths in `CONDITIONAL_PATHS`.
-
-## 20261008_2224 — feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project
-
-- Operator (2026-10-08, in unified-network-controller): "create the docstrings for the code whenever you are creating or updating a script",
-  "specify what are the arguments passed and what is returned", "make it as a standard for all the scripts". The standard is in the global policy
-  and governance `categories/naming-and-file-summary-guide.md` (Code docstrings).
-- `scripts/docstring_ratchet.py` (recipe `just docstrings`): per-file shortfalls (absent docstring, a parameter not under `Args:`, a returned value
-  without `Returns:`) against `scripts/docstring-baseline.json`; `--write-baseline` adopts the standard on a project with legacy code. Same rule as
-  unified-network-controller's `check_docstrings`; on that project it reports the same 1737 shortfalls in 132 files and exits 0.
-- Not yet applied to this pack's own scripts (129 shortfalls in 7 files); adopting it here is a separate change.

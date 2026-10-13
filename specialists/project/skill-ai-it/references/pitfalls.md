@@ -42,3 +42,11 @@ made from a shell (sed, a heredoc, a script) does not trigger it, so the file is
 triggers it, and it reflows every paragraph of the file, not just the one touched: it has rewrapped tables, split a path across table rows (failing the
 split-path check) and joined two managed-block marker comments onto one line. For a governed file with tables or managed blocks, edit through a script with
 a whitespace-tolerant match and an abort guard, then run the checker; restore from git if a hook pass damaged it.
+
+**A rule that says "invoke skill X before Y work" is not followed under load; enforce it with a hook** (learned 2026-10-13, unified-network-controller). An agent
+did platform work for hours without invoking the platform skills its AGENTS.md required, so no write-back happened. A PreToolUse hook in the project's
+`.claude/settings.json` (`scripts/agent_hooks/require_skill.py` there, map `scripts/registries/skill-domains.json`) reads the session transcript for Skill
+calls and refuses an Edit, Write or writing Bash command on a skill-owned path until the owner was invoked (exit 2, reason on stderr). Check Bash only when
+it names an owned path and writes, or reads get blocked; let the hook pass on its own errors, and give a session-level off switch. Observed: a project
+`.claude/settings.json` created mid-session took effect at once in Claude Code (the hook blocked the next matching call), with no restart.
+
