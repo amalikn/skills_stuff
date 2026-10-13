@@ -1081,6 +1081,9 @@ VERIFIED-OBSERVED 2026-10-08 over Teleport apn (20-mile, adjamarragu, areyonga, 
   private /30 behind a `bc:4a:56` gateway. Tool: unified-network-controller `wc-local/scripts/smc/uplink_provider.py`.
 - **Impact:** anything that takes the provider from the name (a `role: starlink` reader, a renderer) is wrong at these sites. Fix: in ansible-wifi
   (operator); until then, take the provider from the far side.
+- **In UNC (2026-10-13, operator: a description line, regarded as drift):** each uplink Circuit's description says its id is a role label
+  (internet = active, starlink = standby) and names the far-side provider; a label naming another carrier is tagged `uplink-label-drift` (umoona
+  `starlink01` = NBN Co). Nothing is renamed; `smc_uplink_circuits.py` `label_note()`.
 
 ## 2026-10-08 — finding which switch port an x86 SMC NIC is cabled to (INFO)
 
