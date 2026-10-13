@@ -1,3 +1,14 @@
+---
+Title: Audit: AI Navigation/Control Layer Support in skill-ai-it
+Category: audit
+Status: archived
+Authority: record
+Scope: Historical skill-ai-it working document, kept for provenance
+Last reviewed: 2026-05-29
+Summary: >-
+  Audit of navigation and control layer support in the package as of 2026-05-29; its gaps were closed by later work (see CHANGELOG history).
+---
+
 # Audit: AI Navigation/Control Layer Support in skill-ai-it
 
 **AUDIT DATE:** 2026-05-29

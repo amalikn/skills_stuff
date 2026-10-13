@@ -1,3 +1,14 @@
+---
+Title: Codex Prompt — Fix skill-ai-it CHANGELOG Governance Integration
+Category: prompt
+Status: archived
+Authority: record
+Scope: Historical skill-ai-it working document, kept for provenance
+Last reviewed: 2026-05-22
+Summary: >-
+  Prompt used with Codex to make CHANGELOG.md a first-class governance file; done, kept as a record.
+---
+
 # Codex Prompt — Fix skill-ai-it CHANGELOG Governance Integration
 
 Use this prompt in Codex from the skill root:

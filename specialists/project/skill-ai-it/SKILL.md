@@ -145,6 +145,7 @@ Every governed project runs `scripts/doc_freshness.py` from this skill (not a co
 
 ### Always-created files
 
+- Roles and loading tiers (always-read files small, detail on need, history on demand): [references/governed-file-roles.md](references/governed-file-roles.md); `just roles` (`scripts/role_check.py`, in `check`, baseline ratchet) enforces the mechanical part.
 - Read [references/files-readme-agents-claude.md](references/files-readme-agents-claude.md) before that work (moved verbatim from here): README.md; AGENTS.md; CLAUDE.md.
 
 - Read [references/files-records.md](references/files-records.md) before that work (moved verbatim from here): SCRATCHPAD.md; CHANGELOG.md; .markdownlint-cli2.jsonc.
@@ -155,7 +156,7 @@ The files in this section are created only when their specific detection conditi
 
 - Read [references/files-architecture-conventions-roadmap.md](references/files-architecture-conventions-roadmap.md) before that work (moved verbatim from here): ARCHITECTURE.md — create when: code,
   infrastructure, or design decisions are present, or user requests architecture documentation; CONVENTIONS.md — create when: code files present, naming patterns exist, or style/linting rules are
-  discoverable; ROADMAP.md — create when: active development, TODOs present, migration/phase structure, or incomplete features detected.
+  discoverable; ROADMAP.md — create when: active development, TODOs present, migration/phase structure, or incomplete features detected; SETUP.md — create when: setup outgrows README's quick start.
 
 - Read [references/files-ai-navigation.md](references/files-ai-navigation.md) before that work (moved verbatim from here): AI_NAVIGATION.md — create when: missing during `navigation-add`, requested
   explicitly, or project has more than one governance/context source.

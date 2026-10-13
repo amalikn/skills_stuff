@@ -1,3 +1,13 @@
+---
+Title: History
+Category: folder-index
+Status: current
+Authority: record
+Scope: docs/history/ rotated records
+Last reviewed: 2026-10-14
+Summary: Rotated records: CHANGELOG, SCRATCHPAD and ROADMAP entries moved out by their tools; read on need only.
+---
+
 # History
 
 Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within budget. Do not read these by default: search with `rotate_records.py --find` (`just history`) or print one entry with `--show <stamp>`.
@@ -11,3 +21,11 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 - [changelog-20261013_2230.md](changelog-20261013_2230.md) 1 entries from `CHANGELOG.md`, 2026-10-07 to 2026-10-07.
 - [changelog-20261013_2241.md](changelog-20261013_2241.md) 1 entries from `CHANGELOG.md`, 2026-10-08 to 2026-10-08.
 - [changelog-20261014_0931.md](changelog-20261014_0931.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
+- [roadmap-20261014_0942.md](roadmap-20261014_0942.md) 5 done items from `ROADMAP.md`, moved 20261014_0942.
+- [changelog-20261014_0943.md](changelog-20261014_0943.md) 2 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
+- [changelog-20261014_1003.md](changelog-20261014_1003.md) 2 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
+- [changelog-20261014_1009.md](changelog-20261014_1009.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
+- [scratchpad-20261014_1017.md](scratchpad-20261014_1017.md) 3 entries from `SCRATCHPAD.md`, 2026-05-22 to 2026-08-11.
+- [rotation-audit-baseline.txt](rotation-audit-baseline.txt) record lines edited on purpose, accepted by `audit_rotations.py` (with the reason).
+- [changelog-20261014_1018.md](changelog-20261014_1018.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
+- [changelog-20261014_1020.md](changelog-20261014_1020.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.

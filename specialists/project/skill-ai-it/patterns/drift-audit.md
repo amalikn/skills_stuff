@@ -1,8 +1,20 @@
+---
+Title: Drift Audit Pattern
+Category: pattern
+Status: current
+Authority: skill-module
+Scope: Manual audit of a target project's AI navigation and control layer
+Last reviewed: 2026-10-14
+Summary: >-
+  Checklist for whether agents can find and use the right project context: file presence, managed blocks, authority, companions, generated-output policy.
+---
+
 # Drift Audit Pattern — AI Navigation/Control Layer
 
 Use this pattern when auditing whether AI agents can find and use the correct project context.
 
-This pattern validates the four capabilities: AI navigation map, file relationship/dependency logic, agent coherence/compliance checks, and structured machine-readable context.
+This pattern validates the capabilities: AI navigation map, file relationship/dependency logic, agent coherence/compliance checks, and structured machine-readable context. The
+executable checks (`just check`) are a separate gate the project runs; this is the checklist the agent runs.
 
 ---
 
@@ -90,7 +102,7 @@ For each change type in `context-map.yaml update_rules`, verify all listed compa
 - [ ] Repomix output (`.ai-context/`) is labeled as generated support, NOT canonical truth
 - [ ] No generated output is promoted into `.archcore/`, AGENTS.md, or other authoritative files without explicit authorization
 - [ ] Regeneration commands are documented:
-  - `graphify update .` for Graphify
+  - `graphify update .` for Graphify, only when re-enabled (`GRAPHIFY_ENABLED=1`; disabled 2026-10-10)
   - `repomix --config repomix.config.json` for Repomix
 - [ ] Generated outputs are excluded from AI_NAVIGATION.md authority-order source-of-truth layers
 
@@ -114,7 +126,7 @@ For each change type in `context-map.yaml update_rules`, verify all listed compa
 ## 9. Context Compaction Recovery
 
 - [ ] Context recovery procedure exists in AI_NAVIGATION.md
-- [ ] Procedure includes: read AI_NAVIGATION → load .archcore/ → regenerate graphify-out/ → regenerate .ai-context/ → verify SCRATCHPAD → verify CHANGELOG → verify companion consistency
+- [ ] Procedure includes: read AI_NAVIGATION → load .archcore/ → (graphify-out/ only when Graphify is re-enabled) → regenerate .ai-context/ → verify SCRATCHPAD → verify CHANGELOG → verify companion consistency
 - [ ] Recovery steps are idempotent (safe to run multiple times)
 - [ ] Label convention exists: `Context recovered via skill-ai-it context-recovery procedure`
 
@@ -163,6 +175,19 @@ For each change type in `context-map.yaml update_rules`, verify all listed compa
 - [ ] Routing categories in AI_NAVIGATION.md match routing sections in context-map.yaml
 - [ ] Update rules in AI_NAVIGATION.md match update_rules in context-map.yaml
 - [ ] Generated context entries listed in AI_NAVIGATION.md match generated_context_policy in context-map.yaml
+
+---
+
+## 14. File Role Compliance
+
+Roles and the full check: [references/governed-file-roles.md](../references/governed-file-roles.md). `just roles` runs the mechanical rules; the
+lines below it cannot decide (reworded duplicates, contradictions, rules in ARCHITECTURE) stay manual.
+
+- [ ] Each root governance file holds only what its role allows; no section is restated from another root file
+- [ ] README has a quick start or a SETUP.md link and does not carry architecture detail
+- [ ] ROADMAP has a dated current phase, open `- [ ]` items and no completed-phase narrative
+- [ ] No root file describes a disabled tool as active or a layout missing current folders
+- [ ] Every root markdown file has front matter (CLAUDE.md excepted)
 
 ---
 

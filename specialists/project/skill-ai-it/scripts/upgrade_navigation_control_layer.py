@@ -626,7 +626,11 @@ def upgrade_agents_md(path, dry_run, report_data):
     block = build_agents_block()
 
     if not os.path.exists(path):
-        text = "Title: Agent Policy\nCategory: agent-governance-guide\nStatus: current\n\n# AGENTS.md\n\n" + block + "\n"
+        # Fenced front matter (2026-10-14): the unfenced form failed role_check.py `front-matter` the moment the upgrader created the file.
+        today = datetime.now().date().isoformat()
+        text = ("---\nTitle: Agent Policy\nCategory: agent-governance-guide\nStatus: current\nAuthority: local-supplement\n"
+                f"Scope: Rules every agent follows in {os.path.basename(os.path.abspath(root))}\nLast reviewed: {today}\n"
+                "Summary: Rules every agent follows in this project; the navigation block is managed by skill-ai-it.\n---\n\n# AGENTS.md\n\n" + block + "\n")
         write_or_propose(path, root, text, dry_run, report_data, "navigation")
         return
 

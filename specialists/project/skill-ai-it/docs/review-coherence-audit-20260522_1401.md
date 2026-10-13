@@ -1,3 +1,14 @@
+---
+Title: skill-ai-it — Coherence Audit Feedback
+Category: review
+Status: archived
+Authority: record
+Scope: Historical skill-ai-it working document, kept for provenance
+Last reviewed: 2026-05-22
+Summary: >-
+  File-by-file coherence review of 2026-05-22: functionally solid but structurally drifted; its fixes landed the same week.
+---
+
 # skill-ai-it — Coherence Audit Feedback
 
 Date: 2026-05-22

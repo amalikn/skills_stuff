@@ -1,3 +1,14 @@
+---
+Title: Archcore Routing Pattern
+Category: pattern
+Status: current
+Authority: skill-module
+Scope: Using .archcore/ as durable truth in target projects: init, source mapping, promotion candidates
+Last reviewed: 2026-09-18
+Summary: >-
+  How skill-ai-it initializes Archcore, maps governance sources to Archcore document types and extracts promotion candidates; only promote writes content.
+---
+
 # Archcore Routing Pattern
 
 Use Archcore as structured durable project truth when `.archcore/` exists.

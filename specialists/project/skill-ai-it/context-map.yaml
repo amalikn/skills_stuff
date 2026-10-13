@@ -52,6 +52,9 @@ authority_order:
 - path: README.md
   type: human_overview
   authority: medium
+- path: references/governed-file-roles.md
+  type: governed_file_roles
+  authority: high
 - path: CLAUDE.md
   type: claude_wrapper
   authority: medium
@@ -107,6 +110,7 @@ routing:
   package_docs:
     description: Changes to skill package documentation and maintenance rules.
     read:
+    - references/governed-file-roles.md
     - README.md
     - ARCHITECTURE.md
     - CHANGELOG.md
@@ -234,6 +238,11 @@ audit_checks:
   task_runner_consistency:
     description: Verify cataloged tasks in scripts/README.md match actual script files.
     action: report_drift
+  file_role_compliance:
+    description: >-
+      Each root governance file holds only what its role allows (references/governed-file-roles.md, Role check); no section restated
+      across root files; front matter present. Mechanical part is scripts/role_check.py (just roles, in just check).
+    action: report_violation
   no_stale_references:
     description: Detect references to removed tools, old task runners, or superseded
       governance assumptions.
@@ -258,7 +267,7 @@ context_recovery:
   procedure:
   - Read AI_NAVIGATION.md first for navigation map.
   - Load .archcore/ context if present (durable truth).
-  - 'Regenerate graphify-out/ with: graphify update .'
+  - 'Graphify is disabled (operator, 2026-10-10): do not regenerate graphify-out/.'
   - 'Regenerate .ai-context/ with: repomix --config repomix.config.json'
   - Verify SCRATCHPAD.md has current state. If empty, populate from memory-keeper
     / mcp-project-context.

@@ -1,23 +1,37 @@
 ---
-Title: skill-ai-it reference: Conditional files: ARCHITECTURE, CONVENTIONS, ROADMAP
+Title: skill-ai-it reference: Conditional files: ARCHITECTURE, CONVENTIONS, ROADMAP, SETUP
 Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-10-10
+Last reviewed: 2026-10-14
 Summary: >-
-  Conditional files: ARCHITECTURE, CONVENTIONS, ROADMAP; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
+  Conditional files: ARCHITECTURE, CONVENTIONS, ROADMAP and (2026-10-14) SETUP; first moved verbatim from SKILL.md so SKILL.md stays an
+  orchestration file within budget. Roles: governed-file-roles.md.
 ---
 
-# skill-ai-it reference: Conditional files: ARCHITECTURE, CONVENTIONS, ROADMAP
+# skill-ai-it reference: Conditional files: ARCHITECTURE, CONVENTIONS, ROADMAP, SETUP
 
-Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget for files loaded whole.
+Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget for files loaded whole. What each file is for, and what keeps it
+there: [governed-file-roles.md](governed-file-roles.md). These are on-need files: an agent reads them when the task touches design, style or
+setup, so they may be longer than the files loaded whole, but each opens with a front-matter Summary so it can be judged unopened (`just docs`).
 
 #### ARCHITECTURE.md — create when: code, infrastructure, or design decisions are present, or user requests architecture documentation
 
 Preferred source: derive from project inventory and content reads. No external template — write from analysis.
 
 ```markdown
+---
+Title: Architecture — <Project Name>
+Category: architecture
+Status: current
+Authority: canonical
+Scope: How <Project Name> works: components, data flow, boundaries
+Last reviewed: <YYYY-MM-DD>
+Summary: <One or two sentences: the shape of the system and its source of truth.>
+Depends on: <comma-separated paths this describes, e.g. src/, config/; a commit to one flags this file for review (`just stale`)>
+---
+
 # Architecture — <Project Name>
 
 ## Overview
@@ -30,16 +44,37 @@ Preferred source: derive from project inventory and content reads. No external t
 |---|---|
 | <name> | <purpose> |
 
+## Data flow and source of truth
+
+<Where data enters, where it is authoritative, what is derived from it. A diagram in a code block is fine.>
+
+## Boundaries
+
+<What this project owns and what it does not; the interfaces at the edge.>
+
 ## Key decisions
 
-- <Decision or constraint that shapes the architecture.>
+- <Decision or constraint that shapes the architecture>, because <reason>. (Link the ADR in `.archcore/adr/` when one exists.)
 ```
+
+Keeps out: setup steps (SETUP.md), rules for agents (AGENTS.md), dated history (CHANGELOG.md). A superseded design moves to `docs/archive/`,
+linked in one line, rather than staying as a section.
 
 #### CONVENTIONS.md — create when: code files present, naming patterns exist, or style/linting rules are discoverable
 
 Preferred source: derive from existing code and naming conventions. No external template.
 
 ```markdown
+---
+Title: Conventions — <Project Name>
+Category: conventions
+Status: current
+Authority: canonical
+Scope: Naming, style and anti-patterns in <Project Name>
+Last reviewed: <YYYY-MM-DD>
+Summary: <One sentence: the conventions that are not obvious from the code.>
+---
+
 # Conventions — <Project Name>
 
 ## Naming
@@ -83,6 +118,9 @@ register or `.archcore/adr/`). An agent reads it whole, so it has a budget like 
 Title: Roadmap
 Category: roadmap
 Status: current
+Authority: canonical
+Scope: Current phase and open milestones of <Project Name>
+Last reviewed: <YYYY-MM-DD>
 Summary: Current phase and open milestones; done items move to docs/history (just rotate).
 Kind: roadmap
 Budget: 200 lines, 25 KB
@@ -102,4 +140,49 @@ Archive: docs/history/ (roadmap-*.md, `just rotate`)
 ## Completed
 
 Done items move to `docs/history/roadmap-*.md` (`just rotate`; find one with `just history <term>`).
+```
+
+#### SETUP.md — create when: setup needs more than a short README quick start plus `just bootstrap` (several prerequisites, pinned versions, environment variables, services to start)
+
+Preferred source: the justfile's `bootstrap` recipe, `.mise.toml`, `requirements.txt` / `package.json`, `.env.example`. Never copy a secret value:
+name the variable and where its value comes from. When setup fits in a few lines, put them under README's **Quick start** and do not create this
+file. README links it from **Quick start**. Recipe renames reach it (`managed-blocks.md`).
+
+```markdown
+---
+Title: Setup — <Project Name>
+Category: setup
+Status: current
+Authority: canonical
+Scope: Installing and running <Project Name>
+Last reviewed: <YYYY-MM-DD>
+Summary: <One sentence: what a working setup needs.>
+Depends on: justfile, .mise.toml
+---
+
+# Setup — <Project Name>
+
+## Prerequisites
+
+| Tool | Version | Pinned in |
+|---|---|---|
+| <tool> | <version> | <.mise.toml / requirements.txt> |
+
+## Bootstrap
+
+`just bootstrap`, then `just check`.
+
+## Environment
+
+| Variable | Purpose | Source of the value |
+|---|---|---|
+| <NAME> | <what it configures> | <vault entry, .env.example; never the value> |
+
+## First run
+
+<The command that proves it works, and what success looks like.>
+
+## Troubleshooting
+
+- <Symptom> — <fix>
 ```

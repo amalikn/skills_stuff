@@ -21,9 +21,23 @@ Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget
 
 #### README.md
 
-Create if missing. If it exists, add a **Governance pointers** section and update **Folder index** only.
+Create if missing. If it exists: add missing front matter (`adopt_governed_files.py` does it at every slurp), a **Quick start** when there is none,
+the **Governance pointers** section, and update **Folder index**. A status, history or architecture section is reported (`just roles`), not moved
+without the operator: it belongs in ROADMAP, CHANGELOG, SCRATCHPAD or ARCHITECTURE. README is read whole, so it stays within 200 lines and links to
+detail instead of holding it (role: [governed-file-roles.md](governed-file-roles.md)).
 
 ```markdown
+---
+Title: <Project Name>
+Category: readme
+Status: current
+Authority: canonical
+Scope: Front door of <project folder>
+Last reviewed: <YYYY-MM-DD>
+Summary: <One or two sentences: what the project is for and who uses it.>
+Budget: 200 lines, 25 KB
+---
+
 # <Project Name>
 
 <One-sentence purpose.>
@@ -32,10 +46,15 @@ Create if missing. If it exists, add a **Governance pointers** section and updat
 
 <2–3 sentences on what this project area is for and why it exists.>
 
+## Quick start
+
+<The few lines a newcomer runs first: `just bootstrap`, `just --list`, the main command. When setup takes more than a few steps, one line
+linking [SETUP.md](SETUP.md) instead.>
+
 ## Context
 
-<Optional. Fill only when meaningful background exists — e.g. engagement history,
-external parties, triggering event. Omit section if nothing useful to say.>
+<Optional. Background a newcomer needs: why the project exists, external parties, triggering event. Not status or history: those live in
+ROADMAP, CHANGELOG and SCRATCHPAD. Omit the section if there is nothing useful to say.>
 
 ## Folder index
 
@@ -45,11 +64,11 @@ external parties, triggering event. Omit section if nothing useful to say.>
 
 ## Governance pointers
 
-- Local agent guidance: [AGENTS.md](../AGENTS.md)
+- Local agent guidance: [AGENTS.md](AGENTS.md)
 - Parent area guidance: [../AGENTS.md](../AGENTS.md)
-- AI navigation entrypoint: [AI_NAVIGATION.md](../AI_NAVIGATION.md)
-- Machine-readable context map: [context-map.yaml](../context-map.yaml)
-- Project change/governance history: [CHANGELOG.md](../CHANGELOG.md)
+- AI navigation entrypoint: [AI_NAVIGATION.md](AI_NAVIGATION.md)
+- Machine-readable context map: [context-map.yaml](context-map.yaml)
+- Change history: [CHANGELOG.md](CHANGELOG.md); current phase and plan: [ROADMAP.md](ROADMAP.md) when present
 - Canonical governance root: [/Volumes/Data/_ai/governance/README.md](/Volumes/Data/_ai/governance/README.md)
 ```
 
@@ -57,9 +76,12 @@ external parties, triggering event. Omit section if nothing useful to say.>
 
 Create if missing. If it exists, add missing sections only — do not overwrite existing rules.
 
-```markdown
-@<absolute-or-relative path to nearest parent AGENTS.md>
+Front matter comes first, fenced; the parent import follows it (an unfenced `Title:` block under the import is the legacy form, fenced by
+`adopt_governed_files.py`). AGENTS.md is loaded whole by every agent: imperative rules and pointers only, within 200 lines; reasoning goes to
+ARCHITECTURE.md, area rules to a file read before that work.
 
+```markdown
+---
 Title: <Project Name> Agent Policy
 Category: agent-governance-guide
 Status: current
@@ -67,6 +89,9 @@ Authority: local-supplement
 Scope: <inferred scope — one line>
 Last reviewed: <YYYY-MM-DD>
 Summary: <One-line summary of what this policy governs.>
+---
+
+@<absolute-or-relative path to nearest parent AGENTS.md>
 
 # AGENTS.md
 
@@ -81,35 +106,7 @@ Summary: <One-line summary of what this policy governs.>
 - Follow naming convention: `<slug>-YYYYMMDD_hhmm.md` for time-bound notes.
 - Keep [README.md](../README.md) current when adding subfolders or significant documents.
 
-<!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-10-10-compact-v1 -->
-
-## AI navigation and context preflight
-
-Before answering, planning, editing, or creating files in this project:
-
-1. Read [AI_NAVIGATION.md](../AI_NAVIGATION.md).
-2. Read [context-map.yaml](../context-map.yaml).
-3. Read recent entries in [CHANGELOG.md](../CHANGELOG.md).
-4. Load relevant `.archcore/` context if present.
-5. Load relevant `memory-bank/` files if present.
-6. Consult generated context when available:
-   - `graphify-out/GRAPH_REPORT.md`
-   - `.ai-context/governance-pack.md`
-7. Before making durable changes, inspect companion-file rules in `context-map.yaml update_rules`. Update all companion files when changing source files.
-8. If sources conflict, stop and report the conflict instead of guessing.
-9. Do not treat `SCRATCHPAD.md` as durable truth unless content is marked `KEEP` or promoted into `.archcore/`, ROADMAP, or memory-bank.
-10. Do not treat Graphify (`graphify-out/`) or Repomix (`.ai-context/`) output as canonical truth. These are generated support artifacts only, always rebuildable.
-11. Before running scripts or automation, inspect `justfile`, `scripts/README.md`, `Taskfile.yml`, `Makefile`, and `package.json` when present.
-    Prefer `just --list` and `just <task>` when a `justfile` exists.
-12. Treat uncataloged scripts as `unknown` safety until inspected.
-13. When adding, modifying, or removing scripts or tasks, update `scripts/README.md` to reflect the change — purpose, inputs, outputs, safety label, and idempotency.
-14. Run defined audit/check commands before completing work. Where `scripts/check_governance.py` exists, that includes it — and when it fails, fix the project, not the check.
-    Adding a new artifact class, generated output, or a constant restated across files requires extending its registries in the same pass.
-15. After making changes, update `CHANGELOG.md` for all durable governance/navigation changes.
-16. Preserve user-authored content outside managed sections. Do not rewrite custom project notes.
-
-<!-- END MANAGED: skill-ai-it:navigation -->
+<Insert the navigation managed block here verbatim from `templates/AGENTS-navigation-block.md` (never from a copy: copies drift).>
 
 <Insert the governance-checks managed block here verbatim from `templates/AGENTS-governance-checks-block.md`, with `<RUNNER CHECK COMMAND>` replaced by this project's actual command (e.g. `just check`).>
 
@@ -127,8 +124,8 @@ Always create as thin wrapper. Never duplicate AGENTS.md content here.
 @AGENTS.md
 
 ## Claude-specific additions
-# No project-specific Claude additions at this time.
-# Add here only if this project needs Claude Code behaviour that differs from global policy.
+
+No project-specific Claude additions at this time. Add here only behaviour that differs for Claude Code.
 ```
 
 Repeat-run rule: if `CLAUDE.md` already contains `@AGENTS.md`, do not rewrite it. Only append Claude-specific additions if explicitly needed.

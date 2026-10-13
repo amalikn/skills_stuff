@@ -167,7 +167,8 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
             "context-map.yaml",
             "AGENTS.md",
             "AI_NAVIGATION.md",
-            "CHANGELOG.md",
+            # CHANGELOG.md removed 2026-10-14: a rotating log states the stamp only in the entry that changed it, and rotation moves that
+            # entry to docs/history/; requiring it there enforced history ("Do not enforce history", AGENTS.md).
             "patterns/navigation-control-automation.md",
             "patterns/script-task-audit-checklist.md",
         ),
@@ -324,6 +325,22 @@ def check_count_claims() -> None:
                     counted()
                     if int(claim.group(1)) != actual:
                         fail("count", f"{surface} claims {claim.group(1)} {noun}; {folder}/{glob} holds {actual}")
+
+
+def check_reference_index_lines() -> None:
+    """Each `[name.md](name.md) (N lines)` in references/readme.md states the file's real line count.
+
+    Found stale by the 2026-10-14 staleness audit (pitfalls.md listed at 38 lines, held 55): an authored count drifts, so it is derived here.
+    """
+    text = read("references/readme.md")
+    if text is None:
+        return
+    for m in re.finditer(r"\[([\w.-]+\.md)\]\(\1\) \((\d+) lines\)", text):
+        counted()
+        body = read(f"references/{m.group(1)}")
+        actual = len(body.splitlines()) if body is not None else -1
+        if actual != int(m.group(2)):
+            fail("count", f"references/readme.md says {m.group(1)} has {m.group(2)} lines; it has {actual}")
 
 
 def check_catalog_coverage() -> None:
@@ -687,6 +704,7 @@ CHECKS = (
     check_referenced_paths,
     check_index_links,
     check_count_claims,
+    check_reference_index_lines,
     check_catalog_coverage,
     check_template_catalog,
     check_task_recipes,

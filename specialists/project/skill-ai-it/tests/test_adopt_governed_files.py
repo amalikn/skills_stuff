@@ -122,6 +122,53 @@ class AdoptTest(unittest.TestCase):
         self.assertIn('[positional-arguments]\noutline *ARGS:', fixed)
         self.assertEqual(fixed.count("[positional-arguments]\n[positional-arguments]"), 0)
 
+    def test_root_files_get_front_matter_and_roles_gate(self):
+        """2026-10-14: 12 of 13 governed projects had root files without `---` front matter, AGENTS.md's legacy block unfenced under an import."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "justfile").write_text('py := "python3"\n\ncheck:\n    @{{py}} scripts/check_governance.py\n')
+            (root / "AGENTS.md").write_text("@../AGENTS.md\n\nTitle: P Agent Policy\nCategory: agent-governance-guide\nSummary: Rules.\n\n# AGENTS.md\n\n- rule\n")
+            (root / "README.md").write_text("# Proj\n\nWhat this project does, in one paragraph.\n\n## Folder index\n\n- docs/\n")
+            self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
+            agents = (root / "AGENTS.md").read_text()
+            self.assertTrue(agents.startswith("---\nTitle: P Agent Policy\n"))
+            self.assertIn("\n---\n\n@../AGENTS.md\n\n# AGENTS.md", agents)
+            readme = (root / "README.md").read_text()
+            self.assertIn("Summary: What this project does, in one paragraph.", readme)
+            self.assertIn("Budget: 200 lines, 25 KB", readme)
+            self.assertIn("Review by:", readme)
+            self.assertIn("role_check.py", (root / "justfile").read_text())
+            self.assertTrue((root / "scripts" / "role-check-baseline.json").is_file())
+            first = {p: (root / p).read_text() for p in ("AGENTS.md", "README.md", "justfile")}
+            self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
+            self.assertEqual(first, {p: (root / p).read_text() for p in first})
+
+    def test_header_growth_does_not_fail_the_budget_ratchet(self):
+        """cambium-swap, 2026-10-14: fencing an over-budget AGENTS.md added two lines and failed `just check` until adoption re-recorded its size."""
+        import json
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init", "-q", tmp], check=True)
+            (root / "justfile").write_text('py := "python3"\n\ncheck:\n    @echo c\n')
+            (root / "AGENTS.md").write_text("@../AGENTS.md\n\nTitle: P\nSummary: Rules.\n\n# AGENTS.md\n\n" + "- rule\n" * 210)
+            subprocess.run(["git", "-C", tmp, "add", "-A"], check=True)
+            freshness = [sys.executable, str(SCRIPT.parent / "doc_freshness.py"), "--project-root", tmp]
+            subprocess.run(freshness + ["--write-baseline"], check=True, capture_output=True)
+            self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
+            self.assertTrue((root / "AGENTS.md").read_text().startswith("---\n"))
+            self.assertEqual(subprocess.run(freshness + ["--check"], capture_output=True).returncode, 0)
+            self.assertIn("over-budget:AGENTS.md", json.loads((root / "scripts" / "doc-freshness-baseline.json").read_text()))
+
+    def test_prose_key_lines_are_not_a_legacy_header(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "SETUP.md").write_text("Note: read this first.\n\n# Setup\n\nInstall the tools.\n")
+            adopt.fix_header(root, "SETUP.md")
+            text = (root / "SETUP.md").read_text()
+            self.assertIn("\n---\n\nNote: read this first.\n", text)
+            self.assertIn("Title: Setup", text)
+
 
 if __name__ == "__main__":
     unittest.main()

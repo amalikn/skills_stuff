@@ -140,7 +140,7 @@ Two prompts that catch this class:
 | Component | Check | Action |
 |---|---|---|
 | **Repomix** (`repomix.config.json` exists, CLI available) | Regenerate `.ai-context/governance-pack.md` | `repomix --config repomix.config.json` |
-| **Graphify** (CLI available) | Regenerate navigation graph | `graphify update .` |
+| **Graphify** | Disabled (operator, 2026-10-10): do not regenerate `graphify-out/` | Only if re-enabled: `GRAPHIFY_ENABLED=1`, then `graphify update .` |
 
 ---
 

@@ -8,6 +8,8 @@ section, then a hand-written script) was done by hand each time. This plans and,
 2. For an over-budget SCRATCHPAD: `normalise_records.py` (headings so dated paragraphs rotate), then for both records `rotate_records.py`.
 3. Still over: move whole sections that are not working state (anything but Contents, Current state, Open items, Next actions, Recent decisions,
    Session history, Memory pointers), largest first, verbatim to `docs/<record>-reference-<stamp>.md` with `move_sections.py`, until it fits.
+3b. ROADMAP.md, when present: `roadmap_trim.py` moves done items older than 7 days to docs/history (2026-10-14: slurp runs this script, not
+   `just rotate`, so without this step ROADMAP was never trimmed at close).
 4. Audit with `audit_rotations.py` (nothing lost, nothing split), then run the project's `just check`.
 5. Report each file that is still over budget, with the section that holds it. AGENTS.md, CLAUDE.md, AI_NAVIGATION.md and SKILL.md are only
    reported, with suggested `move-sections` commands for reference-like sections: what is a rule needs a reader.
@@ -292,6 +294,8 @@ def main(argv: list[str] | None = None) -> int:
             print("\n".join(report))
             if still:
                 unfinished.append(name)
+    if (root / "ROADMAP.md").is_file():
+        print(run(["roadmap_trim.py", "--project-root", str(root)] + (["--apply"] if args.apply else []))[1])
     for name in REPORT_ONLY:
         p = root / name
         if p.is_file() and over(size(p)):

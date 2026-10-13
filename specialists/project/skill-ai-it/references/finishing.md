@@ -71,6 +71,7 @@ After creating/updating files in the target folder:
 - [ ] All `@` import paths in AGENTS.md resolve to real files
 - [ ] The project's justfile runs `doc_freshness.py --check` in `check` and has a `stale` recipe; a baseline exists when findings predate adoption
 - [ ] CLAUDE.md contains only the `@AGENTS.md` import line + additions section
+- [ ] Every root file passes the role check in [governed-file-roles.md](governed-file-roles.md): `just roles` shows no finding outside the baseline, and the manual items (holds only what its role allows, nothing contradicted) were read
 - [ ] README.md Folder index links resolve to real subfolders
 - [ ] Parent README/AGENTS updated if they exist
 - [ ] If `archcore` CLI is available and the run mode allowed changes, `.archcore/` exists or the initialization failure is reported

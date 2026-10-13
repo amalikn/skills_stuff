@@ -23,34 +23,39 @@ Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget
 
 ### File creation/update policy
 
-| File                           | Bootstrap                                            | Navigation-add                      | Refresh                                                 | Audit        |
-| ------------------------------ | ---------------------------------------------------: | ----------------------------------: | ------------------------------------------------------: | -----------: |
-| `README.md`                    | create/update                                        | update pointers                     | update index/pointers only                              | check        |
-| `AGENTS.md`                    | create/update                                        | add navigation block                | refresh managed block only                              | check        |
-| `CLAUDE.md`                    | create/update                                        | ensure wrapper                      | ensure wrapper                                          | check        |
-| `SCRATCHPAD.md`                | create/update                                        | update memory pointers              | append/protect KEEP                                     | check        |
-| `CHANGELOG.md`                 | create/update                                        | append navigation addition          | append refresh summary                                  | check        |
-| `.archcore/`                   | initialize if CLI available                          | initialize if CLI available         | initialize if CLI available                             | check        |
-| Graphify / `graphify-out/`     | disabled (2026-10-10)                                | disabled (2026-10-10)               | disabled (2026-10-10)                                   | check        |
-| `repomix.config.json`          | initialize if CLI available                          | initialize if CLI available         | run to refresh context pack                             | check        |
-| `.markdownlint-cli2.jsonc`     | create unless a markdown lint config already exists  | create unless a markdown lint       | create unless a markdown lint config already exists     | check        |
-|                                |                                                      |   config already exists             |                                                         |              |
-| `AI_NAVIGATION.md`             | create if useful                                     | create                              | update managed sections only                            | check        |
-| `context-map.yaml`             | create if useful                                     | create                              | write `.proposed` if risky                              | check        |
-| `scripts/README.md`            | create if scripts/tasks exist                        | add pointer if scripts/tasks exist  | create from template if scripts/tasks exist and file    | check        |
-|                                |                                                      |                                     |   missing; update managed blocks if exists              |              |
-| `justfile`                     | create from template if no canonical runner exists   | no unless needed                    | propose only if drift/conflict                          | check        |
-|                                |   and scripts/automation present                     |                                     |                                                         |              |
-| `scripts/check_governance.py`  | create from template, tuned to inferred invariants   | add if governance surfaces exist    | **create from template if missing**; if present, extend | run it,      |
-|                                |                                                      |                                     |   registries for new artifacts — never narrow an        |   report     |
-|                                |                                                      |                                     |   existing check                                        |   failures   |
-|                                |                                                      |                                     |                                                         |   and        |
-|                                |                                                      |                                     |                                                         |   coverage   |
-|                                |                                                      |                                     |                                                         |   gaps       |
-| `scripts/context_preflight.sh` | explicit request only                                | explicit request only               | audit/propose only                                      | check        |
-| `ARCHITECTURE.md`              | conditional                                          | no unless needed                    | update pointers only                                    | check        |
-| `CONVENTIONS.md`               | conditional                                          | no unless needed                    | update pointers only                                    | check        |
-| `ROADMAP.md`                   | conditional                                          | no unless needed                    | update progress only                                    | check        |
+| File                           | Bootstrap                                  | Navigation-add               | Refresh                                                                  | Audit        |
+| ------------------------------ | -----------------------------------------: | ---------------------------: | -----------------------------------------------------------------------: | -----------: |
+| `README.md`                    | create/update                              | update pointers              | add missing front matter, quick start, pointers; update index; report    | check, roles |
+|                                |                                            |                              |   status/history sections                                                |              |
+| `AGENTS.md`                    | create/update                              | add navigation block         | refresh managed block only                                               | check        |
+| `CLAUDE.md`                    | create/update                              | ensure wrapper               | ensure wrapper                                                           | check        |
+| `SCRATCHPAD.md`                | create/update                              | update memory pointers       | append; rotate; protect the few KEEP items                               | check        |
+| `ARCHITECTURE.md`,             | create when detected                       | no                           | add missing front matter (adopt); report role breaches (`just roles`)    | check, roles |
+|   `CONVENTIONS.md`,            |                                            |                              |                                                                          |              |
+|   `SETUP.md`, `ROADMAP.md`     |                                            |                              |                                                                          |              |
+| `CHANGELOG.md`                 | create/update                              | append navigation addition   | append refresh summary                                                   | check        |
+| `.archcore/`                   | initialize if CLI available                | initialize if CLI available  | initialize if CLI available                                              | check        |
+| Graphify / `graphify-out/`     | disabled (2026-10-10)                      | disabled (2026-10-10)        | disabled (2026-10-10)                                                    | check        |
+| `repomix.config.json`          | initialize if CLI available                | initialize if CLI available  | run to refresh context pack                                              | check        |
+| `.markdownlint-cli2.jsonc`     | create unless a markdown lint config       | create unless a markdown     | create unless a markdown lint config already exists                      | check        |
+|                                |   already exists                           |   lint config already exists |                                                                          |              |
+| `AI_NAVIGATION.md`             | create if useful                           | create                       | update managed sections only                                             | check        |
+| `context-map.yaml`             | create if useful                           | create                       | write `.proposed` if risky                                               | check        |
+| `scripts/README.md`            | create if scripts/tasks exist              | add pointer if               | create from template if scripts/tasks exist and file missing; update     | check        |
+|                                |                                            |   scripts/tasks exist        |   managed blocks if exists                                               |              |
+| `justfile`                     | create from template if no canonical       | no unless needed             | propose only if drift/conflict                                           | check        |
+|                                |   runner exists and                        |                              |                                                                          |              |
+|                                |   scripts/automation present               |                              |                                                                          |              |
+| `scripts/check_governance.py`  | create from template, tuned to             | add if governance            | **create from template if missing**; if present, extend registries for new | run it,      |
+|                                |   inferred invariants                      |   surfaces exist             |   artifacts — never narrow an existing check                             |   report     |
+|                                |                                            |                              |                                                                          |   failures   |
+|                                |                                            |                              |                                                                          |   and        |
+|                                |                                            |                              |                                                                          |   coverage   |
+|                                |                                            |                              |                                                                          |   gaps       |
+| `scripts/context_preflight.sh` | explicit request only                      | explicit request only        | audit/propose only                                                       | check        |
+| `ARCHITECTURE.md`              | conditional                                | no unless needed             | update pointers only                                                     | check        |
+| `CONVENTIONS.md`               | conditional                                | no unless needed             | update pointers only                                                     | check        |
+| `ROADMAP.md`                   | conditional                                | no unless needed             | update progress only                                                     | check        |
 
 ### Markdown quality rules
 

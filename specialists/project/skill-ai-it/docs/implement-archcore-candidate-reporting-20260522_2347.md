@@ -1,3 +1,14 @@
+---
+Title: Implementation Plan: Archcore Promotion Candidate Reporting
+Category: plan-record
+Status: archived
+Authority: record
+Scope: Historical skill-ai-it working document, kept for provenance
+Last reviewed: 2026-05-22
+Summary: >-
+  Implementation plan for promotion candidate reporting, revised after Codex review; implemented in Phase 4, 2026-05-23.
+---
+
 # Implementation Plan: Archcore Promotion Candidate Reporting
 
 > Revised after Codex review of initial plan. 7 corrections applied — see end of document.

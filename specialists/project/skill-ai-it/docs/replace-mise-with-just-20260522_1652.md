@@ -1,3 +1,14 @@
+---
+Title: skill-ai-it — Replace mise with Just
+Category: prompt
+Status: archived
+Authority: record
+Scope: Historical skill-ai-it working document, kept for provenance
+Last reviewed: 2026-05-22
+Summary: >-
+  Prompt for replacing the mise-first task inventory with a just-preferred, runner-neutral one; done in Phase 3.
+---
+
 # skill-ai-it — Replace mise with Just
 
 

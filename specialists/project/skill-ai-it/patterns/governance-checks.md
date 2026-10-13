@@ -1,3 +1,4 @@
+---
 Title: Governance Coherence Checks
 Category: pattern
 Status: current
@@ -8,6 +9,7 @@ Review by: 2027-01-10
 Summary: >-
   How to infer, generate and extend an executable coherence checker, and (since 2026-10-10) how it is structured so it grows by small registered
   checks in family modules within size and runtime budgets instead of into one file.
+---
 
 # Governance Coherence Checks
 

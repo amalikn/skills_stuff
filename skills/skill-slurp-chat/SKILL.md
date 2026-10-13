@@ -124,6 +124,8 @@ one day (2026-10-13: platform work done without invoking skill-nautobot; a skill
 4. **Committed.** `git status` in the skills repo for every engaged skill. A write-back that is not committed is not done: commit it (and push
    it when the session commits and pushes) as part of the write-back; the operator's "commit and push is single-repo scoped" limits the request,
    not the skill contracts. Run the skill's own tests first.
+4b. **Tools too** (operator, 2026-10-14). A tool from `tools_stuff` used this session (all-scraper first: the fallback for agent-blocked
+   fetches) owes its problems back the same way: fixed in the tool, or an open item in its ROADMAP per its AGENTS.md "Feedback write-back".
 5. **Backlog.** Also check the window since the last slurp of each earlier session in the same project (its change log), not only this one:
    facts left behind earlier are caught here.
 
@@ -150,7 +152,8 @@ own update rules to each (`context-map.yaml` `update_rules`, AGENTS.md "update X
 rules name, rendered views). A changed file whose companion was not updated is a gap, not a detail.
 
 Before that check, run skill-ai-it `scripts/adopt_governed_files.py --project-root <project> --apply` (operator, 2026-10-10): it adds any part
-of the governed-file standard the project lacks (recipes, freshness in `check`, records front matter, baseline) and does nothing when adopted.
+of the governed-file standard the project lacks (recipes, freshness and file roles in `check`, front matter on root files and records, README's
+budget, both baselines) and does nothing when adopted. `just budget --apply` (Step 7) also trims ROADMAP's done items (2026-10-14).
 
 Run the project's own governance check (e.g. `scripts/check_governance.py`, `just check`) and any status validator afterwards. Fix the project, not the check.
 

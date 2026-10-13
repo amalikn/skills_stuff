@@ -11,6 +11,11 @@ What it checks and, with --apply, adds:
 3. CHANGELOG.md and SCRATCHPAD.md: front matter with Kind, Budget and, for SCRATCHPAD, Keep and an open-items tracker; ROADMAP.md, when the project has
    one, with Kind, Budget and Archive, and `roadmap_trim.py` in the `rotate` recipe (2026-10-14: ROADMAP had no budget and no trim outside UNC).
 4. scripts/doc-freshness-baseline.json: written when absent, so existing findings are grandfathered and new ones fail.
+5. File roles (operator, 2026-10-14: the roles in references/governed-file-roles.md must reach every project, and files loaded whole stay small):
+   `---` front matter on every root governance file that lacks it (README, AGENTS, AI_NAVIGATION, ARCHITECTURE, CONVENTIONS, SETUP; a legacy
+   unfenced `Title:` block is fenced and moved above an `@` import), Authority/Scope/Last reviewed on the records, a `Budget` key on README,
+   `role_check.py --check` in `check`, and scripts/role-check-baseline.json written when absent. A header it adds says `Review by` 30 days on,
+   so the file is reviewed rather than stamped; an over-budget README is grandfathered in the freshness baseline (shrink-only from then on).
 
 Usage:
     python scripts/adopt_governed_files.py --project-root P            # report what is missing
@@ -22,13 +27,15 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import importlib.util
+import json
 import pathlib
 import re
 import subprocess
 import sys
 
 SKILL = pathlib.Path(__file__).resolve().parent.parent
-RECIPES = ("stale", "docs", "history", "history-show", "rotate", "budget", "changelog-entry", "move-sections", "outline", "section")
+RECIPES = ("stale", "roles", "docs", "history", "history-show", "rotate", "budget", "changelog-entry", "move-sections", "outline", "section")
 AGENTS_MARK = "just docs <folder>"
 AGENTS_LINE = ("- Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries\n"
                "  live in `docs/history/`, read only on need (`just history <term>`, `just history-show <stamp>`). Large Markdown: `just outline <file>`,\n"
@@ -122,6 +129,8 @@ def justfile_gaps(text: str, roadmap: bool = False) -> list[str]:
         gaps.append("check recipe (nothing gates freshness)")  # smc-file-writing-analysis had none, so its adoption gated nothing (2026-10-10)
     elif "doc_freshness.py" not in text:
         gaps.append("freshness in check")
+    elif not roles_in_check(text):
+        gaps.append("roles in check")
     gaps += [f"recipe {r}" for r in RECIPES if not re.search(rf"^{re.escape(r)}\b", text, re.M)]
     if make_free_text_safe(text) != text:
         gaps.append("free-text recipes take unquoted {{ARGS}}")
@@ -165,6 +174,7 @@ def fix_justfile(text: str, roadmap: bool = False) -> str:
         text = text.rstrip("\n") + "\n\n" + block
     if roadmap:
         text = add_roadmap_to_rotate(text)
+    text = add_roles_to_check(text)
     return make_free_text_safe(text)
 
 
@@ -213,7 +223,7 @@ def records_gaps(path: pathlib.Path, kind: str) -> list[str]:
         return []
     text = path.read_text(encoding="utf-8")
     head = text.split("\n---", 1)[0] if text.startswith("---\n") else ""
-    need = ["Kind:", "Budget:"] + (["Archive:"] if kind == "roadmap" else [])
+    need = ["Kind:", "Budget:", "Authority:", "Scope:", "Last reviewed:"] + (["Archive:"] if kind == "roadmap" else [])
     need += (["Keep:", "Open items tracker:"] if kind == "state" and "Pinned sections:" not in head else [])
     return [k for k in need if k not in head]
 
@@ -227,9 +237,10 @@ def fix_record(path: pathlib.Path, kind: str, stamp: str) -> None:
         stamp: today's stamp, for the tracker's file name.
     """
     text = path.read_text(encoding="utf-8")
-    keys = {"Kind": kind, "Budget": "200 lines, 25 KB"} | ({"Archive": "docs/history/ (roadmap-*.md, `just rotate`)"} if kind == "roadmap" else {})
-    if kind == "roadmap" and "\nLast reviewed:" not in text.split("\n---", 1)[0]:
-        # The header makes ROADMAP a living document, which needs a review date; take the newest date it names (dated from its content), else today.
+    keys = {"Authority": "record" if kind == "log" else "working-state" if kind == "state" else "canonical", "Scope": RECORD_SCOPE[kind],
+            "Kind": kind, "Budget": "200 lines, 25 KB"} | ({"Archive": "docs/history/ (roadmap-*.md, `just rotate`)"} if kind == "roadmap" else {})
+    if "\nLast reviewed:" not in text.split("\n---", 1)[0]:
+        # ROADMAP is a living document and needs a review date; take the newest date a record names (dated from its content), else today.
         dates = re.findall(r"\b(20\d\d-[01]\d-[0-3]\d)\b", text)
         keys["Last reviewed"] = max(dates) if dates else dt.date.today().isoformat()
     if kind == "state":
@@ -249,6 +260,191 @@ def fix_record(path: pathlib.Path, kind: str, stamp: str) -> None:
         body = "\n".join(f"{k}: {v}" for k, v in keys.items())
         text = f"---\nTitle: {title}\nCategory: { {'log': 'change-log', 'state': 'working-state', 'roadmap': 'roadmap'}[kind] }\nStatus: current\nSummary: {summary}\n{body}\n---\n\n" + text
     path.write_text(text, encoding="utf-8")
+
+
+#: root file -> (Category, Authority, Summary used when the file has no first paragraph to take one from)
+HEADED = {
+    "README.md": ("readme", "canonical", "Front door for people: what the project is, quick start, folder index and where the detail lives."),
+    "AGENTS.md": ("agent-governance-guide", "local-supplement", "Rules every agent follows in this project."),
+    "AI_NAVIGATION.md": ("navigation", "local-supplement", "Where project truth lives, what to read first and what is authoritative; a router, not the store."),
+    "ARCHITECTURE.md": ("architecture", "canonical", "How the project works: components, data flow, boundaries and key decisions with reasons."),
+    "CONVENTIONS.md": ("conventions", "canonical", "Naming, style and anti-patterns for this project."),
+    "SETUP.md": ("setup", "canonical", "Prerequisites, pinned versions, bootstrap, environment variable names and first run."),
+}
+RECORD_SCOPE = {"log": "Dated changes to this project", "state": "Working state between sessions", "roadmap": "Current phase and open milestones"}
+
+
+def has_header(text: str) -> bool:
+    """Whether the text opens with `---` front matter naming a Title and a Summary (role_check.py rule 1).
+
+    Args:
+        text: the file.
+
+    Returns:
+        True when it does.
+    """
+    m = re.match(r"---\n(.*?)\n---\n", text, re.S)
+    return bool(m) and bool(re.search(r"(?m)^Title:", m.group(1))) and bool(re.search(r"(?m)^Summary:", m.group(1)))
+
+
+def first_paragraph(body: str) -> str:
+    """The first prose paragraph after the first heading, on one line and cut to fit a front-matter value.
+
+    Args:
+        body: the file without front matter.
+
+    Returns:
+        The paragraph, or "" when there is none.
+    """
+    h1 = re.search(r"(?m)^# .*$", body)
+    after = body[h1.end():] if h1 else body
+    for para in re.split(r"\n\s*\n", after):
+        s = para.strip()
+        if s and not s.startswith(("#", "-", "*", "|", "<!--", "```", "@", ">")) and not re.match(r"\w[\w ]*: ", s):
+            s = re.sub(r"\s+", " ", re.sub(r"[`*]", "", s))
+            return s if len(s) <= 190 else s[:187].rsplit(" ", 1)[0] + "..."
+    return ""
+
+
+def last_commit_day(root: pathlib.Path, rel: str) -> str:
+    """The date the file was last committed, else today.
+
+    Args:
+        root: the project root.
+        rel: the file, relative to it.
+
+    Returns:
+        YYYY-MM-DD.
+    """
+    r = subprocess.run(["git", "-C", str(root), "log", "-1", "--format=%as", "--", rel], capture_output=True, text=True)
+    return r.stdout.strip() or dt.date.today().isoformat()
+
+
+def header_gaps(root: pathlib.Path) -> list[str]:
+    """Root governance files without front matter, and a README without a Budget key.
+
+    Args:
+        root: the project root.
+
+    Returns:
+        Short descriptions of the gaps.
+    """
+    gaps = []
+    for name in HEADED:
+        p = root / name
+        if p.is_file() and not p.is_symlink():
+            text = p.read_text(encoding="utf-8")
+            if not has_header(text):
+                gaps.append(f"{name}: front matter")
+            elif name == "README.md" and not re.search(r"(?m)^Budget:", text.split("\n---", 1)[0]):
+                gaps.append("README.md: Budget key")
+    return gaps
+
+
+def fix_header(root: pathlib.Path, name: str) -> None:
+    """Give a root file `---` front matter: fence a legacy block (moving it above an `@` import), complete a partial one, or write a new one.
+
+    The new header's Title is the first heading, its Summary the first paragraph; `Last reviewed` is the last commit and `Review by` 30 days on,
+    so the file is read before it counts as reviewed. README also gets `Budget: 200 lines, 25 KB` (it is read whole).
+
+    Args:
+        root: the project root.
+        name: the file name, a key of HEADED.
+    """
+    p = root / name
+    text = p.read_text(encoding="utf-8")
+    category, authority, fallback = HEADED[name]
+    keys: dict[str, str] = {}
+    imports: list[str] = []
+    if text.startswith("---\n") and "\n---" in text[4:]:
+        head, body = text[4:].split("\n---", 1)
+        body = body.lstrip("\n")
+        for ln in head.splitlines():
+            if m := re.match(r"([A-Z][\w ]*):\s?(.*)$", ln):
+                keys[m.group(1)] = m.group(2)
+            elif keys:
+                keys[list(keys)[-1]] += "\n" + ln  # a folded value's continuation
+    else:
+        lines = text.splitlines()
+        i = 0
+        while i < len(lines) and (not lines[i].strip() or lines[i].startswith("@")):
+            imports += [lines[i]] if lines[i].startswith("@") else []
+            i += 1
+        j = i
+        while j < len(lines) and re.match(r"[A-Z][\w ]*: ", lines[j]):
+            k, v = lines[j].split(": ", 1)
+            keys[k] = v
+            j += 1
+        if "Title" not in keys:  # prose such as `Status: active` under the heading is not a legacy header
+            keys, j = {}, i
+        body = "\n".join(lines[j:]).lstrip("\n") + ("\n" if text.endswith("\n") else "")
+    h1 = re.search(r"(?m)^# (.+)$", body)
+    reviewed = keys.get("Last reviewed") or last_commit_day(root, name)
+    fill = {"Title": h1.group(1).strip() if h1 else name[:-3].replace("_", " ").title(), "Category": category, "Status": "current",
+            "Authority": authority, "Scope": f"Root {name} of {root.name}", "Last reviewed": reviewed, "Summary": first_paragraph(body) or fallback}
+    new = {k: keys.get(k) or v for k, v in fill.items()}
+    new |= {k: v for k, v in keys.items() if k not in new}
+    if "Last reviewed" not in keys and "Review by" not in keys:
+        new["Review by"] = (dt.date.today() + dt.timedelta(days=30)).isoformat()
+    if name == "README.md" and "Budget" not in new:
+        new["Budget"] = "200 lines, 25 KB"
+    head = "\n".join(f"{k}: {v}" for k, v in new.items())
+    p.write_text("---\n" + head + "\n---\n\n" + ("\n".join(imports) + "\n\n" if imports else "") + body, encoding="utf-8")
+
+
+def grandfather_sizes(root: pathlib.Path, names: list[str]) -> None:
+    """Record in the freshness baseline the size of each file adoption headed that is over budget, so the header's few lines (or README's new
+    Budget key) do not fail a ratchet the operator's content did not break; cambium-swap's AGENTS.md went from 218 to 220 lines (2026-10-14).
+
+    Args:
+        root: the project root.
+        names: the files adoption changed.
+    """
+    base = root / "scripts" / "doc-freshness-baseline.json"
+    spec = importlib.util.spec_from_file_location("doc_freshness", SKILL / "scripts" / "doc_freshness.py")
+    df = importlib.util.module_from_spec(spec)
+    sys.modules.setdefault("doc_freshness", df)
+    spec.loader.exec_module(df)
+    keys = {f"over-budget:{n}" for n in names}
+    found = {k: v for k, v in df.findings(root, dt.date.today(), df.DEFAULT_WINDOW_DAYS).items() if k in keys}
+    if found and base.is_file():
+        data = json.loads(base.read_text(encoding="utf-8"))
+        if any(data.get(k) != v for k, v in found.items()):
+            data |= found
+            base.write_text(json.dumps(dict(sorted(data.items())), indent=1) + "\n", encoding="utf-8")
+
+
+def roles_in_check(text: str) -> bool:
+    """Whether the justfile's check recipe runs role_check.py.
+
+    Args:
+        text: the justfile.
+
+    Returns:
+        True when it does.
+    """
+    m = re.search(r"^check\b[^\n]*\n((?:[ \t]+[^\n]*\n?)+)", text, re.M)
+    return bool(m) and "role_check.py" in m.group(1)
+
+
+def add_roles_to_check(text: str) -> str:
+    """Append role_check.py --check to the check recipe, with the interpreter its freshness line uses.
+
+    Args:
+        text: the justfile.
+
+    Returns:
+        The updated justfile.
+    """
+    m = re.search(r"^check\b[^\n]*\n((?:[ \t]+[^\n]*\n?)+)", text, re.M)
+    if not m or "role_check.py" in m.group(1):
+        return text
+    fresh = next((ln for ln in m.group(1).splitlines() if "doc_freshness.py" in ln), None)
+    if fresh is None:
+        return text
+    line = fresh.replace("doc_freshness.py", "role_check.py")
+    body = m.group(1) if m.group(1).endswith("\n") else m.group(1) + "\n"
+    return text[:m.start(1)] + body + line + "\n" + text[m.end(1):]
 
 
 def agents_gap(path: pathlib.Path) -> bool:
@@ -276,7 +472,8 @@ def fix_agents(path: pathlib.Path) -> None:
 
 
 RECIPE_DOCS = {
-    "check": "`just check`: the project's governance checks, then document freshness. Read-only; `safe`.",
+    "check": "`just check`: the project's governance checks, then document freshness and file roles. Read-only; `safe`.",
+    "roles": "`just roles`: root governance files outside their roles (front matter, README quick start, ROADMAP shape, duplicated sections). Read-only; `safe`.",
     "stale": "`just stale`: stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only; `safe`.",
     "docs": "`just docs [folder]`: one header line per file, to triage before opening. Read-only; `safe`.",
     "history": "`just history <term>`: search rotated CHANGELOG (or SCRATCHPAD) entries in docs/history. Read-only; `safe`.",
@@ -344,6 +541,9 @@ def main(argv: list[str] | None = None) -> int:
     gaps += [f"ROADMAP.md: {k}" for k in records_gaps(root / "ROADMAP.md", "roadmap")]
     if not (root / "scripts" / "doc-freshness-baseline.json").is_file():
         gaps.append("baseline: scripts/doc-freshness-baseline.json")
+    gaps += header_gaps(root)
+    if not (root / "scripts" / "role-check-baseline.json").is_file():
+        gaps.append("baseline: scripts/role-check-baseline.json")
     if not gaps:
         print(f"{root.name}: governed-file standard adopted")
         return 0
@@ -362,9 +562,16 @@ def main(argv: list[str] | None = None) -> int:
     for name, kind in (("CHANGELOG.md", "log"), ("SCRATCHPAD.md", "state"), ("ROADMAP.md", "roadmap")):
         if records_gaps(root / name, kind):
             fix_record(root / name, kind, stamp)
+    headed = [n for n in HEADED if (root / n).is_file() and not (root / n).is_symlink() and any(g.startswith(n) for g in header_gaps(root))]
+    for name in headed:
+        fix_header(root, name)
     if not (root / "scripts" / "doc-freshness-baseline.json").is_file():
         (root / "scripts").mkdir(exist_ok=True)
         subprocess.run([sys.executable, str(SKILL / "scripts" / "doc_freshness.py"), "--project-root", str(root), "--write-baseline"], check=True)
+    else:
+        grandfather_sizes(root, headed + ["CHANGELOG.md", "SCRATCHPAD.md", "ROADMAP.md"])
+    if not (root / "scripts" / "role-check-baseline.json").is_file():
+        subprocess.run([sys.executable, str(SKILL / "scripts" / "role_check.py"), "--project-root", str(root), "--write-baseline"], check=True)
     print(f"{root.name}: applied; run the project's check, then `just rotate --apply` if a record is over budget")
     return 0
 

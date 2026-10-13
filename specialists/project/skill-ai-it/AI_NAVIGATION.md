@@ -1,6 +1,19 @@
+---
+Title: AI Navigation
+Category: navigation
+Status: current
+Authority: local-supplement
+Scope: Context entrypoint for agents maintaining skill-ai-it
+Last reviewed: 2026-10-14
+Summary: >-
+  Where this package's truth lives, what to read first, what is authoritative and what must be updated after work; a router, not the knowledge store.
+---
+
 # AI Navigation — skill-ai-it
 
 Purpose: this file is the context entrypoint for agents maintaining `skill-ai-it`.
+
+What each root file is for: [references/governed-file-roles.md](references/governed-file-roles.md). Generated outputs (`.ai-context/`, `graphify-out/`) are support only, never truth.
 
 This package is a reusable AI governance/navigation bootstrap skill. It must remain repeat-safe, template-driven, changelog-aware, and tool-agnostic.
 

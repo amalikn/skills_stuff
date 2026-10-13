@@ -2,17 +2,25 @@
 Title: Changelog
 Category: change-log
 Status: current
+Authority: record
+Scope: Dated changes to the skill-ai-it package
+Last reviewed: 2026-10-14
 Summary: Newest entries only; older ones rotate to docs/history (search with --find, print with --show).
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261014_0931
+Last rotated: 20261014_1020
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean](#20261014_1020--coherence-pass-architecture-key-decisions-sibling-skills-sweep-clean)
+- [20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes](#20261014_1018--staleness-audit-upgrader-header-derived-index-counts-links-indexes)
+- [20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)](#20261014_1006--graphify-confirmed-disabled-slurp-write-backs-token-budget-rule-roles_fleet)
+- [20261014_1002 — File roles enforced: role_check.py, adoption adds headers, templates and loading tiers](#20261014_1002--file-roles-enforced-role_checkpy-adoption-adds-headers-templates-and-loading-tiers)
+- [20261014_0943 — Governed file roles defined; README trimmed; front matter everywhere](#20261014_0943--governed-file-roles-defined-readme-trimmed-front-matter-everywhere)
 - [20261014_0931 — ROADMAP contract, budget and trim (roadmap_trim.py promoted from UNC)](#20261014_0931--roadmap-contract-budget-and-trim-roadmap_trimpy-promoted-from-unc)
 - [20261013_2241 — Pitfall: enforce skill invocation with a hook, not a rule](#20261013_2241--pitfall-enforce-skill-invocation-with-a-hook-not-a-rule)
 - [20261013_2230 — Pitfall: the wrap hook runs on Write and Edit and reflows the whole file](#20261013_2230--pitfall-the-wrap-hook-runs-on-write-and-edit-and-reflows-the-whole-file)
@@ -21,14 +29,77 @@ Last rotated: 20261014_0931
 - [20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix](#20261011_0525--section-level-markdown-reads-outline-section-and-adopter-attribute-fix)
 - [20261010_2346 — move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry](#20261010_2346--move_sections-link-repointing-and-shared-pointer-budget-tidy-step-add_changelog_entry)
 - [20261010_2332 — Reference reads measured (not split); tracker pointer no longer duplicates](#20261010_2332--reference-reads-measured-not-split-tracker-pointer-no-longer-duplicates)
-- [20261010_2227 — Memory pointers rotate; no upgrade hint for project-owned blocks; jdm within budget](#20261010_2227--memory-pointers-rotate-no-upgrade-hint-for-project-owned-blocks-jdm-within-budget)
-- [20261010_2207 — SKILL.md restructured: 2,074 to 198 lines, detail in references/ by topic](#20261010_2207--skillmd-restructured-2074-to-198-lines-detail-in-references-by-topic)
-- [20261010_2156 — Compact navigation template; reference split by topic; adopter documents recipes; budget suggestions](#20261010_2156--compact-navigation-template-reference-split-by-topic-adopter-documents-recipes-budget-suggestions)
-- [20261010_2135 — budget_plan and normalise_records; heading dates and time grouping; runaway incident and fix](#20261010_2135--budget_plan-and-normalise_records-heading-dates-and-time-grouping-runaway-incident-and-fix)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
-- [20261010_1833 — Rotation made safe and complete; adopter; headers for every script and config](#20261010_1833--rotation-made-safe-and-complete-adopter-headers-for-every-script-and-config)
-- [20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates](#20261010_1805--governed-file-tools-rotation-by-bullet-ticked-items-resolved-checker-standard-slurp-rotates)
-- [20261010_1830 — feat: doc_freshness.py; Graphify disabled](#20261010_1830--feat-doc_freshnesspy-graphify-disabled)
+
+## 20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean
+
+- **Coherence pass** (operator, 2026-10-14) over the file-roles, staleness-audit and all-scraper changes: ARCHITECTURE.md gains "Key decisions"
+  (roles and loading tiers, ratchet via adoption, README budget per project, record rotation, Graphify disabled), so the page readers open first
+  carries today's decisions; scripts/README.md `adopt_governed_files.py` row describes what adoption now adds. Siblings: skill-project-coherence
+  Tier 5 no longer regenerates Graphify (its CHANGELOG 2026-10-14); all-scraper SCRATCHPAD intro uses rotation wording. Stale-reference sweep
+  across this package, skill-slurp-chat, skill-project-coherence, skill-staleness-audit and all-scraper: 0 active. No repomix config here.
+
+## 20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes
+
+- **Staleness audit, whole package** (operator, 2026-10-14; report `docs/reviews/staleness-audit-20261014_1017.md`, gate PASSED). No money
+  band. Fixed: the upgrader created AGENTS.md with an unfenced header that would fail `role_check.py` on first contact (latent; now fenced, test
+  added); stale references index counts (now derived by `check_reference_index_lines`); ROADMAP links to UNC `target_map.py` (moved to
+  `scripts/render/`); SCRATCHPAD 2026-08-11 counts superseded in place and a done open item ticked; folder indexes for `docs/`, `docs/archive/`,
+  `patterns/`, `templates/`, `docs/reviews/`; baselines named in scripts/README.md. Both new checks negative-tested red and green. Why it
+  survived: the upgrader builds its header in code, a generation path the template review did not reach. Residual register in SCRATCHPAD.
+
+## 20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)
+
+- **Graphify confirmed disabled** (operator, 2026-10-14: "confirm and make sure that Graphify is disabled"). Every `graphify update` in this
+  package (templates/context_preflight.sh, the embedded preflight in references/files-support.md, templates/context-map.yaml) and in the nine
+  project justfiles that keep a `graph` recipe is gated by `GRAPHIFY_ENABLED=1`; no git hook, LaunchAgent, Claude hook or running process calls
+  it; `~/.claude.json` holds only skill usage counts, no Graphify MCP server. Two ungated recovery steps fixed: this package's `context-map.yaml`
+  `context_recovery` and `patterns/navigation/recovery-and-audit.md` step 3 (the reference the managed block links to).
+- **Slurp:** operator rule on token budget added to AGENTS.md working rules (loading tiers; never inline what a link carries, never delete to
+  save space); `just roles_fleet` recipe (one role-check line per governed project, to track the rollout); skill-slurp-chat Step 6 names what
+  adoption now adds and that `just budget` trims ROADMAP. Canary entry written in cambium-swap's CHANGELOG (its changes are not committed).
+- **Check surface retired:** CHANGELOG.md no longer a `managed-block-version` surface in `scripts/check_governance.py`. Rotation (`just budget`)
+  moved the only entry stating the stamp to docs/history and the check failed on a past fact; a rotating log cannot hold a live claim.
+
+## 20261014_1002 — File roles enforced: role_check.py, adoption adds headers, templates and loading tiers
+
+- **Roles now reach projects and are enforced** (operator, 2026-10-14: "ensure that all the definitions ... are actually going to be defined for
+  the projects in that way and it will adhere to that"; and the files must spend AI tokens well: small by default, detail on need). Analysis of
+  the templates, the enforcement code and the 13 governed projects: every project broke a role, templates lacked front matter and a README quick
+  start, no SETUP rule existed, and only budgets and links were gated.
+- **`scripts/role_check.py`** (new, `just roles`, in `just check`, baseline `scripts/role-check-baseline.json`): front matter on root files,
+  CLAUDE.md import first, README quick start and no status/history heading, ROADMAP dated phase and no done items or narrative, duplicated
+  sections across root files. `tests/test_role_check.py` proves each rule fails; it also finds the three README/ARCHITECTURE duplicates in HEAD.
+- **`adopt_governed_files.py`** (run at every slurp) adds `---` front matter to README, AGENTS, AI_NAVIGATION, ARCHITECTURE, CONVENTIONS, SETUP
+  (legacy unfenced blocks fenced above the `@` import; `Review by` 30 days on), Authority/Scope/Last reviewed on the records, README's `Budget`
+  key, `role_check.py` in `check`, the `roles` recipe and the role baseline; re-records the size of an over-budget file it heads, so adoption
+  cannot fail the ratchet. Canary: cambium-swap (check green, second run reports adopted).
+- **`budget_plan.py`** trims ROADMAP (slurp runs `just budget`, not `just rotate`, so ROADMAP was never trimmed at close).
+- **Templates:** README (front matter, Quick start, no history in Context, local links fixed), AGENTS (front matter first, navigation block taken
+  from `templates/` instead of a stale copy), CLAUDE (no H1 placeholders), ARCHITECTURE (data flow, boundaries, decisions with reasons,
+  `Depends on`), CONVENTIONS, ROADMAP and CHANGELOG/SCRATCHPAD (full front matter; newest first; `KEEP` the exception), new SETUP.md rule and
+  template; the drifted AI_NAVIGATION fallback removed; refresh table updated.
+- **`references/governed-file-roles.md`**: loading model (always-read, read-once, on-need, on-demand tiers; summarise up, link down), tier per
+  file, and an enforcement table that states only what code enforces. Also fixed: this package's AGENTS.md front matter fenced; the ROADMAP lines
+  left behind by the earlier trim restored to their history file; a YAML error in `context-map.yaml` (found by `nav_validate`, not `just check`).
+
+## 20261014_0943 — Governed file roles defined; README trimmed; front matter everywhere
+
+- **Governed file roles defined** (operator, 2026-10-14: "define what each of these files mean ... and check if each of them ... are defined
+  properly and this skill will take care of it"). New `references/governed-file-roles.md`: reader, holds, keeps out, how it changes and what
+  enforces it for README, AGENTS, CLAUDE, AI_NAVIGATION, ARCHITECTURE, CONVENTIONS, SETUP (conditional), ROADMAP, CHANGELOG and SCRATCHPAD, plus a
+  placement test and a role check. Linked from SKILL.md (Always-created files), the finishing quality checklist, `context-map.yaml`
+  (`file_role_compliance` audit check, `package_docs` routing), AI_NAVIGATION.md and the references index.
+- **Own files brought to their roles.** README.md rewritten from 241 to 116 lines: quick start added, sections duplicated from ARCHITECTURE.md
+  replaced by a link, stale package layout and the "Graphify actively invoked" claim corrected, opted into the 200-line budget with a `Budget` key.
+  ARCHITECTURE.md: Graphify marked disabled (2026-10-10) in the flow, tool stack and recovery steps; "four" capabilities corrected to five;
+  `references/`, `scripts/`, `tests/`, ROADMAP and SCRATCHPAD added to package roles; the stale-outputs upgrade row moved over from README.
+  ROADMAP.md put on its own contract: dated current phase, open `- [ ]` items by area, completed phases and the obsolete sync item moved
+  verbatim to `docs/history/roadmap-20261014_0942.md` by `just rotate`.
+- **Front matter added wherever missing** (operator): AI_NAVIGATION, ARCHITECTURE, README, five patterns (governance-checks fenced),
+  scripts/README.md, docs/history/readme.md, and the six May 2026 plans, prompts and reviews (`Status: archived`); missing Authority, Scope and
+  Last reviewed keys added to ROADMAP, CHANGELOG and SCRATCHPAD. Not given front matter: CLAUDE.md (its import line must stay its whole content)
+  and the three `templates/` snippets that are inserted into other projects' files.
 
 ## 20261014_0931 — ROADMAP contract, budget and trim (roadmap_trim.py promoted from UNC)
 
@@ -105,51 +176,6 @@ Last rotated: 20261014_0931
   so pointers piled up (2 to 3 copies in 7 SCRATCHPADs, one stray in cambium-swap's tracker). It now stays in place, and the presence check compares
   lines. Test added, negative-tested; this SCRATCHPAD deduplicated. The other projects' duplicates are left for the operator's per-project run.
 
-## 20261010_2227 — Memory pointers rotate; no upgrade hint for project-owned blocks; jdm within budget
-
-- normalise_records.py: Memory pointers are a dated log of memory keys, so their dated blocks get headings and rotate (jdm: 198 lines held its
-  SCRATCHPAD over budget). budget_plan.py: no "run the upgrade first" hint for a block carrying skill-ai-it:manual (the upgrader never replaces it).
-  Tests 37 to 38 plus a normaliser case, each negative-tested.
-- jdm brought within budget by hand on top of the tools: guard registries (gate surface, model-count skip) follow moved text; a blockquote is not a heading, so
-  the resolved readiness block was moved with a one-off verified cut; three pointer sections merged into one.
-
-## 20261010_2207 — SKILL.md restructured: 2,074 to 198 lines, detail in references/ by topic
-
-- SKILL.md restructured for progressive disclosure: 2,074 to 198 lines (112 KB to 16 KB), within the 200-line / 25 KB budget. Detail moved
-  verbatim with move_sections.py into 18 topic files under references/ (46 to 319 lines; index references/readme.md), each linked by one line at the
-  step that needs it; SKILL.md keeps use-when, inputs, modes, repeat-safety, the governed-file and freshness rules, workflow and a template and
-  pattern catalogue. Verified: all 13,844 words of the old file present (only the moved sections' Contents links dropped); in-page links repointed;
-  install symlink is whole-folder, so references/ resolves.
-- move_sections.py: moves `###` and `####` sections (to the next heading at their level); `--pointer-line` leaves one linked line instead of a
-  pointer section; relinks only links whose target exists (example links stay as written; 10 example lines restored after an over-eager relink);
-  Contents anchors keep double hyphens as GitHub and VS Code render them. Tests 35 to 37.
-- Larger references (files-context-map 319, files-ai-navigation 228, script-task-inventory 224 lines) are read on need; split them if they are often opened.
-
-## 20261010_2156 — Compact navigation template; reference split by topic; adopter documents recipes; budget suggestions
-
-- Navigation template compacted (version `2026-10-10-compact-v1`): templates/AI_NAVIGATION.md 279 to 96 lines, all 13 required sections kept,
-  each a few lines linking to its topic file; the original text moved verbatim to `patterns/navigation/` (four files of 59 to 95 lines plus an index,
-  split so a reader opens only the topic it needs; operator). Graphify steps dropped from the block. Version restated in templates, SKILL.md,
-  context-map.yaml, patterns and the checker registry. Canary: skill-ai-it AI_NAVIGATION.md 254 to 79 lines; UNC 355 to 155, outside-block text identical.
-- upgrade_navigation_control_layer.py no longer renames recipe names inside SCRATCHPAD.md (it made a historical sentence false).
-- adopt_governed_files.py documents every recipe it adds in scripts/README.md (jdm requires it); budget_plan.py reports SKILL.md too, says to
-  run the navigation upgrade first, and prints `move-sections` suggestions for reference-like sections (outside managed blocks), never applied.
-- Tests 33 to 35, each negative-tested; selftest 29 pass.
-
-## 20261010_2135 — budget_plan and normalise_records; heading dates and time grouping; runaway incident and fix
-
-- New scripts/budget_plan.py (one entry point: measure, normalise, rotate, move non-working-state sections, index, audit, project check; reports what
-  still holds a file over; refuses symlinked records) and scripts/normalise_records.py (adds dated headings above bold-lead paragraphs, standing-fact
-  headings, an Update log heading over dated header comments; refuses if a line changes). `budget` recipe in justfile, template and adopter.
-- rotate_records.py: written dates in headings ("21 September 2026") date and group sections; time suffixes ("~1:35p") no longer split a group.
-- move_sections.py relinks relative links for the destination; adopt_governed_files.py refuses symlinked governed files and creates a missing
-  justfile; move_doc.py --keep-records can be repeated. Tests 22 to 33, each negative-tested.
-- Incident: an in-session loop over 23 projects (operator stopped it: "stop running batches"). In jdm the planner moved its own pointer section each
-  pass and wrote about 10,000 docs/scratchpad-reference-* files; jdm restored from git (clean before the run). Fixed: pointer headings are working
-  state, a move that does not shrink the file stops the loop, MAX_MOVES 8; test added. Canary of nine projects: eight within budget, audits clean;
-  jdm reverted (its guards need registry updates; a 199-line Memory pointers section holds it).
-- Operator rule: canary, then hand the operator per-project commands; never batch in-session.
-
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 
 - `rotate_records.py`: pins only on the explicit marker (`` `PIN` `` or `<!-- PIN -->`; a bare "PIN" substring had pinned ansible-wifi entries about
@@ -164,31 +190,3 @@ Last rotated: 20261014_0931
 - SKILL.md Rotation bullet and skill-slurp-chat step 7: a record left over budget is unfinished; reference goes out with `move-sections`. SKILL.md held
   to its ratchet (2,074 lines, 67 bytes smaller) by replacing the hand-written freshness bootstrap steps with the adopter call.
 - Tests 14 to 22 (new: explicit pin, prose subsection, lazy continuation, move_sections x3, split audit x2, adopter x3), each negative-tested; check 229 pass.
-
-## 20261010_1833 — Rotation made safe and complete; adopter; headers for every script and config
-
-- `rotate_records.py`: Contents is only its link lines (a 424-line prose block was dropped in vocus-profitability, restored); whole-file verification; open items beyond the newest 3 go to a live tracker; `Keep` per section; dated sections grouped; numbered items; git-blame dates for undated entries. `audit_rotations.py`: 39 records clean.
-- `adopt_governed_files.py` (slurp runs it), rule 6 `checker-size`, JSON exempt from headers, nested projects skipped. Rolled out to 25 projects.
-
-## 20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates
-
-- `rotate_records.py`: SCRATCHPAD units are bullets (a `###` subheading travels with its first bullet; undated bullets take its date); `- [x]` and
-  `~~` count as resolved. UNC SCRATCHPAD 766 to 674 lines. skill-slurp-chat Step 7 runs `just rotate --apply` when a record is over budget.
-- Standard and tools of this day: `file_headers.py`, `doc_freshness.py` rules 4-5, `move_doc.py`, `split_checker.py`, `templates/govcheck/`,
-  `patterns/governance-checks.md` "Structure and growth" (reviewed). Why: UNC `docs/reports/knowledge-tooling/governance-surface-management-20261010_1745.md`.
-
-## 20261010_1830 — feat: doc_freshness.py; Graphify disabled
-
-- **Added** `scripts/doc_freshness.py` (operator, 2026-10-10, option B of the OKF adoption assessment in unified-network-controller
-  `docs/reports/knowledge-tooling/okf-adoption-assessment-20261010_1700.md`): three rules (review due, superseded outside `archive/`, a `Depends on`
-  file changed after `Last reviewed`) as a baseline ratchet. Wired into `templates/justfile` (`check` runs `--check`; new `stale` recipe), the
-  embedded justfile in SKILL.md, this package's own justfile, SKILL.md "Document freshness" and the quality checklist. Negative-tested in
-  unified-network-controller (each rule fails, exit 1; removal clears it). This package's own finding (`patterns/governance-checks.md`, review due
-  2026-09-10) is baselined, not stamped: it needs a real review.
-- **Added** `scripts/agent_usage.py` (`just agent_usage <terms>`): counts agent tool calls naming a file or command in recent Claude transcripts;
-  promoted from the session that measured Graphify and wiki usage.
-- **Disabled** Graphify (operator): SKILL.md step 9, the mode table, "Graphify initialization and refresh", the embedded preflight and the
-  compaction-recovery step; `templates/context_preflight.sh` skips it unless `GRAPHIFY_ENABLED=1`; `templates/context-map.yaml` and
-  `upgrade_navigation_control_layer.py` say not to regenerate it. Text kept for re-enabling. Measured cause: 0 graph queries in 30 days against
-  thousands of rebuilds. The managed navigation block still names `graphify-out/` (changing it would put every governed project into drift); projects
-  exempt those paths in `CONDITIONAL_PATHS`.

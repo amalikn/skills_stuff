@@ -90,10 +90,15 @@ audit_scripts:
 check: _require-venv
     @{{py}} scripts/check_governance.py
     @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root . --check
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
     @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
+
+# Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
+roles: _require-venv
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root .
 
 # Triage: one line per file (status, review date, summary) from its header, so a file is judged without being opened
 docs *ARGS: _require-venv
@@ -107,7 +112,7 @@ history TERM RECORD="CHANGELOG.md": _require-venv
 history-show STAMP RECORD="CHANGELOG.md": _require-venv
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
 
-# Keep CHANGELOG, SCRATCHPAD and ROADMAP within budget: plan by default; `just rotate --apply` (slurp runs it)
+# Keep CHANGELOG, SCRATCHPAD and ROADMAP within budget: plan by default; `just rotate --apply` (slurp runs `just budget`, which trims ROADMAP too)
 rotate *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md

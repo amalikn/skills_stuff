@@ -4,3 +4,4 @@ graphify-out/
 .ai-context/
 __pycache__/
 *.pyc
+.staleness-audit/

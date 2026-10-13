@@ -1,3 +1,14 @@
+---
+Title: Fix: Archcore Promotion Candidate Reporting
+Category: plan-record
+Status: archived
+Authority: record
+Scope: Historical skill-ai-it working document, kept for provenance
+Last reviewed: 2026-05-22
+Summary: >-
+  Design for report-first Archcore promotion candidates (only promote writes .archcore/ content); implemented in Phase 4, 2026-05-23.
+---
+
 # Fix: Archcore Promotion Candidate Reporting
 
 > Renamed from "Archcore Bootstrap Seeding" based on dual Codex consultation (2026-05-22).

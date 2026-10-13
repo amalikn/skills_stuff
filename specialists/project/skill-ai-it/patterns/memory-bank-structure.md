@@ -1,3 +1,14 @@
+---
+Title: Memory Bank Structure Pattern
+Category: pattern
+Status: current
+Authority: skill-module
+Scope: Optional memory-bank/ folder in target projects
+Last reviewed: 2026-10-14
+Summary: >-
+  What each memory-bank/ file holds: current working memory and progress, not permanent architecture truth.
+---
+
 # Memory Bank Structure Pattern
 
 Use `memory-bank/` for current working memory and progress, not permanent architecture truth.

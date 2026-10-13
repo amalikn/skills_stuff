@@ -8,6 +8,9 @@
     "MD013": { "line_length": 200, "tables": false, "code_blocks": false, "headings": false },
     "MD060": false,
     "MD024": { "siblings_only": true },
+    // Governed markdown carries `---` front matter with a `Title:` key AND a `#` heading (governance naming-and-file-summary-guide.md).
+    // By default MD025 counts the Title key as an H1, so every governed file would report two (2026-10-14).
+    "MD025": { "front_matter_title": "" },
     // AGENTS.md/CLAUDE.md across this whole governance ecosystem intentionally start with an `@AGENTS.md` /
     // `@../AGENTS.md` import line, not an H1 — that is the convention, not a defect. Without this, MD041 fires on
     // every one of them, forever, in every project.

@@ -53,6 +53,15 @@ class AppendChangelogTest(unittest.TestCase):
             unc.append_changelog(str(path), False, _report(tmp), "")
             self.assertEqual(once, path.read_text())
 
+    def test_new_agents_md_has_fenced_front_matter(self):
+        """2026-10-14 staleness audit: a created AGENTS.md carried an unfenced header and failed role_check.py at once."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "AGENTS.md"
+            unc.upgrade_agents_md(str(path), False, _report(tmp))
+            text = path.read_text()
+            self.assertTrue(text.startswith("---\nTitle: "))
+            self.assertRegex(text.split("\n---\n", 1)[0], r"(?m)^Summary: ")
+
 
 if __name__ == "__main__":
     unittest.main()

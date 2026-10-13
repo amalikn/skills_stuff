@@ -1,5 +1,10 @@
 # Changelog — skill-project-coherence
 
+## 2026-10-14 — Tier 5 no longer regenerates Graphify
+
+- Tier 5's Graphify row said to run `graphify update .` whenever the CLI exists; Graphify was disabled on 2026-10-10 (skill-ai-it CHANGELOG
+  `20261010_1830`). The row now says not to, unless re-enabled with `GRAPHIFY_ENABLED=1`. Found by the skill-ai-it coherence pass.
+
 ## 2026-09-27 (evening) — a phrase split across a wrapped line escapes the sweep
 
 Found in unified-network-controller: its P0 runbook stated a superseded window as "22:35 to" on one line and "23:06" on the next, and `stale_refs.py` (line by line) reported 0 active. Recorded

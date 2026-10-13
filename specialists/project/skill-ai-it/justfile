@@ -90,6 +90,7 @@ audit_scripts:
 check: _require-venv
     @{{py}} scripts/check_governance.py
     @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root . --check
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
@@ -145,6 +146,13 @@ nav_selftest: _require-venv
 nav_migrate_legacy target *flags: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/migrate_legacy_blocks.py" --project-root "{{target}}" {{flags}}
 
+# Role findings across every governed project (AI_NAVIGATION.md with a skill-ai-it stamp), one line each: track the rollout. Read-only
+roles_fleet:
+    #!/usr/bin/env bash
+    for p in $(grep -rl "skill-ai-it-version" --include=AI_NAVIGATION.md /Volumes/Data/_ai/_project/project_stuff /Volumes/Data/_ai/_skills/skills_stuff/specialists 2>/dev/null | grep -v /templates/ | xargs -n1 dirname | sort); do
+      printf "%-60s %s\n" "${p#/Volumes/Data/_ai/}" "$({{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$p" | tail -1)"
+    done
+
 # Pass --print to see a generated skills.md, --write to create one (it refuses to replace an existing file without --force,
 # which keeps a backup). Example: just skills_registry /Volumes/Data/_ai/_project/project_stuff/apn --also /Volumes/Data/_ansible/ansible-wifi/AGENTS.md
 # Skills list for a project area: check its skills.md against the skills its governance files name (exit 1 on drift)
@@ -154,6 +162,10 @@ skills_registry root *args: _require-venv
 # How often agents touch a file, folder or command in recent Claude transcripts (keep or retire a navigation aid on evidence)
 agent_usage *args: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/agent_usage.py" {{args}}
+
+# Root governance files outside their roles (references/governed-file-roles.md). Read-only.
+roles: _require-venv
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root .
 
 # Triage: one header line per file in a project (`just docs ../some-project docs/`)
 docs root *scopes: _require-venv
@@ -167,7 +179,7 @@ history TERM RECORD="CHANGELOG.md": _require-venv
 history-show STAMP RECORD="CHANGELOG.md": _require-venv
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
 
-# Keep CHANGELOG and SCRATCHPAD within budget: plan by default; `just rotate --apply` (slurp runs it)
+# Keep CHANGELOG and SCRATCHPAD within budget: plan by default; `just rotate --apply` (slurp runs `just budget`, which trims ROADMAP too)
 rotate *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md

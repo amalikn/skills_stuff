@@ -29,7 +29,7 @@ After context compaction, rebuild agent context in this order:
 
 1. **Read `AI_NAVIGATION.md`** first — this file is the navigation map.
 2. **Load `.archcore/`** — durable project truth (ADRs, rules, specs, guides, plans).
-3. **Regenerate `graphify-out/`**: `graphify update .`
+3. **Skip `graphify-out/`**: Graphify is disabled (operator, 2026-10-10); regenerate only if re-enabled (`GRAPHIFY_ENABLED=1`)
 4. **Regenerate `.ai-context/`**: `repomix --config repomix.config.json`
 5. **Verify `SCRATCHPAD.md`** — if empty, populate from memory-keeper / mcp-project-context.
 6. **Verify `CHANGELOG.md`** is current.
