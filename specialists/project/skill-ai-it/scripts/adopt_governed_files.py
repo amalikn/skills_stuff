@@ -35,7 +35,7 @@ import subprocess
 import sys
 
 SKILL = pathlib.Path(__file__).resolve().parent.parent
-RECIPES = ("stale", "roles", "docs", "history", "history-show", "rotate", "budget", "changelog-entry", "move-sections", "outline", "section")
+RECIPES = ("stale", "roles", "govern", "docs", "history", "history-show", "rotate", "budget", "changelog-entry", "move-sections", "outline", "section")
 AGENTS_MARK = "just docs <folder>"
 AGENTS_LINE = ("- Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries\n"
                "  live in `docs/history/`, read only on need (`just history <term>`, `just history-show <stamp>`). Large Markdown: `just outline <file>`,\n"
@@ -473,6 +473,7 @@ def fix_agents(path: pathlib.Path) -> None:
 
 RECIPE_DOCS = {
     "check": "`just check`: the project's governance checks, then document freshness and file roles. Read-only; `safe`.",
+    "govern": "`just govern`: governance up to the current skill-ai-it standard (adoption, record budgets with `just check`, role findings); content fixes are `/skill-ai-it refresh`. `modifies-files`.",
     "roles": "`just roles`: root governance files outside their roles (front matter, README quick start, ROADMAP shape, duplicated sections). Read-only; `safe`.",
     "stale": "`just stale`: stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only; `safe`.",
     "docs": "`just docs [folder]`: one header line per file, to triage before opening. Read-only; `safe`.",

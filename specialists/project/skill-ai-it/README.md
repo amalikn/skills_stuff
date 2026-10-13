@@ -37,6 +37,7 @@ architecture docs, roadmaps, scratchpads, changelogs and planning documents. Wha
 - **Set up the package's own tooling:** `just bootstrap` builds the venv from the runtimes pinned in `.mise.toml` (in the skills working cache, never in this folder); `just runtimes` shows what the
   recipes will use.
 - **Before calling a change done:** `just check` (governance checks, document freshness, file roles); `just stale` and `just roles` list findings.
+- **Bring a project up to standard:** `just govern <project>` here, or `just govern` inside the project; then `/skill-ai-it refresh` for content.
 - **All tasks:** `just --list`; each script is catalogued in [scripts/README.md](scripts/README.md).
 
 ## Modes
@@ -45,7 +46,8 @@ architecture docs, roadmaps, scratchpads, changelogs and planning documents. Wha
 | ---------------- | -------------------------------------------------------------------------------------------------------------- |
 | `bootstrap`      | Create the initial governance scaffold for a new or light project                                              |
 | `navigation-add` | Add AI navigation starter files to an existing project                                                         |
-| `refresh`        | Update managed sections safely without overwriting custom content                                              |
+| `refresh` | Run `govern`, then fix content by the role findings, without overwriting custom content |
+| `govern` | Governance only, scripted: adoption, record budgets with `just check`, role findings (`/skill-ai-it govern`, or `just govern`) |
 | `audit`          | Report missing, stale or conflicting governance and context files, and files outside their role                |
 | `promote`        | Promote candidates from `ARCHCORE_PROMOTION_CANDIDATES.md`, or explicitly requested content, into `.archcore/` |
 

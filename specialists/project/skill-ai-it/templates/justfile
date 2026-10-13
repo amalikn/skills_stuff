@@ -100,6 +100,18 @@ stale: _require-venv
 roles: _require-venv
     @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root .
 
+# One-step governance to the current skill-ai-it standard: adoption, budgets + check, role findings; content fixes: /skill-ai-it refresh. Modifies files
+govern: _require-venv
+    #!/usr/bin/env bash
+    # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
+    root="$(cd "." && pwd)" || exit 2
+    start=$(date +%s)
+    {{py}} "{{ai_it}}/scripts/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root"
+    echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
+    exit $rc
+
 # Triage: one line per file (status, review date, summary) from its header, so a file is judged without being opened
 docs *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/file_headers.py" --project-root . {{ARGS}}

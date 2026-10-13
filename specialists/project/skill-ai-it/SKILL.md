@@ -1,6 +1,6 @@
 ---
 name: skill-ai-it
-description: "Bootstraps/refreshes a folder's AI governance docs when onboarding a project."
+description: "Bootstraps, refreshes or governs a folder's AI governance docs (onboarding, `govern` for standards only)."
 metadata:
   short-description: Bootstrap and maintain AI governance/navigation files from folder content analysis
 ---
@@ -62,9 +62,11 @@ Determine the mode before editing. If the user does not specify a mode, infer it
 | `bootstrap`      | New or lightly populated folder                       | Create the base governance scaffold and conditional project files.                                                        |
 | `navigation-add` | Existing project lacks `AI_NAVIGATION.md`             | Add the AI navigation starter module and wire it into AGENTS/CLAUDE/README. Where managed blocks already exist, run the   |
 |                  |   or `context-map.yaml`                               |   deterministic upgrade sequence rather than hand-editing them.                                                           |
-| `refresh`        | Existing governance files are present                 | **Run the deterministic upgrade sequence FIRST** (see [Deterministic Navigation-Control Automation](references/navigation-automation.md#deterministic-navigation-control-automation)) — it rewrites managed |
-|                  |                                                       |   blocks, restamps the version, and adds missing `context-map.yaml` keys mechanically. Only then re-scan content, update  |
-|                  |                                                       |   routing/index sections, append missing blocks, and preserve custom content by hand.                                     |
+| `refresh`        | Existing governance files are present                 | **Run `govern` first**, after the deterministic upgrade sequence (dry run first; see [Deterministic Navigation-Control |
+|                  |                                                       |   Automation](references/navigation-automation.md#deterministic-navigation-control-automation)), then fix content by the |
+|                  |                                                       |   role findings it prints ([roles](references/governed-file-roles.md)), confirming any move of the operator's text.     |
+| `govern`         | `/skill-ai-it govern`, or governance only             | Run the project's `just govern` (no recipe yet: `just govern <project>` from this skill): adoption, record budgets with  |
+|                  |                                                       |   `just check`, role findings. Scripted and safe to repeat; report its summary line and findings. No content edits.     |
 | `audit`          | User asks whether context                             | Report missing files, stale sections, routing gaps, drift, and proposed fixes. Do not edit unless requested.              |
 |                  |   is complete/stale/conflicting                       |                                                                                                                           |
 | `promote`        | User authorizes promotion from                        | Write or propose `.archcore/` content files (adr, rules, specs, guides, plans). Only mode that creates `.archcore/`       |
@@ -76,6 +78,7 @@ Determine the mode before editing. If the user does not specify a mode, infer it
 - If `README.md`, `AGENTS.md`, and `CLAUDE.md` are missing: use `bootstrap`.
 - If base governance exists but `AI_NAVIGATION.md` or `context-map.yaml` is missing: use `navigation-add`.
 - If navigation files exist and the user asks to update context: use `refresh`.
+- If the user asks only to bring governance files up to standard (`govern` argument): use `govern`.
 - If the user asks what is wrong, missing, stale, or why agents get lost: use `audit`.
 - If the user asks to turn notes/decisions into durable project truth: use `promote`.
 - If uncertain, run `audit` first and propose the smallest safe update.
@@ -102,7 +105,6 @@ This skill must be safe to run many times on the same project.
 11. Always report created, updated, skipped, and proposed files separately.
 
 - Read [references/managed-blocks.md](references/managed-blocks.md) before that work (moved verbatim from here): Managed block pattern.
-
 - Read [references/package-layout.md](references/package-layout.md) before that work (moved verbatim from here): Skill Package Layout.
 
 - Read [references/phases-1-3.md](references/phases-1-3.md) before that work (moved verbatim from here): Phase 1 — Inventory; Phase 2 — Understand; Phase 3 — Infer.
@@ -140,14 +142,12 @@ Every governed project runs `scripts/doc_freshness.py` from this skill (not a co
 ---
 
 - Read [references/script-task-inventory.md](references/script-task-inventory.md) before that work (moved verbatim from here): Script and task inventory.
-
 - Read [references/governance-checker.md](references/governance-checker.md) before that work (moved verbatim from here): Governance coherence checker.
 
 ### Always-created files
 
 - Roles and loading tiers (always-read files small, detail on need, history on demand): [references/governed-file-roles.md](references/governed-file-roles.md); `just roles` (`scripts/role_check.py`, in `check`, baseline ratchet) enforces the mechanical part.
 - Read [references/files-readme-agents-claude.md](references/files-readme-agents-claude.md) before that work (moved verbatim from here): README.md; AGENTS.md; CLAUDE.md.
-
 - Read [references/files-records.md](references/files-records.md) before that work (moved verbatim from here): SCRATCHPAD.md; CHANGELOG.md; .markdownlint-cli2.jsonc.
 
 ### Conditionally-created files
@@ -157,13 +157,11 @@ The files in this section are created only when their specific detection conditi
 - Read [references/files-architecture-conventions-roadmap.md](references/files-architecture-conventions-roadmap.md) before that work (moved verbatim from here): ARCHITECTURE.md — create when: code,
   infrastructure, or design decisions are present, or user requests architecture documentation; CONVENTIONS.md — create when: code files present, naming patterns exist, or style/linting rules are
   discoverable; ROADMAP.md — create when: active development, TODOs present, migration/phase structure, or incomplete features detected; SETUP.md — create when: setup outgrows README's quick start.
-
 - Read [references/files-ai-navigation.md](references/files-ai-navigation.md) before that work (moved verbatim from here): AI_NAVIGATION.md — create when: missing during `navigation-add`, requested
   explicitly, or project has more than one governance/context source.
 
 - Read [references/files-context-map.md](references/files-context-map.md) before that work (moved verbatim from here): context-map.yaml — create when: `AI_NAVIGATION.md` is created or already exists
   but no machine-readable routing map exists.
-
 - Read [references/files-support.md](references/files-support.md) before that work (moved verbatim from here): repomix.config.json — create when: project has multiple governance/docs/code files and
   Repomix is part of the navigation stack; scripts/context_preflight.sh — optional local artifact, explicit request only; .graphifyignore or .graphifyignore.sample — create when: Graphify is part of
   the navigation stack and no ignore file exists; memory-bank/ structure — create when: project is long-running, conceptual, planning-heavy, or user asks for persistent working context;
@@ -171,7 +169,6 @@ The files in this section are created only when their specific detection conditi
 
 - Read [references/finishing.md](references/finishing.md) before that work (moved verbatim from here): Phase 5 — Update Parent; Conventions Baked In; Quality Check Before Completing; Audit Output
   Format.
-
 - Read [references/compaction-recovery.md](references/compaction-recovery.md) before that work (moved verbatim from here): Context Compaction Recovery.
 
 ## Workflow: Applying This Skill to a Project
@@ -194,7 +191,6 @@ When running this skill against a target project, follow this order:
 Generated outputs (`graphify-out/`, `.ai-context/`) are support artifacts only and are never automatically promoted to canonical truth.
 
 - Read [references/navigation-automation.md](references/navigation-automation.md) before that work (moved verbatim from here): Deterministic Navigation-Control Automation.
-
 - Read [references/background.md](references/background.md) before that work (moved verbatim from here): Public Pattern Inspiration; Required Follow-Up Packaging Task.
 
 - Read [references/pitfalls.md](references/pitfalls.md) before that work (moved verbatim from here): Pitfalls observed in practice.

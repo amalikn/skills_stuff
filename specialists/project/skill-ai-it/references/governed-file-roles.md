@@ -98,7 +98,7 @@ AGENTS. How to install or run: README's quick start, or SETUP when it does not f
 
 ## Role check (audit and refresh)
 
-`just roles` (`scripts/role_check.py`) runs the mechanical part; `audit` reports its findings and the manual ones below, `refresh` fixes what can be fixed without moving the operator's content (front
+`just govern` runs adoption, budgets and `just check`, then `just roles` (`scripts/role_check.py`), the mechanical part; `audit` reports its findings and the manual ones below, `refresh` fixes what can be fixed without moving the operator's content (front
 matter, missing quick start, pointers) and reports the rest.
 
 - Each file holds only what its row allows: no section repeated from another root file, no history in README or ROADMAP, no rules in ARCHITECTURE.

@@ -16,6 +16,7 @@ Last rotated: 20261014_1030
 
 ## Contents
 
+- [20261014_1039 — govern: one-step governance recipe and skill mode; refresh runs it first](#20261014_1039--govern-one-step-governance-recipe-and-skill-mode-refresh-runs-it-first)
 - [20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)](#20261014_1030--role_check-context-mapyaml-must-parse-nav_validate-stays-manual)
 - [20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted](#20261014_1027--stamping-unstamped-projects-canary-on-agent-stack-failed-and-was-reverted)
 - [20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean](#20261014_1020--coherence-pass-architecture-key-decisions-sibling-skills-sweep-clean)
@@ -30,6 +31,16 @@ Last rotated: 20261014_1030
 - [20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp](#20261012_0952--upgrader-changelog-heading-uses-the-yyyymmdd_hhmm-stamp)
 - [20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix](#20261011_0525--section-level-markdown-reads-outline-section-and-adopter-attribute-fix)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261014_1039 — govern: one-step governance recipe and skill mode; refresh runs it first
+
+- **`govern`: one step to the current standard** (operator, 2026-10-14: "wrap steps 1-3 into one recipe", a `govern` argument for the skill, and
+  `refresh` calls govern before fixing content). `just govern [project]` here and a project-local `just govern` (template; adoption adds it):
+  `adopt_governed_files.py --apply`, `budget_plan.py --apply` (rotation, ROADMAP trim, the project's `just check`), `role_check.py`, then one
+  summary line naming what still needs attention; exit 1 when a file stays over budget or the check fails. SKILL.md: new `govern` mode
+  (`/skill-ai-it govern`, no content edits); `refresh` runs `govern` first, then fixes content by the role findings. Measured: about 1 s on this
+  package and on cambium-swap (budget: under 60 s). Canary cambium-swap: recipe added, 4 done ROADMAP items moved to history, summary names its
+  over-budget AGENTS.md (220 lines). Adoption only adds a missing recipe; it does not refresh an existing `govern` copy.
 
 ## 20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)
 
