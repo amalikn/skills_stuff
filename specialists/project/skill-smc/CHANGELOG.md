@@ -33,6 +33,8 @@ Last rotated: 20261010_1801
 
 - **Pi 4 bootloader A/B** (`references/07_hardware-overlay.md`, `VERIFIED_PRIMARY` from Raspberry Pi's release notes and docs): the fleet's 2023-01-11
   EEPROM supports `autoboot.txt` with `tryboot_a_b=1` (default since 2022-12-01); GPT untested. From unified-network-controller's read-only Pi image research.
+- **Incident:** first committed as 0.3.10 with the pack's check failing (a patch number must stay single-digit); recommitted as 0.4.0 with the check passing.
+- **Moved paths:** the SMC resiliency plans and the hang-recovery note now live in `apn/smc-resiliency` (`references/06_failure-modes.md`, `07_hardware-overlay.md`).
 
 ## 20261013_2352 — umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)
 

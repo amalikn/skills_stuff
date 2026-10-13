@@ -50,3 +50,6 @@ calls and refuses an Edit, Write or writing Bash command on a skill-owned path u
 it names an owned path and writes, or reads get blocked; let the hook pass on its own errors, and give a session-level off switch. Observed: a project
 `.claude/settings.json` created mid-session took effect at once in Claude Code (the hook blocked the next matching call), with no restart.
 
+**`just check` passes on files git does not track yet (2026-10-14, smc-resiliency bootstrap).** `doc_freshness.py` scans tracked files, so a new project's
+AI_NAVIGATION.md and two moved plans without a header summary passed `just check`, then failed the pre-commit hook once staged. Before the first commit of
+new or moved files, stage them (or `git add -N`) and run the check again; the template AI_NAVIGATION.md now carries a header for this reason.
