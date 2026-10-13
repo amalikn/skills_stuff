@@ -45,3 +45,11 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 
 > **Learned 2026-10-13** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `nautobot/extras/jobs.py` ChoiceVar (line 984) and ScriptVariable.as_field; `nautobot/__init__.py` (SUCCESS, FAILURE levels); `extras/jobs.py` JobButtonReceiver (line 1157) and the time-limit lookup (line 1305) · Falsifier: a callable ChoiceVar showing a stale list after its source changes, or `self.logger.success` raising AttributeError
 > `ChoiceVar(choices=<callable>)` works: the choices go to Django's `ChoiceField`, which is built each time the form is (as_field), so a list read from the cache is fresh on every open. `self.logger.success()` and `self.logger.failure()` exist (custom levels), and `extra={"grouping": ..., "object": obj}` sets the log entry's grouping and link, which a panel can query back (`JobLogEntry.grouping__startswith`). A Job Button runs a `JobButtonReceiver` (`receive_job_button(obj)`; fixed vars `object_pk`, `object_model_name`); a button whose Jinja2 text renders empty is hidden. A Job's `Meta.soft_time_limit` and `time_limit` override Celery's defaults for its runs.
+
+> **Learned 2026-10-14** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: `ScheduledJob._meta.get_fields()` and `JobResult._meta` on a 3.2.3 instance; a gate Job denying earlier requests in production code (UNC 0.8.8) · Falsifier: a 3.2.x ScheduledJob with an `approval_required` field, or `task` differing from the Job's `class_path`
+> A Job queued for approval twice (a second request while the first waits) leaves the first pending after the second is answered. Clear it where it
+> is created: in the approved Job's `run()`, find `ScheduledJob.objects.filter(task=self.class_path, kwargs__icontains=<object pk>)` excluding
+> `self.job_result.scheduled_job_id`, take each one's pending `associated_approval_workflows` stage and save an `ApprovalWorkflowStageResponse` for the
+> running user with `state=DENIED` and a comment. 3.2.3 has no `ScheduledJob.approval_required` field (filter by `task` and `kwargs`); `ScheduledJob.task`
+> equals the Job's `class_path`; `JobResult.scheduled_job` links a run to the schedule that queued it.
+
