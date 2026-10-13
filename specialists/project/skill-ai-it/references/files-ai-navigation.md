@@ -19,6 +19,9 @@ Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget
 
 #### AI_NAVIGATION.md — create when: missing during `navigation-add`, requested explicitly, or project has more than one governance/context source
 
+From `templates/AI_NAVIGATION.md`: fill `{{PROJECT_NAME}}` and set the front matter's `Last reviewed` to the bootstrap date. The front matter is outside the managed
+block and gives the file the header summary `doc_freshness.py` requires; without it a new project's first commit fails on it (smc-resiliency, 2026-10-14).
+
 Create as the human-readable context router. If it exists, preserve custom content and update only the managed routing sections.
 
 Preferred source template: `templates/AI_NAVIGATION.md`.

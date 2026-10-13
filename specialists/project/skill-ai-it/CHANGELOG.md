@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261013_2241
+Last rotated: 20261014_0931
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261014_0931 — ROADMAP contract, budget and trim (roadmap_trim.py promoted from UNC)](#20261014_0931--roadmap-contract-budget-and-trim-roadmap_trimpy-promoted-from-unc)
 - [20261013_2241 — Pitfall: enforce skill invocation with a hook, not a rule](#20261013_2241--pitfall-enforce-skill-invocation-with-a-hook-not-a-rule)
 - [20261013_2230 — Pitfall: the wrap hook runs on Write and Edit and reflows the whole file](#20261013_2230--pitfall-the-wrap-hook-runs-on-write-and-edit-and-reflows-the-whole-file)
 - [20261012_0958 — check_outside_blocks.py; upgrader Python floor; adopter and the outline trial](#20261012_0958--check_outside_blockspy-upgrader-python-floor-adopter-and-the-outline-trial)
@@ -23,12 +24,25 @@ Last rotated: 20261013_2241
 - [20261010_2227 — Memory pointers rotate; no upgrade hint for project-owned blocks; jdm within budget](#20261010_2227--memory-pointers-rotate-no-upgrade-hint-for-project-owned-blocks-jdm-within-budget)
 - [20261010_2207 — SKILL.md restructured: 2,074 to 198 lines, detail in references/ by topic](#20261010_2207--skillmd-restructured-2074-to-198-lines-detail-in-references-by-topic)
 - [20261010_2156 — Compact navigation template; reference split by topic; adopter documents recipes; budget suggestions](#20261010_2156--compact-navigation-template-reference-split-by-topic-adopter-documents-recipes-budget-suggestions)
-- [2026-10-10 — deterministic navigation-control upgrade](#2026-10-10--deterministic-navigation-control-upgrade)
 - [20261010_2135 — budget_plan and normalise_records; heading dates and time grouping; runaway incident and fix](#20261010_2135--budget_plan-and-normalise_records-heading-dates-and-time-grouping-runaway-incident-and-fix)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 - [20261010_1833 — Rotation made safe and complete; adopter; headers for every script and config](#20261010_1833--rotation-made-safe-and-complete-adopter-headers-for-every-script-and-config)
 - [20261010_1805 — Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates](#20261010_1805--governed-file-tools-rotation-by-bullet-ticked-items-resolved-checker-standard-slurp-rotates)
 - [20261010_1830 — feat: doc_freshness.py; Graphify disabled](#20261010_1830--feat-doc_freshnesspy-graphify-disabled)
+
+## 20261014_0931 — ROADMAP contract, budget and trim (roadmap_trim.py promoted from UNC)
+
+- **ROADMAP has a contract and a budget** (operator, 2026-10-14: "Roadmap budget is not defined ... make sure that the skill-ai-it has proper use defined
+  for roadmap and the projects are aware of it"). `references/files-architecture-conventions-roadmap.md` now says what ROADMAP is for (dated current phase,
+  open milestones by area; not a log, not session state, not decisions), its header (`Kind: roadmap`, `Budget: 200 lines, 25 KB`, `Archive:`), and how done
+  items leave it. SKILL.md's Budget and Rotation bullets name it.
+- **`scripts/roadmap_trim.py`**, promoted from unified-network-controller (dry runs identical on UNC's ROADMAP, 0 and 5 items), now takes `--project-root`,
+  creates `docs/history/` and its index when missing, and leaves a project without ROADMAP alone; `tests/test_roadmap_trim.py` (5 tests).
+- **`doc_freshness.py`** counts ROADMAP.md as a whole-read file with the default 200-line, 25 KB budget.
+- **`templates/justfile`** `rotate` runs the trim; **`adopt_governed_files.py`** adds the ROADMAP header keys and the trim line in `rotate` to any project
+  with a ROADMAP.md (2 new tests), so slurp's adoption run reaches every project.
+- **Template fix:** `templates/AI_NAVIGATION.md` gains front matter with a summary and a date; without it every new project's first commit failed
+  `doc_freshness.py` (found bootstrapping smc-resiliency). The adopt step also dates a ROADMAP it gives a header to (from its newest date, else today).
 
 ## 20261013_2241 — Pitfall: enforce skill invocation with a hook, not a rule
 
@@ -121,18 +135,6 @@ Last rotated: 20261013_2241
 - adopt_governed_files.py documents every recipe it adds in scripts/README.md (jdm requires it); budget_plan.py reports SKILL.md too, says to
   run the navigation upgrade first, and prints `move-sections` suggestions for reference-like sections (outside managed blocks), never applied.
 - Tests 33 to 35, each negative-tested; selftest 29 pass.
-
-## 2026-10-10 — deterministic navigation-control upgrade
-
-<!-- skill-ai-it-upgrade: 2026-10-10-compact-v1 -->
-
-- Applied `skill-ai-it` deterministic navigation-control upgrade.
-- Upgraded managed navigation/scripts blocks to version `2026-10-10-compact-v1`.
-- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
-- Preserved user-authored content outside managed blocks.
-- Generated outputs remain support-only; no `.archcore/` promotion was performed.
-
-Applied to: AI_NAVIGATION.md, AGENTS.md, SCRATCHPAD.md
 
 ## 20261010_2135 — budget_plan and normalise_records; heading dates and time grouping; runaway incident and fix
 

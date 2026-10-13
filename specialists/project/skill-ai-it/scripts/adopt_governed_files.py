@@ -8,7 +8,8 @@ What it checks and, with --apply, adds:
 1. justfile: the `ai_it` variable, `doc_freshness.py --check` in the `check` recipe, and the recipes stale, docs, history, history-show, rotate, budget, changelog-entry, move-sections, outline, section; a `check` recipe when there is none
    (from skill-ai-it `templates/justfile`; a project without one gets a new justfile). Refuses when the governed files are symlinks.
 2. AGENTS.md: one line on triage, staleness and history, outside any managed block.
-3. CHANGELOG.md and SCRATCHPAD.md: front matter with Kind, Budget and, for SCRATCHPAD, Keep and an open-items tracker.
+3. CHANGELOG.md and SCRATCHPAD.md: front matter with Kind, Budget and, for SCRATCHPAD, Keep and an open-items tracker; ROADMAP.md, when the project has
+   one, with Kind, Budget and Archive, and `roadmap_trim.py` in the `rotate` recipe (2026-10-14: ROADMAP had no budget and no trim outside UNC).
 4. scripts/doc-freshness-baseline.json: written when absent, so existing findings are grandfathered and new ones fail.
 
 Usage:
@@ -68,16 +69,53 @@ def make_free_text_safe(text: str) -> str:
     return text
 
 
-def justfile_gaps(text: str) -> list[str]:
-    """What the justfile lacks.
+def rotate_lacks_roadmap(text: str) -> bool:
+    """Whether the justfile's rotate recipe does not trim ROADMAP.md.
 
     Args:
         text: the justfile.
 
     Returns:
+        True when a rotate recipe exists and none of its lines runs a roadmap trim.
+    """
+    m = re.search(r"^rotate\b[^\n]*\n((?:[ \t]+[^\n]*\n?)+)", text, re.M)
+    return bool(m) and "roadmap_trim" not in m.group(1)
+
+
+def add_roadmap_to_rotate(text: str) -> str:
+    """Append the ROADMAP trim to the rotate recipe, with the interpreter its other lines use.
+
+    Args:
+        text: the justfile.
+
+    Returns:
+        The updated justfile.
+    """
+    m = re.search(r"^rotate\b[^\n]*\n((?:[ \t]+[^\n]*\n?)+)", text, re.M)
+    if not m or "roadmap_trim" in m.group(1):
+        return text
+    first = m.group(1).splitlines()[0]
+    indent = re.match(r"[ \t]+", first).group(0)
+    interp = re.search(r"@?(\S+) \"\{\{ ?ai_it ?\}\}/scripts/", first)
+    py = interp.group(1) if interp else "{{py}}"
+    body = m.group(1) if m.group(1).endswith("\n") else m.group(1) + "\n"
+    line = f'{indent}@{py.lstrip("@")} "{{{{ai_it}}}}/scripts/roadmap_trim.py" --project-root . {{{{ARGS}}}}\n'
+    return text[:m.start(1)] + body + line + text[m.end(1):]
+
+
+def justfile_gaps(text: str, roadmap: bool = False) -> list[str]:
+    """What the justfile lacks.
+
+    Args:
+        text: the justfile.
+        roadmap: the project has a ROADMAP.md, so `rotate` must trim it.
+
+    Returns:
         Short names of the missing pieces.
     """
     gaps = []
+    if roadmap and rotate_lacks_roadmap(text):
+        gaps.append("rotate does not trim ROADMAP")
     if not re.search(r"^ai_it\s*:=", text, re.M):
         gaps.append("ai_it variable")
     if not re.search(r"^check\b", text, re.M):
@@ -90,11 +128,12 @@ def justfile_gaps(text: str) -> list[str]:
     return gaps
 
 
-def fix_justfile(text: str) -> str:
+def fix_justfile(text: str, roadmap: bool = False) -> str:
     """Add the missing justfile pieces.
 
     Args:
         text: the justfile.
+        roadmap: the project has a ROADMAP.md, so `rotate` must trim it.
 
     Returns:
         The updated justfile.
@@ -124,6 +163,8 @@ def fix_justfile(text: str) -> str:
         if not re.search(r"^_require-venv\b", text, re.M):
             block = block.replace(": _require-venv", ":")  # of-si has `py :=` but no _require-venv recipe (2026-10-10)
         text = text.rstrip("\n") + "\n\n" + block
+    if roadmap:
+        text = add_roadmap_to_rotate(text)
     return make_free_text_safe(text)
 
 
@@ -162,8 +203,8 @@ def records_gaps(path: pathlib.Path, kind: str) -> list[str]:
     """What a record's front matter lacks.
 
     Args:
-        path: CHANGELOG.md or SCRATCHPAD.md.
-        kind: `log` or `state`.
+        path: CHANGELOG.md, SCRATCHPAD.md or ROADMAP.md.
+        kind: `log`, `state` or `roadmap`.
 
     Returns:
         Missing keys.
@@ -172,7 +213,8 @@ def records_gaps(path: pathlib.Path, kind: str) -> list[str]:
         return []
     text = path.read_text(encoding="utf-8")
     head = text.split("\n---", 1)[0] if text.startswith("---\n") else ""
-    need = ["Kind:", "Budget:"] + (["Keep:", "Open items tracker:"] if kind == "state" and "Pinned sections:" not in head else [])
+    need = ["Kind:", "Budget:"] + (["Archive:"] if kind == "roadmap" else [])
+    need += (["Keep:", "Open items tracker:"] if kind == "state" and "Pinned sections:" not in head else [])
     return [k for k in need if k not in head]
 
 
@@ -185,7 +227,11 @@ def fix_record(path: pathlib.Path, kind: str, stamp: str) -> None:
         stamp: today's stamp, for the tracker's file name.
     """
     text = path.read_text(encoding="utf-8")
-    keys = {"Kind": kind, "Budget": "200 lines, 25 KB"}
+    keys = {"Kind": kind, "Budget": "200 lines, 25 KB"} | ({"Archive": "docs/history/ (roadmap-*.md, `just rotate`)"} if kind == "roadmap" else {})
+    if kind == "roadmap" and "\nLast reviewed:" not in text.split("\n---", 1)[0]:
+        # The header makes ROADMAP a living document, which needs a review date; take the newest date it names (dated from its content), else today.
+        dates = re.findall(r"\b(20\d\d-[01]\d-[0-3]\d)\b", text)
+        keys["Last reviewed"] = max(dates) if dates else dt.date.today().isoformat()
     if kind == "state":
         keys |= {"Keep": "Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3",
                  "Open items tracker": f"docs/trackers/open-items-{stamp}.md"}
@@ -196,11 +242,12 @@ def fix_record(path: pathlib.Path, kind: str, stamp: str) -> None:
                 head += f"\n{k}: {v}"
         text = head + "\n---" + rest
     else:
-        title = "Changelog" if kind == "log" else "Scratchpad"
-        summary = ("Newest entries only; older ones rotate to docs/history." if kind == "log"
-                   else "Current working state; older entries rotate to docs/history, older open items to docs/trackers.")
+        title = {"log": "Changelog", "state": "Scratchpad", "roadmap": "Roadmap"}[kind]
+        summary = {"log": "Newest entries only; older ones rotate to docs/history.",
+                   "state": "Current working state; older entries rotate to docs/history, older open items to docs/trackers.",
+                   "roadmap": "Current phase and open milestones; done items move to docs/history (just rotate)."}[kind]
         body = "\n".join(f"{k}: {v}" for k, v in keys.items())
-        text = f"---\nTitle: {title}\nCategory: {'change-log' if kind == 'log' else 'working-state'}\nStatus: current\nSummary: {summary}\n{body}\n---\n\n" + text
+        text = f"---\nTitle: {title}\nCategory: { {'log': 'change-log', 'state': 'working-state', 'roadmap': 'roadmap'}[kind] }\nStatus: current\nSummary: {summary}\n{body}\n---\n\n" + text
     path.write_text(text, encoding="utf-8")
 
 
@@ -234,7 +281,7 @@ RECIPE_DOCS = {
     "docs": "`just docs [folder]`: one header line per file, to triage before opening. Read-only; `safe`.",
     "history": "`just history <term>`: search rotated CHANGELOG (or SCRATCHPAD) entries in docs/history. Read-only; `safe`.",
     "history-show": "`just history-show <stamp>`: print one rotated entry. Read-only; `safe`.",
-    "rotate": "`just rotate [--apply]`: move old CHANGELOG/SCRATCHPAD entries to docs/history, verified. Plan by default; `modifies-files`.",
+    "rotate": "`just rotate [--apply]`: move old CHANGELOG/SCRATCHPAD entries and done ROADMAP items to docs/history, verified. Plan by default; `modifies-files`.",
     "budget": "`just budget [--apply]`: bring governed files within budget (normalise, rotate, move reference sections, audit, check). Plan by default; `modifies-files`.",
     "changelog-entry": "`just changelog-entry --title ... --body-file ...`: add a CHANGELOG entry in this project's style, with its Contents line. Plan by default; `modifies-files`.",
     "move-sections": "`just move-sections ...`: move named sections verbatim to an on-need reference doc. Plan by default; `modifies-files`.",
@@ -289,10 +336,12 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     justfile = root / "justfile"
     gaps: list[str] = []
-    gaps += [f"justfile: {g}" for g in (justfile_gaps(justfile.read_text(encoding="utf-8")) if justfile.is_file() else ["no justfile"])]
+    roadmap = (root / "ROADMAP.md").is_file()
+    gaps += [f"justfile: {g}" for g in (justfile_gaps(justfile.read_text(encoding="utf-8"), roadmap) if justfile.is_file() else ["no justfile"])]
     gaps += ["AGENTS.md: governed-files line"] if agents_gap(root / "AGENTS.md") else []
     gaps += [f"CHANGELOG.md: {k}" for k in records_gaps(root / "CHANGELOG.md", "log")]
     gaps += [f"SCRATCHPAD.md: {k}" for k in records_gaps(root / "SCRATCHPAD.md", "state")]
+    gaps += [f"ROADMAP.md: {k}" for k in records_gaps(root / "ROADMAP.md", "roadmap")]
     if not (root / "scripts" / "doc-freshness-baseline.json").is_file():
         gaps.append("baseline: scripts/doc-freshness-baseline.json")
     if not gaps:
@@ -306,11 +355,11 @@ def main(argv: list[str] | None = None) -> int:
         # a governed project without a justfile gets one, so the recipes AGENTS.md names exist (ansible-wifi governance, 2026-10-10)
         justfile.write_text(f"# Governance recipes from skill-ai-it templates/justfile (adopt_governed_files.py, {stamp}).\n"
                             f'py := "{sys.executable}"\n', encoding="utf-8")
-    justfile.write_text(fix_justfile(justfile.read_text(encoding="utf-8")), encoding="utf-8")
+    justfile.write_text(fix_justfile(justfile.read_text(encoding="utf-8"), roadmap), encoding="utf-8")
     document_recipes(root / "scripts" / "README.md", justfile.read_text(encoding="utf-8"))
     if agents_gap(root / "AGENTS.md"):
         fix_agents(root / "AGENTS.md")
-    for name, kind in (("CHANGELOG.md", "log"), ("SCRATCHPAD.md", "state")):
+    for name, kind in (("CHANGELOG.md", "log"), ("SCRATCHPAD.md", "state"), ("ROADMAP.md", "roadmap")):
         if records_gaps(root / name, kind):
             fix_record(root / name, kind, stamp)
     if not (root / "scripts" / "doc-freshness-baseline.json").is_file():

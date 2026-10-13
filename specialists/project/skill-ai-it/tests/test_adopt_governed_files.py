@@ -35,6 +35,29 @@ class AdoptTest(unittest.TestCase):
             self.assertEqual(first, {p: (root / p).read_text() for p in first})
 
 
+    def test_roadmap_gets_budget_and_rotate_trims_it(self):
+        # 2026-10-14: ROADMAP had no budget and only UNC trimmed it; a project with ROADMAP.md gets both, once.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "justfile").write_text('py := "python3"\nai_it := "/x"\n\ncheck:\n    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --check\n\n'
+                                           'rotate *ARGS:\n    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md\n')
+            (root / "AGENTS.md").write_text("# AGENTS\n")
+            (root / "ROADMAP.md").write_text("# Roadmap\n\n## Current phase\n\n- [ ] x\n")
+            self.assertIn("rotate does not trim ROADMAP", adopt.justfile_gaps((root / "justfile").read_text(), roadmap=True))
+            self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
+            just, roadmap = (root / "justfile").read_text(), (root / "ROADMAP.md").read_text()
+            self.assertEqual(just.count("roadmap_trim.py"), 1)
+            self.assertIn('    @{{py}} "{{ai_it}}/scripts/roadmap_trim.py" --project-root . {{ARGS}}', just)
+            for key in ("Kind: roadmap", "Budget: 200 lines, 25 KB", "Archive:", "Last reviewed:"):
+                self.assertIn(key, roadmap)
+            self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
+            self.assertEqual((just, roadmap), ((root / "justfile").read_text(), (root / "ROADMAP.md").read_text()))
+
+    def test_no_roadmap_no_roadmap_gap(self):
+        text = 'rotate *ARGS:\n    @{{py}} "{{ai_it}}/scripts/rotate_records.py" {{ARGS}}\n'
+        self.assertNotIn("rotate does not trim ROADMAP", adopt.justfile_gaps(text))
+        self.assertNotIn("roadmap_trim", adopt.fix_justfile(text))
+
     def test_a_project_without_check_gets_one(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

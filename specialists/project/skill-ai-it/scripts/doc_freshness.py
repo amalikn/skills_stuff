@@ -10,7 +10,7 @@ loads whole keep growing, and a file without a header must be opened to be judge
    `Last reviewed` + 30 days. Reports, reviews, audits, sources and evidence describe a moment and never expire.
 2. `superseded-in-place`: `Status: superseded ...` outside an `archive/` folder (move it with `move_doc.py`).
 3. `dependency-changed`: a file named under `Depends on` was committed after the document's `Last reviewed`.
-4. `over-budget`: a file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md, MEMORY.md, or
+4. `over-budget`: a file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, ROADMAP.md, SKILL.md, MEMORY.md, or
    any file with a `Budget` key) over 200 lines or 25 KB, one standard for every agent (operator, 2026-10-10). Rotate records with
    `rotate_records.py`; trim the others.
 5. `no-header`: a tracked markdown, Python, YAML, shell, justfile or TOML file with no summary in its native header form (JSON and
@@ -47,7 +47,7 @@ DEFAULT_BASELINE = "scripts/doc-freshness-baseline.json"
 DEFAULT_WINDOW_DAYS = 30
 LIVING_STATUSES = ("current", "draft", "proposed")
 POINT_IN_TIME = re.compile(r"report|review|audit|sources?\b|source-index|sources-index|evidence|capture|changelog|record|prompt|handoff|archive", re.I)
-BUDGET_NAMES = {"AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md", "SCRATCHPAD.md", "CHANGELOG.md", "SKILL.md", "MEMORY.md"}
+BUDGET_NAMES = {"AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md", "SCRATCHPAD.md", "CHANGELOG.md", "ROADMAP.md", "SKILL.md", "MEMORY.md"}  # ROADMAP 2026-10-14
 DEFAULT_BUDGET = (200, 25 * 1024)
 CHECKER_SPLIT_LINES = 800
 DATE = re.compile(r"(\d{4})-?(\d{2})-?(\d{2})")

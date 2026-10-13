@@ -107,10 +107,11 @@ history TERM RECORD="CHANGELOG.md": _require-venv
 history-show STAMP RECORD="CHANGELOG.md": _require-venv
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
 
-# Keep CHANGELOG and SCRATCHPAD within budget: plan by default; `just rotate --apply` (slurp runs it)
+# Keep CHANGELOG, SCRATCHPAD and ROADMAP within budget: plan by default; `just rotate --apply` (slurp runs it)
 rotate *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
     @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
+    @{{py}} "{{ai_it}}/scripts/roadmap_trim.py" --project-root . {{ARGS}}
 
 # Bring governed files within budget: normalise, rotate, move non-working-state sections out, audit, check. Plan by default; `--apply` to do it
 budget *ARGS: _require-venv

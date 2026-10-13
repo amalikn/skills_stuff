@@ -1,3 +1,14 @@
+---
+Title: Roadmap
+Category: roadmap
+Status: current
+Summary: Current phase and open milestones; done items move to docs/history (just rotate).
+Kind: roadmap
+Budget: 200 lines, 25 KB
+Archive: docs/history/ (roadmap-*.md, `just rotate`)
+Last reviewed: 2026-10-04
+---
+
 # Roadmap — skill-ai-it
 
 Status: active development. See `CHANGELOG.md` for completed work; see `SCRATCHPAD.md` for open items.
