@@ -29,7 +29,7 @@ class AdoptTest(unittest.TestCase):
             first = {p: (root / p).read_text() for p in ("justfile", "AGENTS.md", "SCRATCHPAD.md")}
             self.assertEqual(first["justfile"].count("\nstale:"), 1)
             self.assertIn("doc_freshness.py", first["justfile"])
-            self.assertIn("\ngovern: ", first["justfile"])  # 2026-10-14: one-step governance reaches every adopted project
+            self.assertIn("\ngovern:", first["justfile"])  # 2026-10-14: one-step governance reaches every adopted project
             self.assertIn("Open items tracker:", first["SCRATCHPAD.md"])
             self.assertEqual(adopt.main(["--project-root", tmp]), 0)
             self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
