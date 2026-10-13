@@ -534,6 +534,11 @@ This pair found Pandanus Park/Umoona/Beagle Bay's `vlan621` backup circuit provi
 Island's `starlink01`/`starlink02` topology block is applied even at sites with no backup circuit ever ordered — see `13_known-issues.md`. Source: `local-knowledge-ansible/ansible-wifi/
 issues/apn/routing-issue/docs/starlink-backup-no-lease-l2-investigation-20260730_1400.md`.
 
+**Recurrence, 2026-10-13 (UNC scheduled uplink check, `VERIFIED_PRIMARY`):** umoona's `starlink01` (`vlan621`) reached nothing on consecutive 15-minute checks from
+23:28 AEDT (pings to 8.8.8.8 and 1.1.1.1 and a DNS query, each sent out of that uplink), while its four internet uplinks reached everything; UNC raised `uplink_down`
+for it. The 2026-07-30 switch-side fix above has not held at umoona, or the backup has gone dark again; the cause is not yet read (try the RX counter and sibling-VLAN
+tests first). The check costs one SSH session per SMC: 15 to 19 s for four or five uplinks, about 22 s for two SMCs checked in parallel.
+
 ### Local (LAN) Traffic
 
 ```

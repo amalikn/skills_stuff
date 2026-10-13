@@ -412,3 +412,9 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 
 > **Learned 2026-10-13** · Nautobot 3.2.3 · VERIFIED_SECONDARY · Source: observed building app images in Docker (overlayfs storage driver); Python and Django naming rules · Falsifier: `os.rename` of a directory copied in an earlier image layer succeeding under overlayfs
 > An app's Python package and Django app label cannot contain a hyphen (`my_app`, not `my-app`); the distribution name may (`my-app`), and the title Nautobot shows is set separately. To give one code base a different package name per deployment, rename the build copy in the image with `shutil.move`, not `os.rename`: overlayfs refuses to rename a directory that came from an earlier layer.
+
+> **Learned 2026-10-13** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: a deployed app panel on dcim.location answering 200 on a production instance (UNC app 0.8.6, Connectivity panel) · Falsifier: the same filter raising or returning nothing on 3.2.x
+> A site-level panel that gathers objects tied to the site's devices through a Relationship can filter `RelationshipAssociation.objects.filter(relationship=rel,
+> destination_id__in=Interface.objects.filter(Q(device__location=site) | Q(device__location__parent=site)).values("pk"))`: the `.values("pk")` subquery works, where
+> `site.descendants()` used as a subquery fails on 3.2.3.
+
