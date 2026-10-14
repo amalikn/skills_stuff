@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261014_1202
+Last rotated: 20261014_1213
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries](#20261014_1213--govern-stops-on-uncommitted-governed-files-drops-resolved-baseline-entries)
 - [20261014_1202 — adopt: a future deadline is not a review date](#20261014_1202--adopt-a-future-deadline-is-not-a-review-date)
 - [20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity](#20261014_1102--token-efficiency-from-the-unc-run-compact-agents-block-load-cost-header-validity)
 - [20261014_1058 — deterministic navigation-control upgrade](#20261014_1058--deterministic-navigation-control-upgrade)
@@ -28,8 +29,19 @@ Last rotated: 20261014_1202
 - [20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)](#20261014_1006--graphify-confirmed-disabled-slurp-write-backs-token-budget-rule-roles_fleet)
 - [20261014_1002 — File roles enforced: role_check.py, adoption adds headers, templates and loading tiers](#20261014_1002--file-roles-enforced-role_checkpy-adoption-adds-headers-templates-and-loading-tiers)
 - [20261014_0943 — Governed file roles defined; README trimmed; front matter everywhere](#20261014_0943--governed-file-roles-defined-readme-trimmed-front-matter-everywhere)
-- [20261014_0931 — ROADMAP contract, budget and trim (roadmap_trim.py promoted from UNC)](#20261014_0931--roadmap-contract-budget-and-trim-roadmap_trimpy-promoted-from-unc)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries
+
+- New `scripts/govern_guard.py`, first step of both `govern` recipes (template and skill): exits 1 listing governed paths
+  with uncommitted work; `GOVERN_ALLOW_DIRTY=1` overrides. On enterprise-strategy (2026-10-14) govern rotated an uncommitted
+  CHANGELOG and its edits could not be split from the operator's.
+- `doc_freshness.py` and `role_check.py`: `--prune-baseline` drops resolved entries and never adds one; kept entries keep their
+  recorded value, so an over-budget size stays the ratchet. govern runs it on both baselines. `--write-baseline` was unsafe for
+  this: it also absorbs new findings.
+- Project copies of `govern` pick the guard up on their next run (adopt refreshes them mid-run), so the first run after this
+  release is still unguarded.
+- Tests: `tests/test_govern_guard.py` (6). Live: cambium-swap refused (dirty `justfile`), enterprise-strategy passed.
 
 ## 20261014_1202 — adopt: a future deadline is not a review date
 
@@ -166,20 +178,6 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
   scripts/README.md, docs/history/readme.md, and the six May 2026 plans, prompts and reviews (`Status: archived`); missing Authority, Scope and
   Last reviewed keys added to ROADMAP, CHANGELOG and SCRATCHPAD. Not given front matter: CLAUDE.md (its import line must stay its whole content)
   and the three `templates/` snippets that are inserted into other projects' files.
-
-## 20261014_0931 — ROADMAP contract, budget and trim (roadmap_trim.py promoted from UNC)
-
-- **ROADMAP has a contract and a budget** (operator, 2026-10-14: "Roadmap budget is not defined ... make sure that the skill-ai-it has proper use defined
-  for roadmap and the projects are aware of it"). `references/files-architecture-conventions-roadmap.md` now says what ROADMAP is for (dated current phase,
-  open milestones by area; not a log, not session state, not decisions), its header (`Kind: roadmap`, `Budget: 200 lines, 25 KB`, `Archive:`), and how done
-  items leave it. SKILL.md's Budget and Rotation bullets name it.
-- **`scripts/roadmap_trim.py`**, promoted from unified-network-controller (dry runs identical on UNC's ROADMAP, 0 and 5 items), now takes `--project-root`,
-  creates `docs/history/` and its index when missing, and leaves a project without ROADMAP alone; `tests/test_roadmap_trim.py` (5 tests).
-- **`doc_freshness.py`** counts ROADMAP.md as a whole-read file with the default 200-line, 25 KB budget.
-- **`templates/justfile`** `rotate` runs the trim; **`adopt_governed_files.py`** adds the ROADMAP header keys and the trim line in `rotate` to any project
-  with a ROADMAP.md (2 new tests), so slurp's adoption run reaches every project.
-- **Template fix:** `templates/AI_NAVIGATION.md` gains front matter with a summary and a date; without it every new project's first commit failed
-  `doc_freshness.py` (found bootstrapping smc-resiliency). The adopt step also dates a ROADMAP it gives a header to (from its newest date, else today).
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

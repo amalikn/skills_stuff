@@ -25,6 +25,7 @@ Usage:
     python scripts/doc_freshness.py --project-root /path/to/project               # list findings (session preflight; exit 0)
     python scripts/doc_freshness.py --project-root . --check                      # exit 1 on a new finding or a grown file
     python scripts/doc_freshness.py --project-root . --write-baseline             # adopt: record today's findings and sizes
+    python scripts/doc_freshness.py --project-root . --prune-baseline             # drop resolved entries only (govern)
 Exit: 0 clean (or list mode), 1 on new findings under --check, 2 on bad arguments.
 """
 
@@ -213,6 +214,7 @@ def main(argv: list[str] | None = None) -> int:
     mode = ap.add_mutually_exclusive_group()
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--write-baseline", action="store_true")
+    mode.add_argument("--prune-baseline", action="store_true", help="drop resolved entries only; never adds one (govern)")
     args = ap.parse_args(argv)
     root = pathlib.Path(args.project_root).resolve()
     if not root.is_dir():
@@ -228,6 +230,13 @@ def main(argv: list[str] | None = None) -> int:
         base_path.write_text(json.dumps(kept, indent=1) + "\n")
         print(f"baseline written: {len(kept)} finding(s) -> {args.baseline}")
         return 0
+    if args.prune_baseline:
+        # Keeps the recorded value, so an over-budget size stays the ratchet it was; a new finding still fails `--check`.
+        kept = {k: v for k, v in baseline.items() if k in found}
+        if len(kept) < len(baseline):
+            base_path.write_text(json.dumps(kept, indent=1) + "\n")
+        print(f"doc-freshness baseline: {len(baseline) - len(kept)} resolved finding(s) dropped, {len(kept)} kept")
+        return 0
     bad = regressions(found, baseline)
     gone = [k for k in baseline if k not in found]
     if not args.check:
@@ -241,7 +250,7 @@ def main(argv: list[str] | None = None) -> int:
     for k in sorted(bad):
         print(f"  ✗ doc-freshness: {bad[k]}")
     if gone:
-        print(f"  note: {len(gone)} baseline finding(s) resolved; drop them with --write-baseline")
+        print(f"  note: {len(gone)} baseline finding(s) resolved; drop them with --prune-baseline (just govern does)")
     print(f"{'FAIL' if bad else 'OK'} — doc freshness: {len(bad)} new finding(s), {len(found) - len(bad)} baselined")
     return 1 if bad else 0
 

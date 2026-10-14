@@ -26,6 +26,7 @@ Usage:
     python scripts/role_check.py --project-root P                    # list findings
     python scripts/role_check.py --project-root P --check            # exit 1 on a finding the baseline does not hold
     python scripts/role_check.py --project-root P --write-baseline   # record today's findings
+    python scripts/role_check.py --project-root P --prune-baseline   # drop resolved entries only (govern)
 Exit: 0 clean (or baselined), 1 new findings in --check mode, 2 bad arguments.
 """
 
@@ -339,6 +340,7 @@ def main(argv: list[str] | None = None) -> int:
     mode = ap.add_mutually_exclusive_group()
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--write-baseline", action="store_true")
+    mode.add_argument("--prune-baseline", action="store_true", help="drop resolved entries only; never adds one (govern)")
     args = ap.parse_args(argv)
     root = pathlib.Path(args.project_root).resolve()
     if not root.is_dir():
@@ -352,6 +354,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"role baseline written: {len(found)} finding(s) -> {BASELINE}")
         return 0
     baseline = json.loads(base_path.read_text(encoding="utf-8")) if base_path.is_file() else {}
+    if args.prune_baseline:
+        kept = {k: v for k, v in baseline.items() if k in found}
+        if len(kept) < len(baseline):
+            base_path.write_text(json.dumps(kept, indent=1) + "\n", encoding="utf-8")
+        print(f"role baseline: {len(baseline) - len(kept)} resolved finding(s) dropped, {len(kept)} kept")
+        return 0
     new = {k: v for k, v in found.items() if k not in baseline}
     if not args.check:
         for k, v in sorted(found.items()):
@@ -363,7 +371,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  ✗ role: {v}")
     gone = [k for k in baseline if k not in found]
     if gone:
-        print(f"  note: {len(gone)} baselined role finding(s) resolved; drop them with --write-baseline")
+        print(f"  note: {len(gone)} baselined role finding(s) resolved; drop them with --prune-baseline (just govern does)")
     print(f"{'FAIL' if new else 'OK'} — file roles: {len(new)} new finding(s), {len(found) - len(new)} baselined")
     return 1 if new else 0
 

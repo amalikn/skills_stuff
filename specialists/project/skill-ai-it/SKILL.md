@@ -65,8 +65,10 @@ Determine the mode before editing. If the user does not specify a mode, infer it
 | `refresh`        | Existing governance files are present                 | **Run `govern` first**, after the deterministic upgrade sequence (dry run first; see [Deterministic Navigation-Control |
 |                  |                                                       |   Automation](references/navigation-automation.md#deterministic-navigation-control-automation)), then fix content by the |
 |                  |                                                       |   role findings it prints ([roles](references/governed-file-roles.md)), confirming any move of the operator's text.     |
-| `govern`         | `/skill-ai-it govern`, or governance only             | Run the project's `just govern` (no recipe yet: `just govern <project>` from this skill): navigation-block upgrade when clean, adoption, budgets with  |
-|                  |                                                       |   `just check`, role findings. Scripted and safe to repeat; report its summary line and findings. No content edits.     |
+| `govern`         | `/skill-ai-it govern`, or governance only             | Run the project's `just govern` (no recipe yet: `just govern <project>` from this skill). It stops when governed files    |
+|                  |                                                       |   hold uncommitted work (ask to commit; never override unasked); then nav upgrade, adoption, budgets with `just check`,   |
+|                  |                                                       |   resolved baseline entries dropped, role findings. Safe to repeat; report its summary line and findings. No content      |
+|                  |                                                       |   edits.                                                                                                                  |
 | `audit`          | User asks whether context                             | Report missing files, stale sections, routing gaps, drift, and proposed fixes. Do not edit unless requested.              |
 |                  |   is complete/stale/conflicting                       |                                                                                                                           |
 | `promote`        | User authorizes promotion from                        | Write or propose `.archcore/` content files (adr, rules, specs, guides, plans). Only mode that creates `.archcore/`       |
