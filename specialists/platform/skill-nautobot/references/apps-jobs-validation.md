@@ -99,3 +99,14 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > immediate runs but shows a warning card and cannot coexist with an approval workflow. **Job result logs filter by message or level only**
 > (`log-table?q=`), not by `grouping`: a Job that logs several stages needs its own per-grouping page. **A conditional object tab:** subclass
 > `DistinctViewTab` and override `should_render(context)` (call `super()` for `required_permissions`).
+
+> **Learned 2026-10-14 (f)** · Nautobot 3.2.3, DLM 4.2.0, Golden Config 3.0.7 · VERIFIED_PRIMARY (installed sources and read-only probes of a 3.2.3
+> instance, UNC platform features plan 20261014_2348) · Falsifier: a DLM release that matches a version range, or a Golden Config Device tab shown
+> with no compliance rows
+> **Device Lifecycle Management shows every versioned Device "Software INVALID" while no Validated Software exists**: validity is a match of the
+> Device's one SoftwareVersion against a ValidatedSoftware entry (by device type, role or device), exactly, so "22.04.x" is one entry per point
+> release; an entry is unique on (software, start, end). **Golden Config 3.0.7's only Device tab is Configuration Compliance**, hidden while the
+> device has no compliance rows; the backed-up configuration is reached through the GoldenConfig record, not a tab. **Core's LLDP Neighbors and
+> Configuration tabs are live NAPALM calls** from the web process: they need a Platform with a NAPALM driver and the device reachable from Nautobot,
+> so behind a jump host or for a vendor without a driver they stay empty; show stored observations from an app instead. **Core Data Compliance
+> rules** register through an app's custom validators or a Git repository and report, they do not refuse a save by default.

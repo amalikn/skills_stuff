@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261015 Learned 2026-10-14 (f) (UNC platform features plan, verified update): `references/apps-jobs-validation.md` gains DLM validity by exact SoftwareVersion match (all Invalid with none), Golden Config 3.0.7's compliance-only Device tab, core LLDP/Configuration tabs as live NAPALM calls, and Data Compliance registration.
 - 20261014 Learned 2026-10-14 (e) (UNC 0.8.22, verified update): `references/apps-jobs-validation.md` gains Run Now held by a matching approval workflow (dryrun skips it), hiding one Job's schedule card, Job result logs not filterable by grouping, and a conditional object tab.
 - 20261014 Learned 2026-10-14 (d) (UNC 0.8.15 to 0.8.19, verified update): `references/apps-jobs-validation.md` gains DNS Models zone tags not writable over REST, banners on every tab of an object page, an htmx poll filter stuck after Back, Job log retention as a history source, and badge text colours.
 - 20261014 Learned 2026-10-14 (c) (UNC 0.8.12, verified update): `references/apps-jobs-validation.md` gains a per-user view switch kept in user preferences and drawn in the app banner, and nbshell's interactive-prompt pitfall.
