@@ -63,3 +63,12 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > `nautobot_dns_models__CNAME_RESTRICTION_ENABLED` (default False), read directly from constance, so `PLUGINS_CONFIG` cannot set it; set it in nbshell with
 > `setattr(constance.config, key, True)`. **htmx polling that must not close a pop-up:** add a trigger filter, `every 10s[!document.querySelector('.modal.show')]`.
 
+> **Learned 2026-10-14 (c)** · Nautobot 3.2.3 · VERIFIED_PRIMARY (live on a 3.2.3 instance, UNC 0.8.12) · Source: `users/models.py` `get_config`/`set_config`,
+> `extras/plugins/__init__.py` `banner_function` and `BannerClassChoices` read on the container; a Django test client run against the live app · Falsifier:
+> a 3.2.x release dropping `User.config_data`, or app banners no longer called on every page
+> **A per-user view switch that persists across pages** needs no model: store it in the user's preferences (`user.set_config("<app>.<key>", value,
+> commit=True)`, read with `get_config(path, default)`), flip it from a small POST view that redirects to a validated `return_url`, and draw the switch
+> in the app's banner function (one per app, called for every page with the template context; combine anything else the app shows there into the same
+> Banner). Banner classes are only success, info, warning and danger. **nbshell from stdin is an interactive shell:** printed lines carry `>>> `
+> prompts and a block needs a closing blank line, so search a marker anywhere in the line, or use `nbshell --command`.
+
