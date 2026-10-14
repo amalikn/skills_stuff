@@ -110,3 +110,12 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > Configuration tabs are live NAPALM calls** from the web process: they need a Platform with a NAPALM driver and the device reachable from Nautobot,
 > so behind a jump host or for a vendor without a driver they stay empty; show stored observations from an app instead. **Core Data Compliance
 > rules** register through an app's custom validators or a Git repository and report, they do not refuse a save by default.
+
+> **Learned 2026-10-15 (g)** · Nautobot 3.2.3, DLM 4.2.0 · VERIFIED_PRIMARY (installed source; seeded and pages read on a live 3.2.3 instance, UNC
+> 0.8.23) · Falsifier: a DLM release with another endpoint or uniqueness, or a list with a global default view that answers 200 without a redirect
+> **DLM Validated Software over REST:** `/api/plugins/nautobot-device-lifecycle-mgmt/validated-software/` with `software`, `device_types`,
+> `device_roles`, `start`, `end`, `preferred`; key an idempotent seed on (software, start, end), DLM's uniqueness. **A global default Saved View**
+> (`is_global_default`, one per list view; saving one clears the others) makes the list URL answer 302 to `?saved_view=<id>`: a page check must follow
+> redirects, and `?clear_view=true` opens the list without it. **A Device-page tab from an app:** an `ObjectView` rendering a template that extends
+> `dcim/device.html`, with `get_detail_view_components_context_for_model(Device)` in its context, plus a `DistinctViewTab` in a TemplateExtension's
+> `object_detail_tabs`; `should_render(context)` can hide it per object (call `super()` for `required_permissions`).
