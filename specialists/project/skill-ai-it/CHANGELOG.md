@@ -16,6 +16,7 @@ Last rotated: 20261014_1233
 
 ## Contents
 
+- [20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade](#20261014_1247--yaml_key_diff-context-map-key-changes-and-lost-comments-after-an-upgrade)
 - [20261014_1234 — pitfalls: the navigation upgrade drops context-map.yaml comments](#20261014_1234--pitfalls-the-navigation-upgrade-drops-context-mapyaml-comments)
 - [20261014_1233 — validator: accepts the compact template's generated-output wording](#20261014_1233--validator-accepts-the-compact-templates-generated-output-wording)
 - [20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries](#20261014_1213--govern-stops-on-uncommitted-governed-files-drops-resolved-baseline-entries)
@@ -31,6 +32,14 @@ Last rotated: 20261014_1233
 - [20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)](#20261014_1006--graphify-confirmed-disabled-slurp-write-backs-token-budget-rule-roles_fleet)
 - [20261014_1002 — File roles enforced: role_check.py, adoption adds headers, templates and loading tiers](#20261014_1002--file-roles-enforced-role_checkpy-adoption-adds-headers-templates-and-loading-tiers)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade
+
+- New `scripts/yaml_key_diff.py` (recipe `nav_check_context_map`, skill and project template justfiles; catalogued; `tests/test_yaml_key_diff.py`):
+  compares `context-map.yaml` with a git ref by key and lists lost comments, exit 1 while one is lost. Smoke on smc-resiliency vs b1483af: two
+  added keys, one expected lost comment (the old version stamp). Promoted from the smc-resiliency refresh's ad hoc check. 102 tests.
+- `references/navigation-automation.md`: run the scripts with the venv python or `just nav_*`; a bare `python3` stops the upgrader on PyYAML.
+  Step 5 names the new check. `references/pitfalls.md` points to it.
 
 ## 20261014_1234 — pitfalls: the navigation upgrade drops context-map.yaml comments
 

@@ -26,6 +26,10 @@ SKILL_DIR=/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it
 TARGET=/path/to/target/project
 ```
 
+Run them with the skill's venv python, `/Volumes/Data/_ai/_skills/skills-working-cache/specialists/project/skill-ai-it/.venv/bin/python`
+(the `py` variable in the justfile), or through the project's `just nav_*` recipes. A bare `python3` stops the upgrader with "PyYAML is required"
+(smc-resiliency refresh, 2026-10-14); the `python3` below stands for that interpreter.
+
 **Recommended order:**
 
 0. `python3 "$SKILL_DIR/scripts/selftest_blocks.py"` — only when a template under `templates/` or a builder has been edited since the last run. It asserts the emitted blocks still carry every required
@@ -36,6 +40,8 @@ TARGET=/path/to/target/project
 3. `python3 "$SKILL_DIR/scripts/upgrade_navigation_control_layer.py" --project-root "$TARGET"` — apply changes
 4. `python3 "$SKILL_DIR/scripts/validate_navigation_control_layer.py" --project-root "$TARGET"` — validate
 5. `python3 "$SKILL_DIR/scripts/check_expected_diff.py" --project-root "$TARGET"` — verify only expected files changed (target must be a git repo)
+   - when the upgrader warns that `context-map.yaml` was re-serialised: `python3 "$SKILL_DIR/scripts/yaml_key_diff.py" --project-root "$TARGET"`
+     (`just nav_check_context_map`) names the real key changes and the comments lost; restore the purpose header and rationale comments
 6. **Governance checker** — validate reports whether `scripts/check_governance.py` exists and is wired. If absent, create it now from `templates/check_governance.py` per the *Governance coherence
    checker* section; if present, extend its registries. This step is judgement, not mechanics: the universal checks are copied, but the Tier 3 invariants must be read out of the target's own stated
    rules. Run it and report its exit status

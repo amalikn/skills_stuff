@@ -9,7 +9,7 @@ Summary: Current working state, newest first per section; superseded entries rot
 Kind: state
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261014_1017
+Last rotated: 20261014_1247
 Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
 Open items tracker: docs/trackers/open-items-20261010_1830.md
 ---
@@ -113,6 +113,8 @@ not overwrite the hand-built checker (521
 
 ## Session history
 
+- **20261014_1247** slurp: smc-resiliency govern and refresh found the validator rejecting the compact template's wording (fixed, test
+  added) and the upgrader dropping context-map.yaml comments (pitfall, ROADMAP fix item, `yaml_key_diff.py` promoted). Open: build the upgrader fix.
 - **20261014_1006** slurp: Graphify verified disabled (all calls gated; two recovery steps fixed); token-budget rule in AGENTS.md;
   `just roles_fleet`. Open: cambium-swap canary uncommitted; operator runs adopt on 11 projects; 12 unstamped AI_NAVIGATION projects.
 - **20261014_1002**: roles enforced: `role_check.py` (gate, ratchet), adopt adds headers and the role gate, templates aligned, loading tiers in
@@ -152,10 +154,6 @@ not overwrite the hand-built checker (521
 - Names only ever written in plain prose cannot be told apart from hyphenated phrases, so they are reported for a human (`--keep` lists one). Open from its
   first run: `skill-malik-ai` is cited by `me/islam` and `me/japan/tracks/jdm` but exists nowhere.
 
-### 20260923_1300 — KEEP: self-governance, and a loss this package caused in itself
-
-- The upgrader's inlined navigation block had drifted nine sections behind `templates/AI_NAVIGATION.md` since 2026-08-11. Bootstrapping then upgrading a project deleted 105 lines of routing while
-  reporting `replaced-managed-block`. All three builders now read their templates; a missing template stops the run instead of falling back.
 - `scripts/selftest_blocks.py` added — 20 assertions, with the required-section floor stated independently of any template, because comparing the emitted block to the template it is generated from
   cannot fail.
 - `scripts/check_governance.py` added. On its first run it caught that this package's OWN `scripts/README.md` had lost four sections to the self-upgrade, because they were nested inside the
@@ -165,6 +163,8 @@ not overwrite the hand-built checker (521
 
 ## Next actions
 
+- Build the ROADMAP item "Upgrader keeps `context-map.yaml` comments" before the unstamped-projects rollout (operator not yet asked to
+  schedule it, 2026-10-14); its test: a commented context map survives an upgrade.
 - Operator: `git push` in skills_stuff (commit `d8c0df6`; the agent push was refused by auto mode). tools_stuff (all-scraper write-back,
   parent AGENTS rule) and apn/cambium-swap (role-check canary) are uncommitted in their repos.
 - Roll the role check out: per project `adopt_governed_files.py --project-root . --apply && just check && just roles` (11 projects, CHANGELOG
@@ -189,6 +189,9 @@ Keys written this session:
 - `skills_stuff.governance-checker.scoping-lessons-20260923` — SURFACES scoping for a spec package, with the measured numbers
 - `skills_stuff.runtime-pinning.undeclared-host-deps-20260923` — PyYAML, and pin-versus-host
 - `skills_stuff.skill-eval-manager.governance-bootstrap-20260923`, `skills_stuff.task.skill-eval-manager-open-decisions-20260923`
+
+Slurp 20261014_1247 — memory-keeper channel `skill-ai-it` key `skill-ai-it.smc-resiliency-refresh-findings.20261014`; project-context
+`skills_stuff` note; checkpoint `slurp-20261014-smc-resiliency-refresh` in both backends.
 
 Slurp 20261008_1428 — memory-keeper channel `skill-ai-it` keys above; project-context `skills_stuff` delta note and the commit-all decision;
 checkpoint `slurp-20261008-snake-run-commits` in both backends.

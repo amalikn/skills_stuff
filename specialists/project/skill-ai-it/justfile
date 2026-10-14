@@ -135,6 +135,10 @@ nav_check_diff: _require-venv
 nav_check_blocks REF="HEAD": _require-venv
 	@{{py}} "{{skill_dir}}/scripts/check_outside_blocks.py" --project-root . --ref "{{REF}}"
 
+# Context map after an upgrade: key changes by content and comments lost vs a git ref (default HEAD); exit 1 while a comment is lost. Read-only
+nav_check_context_map REF="HEAD": _require-venv
+	@{{py}} "{{skill_dir}}/scripts/yaml_key_diff.py" --project-root . --ref "{{REF}}"
+
 # Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
 # package's templates change, before trusting nav_upgrade to rewrite this project's blocks.
 nav_selftest: _require-venv

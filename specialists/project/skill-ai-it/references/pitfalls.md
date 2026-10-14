@@ -57,5 +57,6 @@ new or moved files, stage them (or `git add -N`) and run the check again; the te
 **The navigation upgrade re-serialises `context-map.yaml` and drops its comments (2026-10-14, smc-resiliency refresh).** When the `update_rules`
 merge adds a rule, the upgrader warns "re-serialised the whole file" and writes it back without comments or quoting, so the line diff is
 hundreds of lines (532 there) while the real change was one version key and one rule. The lost lines included the file's purpose header, which the
-header standard requires. After applying: load the old (`git show HEAD:./context-map.yaml`) and new files with PyYAML and compare by key to
-confirm what changed, list the old comments (`grep -n '^\s*#'`), and put the purpose header and any rationale comments back by script.
+header standard requires. After applying: `just nav_check_context_map`
+(`scripts/yaml_key_diff.py`) compares the old (`git show HEAD:./context-map.yaml`) and new files by key and lists the comments lost; put the
+purpose header and any rationale comments back by script. A lost `# skill-ai-it-version:` comment is expected: the key replaces it.
