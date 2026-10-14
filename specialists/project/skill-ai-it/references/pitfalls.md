@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-10-10
+Last reviewed: 2026-10-14
 Summary: >-
   Pitfalls observed in practice; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -53,3 +53,9 @@ it names an owned path and writes, or reads get blocked; let the hook pass on it
 **`just check` passes on files git does not track yet (2026-10-14, smc-resiliency bootstrap).** `doc_freshness.py` scans tracked files, so a new project's
 AI_NAVIGATION.md and two moved plans without a header summary passed `just check`, then failed the pre-commit hook once staged. Before the first commit of
 new or moved files, stage them (or `git add -N`) and run the check again; the template AI_NAVIGATION.md now carries a header for this reason.
+
+**The navigation upgrade re-serialises `context-map.yaml` and drops its comments (2026-10-14, smc-resiliency refresh).** When the `update_rules`
+merge adds a rule, the upgrader warns "re-serialised the whole file" and writes it back without comments or quoting, so the line diff is
+hundreds of lines (532 there) while the real change was one version key and one rule. The lost lines included the file's purpose header, which the
+header standard requires. After applying: load the old (`git show HEAD:./context-map.yaml`) and new files with PyYAML and compare by key to
+confirm what changed, list the old comments (`grep -n '^\s*#'`), and put the purpose header and any rationale comments back by script.
