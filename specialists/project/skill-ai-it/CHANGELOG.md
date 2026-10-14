@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261014_1102
+Last rotated: 20261014_1202
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261014_1202 — adopt: a future deadline is not a review date](#20261014_1202--adopt-a-future-deadline-is-not-a-review-date)
 - [20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity](#20261014_1102--token-efficiency-from-the-unc-run-compact-agents-block-load-cost-header-validity)
 - [20261014_1058 — deterministic navigation-control upgrade](#20261014_1058--deterministic-navigation-control-upgrade)
 - [20261014_1051 — govern fixes from the UNC run: folded legacy headers stay fenced; audit failures named](#20261014_1051--govern-fixes-from-the-unc-run-folded-legacy-headers-stay-fenced-audit-failures-named)
@@ -28,8 +29,14 @@ Last rotated: 20261014_1102
 - [20261014_1002 — File roles enforced: role_check.py, adoption adds headers, templates and loading tiers](#20261014_1002--file-roles-enforced-role_checkpy-adoption-adds-headers-templates-and-loading-tiers)
 - [20261014_0943 — Governed file roles defined; README trimmed; front matter everywhere](#20261014_0943--governed-file-roles-defined-readme-trimmed-front-matter-everywhere)
 - [20261014_0931 — ROADMAP contract, budget and trim (roadmap_trim.py promoted from UNC)](#20261014_0931--roadmap-contract-budget-and-trim-roadmap_trimpy-promoted-from-unc)
-- [20261013_2241 — Pitfall: enforce skill invocation with a hook, not a rule](#20261013_2241--pitfall-enforce-skill-invocation-with-a-hook-not-a-rule)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261014_1202 — adopt: a future deadline is not a review date
+
+- `adopt_governed_files.py` `fix_record`: `Last reviewed` derived from content now ignores dates after today. On enterprise-strategy (govern run, 2026-10-14)
+  it took a 25 Oct deadline in SCRATCHPAD as the review date and wrote 2026-10-25 on CHANGELOG and SCRATCHPAD; both corrected by hand.
+- Test: `test_future_deadline_is_not_the_review_date`, shown failing without the fix (17 tests, OK with it).
+- Other projects adopted earlier may carry a future `Last reviewed`; checked across governed projects in the same session.
 
 ## 20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity
 
@@ -173,11 +180,6 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
   with a ROADMAP.md (2 new tests), so slurp's adoption run reaches every project.
 - **Template fix:** `templates/AI_NAVIGATION.md` gains front matter with a summary and a date; without it every new project's first commit failed
   `doc_freshness.py` (found bootstrapping smc-resiliency). The adopt step also dates a ROADMAP it gives a header to (from its newest date, else today).
-
-## 20261013_2241 — Pitfall: enforce skill invocation with a hook, not a rule
-
-- `references/pitfalls.md`: enforce "invoke skill X before Y work" with a PreToolUse hook (transcript Skill calls, owned-path map, Bash only when it writes,
-  fail open, off switch); a project `.claude/settings.json` created mid-session took effect at once. From unified-network-controller 2026-10-13.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

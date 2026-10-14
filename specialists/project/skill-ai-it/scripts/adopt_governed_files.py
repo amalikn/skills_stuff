@@ -303,7 +303,9 @@ def fix_record(path: pathlib.Path, kind: str, stamp: str) -> None:
             "Kind": kind, "Budget": "200 lines, 25 KB"} | ({"Archive": "docs/history/ (roadmap-*.md, `just rotate`)"} if kind == "roadmap" else {})
     if "\nLast reviewed:" not in text.split("\n---", 1)[0]:
         # ROADMAP is a living document and needs a review date; take the newest date a record names (dated from its content), else today.
-        dates = re.findall(r"\b(20\d\d-[01]\d-[0-3]\d)\b", text)
+        # Dates after today are deadlines, not reviews (enterprise-strategy SCRATCHPAD, 2026-10-14, got a 25 Oct deadline as Last reviewed).
+        today = dt.date.today().isoformat()
+        dates = [d for d in re.findall(r"\b(20\d\d-[01]\d-[0-3]\d)\b", text) if d <= today]
         keys["Last reviewed"] = max(dates) if dates else dt.date.today().isoformat()
     if kind == "state":
         keys |= {"Keep": "Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3",

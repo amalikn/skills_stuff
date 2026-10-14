@@ -201,6 +201,14 @@ class AdoptTest(unittest.TestCase):
             self.assertIn("Summary: >- First line\n  second line.\n", text.split("\n---\n", 1)[0])
             self.assertIn("\n---\n\n@../AGENTS.md\n\n# AGENTS.md\n", text)
 
+    def test_future_deadline_is_not_the_review_date(self):
+        # 2026-10-14: enterprise-strategy SCRATCHPAD got its 25 Oct deadline as Last reviewed; only dates up to today count.
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "SCRATCHPAD.md"
+            path.write_text("# Scratchpad\n\n- done 2020-01-02\n- due 2099-12-31\n")
+            adopt.fix_record(path, "state", "20200102_0000")
+            self.assertIn("Last reviewed: 2020-01-02", path.read_text())
+
 
 if __name__ == "__main__":
     unittest.main()
