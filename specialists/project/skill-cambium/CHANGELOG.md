@@ -32,6 +32,11 @@ Last rotated: 20261010_1801
 - [20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)](#20261009_0120--station-table-range-and-angle-force-300-has-no-mac-table-r195p-attachment-not-readable-v0646---v0647)
 - [20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)](#20260930_1221--terminology-paid-pin-corrected-to-access-mark-v0626---v0627)
 
+## 20261014_1956 — ePMP ARP MAC = LAN + 1 confirmed on Force 300-25 (v0.7.10 -> v0.8.0)
+
+- `references/03_asset-register-conventions.md`: wandawuy's Force 300-25 PtP pair shows the same LAN + 1 ARP MAC as the 3000L units; storing the ARP MAC
+  reads as drift at OpenWISP registration. Source: unified-network-controller, wandawuy register stage, 2026-10-14.
+
 ## 20261013_2226 — Sidekick commissioning leaves no installer record; as-built sets (v0.7.9 -> v0.7.10)
 
 - **Sidekick commissioning leaves no installer record** (`references/05_known-issues.md`, after the low-touch installer-record section; from unified-network-controller

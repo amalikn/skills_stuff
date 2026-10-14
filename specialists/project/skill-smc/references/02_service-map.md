@@ -63,6 +63,12 @@ Separately, **the SMC's own DNS queries never go through unbound/stubby/bind at 
 PREROUTING DNS redirect (`roles/smc_iptables/templates/iptables.smp.j2`) is scoped to the LAN-facing bridge interface, not the host's own OUTPUT traffic. Conflating "host DNS" and "client DNS" is a
 common source of confusion when debugging DNS delays reported from the box itself vs. from a connected client.
 
+**Names in the `smc_ltp` RPZ zone (2026-10-14, unified-network-controller):** BIND's `check-names` defaults to `fail` for a primary zone, so an A or AAAA
+owner name with an underscore (an asset-register name such as `WDY_XV2_AP1_IP3_10`) makes `named` refuse to load the zone; the check covers owner names of
+A, AAAA and MX records (and NS, SOA, MX, SRV data), not CNAME or TXT records. A name meant for `db.cambium-rpz` is lowercase with hyphens
+(`wdy-xv2-ap1-ip3-10`). `VERIFIED_PRIMARY` (BIND 9 ARM 9.20.29, `check-names`: primary fail, secondary warn, response ignore; read 2026-10-14); not yet
+loaded on a live box.
+
 **Live-verified network layout (RCT):**
 - `eth1.500` → `bridge_500` (management VLAN, 10.255.0.0/24, DHCP .100-.110)
 - `eth1.501` → `bridge_501` (client VLAN, 10.0.0.0/23, DHCP .10-.254)

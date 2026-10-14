@@ -72,3 +72,16 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > Banner). Banner classes are only success, info, warning and danger. **nbshell from stdin is an interactive shell:** printed lines carry `>>> `
 > prompts and a block needs a closing blank line, so search a marker anywhere in the line, or use `nbshell --command`.
 
+> **Learned 2026-10-14 (d)** · Nautobot 3.2.3, DNS Models 2.3.0 · VERIFIED_PRIMARY (live on a 3.2.3 instance, UNC 0.8.15 to 0.8.19) · Source: a PATCH of `tags`
+> to `/api/plugins/dns/dns-zones/<id>/` (200, response without `tags`, zone unchanged), then `zone.tags.add(...)` in nbshell; Django test client page reads
+> · Falsifier: a DNS Models release whose zone serializer accepts `tags`
+> **DNS Models zone tags are not writable over REST:** `DNSZone` is a PrimaryModel with tags, but its serializer drops `tags`, so the write "succeeds" and
+> nothing is tagged; set them through the ORM (nbshell `--command`) and read them back. **An object page's banner is drawn on every tab of it**
+> (`?tab=<name>`), while a template-extension panel sits on the main tab only: a banner link or button that relies on the panel's markup (a modal, an
+> in-page anchor) must point at the main tab when `tab` is not `main`. **An htmx poll filter that names an open element** (`[!document.querySelector
+> ('details[open]')]`) stops polling for good when the browser restores the page from its back-forward cache with that element open: on `pageshow`,
+> close such elements and fire a custom trigger the poll also listens to (`hx-trigger="every 10s[...], my-refresh"`). **The Job log as a history
+> source:** `JobLogEntry` keeps `created`, `grouping` and the Job result's user, enough to time steps a Job logs as start and end lines, but the
+> Logs Cleanup system Job deletes them; copy them first if the history must outlive a cleanup. **Badge text:** Nautobot's theme draws white on
+> `bg-success` and black on `text-bg-success` and `text-bg-info`.
+

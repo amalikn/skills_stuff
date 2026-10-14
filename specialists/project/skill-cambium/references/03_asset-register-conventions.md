@@ -39,6 +39,8 @@ The naming *idea* is shared but each site applies it with its own drift:
   address** (`VERIFIED_PRIMARY` 2026-09-23: hope-vale `HOP_3000L_T1_SecE0_21` LAN `58:C1:7A:79:21:BD`, ARP `…:BE`; `SecW0_22` `…:06:CB` / `…:CC`; every one of 67 ePMP rows at kalumburu matched
   at ARP MAC = register MAC + 1; the kalumburu masters' device-reported `lan_mac_address` equals their register MAC). So a MAC join between register and ARP must try the value and value + 1,
   and the ARP MAC is the management-plane address (bridge side), not the LAN port's. An earlier note here that kalumburu's register held the radio MAC was wrong and is withdrawn.
+  Confirmed on another model 2026-10-14 (wandawuy, Force 300-25 PtP master and slave): the sweep's ARP MACs `00:04:56:4A:E7:89` and `…:E4:4D` were
+  landed in Nautobot, and OpenWISP registration found the units identify as `…:E7:88` and `…:E4:4C` (LAN MAC), so a store of the ARP MAC reads as drift.
 
 ### Per-Site IP Addressing Reality
 
