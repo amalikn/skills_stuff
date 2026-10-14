@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261015 Learned 2026-10-15 (h) (UNC SSoT OpenWISP health Job, verified update): `references/integrations.md` gains a flat field-mirror DataSource pattern, quieter diffsync flags for an hourly mirror, schedulable Jobs need has_sensitive_variables False, the writer is the schedule's owner via the change context, DataMapping's shape and the pydantic Optional gotcha in path-loaded tests.
 - 20261015 Learned 2026-10-15 (g) (UNC 0.8.23, verified update): `references/apps-jobs-validation.md` gains DLM's Validated Software REST shape and uniqueness, a global default Saved View's redirect and clear_view, and a Device-page tab from an app.
 - 20261015 Learned 2026-10-14 (f) (UNC platform features plan, verified update): `references/apps-jobs-validation.md` gains DLM validity by exact SoftwareVersion match (all Invalid with none), Golden Config 3.0.7's compliance-only Device tab, core LLDP/Configuration tabs as live NAPALM calls, and Data Compliance registration.
 - 20261014 Learned 2026-10-14 (e) (UNC 0.8.22, verified update): `references/apps-jobs-validation.md` gains Run Now held by a matching approval workflow (dryrun skips it), hiding one Job's schedule card, Job result logs not filterable by grouping, and a conditional object tab.

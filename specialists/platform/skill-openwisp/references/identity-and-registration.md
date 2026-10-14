@@ -19,6 +19,9 @@ effective settings before relying on it. Claim O-C11.
 > **Learned 2026-10-05** · OpenWISP controller 1.3 (images 26.09.0) · VERIFIED_PRIMARY · Source: openwisp_controller/config/api/serializers.py lines 252-345 and config/settings.py lines 42-54 in the installed image · Falsifier: a 1.3 device serializer that lists hardware_id
 > The REST device serializers omit `hardware_id`, so REST can neither read nor write it in 1.3; `HARDWARE_ID_ENABLED` defaults to False and `HARDWARE_ID_AS_NAME` to True. Server-side registration is required to key on it. Syntax: [operations cookbook](operations-cookbook.md) section 2.
 
+> **Learned 2026-10-15** · openwisp-api 26.09.0 (Monitoring 1.3) · VERIFIED_PRIMARY (source read in the image; the SQL not yet run against a live database) · Source: `openwisp_monitoring/device/api/serializers.py:97-123` (`MonitoringDeviceListSerializer` fields), `openwisp_monitoring/device/api/filters.py:46-49`, `openwisp_monitoring/device/apps.py:39-40` (label `device_monitoring`) · Falsifier: a monitoring list serializer that lists hardware_id
+> The monitoring device list (`/api/v1/monitoring/device/`, filter `monitoring__status`) returns id, name, mac_address, key, last_ip, management_ip and `monitoring.status`, but no `hardware_id` either, so REST cannot give hardware_id-keyed health. A reader that cannot run a Django shell in the container (a Nautobot worker) can read the same answer read-only from the database: `config_device.hardware_id` LEFT JOIN `device_monitoring_devicemonitoring` ON `device_id`, a missing row reading `unknown` (default table names of the unswapped models).
+
 ## Acceptance and failure clues
 
 An accepted registration request is not proof that the intended record, group mapping, monitoring identity, or deduplication policy took effect. Investigate duplicate identity, stale registration,
