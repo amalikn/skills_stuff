@@ -13,6 +13,7 @@ Last rotated: 20261010_1801
 
 ## Contents
 
+- [20261014_2230 — Central chassis port plans from as-built sets; old-looma SWP 24 corrected (v0.4.2 -> v0.4.3)](#20261014_2230--central-chassis-port-plans-from-as-built-sets-old-looma-swp-24-corrected-v042---v043)
 - [20261014_1513 — x86 SMC facts, Teleport static-token join, x86 resiliency probe (v0.4.0 -> v0.4.1)](#20261014_1513--x86-smc-facts-teleport-static-token-join-x86-resiliency-probe-v040---v041)
 - [20261014_0900 — Pi bootloader already supports tryboot A/B (v0.3.9 -> v0.4.0)](#20261014_0900--pi-bootloader-already-supports-tryboot-ab-v039---v040)
 - [20261013_2352 — umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)](#20261013_2352--umoona-vlan621-dark-again-uplink-check-cost-v038---v039)
@@ -29,6 +30,12 @@ Last rotated: 20261010_1801
 - [20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)](#20260930_1202--bot-cw-dashboard-wipes-pin-marks-on-koonibbaamata-a-zero-eclipse_mark-count-is-not-normal-v0173---v0174)
 - [20260911_1120 — bungardi-smc01 confirmed as third broken site; Eclipse "PIN Last Issued" admin report documented as a third corroborating evidence source (v0.1.35 -> v0.1.36)](#20260911_1120--bungardi-smc01-confirmed-as-third-broken-site-eclipse-pin-last-issued-admin-report-documented-as-a-third-corroborating-evidence-source-v0135---v0136)
 - [20260626_1845 — v0.1.3: project-coherence checklist + references/10-13 content update](#20260626_1845--v013-project-coherence-checklist--references10-13-content-update)
+
+## 20261014_2230 — Central chassis port plans from as-built sets; old-looma SWP 24 corrected (v0.4.2 -> v0.4.3)
+
+- `references/16_tplink-site-switches.md`: wangkatjungka's and yakanarra's central chassis port plans read from their as-built drawings (checked
+  against the rendered PDFs), and a correction: old-looma's SWP 24 line enters Switch2, not Switch1 (draw.io XML and PDF). Source:
+  unified-network-controller as-built generator, 2026-10-14.
 
 ## 20261014_1956 — BIND check-names on the smc_ltp RPZ zone (v0.4.1 -> v0.4.2)
 

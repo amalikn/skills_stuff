@@ -7,6 +7,7 @@
 - [Per-Site Drift — Read the Columns, Not the Name](#per-site-drift--read-the-columns-not-the-name)
 - [Site-Name Convention](#site-name-convention)
 - [R195P Residential CPE — `rcp`-Only, IP Not in the Register](#r195p-residential-cpe--rcp-only-ip-not-in-the-register)
+- [As-Built Sets — Site Drawings Beside the Register (2026-10-13)](#as-built-sets--site-drawings-beside-the-register-2026-10-13)
 - [Extraction Gotchas](#extraction-gotchas)
 
 ---
@@ -35,12 +36,12 @@ The naming *idea* is shared but each site applies it with its own drift:
   `HOP_XV2_AP1_IP3_1` (hope-vale): `device_ip` 10.255.3.1, mask 255.255.224.0 (a `/19` inside the `/18`), gateway 10.255.0.1, `vlan_id` 500, the VLAN500 interface carrying the same address and every
   other interface `0.0.0.0`. `unified-network-controller` applies this rule in `adapters/estate.py` (`select_management_ip`).
 
-- **For an ePMP unit the register's `mac_address` is the unit's LAN MAC (`cambiumLANMACAddress`) at every site checked, but the SMC's ARP table shows LAN + 1 for its management
-  address** (`VERIFIED_PRIMARY` 2026-09-23: hope-vale `HOP_3000L_T1_SecE0_21` LAN `58:C1:7A:79:21:BD`, ARP `…:BE`; `SecW0_22` `…:06:CB` / `…:CC`; every one of 67 ePMP rows at kalumburu matched
-  at ARP MAC = register MAC + 1; the kalumburu masters' device-reported `lan_mac_address` equals their register MAC). So a MAC join between register and ARP must try the value and value + 1,
-  and the ARP MAC is the management-plane address (bridge side), not the LAN port's. An earlier note here that kalumburu's register held the radio MAC was wrong and is withdrawn.
-  Confirmed on another model 2026-10-14 (wandawuy, Force 300-25 PtP master and slave): the sweep's ARP MACs `00:04:56:4A:E7:89` and `…:E4:4D` were
-  landed in Nautobot, and OpenWISP registration found the units identify as `…:E7:88` and `…:E4:4C` (LAN MAC), so a store of the ARP MAC reads as drift.
+- **For an ePMP unit the register's `mac_address` is the unit's LAN MAC (`cambiumLANMACAddress`) at every site checked, but the SMC's ARP table shows LAN + 1 for its management address**
+  (`VERIFIED_PRIMARY` 2026-09-23: hope-vale `HOP_3000L_T1_SecE0_21` LAN `58:C1:7A:79:21:BD`, ARP `…:BE`; `SecW0_22` `…:06:CB` / `…:CC`; every one of 67 ePMP rows at kalumburu matched at ARP MAC =
+  register MAC + 1; the kalumburu masters' device-reported `lan_mac_address` equals their register MAC). So a MAC join between register and ARP must try the value and value + 1, and the ARP MAC is the
+  management-plane address (bridge side), not the LAN port's. An earlier note here that kalumburu's register held the radio MAC was wrong and is withdrawn. Confirmed on another model 2026-10-14
+  (wandawuy, Force 300-25 PtP master and slave): the sweep's ARP MACs `00:04:56:4A:E7:89` and `…:E4:4D` were landed in Nautobot, and OpenWISP registration found the units identify as `…:E7:88` and
+  `…:E4:4C` (LAN MAC), so a store of the ARP MAC reads as drift.
 
 ### Per-Site IP Addressing Reality
 
@@ -100,25 +101,29 @@ same `EXTnnnn`-named entry, in the "Tower + AP" sheet — don't double-count it 
 
 ## As-Built Sets — Site Drawings Beside the Register (2026-10-13)
 
-A deployed site may also have an **as-built set** from its build contractor, besides the asset register: first read at old-looma (FNCW - Looma
-Community, rcp low-touch, version 1.0, drawings 2026-08-03, map 2026-09-01; kept verbatim in unified-network-controller `docs/sites/old-looma/as-built/`).
+A deployed site may also have an **as-built set** from its build contractor, besides the asset register: first read at old-looma (FNCW - Looma Community, rcp low-touch, version 1.0, drawings
+2026-08-03, map 2026-09-01; kept verbatim in unified-network-controller `docs/sites/old-looma/as-built/`).
 
-- **What a set holds:** a central chassis connectivity drawing (SMC, switches, UPS, uplinks with their SMC interfaces, switch ports to the tower radios and
-  APs), one connection drawing per tower (radios, mast heights, injectors, power, the tower's XV2 and any wired router), each as draw.io plus PDF; a KMZ
-  (one folder per tower: point, sector and omni coverage shapes, each XV2 and how it is fed, the cnWave and PtP links; carries no date); a coverage map
-  (InDesign plus PDF: lot, hardware, power, mast height and AP number per tower, and a hardware glossary). Towers without a drawing (old-looma T6-T8) are on
-  the map and KMZ only.
-- **Labels:** XV2s are numbered `APn` per tower (the map and KMZ, AP1 at the central tower); 3000L sectors and omnis carry `WifiBridge_n` (with a direction
-  for sectors, e.g. "SouthEast"); `F25` is the ePMP Force 300-25 (SM or PtP), `V5000/V3000/V2000` the cnWave units; `CIE`/`CEE` are central internal
-  (SMC plus switches) and external equipment; `SWP n` is a switch port; routers are drawn `R195P IAP (Ext XXXX)` with the extension left blank.
-- **Read the drawings as text** with unified-network-controller `just wc::asbuilt-read <folder>` (`wc-local/scripts/site_onboarding/asbuilt_read.py`): draw.io
-  pages are deflated base64 XML with HTML labels. A drawing's port labels (`SWP n`) are separate boxes beside the line, so which port a link uses is read from
-  the PDF by eye, not from the XML.
-- **Known flaws in v1.0:** tower drawings are copied from each other (old-looma T2's drawing carries T3's XV2 and omni labels; the map, KMZ and discovery
-  agree on T2 = AP3); a hardware list can name a unit discovery never finds (T4's F25); the KMZ and the map can disagree on mast height and power (T4).
-  Cross-check every drawing against the map and discovery; a corrected set arrives as a new version beside the old one, never over it.
-- **How it is used:** a deployed site's as-built is the reference for drift against what discovery finds; unified-network-controller holds it per site as
-  `docs/sites/<site>/as-built-reference.yaml` (format `unc-as-built/1`) and shows it in Nautobot's As built panel.
+- **What a set holds:** a central chassis connectivity drawing (SMC, switches, UPS, uplinks with their SMC interfaces, switch ports to the tower radios and APs), one connection drawing per tower
+  (radios, mast heights, injectors, power, the tower's XV2 and any wired router), each as draw.io plus PDF; a KMZ (one folder per tower: point, sector and omni coverage shapes, each XV2 and how it is
+  fed, the cnWave and PtP links; carries no date); a coverage map (InDesign plus PDF: lot, hardware, power, mast height and AP number per tower, and a hardware glossary). Towers without a drawing
+  (old-looma T6-T8) are on the map and KMZ only.
+- **Labels:** XV2s are numbered `APn` per tower (the map and KMZ, AP1 at the central tower); 3000L sectors and omnis carry `WifiBridge_n` (with a direction for sectors, e.g. "SouthEast"); `F25` is the
+  ePMP Force 300-25 (SM or PtP), `V5000/V3000/V2000` the cnWave units; `CIE`/`CEE` are central internal (SMC plus switches) and external equipment; `SWP n` is a switch port; routers are drawn `R195P
+  IAP (Ext XXXX)` with the extension left blank.
+- **Read the drawings as text** with unified-network-controller `just wc::asbuilt-read <folder>` (`wc-local/scripts/site_onboarding/asbuilt_read.py`): draw.io pages are deflated base64 XML with HTML
+  labels. A drawing's port labels (`SWP n`) are separate boxes beside the line; since 2026-10-14 asbuilt_read also gives each box's position and each line's path, and `just wc::asbuilt-generate --site
+  <s>` matches a port to the nearest line (old-looma, wangkatjungka and yakanarra checked against the PDFs: every port right). A line drawn to a picture takes the caption beside it.
+- **Known flaws in v1.0:** tower drawings are copied from each other (old-looma T2's drawing carries T3's XV2 and omni labels; the map, KMZ and discovery agree on T2 = AP3); a hardware list can name a
+  unit discovery never finds (T4's F25); the KMZ and the map can disagree on mast height and power (T4). Cross-check every drawing against the map and discovery; a corrected set arrives as a new
+  version beside the old one, never over it.
+- **Seen across seven sets (2026-10-14: beagle-bay, pandanus-park, umoona, wangkatjungka, warburton, yakanarra besides old-looma):** the copied XV2 label recurs (pandanus-park T2 drawn AP2, KMZ AP5;
+  wangkatjungka T3 drawn AP3, KMZ AP2); placeholders `AP#` and `EAP` stand for the number; sets often ship drawings as PDF only (beagle-bay towers, umoona and warburton chassis) or no central drawing
+  at all; KMZ link text can name the wrong tower ("T1 F25 - T6" drawn T1-T3), a place ("Shop V5000 - Clinic V1000") or a non-tower ("T2B"), and a line can run backwards, so take ends from the line's
+  coordinates; towers can be split (warburton 3A/3B, 4A/4B); the map can number routers as APs (warburton AP17-19 are R195s); Force 300-16 SMs feed some towers ("via F16", umoona). The KMZ is the most
+  complete source: every set has one, one folder per tower.
+- **How it is used:** a deployed site's as-built is the reference for drift against what discovery finds; unified-network-controller holds it per site as `docs/sites/<site>/as-built-reference.yaml`
+  (format `unc-as-built/1`) and shows it in Nautobot's As built panel.
 
 ## Extraction Gotchas
 

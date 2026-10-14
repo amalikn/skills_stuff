@@ -330,6 +330,9 @@ Q-BRIDGE or ARP table over SNMP, and its REST bridge table listed only itself wh
   SM), and the Remote ID is the SM's radio MAC (its record + 1; ansible-wifi `cnmaestro-provisioning.py` `_remote_id_mac`). The SMC's dhcpd keeps it
   in `/var/lib/dhcp/dhcpd.leases` (212 of 1,949 leases), for the public clients only: the routers' own leases carry none. The clients the router
   learnt on its `ra*`/`rai*` ports, looked up there, name its SM: home-49's and home-17's clients came through sm-47 and sm-16, as the AP table said.
+  Confirmed 2026-10-14 (old-looma-smc01, read-only): 10.0.x 1,850 leases, 167 with a Remote ID; 10.255.x (management) only 12 leases, 2 with a
+  Remote ID, both non-Cambium clients behind an SM; the SMC's ARP table holds 129 10.255 entries. The units' management addresses are static, so
+  Option 82 alone pairs no unit with its SM; the pairing comes from the install record and the bridge tables (unified-network-controller 0.8.22).
 
 - **The install record, strongest at low-touch sites** (2026-10-09): the router's own provisioning request went through its SM's AP, which added
   Option 82; the SMC's provisioning hook logged that Remote ID and wrote the SM's name into the router's cnMaestro description (`us`, with `lot no`

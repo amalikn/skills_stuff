@@ -85,3 +85,17 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > Logs Cleanup system Job deletes them; copy them first if the history must outlive a cleanup. **Badge text:** Nautobot's theme draws white on
 > `bg-success` and black on `text-bg-success` and `text-bg-info`.
 
+
+> **Learned 2026-10-14 (e)** · Nautobot 3.2.3 · VERIFIED_PRIMARY (installed source; UNC 0.8.22) · Source: `extras/views.py` JobRunView POST (create_schedule,
+> has_approval_workflow_definition, dryrun branch), `extras/templates/extras/job.html` (schedule card), `extras/views.py` JobResultUIViewSet.log_table,
+> `core/ui/object_detail.py` Component.should_render · Falsifier: a Run Now of a workflow-matched Job that executes without approval, or a job.html with a
+> wrapper block around the schedule card
+> **Run Now goes through approval too:** the run form always makes a ScheduledJob (`create_schedule`, interval `immediately`), and when a workflow
+> definition matches it, the run is held for approval like a scheduled one; only a Job's `dryrun` variable skips the approval (runs at once). So a
+> name-matched definition plus a `DryRunVar` gives "preview freely, change after approval" with no custom code. **Hiding the schedule card** of one
+> Job: `job.html` has a `schedule_form` block inside the card but no block around the card, and its script reads `#id__schedule_type`; in the Job's
+> `Meta.template_name` keep the fields and hide the cards with `.card:has(#id__schedule_type)` (and `#id__job_queue`, `#id__console_log`), then refuse
+> a schedule in `run()` (`self.job_result.scheduled_job_id`), since hiding is not a guard. `has_sensitive_variables = True` would also force
+> immediate runs but shows a warning card and cannot coexist with an approval workflow. **Job result logs filter by message or level only**
+> (`log-table?q=`), not by `grouping`: a Job that logs several stages needs its own per-grouping page. **A conditional object tab:** subclass
+> `DistinctViewTab` and override `should_render(context)` (call `super()` for `required_permissions`).
