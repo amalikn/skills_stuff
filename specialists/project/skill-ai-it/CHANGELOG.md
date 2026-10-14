@@ -9,13 +9,16 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261014_1030
+Last rotated: 20261014_1102
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity](#20261014_1102--token-efficiency-from-the-unc-run-compact-agents-block-load-cost-header-validity)
+- [20261014_1058 — deterministic navigation-control upgrade](#20261014_1058--deterministic-navigation-control-upgrade)
+- [20261014_1051 — govern fixes from the UNC run: folded legacy headers stay fenced; audit failures named](#20261014_1051--govern-fixes-from-the-unc-run-folded-legacy-headers-stay-fenced-audit-failures-named)
 - [20261014_1039 — govern: one-step governance recipe and skill mode; refresh runs it first](#20261014_1039--govern-one-step-governance-recipe-and-skill-mode-refresh-runs-it-first)
 - [20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)](#20261014_1030--role_check-context-mapyaml-must-parse-nav_validate-stays-manual)
 - [20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted](#20261014_1027--stamping-unstamped-projects-canary-on-agent-stack-failed-and-was-reverted)
@@ -26,11 +29,40 @@ Last rotated: 20261014_1030
 - [20261014_0943 — Governed file roles defined; README trimmed; front matter everywhere](#20261014_0943--governed-file-roles-defined-readme-trimmed-front-matter-everywhere)
 - [20261014_0931 — ROADMAP contract, budget and trim (roadmap_trim.py promoted from UNC)](#20261014_0931--roadmap-contract-budget-and-trim-roadmap_trimpy-promoted-from-unc)
 - [20261013_2241 — Pitfall: enforce skill invocation with a hook, not a rule](#20261013_2241--pitfall-enforce-skill-invocation-with-a-hook-not-a-rule)
-- [20261013_2230 — Pitfall: the wrap hook runs on Write and Edit and reflows the whole file](#20261013_2230--pitfall-the-wrap-hook-runs-on-write-and-edit-and-reflows-the-whole-file)
-- [20261012_0958 — check_outside_blocks.py; upgrader Python floor; adopter and the outline trial](#20261012_0958--check_outside_blockspy-upgrader-python-floor-adopter-and-the-outline-trial)
-- [20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp](#20261012_0952--upgrader-changelog-heading-uses-the-yyyymmdd_hhmm-stamp)
-- [20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix](#20261011_0525--section-level-markdown-reads-outline-section-and-adopter-attribute-fix)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity
+
+- **Token efficiency, from the UNC run** (operator, 2026-10-14: confirm UNC follows efficient token use; fix gaps in the skill). UNC loaded 50 KB
+  (~12,800 tokens) before work, and its preflight forced a full read of context-map.yaml (10.8 KB). Skill gaps fixed: the AGENTS navigation block
+  (26 lines restating AI_NAVIGATION, still naming Graphify output) is now 9 lines of hard rules plus a pointer, and context-map.yaml is read only
+  when routing or companions change (version `2026-10-14-compact-v2`); `role_check.py` prints `always loaded: N files, X KB (~T tokens)`
+  following `@` imports; `govern` applies the navigation-block upgrade when its dry run is clean. UNC after: 48 KB (~12,500 tokens), AGENTS.md
+  203 to 191 lines (within budget), and no forced context-map read.
+- **Header validity:** `role_check.py` front-matter rule parses the header as YAML (UNC AGENTS.md had text after `>-`; smc-resiliency README an
+  unquoted `: `); the adopter quotes values that need it (`fm_value`) and no longer mistakes a sentence with a colon for a `Key: value` line.
+- **Outdated `govern` copies refreshed** by the adopter (project form only); interpreter detection ignores calls inside `$(...)`.
+- **Checker:** CHANGELOG.md exempt from the unregistered-restatement scan (history; it stated the new stamp). Also carried: the other session's
+  adopter fix for folded continuation lines and the govern summary naming rotation-audit losses (entry 20261014_1051).
+
+## 20261014_1058 — deterministic navigation-control upgrade
+
+<!-- skill-ai-it-upgrade: 2026-10-14-compact-v2 -->
+
+- Applied `skill-ai-it` deterministic navigation-control upgrade.
+- Upgraded managed navigation/scripts blocks to version `2026-10-14-compact-v2`.
+- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
+- Preserved user-authored content outside managed blocks.
+- Generated outputs remain support-only; no `.archcore/` promotion was performed.
+
+Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
+
+## 20261014_1051 — govern fixes from the UNC run: folded legacy headers stay fenced; audit failures named
+
+- **adopt_governed_files.py:** a legacy (unfenced) header's folded value now keeps its indented continuation lines inside the new fence; before,
+  the fence closed after the first line and the tail landed below the `@` import (UNC AGENTS.md, first `govern` run). Test added (14 pass).
+- **govern recipe** (justfile, templates/justfile): the NEEDS ATTENTION reason also names `audit: LOST|SPLIT`; it was blank when the rotation audit
+  failed, because budget_plan.py returns before printing UNFINISHED. cambium-swap's adopted copy still has the old grep.
 
 ## 20261014_1039 — govern: one-step governance recipe and skill mode; refresh runs it first
 
@@ -146,40 +178,6 @@ Last rotated: 20261014_1030
 
 - `references/pitfalls.md`: enforce "invoke skill X before Y work" with a PreToolUse hook (transcript Skill calls, owned-path map, Bash only when it writes,
   fail open, off switch); a project `.claude/settings.json` created mid-session took effect at once. From unified-network-controller 2026-10-13.
-
-## 20261013_2230 — Pitfall: the wrap hook runs on Write and Edit and reflows the whole file
-
-- `references/pitfalls.md`: the Markdown wrap and contents hook runs on Write and Edit only and reflows the whole file (tables, split paths, joined
-  managed-block markers); shell edits bypass it. From unified-network-controller 2026-10-10/11, written back late after a write-back audit (2026-10-13).
-
-## 20261012_0958 — check_outside_blocks.py; upgrader Python floor; adopter and the outline trial
-
-- `scripts/check_outside_blocks.py` (promoted from an enterprise-strategy upgrade check): each file with its managed blocks removed must match a git ref (default HEAD);
-  `just nav_check_blocks [REF]`; catalogued in scripts/README.md; three offline tests (block-only change passes, outside edit fails, dropped END marker fails); smoke on
-  enterprise-strategy at a5f2c33~1: AI_NAVIGATION.md identical, AGENTS.md and scripts/README.md differ by their deliberate outside-block edits. 66 tests pass.
-- Finding: the upgrader needs Python 3.10 or later (`str | None` in a signature); the host `python3` crashes on import. Use the project venv (`just nav_upgrade`) or python3.14.
-- Open, proposed not decided: `adopt_governed_files.py` adds the `outline` and `section` recipes to every project, which undoes the hold on them until the
-  unified-network-controller trial is re-measured (2026-10-25). A skip list or a trial flag would keep the hold.
-
-## 20261012_0952 — Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp
-
-- `scripts/upgrade_navigation_control_layer.py`: the CHANGELOG entry heading now carries the `YYYYMMDD_hhmm` stamp (local time), as `add_changelog_entry.py`
-  writes it, instead of an ISO date (`2026-10-12 — ...`), which broke the heading convention in every project it upgraded (found on enterprise-strategy, operator 12 Oct 2026).
-- `tests/test_upgrade_navigation_control_layer.py`: the heading is stamped and first in a newest-first log; a second run is idempotent. Red against the old code, green now; 63 tests pass.
-- Existing date-only upgrade headings in projects stay as written (history); rotation and order detection already read both forms.
-
-## 20261011_0525 — Section-level Markdown reads (outline, section) and adopter attribute fix
-
-- New `scripts/md_sections.py` with recipes `just outline` (each heading with its line range and size) and `just section` (one section by exact
-  title, leading section number optional, `Parent > Child`, `#anchor` or `~substring`; an ambiguous selector exits 3 and lists every match). Idea
-  from lilmd (molefrog/lilmd), no code taken (it has no licence); exact by default because 44 of 123 numbered UNC headings collide under substring
-  matching. Read-only, stdlib only. Evidence: UNC `docs/reports/knowledge-tooling/lilmd-assessment-20261011_0517.md`.
-- `agent_usage.py --md-reads`: counts hand-built outline greps, recipe calls and whole/ranged Markdown Reads, subagent transcripts included.
-  UNC baseline (30 days): 182 transcripts, 748 outline greps in 99.
-- Fixed `adopt_governed_files.py` `split_recipes`: attribute lines (`[positional-arguments]`) and the comment above them were dropped when a
-  recipe was copied, so `"$@"` arrived empty (found when `just outline` got no file). Adopter now ships `outline` and `section` and names them in
-  the AGENTS line for new projects.
-- Tests 50 to 61 (md_sections 9, adopter regression 1, md_reads 1); `just check` 308 pass. Adopted here and in UNC (trial to 2026-10-25).
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

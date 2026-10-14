@@ -8,7 +8,7 @@ the role check a script can decide; the rest stays with the agent's audit (drift
 
 Rules (key `<rule>:<file>`):
 1. `front-matter`: a root governance file (README, AGENTS, AI_NAVIGATION, ARCHITECTURE, CONVENTIONS, SETUP, ROADMAP, CHANGELOG, SCRATCHPAD) does
-   not open with a `---` fenced block carrying Title and Summary. CLAUDE.md is exempt: its import line must stay first.
+   not open with a `---` fenced block carrying Title and Summary that parses as YAML (when PyYAML is installed). CLAUDE.md is exempt: its import line must stay first.
 2. `claude-import`: CLAUDE.md's first line is not `@AGENTS.md`.
 3. `readme-quick-start`: README.md has no quick start (a heading such as Quick start, Getting started, Setup, Usage) and no SETUP.md link.
 4. `readme-history`: README.md has a history or status heading (History, Changelog, Progress, Status, Current state, Recent, a dated heading).
@@ -85,7 +85,17 @@ def has_front_matter(text: str) -> bool:
     lines = text.splitlines()
     end = md_sections.front_matter_end(lines)
     head = "\n".join(lines[:end])
-    return end > 0 and bool(re.search(r"(?m)^Title:", head)) and bool(re.search(r"(?m)^Summary:", head))
+    if not (end > 0 and bool(re.search(r"(?m)^Title:", head)) and bool(re.search(r"(?m)^Summary:", head))):
+        return False
+    try:
+        import yaml
+    except ImportError:
+        return True  # key presence only; the context-map rule reports the missing PyYAML once
+    try:
+        # 2026-10-14: an unquoted `: ` (smc-resiliency README) and text after `>-` (UNC AGENTS.md) passed the key check as invalid YAML
+        return isinstance(yaml.safe_load("\n".join(lines[1:end - 1])), dict)
+    except yaml.YAMLError:
+        return False
 
 
 def sections(text: str) -> list[tuple[int, str, str]]:
@@ -247,7 +257,7 @@ def findings(root: pathlib.Path, today: dt.date) -> dict[str, str]:
     texts = {n: (root / n).read_text(encoding="utf-8") for n in ROLE_FILES if (root / n).is_file()}
     for name, text in texts.items():
         if not has_front_matter(text):
-            out[f"front-matter:{name}"] = f"{name}: no `---` front matter with Title and Summary"
+            out[f"front-matter:{name}"] = f"{name}: no `---` front matter with Title and Summary that parses as YAML"
     claude = root / "CLAUDE.md"
     if claude.is_file():
         first = next((ln.strip() for ln in claude.read_text(encoding="utf-8").splitlines() if ln.strip()), "")
@@ -264,6 +274,55 @@ def findings(root: pathlib.Path, today: dt.date) -> dict[str, str]:
     else:
         out |= {f"{k}:context-map.yaml": f"context-map.yaml: {v}" for k, v in cmap.items()}
     return out
+
+
+def load_cost(root: pathlib.Path) -> list[tuple[str, int]]:
+    """What an agent loads before any work: CLAUDE.md and AGENTS.md with every `@` import they pull in, and AI_NAVIGATION.md, read first.
+
+    Reported, not gated (operator, 2026-10-14: files must spend AI tokens well). Per-file budgets hide the sum across the parent chain.
+
+    Args:
+        root: the project root.
+
+    Returns:
+        (path, bytes) for each file, in load order, each once.
+    """
+    seen: dict[str, int] = {}
+    todo = [root / "CLAUDE.md", root / "AGENTS.md"]
+    while todo:
+        path = todo.pop(0)
+        try:
+            real = path.resolve()
+        except OSError:
+            continue
+        if str(real) in seen or not real.is_file():
+            continue
+        text = real.read_text(encoding="utf-8", errors="replace")
+        seen[str(real)] = len(text.encode("utf-8"))
+        for line in text.splitlines():
+            if re.match(r"^@\S+\.md\s*$", line.strip()):
+                target = pathlib.Path(line.strip()[1:]).expanduser()
+                todo.append(target if target.is_absolute() else real.parent / target)
+    nav = (root / "AI_NAVIGATION.md").resolve()
+    if nav.is_file() and str(nav) not in seen:
+        seen[str(nav)] = nav.stat().st_size
+    return list(seen.items())
+
+
+def cost_line(root: pathlib.Path) -> str:
+    """One line: files loaded before work, their size and a token estimate (bytes / 4).
+
+    Args:
+        root: the project root.
+
+    Returns:
+        The line.
+    """
+    files = load_cost(root)
+    total = sum(n for _, n in files)
+    largest = max(files, key=lambda f: f[1]) if files else ("", 0)
+    return (f"always loaded: {len(files)} files, {total // 1024} KB (~{total // 4:,} tokens); largest {pathlib.Path(largest[0]).name} "
+            f"{largest[1] // 1024} KB. Keep rules and pointers there; detail one link down (governed-file-roles.md, Loading model)")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -298,6 +357,7 @@ def main(argv: list[str] | None = None) -> int:
         for k, v in sorted(found.items()):
             print(f"{'  ' if k in baseline else '✗ '}{v}{'  (baselined)' if k in baseline else ''}")
         print(f"{len(found)} role finding(s), {len(new)} not in the baseline; roles: skill-ai-it references/governed-file-roles.md")
+        print(cost_line(root))
         return 0
     for v in new.values():
         print(f"  ✗ role: {v}")

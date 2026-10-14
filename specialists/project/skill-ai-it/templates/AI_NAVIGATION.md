@@ -32,7 +32,7 @@ between the markers. Keep it updated when sections are added either side. -->
 - [Audit procedure](#audit-procedure)
 - [Agent answer contract](#agent-answer-contract)
 
-<!-- BEGIN MANAGED: skill-ai-it:navigation --> <!-- skill-ai-it-version: 2026-10-10-compact-v1 -->
+<!-- BEGIN MANAGED: skill-ai-it:navigation --> <!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
 
 ## Mandatory read order
 

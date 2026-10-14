@@ -32,3 +32,6 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 - [changelog-20261014_1027.md](changelog-20261014_1027.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
 - [changelog-20261014_1030.md](changelog-20261014_1030.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
 - [scratchpad-20261014_1035.md](scratchpad-20261014_1035.md) SCRATCHPAD Next actions as replaced at the 2026-10-14 slurp close (verbatim).
+- [changelog-20261014_1051.md](changelog-20261014_1051.md) 1 entries from `CHANGELOG.md`, 2026-10-11 to 2026-10-11.
+- [changelog-20261014_1100.md](changelog-20261014_1100.md) 1 entries from `CHANGELOG.md`, 2026-10-12 to 2026-10-12.
+- [changelog-20261014_1102.md](changelog-20261014_1102.md) 2 entries from `CHANGELOG.md`, 2026-10-12 to 2026-10-13.

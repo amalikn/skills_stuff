@@ -15,7 +15,7 @@ Runnable scripts for maintaining the **navigation control layer** in target proj
 explicitly.
 
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
-<!-- skill-ai-it-version: 2026-10-10-compact-v1 -->
+<!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
 
 ## Execution Policy
 
@@ -108,7 +108,7 @@ looked maintained. Run `selftest_blocks.py` after touching a template or a build
 ## Governance recipes (skill-ai-it)
 
 - `just stale`: stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only; `safe`.
-- `just govern [project]`: one-step governance of a project (default this package): `adopt_governed_files.py --apply`, `budget_plan.py --apply` (runs the project's `just check`), `role_check.py`; prints one summary line naming what still needs attention; under 60 s (about 1 s measured 2026-10-14). Projects get their own `just govern` from the template. `modifies-files`.
+- `just govern [project]`: one-step governance of a project (default this package): the navigation-block upgrade when its dry run is clean (else: run refresh), `adopt_governed_files.py --apply`, `budget_plan.py --apply` (runs the project's `just check`), `role_check.py`; prints one summary line naming what still needs attention; under 60 s (about 1 s measured 2026-10-14). Projects get their own `just govern` from the template. `modifies-files`.
 - `just roles_fleet`: one role-check summary line per governed project, to track the role-check rollout. Read-only; `safe`.
 - `just roles`: root governance files outside their roles (front matter, README quick start, ROADMAP shape, duplicated sections). Read-only; `safe`.
 - `just history <term>`: search rotated CHANGELOG (or SCRATCHPAD) entries in docs/history. Read-only; `safe`.

@@ -19,7 +19,7 @@ When adding repeat-refreshable content into existing files, wrap it with comment
 
 ```markdown
 <!-- BEGIN MANAGED: skill-ai-it:<section-name> -->
-<!-- skill-ai-it-version: 2026-10-10-compact-v1 -->
+<!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
 ...managed content...
 <!-- END MANAGED: skill-ai-it:<section-name> -->
 ```

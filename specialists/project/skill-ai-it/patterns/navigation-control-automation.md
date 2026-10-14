@@ -95,7 +95,7 @@ that is present but unwired is still flagged.
 it is the mechanism that tells already-upgraded projects to re-run the upgrade: their managed blocks carry the previous stamp and `validate` reports "missing current version stamp". That report is the
 intended signal, not a defect in the project. Remediation is one `just nav_upgrade` per project.
 
-Current stamp: `2026-10-10-compact-v1` (previous: `2026-10-07-snake-case-recipes-v1`). Projects still on the previous stamp lack the emitted governance-checks guidance.
+Current stamp: `2026-10-14-compact-v2` (previous: `2026-10-07-snake-case-recipes-v1`). Projects still on the previous stamp lack the emitted governance-checks guidance.
 
 ## Relationship to patterns/drift-audit.md
 

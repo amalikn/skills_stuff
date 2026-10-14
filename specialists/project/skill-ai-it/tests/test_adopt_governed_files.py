@@ -161,6 +161,28 @@ class AdoptTest(unittest.TestCase):
             self.assertEqual(subprocess.run(freshness + ["--check"], capture_output=True).returncode, 0)
             self.assertIn("over-budget:AGENTS.md", json.loads((root / "scripts" / "doc-freshness-baseline.json").read_text()))
 
+    def test_outdated_govern_copy_is_refreshed_and_skill_form_left_alone(self):
+        """cambium-swap, 2026-10-14: an older `govern` copy printed a blank reason; adoption refreshes the project form only."""
+        old = 'py := "python3"\nai_it := "/x"\n\ncheck:\n    @echo c doc_freshness.py role_check.py\n\n# old\ngovern:\n    @echo old\n'
+        self.assertIn("recipe govern outdated", adopt.justfile_gaps(old))
+        fixed = adopt.fix_justfile(old)
+        self.assertNotIn("@echo old", fixed)
+        self.assertIn("audit: (LOST", fixed)
+        self.assertEqual(adopt.outdated_recipes(fixed), [])
+        skill_form = 'py := "python3"\n\ngovern project=".":\n    @echo mine\n'
+        self.assertEqual(adopt.outdated_recipes(skill_form), [])
+
+    def test_written_header_is_valid_yaml(self):
+        """A summary taken from prose may hold `: `; the written header must still parse (smc-resiliency, 2026-10-14)."""
+        import yaml
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# Proj\n\nThis project does one thing: it routes # packets.\n\n## Folder index\n")
+            adopt.fix_header(root, "README.md")
+            text = (root / "README.md").read_text()
+            head = yaml.safe_load(text[4:text.index("\n---", 4)])
+            self.assertEqual(head["Summary"], "This project does one thing: it routes # packets.")
+
     def test_prose_key_lines_are_not_a_legacy_header(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -169,6 +191,15 @@ class AdoptTest(unittest.TestCase):
             text = (root / "SETUP.md").read_text()
             self.assertIn("\n---\n\nNote: read this first.\n", text)
             self.assertIn("Title: Setup", text)
+
+    def test_legacy_folded_value_stays_inside_the_fence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "AGENTS.md").write_text("@../AGENTS.md\n\nTitle: Policy\nSummary: >- First line\n  second line.\n\n# AGENTS.md\n\nRules.\n")
+            adopt.fix_header(root, "AGENTS.md")
+            text = (root / "AGENTS.md").read_text()
+            self.assertIn("Summary: >- First line\n  second line.\n", text.split("\n---\n", 1)[0])
+            self.assertIn("\n---\n\n@../AGENTS.md\n\n# AGENTS.md\n", text)
 
 
 if __name__ == "__main__":

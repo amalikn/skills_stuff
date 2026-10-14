@@ -65,7 +65,7 @@ Determine the mode before editing. If the user does not specify a mode, infer it
 | `refresh`        | Existing governance files are present                 | **Run `govern` first**, after the deterministic upgrade sequence (dry run first; see [Deterministic Navigation-Control |
 |                  |                                                       |   Automation](references/navigation-automation.md#deterministic-navigation-control-automation)), then fix content by the |
 |                  |                                                       |   role findings it prints ([roles](references/governed-file-roles.md)), confirming any move of the operator's text.     |
-| `govern`         | `/skill-ai-it govern`, or governance only             | Run the project's `just govern` (no recipe yet: `just govern <project>` from this skill): adoption, record budgets with  |
+| `govern`         | `/skill-ai-it govern`, or governance only             | Run the project's `just govern` (no recipe yet: `just govern <project>` from this skill): navigation-block upgrade when clean, adoption, budgets with  |
 |                  |                                                       |   `just check`, role findings. Scripted and safe to repeat; report its summary line and findings. No content edits.     |
 | `audit`          | User asks whether context                             | Report missing files, stale sections, routing gaps, drift, and proposed fixes. Do not edit unless requested.              |
 |                  |   is complete/stale/conflicting                       |                                                                                                                           |

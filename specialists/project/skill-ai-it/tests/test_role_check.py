@@ -64,6 +64,12 @@ class RoleCheckTest(unittest.TestCase):
             with self.subTest(key), tempfile.TemporaryDirectory() as tmp:
                 self.assertIn(key, rc.findings(project(tmp, GOOD | override), TODAY))
 
+    def test_front_matter_must_parse_as_yaml(self):
+        """2026-10-14: `Scope: ... apn: what` and `Summary: >- text` passed the key check but are not YAML."""
+        for bad in ("---\nTitle: T\nScope: a: b\nSummary: S\n---\n\n# A\n", "---\nTitle: T\nSummary: >- text\n  more\n---\n\n# A\n"):
+            with self.subTest(bad[:30]), tempfile.TemporaryDirectory() as tmp:
+                self.assertIn("front-matter:AGENTS.md", rc.findings(project(tmp, GOOD | {"AGENTS.md": bad}), TODAY))
+
     def test_old_done_item_fails_and_recent_one_does_not(self):
         with tempfile.TemporaryDirectory() as tmp:
             old = GOOD["ROADMAP.md"].replace("- [ ] Next thing", "- [ ] Next thing\n- [x] Shipped 2026-09-01")
@@ -86,6 +92,16 @@ class RoleCheckTest(unittest.TestCase):
                 self.assertIn("context-map-parse:context-map.yaml", rc.findings(project(tmp, GOOD | {"context-map.yaml": text}), TODAY))
         with tempfile.TemporaryDirectory() as tmp:
             self.assertEqual(rc.findings(project(tmp, GOOD | {"context-map.yaml": "version: 1\nrouting:\n  a: [b]\n"}), TODAY), {})
+
+    def test_load_cost_follows_imports_once(self):
+        """The always-loaded set is CLAUDE.md, AGENTS.md, what they import (each once) and AI_NAVIGATION.md."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "proj"
+            root.mkdir()
+            (Path(tmp) / "AGENTS.md").write_text("parent rules\n")
+            project(str(root), {"CLAUDE.md": "@AGENTS.md\n", "AGENTS.md": FM + "@../AGENTS.md\n# A\n", "AI_NAVIGATION.md": "nav\n"})
+            names = [Path(p).relative_to(Path(tmp).resolve()).as_posix() for p, _ in rc.load_cost(root)]
+            self.assertEqual(names, ["proj/CLAUDE.md", "proj/AGENTS.md", "AGENTS.md", "proj/AI_NAVIGATION.md"])
 
     def test_check_fails_only_on_unbaselined_findings(self):
         with tempfile.TemporaryDirectory() as tmp:

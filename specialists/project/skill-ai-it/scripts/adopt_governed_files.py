@@ -110,6 +110,63 @@ def add_roadmap_to_rotate(text: str) -> str:
     return text[:m.start(1)] + body + line + text[m.end(1):]
 
 
+#: skill-owned recipes refreshed when a project's copy differs from the template; adoption otherwise only adds missing recipes, which left
+#: cambium-swap on a `govern` that printed a blank reason (2026-10-14). Only the project form (`govern:`) is touched.
+REFRESHED = ("govern",)
+#: a recipe line that starts with the interpreter calling a skill script; a call inside `$(...)` (govern's navigation dry run) is not one
+INTERP = re.compile(r'(?m)^[ \t]+@?(\{\{ ?\w+ ?\}\}|\S*python[\w.]*) "\{\{ ?ai_it ?\}\}/scripts/')
+
+
+def adapt(block: str, text: str) -> str:
+    """Fit template recipe text to a project's justfile: its interpreter, and no `_require-venv` dependency when it has no such recipe.
+
+    Args:
+        block: recipe text from the template.
+        text: the project's justfile.
+
+    Returns:
+        The adapted recipe text.
+    """
+    used = INTERP.search(text)  # the interpreter the project's skill recipes already call (of-si: {{ai_py}})
+    interp = used.group(1) if used else "{{py}}" if re.search(r"^py\s*:=", text, re.M) else "python3"
+    if interp != "{{py}}":
+        block = block.replace("{{py}}", interp)
+    if not re.search(r"^_require-venv\b", text, re.M):
+        block = block.replace(": _require-venv", ":")
+    return block
+
+
+def recipe_span(text: str, name: str) -> re.Match | None:
+    """The project-form recipe `name:` with its comment and attribute lines and indented body.
+
+    Args:
+        text: the justfile.
+        name: the recipe name.
+
+    Returns:
+        The match, or None when the recipe is absent or takes parameters (the skill's own `govern project="."`).
+    """
+    return re.search(rf"(?m)^(?:#[^\n]*\n|\[[\w-]+\]\n)*{re.escape(name)}:[^\n=]*\n(?:[ \t][^\n]*\n?)*", text)
+
+
+def outdated_recipes(text: str) -> list[str]:
+    """Skill-owned recipes whose project copy differs from the template.
+
+    Args:
+        text: the justfile.
+
+    Returns:
+        Recipe names to refresh.
+    """
+    recipes = split_recipes(template_recipes())
+    out = []
+    for name in REFRESHED:
+        m = recipe_span(text, name)
+        if m and name in recipes and m.group(0).rstrip("\n") != adapt(recipes[name], text).rstrip("\n"):
+            out.append(name)
+    return out
+
+
 def justfile_gaps(text: str, roadmap: bool = False) -> list[str]:
     """What the justfile lacks.
 
@@ -134,6 +191,7 @@ def justfile_gaps(text: str, roadmap: bool = False) -> list[str]:
     gaps += [f"recipe {r}" for r in RECIPES if not re.search(rf"^{re.escape(r)}\b", text, re.M)]
     if make_free_text_safe(text) != text:
         gaps.append("free-text recipes take unquoted {{ARGS}}")
+    gaps += [f"recipe {r} outdated" for r in outdated_recipes(text)]
     return gaps
 
 
@@ -165,7 +223,7 @@ def fix_justfile(text: str, roadmap: bool = False) -> str:
     if missing:
         recipes = split_recipes(template_recipes())
         block = "\n".join(recipes[r] for r in missing if r in recipes)
-        used = re.search(r'@(\S+) "\{\{ai_it\}\}/scripts/', text)  # the interpreter the project's skill recipes already call (of-si: {{ai_py}})
+        used = INTERP.search(text)  # the interpreter the project's skill recipes already call (of-si: {{ai_py}})
         interp = used.group(1) if used else "{{py}}" if re.search(r"^py\s*:=", text, re.M) else "python3"
         if interp != "{{py}}":
             block = block.replace("{{py}}", interp)
@@ -175,6 +233,10 @@ def fix_justfile(text: str, roadmap: bool = False) -> str:
     if roadmap:
         text = add_roadmap_to_rotate(text)
     text = add_roles_to_check(text)
+    recipes = split_recipes(template_recipes())
+    for name in outdated_recipes(text):
+        m = recipe_span(text, name)
+        text = text[:m.start()] + adapt(recipes[name], text).rstrip("\n") + "\n" + text[m.end():]
     return make_free_text_safe(text)
 
 
@@ -274,6 +336,22 @@ HEADED = {
 RECORD_SCOPE = {"log": "Dated changes to this project", "state": "Working state between sessions", "roadmap": "Current phase and open milestones"}
 
 
+def fm_value(value: str) -> str:
+    """A front-matter value as valid YAML: double-quoted when plain style would break (smc-resiliency README, 2026-10-14: `Scope: ... apn: what`).
+
+    Args:
+        value: the value as written, or a folded block (`>-` plus indented lines), which is returned unchanged.
+
+    Returns:
+        The value, quoted when it holds `: ` or ` #`, or starts with a YAML indicator character.
+    """
+    if value.startswith((">", "|")) or not value:
+        return value
+    if ": " in value or " #" in value or value.endswith(":") or value[0] in "!&*[]{}#|>'\"%@`,?-":
+        return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    return value
+
+
 def has_header(text: str) -> bool:
     """Whether the text opens with `---` front matter naming a Title and a Summary (role_check.py rule 1).
 
@@ -300,7 +378,7 @@ def first_paragraph(body: str) -> str:
     after = body[h1.end():] if h1 else body
     for para in re.split(r"\n\s*\n", after):
         s = para.strip()
-        if s and not s.startswith(("#", "-", "*", "|", "<!--", "```", "@", ">")) and not re.match(r"\w[\w ]*: ", s):
+        if s and not s.startswith(("#", "-", "*", "|", "<!--", "```", "@", ">")) and not re.match(r"[A-Z][\w-]*(?: [\w-]+){0,2}: \S", s):  # a `Key: value` line, not a sentence
             s = re.sub(r"\s+", " ", re.sub(r"[`*]", "", s))
             return s if len(s) <= 190 else s[:187].rsplit(" ", 1)[0] + "..."
     return ""
@@ -371,9 +449,12 @@ def fix_header(root: pathlib.Path, name: str) -> None:
             imports += [lines[i]] if lines[i].startswith("@") else []
             i += 1
         j = i
-        while j < len(lines) and re.match(r"[A-Z][\w ]*: ", lines[j]):
-            k, v = lines[j].split(": ", 1)
-            keys[k] = v
+        while j < len(lines) and (re.match(r"[A-Z][\w ]*: ", lines[j]) or (keys and re.match(r"[ \t]+\S", lines[j]))):
+            if lines[j][0] in " \t":
+                keys[list(keys)[-1]] += "\n" + lines[j]  # a folded value's continuation; it stayed outside the fence (UNC AGENTS.md, 2026-10-14)
+            else:
+                k, v = lines[j].split(": ", 1)
+                keys[k] = v
             j += 1
         if "Title" not in keys:  # prose such as `Status: active` under the heading is not a legacy header
             keys, j = {}, i
@@ -388,7 +469,7 @@ def fix_header(root: pathlib.Path, name: str) -> None:
         new["Review by"] = (dt.date.today() + dt.timedelta(days=30)).isoformat()
     if name == "README.md" and "Budget" not in new:
         new["Budget"] = "200 lines, 25 KB"
-    head = "\n".join(f"{k}: {v}" for k, v in new.items())
+    head = "\n".join(f"{k}: {fm_value(v)}" for k, v in new.items())
     p.write_text("---\n" + head + "\n---\n\n" + ("\n".join(imports) + "\n\n" if imports else "") + body, encoding="utf-8")
 
 

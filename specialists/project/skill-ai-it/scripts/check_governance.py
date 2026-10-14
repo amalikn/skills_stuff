@@ -156,7 +156,7 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
     # file stating the version without being registered here fails, so a fourth template or a fifth
     # doc cannot start carrying a stamp nobody syncs.
     "managed-block-version": {
-        "pattern": r"2026-10-10-compact-v1",
+        "pattern": r"2026-10-14-compact-v2",
         "surfaces": (
             "scripts/upgrade_navigation_control_layer.py",
             "scripts/validate_navigation_control_layer.py",
@@ -601,7 +601,7 @@ def check_constant_sync() -> None:
             if not path.is_file() or path.suffix not in SCAN_SUFFIXES:
                 continue
             rel = path.relative_to(ROOT).as_posix()
-            if rel in registered or rel.startswith(".") or "/." in rel or rel == SELF or rel.startswith("docs/history/"):  # rotated records are dated history
+            if rel in registered or rel.startswith(".") or "/." in rel or rel == SELF or rel.startswith("docs/history/") or rel == "CHANGELOG.md":  # dated history: rotated records and the change log (2026-10-14)
                 continue
             counted()
             if pattern.search(without_code(path.read_text(encoding="utf-8", errors="ignore"))):

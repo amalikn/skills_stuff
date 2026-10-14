@@ -20,7 +20,7 @@ from datetime import datetime
 
 # Bumping this stamps re-emitted managed blocks and makes validate_navigation_control_layer.py flag projects still carrying the previous block content. Keep it identical to the VERSION constant
 # in validate_navigation_control_layer.py — the two are a deliberate restatement, and drift between them silently disables the staleness signal.
-VERSION = "2026-10-10-compact-v1"
+VERSION = "2026-10-14-compact-v2"
 
 # Managed block constants
 BEGIN_OLD = "<!-- BEGIN skill-ai-it:navigation -->"

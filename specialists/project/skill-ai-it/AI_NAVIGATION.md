@@ -18,7 +18,7 @@ What each root file is for: [references/governed-file-roles.md](references/gover
 This package is a reusable AI governance/navigation bootstrap skill. It must remain repeat-safe, template-driven, changelog-aware, and tool-agnostic.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-10-10-compact-v1 -->
+<!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
 
 ## Mandatory read order
 
