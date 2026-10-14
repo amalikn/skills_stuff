@@ -533,6 +533,22 @@ read-write community), and refuses to write if the login or enable password or a
 | `tplink_cli_driver.py`  | Runs on the SMC; SSH to one switch                      | `external-network`,             | Never run directly from the workstation; fed by `tplink-switch.sh`                |
 |                         |                                                         |   `requires-credentials`        |                                                                                   |
 
+### `x86_resiliency_probe.sh`
+
+Promoted 2026-10-14 from the smc-resiliency x86 plan session. `x86_resiliency_probe.sh --proxy <proxy> <node>...` prints, per x86 SMC, the DMI model and
+BIOS, memory, each disk, the root source and use, LVM volume groups with free space, the EFI boot entries, the hardware watchdog (device, identity, timeouts,
+which watchdog drivers ship with the kernel, `RuntimeWatchdogSec`), the soft-lockup detector, systemd and kernel versions, and the size of the state
+directories that must survive a reboot. The remote command set is fixed; node names only; proxy required. Exits 1 when any node is unreachable or does not
+finish. Interpretation: `../references/07_hardware-overlay.md` (`smc_disk_failover` mechanics) and smc-resiliency's x86 plan, sections 3 and 6.7 (stage XQ).
+
+```bash
+just x86_resiliency_probe teleport.apn.au horn-island-smc01 jigalong-smc01
+```
+
+| Script                    | Touches                               | Safety        | Notes                                                                      |
+| ------------------------- | ------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| `x86_resiliency_probe.sh` | Live x86 SMC appliances via `tsh ssh` | **read-only** | Fixed command set, node names only; idempotent; proxy required             |
+
 ### `pi_identity_probe.sh` and `ata_settings_read.py`
 
 Promoted 2026-10-08 from a unified-network-controller session that read the Raspberry Pi SMCs and the rct site ATAs. Both take the Teleport proxy as a

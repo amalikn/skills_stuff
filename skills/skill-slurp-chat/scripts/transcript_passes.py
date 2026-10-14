@@ -63,6 +63,32 @@ def text_of(content) -> str:
     return ""
 
 
+TAG_BLOCK = re.compile(r"^\s*<([a-z_-]+)>.*?</\1>\s*", re.S)
+
+
+def typed_text(content) -> str:
+    """The operator's own text of a message, without the IDE and harness blocks the client puts before it.
+
+    A typed turn often arrives as two text blocks: an `<ide_opened_file>` or `<ide_selection>` note, then the message. Joining the blocks first and
+    then dropping text that starts with `<` lost every such message (found 2026-10-14: five of ten typed turns missing).
+
+    Args:
+        content: a string or a list of content blocks.
+
+    Returns:
+        The message text with leading tag blocks removed; empty when nothing but tags is left.
+    """
+    if isinstance(content, list):
+        parts = [typed_text(b.get("text") or "") for b in content if isinstance(b, dict) and b.get("type") == "text"]
+        return "\n".join(x for x in parts if x)
+    t = content if isinstance(content, str) else ""
+    while True:
+        m = TAG_BLOCK.match(t)
+        if not m:
+            return t.strip()
+        t = t[m.end():]
+
+
 def events(path: pathlib.Path, since: str = ""):
     """Every pass-1, pass-2 and compaction event of a transcript, in order.
 
@@ -83,14 +109,14 @@ def events(path: pathlib.Path, since: str = ""):
         if since and ts < since:
             continue
         if d.get("type") == "queue-operation" and d.get("operation") == "enqueue":
-            t = str(d.get("content") or "").strip()
+            t = typed_text(str(d.get("content") or ""))
             if t and not t.startswith("<") and t not in seen:
                 seen.add(t)
                 yield ts, "mid", t
             continue
         att = d.get("attachment") or {}
         if att.get("type") == "queued_command" and (att.get("origin") or {}).get("kind") == "human":
-            t = text_of(att.get("prompt")).strip()
+            t = typed_text(att.get("prompt"))
             if t and not t.startswith("<") and t not in seen:
                 seen.add(t)
                 yield ts, "mid", t
@@ -102,7 +128,7 @@ def events(path: pathlib.Path, since: str = ""):
             continue
         if d.get("type") == "user":
             if isinstance(content, str) or (isinstance(content, list) and any(b.get("type") == "text" for b in content if isinstance(b, dict))):
-                t = text_of(content).strip()
+                t = typed_text(content)
                 if t and not t.startswith(("<", "Base directory for this skill", "(Re-invocation of")) and t not in seen:
                     seen.add(t)   # a typed turn is also queued as a mid-turn message: keep one (2026-10-09)
                     yield ts, "user", t

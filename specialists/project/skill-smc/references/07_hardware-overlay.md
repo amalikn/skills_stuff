@@ -549,6 +549,14 @@ that state — confirmed live on amata-smc01, see the storage incident in `06_fa
 read-only, do not assume `smc_disk_failover` will cut over automatically — verify EFI tooling is actually responsive (`efibootmgr -v`) before relying on it, and be ready to set the one-time boot entry
 manually or fall back to a BIOS/UEFI console boot to the alternate disk.
 
+**Mechanics read at source and live (2026-10-14, smc-resiliency x86 plan).** `smc_bases.yml` applies the role to every `rcp` and `nbn_accelerate` box. It installs
+os-prober, sets `GRUB_DISABLE_OS_PROBER=false`, copies `/disk_failover.sh` and runs it hourly (minute 13): 24 failed hours of pings to 8.8.8.8, 8.8.4.4 and
+1.1.1.1 (counter in `/var/log/internet_failure_count`) set `BootNext` to another `ubuntu` entry and reboot a minute later. On a one-disk BOXER-6404
+(jigalong-smc01: one 60 GB CFast, entries `ubuntu`, `UEFI OS`, `Hard Drive`) there is no other `ubuntu` entry, so the script exits 1 every hour and never
+reboots. BOXER-6641 (horn-island-smc01) has two 119 GB SSDs, each ESP + ext4 root, one `ubuntu` entry per disk. Neither box loads a hardware watchdog
+(no `/dev/watchdog`), though `iTCO_wdt`, `it87_wdt` and `f71808e_wdt` ship with the kernel; both run systemd 249. Operator, 2026-10-14: future x86 SMCs
+have one disk; no two-disk models.
+
 ### rcp Disk Write Profile (confirmed jigalong-smc01, 2026-04-20; re-confirmed 3 more nodes 2026-07-20)
 
 **2026-07-20 re-confirmation:** live-checked `/etc/overlayroot.conf` (`overlayroot=""`), `mount | grep overlay`/`root-ro`/`root-rw` (no matches), and `findmnt -T /var/log/syslog` (resolves to the real

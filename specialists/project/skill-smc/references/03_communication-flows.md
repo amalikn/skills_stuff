@@ -54,6 +54,15 @@ behaviours cost time the first time (source: unified-network-controller `infra/a
   second host given the same profile could join as another service's bot (the `apn-dashboard-iam` token allows `teleport-ec2-bot-role-apn/*`). Give each
   host its own role and token.
 
+### SMC Teleport node join: static token, default data dir (read at source 2026-10-14)
+
+`roles/smc_teleport/templates/teleport.yaml.j2` joins the node with `auth_token: {{ teleport_token }}`, a static alphanumeric token the cluster defines under
+`tokens:` (`roles/teleport_core/templates/teleport-server.yaml.j2`); no per-box certificate is issued for the join. No `data_dir` is set, so the node's
+host identity lives in the default `/var/lib/teleport`. Static labels are site-level (`env`, `site`, `flavor`, `iridium`); the rest are `commands:` labels
+run on a period (hostname, `site.txt`, Teleport version, `disk` when `disk_count == '2'`, DMI model on x86, overlay state on the Pi flavours). Operator,
+2026-10-14: if `/var/lib/teleport` is lost, deleting it and restarting Teleport re-joins the node from `/etc/teleport.yaml`; smc-resiliency's identity
+partition design relies on this.
+
 ### Backdoor SSH Access (raw reverse tunnel, bypasses Teleport's node agent)
 
 Use this when `tsh ssh <site>` hangs, refuses to connect, or the box is registered in Teleport (shows up in `tsh ls`) but is unresponsive over it — the Teleport agent on the SMC has stalled, but the
