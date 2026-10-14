@@ -16,6 +16,7 @@ Last rotated: 20261014_1233
 
 ## Contents
 
+- [20261015_0129 — doc_freshness: a Budget header counts only with a size](#20261015_0129--doc_freshness-a-budget-header-counts-only-with-a-size)
 - [20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade](#20261014_1247--yaml_key_diff-context-map-key-changes-and-lost-comments-after-an-upgrade)
 - [20261014_1234 — pitfalls: the navigation upgrade drops context-map.yaml comments](#20261014_1234--pitfalls-the-navigation-upgrade-drops-context-mapyaml-comments)
 - [20261014_1233 — validator: accepts the compact template's generated-output wording](#20261014_1233--validator-accepts-the-compact-templates-generated-output-wording)
@@ -32,6 +33,10 @@ Last rotated: 20261014_1233
 - [20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)](#20261014_1006--graphify-confirmed-disabled-slurp-write-backs-token-budget-rule-roles_fleet)
 - [20261014_1002 — File roles enforced: role_check.py, adoption adds headers, templates and loading tiers](#20261014_1002--file-roles-enforced-role_checkpy-adoption-adds-headers-templates-and-loading-tiers)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261015_0129 — doc_freshness: a Budget header counts only with a size
+
+- `scripts/doc_freshness.py`: a `Budget` header counts as a file budget only when it states a size (`N lines` or `N KB`); a Python docstring line such as "Budget: 60 seconds" (a runtime budget) made two unified-network-controller modules fail as over a 200-line file budget (2026-10-15).
 
 ## 20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade
 

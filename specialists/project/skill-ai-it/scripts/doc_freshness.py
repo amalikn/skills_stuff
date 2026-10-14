@@ -126,7 +126,9 @@ def findings(root: pathlib.Path, today: dt.date, window_days: int) -> dict[str, 
         head = file_headers.read_header(path)
         if path.name not in file_headers.INDEX_NAMES and not head.get("summary") and not head.get("title"):
             out[f"no-header:{rel}"] = f"{rel}: no summary in its header (see the governance File headers standard)"
-        if path.name in BUDGET_NAMES or "budget" in head:
+        # A `Budget` header counts only when it states a size (`N lines` or `N KB`): a script's docstring line "Budget: 60 seconds" is a runtime
+        # budget, not a file budget (unified-network-controller, 2026-10-15: two Python modules flagged as over a 200-line file budget).
+        if path.name in BUDGET_NAMES or re.search(r"\d+\s*(lines|KB)\b", head.get("budget", ""), re.I):
             text = path.read_bytes()
             nlines, nbytes = text.count(b"\n"), len(text)
             max_lines, max_bytes = parse_budget(head.get("budget", ""))
