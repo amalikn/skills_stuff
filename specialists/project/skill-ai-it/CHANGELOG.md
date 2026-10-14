@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261014_1233
+Last rotated: 20261015_0129
 ---
 
 # Changelog — skill-ai-it
@@ -31,7 +31,6 @@ Last rotated: 20261014_1233
 - [20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean](#20261014_1020--coherence-pass-architecture-key-decisions-sibling-skills-sweep-clean)
 - [20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes](#20261014_1018--staleness-audit-upgrader-header-derived-index-counts-links-indexes)
 - [20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)](#20261014_1006--graphify-confirmed-disabled-slurp-write-backs-token-budget-rule-roles_fleet)
-- [20261014_1002 — File roles enforced: role_check.py, adoption adds headers, templates and loading tiers](#20261014_1002--file-roles-enforced-role_checkpy-adoption-adds-headers-templates-and-loading-tiers)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## 20261015_0129 — doc_freshness: a Budget header counts only with a size
@@ -166,28 +165,6 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
   adoption now adds and that `just budget` trims ROADMAP. Canary entry written in cambium-swap's CHANGELOG (its changes are not committed).
 - **Check surface retired:** CHANGELOG.md no longer a `managed-block-version` surface in `scripts/check_governance.py`. Rotation (`just budget`)
   moved the only entry stating the stamp to docs/history and the check failed on a past fact; a rotating log cannot hold a live claim.
-
-## 20261014_1002 — File roles enforced: role_check.py, adoption adds headers, templates and loading tiers
-
-- **Roles now reach projects and are enforced** (operator, 2026-10-14: "ensure that all the definitions ... are actually going to be defined for
-  the projects in that way and it will adhere to that"; and the files must spend AI tokens well: small by default, detail on need). Analysis of
-  the templates, the enforcement code and the 13 governed projects: every project broke a role, templates lacked front matter and a README quick
-  start, no SETUP rule existed, and only budgets and links were gated.
-- **`scripts/role_check.py`** (new, `just roles`, in `just check`, baseline `scripts/role-check-baseline.json`): front matter on root files,
-  CLAUDE.md import first, README quick start and no status/history heading, ROADMAP dated phase and no done items or narrative, duplicated
-  sections across root files. `tests/test_role_check.py` proves each rule fails; it also finds the three README/ARCHITECTURE duplicates in HEAD.
-- **`adopt_governed_files.py`** (run at every slurp) adds `---` front matter to README, AGENTS, AI_NAVIGATION, ARCHITECTURE, CONVENTIONS, SETUP
-  (legacy unfenced blocks fenced above the `@` import; `Review by` 30 days on), Authority/Scope/Last reviewed on the records, README's `Budget`
-  key, `role_check.py` in `check`, the `roles` recipe and the role baseline; re-records the size of an over-budget file it heads, so adoption
-  cannot fail the ratchet. Canary: cambium-swap (check green, second run reports adopted).
-- **`budget_plan.py`** trims ROADMAP (slurp runs `just budget`, not `just rotate`, so ROADMAP was never trimmed at close).
-- **Templates:** README (front matter, Quick start, no history in Context, local links fixed), AGENTS (front matter first, navigation block taken
-  from `templates/` instead of a stale copy), CLAUDE (no H1 placeholders), ARCHITECTURE (data flow, boundaries, decisions with reasons,
-  `Depends on`), CONVENTIONS, ROADMAP and CHANGELOG/SCRATCHPAD (full front matter; newest first; `KEEP` the exception), new SETUP.md rule and
-  template; the drifted AI_NAVIGATION fallback removed; refresh table updated.
-- **`references/governed-file-roles.md`**: loading model (always-read, read-once, on-need, on-demand tiers; summarise up, link down), tier per
-  file, and an enforcement table that states only what code enforces. Also fixed: this package's AGENTS.md front matter fenced; the ROADMAP lines
-  left behind by the earlier trim restored to their history file; a YAML error in `context-map.yaml` (found by `nav_validate`, not `just check`).
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 
