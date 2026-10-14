@@ -299,6 +299,22 @@ bridged `enpXs0.50N` sub-interfaces and the starlink ones carry the port's MAC; 
 unified-network-controller's proposal for which of these Nautobot records:
 [smc-services-in-nautobot-proposal-20260930_1421.md](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/architecture/site-model/smc-services-in-nautobot-proposal-20260930_1421.md).
 
+### Listeners on five SMCs, read from apn-unc01 (2026-10-15)
+
+VERIFIED-OBSERVED 2026-10-15, read-only `ss -Htlnup` over Teleport (the host's tbot identities, both proxies) by unified-network-controller's
+`wc-local/scripts/smc/smc_services.py`: old-looma, umoona, yakanarra (`rcp`, all `smc_ltp`) and arawerr, wandawuy (`nbn_accelerate`).
+
+- **smc_ltp boxes:** `named` answers tcp+udp/53 on every address (bridges, uplinks, 192.168.11.100, loopback) and unbound moves to 0.0.0.0:5353, as
+  `unbound.conf.j2` sets for the group; non-ltp boxes run unbound on 0.0.0.0:53.
+- **Apache listens on 443 on `rcp` too**, although rcp's `smc_bases_portal_protocol` is `http`: `smc_application` runs `a2enmod ssl`, so the
+  stock ports.conf adds `Listen 443` on every flavour.
+- **Asterisk exposes more than SIP** on old-looma and yakanarra: tcp/1720, tcp/2000, udp/2727, udp/4520, udp/4569 and udp/5000 on 0.0.0.0, the
+  channel drivers `autoload=yes` in `roles/smc_asterisk/files/modules.conf` pulls in, beside SIP udp/5060. umoona had no Asterisk listener at all.
+- **fluent-bit (Graylog sidecar) listens on 0.0.0.0:2020** on the three `rcp` boxes, not on the two `nbn_accelerate` ones; no role on `big_push`
+  installs it.
+- postfix still listens on 0.0.0.0:25 on all five (the 2026-10-06 loopback decision above is not yet in `smc_postfix`); no `snmpd` on any of them.
+- One `tsh ssh` session took about 11 s on the communitywifi.net.au cluster against about 2 s on apn.au, from the same host.
+
 ## snmpd on the SMC (canary, 2026-09-24)
 
 Until 2026-09-24 no SMC ran an SNMP agent: `snmpd` was absent everywhere, only the net-snmp client tools and `/etc/snmp/snmp.conf` (unified-network-controller's collector runs its
