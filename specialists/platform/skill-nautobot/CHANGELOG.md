@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261015 Learned 2026-10-15 (i) (UNC SSoT schedule step, verified update): `references/apps-jobs-validation.md` gains ScheduledJob.create_schedule for a machine-owned schedule (start from crontab, no permission check on the owner).
 - 20261015 Learned 2026-10-15 (i) (UNC IPAM Services for SMCs, verified update): `references/authority-and-modeling.md` gains the 3.2.3 Service shape (no Status, protocol tcp or udp only), so listener presence is carried by tags on the Service and differences on the Device.
 - 20261015 Learned 2026-10-15 (h) (UNC SSoT OpenWISP health Job, verified update): `references/integrations.md` gains a flat field-mirror DataSource pattern, quieter diffsync flags for an hourly mirror, schedulable Jobs need has_sensitive_variables False, the writer is the schedule's owner via the change context, DataMapping's shape and the pydantic Optional gotcha in path-loaded tests.
 - 20261015 Learned 2026-10-15 (g) (UNC 0.8.23, verified update): `references/apps-jobs-validation.md` gains DLM's Validated Software REST shape and uniqueness, a global default Saved View's redirect and clear_view, and a Device-page tab from an app.

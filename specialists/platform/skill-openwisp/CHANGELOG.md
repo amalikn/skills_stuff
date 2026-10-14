@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261015 Learned 2026-10-15 (b) (UNC SSoT read-only role, verified update): `references/identity-and-registration.md` gains the live check of the health query's columns and the column-level grants that keep device keys unreadable.
 - 20261015 Learned 2026-10-15 (UNC SSoT OpenWISP health Job, verified update): `references/identity-and-registration.md` gains the monitoring device list's fields (no hardware_id) and the read-only database query that gives hardware_id-keyed health where no Django shell is available.
 - 20261013 Learned 2026-10-13 (from UNC 2026-10-12/13, written back late after a write-back audit): `references/deployment-and-recovery.md` (openwisp-nginx resolves the API once: restart it after the API; Redis MISCONF while reloading), `references/customisation-and-upgrades.md` (admin title and header settings; a custom notification type needs a restart; candidate pattern: OpenWISP notifications as the transport for external alarm rules).
 - 20261010_1805 Workspace standard (operator, 2026-10-10; skill-ai-it "Governed files: headers, budgets, rotation and the checker's shape"): `justfile` gains

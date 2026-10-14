@@ -22,6 +22,10 @@ effective settings before relying on it. Claim O-C11.
 > **Learned 2026-10-15** · openwisp-api 26.09.0 (Monitoring 1.3) · VERIFIED_PRIMARY (source read in the image; the SQL not yet run against a live database) · Source: `openwisp_monitoring/device/api/serializers.py:97-123` (`MonitoringDeviceListSerializer` fields), `openwisp_monitoring/device/api/filters.py:46-49`, `openwisp_monitoring/device/apps.py:39-40` (label `device_monitoring`) · Falsifier: a monitoring list serializer that lists hardware_id
 > The monitoring device list (`/api/v1/monitoring/device/`, filter `monitoring__status`) returns id, name, mac_address, key, last_ip, management_ip and `monitoring.status`, but no `hardware_id` either, so REST cannot give hardware_id-keyed health. A reader that cannot run a Django shell in the container (a Nautobot worker) can read the same answer read-only from the database: `config_device.hardware_id` LEFT JOIN `device_monitoring_devicemonitoring` ON `device_id`, a missing row reading `unknown` (default table names of the unswapped models).
 
+> **Learned 2026-10-15 (b)** · openwisp-api 26.09.0, PostgreSQL 15.8 (postgis image) · VERIFIED_PRIMARY (read-only on one live deployment) · Source: `information_schema.columns` and the query run as the database owner · Falsifier: a release that renames these tables or columns
+> The four columns exist as named and the hardware_id query runs; a consumer needs only column-level `GRANT SELECT (id, hardware_id) ON config_device`
+> and `GRANT SELECT (device_id, status) ON device_monitoring_devicemonitoring`, which keeps the device `key` (the push secret) unreadable to it.
+
 ## Acceptance and failure clues
 
 An accepted registration request is not proof that the intended record, group mapping, monitoring identity, or deduplication policy took effect. Investigate duplicate identity, stale registration,

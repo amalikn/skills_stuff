@@ -119,3 +119,8 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > redirects, and `?clear_view=true` opens the list without it. **A Device-page tab from an app:** an `ObjectView` rendering a template that extends
 > `dcim/device.html`, with `get_detail_view_components_context_for_model(Device)` in its context, plus a `DistinctViewTab` in a TemplateExtension's
 > `object_detail_tabs`; `should_render(context)` can hide it per object (call `super()` for `required_permissions`).
+
+> **Learned 2026-10-15 (i)** · Nautobot 3.2.3 · VERIFIED_PRIMARY (installed source; not yet run on a live instance) · Source: `nautobot/extras/models/jobs.py:1808-1935` (`ScheduledJob.create_schedule`) · Falsifier: a release that checks the owner's run permission when creating or dispatching a schedule
+> **A schedule owned by a machine account**: `ScheduledJob.create_schedule(job_model, user, name=..., interval="custom", crontab="7 * * * *", job_kwargs={...})`
+> takes the next crontab match as the start time, the Job's default queue and its time limits, and checks no permission of `user`; run it from
+> `nbshell` as an admin step to give a token-only account (no `run` on extras.job) a schedule whose writes it owns. `job_kwargs` is required.
