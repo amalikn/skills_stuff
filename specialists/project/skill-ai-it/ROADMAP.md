@@ -34,6 +34,11 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   `nav_upgrade`: the 2026-10-14 canary on agent-stack re-serialised context-map.yaml (comments lost), refused AGENTS.md (pre-2026-09-23 block
   with project content) and failed `just check`; reverted. 11 of 13 have a hand-written AI_NAVIGATION.md the upgrader only proposes over.
   Each needs `/skill-ai-it refresh` by an agent, one project at a time, merging the proposed block by hand.
+- [ ] **Upgrader keeps `context-map.yaml` comments** — the `update_rules` merge in `upgrade_navigation_control_layer.py` re-dumps the whole file, losing
+  comments and quoting, including the purpose header the header standard requires (agent-stack canary and smc-resiliency refresh, 2026-10-14;
+  hand recovery in [references/pitfalls.md](references/pitfalls.md)). Fix: merge with a round-trip loader (ruamel.yaml) or insert the new keys as
+  text, and fall back to a `.proposed` file rather than rewriting the live one. Done when a test upgrades a commented `context-map.yaml` and every
+  comment survives. Unblocks the unstamped-projects item above.
 
 ## Archcore
 
