@@ -275,7 +275,9 @@ def validate_ai_navigation(ai_nav, results):
             add_result(results, "warn", f"AI_NAVIGATION.md: potentially stale generated-output claim matching /{pattern}/")
 
     lowered = ai_nav.lower()
-    if "support-only" in lowered or "support only" in lowered or "generated support" in lowered:
+    # The compact template (2026-10-10-compact-v1 on) words the policy as "never a source of truth"; older blocks say "support-only".
+    support_phrases = ("support-only", "support only", "generated support", "never a source of truth", "never truth")
+    if any(phrase in lowered for phrase in support_phrases):
         add_result(results, "pass", "AI_NAVIGATION.md: generated-output support-only policy present")
     else:
         add_result(results, "fail", "AI_NAVIGATION.md: missing generated-output support-only policy")

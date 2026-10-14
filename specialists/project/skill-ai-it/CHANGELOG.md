@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261014_1213
+Last rotated: 20261014_1233
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261014_1233 — validator: accepts the compact template's generated-output wording](#20261014_1233--validator-accepts-the-compact-templates-generated-output-wording)
 - [20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries](#20261014_1213--govern-stops-on-uncommitted-governed-files-drops-resolved-baseline-entries)
 - [20261014_1202 — adopt: a future deadline is not a review date](#20261014_1202--adopt-a-future-deadline-is-not-a-review-date)
 - [20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity](#20261014_1102--token-efficiency-from-the-unc-run-compact-agents-block-load-cost-header-validity)
@@ -28,8 +29,15 @@ Last rotated: 20261014_1213
 - [20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes](#20261014_1018--staleness-audit-upgrader-header-derived-index-counts-links-indexes)
 - [20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)](#20261014_1006--graphify-confirmed-disabled-slurp-write-backs-token-budget-rule-roles_fleet)
 - [20261014_1002 — File roles enforced: role_check.py, adoption adds headers, templates and loading tiers](#20261014_1002--file-roles-enforced-role_checkpy-adoption-adds-headers-templates-and-loading-tiers)
-- [20261014_0943 — Governed file roles defined; README trimmed; front matter everywhere](#20261014_0943--governed-file-roles-defined-readme-trimmed-front-matter-everywhere)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261014_1233 — validator: accepts the compact template's generated-output wording
+
+- `validate_navigation_control_layer.py`: the generated-output policy check matched only "support-only", but the compact template
+  (2026-10-10-compact-v1 on) says "never a source of truth", so every compact-block project failed it (found on smc-resiliency
+  refresh, 2026-10-14). It now accepts both wordings.
+- New `tests/test_validate_navigation.py` runs the validator against `templates/AI_NAVIGATION.md`, so template wording that the
+  validator rejects fails a test; red without the fix, green with it. 99 tests.
 
 ## 20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries
 
@@ -160,24 +168,6 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
 - **`references/governed-file-roles.md`**: loading model (always-read, read-once, on-need, on-demand tiers; summarise up, link down), tier per
   file, and an enforcement table that states only what code enforces. Also fixed: this package's AGENTS.md front matter fenced; the ROADMAP lines
   left behind by the earlier trim restored to their history file; a YAML error in `context-map.yaml` (found by `nav_validate`, not `just check`).
-
-## 20261014_0943 — Governed file roles defined; README trimmed; front matter everywhere
-
-- **Governed file roles defined** (operator, 2026-10-14: "define what each of these files mean ... and check if each of them ... are defined
-  properly and this skill will take care of it"). New `references/governed-file-roles.md`: reader, holds, keeps out, how it changes and what
-  enforces it for README, AGENTS, CLAUDE, AI_NAVIGATION, ARCHITECTURE, CONVENTIONS, SETUP (conditional), ROADMAP, CHANGELOG and SCRATCHPAD, plus a
-  placement test and a role check. Linked from SKILL.md (Always-created files), the finishing quality checklist, `context-map.yaml`
-  (`file_role_compliance` audit check, `package_docs` routing), AI_NAVIGATION.md and the references index.
-- **Own files brought to their roles.** README.md rewritten from 241 to 116 lines: quick start added, sections duplicated from ARCHITECTURE.md
-  replaced by a link, stale package layout and the "Graphify actively invoked" claim corrected, opted into the 200-line budget with a `Budget` key.
-  ARCHITECTURE.md: Graphify marked disabled (2026-10-10) in the flow, tool stack and recovery steps; "four" capabilities corrected to five;
-  `references/`, `scripts/`, `tests/`, ROADMAP and SCRATCHPAD added to package roles; the stale-outputs upgrade row moved over from README.
-  ROADMAP.md put on its own contract: dated current phase, open `- [ ]` items by area, completed phases and the obsolete sync item moved
-  verbatim to `docs/history/roadmap-20261014_0942.md` by `just rotate`.
-- **Front matter added wherever missing** (operator): AI_NAVIGATION, ARCHITECTURE, README, five patterns (governance-checks fenced),
-  scripts/README.md, docs/history/readme.md, and the six May 2026 plans, prompts and reviews (`Status: archived`); missing Authority, Scope and
-  Last reviewed keys added to ROADMAP, CHANGELOG and SCRATCHPAD. Not given front matter: CLAUDE.md (its import line must stay its whole content)
-  and the three `templates/` snippets that are inserted into other projects' files.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 
