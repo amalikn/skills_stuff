@@ -53,3 +53,13 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > running user with `state=DENIED` and a comment. 3.2.3 has no `ScheduledJob.approval_required` field (filter by `task` and `kwargs`); `ScheduledJob.task`
 > equals the Job's `class_path`; `JobResult.scheduled_job` links a run to the schedule that queued it.
 
+> **Learned 2026-10-14 (b)** · Nautobot 3.2.3, DNS Models 2.3.0 · CANDIDATE (system check and offline tests; not yet exercised live) · Source: `extras/templates/extras/job.html`
+> (blocks `job_form`, `javascript`), `nautobot.core.forms.widgets.StaticSelect2`, `nautobot_dns_models/__init__.py` `constance_config` and `models.py:517-532` read
+> on a 3.2.3 container · Falsifier: a 3.2.x job form that drops `Meta.template_name`, or a DNS Models release that reads the setting from `PLUGINS_CONFIG`
+> **Dependent Job fields.** `ChoiceVar` has no `query_params`, so "pick a group, then only its items" is done in the Job's own form template: `Meta.template_name`
+> pointing at an app template that `{% extends 'extras/job.html' %}` and adds a `javascript` block. Keep every item in the second field with a value that
+> carries its group (`"<group>:<item>"`), rebuild that `<select>`'s options on the first field's change and fire jQuery `change` so Select2 redraws; check the
+> pair again in `run()`, since the script only narrows. Fields render in class order. **DNS Models CNAME exclusivity** is the constance key
+> `nautobot_dns_models__CNAME_RESTRICTION_ENABLED` (default False), read directly from constance, so `PLUGINS_CONFIG` cannot set it; set it in nbshell with
+> `setattr(constance.config, key, True)`. **htmx polling that must not close a pop-up:** add a trigger filter, `every 10s[!document.querySelector('.modal.show')]`.
+

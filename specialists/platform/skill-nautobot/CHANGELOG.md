@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261014 Learned 2026-10-14 (b) (UNC dependent new-site fields and RPZ option A, candidate): `references/apps-jobs-validation.md` gains dependent Job fields through `Meta.template_name`, DNS Models' constance key for CNAME exclusivity, and an htmx poll filter that pauses while a modal is open.
 - 20261014 Learned 2026-10-14 (UNC 0.8.8, verified update): `references/apps-jobs-validation.md` gains clearing a superseded approval request from the approved Job (`ScheduledJob.task` = `class_path`, no `approval_required` field, `JobResult.scheduled_job`).
 - 20261014 Learned 2026-10-14 (UNC onboarding page, verified update): `references/app-development.md` gains four 3.2.3 seams: answering an approval stage from any page via its own approve/deny view with `return_url`, app banners, app Jinja filters for Job Button text, and htmx polling that stops itself.
 - 20261013 Learned 2026-10-13 (UNC app 0.8.6, verified update): `references/app-development.md` gains a site panel's Relationship query (`destination_id__in` an Interface `.values("pk")` subquery works on 3.2.3 where `descendants()` does not).

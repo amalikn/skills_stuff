@@ -183,6 +183,12 @@ days.
 
 ## Hosts answering an `IPSSH` banner (measured 2026-10-05, UNVERIFIED as TP-Link)
 
+**Update 2026-10-14 (VERIFIED_PRIMARY for one site, read-only login):** wandawuy (nbn_accelerate) has two hosts at 10.255.0.2 and 10.255.0.3, OUI
+`98:25:4A`, banner `SSH-1.99-IPSSH-6.6.0`. `scripts/tplink-switch.sh wandawuy <ip> --backup` logged in to both with the `/Network/tplink switch` entry
+(`enable-no-password`): TP-Link SG2428P, firmware 5.20.0 Build 20230818 Rel.72032, system names `Wan-sw01` and `Wan-sw02`. So `IPSSH` is at least
+this SG2428P firmware's banner; the other OUIs above stay unconfirmed. UNC's onboarding switch stage needs a capture for every switch, which a site never
+surveyed lacks: take one with `--backup` first (arawerr's dated from the 2026-09-30 survey, wandawuy had none).
+
 Source: UNC capture corpus: newest discovery sweep per site (43 sites, about 4,000 hosts, 2026-09-23 to 2026-09-30) and 44 identify reads, aggregated read-only on 2026-10-05. 52 hosts across 25 sites answer SSH with the banner `IPSSH`, not `TPSSH`, and none has a Cambium OUI; they include hosts at sites listed
 above as "TP-Link OUIs but none answered TPSSH" (for example aurukun 4, doomadgee 2, galiwinku 3). OUIs seen include `98:25:4A`, `A8:42:A1` and
 `5C:E9:31`. Whether they are TP-Link switches (another firmware's banner) is **UNVERIFIED**: confirm one with a read-only login before adding `IPSSH` to
