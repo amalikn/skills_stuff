@@ -1253,3 +1253,12 @@ Replace writes `type: replacement` and `replaced_mac` (ePMP), `location <mac>` (
 holds credentials in code and templates (not copied here). Device field formats: skill-cambium 05_known-issues; full write-up:
 unified-network-controller `docs/reports/device-families/sidekick-field-installer-20261009_1804.md`.
 
+
+## 2026-10-15 — tunnels from apn-unc01: NBN Accelerate costs several times APN per unit (INFO, measured)
+
+Reading a unit's config through an SMC from apn-unc01 (one `ssh -f -L` forward per unit to `root@<smc>.teleport.<domain>`, run as `ubuntu` with
+the tbot ssh_configs; unified-network-controller Golden Config canary, 2026-10-15): an Enterprise Wi-Fi read took about 6 s per unit through an
+APN box (`teleport.apn.au`) and about 30 s through arawerr and wandawuy (`teleport.communitywifi.net.au`); ePMP SMs 6 s against 20 s. The unit
+answers as fast in both; the difference is tunnel set-up on the NBN Accelerate cluster. Budget a per-site job on the NBN cluster at several times
+the APN figure, and reuse one connection per SMC where the code allows it (the collector's `smc_snmp.SSH_REUSE`). Classification: candidate
+(two sites, one day).

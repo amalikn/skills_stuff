@@ -8,6 +8,7 @@
 - [Site-Name Convention](#site-name-convention)
 - [R195P Residential CPE — `rcp`-Only, IP Not in the Register](#r195p-residential-cpe--rcp-only-ip-not-in-the-register)
 - [As-Built Sets — Site Drawings Beside the Register (2026-10-13)](#as-built-sets--site-drawings-beside-the-register-2026-10-13)
+- [Low-Touch Register Layout and a Tolerant Reader (2026-10-15)](#low-touch-register-layout-and-a-tolerant-reader-2026-10-15)
 - [Extraction Gotchas](#extraction-gotchas)
 
 ---
@@ -124,6 +125,18 @@ A deployed site may also have an **as-built set** from its build contractor, bes
   complete source: every set has one, one folder per tower.
 - **How it is used:** a deployed site's as-built is the reference for drift against what discovery finds; unified-network-controller holds it per site as `docs/sites/<site>/as-built-reference.yaml`
   (format `unc-as-built/1`) and shows it in Nautobot's As built panel.
+
+## Low-Touch Register Layout and a Tolerant Reader (2026-10-15)
+
+Two low-touch `rcp` registers (Umoona LT V1.1, Yakanarra LT v1.0, operator-supplied 2026-10-14) share one layout, which Hope Vale's (`nbn_accelerate`) resembles: sheet `Infrastructure & AP's` stacks
+several tables, each under a one-cell title: `ASSET REGISTER` (Tower ID, Lat, Long with a `°` sign, Location, Lot Number, Mast Height as text such as `2 x 3m`, Power Source, Role
+`Central`/`Remote`/`Wi-Fi`, Solar Panels, Batteries), `AP's` (Tower, Model, AP# as `AP-8`, sometimes `AP-4 > 1.10`), `5Ghz ePMP Multipoint` (Antenna `3000L Omni`/`3000L Sector`, Sequence ID,
+Frequency, Power, Bearing), `5Ghz ePMP P2P Links` (AP and SM halves repeat the same headers after `SM Tower`), `60Ghz P2(M)P Links` (DN and CN names, IPs, models, `CN MAC`; a second CN of the same DN
+has a blank Tower cell), `Switches`. Spares sit in the same tables under `Spare`/`Spare 1`. Umoona's sheet carries a frequency lookup table beside the towers table, so its numbers appear in later
+header rows. Other sheets (Summary & BOM, Change Register, Internals & QA, Asbestos, Network Testing, FrequencyLookup) hold no device identity. These two registers record no serial or LAN MAC per unit
+(only the cnWave CN MAC); Burringurrah's `Tower + AP` sheet does. The 3000L Frequency per sector matches the frequency Nautobot holds on that AP's Wireless Links (umoona, yakanarra, 2026-10-15), which
+identifies the sector when names do not. A tolerant reader that finds tables by their headers and reports every unused row and header is unified-network-controller
+`src/unc/tasks/site_workbook/register.py` (VERIFIED_PRIMARY on the four registers, 2026-10-15).
 
 ## Extraction Gotchas
 

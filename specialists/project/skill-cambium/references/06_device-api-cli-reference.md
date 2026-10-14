@@ -190,6 +190,24 @@ carry no real secret values, only mode names/VLANs/counters/BSSIDs.
 Oxidized for config backup, but Oxidized needs a way to pull a config for devices where SNMP can't do it — `GET /api/system-config` (+ the network/dhcp/vlan/firewall config endpoints above) or `show
 config all` over SSH is that path for this family. Not yet wired into Oxidized or tested at scale — this file records the data source, not a finished integration.
 
+**Learned 2026-10-15 — config backup per family, measured on apn-unc01 (unified-network-controller canary 1 + 5, 30 units, VERIFIED_PRIMARY).**
+The redacted `get_config()` of all five families, flattened to dotted keys and read through the SMC tunnel from apn-unc01, passed the
+credential-redaction check on every unit and was stored as each unit's Golden Config backup. Keys and wall time per unit (read, store,
+intended config and compliance; first login with the family's own vault entry on every unit, no fallback used):
+
+| Family | Units (sites) | Keys | Seconds per unit |
+| --- | --- | --- | --- |
+| ePMP 3000L AP | 6 (old-looma, umoona, yakanarra) | 792-794 | 5-12 |
+| ePMP Force 300 SM (incl. Force 300 as P2P AP) | 6 (old-looma, arawerr, wandawuy) | 718-792 | 6-20 |
+| Enterprise Wi-Fi XV2 / E-series | 6 (old-looma, arawerr, wandawuy) | 158-169 | 6 (APN), about 30 (NBN Accelerate) |
+| cnWave V5000/V3000/V2000 | 6 (old-looma, yakanarra) | 423-458 | 5-8 |
+| cnPilot R195P (SSH) | 6 (old-looma, umoona, yakanarra) | 2,519 | 37-42 |
+
+R195P is the slow family: one SSH login, `cat /etc/config/*` and the nvram read take about 40 s, so a site of 60 routers read one at a time is
+about 40 minutes; read 4 at a time. NBN Accelerate units cost several times their APN equivalents through `teleport.communitywifi.net.au`
+(tunnel set-up, not the unit). The stored backups are not compliant on the managed keys yet (name and location keys, SNMP trap, NTP, CNS URL
+differ from intent): that is the project's intent, not a reader fault.
+
 ## Write Operations — XV2-22H REST writes proven on one test unit (2026-09-29)
 
 Read from the unit's own UI bundle (`assets/falcon-ng-client-2.0.0.min.js`, 6.6.0.3-r9; unified-network-controller
