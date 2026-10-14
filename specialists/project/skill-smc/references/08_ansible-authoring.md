@@ -1176,6 +1176,11 @@ rm inventories/<flavor>/topology_vars/.<site>.yml
 find inventories/<flavor>/topology_vars/ -name '.*.yml' -delete
 ```
 
+**A cache is not the source, and branches differ in which sites they hold (2026-10-14).** `rise` has no `inventories/rcp/topology_vars/yakanarra.yml`
+(nor wangkatjungka's); both are on `big_push`, and a Mac checkout on `rise` held only their gitignored `.<site>.yml` caches. A tool that lists sites
+from one ref must read their topology_vars from the same ref (`git show <ref>:inventories/<flavor>/topology_vars/<site>.yml`), never the working
+tree: unified-network-controller's uplink labels failed for yakanarra this way (its CHANGELOG 20261014_2338, fixed cc72a25).
+
 ### Inventory Path Convention
 
 Each flavor's `inventories/<flavor>/` directory contains **two separate inventory files**, `prod` and `stage` (e.g. `inventories/rcp/prod`, `inventories/rcp/stage`) — not a nested directory structure.
