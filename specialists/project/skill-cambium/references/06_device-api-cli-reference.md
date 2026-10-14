@@ -595,6 +595,18 @@ One SSH snapshot of `umoona-home-1` (umoona, 10.255.1.1, 4.7.3-R21, low-touch si
 MAC (base + 1) while Nautobot and the asset register hold its LAN MAC (base), so all 58 old-looma and 4 umoona routers read as MAC drift; an ePMP
 unit identifies by its LAN MAC while a sweep's ARP MAC is LAN + 1 (03_asset-register-conventions). A MAC compare must choose one kind per family.
 
+**The rule since 2026-10-14, and what identify reports (unified-network-controller, 2026-10-15):** Nautobot holds every unit's LAN MAC for every
+family (operator). Measured over every discovery capture with an identify read on the Mac (beagle-bay, engawala, junjuwa, kalumburu, koonibba, umoona,
+yakanarra): identify's MAC is the ARP MAC - 1 on all 75 ePMP units (12 AP, 63 SM: it reads `cambiumLANMACAddress`) and equals the ARP MAC on all 52
+R195Ps (it reports `eth2.500`, the management MAC, e.g. umoona-home-1 `bc:a9:93:47:dd:51`); Enterprise Wi-Fi (26) and TP-Link (47) identify by the ARP
+MAC. So the LAN MAC is: ePMP `cambiumLANMACAddress` (SNMP `.1.3.6.1.4.1.17713.21.1.1.15.0`, snmp-oid-registry.yaml) or ARP - 1; R195P `br0`
+(`facts.lan_mac_address`) or management MAC - 1; the other families their identify MAC. **Open conflict:** the kalumburu paragraph above says the R195P
+`br0` MAC "is what ARP shows (39 of 44 rows)", while the 2026-09-28 layout and these five kalumburu identify reads (identify = ARP) put ARP at
+`eth2.500` = base + 1. One read-only SSH snapshot of a kalumburu R195P (`ifconfig br0` against `eth2.500`) settles it; until then UNVERIFIED for kalumburu.
+Correction to the 2026-10-14 paragraph above, from apn-unc01's Nautobot (read-only, 2026-10-15): the R195P records there (57 at old-looma, 4 at
+umoona, 30 at yakanarra) hold the ARP MAC, base + 1, on `mgmt`, not the base; the drift most likely (inferred, not read) came from the collector's identity carrying `br0`
+(`facts.lan_mac_address`, the adapter's fallback when no interface holds the management address). Either way the stored MAC was not the LAN MAC.
+
 The management MAC a sweep sees is base + 1, and the public side answers from base + 2, one above it. Checked by ARP from umoona-smc01 on all four umoona R195Ps (10.0.1.1–.4 answer from each router's
 management MAC + 1). The public address is not handed out by the SMC's DHCP and is not in the TFTP configs: the low-touch hook (`cnmaestro-provisioning.py`, ansible-wifi
 `roles/smc_cnmaestro_provisioning`) assigns each R195P a `public_ip` keyed by its MAC, pushes it through cnMaestro, and writes the `<name>-public` RPZ record beside `<name>`. Written back from
