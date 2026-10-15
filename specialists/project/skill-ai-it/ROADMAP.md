@@ -71,6 +71,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
     generic version under `templates/` for `--init` to emit; the UNC wording stays in the pilot.
 
 ## Audit and preflight
+- [ ] **`budget_plan.py` audit reports SCRATCHPAD lines LOST when none were removed** (2026-10-15, ansible-wifi-root-governance): `just budget --apply` printed "LOST SCRATCHPAD.md: 85 line(s) lost, e.g. '**Newest thread (2026-10-07, 13:36) ...'" and exited 1, yet `git diff` on SCRATCHPAD.md shows additions only and the quoted line is still in the file. The CHANGELOG rotation in the same run was correct. Reproduce on that project and fix the audit comparison.
 
 - [ ] **`audit` mode refinement** — structured output format for audit findings (missing files, stale sections, routing gaps, drift) so agents can act on audit output without ambiguity.
 - [ ] **Context-preflight validation** — extend `templates/context_preflight.sh` to check for `ARCHCORE_PROMOTION_CANDIDATES.md` freshness and warn if candidates are stale relative to governance files.
