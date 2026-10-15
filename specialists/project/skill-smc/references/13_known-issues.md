@@ -893,6 +893,8 @@ ran) inside the bad window keeps serving the broken redirect indefinitely afterw
   since before the bug existed, so it never carried either value. It does have an orphaned `teleport.*` Apache vhost from Oct 2024, unrelated to this specific regression.
 - **The remaining ~21 sites** have `squid.conf` predating 2025-06-27 entirely (fleet-wide `smc_squid` run of 2024-08-07) — never affected.
 
+**Update 2026-10-15 (Prometheus, `node_nf_conntrack_entries`):** the user impact at hope-vale, kowanyama and galiwinku began on **2026-09-01**, not when the bad value landed in 2025. Sessions for 1-7 Sep fell to 32-50% of the prior week at those three sites only; the other 26 nbn_accelerate/nbn_wh sites ranged 74-150%. 1 Jul, 1 Aug and 1 Oct show no drop. None of the three rebooted in the window except hope-vale (5 Sep 10:51), and none went offline, so no availability alert fired. Recovery: galiwinku 8 Sep between 15:00 and 16:00 AEST (box rebuild); hope-vale and kowanyama 11 Sep 11:34 AEST (squid re-run). Galiwinku's sessions drop every midnight and return about 07:00 on normal days, so a midnight dip there is not an outage onset. The operator states free PINs expire on the 1st of each month (operator, 2026-10-15), which fits the 1 Sep onset; why 1 Aug did not break the same sites is still unexplained.
+
 **Process lesson:** the `nbn_wh` fix landing inside an unrelated commit (headline: blocklist-feed transport, not portal FQDN) is exactly the kind of change where a targeted write-back audit misses
 things — `git show --stat` on every commit that touches a shared vars file, not just commits whose headline names the file, should be part of any future sweep for this class of regression.
 
@@ -981,6 +983,8 @@ making the restart non-destructive; this is not applied.
 **Detection:** see [14_pin-activation-diagnosis.md](14_pin-activation-diagnosis.md). Sample the `ECLIPSE_MARK` count per minute; repeated
 drops to zero mean a wipe. Then run `journalctl -u teleport | grep "teleportUser:bot-cw-dashboard"`. Full RCA and evidence:
 `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/koonibba-usage-drop/`.
+
+**Update 2026-10-15 (live, koonibba-smc01):** the bot's `netfilter-persistent` restarts stopped at **2026-10-01 13:06 AEST** (journal: 586 and 560 restart lines/day on 29-30 Sep, none after 13:06 on 1 Oct). The bot still connects (about 7,700 `bot-cw-dashboard` teleport journal lines a day through 15 Oct), so only the restart step was removed; who removed it is not recorded here. Client traffic (bridge_501 tx) stayed at 6-13 GB/day for 1-8 Oct, spiked 181 GB on 9 Oct and 132 GB on 10 Oct (AEDT), and has held about 30-37 GB/day since 12 Oct. The spike began in the hour an **Xbox One** (`10.0.4.133`, UA `...Xbox; Xbox One; WebView/3.0...`) activated a PIN, 2026-10-09 16:04:22 AEDT; bridge_501 then ran a flat ~50 Mbps from 16:00 to 04:00 and again 16:00-19:00 on 10 Oct. DNS capture for 16:00-24:00 on 9 Oct (`/url_capture/202610/`): the top two clients queried netflix.com, xboxlive.com (`assets1.xboxlive.com`, `update.xboxlive.com`) and microsoft.com. DNS shows names, not bytes, so the per-device split of the 181 GB is inferred, not measured. Squid keeps only 3 days of logs, so the URL-capture pcaps are the only per-client record past that.
 
 **Side findings (same session):**
 - The hourly WAN bursts in Grafana are `speedtest_exporter`'s own tests, roughly 1.2 GB/hour of WAN data (5-minute-rate estimate).
