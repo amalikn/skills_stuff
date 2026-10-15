@@ -208,6 +208,20 @@ about 40 minutes; read 4 at a time. NBN Accelerate units cost several times thei
 (tunnel set-up, not the unit). The stored backups are not compliant on the managed keys yet (name and location keys, SNMP trap, NTP, CNS URL
 differ from intent): that is the project's intent, not a reader fault.
 
+**Learned 2026-10-15 — which config keys change without a real change (unified-network-controller, VERIFIED_PRIMARY on stored backups).**
+Consecutive redacted `get_config()` backups of the same unit, read hours apart with nobody changing the unit (apn-unc01, 2026-10-15):
+
+| Family | Units read twice | What differed | Treat as |
+| --- | --- | --- | --- |
+| ePMP 3000L AP and Force 300 SM | 5 | 66-101 keys each, 0 settings: `config_regular` device props mix live status into the config (`*Status`, `*State`, counters, second radio and port forms, SM-only forms) | volatile; config tables and RSSI thresholds stay real |
+| Enterprise Wi-Fi (XV2, E-series) | 2 | only `system.clock` | volatile, with `system.reboot_reason` (read-only in the unit's own UI) |
+| cnPilot R195P | 2 (yakanarra) | `nvram.cns_cloud_id` from `APN_MIGRATION` to empty | a real change (cnMaestro cloud ID cleared on the unit) |
+| cnWave 60 GHz | 0 | not measured | none assumed (UNVERIFIED) |
+
+No family exposes a configuration version, checksum or last-changed time among its keys (ePMP: none of 1,002 keys), so change detection must read
+the configuration and compare it with volatile keys removed. A secret that shows as `<REDACTED>` in one read and a fingerprint in the next is not a
+change; two different fingerprints are. UNC's rules: `src/unc/tasks/config_backup/normalise.py` in that project.
+
 ## Write Operations — XV2-22H REST writes proven on one test unit (2026-09-29)
 
 Read from the unit's own UI bundle (`assets/falcon-ng-client-2.0.0.min.js`, 6.6.0.3-r9; unified-network-controller

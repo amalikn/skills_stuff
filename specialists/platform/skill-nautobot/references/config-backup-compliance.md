@@ -45,3 +45,12 @@ for worker prerequisites and [upgrade and troubleshooting](upgrade-and-troublesh
 > Location panel (`ConfigComplianceLocationCheck`, plain badges) offers no link either. To send a user from a count to the matching results, build a
 > small list view over `ConfigCompliance` filtered by location subtree, feature slug and compliance, and link each row to the device's compliance tab
 > (`plugins:nautobot_golden_config:configcompliance_devicetab`, `?tab=nautobot_golden_config:1`).
+
+> **Learned 2026-10-15 (v)** · Golden Config 3.0.7, Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: a production instance's GoldenConfig records and change log (backups
+> written through the REST API), custom fields on `nautobot_golden_config.goldenconfig` created and written in the same PATCH · Falsifier: a 3.0.x
+> change-log entry carrying `backup_config` text, or a record holding more than one backup
+> Change-only backups. An API-fed GoldenConfig record holds one backup (`backup_config`) and its `backup_last_success_date`; the change log does not keep
+> the replaced config text, so neither "when did it last really change" nor the previous version exists natively. GoldenConfig accepts custom fields,
+> so a change time and the replaced keys can ride in the same PATCH as the backup (Object Metadata would be a separate request that can disagree with
+> it). Keep `backup_last_success_date` as "checked" and rewrite `backup_config` only when a normalised comparison finds a real change. `nbshell` fed a
+> script on stdin breaks on multi-line loops; pass `--command` instead.

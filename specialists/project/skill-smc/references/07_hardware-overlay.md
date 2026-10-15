@@ -969,3 +969,20 @@ update.
 `tryboot_a_b=1` (Pi 4 EEPROM beta 2022-10-18, default 2022-12-01): a one-shot `reboot "0 tryboot"` boots the other slot once and any later reboot returns
 to the committed one. Whether it honours `autoboot.txt` on a GPT card is not yet tested. Source and design: the smc-resiliency project
 (`/Volumes/Data/_ai/_project/project_stuff/apn/smc-resiliency/docs/pi/`).
+
+## Overlay building blocks already on the fleet (read 2026-10-15)
+
+Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for unified-network-controller's direct device reach proposal (UNC options register D1.2, proposed, not decided):
+
+| SMC | Flavour | Kernel | `wireguard.ko` | `xt_NETMAP.ko` | iptables | netplan.io | Root | bridge_500 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| umoona-smc01 | rcp | 5.15.0-43-generic | present | present | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1 | ext4 | 10.255.0.1/19 |
+| old-looma-smc01 | rcp | 5.15.0-101-generic | present | present | 1.8.7 (nf_tables) | 0.105-0ubuntu2~22.04.3 | ext4 | 10.255.0.1/19 |
+| adjamarragu-smc01 | rct | 5.15.0-1078-raspi | present | present | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1 | overlayroot | 10.255.0.1/24, 192.168.5.100/24 |
+| alamirra-smc01 | rct | 5.15.0-1078-raspi | present | present | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1 | overlayroot | 10.255.0.1/24, 192.168.5.100/24 |
+
+- A kernel WireGuard tunnel and a NETMAP rule need **no package** on either platform: the modules ship in the stock Ubuntu 22.04 kernels, systemd-networkd 249 and netplan (jammy
+  manual lists `mode: wireguard`) configure the interface. `wireguard-tools` and `tailscale` are installed on none of the four; adding either is a package install under the
+  box-by-box approval rule.
+- The management prefix length differs by flavour: rcp `bridge_500` is /19, rct is /24 (with a second 192.168.5.100/24). Anything sized per site should take the /19.
+- On rct the files of any such change must reach the lower layer (overlayroot), or they vanish on reboot.

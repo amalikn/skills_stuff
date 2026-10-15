@@ -455,3 +455,11 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 > the REST serializers), so they cannot be hidden that way. To restyle a core panel (the Location Stats box), hide its instance by class name the same
 > way and draw an app panel with core's own markup (`col text-center` / `h2` / `btn btn-lg btn-primary|btn-secondary` / `p`), which keeps its colours
 > and theme behaviour.
+
+> **Learned 2026-10-15 (u)** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `core/templates/base_django.html` line 22 (`<body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+> hx-inherit="hx-headers">`) on a production instance; its Nautobot log answering an app's htmx POSTs with 403 "CSRF token from the 'X-Csrftoken' HTTP header has incorrect length" · Falsifier: a
+> 3.2.x htmx POST carrying both headers accepted
+> htmx CSRF in app templates. The page body already sends `x-csrftoken` with every htmx request it contains, inherited by every element. An app control
+> that adds its own `hx-headers` with `X-CSRFToken` makes htmx send the token twice; Django joins the two values and refuses the POST with 403 "incorrect
+> length". htmx shows nothing on a 403 by default, so the button looks dead. Add no CSRF header of your own inside a Nautobot page, and handle
+> `htmx:responseError` / `htmx:sendError` so a refused request is shown in words.
