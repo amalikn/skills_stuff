@@ -14,6 +14,7 @@ Last rotated: 20261015_1554
 ## Contents
 
 - [20261015_1553 — The SMC runs four parallel SNMP walks cleanly; fping absent on old-looma-smc01 too (v0.4.5 -> v0.4.6)](#20261015_1553--the-smc-runs-four-parallel-snmp-walks-cleanly-fping-absent-on-old-looma-smc01-too-v045---v046)
+- [20261015_1558 — Why the 2025 portal misconfiguration stayed latent; 1 Sep trigger checks (v0.4.6 -> v0.4.7)](#20261015_1558--why-the-2025-portal-misconfiguration-stayed-latent-1-sep-trigger-checks-v046---v047)
 - [20261015_1515 — Three-site PIN outage dated by conntrack; koonibba bot restarts stopped 2026-10-01, 9 Oct Xbox spike (v0.4.5 -> v0.4.6)](#20261015_1515--three-site-pin-outage-dated-by-conntrack-koonibba-bot-restarts-stopped-2026-10-01-9-oct-xbox-spike-v045---v046)
 - [20261015_1441 — fping absent on yakanarra-smc01; iputils ping used for device ping (v0.4.4 -> v0.4.5)](#20261015_1441--fping-absent-on-yakanarra-smc01-iputils-ping-used-for-device-ping-v044---v045)
 - [20261014_2345 — Topology_vars differ by branch; read them at the listing ref (v0.4.3 -> v0.4.4)](#20261014_2345--topology_vars-differ-by-branch-read-them-at-the-listing-ref-v043---v044)
@@ -38,6 +39,10 @@ Last rotated: 20261015_1554
 
 - `references/02_service-map.md`: old-looma-smc01 (rcp) ran 4 concurrent snmpwalks plus 2 shared SSH sessions without errors (2026-10-15);
   fping is not installed there either. Found by unified-network-controller's onboarding speedups.
+
+## 20261015_1558 — Why the 2025 portal misconfiguration stayed latent; 1 Sep trigger checks (v0.4.6 -> v0.4.7)
+
+- `references/13_known-issues.md` (2026-09-11 entry): Unbound template line that masked the wrong redirect, 5 Sep unbound rewrite, cert and Route 53 ruled out, CloudTrail and Graylog gaps, staff sessions 1-3 Sep.
 
 ## 20261015_1515 — Three-site PIN outage dated by conntrack; koonibba bot restarts stopped 2026-10-01, 9 Oct Xbox spike (v0.4.5 -> v0.4.6)
 
