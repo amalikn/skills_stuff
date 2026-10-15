@@ -163,6 +163,13 @@ Operator note, 2026-09-23: is LLDP available on any Cambium family? Checked the 
 - **The SMC cannot see them across the switch.** LLDP frames are link-local (`01:80:c2:00:00:0e`) and are not bridged, so a 70 s `tcpdump ether proto 0x88cc` on `bridge_500` at kalumburu captured
   nothing; the SMC has no `lldpd`. The consumer of ePMP LLDP is the switch port the radio hangs off (the switching-refresh project's ground), not the SMC.
 - Enterprise Wi-Fi (XV2/E-series) and cnWave transmit-side support: `UNVERIFIED` (no config key looked for yet).
+- **What each family sends, read from the switch side** (TP-Link SG2428P lldpRemTable, wangkatjungka Switch1 2026-10-11, unified-network-controller
+  `captures/topology/wangkatjungka-20261011_2230/raw/`; checked 2026-10-15): ePMP 3000L 4.7.0.1 and XV2 6.6.0.3 send port id subtype macAddress(3)
+  with the unit's MAC and port description `eth0`; **cnWave V5000 1.5.2 sends port id subtype networkAddress(4) whose value is its management IPv4
+  (`10.255.4.10`, walked as text) and an empty port description**, chassis id subtype macAddress (`00:04:56:...`). Its system name is the unit's own
+  name, which can differ from the Nautobot record (wangkatjungka: `WNG_T1_V5K-S_IP4_10` sent, record `...V5K-N...` holds the address). So an LLDP
+  reader must not show a cnWave port id as a port: use the description, else match the address to the unit's Interface. `VERIFIED_PRIMARY`
+  (one capture per family; other firmware `UNVERIFIED`).
 
 ## Failure signatures over the SMC path (mowanjum, 60-plus collector cycles to 2026-09-26)
 

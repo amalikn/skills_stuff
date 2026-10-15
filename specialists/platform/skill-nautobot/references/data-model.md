@@ -342,3 +342,7 @@ Source: `nautobot/extras/models/contacts.py:49-125`, `nautobot/extras/models/sta
 
 > **Learned 2026-10-13** · Nautobot 3.2.3 · VERIFIED_SECONDARY · Source: observed in the 3.2.3 web UI (interface tables, cable statuses, Circuit API) · Falsifier: an interface row coloured from a recoloured cable status, or a bridge's page listing its members
 > Three UI and model limits that surprise: (1) an interface row takes its colour from its cable's status only while that status keeps one of Nautobot's own palette colours (`table-success` for 4caf50): recolour "Connected" and the green rows disappear, so exempt cable statuses from any colour scheme; (2) the native Bridge field is shown on each member interface (and as a Bridge column) but the bridge interface's own page lists no members: a panel or a filter `?bridge=<id>` is needed; (3) a Circuit's `description` is capped at 255 characters (the API refuses longer), so generated descriptions must be capped.
+
+> **Learned 2026-10-15 (m)** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `ipam/models.py` `Namespace.location = ForeignKey("dcim.Location", on_delete=PROTECT, related_name="namespaces")` · Falsifier: a 3.2.x Location delete that succeeds while a Namespace names it
+> A Location delete is refused while any Namespace's optional `location` points at it (`on_delete=PROTECT`). A Job or script that removes a site must
+> clear or delete the site's Namespaces (after their Prefixes and VRFs, whose `namespace` is also PROTECT) before deleting the Location.

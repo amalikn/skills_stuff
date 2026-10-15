@@ -427,3 +427,12 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 > `@django_jinja.library.filter` is imported at start-up and usable in Job Button and custom link text; empty text hides the button. (4) Nautobot polls
 > with htmx (`hx-get`, `hx-trigger="every 3s"`, `hx-swap`) and stops by leaving the poller out of the response once nothing is pending.
 
+> **Learned 2026-10-15 (l)** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `core/context_processors.py` `nav_menu` (lines 61-145), `core/settings.py` INSTALLED_APPS (lines 632-665) and TEMPLATES (two engines, both list `nautobot.core.context_processors.nav_menu`), `extras/plugins/__init__.py` (constance_config merge), `apps/config.py` `get_app_settings_or_config`, `core/authentication.py` `has_perm("is_staff")`, `project-static/docs/release-notes/version-2.1.html` (HIDE_RESTRICTED_UI) · Falsifier: a 3.2.x setting that hides restricted menus, or a menu not rebuilt per request
+> Hiding menus and app UI per audience without a restart. `HIDE_RESTRICTED_UI` was removed in 2.1; the menu is built per request by
+> `nautobot.core.context_processors.nav_menu` from `registry["nav_menu"]["tabs"]`, filtered by permissions only, and a superuser sees every tab. The core
+> apps cloud, load_balancers, virtualization, vpn and wireless are hard-coded in INSTALLED_APPS and cannot be removed, so hiding their tab is the available
+> cut. A seam that works: an app context processor that calls core's and deletes tabs from its `nav_menu` dict, swapped for core's entry in every
+> TEMPLATES engine in `nautobot_config.py` (global search reads the same value). Settings an admin changes in the GUI belong in
+> `NautobotAppConfig.constance_config`: each key is stored as `<app_name>__<KEY>`, read with `get_app_settings_or_config(app, KEY)` (PLUGINS_CONFIG wins
+> if it sets the key, so keep these keys out of `default_settings`) and written with `setattr(constance.config, "<app>__<KEY>", value)`. A nav item with
+> `permissions=["is_staff"]` shows to staff and superusers only (the backend special-cases it). Hiding is never access control: say so on the page.
