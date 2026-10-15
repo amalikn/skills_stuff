@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261015_1441
+Last rotated: 20261015_1554
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261015_1553 — The SMC runs four parallel SNMP walks cleanly; fping absent on old-looma-smc01 too (v0.4.5 -> v0.4.6)](#20261015_1553--the-smc-runs-four-parallel-snmp-walks-cleanly-fping-absent-on-old-looma-smc01-too-v045---v046)
 - [20261015_1515 — Three-site PIN outage dated by conntrack; koonibba bot restarts stopped 2026-10-01, 9 Oct Xbox spike (v0.4.5 -> v0.4.6)](#20261015_1515--three-site-pin-outage-dated-by-conntrack-koonibba-bot-restarts-stopped-2026-10-01-9-oct-xbox-spike-v045---v046)
 - [20261015_1441 — fping absent on yakanarra-smc01; iputils ping used for device ping (v0.4.4 -> v0.4.5)](#20261015_1441--fping-absent-on-yakanarra-smc01-iputils-ping-used-for-device-ping-v044---v045)
 - [20261014_2345 — Topology_vars differ by branch; read them at the listing ref (v0.4.3 -> v0.4.4)](#20261014_2345--topology_vars-differ-by-branch-read-them-at-the-listing-ref-v043---v044)
@@ -32,7 +33,11 @@ Last rotated: 20261015_1441
 - [20261008_1147 — Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)](#20261008_1147--raspberry-pi-smc-identity-and-ports-rct-site-ata-vendor-sources-linked-v021---v022)
 - [20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)](#20260930_1221--terminology-access-is-free-via-tc-acceptance-not-a-paid-pin-v0175---v0176)
 - [20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)](#20260930_1202--bot-cw-dashboard-wipes-pin-marks-on-koonibbaamata-a-zero-eclipse_mark-count-is-not-normal-v0173---v0174)
-- [20260911_1120 — bungardi-smc01 confirmed as third broken site; Eclipse "PIN Last Issued" admin report documented as a third corroborating evidence source (v0.1.35 -> v0.1.36)](#20260911_1120--bungardi-smc01-confirmed-as-third-broken-site-eclipse-pin-last-issued-admin-report-documented-as-a-third-corroborating-evidence-source-v0135---v0136)
+
+## 20261015_1553 — The SMC runs four parallel SNMP walks cleanly; fping absent on old-looma-smc01 too (v0.4.5 -> v0.4.6)
+
+- `references/02_service-map.md`: old-looma-smc01 (rcp) ran 4 concurrent snmpwalks plus 2 shared SSH sessions without errors (2026-10-15);
+  fping is not installed there either. Found by unified-network-controller's onboarding speedups.
 
 ## 20261015_1515 — Three-site PIN outage dated by conntrack; koonibba bot restarts stopped 2026-10-01, 9 Oct Xbox spike (v0.4.5 -> v0.4.6)
 
@@ -179,22 +184,3 @@ VERIFIED-OBSERVED 2026-10-08, read-only over Teleport apn on 20-mile and adjamar
   usage drop. The 2026-09-15 carrier-throttling conclusion is withdrawn. Fleet survey of 31 SMCs included; side findings and 2 `correlate-pin-activation.sh` bugs recorded.
 - `references/14_pin-activation-diagnosis.md`: CORRECTED the 2026-09-11 bullet that called a 0-mark snapshot normal on a healthy site (amata). Healthy sites hold a steady non-zero count; a zero means
   the chain was wiped. Added per-minute sampling as the detection method and the correct mark-count command.
-
-## 20260911_1120 — bungardi-smc01 confirmed as third broken site; Eclipse "PIN Last Issued" admin report documented as a third corroborating evidence source (v0.1.35 -> v0.1.36)
-
-**Trigger:** Operator shared a screenshot of the Eclipse admin "PIN Last Issued" report (per-site last-issue date, all `nbn_accelerate`/`nbn_wh` communities) and flagged `bungardi` as still
-suspiciously unresolved from the prior session's "unreachable" status, plus a batch of sites showing `Sep 10` as possibly-nothing-but-worth-checking.
-
-- `bungardi-smc01`'s Teleport tunnel recovered on retry (the earlier "no tunnel connection found" was transient). Live-audited: `deny_info` still points at `teleport.communitywifi.net.au`,
-  `squid.conf` mtime 2025-09-18, 2 marks / 2 activations in the log window — same dead signature as `hope-vale`/`kowanyama`. **Third confirmed-broken site.**
-- Ran `audit-pin-activation.sh` against the six operator-flagged `Sep 10`/`Sep 9` sites (`arawerr`, `loanbun`, `burawa`, `warakurna`, `pipalyatjara`, `mungkarta`): all showed healthy 302 counts
-  (57–526) — cleared as false alarms, normal daily variance.
-- Documented the Eclipse "PIN Last Issued" report itself in `references/14_pin-activation-diagnosis.md` §14.6 as a third independent evidence source (outside this fleet's own tooling) — corrects the
-  prior framing that pin-generation data was Eclipse-side and effectively unreachable; it's unreachable from *this fleet's* tooling specifically, but the operator has a working admin view for it.
-  Landed on the same three sites as both of this pack's own mechanisms, independently.
-- Updated `references/13_known-issues.md`'s `bungardi-smc01` entry from "could not be verified live" to confirmed-broken, and updated the "still actively broken" list fleet-wide from 2 sites to 3.
-- Updated the §14.7 case-study table with `bungardi`'s real numbers.
-
-Applied to: `references/13_known-issues.md`, `references/14_pin-activation-diagnosis.md`, `manifest.json`, `CHANGELOG.md`.
-
----

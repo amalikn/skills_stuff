@@ -137,3 +137,11 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > context). A lookup filter's values are copied into a new object's attributes, so a many-to-many field cannot be a filter (look the object up in the context
 > and name it by `id`). Tags and many-to-many values are added, never removed. A Design Builder Job saves as its launcher (UI user or API token owner), and
 > custom validators see that user. DNS Models' `DNSView.prefixes` is a many-to-many through `DNSViewPrefixAssignment`; the design key is `dns_views`.
+
+> **Learned 2026-10-15 (t)** · Nautobot 3.2.3, DLM 4.2.0, Golden Config 3.0.7 · VERIFIED_PRIMARY (read-only nbshell timings on a live 3.2.3 instance, UNC network drift tab) · Source:
+> `ValidatedSoftwareLCM.objects.get_for_object` and `DeviceSoftwareValidationResult` on the installed DLM 4.2.0 · Falsifier: a DLM release whose `get_for_object` is one query per call, or results filled without the validation Job
+> **Checking many Devices against Validated Software:** `ValidatedSoftwareLCM.objects.get_for_object(device)` cost about 0.1 s per Device (6 s for a
+> 60-device site), too slow for a page; read the few current records once (prefetch `devices`, `device_types`, `device_roles`, `device_tenants`,
+> `object_tags`) and apply them by those assignments and the software's platform (parity 120 of 120 Devices). `DeviceSoftwareValidationResult` stays
+> empty until DLM's validation Job runs, so it cannot be the page's source on its own. **Golden Config JSON compliance `missing`/`extra`** hold deepdiff
+> paths (`root['nvram.SNMPGetCommunity']`), so a summary must parse the bracketed parts; a flattened key keeps its dots inside one part.

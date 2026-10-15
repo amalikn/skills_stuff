@@ -326,6 +326,13 @@ management address on all three. Still a hand install, not an ansible-wifi role;
 recorded:** feeding the community as the first stdin line to `ssh host sh -s` executes it as a command and echoes it in stderr; carry it inside the script body (a quoted here-doc) instead. That
 mistake printed both read-only communities into one agent session's transcript on 2026-09-24 01:20; rotation of the two RO communities is recommended.
 
+**SNMP client concurrency on an x86 SMC (VERIFIED-OBSERVED 2026-10-15, old-looma-smc01, `rcp`, read-only).** The box ran four
+`snmpbulkwalk`/`snmpget` processes at once (`xargs -P 4`; `seq` and `xargs` are present on jammy) inside one SSH session, while two more
+sessions shared the same ControlMaster (a ping sweep and another SNMP session): no session failed and no walk returned worse than serial. A
+52-SM bridge walk, two cycles, took 35 s against 162 s serial; 121 sysUpTime gets 1.6 s against 55 s. unified-network-controller's
+`smc_snmp.run` now defaults to 4 at once (one command per device; writes stay serial). The same day `fping` was absent on old-looma-smc01: the
+reachability probe fell back to `ping` (131 addresses, 6 down, about 8 s).
+
 **Raspberry Pi boxes: no agent, by decision (operator, 2026-10-08).** VERIFIED-OBSERVED 2026-10-08: no `snmpd` on 20-mile, adjamarragu (`rct`), areyonga or glen-hill (`wh`); the root is
 overlayroot, so a hand install would not survive a reboot. The operator decided no SNMP on the Pis for now. Details: `07_hardware-overlay.md`, Raspberry Pi SMC identity.
 

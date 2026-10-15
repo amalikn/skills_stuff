@@ -13,6 +13,7 @@ Last rotated: 20261010_1801
 
 ## Contents
 
+- [20261015_1553 — Concurrent SNMP walks lose no evidence; SNMP is not a login (no version change)](#20261015_1553--concurrent-snmp-walks-lose-no-evidence-snmp-is-not-a-login-no-version-change)
 - [20261015_1442 — Radio parameters over SNMP per family; no azimuth or beamwidth anywhere (no version change)](#20261015_1442--radio-parameters-over-snmp-per-family-no-azimuth-or-beamwidth-anywhere-no-version-change)
 - [20261015_1313 — A closed connection through the SMC hop is an unreachable unit (old-looma config backup) (no version change)](#20261015_1313--a-closed-connection-through-the-smc-hop-is-an-unreachable-unit-old-looma-config-backup-no-version-change)
 - [20261015_1115 — LLDP as each family sends it: cnWave V5000 sends its address as the port id (no version change)](#20261015_1115--lldp-as-each-family-sends-it-cnwave-v5000-sends-its-address-as-the-port-id-no-version-change)
@@ -36,6 +37,11 @@ Last rotated: 20261010_1801
 - [20261009_0153 — Installer record in sysDescr, Force 300 position fields, coarse range, cnWave sites (v0.6.47 -> v0.6.48)](#20261009_0153--installer-record-in-sysdescr-force-300-position-fields-coarse-range-cnwave-sites-v0647---v0648)
 - [20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)](#20261009_0120--station-table-range-and-angle-force-300-has-no-mac-table-r195p-attachment-not-readable-v0646---v0647)
 - [20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)](#20260930_1221--terminology-paid-pin-corrected-to-access-mark-v0626---v0627)
+
+## 20261015_1553 — Concurrent SNMP walks lose no evidence; SNMP is not a login (no version change)
+
+- `references/05_known-issues.md`: four SM bridge walks at once from the SMC found as many units as one at a time (old-looma, 2026-10-15),
+  and SNMP does not count toward the ePMP HTTPS login lockout. Found by unified-network-controller's onboarding speedups.
 
 ## 20261015_1442 — Radio parameters over SNMP per family; no azimuth or beamwidth anywhere (no version change)
 

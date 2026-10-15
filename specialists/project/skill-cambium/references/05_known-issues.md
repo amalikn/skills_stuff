@@ -408,6 +408,12 @@ after a ping from the SMC, old-looma's routers appeared for 8 of 10 known pairs 
 kalumburu showed 0 of 10 over SNMP and only own rows on two of three SMs by REST. A sighting is direct evidence (the MAC was learnt on that
 SM's Ethernet port); an absence proves nothing. Repeated sampling is how to use it.
 
+**Learned 2026-10-15: concurrent SNMP walks from the SMC cost no evidence** (`VERIFIED_PRIMARY`, read-only, unified-network-controller speed
+work). Walking old-looma's `cambiumSTABridgeTable` on 52 Force 300 SMs four at a time from the SMC (net-snmp, `-t 5 -r 3`), with the AP bridge
+walks and GPS gets running alongside, found known units on 42 SMs (per cycle 44, 47) against 34 of 55 (41, 26) walked one at a time about 20 minutes
+earlier, in 35 s against 162 s. No SM refused or timed out more for it. SNMP is not a login: it does not count towards the ePMP HTTPS lockout
+(fourth login inside about twenty minutes, `06_device-api-cli-reference.md`).
+
 ## 2026-10-09 — R195P: host keys and settings in RAM, remote syslog off, and a by-hand enable that does nothing (INFO)
 
 old-looma home-48, operator at the router's shell, 2026-10-09 (VERIFIED_PRIMARY unless marked):
