@@ -13,6 +13,8 @@ Last rotated: 20261010_1801
 
 ## Contents
 
+- [20261015_1442 — Radio parameters over SNMP per family; no azimuth or beamwidth anywhere (no version change)](#20261015_1442--radio-parameters-over-snmp-per-family-no-azimuth-or-beamwidth-anywhere-no-version-change)
+- [20261015_1313 — A closed connection through the SMC hop is an unreachable unit (old-looma config backup) (no version change)](#20261015_1313--a-closed-connection-through-the-smc-hop-is-an-unreachable-unit-old-looma-config-backup-no-version-change)
 - [20261015_1115 — LLDP as each family sends it: cnWave V5000 sends its address as the port id (no version change)](#20261015_1115--lldp-as-each-family-sends-it-cnwave-v5000-sends-its-address-as-the-port-id-no-version-change)
 - [20261015_0130 — LAN MAC rule measured per family; cambiumLANMACAddress in the OID registry (v0.8.1 -> v0.8.2)](#20261015_0130--lan-mac-rule-measured-per-family-cambiumlanmacaddress-in-the-oid-registry-v081---v082)
 - [20261014_2230 — MAC identity by family; Option 82 pairs no unit; as-built patterns across seven sets (v0.8.0 -> v0.8.1)](#20261014_2230--mac-identity-by-family-option-82-pairs-no-unit-as-built-patterns-across-seven-sets-v080---v081)
@@ -34,6 +36,17 @@ Last rotated: 20261010_1801
 - [20261009_0153 — Installer record in sysDescr, Force 300 position fields, coarse range, cnWave sites (v0.6.47 -> v0.6.48)](#20261009_0153--installer-record-in-sysdescr-force-300-position-fields-coarse-range-cnwave-sites-v0647---v0648)
 - [20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)](#20261009_0120--station-table-range-and-angle-force-300-has-no-mac-table-r195p-attachment-not-readable-v0646---v0647)
 - [20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)](#20260930_1221--terminology-paid-pin-corrected-to-access-mark-v0626---v0627)
+
+## 20261015_1442 — Radio parameters over SNMP per family; no azimuth or beamwidth anywhere (no version change)
+
+- `references/snmp-oid-registry.yaml` and `references/06_device-api-cli-reference.md`: read live at old-looma (read-only): ePMP 3000L and
+  Force 300 give frequency, width, power and antenna gain; XV2 per radio channel, width and power (unit assumed dBm); cnWave and R195P nothing
+  usable; azimuth only as the installer's `sector_direction` in sysDescr, beamwidth from no family. Found by unified-network-controller's coverage map.
+
+## 20261015_1313 — A closed connection through the SMC hop is an unreachable unit (old-looma config backup) (no version change)
+
+- `references/05_known-issues.md`: new section. 15 backup failures at old-looma (ePMP SM TLS EOF, R195P SSH kex closed) were 12 units the SMC
+  could not reach and 3 flapping; not TLS; cost per unit measured (SM 10-14 s, R195P 40-42 s, unreachable 11-12 s). Found by unified-network-controller.
 
 ## 20261015_1115 — LLDP as each family sends it: cnWave V5000 sends its address as the port id (no version change)
 

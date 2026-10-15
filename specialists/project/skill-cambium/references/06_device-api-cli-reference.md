@@ -415,6 +415,14 @@ live walk returned columns through `.43`, with `.43` carrying the SM's firmware 
 
 **ePMP reports session time per SM directly** (`.27`, format `0001:22:51:32`), so ePMP link sessions do not need poll-based reconstruction the way Wi-Fi client sessions do.
 
+**Radio parameters over SNMP, per family (2026-10-15, read-only GETs and walks on old-looma units; OIDs in `snmp-oid-registry.yaml`).** ePMP AP and SM: frequency (`centerFrequency`; an SM reads 0
+there and reports `cambiumSTAConnectedRFFrequency`), width as a code (`wirelessInterfaceHTMode` on an AP, `cambiumSTAConnectedRFBandwidth` on an SM; 1 = 20, 2 = 40, 3 = 10, 4 = 5, 5 = 80, 6 = 160 MHz
+per the 2020 MIB), conducted power (`cambiumSTAConductedTXPower`; an SM's `wirelessInterfaceTXPower` is its configured maximum, 30, while it transmits at 3 under power control) and antenna gain
+(`cambiumEffectiveAntennaGain`). No ePMP object holds an azimuth, a beamwidth or the antenna model. At low-touch sites the AP's sysDescr holds the installer's JSON with `sector_direction` (OMNI or a
+compass point) and `antenna_gain` (10 omni, 18 sector): the only direction a unit reports, and a compass point rather than a surveyed bearing. `cambiumGPSHeight` is an altitude, not the mast height.
+XV2-2T0: `cambiumRadioEntry` gives band, channel, width and power per radio (power unit not stated by the MIB); sysDescr says "Integrated Omni". cnWave V5000/V3000: nothing; the `.60` arm holds only
+the link entry. R195P: per-SSID channel and width in CAMBIUM-MIB 41010, no power. unified-network-controller stores these in Device radio fields (`wc-local/scripts/collector/radio_params.py`).
+
 ## cnWave 60 GHz — SNMP Exists, on Its Own Arm, and Is Enabled Per Device
 
 Walked live 2026-09-21 from `mornington-smc01` and `bidyadanga-smc01`. This section corrects an assumption that nearly entered the record as fact.

@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261015 Learned 2026-10-15 (s) (UNC core tab hiding and Infrastructure panel, verified update): `references/app-development.md` gains hiding core object tabs by wrapping instance `should_render` (Notes and Change Log are template-drawn and cannot be) and restyling a core panel with core's own Stats markup.
 - 20261015 Learned 2026-10-15 (r) (UNC Design Builder standard site and tower designs, verified update): `references/apps-jobs-validation.md` gains deployment-mode re-run semantics (a `!get` is not recorded and is decommissioned; name every object with `!create_or_update`, attributes only on create), filters copied into new objects (no many-to-many filter), and that a design Job saves as its launcher.
 - 20261015 Learned 2026-10-15 (q) (UNC UI features per site and menu items, verified update): `references/app-development.md` gains the nav_menu shape keyed by item link (an app pruning groups or items must prune empties itself) and a per-object UI choice as an `advanced_ui` multi-select custom field.
 - 20261015 Write-back checker: `tests/test_package_contract.py` joins a header the Markdown wrap hook folded over several lines, and accepts a same-day letter `(a)`, an evidence note in brackets and CANDIDATE; entries (f), (g) and (p) gained their missing Source field. The test had been failing since 2026-10-14 (b) while commits went in.

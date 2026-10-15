@@ -18,7 +18,7 @@
 # Table OIDs are ENTRY OIDs: a row reads <entry>.<column>.<index>. Scalars answer at instance .0.
 
 schema_version: 1
-updated: "2026-09-28"
+updated: "2026-10-15"
 
 mib2_system: &mib2_system
   # Standard MIB-II system group. Listed per type only where verified on that type.
@@ -46,6 +46,22 @@ device_types:
          verified: {date: "2026-09-28", unit: JUN_3000L_T1_NW_IP0_11, site: junjuwa, firmware: "4.7.0.1", method: get}}
       - {oid: ".1.3.6.1.4.1.17713.21.3.8.2.5.0", name: wirelessInterfaceHTMode, access: ro, note: "the channel-width setting as a code (read 1); the MIB of 2013 does not name each code: 1 is taken as 20 MHz, unverified",
          verified: {date: "2026-09-28", unit: JUN_3000L_T1_NW_IP0_11, site: junjuwa, firmware: "4.7.0.1", method: get}}
+      # Radio parameters, 2026-10-15 (unified-network-controller radio fields and Map coverage; read-only GETs from old-looma-smc01 through apn-unc01's
+      # bot, 3000L-ap-1..5). The MIB revision 202002131900Z (cambium-swap artifacts/mibs/netdisco-mibs) names the HTMode codes the 2013 one did not:
+      # 1 = 20, 2 = 40, 3 = 10, 4 = 5, 5 = 80, 6 = 160 MHz; all five APs read 1, consistent with their 20 MHz plan. No object holds an azimuth,
+      # beamwidth or antenna model; the azimuth comes from the installer record in sysDescr (below).
+      - {oid: ".1.3.6.1.4.1.17713.21.3.8.2.6.0", name: wirelessInterfaceTXPower, access: ro, note: "configured conducted power, dBm (18 on the two sectors, 26 on the three omnis); equals the installer record's `power`",
+         verified: {date: "2026-10-15", unit: old-looma-3000L-ap-1..5, site: old-looma, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.3.8.2.7.0", name: wirelessInterfaceTDDAntennaGain, access: ro, note: "configured antenna gain, dBi: 18 on the sectors, 10 on the omnis; equals cambiumEffectiveAntennaGain and the installer record's `antenna_gain`",
+         verified: {date: "2026-10-15", unit: old-looma-3000L-ap-1..5, site: old-looma, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.1.1.9.0", name: cambiumEffectiveAntennaGain, access: ro, note: "effective antenna gain, dBi (MIB: AP, SM); what unified-network-controller stores as radio_antenna_gain_dbi",
+         verified: {date: "2026-10-15", unit: old-looma-3000L-ap-1..5, site: old-looma, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.1.2.5.0", name: cambiumSTAConductedTXPower, access: ro, note: "current conducted power, dBm; the MIB allocates it to the SM but the AP answers its configured power (18, 26)",
+         verified: {date: "2026-10-15", unit: old-looma-3000L-ap-1..5, site: old-looma, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.1.3.4.0", name: cambiumGPSHeight, access: ro, note: "GPS height as text (106.9, 87.9, 81.9, 69.3, 95.7): an altitude, not the antenna's height above ground; systemDeviceLocHeight .21.3.6.1.8.0 is a typed-in value (0, empty, 71 seen)",
+         verified: {date: "2026-10-15", unit: old-looma-3000L-ap-1..5, site: old-looma, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.2.1.1.1.0", name: sysDescr (installer record), access: ro, note: "at low-touch old-looma every 3000L AP's sysDescr holds the installer's JSON (confirmed, lotno, sector_direction, variables {frequency, power, antenna_gain}); sector_direction OMNI or N/NE/E/SE/S/SW/W/NW_SECTOR (Sidekick sidekick.py, the antenna_gain menu: omni sets 10 dBi, sector 18 dBi). ap-1 SE_SECTOR, ap-2 SW_SECTOR, ap-3..5 OMNI; frequency, power and gain equal the SNMP reads. The only azimuth source over SNMP: a compass point, not a surveyed bearing",
+         verified: {date: "2026-10-15", unit: old-looma-3000L-ap-1..5, site: old-looma, firmware: "4.7.0.1", method: get}}
       - {oid: ".1.3.6.1.4.1.17713.21.1.2.30.1.1", name: cambiumAPConnectedSTATable mac column, access: ro, note: "column 1 of the connected-STA entry: each registered SM's MAC (the AP-to-SM pairs)",
          verified: {date: "2026-09-28", unit: JUN_3000L_T1_NW_IP0_11, site: junjuwa, firmware: "4.7.0.1", method: walk}}
       - {oid: ".1.3.6.1.4.1.17713.21.1.2.40.1", name: cambiumAPBridgeTable, access: ro, note: "each MAC the AP learnt (col 2), its port (3: WLAN, or Own for the AP), the SM it came through (4) and an age (5); indexed by the MAC as a string, so every raw line carries a client MAC: parse in memory, never store the walk. Places units behind an SM with no name: old-looma 39 known units after pinging them and waiting 90 s (15 on a cold read); refreshed on a cycle of about a minute and aged out. Cambium fixed missed entries on ePMP 3000 in 4.7.1 (ACG-14693) and incorrect or incomplete data in 5.11.0 (ACG-16323): one sighting is not proof",
@@ -146,6 +162,9 @@ device_types:
     # cnWave arm .60 holds only the link entry; the rest is net-snmp (host resources, interfaces, IP). The serial is REST /local/getDeviceInfo `msn`
     # (cambium_cnwave_adapter.get_facts), read by unified-network-controller's identify and its `links` stage.
     serial_over_snmp: {available: false, verified: {date: "2026-09-29", units: [LMA_T1_V5K-E_IP4_10, LMA_T3_V2K_IP4_12], site: old-looma, firmware: "1.4", method: full walk}}
+    # Radio parameters over SNMP: none (2026-10-15). A walk of the cnWave arm .60 returns only the link entry columns 2-7 (18 values on the V5000 DN
+    # LMA_T1_V5K-E_IP4_10, 6 on the V3000 CN LMA_T2_V3K_IP4_11): no frequency, channel, power, gain or direction. Those are REST-only, if anywhere.
+    radio_over_snmp: {available: false, verified: {date: "2026-10-15", units: [LMA_T1_V5K-E_IP4_10, LMA_T2_V3K_IP4_11], site: old-looma, firmware: "1.4", method: walk .60}}
     unverified_siblings: [V1000]   # V3000 and V2000 identity read live 2026-09-23 (doomadgee); V1000 not yet
 
   # No verified SNMP surface yet (live walk not done): epmp-force300 (SM; SM-side scalars .17713.21.1.2.3/.18 exist on the SM, not walked here), e500, e430h, xv2-2t0.
@@ -185,6 +204,17 @@ device_types:
          verified: {date: "2026-09-24", unit: MOR_F300-16SM_EXT1003_IP_21_3, site: mornington, firmware: "4.7.0.1", method: get}}
       - {oid: ".1.3.6.1.4.1.17713.21.1.2.18.0", name: cambiumSTADLSNR, access: ro, note: "SM-side downlink SNR in dB (54, 44, 36)",
          verified: {date: "2026-09-24", unit: MOR_F300-16SM_EXT1003_IP_21_3, site: mornington, firmware: "4.7.0.1", method: get}}
+      # Radio parameters on an SM, 2026-10-15 (old-looma-sm-10): centerFrequency .21.3.8.2.18.0 reads 0 on an SM, so its frequency is the connected one;
+      # wirelessInterfaceTXPower reads 30 (the configured maximum) while the conducted power under power control is 3; sysDescr holds the installer
+      # record with lat, lon, align, test and antenna_gain 16, no sector_direction.
+      - {oid: ".1.3.6.1.4.1.17713.21.1.2.1.0", name: cambiumSTAConnectedRFFrequency, access: ro, note: "connected frequency, MHz (5785)",
+         verified: {date: "2026-10-15", unit: old-looma-sm-10, site: old-looma, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.1.2.2.0", name: cambiumSTAConnectedRFBandwidth, access: ro, note: "connected width code (1 = 20 MHz; codes as wirelessInterfaceHTMode)",
+         verified: {date: "2026-10-15", unit: old-looma-sm-10, site: old-looma, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.1.2.5.0", name: cambiumSTAConductedTXPower, access: ro, note: "current conducted power under power control, dBm (3)",
+         verified: {date: "2026-10-15", unit: old-looma-sm-10, site: old-looma, firmware: "4.7.0.1", method: get}}
+      - {oid: ".1.3.6.1.4.1.17713.21.1.1.9.0", name: cambiumEffectiveAntennaGain, access: ro, note: "16 dBi, the Force 300-16's integrated dish; systemConfigMinAntGain .21.3.6.1.17.0 also reads 16 (0 on the 3000L)",
+         verified: {date: "2026-10-15", unit: old-looma-sm-10, site: old-looma, firmware: "4.7.0.1", method: get}}
       - {oid: ".1.3.6.1.4.1.17713.21.1.1.33.0", name: cambiumSubModeType, access: ro, note: "the unit's mode: 1 TDD, 2 TDD PTP, 3 Standard WiFi, 4 ePTP Slave, 5 ePTP Master, 6 WLR (MIB cambiumGeneralStatus 33). The model never tells an ePTP end from a PtMP SM: old-looma's pair (Force 300-25, SSID WifiP2P_1) was held as two PtMP SMs; read the mode to decide the role. As an ePTP master the unit answers cambiumAPConnectedSTATable (its one slave) and cambiumAPBridgeTable (the units beyond the link, learnt through the slave); the slave answers neither",
          verified: {date: "2026-10-09", unit: "old-looma-ap-ep2p-1 (5), old-looma-sm-ep2p-1 (4)", site: old-looma, firmware: "4.7.0.1", method: get}}
       - {oid: ".1.3.6.1.4.1.17713.21.1.1.15.0", name: cambiumLANMACAddress, access: ro, note: "the unit's LAN MAC, AP and SM alike (MIB 'Device Allocation: AP, SM'): what Nautobot holds for ePMP (unified-network-controller, operator 2026-10-14). The SMC's ARP table shows LAN + 1, the wireless MAC cambiumWirelessMACAddress (.21.1.1.5 per the MIB, not read here). The SNMP GET itself is UNVERIFIED live: the 2026-10-15 probe could not reach the SMCs; the same object read over REST matches the register (03_asset-register-conventions)",
@@ -225,6 +255,9 @@ device_types:
       - {oid: ".1.3.6.1.2.1.1.6.0", name: sysLocation, access: rw, note: "default 'Unknown'; SET with apn-snmp-rw written, read back and restored on 3 of 3 tjuntjuntjara units (the only family besides ePMP that accepts an SNMP write). On daniel-test-nbn's unit (2026-09-29) apn-snmp-rw is refused for a GET (noAccess) yet accepted for the SET: read with the read-only community, write with the read-write one",
          verified: {date: "2026-09-24", unit: TJN-R195P-1002, site: tjuntjuntjara, firmware: "4.7.3-R21", method: set-and-revert,
                     also: "2026-09-29 HOR-R195P-1001 at daniel-test-nbn (nbn cluster, answering only the apn communities), set-and-revert ok"}}
+      # Wi-Fi radio, 2026-10-15 (old-looma home-10 and home-11, 4.7.3-R21, GET): CAMBIUM-MIB ssid_2gEntry (.41010.1.10.2.1.1.1.<col>.1) column 4
+      # channel reads "4" and column 14 bandwidth 0 (MIB: 0 = 20, 1 = 20/40); ssid_5gEntry (.41010.1.10.2.2.1.1.<col>.1) column 4 reads INTEGER 1 and
+      # columns 14 and 15 read 0 and empty. No transmit power or antenna object. Not used for coverage (an indoor home router); home-1 timed out.
       # Negative result 2026-10-09 (old-looma home-1, -2, -3, apn-snmp-ro): sysUpTime answers, the IF-MIB ifTable and ifXTable walks return nothing.
       # Interface counters come from the shell (/proc/net/dev over SSH). CAMBIUM-MIB has no Wi-Fi client table either.
       # CAMBIUM-MIB for cnPilot R-series (cambium-swap artifacts/mibs/librenms/cnpilotr/CAMBIUM-MIB, enterprise 41010, `status` scalars). GET the scalars:
@@ -276,3 +309,9 @@ device_types:
          verified: {date: "2026-09-28", unit: "10.255.1.3", site: umoona, method: get, also: "kowanyama 10.255.3.10"}}
       - {oid: ".1.3.6.1.2.1.1.2.0", name: sysObjectID, access: ro, note: "reads .1.3.6.1.4.1.17713.22.3.16 on 132 swept units; all 39 that Nautobot holds are typed XV2 (plain, the variant unresolved there)",
          verified: {date: "2026-09-28", unit: "10.255.1.3", site: umoona, method: get}}
+      - oid: ".1.3.6.1.4.1.17713.22.1.2.1"
+        name: cambiumRadioEntry
+        access: ro
+        columns: {1: index, 3: band, 5: client_count, 6: channel, 7: width_mhz, 8: tx_power, 16: noise_floor}
+        note: "one row per radio, index 0 = 2.4GHz, 1 = 5GHz; channel and width are quoted text (\"11\", \"20\"), power an integer (12/17 on ap-1, 28/21 on ap-2) whose unit the MIB does not state (dBm taken, unverified). sysDescr names the antenna: 'Integrated Omni Outdoor Access Point'. No azimuth or gain object"
+        verified: {date: "2026-10-15", unit: "old-looma-ap-1, old-looma-ap-2", site: old-looma, firmware: "6.6.0.3-r9 (not re-read)", method: walk}

@@ -468,3 +468,23 @@ Evidence: unified-network-controller docs/reports/smc-and-site-network/topology-
 - **No CFM**: ePMP 3000L and Force 300-16 (4.7.0.1) return nothing under IEEE8021-CFM-MIB (`.1.3.111.2.802.1.1.8`) or IEEE802171-CFM-MIB
   (`.1.0.8802.1.1.2.1.5`). No 802.1ag Linktrace path through these radios is in sight; the burst trace on the SM's LAN counters stays the
   active path test.
+
+## 2026-10-15 — A closed connection through the SMC hop is an unreachable unit, not a TLS fault (old-looma config backup)
+
+Golden Config backup of old-looma (unified-network-controller `golden_config_backup.py --all`, 4 units at a time, one Teleport forward per unit
+through old-looma-smc01): 118 stored, 15 failed. 7 ePMP Force 300 SMs ended in `[SSL: UNEXPECTED_EOF_WHILE_READING]` and 8 R195Ps in
+`kex_exchange_identification: Connection closed by remote host`. Both are what the client sees when `ssh -L` accepts the local connection and
+the SMC then cannot open the channel to the unit: the local socket is closed before a byte arrives.
+
+- **Measured from the SMC the same hour** (read-only ping and TCP from old-looma-smc01): 12 of the 15 answered neither ping nor TCP 443 or 22, and
+  the collector held 13 of them as `device-down`. The other 3 (`old-looma-sm-25`, `old-looma-home-26`, `old-looma-home-17`) answered and read
+  cleanly minutes later, one at a time: they were flapping, not faulty. Repeating the read one unit at a time on two down SMs and one down
+  R195P gave the same errors, so it was not parallel load on the SMC (its sshd: MaxStartups 10:30:100, MaxSessions 10).
+- **Not a TLS version or cipher fault**: 52 other Force 300 SMs on the same site and firmware negotiated and read in the same run. No TLS
+  fallback is needed for ePMP SM HTTPS; treat the error as unreachable and confirm with a second protocol (the 2026-09-23 kalumburu 3000L
+  exception in `06_device-api-cli-reference.md` still applies to a unit that answers ping and SNMP).
+- **Cost per unit, whole command through the hop, one at a time:** Force 300 SM 10-14 s, R195P 40-42 s (2,519 keys over SSH), an unreachable
+  unit 11-12 s (it fails fast; no login is spent, because the connection closes before TLS or SSH starts). A site's backup time is set by
+  its R195Ps: 58 at 4 at a time is about 10 minutes.
+- **What the controller does with it** (unified-network-controller `src/unc/tasks/config_backup/daily.py`): a closed connection is tried once
+  more at the end of the run, then reported as "no answer through the SMC"; a time-out or a rejected login is never retried.

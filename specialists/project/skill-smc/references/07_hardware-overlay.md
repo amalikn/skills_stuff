@@ -494,6 +494,11 @@ node list from every Nautobot Location with a programme tenant, so seeding the n
 guard now installs only on a node whose package is approved for its flavour (`APPROVED_INSTALLS`), whose SMC Device exists in Nautobot, or that was named with `--nodes`. Both approved flavours are x86
 with a plain ext4 root, so the approval never meets an overlayroot (those are the RPi and WH flavours: `rct`, `wh`, `nbn_wh`); `nbn_wh` stays skipped.
 
+**fping absent on yakanarra-smc01 (2026-10-15, read-only check from apn-unc01's tbot).** `command -v fping` (one quoted remote command) printed
+nothing on this `rcp` box, so the 2026-09-23 fleet install did not reach it (or a reimage removed it). iputils `ping -c 4 -W 1 -n <ip>` is present
+and answered in 12 s cold through Teleport (4/4 to yakanarra-sm-1, rtt 17.5/19.7/21.0 ms); unified-network-controller's Device Ping uses
+iputils `ping` for that reason and does not depend on fping.
+
 ### Checking Overlayroot Status
 
 ```bash

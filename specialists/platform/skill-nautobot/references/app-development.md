@@ -444,3 +444,14 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 > repeat across tabs. For a per-object choice (hide something on one Location's pages), a multi-select custom field on the object with
 > `advanced_ui: true` is native, validated by its choices, filterable and change-logged, and sits on the Advanced tab so it does not clutter the page it
 > tidies; read it from `obj.cf` (the `_custom_field_data` dict) and walk `parent` for a tree, memoised per request.
+
+> **Learned 2026-10-15 (s)** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `core/ui/object_detail.py` (ObjectDetailContent standard tabs, `Tab.render_label_wrapper` and
+> `render` both calling `should_render`, `WEIGHT_NOTES_TAB`/`WEIGHT_CHANGELOG_TAB` "reserved, not yet using this framework", AsyncStatsPanel), `dcim/views.py` (DeviceUIViewSet extra_tabs,
+> LocationUIViewSet panels), `core/templates/generic/object_retrieve.html`, `core/templates/components/panel/async_stats_panel_body.html` · Falsifier: a 3.2.x Notes or Change Log tab
+> drawn by a Tab instance, or a tab label drawn without `should_render`
+> Hiding core object tabs and replacing a core panel. A detail view's tabs are instances on the view set's class attribute `object_detail_content`
+> (`.tabs` sorts the shared list), so wrapping an instance's `should_render` at ready() hides both its label and its pane for every request; find them by
+> `tab_id`, log one not found. Notes and Change Log are drawn by `generic/object_retrieve.html` from `get_notes_url`/`get_changelog_url` (also used by
+> the REST serializers), so they cannot be hidden that way. To restyle a core panel (the Location Stats box), hide its instance by class name the same
+> way and draw an app panel with core's own markup (`col text-center` / `h2` / `btn btn-lg btn-primary|btn-secondary` / `p`), which keeps its colours
+> and theme behaviour.
