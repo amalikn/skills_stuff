@@ -124,3 +124,10 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > **A schedule owned by a machine account**: `ScheduledJob.create_schedule(job_model, user, name=..., interval="custom", crontab="7 * * * *", job_kwargs={...})`
 > takes the next crontab match as the start time, the Job's default queue and its time limits, and checks no permission of `user`; run it from
 > `nbshell` as an admin step to give a token-only account (no `run` on extras.job) a schedule whose writes it owns. `job_kwargs` is required.
+
+> **Learned 2026-10-15 (p)** · Nautobot 3.2.3, Django 5.2 · VERIFIED_PRIMARY (Django `deletion.Collector` source) · UNVERIFIED on a live run (first
+> dry run pending) · Falsifier: Collector accepting a PROTECT object that is itself scheduled for deletion
+> A Job that deletes a whole site cannot preview with `Collector` alone: Collector raises ProtectedError even when the protecting object (a Prefix in the
+> site's Namespace) is also due for deletion. Preview by doing the real deletes in dependency order inside `transaction.atomic()` and rolling back;
+> the counts are Django's own. `Namespace.delete()` returns None (no count tuple). Whether a rolled-back run leaves no ObjectChange and fires no hooks
+> is to be confirmed on the first dry run.
