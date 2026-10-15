@@ -436,3 +436,11 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 > `NautobotAppConfig.constance_config`: each key is stored as `<app_name>__<KEY>`, read with `get_app_settings_or_config(app, KEY)` (PLUGINS_CONFIG wins
 > if it sets the key, so keep these keys out of `default_settings`) and written with `setattr(constance.config, "<app>__<KEY>", value)`. A nav item with
 > `permissions=["is_staff"]` shows to staff and superusers only (the backend special-cases it). Hiding is never access control: say so on the page.
+
+> **Learned 2026-10-15 (q)** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `core/context_processors.py` `nav_menu` (the per-request loop over tabs, groups and items), `extras/models/customfields.py` (`advanced_ui`, `cf` returning `_custom_field_data`) · Falsifier: a 3.2.x nav_menu keyed by something other than the item link, or a custom field with `advanced_ui` drawn on the main tab
+> Hiding single menu groups or items, and per-object UI choices. Core's per-request `nav_menu` value is `{"tabs": {tab: {"groups": {group: {"items":
+> {link: {"name", "weight", "is_active"}}}}}}}`, items keyed by their reversed link; core drops an empty group or tab only after its own permission
+> filter, so an app that deletes groups or items must prune what it empties itself. Name an entry by tab, group and link together, since group names
+> repeat across tabs. For a per-object choice (hide something on one Location's pages), a multi-select custom field on the object with
+> `advanced_ui: true` is native, validated by its choices, filterable and change-logged, and sits on the Advanced tab so it does not clutter the page it
+> tidies; read it from `obj.cf` (the `_custom_field_data` dict) and walk `parent` for a tree, memoised per request.

@@ -130,3 +130,10 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > site's Namespace) is also due for deletion. Preview by doing the real deletes in dependency order inside `transaction.atomic()` and rolling back;
 > the counts are Django's own. `Namespace.delete()` returns None (no count tuple). Whether a rolled-back run leaves no ObjectChange and fires no hooks
 > is to be confirmed on the first dry run.
+
+> **Learned 2026-10-15 (r)** · Nautobot 3.2.3, Design Builder 3.1.2, DNS Models 2.3.0 · VERIFIED_PRIMARY (released wheel source; not yet run live) · Source: `nautobot_design_builder/design.py` `ModelInstance.save` and `ModelMetadata` load, `models.py` `ChangeSet.log` and `__sub__`, `design_job.py` `_run_in_transaction`; `nautobot/extras/jobs.py` `Job.__call__` (`web_request_context(user=self.user)`) · Falsifier: a deployment-mode re-run that keeps an object the design now only `!get`s, or a custom validator seeing another user than the Job's launcher
+> A deployment-mode design re-run decommissions every object an earlier run recorded that the new run does not name, and a `!get` is never saved, so never
+> recorded: a rerunnable design names each of its objects with `!create_or_update` every run and writes attributes only when the object is new (decide it in the
+> context). A lookup filter's values are copied into a new object's attributes, so a many-to-many field cannot be a filter (look the object up in the context
+> and name it by `id`). Tags and many-to-many values are added, never removed. A Design Builder Job saves as its launcher (UI user or API token owner), and
+> custom validators see that user. DNS Models' `DNSView.prefixes` is a many-to-many through `DNSViewPrefixAssignment`; the design key is `dns_views`.
