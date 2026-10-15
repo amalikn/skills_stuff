@@ -13,6 +13,7 @@ Last rotated: 20261015_1554
 
 ## Contents
 
+- [20261015_1632 — Operator's account of the 1 Sep trigger, monthly PIN expiry, two incident-evidence scripts (v0.4.7 -> v0.4.8)](#20261015_1632--operators-account-of-the-1-sep-trigger-monthly-pin-expiry-two-incident-evidence-scripts-v047---v048)
 - [20261015_1558 — Why the 2025 portal misconfiguration stayed latent; 1 Sep trigger checks (v0.4.6 -> v0.4.7)](#20261015_1558--why-the-2025-portal-misconfiguration-stayed-latent-1-sep-trigger-checks-v046---v047)
 - [20261015_1553 — The SMC runs four parallel SNMP walks cleanly; fping absent on old-looma-smc01 too (v0.4.5 -> v0.4.6)](#20261015_1553--the-smc-runs-four-parallel-snmp-walks-cleanly-fping-absent-on-old-looma-smc01-too-v045---v046)
 - [20261015_1515 — Three-site PIN outage dated by conntrack; koonibba bot restarts stopped 2026-10-01, 9 Oct Xbox spike (v0.4.5 -> v0.4.6)](#20261015_1515--three-site-pin-outage-dated-by-conntrack-koonibba-bot-restarts-stopped-2026-10-01-9-oct-xbox-spike-v045---v046)
@@ -34,6 +35,12 @@ Last rotated: 20261015_1554
 - [20261008_1147 — Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)](#20261008_1147--raspberry-pi-smc-identity-and-ports-rct-site-ata-vendor-sources-linked-v021---v022)
 - [20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)](#20260930_1221--terminology-access-is-free-via-tc-acceptance-not-a-paid-pin-v0175---v0176)
 - [20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)](#20260930_1202--bot-cw-dashboard-wipes-pin-marks-on-koonibbaamata-a-zero-eclipse_mark-count-is-not-normal-v0173---v0174)
+
+## 20261015_1632 — Operator's account of the 1 Sep trigger, monthly PIN expiry, two incident-evidence scripts (v0.4.7 -> v0.4.8)
+
+- `references/13_known-issues.md`: operator-stated August Route 53 `A` change for `communitywifi.net.au` to `10.254.0.1` as the trigger, with what is and is not verified; pointer to the nbn response record.
+- `references/14_pin-activation-diagnosis.md`: free PINs expire on the 1st of each month.
+- New read-only scripts `scripts/dns_capture_top.sh` and `scripts/teleport_sessions.py`, catalogued in `scripts/README.md`, recipes in `justfile`; smoke-tested on koonibba 2026-10-09 and the 2026-08-31..09-01 audit window.
 
 ## 20261015_1558 — Why the 2025 portal misconfiguration stayed latent; 1 Sep trigger checks (v0.4.6 -> v0.4.7)
 

@@ -92,6 +92,14 @@ x86_resiliency_probe proxy +nodes:
 ata_settings_read proxy +nodes: _require-venv
     @{{py}} scripts/ata_settings_read.py --proxy "{{proxy}}" {{nodes}}
 
+# Top clients and domains from an SMC's DNS capture for a local time window (read-only). Example: just dns_capture_top teleport.communitywifi.net.au 20261009 16:00 23:59 koonibba-smc01
+dns_capture_top proxy date from to node:
+    @bash scripts/dns_capture_top.sh --proxy "{{proxy}}" --date "{{date}}" --from "{{from}}" --to "{{to}}" "{{node}}"
+
+# Who had Teleport sessions on hosts over UTC days, bot excluded (read-only). Example: just teleport_sessions teleport.communitywifi.net.au 2026-08-31 2026-09-06 hope-vale kowanyama
+teleport_sessions proxy from to +hosts:
+    @python3 scripts/teleport_sessions.py --proxy "{{proxy}}" --from "{{from}}" --to "{{to}}" --exclude-user bot-cw-dashboard $(printf -- '--host %s ' {{hosts}})
+
 # --- skill-ai-it navigation-control layer -------------------------------------------------------
 
 nav_upgrade_dry_run: _require-venv

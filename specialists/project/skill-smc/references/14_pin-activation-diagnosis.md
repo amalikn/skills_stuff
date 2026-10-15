@@ -152,6 +152,8 @@ the data gaps found live on this fleet: an IP with no lease record at all in the
 
 This is why the two mechanisms normally track each other tightly (9-second gap, confirmed above) — but see [14.6](#146-pitfalls) for the one path that decouples them.
 
+**Free PINs expire on the 1st of each month (operator, 2026-10-15).** Every user must pass the T&C page again at the month rollover, so a site whose portal path is broken looks healthy until the 1st and then collapses (the 2026-09-01 three-site outage). A broken portal path can therefore stay invisible for weeks; check issuance (§ mechanism 2) on the 1st-2nd of the month, not only usage.
+
 ## 14.6 Pitfalls
 
 - **Log location varies by box.** On some boxes `/var/log/apache2/access.log` is missing or empty and portal hits land in `other_vhosts_access.log` instead — confirmed live on `bungardi-smc01`, where

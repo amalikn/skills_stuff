@@ -583,6 +583,24 @@ just ata_settings_read teleport.apn.au --json adjamarragu-smc01
 | `pi_identity_probe.sh` | Live Pi SMC appliances via `tsh ssh`                 | **read-only**                     | Fixed command set, node names only; idempotent; proxy required                                          |
 | `ata_settings_read.py` | `tsh ssh` to SMCs; HTTP from the SMC to the site ATA | **read-only**, `external-network` | One login POST per page read with the empty PIN, never a form submission; secret-named fields dropped on the box; idempotent; proxy required |
 
+### `dns_capture_top.sh` and `teleport_sessions.py`
+
+Incident-window evidence when the box's own logs have rotated. `dns_capture_top.sh` reads the url_capture DNS pcaps on one SMC for a date and
+local time window and prints the top clients, the top domains, and each busy client's domains (Koonibba 9 Oct 2026: an Xbox One and Netflix
+behind a 181 GB day). DNS gives names, not bytes. `teleport_sessions.py` lists who had Teleport sessions on named hosts over a date range, from the
+cluster's session recordings, one UTC day per query so bot sessions cannot crowd out people (2026-09-01: staff on hope-vale and galiwinku the
+first morning of the PIN outage). About 10 s per day queried.
+
+```bash
+just dns_capture_top teleport.communitywifi.net.au 20261009 16:00 23:59 koonibba-smc01
+just teleport_sessions teleport.communitywifi.net.au 2026-08-31 2026-09-06 hope-vale kowanyama galiwinku
+```
+
+| Script                  | Touches                                        | Safety                            | Notes                                                                       |
+| ----------------------- | ---------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------- |
+| `dns_capture_top.sh`    | Live SMC via `tsh ssh`: `/url_capture` pcaps   | **read-only**                     | Fixed command set; validated inputs only; temp file on the box removed      |
+| `teleport_sessions.py`  | Teleport audit (`tsh recordings ls`)           | **read-only**, `external-network` | Needs the auditor role; `--exclude-user bot-cw-dashboard` for human sessions |
+
 ## Usage
 
 ```bash
