@@ -100,8 +100,8 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > (`log-table?q=`), not by `grouping`: a Job that logs several stages needs its own per-grouping page. **A conditional object tab:** subclass
 > `DistinctViewTab` and override `should_render(context)` (call `super()` for `required_permissions`).
 
-> **Learned 2026-10-14 (f)** · Nautobot 3.2.3, DLM 4.2.0, Golden Config 3.0.7 · VERIFIED_PRIMARY (installed sources and read-only probes of a 3.2.3
-> instance, UNC platform features plan 20261014_2348) · Falsifier: a DLM release that matches a version range, or a Golden Config Device tab shown
+> **Learned 2026-10-14 (f)** · Nautobot 3.2.3, DLM 4.2.0, Golden Config 3.0.7 · VERIFIED_PRIMARY (read-only probes of a 3.2.3 instance) · Source:
+> installed DLM 4.2.0 and Golden Config 3.0.7 sources, UNC platform features plan 20261014_2348 · Falsifier: a DLM release that matches a version range, or a Golden Config Device tab shown
 > with no compliance rows
 > **Device Lifecycle Management shows every versioned Device "Software INVALID" while no Validated Software exists**: validity is a match of the
 > Device's one SoftwareVersion against a ValidatedSoftware entry (by device type, role or device), exactly, so "22.04.x" is one entry per point
@@ -111,8 +111,8 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > so behind a jump host or for a vendor without a driver they stay empty; show stored observations from an app instead. **Core Data Compliance
 > rules** register through an app's custom validators or a Git repository and report, they do not refuse a save by default.
 
-> **Learned 2026-10-15 (g)** · Nautobot 3.2.3, DLM 4.2.0 · VERIFIED_PRIMARY (installed source; seeded and pages read on a live 3.2.3 instance, UNC
-> 0.8.23) · Falsifier: a DLM release with another endpoint or uniqueness, or a list with a global default view that answers 200 without a redirect
+> **Learned 2026-10-15 (g)** · Nautobot 3.2.3, DLM 4.2.0 · VERIFIED_PRIMARY (seeded and pages read on a live 3.2.3 instance, UNC 0.8.23) · Source:
+> installed DLM 4.2.0 source (validated-software API and model uniqueness) · Falsifier: a DLM release with another endpoint or uniqueness, or a list with a global default view that answers 200 without a redirect
 > **DLM Validated Software over REST:** `/api/plugins/nautobot-device-lifecycle-mgmt/validated-software/` with `software`, `device_types`,
 > `device_roles`, `start`, `end`, `preferred`; key an idempotent seed on (software, start, end), DLM's uniqueness. **A global default Saved View**
 > (`is_global_default`, one per list view; saving one clears the others) makes the list URL answer 302 to `?saved_view=<id>`: a page check must follow
@@ -125,8 +125,7 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > takes the next crontab match as the start time, the Job's default queue and its time limits, and checks no permission of `user`; run it from
 > `nbshell` as an admin step to give a token-only account (no `run` on extras.job) a schedule whose writes it owns. `job_kwargs` is required.
 
-> **Learned 2026-10-15 (p)** · Nautobot 3.2.3, Django 5.2 · VERIFIED_PRIMARY (Django `deletion.Collector` source) · UNVERIFIED on a live run (first
-> dry run pending) · Falsifier: Collector accepting a PROTECT object that is itself scheduled for deletion
+> **Learned 2026-10-15 (p)** · Nautobot 3.2.3, Django 5.2 · VERIFIED_PRIMARY (not yet run live; first dry run pending) · Source: Django 5.2 `django/db/models/deletion.py` `Collector.collect` · Falsifier: Collector accepting a PROTECT object that is itself scheduled for deletion
 > A Job that deletes a whole site cannot preview with `Collector` alone: Collector raises ProtectedError even when the protecting object (a Prefix in the
 > site's Namespace) is also due for deletion. Preview by doing the real deletes in dependency order inside `transaction.atomic()` and rolling back;
 > the counts are Django's own. `Namespace.delete()` returns None (no count tuple). Whether a rolled-back run leaves no ObjectChange and fires no hooks

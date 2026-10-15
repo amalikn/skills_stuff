@@ -293,8 +293,7 @@ Source: `nautobot/core/urls.py:95`, `nautobot/core/views/__init__.py:290-295`, `
 > **Learned 2026-10-13** · Nautobot 3.2.3 · VERIFIED_SECONDARY · Source: observed on a t3.xlarge (burstable, about half busy) · Falsifier: `nautobot-server health_check` returning within 10 s on a comparably loaded host
 > `nautobot-server health_check` can take about 17 s on a modest burstable host, longer than the image's own healthcheck timeout (10 s), so Docker marks a working worker or scheduler unhealthy. Give the healthcheck a longer timeout (45 s, 60 s interval, 120 s start period worked) rather than chasing a fault that is not there.
 
-> **Learned 2026-10-15 (n)** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: measured on a t3.xlarge (cgroup cpu.stat around each run) and Nautobot's
-> `user-guide/administration/guides/health-checks.md` · Falsifier: a `nautobot-server` subcommand returning in under 2 s of CPU on the same host
+> **Learned 2026-10-15 (n)** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: measured on a t3.xlarge (cgroup cpu.stat around each run) and Nautobot's `user-guide/administration/guides/health-checks.md` · Falsifier: a `nautobot-server` subcommand returning in under 2 s of CPU on the same host
 > Every `nautobot-server` command starts Django with every app, so `health_check` and the documented worker check `celery inspect ping` each cost about
 > 15-17 s of a full core. Run every 60 s on both worker and scheduler, that was half a core all day. For celery beat use the documented heartbeat-file check
 > (`find /tmp/nautobot_celery_beat_heartbeat -mmin -0.1`, which costs nothing); write the test as `= "1"`, since the documented `!= ""` can never fail.

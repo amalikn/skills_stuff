@@ -49,8 +49,8 @@ def _load(path: Path) -> dict:
 
 
 LEARNED = re.compile(
-    r"^> \*\*(Learned|Disputed) (\d{4}-\d{2}-\d{2})\*\* · (?P<product>[^·]+?) · "
-    r"(?P<evidence>VERIFIED_PRIMARY|VERIFIED_SECONDARY|UNVERIFIED|USER_STATED) · Source: (?P<source>[^·]+?) · Falsifier: (?P<falsifier>[^·]+?)"
+    r"^> \*\*(Learned|Disputed) (\d{4}-\d{2}-\d{2})(?: \([a-z]\))?\*\* · (?P<product>[^·]+?) · "
+    r"(?P<evidence>VERIFIED_PRIMARY|VERIFIED_SECONDARY|UNVERIFIED|USER_STATED|CANDIDATE)(?: \([^·]*\))? · Source: (?P<source>[^·]+?) · Falsifier: (?P<falsifier>[^·]+?)"
     r"(?: · Conflicts: (?P<conflicts>.+))?$"
 )
 
@@ -62,9 +62,14 @@ def _without_fences(text: str) -> str:
 def _learned_entries(text: str) -> list[tuple[str, str, str]]:
     """Return (kind, date, line) for every write-back entry outside code fences; raise on a malformed one."""
     entries = []
-    for line in _without_fences(text).splitlines():
+    lines = _without_fences(text).splitlines()
+    for index, line in enumerate(lines):
         if not re.match(r"^> \*\*(?:Learned|Disputed)\b", line):
             continue
+        # The Markdown wrap hook folds a long header over several "> " lines: join them up to the Falsifier field.
+        following = lines[index + 1:index + 6]
+        while ("Falsifier:" not in line or line.rstrip().endswith("Falsifier:")) and following and following[0].startswith("> ") and not re.match(r"^> \*\*", following[0]):
+            line = line + " " + following.pop(0)[2:]
         match = LEARNED.match(line)
         if not match:
             raise AssertionError(f"malformed write-back entry: {line[:80]}")

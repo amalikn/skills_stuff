@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261015 Write-back checker: `tests/test_package_contract.py` joins a header the Markdown wrap hook folded over several lines, and accepts a same-day letter `(a)`, an evidence note in brackets and CANDIDATE; entries (f), (g) and (p) gained their missing Source field. The test had been failing since 2026-10-14 (b) while commits went in.
 - 20261015 Learned 2026-10-15 (n, o, p) (UNC load and review batch, verified update): `references/operations-and-recovery.md` healthcheck cost and the beat heartbeat check; `references/config-backup-compliance.md` GC 3.0.7's compliance list returns nothing when filtered by location; `references/apps-jobs-validation.md` Collector refuses a PROTECT chain, preview by rollback.
 - 20261015 Learned 2026-10-15 (l, m) (UNC UI features page, verified update): `references/app-development.md` gains hiding menus per audience (HIDE_RESTRICTED_UI gone since 2.1, per-request nav_menu wrapped by an app context processor, core apps not removable, app constance keys `<app>__<KEY>`, `is_staff` nav permission); `references/data-model.md` gains Namespace.location PROTECT blocking a Location delete.
 - 20261015 Learned 2026-10-15 (k) (UNC as-built workbook probe, verified update): `references/api-and-writers.md` gains which `location` filters take a subtree (Devices) and which do not (interfaces, wireless links; Cables reject it), the port endpoints' `device` filter, and depth-1 Cables resolved locally (three times faster).
