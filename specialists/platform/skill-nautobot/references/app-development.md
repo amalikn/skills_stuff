@@ -13,13 +13,17 @@ Summary: Twelve verified recipes and a minimal working app skeleton for Nautobot
 
 # Nautobot app development
 
-> **Learned 2026-10-16** · Nautobot 3.2.3 · UNVERIFIED · Source: live browser CSSOM and computed styles on one deployment, with a competing
-> `.table > thead:not(caption) > tr > th { position: relative; }` rule · Falsifier: a stock 3.2.3 table without this rule, or the stronger app selector
-> failing to keep the header fixed while its scroll container moves
+> **Learned 2026-10-16** · Nautobot 3.2.3 · UNVERIFIED · Source: live browser CSSOM, ancestor DOM and computed styles on one deployment, with a competing
+> `.table > thead:not(caption) > tr > th { position: relative; }` rule · Falsifier: a stock 3.2.3 table without the observed rule or responsive wrapper,
+> or the combined scoped selector and overflow overrides failing to keep the header fixed during outer scrolling
 > Candidate: an app's `.my-log thead th { position: sticky; }` can lose to the platform table selector above. A scoped
 > `.my-log .table > thead > tr > th` selector won without `!important` in the observed browser. Validate with the deployed stylesheets and physical
 > scrolling in both themes; a standalone preview containing only the app CSS missed the conflict. Confirm on a stock installation before treating
 > the exact platform selector as universal.
+> The same native table also rendered a `.table-responsive` wrapper with `overflow: auto` inside the app's own scrolling container. Correct
+> computed `position: sticky` was insufficient: the header followed the inner scrollport and moved with the outer one. A scoped overflow-visible
+> override on that native wrapper made the intended app container own both axes. Verify actual header bounding-box movement during a long log's
+> scroll, not only the computed position; in this observed page it changed from 200 pixels to zero for a 200-pixel outer scroll.
 
 Verified against: Nautobot 3.2.3 (installed source in a 3.2.3 container, and the docs bundled in the package), checked 2026-10-05.
 
