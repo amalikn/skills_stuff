@@ -7,6 +7,10 @@ Change log for the `skills_stuff` parent repository.
 - Submodules must contain their own `REVISION_HISTORY.md`.
 - Pushes should use controlled workflows so rollback points are explicit.
 
+## 2026-10-16
+- Extend skill-slurp-chat's existing helper for explicit Codex rollout JSONL: preserve repeated user turns, ignore mirrored messages, inventory tool names without arguments, and retain
+  compaction/time filters. Five offline tests pass; the real UNC rollout smoke matches 36 messages, 388 tool envelopes and three compactions in 0.103 s against a ten-second budget.
+
 ## 2026-10-05
 - Released `skill-nautobot` and `skill-openwisp` 0.4.0 after an independent assessment: eight new verified references (app development, data model, integrations, recovery; configuration management, connections and firmware, RADIUS, deployment and recovery), Orient sections, tested stdlib-only helpers in `scripts/`, and measured fleet lessons from the UNC capture corpus. `skill-cambium` 0.6.29 and `skill-smc` 0.1.82 record the corpus's device facts.
 - Released `skill-nautobot` and `skill-openwisp` 0.3.0: version-matched operations cookbooks with summary tables, a standing write-back contract enforced by the contract test, promoted OpenWISP evidence, new trap scenarios and a paired fresh-context evaluation (4 of 4 pass with the skill, controls partial).

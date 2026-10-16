@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build slurp Step 3's two passes from a Claude Code session transcript (the raw `.jsonl`), not from a compaction summary.
+"""Build slurp Step 3's two passes from a Claude Code transcript or explicit Codex rollout JSONL, not a compaction summary.
 
 A compaction summary is lossy: it drops mid-turn messages, question answers, exact commands and incidents. When a conversation was compacted since
 its last slurp, the slurp reads the transcript itself. This prints, in order and with timestamps:
@@ -13,6 +13,8 @@ Run:
     transcript_passes.py --transcript PATH.jsonl [--since 2026-10-09T01:53] [--pass 1|2]
 
 Times are the transcript's own (UTC). Output is a working list for the slurp, not a record: it is never saved into a project.
+For Codex, pass --transcript explicitly. Pass 2 lists tool-envelope and nested tool names without arguments; inspect relevant source inputs locally
+to distinguish reads from writes. Mirrored response-item user messages are ignored, while repeated real user events are retained.
 """
 
 from __future__ import annotations
@@ -89,6 +91,20 @@ def typed_text(content) -> str:
         t = t[m.end():]
 
 
+def _lines(path: pathlib.Path):
+    """Stream transcript lines with a managed file handle.
+
+    Args:
+        path: The local transcript path.
+    Yields:
+        Each raw JSONL line.
+    Raises:
+        OSError: When the transcript cannot be read.
+    """
+    with path.open(encoding="utf-8") as stream:
+        yield from stream
+
+
 def events(path: pathlib.Path, since: str = ""):
     """Every pass-1, pass-2 and compaction event of a transcript, in order.
 
@@ -97,16 +113,33 @@ def events(path: pathlib.Path, since: str = ""):
         since: ISO time prefix; earlier events are skipped.
 
     Yields:
-        (timestamp, kind, text) with kind `compaction`, `user`, `mid`, `answer`, `bash`, `file` or `mcp`.
+        (timestamp, kind, text) with kind `compaction`, `user`, `mid`, `answer`, `bash`, `file`, `mcp` or Codex `tool`.
     """
     seen: set[str] = set()
-    for line in path.open(encoding="utf-8"):
+    for line in _lines(path):
         try:
             d = json.loads(line)
         except ValueError:
             continue
-        ts = d.get("timestamp", "")[:16]
+        ts = d.get("timestamp", "")
         if since and ts < since:
+            continue
+        payload = d.get("payload") or {}
+        if d.get("type") == "event_msg" and payload.get("type") == "user_message":
+            text = payload.get("message")
+            if isinstance(text, str) and text.strip():
+                yield ts, "user", text.strip()
+            continue
+        if d.get("type") == "compacted":
+            yield ts, "compaction", "context summarised here; details before it come from this transcript, not the summary"
+            continue
+        if d.get("type") == "response_item":
+            if payload.get("type") in ("custom_tool_call", "function_call"):
+                name = str(payload.get("name") or "unknown tool")
+                raw = payload.get("input", payload.get("arguments", ""))
+                raw = raw if isinstance(raw, str) else json.dumps(raw)
+                nested = sorted(set(re.findall(r"tools\.([A-Za-z0-9_]+)", raw)))
+                yield ts, "tool", name + (" [" + ", ".join(nested) + "]" if nested else "")
             continue
         if d.get("type") == "queue-operation" and d.get("operation") == "enqueue":
             t = typed_text(str(d.get("content") or ""))
@@ -176,7 +209,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--pass", dest="which", choices=["1", "2"], help="only pass 1 (user) or pass 2 (side effects)")
     args = ap.parse_args(argv)
     path = args.transcript or default_transcript(pathlib.Path.cwd())
-    keep = {"1": {"compaction", "user", "mid", "answer"}, "2": {"compaction", "bash", "file", "mcp"}}.get(args.which)
+    keep = {"1": {"compaction", "user", "mid", "answer"}, "2": {"compaction", "bash", "file", "mcp", "tool"}}.get(args.which)
     print(f"transcript: {path}")
     counts: dict[str, int] = {}
     for ts, kind, text in events(path, args.since):
