@@ -25,6 +25,9 @@ Agent working memory for skill-cambium. Use for: draft plans, terminal output, i
 
 ## Current state
 
+KEEP 2026-10-16: UNC's source conversion audit added observed drawing-label variants and ambiguity guards to reference 03, with its source
+audit linked there. This is source-document parsing knowledge, not a change to device behavior or inventory authority.
+
 **Phase:** All four Cambium device families (Enterprise Wi-Fi XV2/E-series, ePMP AP/SM, cnWave 60GHz, cnPilot R195P) now have real, live-verified adapter code and `VERIFIED-OBSERVED` data — see
 `references/06_device-api-cli-reference.md`. Pack scaffolded 2026-09-17 from `cambium-swap`'s device-credentialing/device-inventory session; same day, later sessions added: `scripts/cambium-portal.sh`
 (moved from `cambium-swap`, support-portal login + version-matched release fetch), the confirmed live Hope Vale access chain (SSH CLI + authenticated REST API, written into

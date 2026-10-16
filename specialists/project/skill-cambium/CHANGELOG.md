@@ -39,6 +39,8 @@ Last rotated: 20261010_1801
 - [20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)](#20261009_0120--station-table-range-and-angle-force-300-has-no-mac-table-r195p-attachment-not-readable-v0646---v0647)
 - [20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)](#20260930_1221--terminology-paid-pin-corrected-to-access-mark-v0626---v0627)
 
+**20261016_2115 — v0.8.3:** Reference 03 adds observed as-built label variants, unique-match and conflict guards from UNC's conversion audit. No device changes.
+
 ## 20261015_1750 — Volatile config keys per family; no family has a change marker (no version change)
 
 - `references/06_device-api-cli-reference.md`: consecutive backups show ePMP status keys, Enterprise `system.clock` and `system.reboot_reason` change

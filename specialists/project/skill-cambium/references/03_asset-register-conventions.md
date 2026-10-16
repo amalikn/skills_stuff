@@ -128,6 +128,15 @@ A deployed site may also have an **as-built set** from its build contractor, bes
 
 ## Low-Touch Register Layout and a Tolerant Reader (2026-10-15)
 
+Learned 2026-10-16, VERIFIED_PRIMARY on an additional contractor drawing set: a plain `XV2-2T0` caption may omit `APn`; bind it only when the
+same tower has one compatible KMZ AP, otherwise report ambiguity. `F300-25` is another written label for Force 300-25. Uplink captions may
+say `Backup SMP` or `SMP Backup`. AUX Ethernet lines on cnWave drawings can feed the tower's XV2 and must not be dropped merely because
+the AP number is absent. These are observed source-label variants, not a universal contractor grammar. A drawing and KMZ that disagree on
+the far tower remain an explicit conflict; an unmanaged-switch picture alone does not establish its inventory model or port names.
+Source: [UNC conversion audit](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/reports/smc-and-site-network/asbuilt-conversion-audit-20261016_2055.md),
+including source cases and seven-site generator regression evidence. No device read or device configuration change was involved.
+
+
 Two low-touch `rcp` registers (Umoona LT V1.1, Yakanarra LT v1.0, operator-supplied 2026-10-14) share one layout, which Hope Vale's (`nbn_accelerate`) resembles: sheet `Infrastructure & AP's` stacks
 several tables, each under a one-cell title: `ASSET REGISTER` (Tower ID, Lat, Long with a `°` sign, Location, Lot Number, Mast Height as text such as `2 x 3m`, Power Source, Role
 `Central`/`Remote`/`Wi-Fi`, Solar Panels, Batteries), `AP's` (Tower, Model, AP# as `AP-8`, sometimes `AP-4 > 1.10`), `5Ghz ePMP Multipoint` (Antenna `3000L Omni`/`3000L Sector`, Sequence ID,
