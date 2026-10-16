@@ -13,6 +13,14 @@ Summary: Twelve verified recipes and a minimal working app skeleton for Nautobot
 
 # Nautobot app development
 
+> **Learned 2026-10-16** · Nautobot 3.2.3 · UNVERIFIED · Source: live browser CSSOM and computed styles on one deployment, with a competing
+> `.table > thead:not(caption) > tr > th { position: relative; }` rule · Falsifier: a stock 3.2.3 table without this rule, or the stronger app selector
+> failing to keep the header fixed while its scroll container moves
+> Candidate: an app's `.my-log thead th { position: sticky; }` can lose to the platform table selector above. A scoped
+> `.my-log .table > thead > tr > th` selector won without `!important` in the observed browser. Validate with the deployed stylesheets and physical
+> scrolling in both themes; a standalone preview containing only the app CSS missed the conflict. Confirm on a stock installation before treating
+> the exact platform selector as universal.
+
 Verified against: Nautobot 3.2.3 (installed source in a 3.2.3 container, and the docs bundled in the package), checked 2026-10-05.
 
 Source paths are relative to `site-packages/`. `docs/...` means the page bundled under `nautobot/project-static/docs/`, also published at

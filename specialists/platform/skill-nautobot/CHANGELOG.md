@@ -14,6 +14,9 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261016 Learned 2026-10-16 (UNC deployed log-header check, reusable candidate): `references/app-development.md` records a table-header selector
+  specificity conflict observed in the live browser and the need to test sticky headers with the platform stylesheets; exact stock behavior remains unverified.
+
 - 20261015 Learned 2026-10-15 (v) (UNC change-only config backups, verified update): `references/config-backup-compliance.md` gains that an API-fed GoldenConfig record keeps one backup and no replaced text in its change log, that custom fields on GoldenConfig ride in the backup's PATCH, and `nbshell --command` over stdin loops.
 - 20261015 Learned 2026-10-15 (u) (UNC live buttons dead, verified update): `references/app-development.md` gains that the 3.2.3 page body already sends `x-csrftoken` to every htmx request, so an app's own `X-CSRFToken` header doubles the token and Django answers 403 "incorrect length".
 - 20261015 Learned 2026-10-15 (t) (UNC network drift tab, verified update): `references/apps-jobs-validation.md` gains that DLM `get_for_object` is too slow per Device for a page (read the records once and apply assignments locally), that DLM validation results stay empty until its Job runs, and Golden Config JSON `missing`/`extra` as deepdiff paths.
