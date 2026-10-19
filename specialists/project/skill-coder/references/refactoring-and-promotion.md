@@ -65,3 +65,22 @@ asked (operator, 2026-10-07).
 6. If no skill fits, promote into the project's own shared `scripts/` the same way. A scratchpad copy is not durable.
 
 Engines a project imports run in the project's interpreter and the project pins the skill revision; see [runtime-boundaries.md](runtime-boundaries.md).
+
+> **Learned 2026-10-20** · adopting `code-map.toml` in a project with its own checks · VERIFIED-OBSERVED (unified-network-controller: layers, 13
+> write-gate exceptions, 11 write patterns and 198 module statuses moved; equality asserted against the old files; `just check` 8,699 to 8,701 checks
+> pass; four negative cases each fail) · Source: unified-network-controller `scripts/govcheck/config.py`, `code-map.toml` (2026-10-20) · Falsifier: a
+> project whose old register cannot be expressed in the map's sections without loss
+> Move the decisions, keep the project's checks: the project's checker reads the map instead of its constants, and calls `code_map.load` once so an
+> unknown section fails. Generate the map from the old sources and assert equality before deleting them; write the full write-pattern list
+> (`write_patterns` plus `apply_pattern`) so this pack's `write_gates.py` sees the same writes; record each retired path in the project's
+> moved-paths map so dated records still resolve. Baselines and progress trackers stay out (decisions only).
+>
+> ```python
+> # unified-network-controller scripts/govcheck/config.py (2026-10-20, commit 9970c48)
+> CODE_MAP_FILE = ROOT / "code-map.toml"
+> CODE_MAP: dict = tomllib.loads(CODE_MAP_FILE.read_text(encoding="utf-8"))
+> WRITE_PATTERN = re.compile("|".join(CODE_MAP["write_gates"]["write_patterns"]))
+> APPLY_FLAG = re.compile(CODE_MAP["write_gates"]["apply_pattern"])
+> WRITE_GATES: dict[str, str] = dict(CODE_MAP["write_gates"].get("exceptions", {}))
+> ```
+

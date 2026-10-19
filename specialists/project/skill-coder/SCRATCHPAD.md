@@ -35,7 +35,7 @@ Summary: Transient working state for skill-coder; durable facts move to referenc
   `just test-matrix` to prove the floor by a run.
 - `write_gates.py` found 0 writers in skill-drawio although `render_flowmap.py --write` and `yaml_list_patch.py --apply` write files: its patterns look for
   remote and database writes, not `write_text`. Decide whether local file writes count (a renderer's `--write` is the skill's own exception).
-- Adopt the helpers in unified-network-controller: a `code-map.toml` replacing `src/unc/layers.toml`, the WRITE_GATES register and the promotion register's statuses; characterise its
-  `check_write_gates`/`check_import_layers` against the helpers before switching.
+- Done 2026-10-20: unified-network-controller adopted `code-map.toml` (layers, write gates, module statuses). Open: its check scans Python only; `write_gates.py`
+  also flags its shell backup runner (the config-backup shell script). Baselines (`--write-baseline`) not yet adopted there.
 - Ansible and YAML: `code_size.py` measures no `.yml` files yet; decide a module limit for task files once `languages/ansible.md` has a source.
 - Shell limits (100/200) are UNVERIFIED until the Google Shell Style Guide capture is in `documents/`.
