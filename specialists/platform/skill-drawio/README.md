@@ -24,7 +24,7 @@ unified-network-controller's flow map and promoted here on 2026-10-19; that proj
 - Using the skill: invoke `skill-drawio`; it routes from [SKILL.md](SKILL.md).
 - Drawing a project's flows: write a map like [examples/shop/flows.yaml](examples/shop/flows.yaml), then
   `<python> <this pack>/scripts/render_flowmap.py --map <map> --write` from the project root (see [scripts/README.md](scripts/README.md)).
-- Working on the pack: `just bootstrap` once, then `just test` and `just check` before calling a change complete.
+- Working on the pack: `just bootstrap` once, then `just test` and `just check` before calling a change complete. Full setup: [SETUP.md](SETUP.md).
 
 ## Folder index
 
@@ -44,6 +44,8 @@ unified-network-controller's flow map and promoted here on 2026-10-19; that proj
 | [compatibility.yaml](compatibility.yaml) | draw.io versions and environments exercised |
 | [code-map.toml](code-map.toml) | This pack's code decisions, checked by skill-coder's helpers |
 | [CHANGELOG.md](CHANGELOG.md) | Release history; version of record |
+| [ROADMAP.md](ROADMAP.md) | Current phase and open milestones; done items rotate to `docs/history/` |
+| [SETUP.md](SETUP.md) | Prerequisites, bootstrap, use from a project, troubleshooting |
 | [justfile](justfile) | Task catalog: `just --list`; `just test` and `just check` gate completion |
 
 ## Governance pointers

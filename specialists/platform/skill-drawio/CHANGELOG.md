@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261019 `ROADMAP.md` and `SETUP.md` added (operator, 2026-10-19: "add ROADMAP.md in both the skills", "and SETUP.md"), to skill-ai-it's templates; ROADMAP from this pack's SCRATCHPAD open items and unified-network-controller's retirement assessment, SETUP from the justfile, `.mise.toml` and requirements. README lists both and links SETUP from Quick start.
 - 20261019 Archcore promoted (operator: "promote and accept"): 4 ADRs and 7 rules written `accepted` under `.archcore/`, indexed in
   `.archcore/index.guide.md` with the deferred spec and guide and the never-promoted reasons; `ARCHCORE_PROMOTION_CANDIDATES.md` deleted;
   `context-map.yaml`, `repomix.config.json` and the checker's `CONDITIONAL_PATHS` updated to match.

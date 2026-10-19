@@ -25,7 +25,7 @@ project's own interpreter and read its `code-map.toml`.
 - Using the skill in a project: invoke `skill-coder`; it reads the project's own rules first, then routes from [SKILL.md](SKILL.md).
 - Running a checker against a project: `<project python> <this pack>/scripts/code_size.py --project-root . --list` (any helper; see
   [scripts/README.md](scripts/README.md)); copy [templates/code-map.toml](templates/code-map.toml) to the project root to set its decisions.
-- Working on the pack: `just bootstrap` once, then `just test` and `just check` before calling a change complete.
+- Working on the pack: `just bootstrap` once, then `just test` and `just check` before calling a change complete. Full setup: [SETUP.md](SETUP.md).
 
 ## Folder index
 
@@ -44,6 +44,8 @@ project's own interpreter and read its `code-map.toml`.
 | [sources.yaml](sources.yaml) | Claim ledger with evidence labels |
 | [code-map.toml](code-map.toml) | This pack's own code decisions (it is held to its own rules) |
 | [CHANGELOG.md](CHANGELOG.md) | Release history; version of record |
+| [ROADMAP.md](ROADMAP.md) | Current phase and open milestones; done items rotate to `docs/history/` |
+| [SETUP.md](SETUP.md) | Prerequisites, bootstrap, use from a project, troubleshooting |
 | [justfile](justfile) | Task catalog: `just --list`; `just test` and `just check` gate completion |
 
 ## Governance pointers
