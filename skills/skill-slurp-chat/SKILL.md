@@ -180,6 +180,10 @@ normalises dated paragraphs, rotates to `docs/history/`, moves non-working-state
 2026-10-10): list it, with the section it names, in the closeout as open work; never report it as within budget. Write CHANGELOG entries short: what changed and where, with `just changelog-entry --title ... --body-file ... --apply` (skill-ai-it
 `scripts/add_changelog_entry.py`: the project's own heading style and order, Contents line included).
 
+Then the cross-project sync (operator, 2026-10-19): when the project's `justfile` has a `sync-projects` recipe (the apn continuity projects:
+enterprise-strategy, unified-network-controller, smc-resiliency), run `just sync-projects --apply` after the SCRATCHPAD update, so this session's outbox
+lines reach the partners and their inbox lines show in the report. Exit 1 means an item needs a person: list it as open work, never work around it.
+
 Then regenerate the project's wiki page from those files (operator, 2026-10-10; the page is generated, never hand-written):
 `just -f /Volumes/Data/_ai/_wiki/wiki_stuff/justfile project_page <project-path>`. It rewrites only its generated block in
 `projects/<folder-name>.md` and appends to the wiki's `log.md`; add the page to `index.md` the first time it prints a note. Report it in the coverage table.
