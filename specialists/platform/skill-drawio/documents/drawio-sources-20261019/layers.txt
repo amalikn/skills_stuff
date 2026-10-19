@@ -1,0 +1,45 @@
+Contents of https://www.drawio.com/docs/manual/layers/:
+Layers add structure and organisation to your diagrams. When you interact with a complex diagram to display or hide its various layers, you can understand the diagram more easily.
+
+Each shape (or group) can only be placed on one layer - it can't belong to multiple layers. Learn more about [how layers work in draw.io](/docs/manual/layers/how-layers-work/).
+
+Connectors can connect source and target shapes on different layers.
+
+**Tip:** [Open an example gitflow with layers in the draw.io editor](https://app.diagrams.net/?lightbox=0&highlight=0000ff&edit=_blank&layers=1&page=0&nav=1&title=#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fjgraph%2Fdrawio-diagrams%2Fdev%2Fblog%2Fgitflow-layers.drawio) - use the linked documentation below to learn how to work with these layers in a diagram.
+
+## Open the Layers dialog[​](#open-the-layers-dialog "Direct link to Open the Layers dialog")
+
+Select *View > Layers* or press `Ctrl+Shift+L` / `Cmd+Shift+L` to display or hide the *Layers* dialog.
+
+![Select View /> Layers to open the Layers dialog](/img/blog/view-layers.png)
+
+By default, a new diagram has a single *Background* layer, to which all shapes, connectors and text are added.
+
+From the *Layers* dialog, you can:
+
+* [add new and duplicate layers](/docs/manual/layers/layers-add/)
+* [rename layers](/docs/manual/layers/layers-rename/)
+* [delete existing layers](/docs/manual/layers/layers-delete/)
+* [move selected shapes to a layer](/docs/manual/layers/layer-move-shapes/)
+* [select all shapes and connectors on one layer](/docs/manual/layers/select-layer-objects/)
+* [display and hide layers](/docs/manual/layers/hide-display-layers/) to display or hide all the shapes, connectors and text that are on those layers
+* [lock layers](/docs/manual/layers/layers-lock/) to ensure you can't make any inadvertent changes
+* [rearrange layers](/docs/manual/layers/reorder-layers/) to move shapes forward or backward
+
+**Tip:** Make sure you select the layer you want to add shapes to in the layers dialog first, before you add shapes and connectors.
+
+## How do layers work?[​](#how-do-layers-work "Direct link to How do layers work?")
+
+Shapes are arranged in the order you added them to the drawing canvas, within the layer you added them. Shapes and connectors placed on a higher layer can not go behind shapes on a lower layer - they can only be arranged from front to back *within their layer*.
+
+Learn more about [how layers work in draw.io](/docs/manual/layers/how-layers-work/).
+
+With [layers and custom links you can add interactivity](/docs/tutorials/interactive-diagram-layers/) - click on a shape with a custom link your diagram to hide or display layers.
+  
+![Paste the custom link into the first text field and click Apply](/img/blog/interactive-diagram-toggle-editor.gif)
+
+## Diagrams that work well with layers[​](#diagrams-that-work-well-with-layers "Direct link to Diagrams that work well with layers")
+
+* [Floor plans](/docs/diagram-types/floorplans/) - Add furniture, appliances or IT devices, fixtures, and decorations on separate layers.
+* [Network diagrams](/docs/diagram-types/network-diagrams/) - Place areas behind firewalls or on different subnets on different layers.
+* [Gitflow diagrams](/docs/diagram-types/gitflow-diagram/) - Separate team or feature branches onto their own layers. Open this [example gitflow diagram with layers](https://viewer.diagrams.net/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&page=0&nav=1&title=#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fjgraph%2Fdrawio-diagrams%2Fdev%2Fblog%2Fgitflow-layers.drawio) in the lightbox viewer.

@@ -1,0 +1,278 @@
+# Example flow map for skill-drawio: a small online shop (invented; no real system). It shows every part of the map format and the optional
+# `drawing:` block, and its rendered drawing must pass every layout audit (tests/test_example.py). Render it from the skill's root with
+# `just example` (or: scripts/render_flowmap.py --root examples/shop --map flows.yaml --write).
+schema_version: 1
+title: "Example shop: components and flows"
+updated: "2026-10-19"
+
+drawing:
+  output: drawio/flows.drawio
+  command: just example
+  kinds:
+    person: ["#ffffff", "#000000"]
+    service: ["#dae8fc", "#6c8ebf"]
+    worker: ["#ffe6cc", "#d79b00"]
+    timer: ["#fff2cc", "#d6b656"]
+    store: ["#e6e6e6", "#4d4d4d"]
+    secret: ["#fff8e1", "#bf9000"]
+    external: ["#dfe7f3", "#3d5a80"]
+  tiers:
+    - {name: People, groups: [People]}
+    - {name: Edge, groups: [Edge]}
+    - {name: Application, groups: [Application]}
+    - {name: Outside services, groups: [Outside services]}
+  below: {groups: [Data and secrets]}
+  band_title: Data and secrets
+  families:
+    - {id: orders, name: Orders, colour: "#1f4e9c", flows: [checkout, refund]}
+    - {id: catalogue, name: Catalogue, colour: "#1b7a3a", flows: [image-upload]}
+    - {id: operations, name: Operations, colour: "#6a3fa0", flows: [nightly-report, deploy]}
+
+components:
+  - id: customer
+    name: Customer
+    kind: person
+    group: People
+    host: a browser
+    health: can load the home page
+    depends_on: [cdn]
+  - id: staff
+    name: Shop staff
+    kind: person
+    group: People
+    host: the admin pages
+    health: can sign in
+    depends_on: [web-app]
+  - id: cdn
+    name: CDN
+    kind: external
+    group: Edge
+    host: CDN provider
+    health: cache hit ratio over 80 per cent
+    depends_on: [web-app, images]
+  - id: web-app
+    name: Web app
+    kind: service
+    group: Application
+    host: app servers
+    ports: [443]
+    health: /healthz returns 200
+    depends_on: [api, sessions]
+  - id: api
+    name: Orders API
+    kind: service
+    group: Application
+    host: app servers
+    ports: [8080]
+    health: /healthz returns 200
+    depends_on: [db, queue, payments, api-keys]
+  - id: worker
+    name: Background worker
+    kind: worker
+    group: Application
+    host: worker servers
+    health: queue depth under 100
+    depends_on: [queue, db, mail, images]
+  - id: report-timer
+    name: Nightly report timer
+    kind: timer
+    group: Application
+    host: worker servers
+    health: last run under 24 hours ago
+    depends_on: [worker]
+  - id: db
+    name: Orders database
+    kind: store
+    group: Data and secrets
+    host: database cluster
+    health: replication lag under 5 s
+  - id: queue
+    name: Job queue
+    kind: store
+    group: Data and secrets
+    host: queue cluster
+    health: no message older than 10 minutes
+  - id: sessions
+    name: Session cache
+    kind: store
+    group: Data and secrets
+    host: cache cluster
+    health: memory under 80 per cent
+  - id: images
+    name: Image store
+    kind: store
+    group: Data and secrets
+    host: object storage
+    health: upload test object succeeds
+  - id: api-keys
+    name: Payment API key
+    kind: secret
+    group: Data and secrets
+    host: secrets vault
+    health: key not within 30 days of expiry
+  - id: payments
+    name: Payment provider
+    kind: external
+    group: Outside services
+    host: payment provider
+    health: provider status page green
+  - id: mail
+    name: Mail provider
+    kind: external
+    group: Outside services
+    host: mail provider
+    health: test message delivered
+  - id: pipeline
+    name: Deploy pipeline
+    kind: service
+    group: Outside services
+    host: CI service
+    health: last deploy succeeded
+    depends_on: [web-app, api, worker]
+
+flows:
+  - id: checkout
+    title: Checkout
+    category: custom
+    purpose: A customer pays for a basket and gets a confirmation e-mail.
+    trigger: {kind: button, detail: "Pay now on the basket page"}
+    runs_on: web-app
+    owner: api
+    budget: under 3 s to the confirmation page
+    dependencies: {components: [sessions, api-keys, db, queue], credentials: [payment API key]}
+    steps:
+      - id: submit
+        actor: customer
+        action: Presses Pay now.
+        via: [HTTP]
+      - id: page
+        actor: web-app
+        action: Checks the session and posts the basket to the API.
+        via: [HTTP]
+        reads: [session cache]
+        failures: [session expired]
+        look: [web app log]
+      - id: charge
+        actor: api
+        action: Creates the order and charges the card.
+        via: [API, DB]
+        writes: [orders table]
+        gate: payment authorised
+        failures: [card declined, provider timeout]
+        look: [API log, provider dashboard]
+      - id: provider
+        actor: payments
+        action: Authorises the payment.
+        via: [API]
+      - id: enqueue
+        actor: api
+        action: Queues the confirmation e-mail.
+        via: [internal]
+        writes: [job queue]
+      - id: confirm
+        actor: worker
+        action: Sends the confirmation e-mail.
+        via: [API]
+        look: [worker log]
+  - id: refund
+    title: Refund
+    category: custom
+    purpose: Staff refund an order.
+    trigger: {kind: button, detail: "Refund on the order page"}
+    runs_on: web-app
+    owner: api
+    steps:
+      - id: request
+        actor: staff
+        action: Asks for a refund.
+        via: [HTTP]
+      - id: admin
+        actor: web-app
+        action: Forwards it to the API.
+        via: [HTTP]
+      - id: refund
+        actor: api
+        action: Refunds the payment and marks the order.
+        via: [API, DB]
+        failures: [already refunded]
+      - id: provider
+        actor: payments
+        action: Returns the money.
+        via: [API]
+  - id: image-upload
+    title: Product image upload
+    category: native
+    purpose: Staff add a product photo; the worker makes thumbnails.
+    trigger: {kind: button, detail: "Upload on the product page"}
+    runs_on: web-app
+    owner: worker
+    dependencies: {components: [images, queue]}
+    steps:
+      - id: upload
+        actor: staff
+        action: Uploads a photo.
+        via: [HTTP]
+      - id: store
+        actor: web-app
+        action: Saves it and queues a thumbnail job.
+        via: [API]
+        writes: [image store, job queue]
+      - id: thumbnails
+        actor: worker
+        action: Makes thumbnails.
+        via: [file]
+      - id: serve
+        actor: cdn
+        action: Serves the new images.
+        via: [HTTP]
+  - id: nightly-report
+    title: Nightly sales report
+    category: custom
+    purpose: Mail the day's sales to staff.
+    trigger: {kind: timer, detail: "every day at 02:00"}
+    runs_on: report-timer
+    owner: worker
+    dependencies: {components: [db]}
+    budget: under 10 minutes
+    steps:
+      - id: fire
+        actor: report-timer
+        action: Starts the report job.
+        via: [internal]
+      - id: build
+        actor: worker
+        action: Totals the day's orders.
+        via: [DB]
+        reads: [orders table]
+      - id: send
+        actor: mail
+        action: Delivers the report.
+        via: [API]
+  - id: deploy
+    title: Deploy
+    category: custom
+    purpose: Ship a new release of the app and worker.
+    trigger: {kind: deploy, detail: "merge to main"}
+    runs_on: pipeline
+    owner: pipeline
+    dependencies: {flows: [checkout]}
+    steps:
+      - id: build
+        actor: pipeline
+        action: Builds and tests the release.
+        via: [internal]
+      - id: roll-app
+        actor: web-app
+        action: Restarts with the new release.
+        via: [HTTP]
+      - id: roll-worker
+        actor: worker
+        action: Restarts with the new release.
+        via: [internal]
+        next: [check]
+      - id: check
+        actor: pipeline
+        action: Checks health; rolls back on failure.
+        via: [HTTP]
+        failures: [health check fails]
+        next: [build]

@@ -9,7 +9,7 @@ Summary: Current working state, newest first per section; superseded entries rot
 Kind: state
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261014_1247
+Last rotated: 20261019_1818
 Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
 Open items tracker: docs/trackers/open-items-20261010_1830.md
 ---
@@ -73,13 +73,11 @@ under `just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitab
 
 ## Open items
 
-- [ ] **20261010_2330** Re-measure reference reads on 2026-11-10: `python3 scripts/agent_usage.py --days 30 references/files-context-map.md references/files-ai-navigation.md
-  references/script-task-inventory.md`. Split a file only if read in more than 5 sessions; on 2026-10-10 each had 0 real reads.
+- **20261019_1817** `KEEP`: this pack's justfile has no `test` recipe and no working-cache venv; `tests/` need PyYAML, so a run with the host `python3`
+  reports 7 false failures (`No module named 'yaml'`). Add `bootstrap`/`test` recipes as the packs it generates have.
+
 - [ ] **20261019_1708** `templates/check_governance.py` `check_referenced_paths` has no bare-filename resolution: skill-nautobot and skill-coder each added `NAME_ROOTS` locally so a pack's prose can
   name `code_size.py` without its folder. Port it to the template (with a test), then drop the local copies.
-- [ ] **20261019_1708** `patterns/archcore-routing.md` passed its review date (2026-10-18); review the content, then update `Last reviewed` (`just check` fails on it).
-- [ ] **20261019_1708** skill-coder's helpers overlap three code checks here (`check_function_docs`/`docstring_ratchet.py`, `check_file_naming`, `check_interpreter_pinning`): once skill-coder is the
-  default, call its helpers from the template instead of keeping a second copy of each rule.
 - [ ] **20261019_1732** `scripts/audit_rotations.py` compares records line by line, so a re-wrap by the markdown hook reads as lost (41 SCRATCHPAD lines
   on 2026-10-19, baselined with a word-for-word check). Compare the text with line breaks folded, so only real loss is reported, then drop those rows.
 - Older open items are tracked in [open-items-20261010_1830.md](docs/trackers/open-items-20261010_1830.md).

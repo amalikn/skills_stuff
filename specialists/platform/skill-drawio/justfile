@@ -1,0 +1,265 @@
+# just task catalog for skill-drawio.
+# Purpose:
+# - expose safe, documented project tasks to humans and AI agents
+# - avoid agents running arbitrary scripts without context
+# - keep runnable entrypoints simple and readable
+#
+# List tasks:
+#   just --list
+#
+# Run task:
+#   just <task>
+#
+# Safety:
+# - Prefer safe/read-only tasks by default.
+# - Mark destructive tasks clearly and require review.
+# - Keep detailed inputs/outputs/safety notes in scripts/README.md.
+#
+# RUNTIME PINNING — do not replace {{py}} / {{nd}} with bare `python3` or `node`.
+# A bare interpreter resolves to whatever the host has on PATH, which is NOT what .mise.toml pins. That works until the
+# host changes underneath it and then fails in a way that reads like a code bug. Recipes go through the variables below
+# so no recipe depends on the ambient interpreter, and `just runtimes` makes the resolved versions visible.
+#
+# `mise exec -- python` IS NOT THE FIX, and this is the part that gets missed. Where .mise.toml sets `_.python.venv`,
+# `mise exec -- python` does land on the venv — so it tests clean and reads as pinned. But the dependency is IMPLICIT:
+# nothing at the call site says which interpreter is meant, and if the activation ever stops applying (the env block is
+# edited, the venv is missing, the recipe is copied into a project without that config) it degrades SILENTLY to the host
+# interpreter instead of failing. Address the interpreter by PATH via {{py}}, and depend on _require-venv, so a missing
+# venv is a loud error with a fix attached rather than a wrong-interpreter run that looks fine.
+#
+# Node has no venv layer, so `mise exec -- node` is genuinely the explicit form for it — the distinction above applies
+# wherever a venv sits between mise and the interpreter, which in practice means Python.
+#
+# The venv lives in the WORKING-CACHE PEER, never in this repo — a repo carries source, not rebuildable runtime.
+# Path mapping (see the global runtime-isolation policy):
+#   project_stuff/<group>/<project>  ->  project-working-cache/<group>/<project>
+#   mcp_stuff/<project>              ->  mcp-working-cache/<project>
+#   skills_stuff/<project>           ->  skills-working-cache/<project>
+#   tools_stuff/<project>            ->  tools-working-cache/<project>
+#
+# `uv run` is deliberately NOT the primary path: it resolves its own interpreter independently of mise, which is the
+# same class of drift this pinning removes. Use it only where a recipe needs throwaway third-party packages.
+
+set dotenv-load := false
+
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-drawio"
+py := wc + "/.venv/bin/python"
+ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
+coder := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-coder"
+
+# Build the working-cache venv from the mise-pinned runtimes. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @test -f requirements.txt && {{py}} -m pip install --quiet --upgrade pip -r requirements.txt || true
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Fail early and legibly rather than falling back to the host interpreter
+_require-venv:
+    @test -x "{{py}}" || { echo "venv missing at {{py}} — run: just bootstrap" >&2; exit 1; }
+
+# Report which runtimes the recipes will actually use
+runtimes:
+    @printf 'python  '; {{py}} -c "import sys; print(sys.version.split()[0], sys.executable)" 2>/dev/null || echo "MISSING — run: just bootstrap"
+
+# List available tasks and show script inventory when present
+inventory:
+    @just --list
+    @test -f scripts/README.md && sed -n '1,220p' scripts/README.md || true
+
+# Audit script/task inventory for obvious drift
+audit-scripts:
+    @echo "== just recipes =="
+    @just --list || true
+    @echo
+    @echo "== script files =="
+    @find scripts -maxdepth 2 -type f 2>/dev/null | sort || true
+    @echo
+    @echo "== uncataloged script candidates =="
+    @if [ -d scripts ] && [ -f scripts/README.md ]; then \
+      find scripts -maxdepth 2 -type f | sort | while read -r f; do \
+        grep -Fq "$f" scripts/README.md || echo "$f"; \
+      done; \
+    fi
+
+# Must exit 0 before durable work is called complete. Fix the project when it fails, never the check.
+# Governance coherence checks — assert this project's governance claims against reality
+check: _require-venv
+    @{{py}} scripts/check_governance.py
+    @just self-check
+    @just example-check
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root . --check
+
+# Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
+stale: _require-venv
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
+
+# Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
+roles: _require-venv
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root .
+
+# One-step governance to the current skill-ai-it standard: adoption, budgets + check, role findings; content fixes: /skill-ai-it refresh. Modifies files
+govern: _require-venv
+    #!/usr/bin/env bash
+    # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
+    root="$(cd "." && pwd)" || exit 2
+    start=$(date +%s)
+    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/govern_guard.py" --project-root "$root" || exit 1; fi
+    if grep -q "skill-ai-it-version" "$root/AI_NAVIGATION.md" 2>/dev/null; then
+      nav="$(mktemp)"
+      {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
+      if grep -qiE "REFUSED|re-serialised|legacy-layout|proposed" "$nav"; then echo "navigation blocks: upgrade needs review, run /skill-ai-it refresh"
+      elif grep -q "would" "$nav"; then
+        {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
+      fi
+      rm -f "$nav"
+    fi
+    {{py}} "{{ai_it}}/scripts/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root"
+    echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
+    exit $rc
+
+# Triage: one line per file (status, review date, summary) from its header, so a file is judged without being opened
+docs *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/file_headers.py" --project-root . {{ARGS}}
+
+# Rotated history on demand: `just history <term>` searches the CHANGELOG archives (SCRATCHPAD: `just history <term> SCRATCHPAD.md`)
+history TERM RECORD="CHANGELOG.md": _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --find "{{TERM}}" {{RECORD}}
+
+# Print one rotated entry by its stamp, when a live entry cites it: `just history-show 20260918_1200`
+history-show STAMP RECORD="CHANGELOG.md": _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
+
+# Keep CHANGELOG, SCRATCHPAD and ROADMAP within budget: plan by default; `just rotate --apply` (slurp runs `just budget`, which trims ROADMAP too)
+rotate *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
+    @{{py}} "{{ai_it}}/scripts/roadmap_trim.py" --project-root . {{ARGS}}
+
+# Bring governed files within budget: normalise, rotate, move non-working-state sections out, audit, check. Plan by default; `--apply` to do it
+budget *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root . {{ARGS}}
+
+# Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
+[positional-arguments]
+changelog-entry *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/add_changelog_entry.py" --project-root . "$@"
+
+# Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
+[positional-arguments]
+move-sections *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"
+
+# Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
+[positional-arguments]
+outline *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . outline "$@"
+
+# Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
+[positional-arguments]
+section *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . section "$@"
+
+# The pack's own offline contract and engine tests
+test: _require-venv
+    @{{py}} -m unittest discover -s tests -p 'test_*.py' -b
+
+# The engine tests under every Python that mise has installed from 3.11 up: projects run the engine with their own interpreter
+test-matrix:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    rc=0; ran=0
+    for v in 3.11 3.12 3.13 3.14; do
+      where=$(mise where "python@$v" 2>/dev/null) || { echo "python $v: not installed through mise, NOT TESTED"; continue; }
+      bin="$where/bin/python3"
+      [ -x "$bin" ] || { echo "python $v: no interpreter at $bin, NOT TESTED"; continue; }
+      ran=$((ran + 1))
+      if "$bin" -m unittest discover -s tests -p 'test_helpers.py' >/dev/null 2>&1; then echo "python $v: OK"; else echo "python $v: FAIL"; rc=1; fi
+    done
+    [ "$ran" -gt 0 ] || { echo "no interpreter from 3.11 up is installed through mise" >&2; exit 1; }
+    exit $rc
+
+# Validate a flow map and report drift, or render it (--write), list flows (--list) or audit the layout (--audit); run from the project root, e.g. just render-flowmap --map docs/flows/flows.yaml
+[positional-arguments]
+render-flowmap *args: _require-venv
+    @{{py}} scripts/render_flowmap.py "$@"
+
+# Render the example map (examples/shop/flows.yaml) into examples/shop/drawio/flows.drawio (modifies that file only)
+example: _require-venv
+    @{{py}} scripts/render_flowmap.py --root examples/shop --map flows.yaml --write
+
+# Read-only: the example map is valid, its drawing is current, and its routed pages pass every layout audit (part of `just check`)
+example-check: _require-venv
+    @{{py}} scripts/render_flowmap.py --root examples/shop --map flows.yaml
+    @{{py}} scripts/render_flowmap.py --root examples/shop --map flows.yaml --audit
+
+# Export pages of a drawing to images for review (writes only the images), e.g. just drawio-export examples/shop/drawio/flows.drawio --out-dir /path --pages 1,2
+[positional-arguments]
+drawio-export *args: _require-venv
+    @{{py}} scripts/drawio_export.py "$@"
+
+# Read-only: what an existing drawing says (boxes and connections; --json, --geometry), e.g. just drawio-read some.drawio
+[positional-arguments]
+drawio-read *args: _require-venv
+    @{{py}} scripts/drawio_read.py "$@"
+
+# Add values to flow-style lists in a YAML map without losing comments: plan by default, --apply to write, e.g. just yaml-list-patch map.yaml --list components --field depends_on --spec adds.json
+[positional-arguments]
+yaml-list-patch *args: _require-venv
+    @{{py}} scripts/yaml_list_patch.py "$@"
+
+# The pack held to skill-coder's rules: sizes, timeouts, write gates, headers, names and module families (skill-coder's helpers, this pack's code-map.toml)
+self-check: _require-venv
+    @{{py}} "{{coder}}/scripts/code_size.py" --project-root . --roots scripts,tests
+    @{{py}} "{{coder}}/scripts/call_timeouts.py" --project-root . --roots scripts,tests
+    @{{py}} "{{coder}}/scripts/write_gates.py" --project-root .
+    @{{py}} "{{coder}}/scripts/script_headers.py" --project-root . --roots scripts
+    @{{py}} "{{coder}}/scripts/naming_check.py" --project-root .
+    @{{py}} "{{coder}}/scripts/module_groups.py" --project-root . --roots scripts,tests --strict
+
+# Regenerate the deterministic Repomix context pack (.ai-context/governance-pack.md). Generated support, not truth.
+context-pack:
+    @command -v repomix >/dev/null || { echo 'repomix not installed; skipped'; exit 0; }
+    @repomix --config repomix.config.json --quiet
+
+# Run safe local preflight checks
+preflight: runtimes audit-scripts test check lint-md
+
+# Lint Markdown files when markdownlint-cli2 is available
+lint-md:
+    @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
+    @markdownlint-cli2 '**/*.md'
+
+# The navigation-control scripts live in the skill package, NOT in this project. Override on the
+# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav-validate
+skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
+
+# Upgrade navigation control layer (dry-run preview)
+nav-upgrade-dry-run: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
+
+# Upgrade navigation control layer (apply changes) — review the dry-run first
+nav-upgrade: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
+
+# Validate navigation control layer
+nav-validate: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
+
+# Check only expected files changed after upgrade (requires a git repo)
+nav-check-diff: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
+
+# Context map after an upgrade: key changes by content and comments lost vs a git ref (default HEAD); exit 1 while a comment is lost. Read-only
+nav-check-context-map REF="HEAD": _require-venv
+	@{{py}} "{{skill_dir}}/scripts/yaml_key_diff.py" --project-root . --ref "{{REF}}"
+
+# Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
+# package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
+nav-selftest: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"

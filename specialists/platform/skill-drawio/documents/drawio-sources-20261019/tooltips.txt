@@ -1,0 +1,79 @@
+Contents of https://www.drawio.com/docs/manual/links-tooltips-tags/tooltips/:
+Each shape and connector in a diagram can contain [metadata or custom properties](/docs/manual/shapes/shape-metadata/) - extra information about those shapes.
+
+A tooltip is a predefined shape property which appears when you hover over the shape or connector on the drawing canvas, or in the lightbox when viewing a [published diagram](/docs/manual/export/publish-link/).
+  
+![Hover over a shape in the draw.io editor to see its tooltip](/img/blog/tooltip-hover-editor.png)
+
+You can add a tooltip to a shape or connector via the menu, or by editing the shape properties.
+
+1. Select the shape or connector.
+2. Select *Edit > Edit Tooltip*, or press `Alt+Shift+T`.
+     
+   ![Select the shape or connector and click Edit /> Edit Tooltip to add a tooltip](/img/blog/edit-tooltip-menu.png)
+3. Enter the tooltip in the text field of the *Edit Tooltip* dialog, then click *Apply*.
+     
+   ![Select the shape or connector and click Edit /> Edit Tooltip to add a tooltip](/img/blog/edit-tooltip-dialog.png)
+
+Now, when you hover over the shape in the draw.io editor or lightbox, you'll see the tooltip appear just below the mouse cursor.
+  
+![Hover over a shape in the draw.io lightbox to see its tooltip](/img/blog/tooltip-hover-lightbox.png)
+
+## Edit the shape properties to add or edit a tooltip[​](#edit-the-shape-properties-to-add-or-edit-a-tooltip "Direct link to Edit the shape properties to add or edit a tooltip")
+
+1. Right click on the shape or connector then select *Edit Data* from the context menu, or select *Edit > Edit Data* from the list in the *Style* tab of the format panel. Alternatively, press `Ctrl+M` on Windows or `Cmd+M` on macOS.
+     
+   ![Edit the shape properties via the context menu to add a tooltip](/img/blog/tooltip-edit-data.png)
+2. Type `tooltip` into the text field where it says *Enter Property Name*, then click *Add Property*.
+     
+   ![Add the tooltip shape property, if it doesn't already exist](/img/blog/tooltip-add-property.png)
+3. Add your tooltip text into the tooltip text field and click *Apply* to save your tooltip.
+     
+   ![Enter the text for your tooltip in the shape properties dialog, then press apply to return to the draw.io editor](/img/blog/tooltip-add-property-value.png)
+
+## Delete a tooltip[​](#delete-a-tooltip "Direct link to Delete a tooltip")
+
+1. Edit the shape properties: select the shape or connector, then press press `Ctrl+M` on Windows or `Cmd+M` on macOS.
+2. Click the small cross to the right of the tooltip text to delete it.
+     
+   ![Edit the shape properties, then click the small cross to delete your tooltip](/img/blog/tooltip-delete.png)
+3. Click *Apply* to return to the diagram editor.
+
+**Tip:** Tooltips can contain placeholders (variables), which allow you to change the text based on the context of where the shape is in the diagram (within another shape) or how it is styled.
+
+[Learn how to work with placeholders](/docs/manual/advanced/placeholders/)
+
+## Change the font size of tooltips[​](#change-the-font-size-of-tooltips "Direct link to Change the font size of tooltips")
+
+1. Select the shape you want to add the tooltip to and press `Alt+Shift+T` to edit the tooltip.
+2. Click on *HTML* in the top right above the tooltip, and change the font size by using a HTML tag: `<font size="3">Write your tooltip here</font>`. Alternatively, use the *H* heading tool in the toolbar to set a heading level or another text style.
+     
+   ![Surround your tooltip text with the <font /> HTML tags to change the size of the tooltip text](/img/blog/tooltip-change-font-size.png)
+3. Click *Apply* to save your tooltip.
+
+When you hover over the shape, the tooltip will appear after a short delay.
+
+Here's how three different sizes of tooltips appear.
+  
+![Surround your tooltip text with the <font /> HTML tags to change the size of the tooltip text](/img/blog/tooltip-font-sizes.png)
+
+## Show an icon on shapes with tooltips[​](#show-an-icon-on-shapes-with-tooltips "Direct link to Show an icon on shapes with tooltips")
+
+Tooltips only appear on hover, so there is nothing to tell you which shapes have
+one. Turn on tooltip icons to mark them with a small icon in the top left corner,
+which you can click to edit the tooltip.
+
+1. Select *Extras > Configuration*.
+2. Add the `showTooltipIcons` setting, then click *Save* and reload draw.io.
+
+```
+{  
+  "showTooltipIcons": true  
+}
+```
+
+The same icons are available in the [lightbox and HTML embeds](/docs/manual/export/embed-html/)
+via `show-tooltip-icons=true`, and with the
+[`tooltip-icons=1` URL parameter](/docs/reference/supported-url-parameters/).
+
+**Note:** `showLinkIcons` does the same for shapes that have a link.

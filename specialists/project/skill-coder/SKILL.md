@@ -43,25 +43,26 @@ commit on its own.
 
 ## Route the task
 
-| Task                                                                                       | Core reference                           | Then                                         |
-| ------------------------------------------------------------------------------------------ | ---------------------------------------- | -------------------------------------------- |
-| Shape a new module, package or service; choose layers; decide whether to build             | [references/design-principles.md](references/design-principles.md) | the language file                            |
-| Size, split or name modules and functions; adopt a size budget on old code                 | [references/module-and-function-shape.md](references/module-and-function-shape.md) | `scripts/code_size.py`, `scripts/ratchet.py` |
-| Name files, identifiers, commands and recipes in any language | [references/naming-conventions.md](references/naming-conventions.md) | the language file |
-| File headers, docstrings, doc comments, comments, lint suppression                         | [references/documentation-and-headers.md](references/documentation-and-headers.md) | the language file's doc convention           |
-| Anything that writes: files, databases, devices, remote systems; deletes; batches; renames | [references/safety-and-writes.md](references/safety-and-writes.md) | `scripts/write_gates.py`                     |
-| Error types, exit codes, timeouts, retries, unknown third-party errors                     | [references/errors-and-timeouts.md](references/errors-and-timeouts.md) | `scripts/call_timeouts.py`                   |
-| Settings, paths, hosts, tokens, version pins, catalog data, config directives              | [references/configuration-and-literals.md](references/configuration-and-literals.md) |                                              |
-| Tests, fakes, characterisation, negative tests for checks, real-target proof               | [references/testing.md](references/testing.md) | the language file's test runner              |
-| Refactor, move code, shims, promote a script to a skill                                    | [references/refactoring-and-promotion.md](references/refactoring-and-promotion.md) |                                              |
-| Jobs, loops and pages over many items; runtime budgets                                     | [references/efficiency-and-measurement.md](references/efficiency-and-measurement.md) |                                              |
-| Generated files, renderers, drift checks, lock files                                       | [references/generated-artifacts.md](references/generated-artifacts.md) |                                              |
-| Interpreters, venvs, task runner, scripts catalog                                          | [references/tooling-and-runtime.md](references/tooling-and-runtime.md) |                                              |
-| Which environment runs this skill's helpers; projects importing skill code                 | [references/runtime-boundaries.md](references/runtime-boundaries.md) |                                              |
-| Add, use or upgrade a dependency                                                           | [references/dependencies.md](references/dependencies.md) | [references/security.md](references/security.md) |
-| Input, injection, secrets, least privilege, supply chain                                   | [references/security.md](references/security.md) | the language file's injection row            |
-| Commits, change logs, versions, review, definition of done                                 | [references/version-control-and-review.md](references/version-control-and-review.md) |                                              |
-| Closeout: record what this engagement taught                                               | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |                                              |
+| Task                                                                                          | Core reference                           | Then                                                      |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------- | --------------------------------------------------------- |
+| Shape a new module, package or service; choose layers; decide whether to build                | [references/design-principles.md](references/design-principles.md) | the language file                                         |
+| Size, split, group into packages or name modules and functions; adopt a size budget on        | [references/module-and-function-shape.md](references/module-and-function-shape.md) | `scripts/code_size.py`,                                   |
+|   old code                                                                                    |                                          |   `scripts/ratchet.py`, `scripts/module_groups.py`        |
+| Name files, identifiers, commands and recipes in any language                                 | [references/naming-conventions.md](references/naming-conventions.md) | the language file                                         |
+| File headers, docstrings, doc comments, comments, lint suppression                            | [references/documentation-and-headers.md](references/documentation-and-headers.md) | the language file's doc convention                        |
+| Anything that writes: files, databases, devices, remote systems; deletes; batches; renames    | [references/safety-and-writes.md](references/safety-and-writes.md) | `scripts/write_gates.py`                                  |
+| Error types, exit codes, timeouts, retries, unknown third-party errors                        | [references/errors-and-timeouts.md](references/errors-and-timeouts.md) | `scripts/call_timeouts.py`                                |
+| Settings, paths, hosts, tokens, version pins, catalog data, config directives                 | [references/configuration-and-literals.md](references/configuration-and-literals.md) |                                                           |
+| Tests, fakes, characterisation, negative tests for checks, real-target proof                  | [references/testing.md](references/testing.md) | the language file's test runner                           |
+| Refactor, move code, shims, promote a script to a skill                                       | [references/refactoring-and-promotion.md](references/refactoring-and-promotion.md) |                                                           |
+| Jobs, loops and pages over many items; runtime budgets                                        | [references/efficiency-and-measurement.md](references/efficiency-and-measurement.md) |                                                           |
+| Generated files, renderers, drift checks, lock files                                          | [references/generated-artifacts.md](references/generated-artifacts.md) |                                                           |
+| Interpreters, venvs, task runner, scripts catalog                                             | [references/tooling-and-runtime.md](references/tooling-and-runtime.md) |                                                           |
+| Which environment runs this skill's helpers; projects importing skill code                    | [references/runtime-boundaries.md](references/runtime-boundaries.md) |                                                           |
+| Add, use or upgrade a dependency                                                              | [references/dependencies.md](references/dependencies.md) | [references/security.md](references/security.md)          |
+| Input, injection, secrets, least privilege, supply chain                                      | [references/security.md](references/security.md) | the language file's injection row                         |
+| Commits, change logs, versions, review, definition of done                                    | [references/version-control-and-review.md](references/version-control-and-review.md) |                                                           |
+| Closeout: record what this engagement taught                                                  | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |                                                           |
 
 | Language                        | Override file                      |
 | ------------------------------- | ---------------------------------- |
@@ -81,15 +82,17 @@ commit on its own.
 fall back to the skill's own recipe only when the project has no Python 3.11 or later ([references/runtime-boundaries.md](references/runtime-boundaries.md)). `scripts/README.md` catalogues their
 inputs, outputs and safety labels.
 
-| Script                     | What it reports                                              |
-| -------------------------- | ------------------------------------------------------------ |
-| `scripts/code_size.py`     | Modules and functions over the size budget                   |
-| `scripts/ratchet.py`       | A count compared with its shrink-only baseline               |
-| `scripts/import_layers.py` | Imports that break a declared layer table, and import cycles |
-| `scripts/write_gates.py`   | Write paths reachable without the apply gate                 |
-| `scripts/call_timeouts.py` | Network calls and subprocesses without a timeout             |
-| `scripts/script_headers.py` | Runnable scripts whose header lacks a summary, run line or safety statement |
-| `scripts/naming_check.py`  | File and recipe names off the naming mapping (`naming.toml`)  |
+| Script                      | What it reports                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------- |
+| `scripts/code_size.py`      | Modules and functions over the size budget                                            |
+| `scripts/ratchet.py`        | A count compared with its shrink-only baseline                                        |
+| `scripts/import_layers.py`  | Imports that break a declared layer table, and import cycles                          |
+| `scripts/write_gates.py`    | Write paths reachable without the apply gate                                          |
+| `scripts/call_timeouts.py`  | Network calls and subprocesses without a timeout                                      |
+| `scripts/script_headers.py` | Runnable scripts whose header lacks a summary, run line or safety statement           |
+| `scripts/module_groups.py`  | Folders where three or more code files share a prefix: candidate packages (warn only) |
+| `scripts/write_back.py`     | Write-back entries a project parked for this skill, to promote                        |
+| `scripts/naming_check.py`   | File and recipe names off the naming mapping (`naming.toml`)                          |
 
 ## How the override layer works
 
@@ -125,6 +128,10 @@ line under `## Unreleased` naming that file and date:
 
 A contradiction is a `Disputed` entry beside the old text with `Conflicts: <claim ID>`; never delete or silently rewrite. Read the edited file back. Full contract, release reconciliation and
 promotion: [references/evolution-and-write-back.md](references/evolution-and-write-back.md).
+
+**The calling project owes it** (operator, 2026-10-19: "any project which is calling skill coder should write that learning back"). A session in any project that invoked this skill, followed its rules
+or ran its helpers is engaged, and its closeout (skill-slurp-chat Step 5b) classifies, writes and commits the entry here. When this source cannot be written, the entry is parked in the project under
+`## skill-coder write-back candidates`; `scripts/write_back.py --project-root <project>` lists parked entries, and the next engagement promotes them and removes them there.
 
 ## Evidence
 

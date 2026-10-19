@@ -15,6 +15,19 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261019 Learned entry in `languages/python.md` (2026-10-19): after a `sys.path` seam, load modules with `importlib.import_module` instead of
+  imports below code, so no `# noqa` is needed (from building skill-drawio's UNC wrapper and tests). `AI_NAVIGATION.md` pack routing mirrors the
+  `SKILL.md` row for `module_groups.py`.
+- 20261019 Calling projects write back (operator, 2026-10-19: "add the write back mechanism so that whatever learning is there, any project which is calling skill
+  coder should write that learning back"): `references/evolution-and-write-back.md` gains "Projects that call this skill" (engaged means used; the calling session
+  writes, reads back and commits here; the fixed parking heading `## skill-coder write-back candidates`); new read-only helper `scripts/write_back.py`
+  (`just write-back`) lists parked entries in a project, with tests; `templates/project-agents-write-back.md` is the line a project may add to its AGENTS.md;
+  `SKILL.md` and `AGENTS.md` state the obligation; skill-slurp-chat Step 5b lists skill-coder whenever code was written and runs the helper.
+- 20261019 Module families become packages (operator, 2026-10-19: "is it better to create subdirectory under scripts and put all the related modules under that relevant
+  folder with a proper name? ... make it part of the skill coder logic"): `references/module-and-function-shape.md` gains "Grouping modules into packages" (three or more
+  modules sharing a prefix are a package; entry points stay at the top of `scripts/`; package names unique across loaded packs; one level, two at most);
+  `languages/python.md` maps it (regular packages, relative imports, no namespace packages); new warn-only helper `scripts/module_groups.py` (`just module-groups`,
+  `--strict` in `just self-check`), with tests.
 - 20261019 Seven of the nine archcore entries (activation and naming ADRs; write-back, helpers, generic text, precedence and cite-sources rules)
   were written by a parallel session on the operator's instruction to add the missing entries, then reviewed here.
 - 20261019 Archcore review (operator: "assess the archcore entries ... are they correct logically? any missing?", then "yes apply all"): all nine accepted

@@ -1,0 +1,40 @@
+Contents of https://www.drawio.com/docs/manual/connectors/connector-fixed-vs-floating/:
+Connectors in draw.io attach to shapes in two different ways:
+
+**Floating connectors** move around the perimeter of a shape as you move it to another location on the drawing canvas, or when you drag a connector and add way points to change the route it takes.
+
+**Fixed connectors** stay attached to fixed points on your shapes, even when you move the shapes around the drawing canvas.
+
+![Floating connectors move intelligently around the shape when you move it. Fixed connectors stay attached to that fixed point on the shape.](/img/blog/connector-floating-vs-fixed.gif)
+
+You can have a fixed connection at one end of your connector and a floating connection at the other, or use the same type of connection at both ends.
+
+## Draw a floating connector[​](#draw-a-floating-connector "Direct link to Draw a floating connector")
+
+1. Hover over an existing shape, click and drag a connector from one of the four directional arrows.
+2. Hover over the target shape and drop the connector end when the shape outline is blue.
+     
+   ![Floating connector - Drop the connector on the target shape when the outline is blue](/img/blog/connector-floating.png)
+     
+   The end of the connector will be blue with a circle to indicate it's a floating connection.
+
+## Draw a fixed connector[​](#draw-a-fixed-connector "Direct link to Draw a fixed connector")
+
+1. Hover over an existing shape on the drawing canvas to see the fixed connection points (small crosses, highlighted in green when you hover over them). Click and drag a connector from one of these points.
+2. Hover over the target shape. Drop the connector end over a fixed connection point on the target shape when it is highlighted in green.
+     
+   ![Fixed connector - Drop the connector on a connection point - a small x - when it is highlighted with a green circle](/img/blog/connector-fixed.png)
+     
+   The end of the connector will be green with a cross to indicate it's a fixed connection.
+
+**Tip:** Alternatively, hover over anywhere on the outline of a shape until it is highlighted in green. When you drop the connector to attach it, it will be fixed at that position on the shape's outline.
+
+Fixed connection points are usually spaced evenly around the outside of a shape. You can [customise the shape connection points](/docs/manual/shapes/shape-connection-points-customise/) on any shape.
+
+In addition to the fixed connection points around a shape, you can drop a fixed connection on the outline of a shape when it is highlighted green, and drop a [fixed connection anywhere within a shape](/docs/manual/connectors/connect-shapes/): Hold down `Shift` as you drag the connector into position over the target shape, then drop the connector when you see the green shape outline.
+  
+![Hold down Alt key as you connect to a shape to connect to any position on that shape](/img/blog/connect-to-shapes-anywhere.gif)
+
+**Note:** If you [don't see any connection points](/docs/manual/shapes/shape-connection-points-customise/) when you hover over a shape, make sure you have the option enabled. Check the *Arrange* tab of the format panel, or select *View > Connection Points* from the menu.
+
+The [*Snap to Point* shape property](/docs/manual/shapes/snap-to-point/) will make floating connectors, snap to the nearest connection point.

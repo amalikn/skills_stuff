@@ -1,0 +1,68 @@
+# Environments this skill was verified against: product, version, components and when observed.
+# Untested: draw.io desktop on Windows and Linux, desktop versions other than 32.4.1 and 32.5.5, the web app (app.diagrams.net) and the VS Code extension.
+# They are expected to read and write the same file format, but no export flag or rendering behaviour here was exercised on them.
+environments:
+  - id: drawio-desktop-32-5-5
+    product: draw.io desktop (macOS)
+    product_version: 32.5.5
+    components: [CLI export, PNG, XML, page selection, layer selection, scale, installed app bundle]
+    observed_at: "2026-10-19"
+    evidence_locator: >-
+      `draw.io --help` captured as documents/drawio-sources-20261019/drawio-desktop-cli-help-32.5.5.txt; scratch two-page, two-layer file exported with -x -f png
+      (no -p, -p 2, -p 1 --layers 0, -s 2) and -x -f xml, outputs checked by pixel size and by eye; a 3.5 s single-page export through a Python subprocess with
+      --disable-update and a timeout; app.asar searched for the data:page/id, link form
+    validation_layer: observed_install
+    result: pass
+  - id: drawio-desktop-32-4-1
+    product: draw.io desktop (macOS)
+    product_version: 32.4.1
+    components: [CLI export, PNG, page selection, layer selection, static edge rendering, line hops]
+    observed_at: "2026-10-19"
+    evidence_locator: >-
+      UNC docs/flows/readme.md 'Exporting and checking the drawing' and /Volumes/Data/_ai/claude-auto-memory/reference_drawio_cli.md: -p 1-based, --layers 0,1,
+      layer cells after the root, jumpSize is the hop width, orthogonal edges without waypoints drawn through boxes; recorded by the project, not re-run here
+      (the installed app had updated to 32.5.5 by the time this pack was written)
+    validation_layer: observed_install
+    result: pass
+  - id: drawio-docs-20261019
+    product: draw.io documentation and drawio-tools
+    product_version: "drawio.com docs and jgraph/drawio-mcp mxfile.xsd as published 2026-10-19"
+    components: [file format, style reference, layers, links, tooltips, waypoints, groups, compressed pages, XML export]
+    observed_at: "2026-10-19"
+    evidence_locator: "documents/drawio-sources-20261019/ (style reference, mxfile.xsd, drawio-tools.js codec, manual pages); the docs are unversioned, so the fetch date is the version"
+    validation_layer: official_documented
+    result: pass
+  - id: drawio-skill-code-20261019
+    product: skill-drawio scripts
+    product_version: "scripts/ as read 2026-10-19 (packages drawio/ and flowmap/, code_refs.py, schema_lite.py; after the split)"
+    components: [renderer, layout, routing, audits, text sizing, schema subset, code references]
+    observed_at: "2026-10-19"
+    evidence_locator: >-
+      Code read 2026-10-19 while another agent was refactoring scripts/; behaviour proven by UNC tests/test_flows_drawio.py (44 flow tests, just check OK per UNC
+      CHANGELOG 20261019_1602), not by tests in this pack, which held fixtures only
+    validation_layer: implementation_inspected
+    result: pass
+  - id: drawio-unc-reader-20261019
+    product: UNC as-built drawing reader
+    product_version: "UNC source as read 2026-10-19"
+    components: [compressed page decode, cell index, HTML label text, group offsets, line paths, port label matching]
+    observed_at: "2026-10-19"
+    evidence_locator: "UNC wc-local/scripts/site_onboarding/asbuilt_read.py, src/unc/tasks/asbuilt/drawings.py and tests/test_asbuilt_read.py; project implementation, not product behaviour"
+    validation_layer: implementation_inspected
+    result: pass
+  - id: macos-27-0-1
+    product: macOS sips
+    product_version: "macOS 27.0.1"
+    components: [PNG crop]
+    observed_at: "2026-10-19"
+    evidence_locator: "documents/drawio-sources-20261019/macos-sips-help.txt; scratch crop --cropOffset 10 100 -c 50 80 gave an 80 x 50 image"
+    validation_layer: observed_install
+    result: pass
+  - id: wcag-2-2-docs-20261019
+    product: W3C WCAG 2.2 Understanding documents
+    product_version: "WCAG 2.2"
+    components: [contrast minimum, non-text contrast]
+    observed_at: "2026-10-19"
+    evidence_locator: "documents/drawio-sources-20261019/wcag22-contrast-minimum.txt and wcag22-non-text-contrast.txt"
+    validation_layer: official_documented
+    result: pass

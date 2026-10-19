@@ -17,12 +17,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 # The helpers are plain modules in scripts/ (not a package), loaded by name once that folder is on sys.path.
-call_timeouts, code_map, code_size, import_layers, naming_check, naming_table, pyparse, ratchet, script_headers, write_gates = (
-    importlib.import_module(n) for n in ("call_timeouts", "code_map", "code_size", "import_layers", "naming_check", "naming_table", "pyparse",
-                                         "ratchet", "script_headers", "write_gates"))
+call_timeouts, code_map, code_size, import_layers, module_groups, naming_check, naming_table, pyparse, ratchet, script_headers, write_back, write_gates = (
+    importlib.import_module(n) for n in ("call_timeouts", "code_map", "code_size", "import_layers", "module_groups", "naming_check", "naming_table",
+                                         "pyparse", "ratchet", "script_headers", "write_back", "write_gates"))
 
 #: Every helper named here, so the contract test can see each one has tests: "ratchet", "code_size", "import_layers", "write_gates", "script_headers", "code_map", "pyparse", "naming_check", "naming_table",
-#: "call_timeouts".
+#: "call_timeouts", "module_groups", "write_back".
 
 
 def _tree(files: dict[str, str]) -> Path:
@@ -253,6 +253,48 @@ class ScriptHeaders(unittest.TestCase):
         good = "#!/bin/bash\n# Back up the database; writes only with --apply.\n# Usage: backup.sh [--apply]\nset -euo pipefail\n"
         self.assertEqual(script_headers.missing_parts(good, ".sh"), [])
         self.assertEqual(script_headers.missing_parts("#!/bin/bash\nset -e\n", ".sh"), ["summary", "run", "safety"])
+
+
+class ModuleGroups(unittest.TestCase):
+    """Three code files sharing a prefix are a candidate package; fewer, tests and non-code files are not."""
+
+    def test_family_found_and_small_or_exempt_ignored(self) -> None:
+        """A three-file family is reported; a two-file one, test files and Markdown are not; --strict fails only when one is found."""
+        root = _tree({"scripts/flowmap_model.py": "", "scripts/flowmap_pages.py": "", "scripts/flowmap-e2e.sh": "", "scripts/drawio_xml.py": "",
+                      "scripts/drawio_audit.py": "", "scripts/test_a.py": "", "scripts/test_b.py": "", "scripts/test_c.py": "",
+                      "scripts/notes_a.md": "", "scripts/notes_b.md": "", "scripts/notes_c.md": "", "scripts/pkg/flowmap_x.py": ""})
+        self.assertEqual(module_groups.candidates(root, ["scripts"]),
+                         [("scripts", "flowmap", ["flowmap-e2e.sh", "flowmap_model.py", "flowmap_pages.py"])])
+        self.assertEqual(module_groups.main(["--project-root", str(root), "--roots", "scripts"]), 0)
+        self.assertEqual(module_groups.main(["--project-root", str(root), "--roots", "scripts", "--strict"]), 1)
+        self.assertEqual(module_groups.main(["--project-root", str(root), "--roots", "scripts", "--strict", "--min", "4"]), 0)
+
+
+class WriteBack(unittest.TestCase):
+    """Entries parked in a project for a skill are found; entries elsewhere, in code fences or in history are not."""
+
+    def test_parked_entries_found_and_strict_fails(self) -> None:
+        """Only the section naming the skill counts, it ends at the next same-level heading, and --strict fails while one is pending."""
+        doc = """\
+            # Notes
+            ## skill-coder write-back candidates
+            > **Learned 2026-10-19** · python 3.14 · UNVERIFIED · Source: a.py:1 · Falsifier: x
+            > the fact
+            ### detail
+            > **Disputed 2026-10-18** · core · USER_STATED · Source: b · Falsifier: y · Conflicts: C-C01
+            ```text
+            > **Learned 2026-01-01** · in a fence
+            ```
+            ## Other
+            > **Learned 2026-10-17** · not parked for this skill
+            """
+        root = _tree({"docs/notes.md": doc, "docs/history/old.md": doc})
+        self.assertEqual(write_back.pending(root, "skill-coder"),
+                         [("docs/notes.md", 3, "Learned", "2026-10-19"), ("docs/notes.md", 6, "Disputed", "2026-10-18")])
+        self.assertEqual(write_back.pending(root, "skill-nautobot"), [])
+        self.assertEqual(write_back.main(["--project-root", str(root)]), 0)
+        self.assertEqual(write_back.main(["--project-root", str(root), "--strict"]), 1)
+        self.assertEqual(write_back.main(["--project-root", str(root / "missing")]), 2)
 
 
 class CodeMap(unittest.TestCase):

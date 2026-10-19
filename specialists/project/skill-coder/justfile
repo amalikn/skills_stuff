@@ -217,6 +217,16 @@ script-headers *args: _require-venv
 naming-check *args: _require-venv
     @{{py}} scripts/naming_check.py "$@"
 
+# Read-only, warn only: folders where three or more code files share a name prefix (candidate packages), e.g. just module-groups --project-root /path --strict
+[positional-arguments]
+module-groups *args: _require-venv
+    @{{py}} scripts/module_groups.py "$@"
+
+# Read-only: write-back entries a project parked for a skill (under a heading naming it), to promote, e.g. just write-back --project-root /path --strict
+[positional-arguments]
+write-back *args: _require-venv
+    @{{py}} scripts/write_back.py "$@"
+
 # Render the naming table in references/naming-conventions.md from naming.toml (modifies that file only)
 naming-table: _require-venv
     @{{py}} scripts/naming_table.py --write
@@ -229,6 +239,7 @@ self-check: _require-venv
     @{{py}} scripts/script_headers.py --project-root . --roots scripts
     @{{py}} scripts/naming_check.py --project-root .
     @{{py}} scripts/naming_table.py
+    @{{py}} scripts/module_groups.py --project-root . --roots scripts,tests --strict
 
 # Regenerate the deterministic Repomix context pack (.ai-context/governance-pack.md). Generated support, not truth.
 context-pack:

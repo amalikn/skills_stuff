@@ -387,10 +387,6 @@ def check_function_docs() -> None:
                     fail("function-docs", f"{rel}:{i + 1} shell function `{line.strip()[:40]}` has no comment block above it")
 
 
-# Code files that kept a kebab-case name when the snake_case rule arrived. Listed here, by repo-relative path, until they are next touched and renamed
-# (governance coding-guide: renamed when touched, references updated in the same change; never a new one). Empty is the goal.
-KEBAB_LEGACY: frozenset[str] = frozenset()
-CODE_SUFFIXES: frozenset[str] = frozenset({".py", ".sh", ".bash", ".js", ".mjs", ".ts", ".rb", ".pl"})
 
 
 def check_interpreter_pinning() -> None:

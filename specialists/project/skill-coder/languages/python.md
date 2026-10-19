@@ -31,21 +31,30 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 
 ## Core rule mapping
 
-| Core reference              | In Python                                                                                                                                                              |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| documentation-and-headers   | Module docstring with purpose and `Usage:`; Google-style `Args:`, `Returns:`, `Raises:` (and `Yields:` for generators); triple double quotes and a one-line summary    |
-|                             |   (PEP 257)                                                                                                                                                            |
-| design-principles           | Interfaces are `typing.Protocol` (structural, so a fake needs no base class); records are frozen dataclasses with `to_dict`/`from_dict`; third-party validation models |
-|                             |   (Pydantic) only at the API edge                                                                                                                                      |
-| errors-and-timeouts         | A project error base class with subclasses; `raise ... from err` to chain; no bare `except:` (PEP 8: it catches `SystemExit` and `KeyboardInterrupt`);                 |
-|                             |   `subprocess.run([...], timeout=s, check=True)` raises `TimeoutExpired` or `CalledProcessError`; HTTP clients get an explicit timeout                                 |
-| safety-and-writes           | `argparse` with `--apply` defaulting to false; the write path checks it in the writer, not the CLI                                                                     |
-| configuration-and-literals  | One settings module reads `os.environ`; `pathlib.Path` relative to a root from settings                                                                                |
-| security                    | Argument lists, never `shell=True` with input; DB-API placeholders; `yaml.safe_load`; `secrets` module for tokens                                                      |
-| testing                     | pytest `tmp_path` and `monkeypatch` style isolation; recorded fixtures under `tests/fixtures/`; no network in unit tests                                               |
-| runtime-boundaries          | Helpers parse with `ast.parse(source, feature_version=(3, 11))` style calls (UNVERIFIED: the `ast` docs were not fetched) and never import the target; a `SyntaxError` is reported                                   |
-| documentation-and-headers   | Never `# noqa`; fix the cause or configure the rule in `pyproject.toml` with a comment                                                                                 |
-|   (suppression)             |                                                                                                                                                                        |
+| Core reference                        | In Python                                                                                                                                                    |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| documentation-and-headers             | Module docstring with purpose and `Usage:`; Google-style `Args:`, `Returns:`, `Raises:` (and `Yields:` for generators); triple double quotes and a one-line  |
+|                                       |   summary (PEP 257)                                                                                                                                          |
+| design-principles                     | Interfaces are `typing.Protocol` (structural, so a fake needs no base class); records are frozen dataclasses with `to_dict`/`from_dict`; third-party         |
+|                                       |   validation models (Pydantic) only at the API edge                                                                                                          |
+| errors-and-timeouts                   | A project error base class with subclasses; `raise ... from err` to chain; no bare `except:` (PEP 8: it catches `SystemExit` and `KeyboardInterrupt`);       |
+|                                       |   `subprocess.run([...], timeout=s, check=True)` raises `TimeoutExpired` or `CalledProcessError`; HTTP clients get an explicit timeout                       |
+| safety-and-writes                     | `argparse` with `--apply` defaulting to false; the write path checks it in the writer, not the CLI                                                           |
+| configuration-and-literals            | One settings module reads `os.environ`; `pathlib.Path` relative to a root from settings                                                                      |
+| security                              | Argument lists, never `shell=True` with input; DB-API placeholders; `yaml.safe_load`; `secrets` module for tokens                                            |
+| testing                               | pytest `tmp_path` and `monkeypatch` style isolation; recorded fixtures under `tests/fixtures/`; no network in unit tests                                     |
+| runtime-boundaries                    | Helpers parse with `ast.parse(source, feature_version=(3, 11))` style calls (UNVERIFIED: the `ast` docs were not fetched) and never import the target; a     |
+|                                       |   `SyntaxError` is reported                                                                                                                                  |
+| module-and-function-shape (packages)  | A module family is a regular package (a folder with `__init__.py`, never an implicit namespace package: those merge across every path entry, so two packs'   |
+|                                       |   folders of one name combine silently); relative imports inside it (`from .model import Profile`); entry points are top-level scripts or `python -m pkg`    |
+|                                       |   with `__main__.py`, never a module inside the package run by path (its relative imports fail)                                                              |
+| documentation-and-headers             | Never `# noqa`; fix the cause or configure the rule in `pyproject.toml` with a comment                                                                       |
+|   (suppression)                       |                                                                                                                                                              |
+
+> **Learned 2026-10-19** · python 3.14 · VERIFIED_PRIMARY · Source: /Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/scripts/render/flows_drawio.py (thin wrapper over skill-drawio) · Falsifier: a linter that flags importlib.import_module after a sys.path change
+> A module that must change `sys.path` before importing (a project's seam to a skill pack, a test putting `scripts/` on the path) loads the rest with
+> `importlib.import_module(...)` and plain assignments instead of `import` statements below code: the imports stay at the top of the file, so E402 never
+> fires and no `# noqa` is needed. Re-exported names are then ordinary assignments a reader can grep.
 
 ## Size and limit tweaks
 

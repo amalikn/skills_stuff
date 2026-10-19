@@ -1,0 +1,106 @@
+Contents of https://www.drawio.com/docs/manual/connectors/waypoints-connectors/:
+Connectors show how the different shapes in the diagram are related. In complex diagrams, you are likely to have many overlapping connectors. While line jumps are useful when you have one or two connectors that cross but shouldn't intersect, you can change the path that your connectors take to make your diagram clearer by adding extra waypoints in the connector's path.
+
+## Add waypoints to connectors[​](#add-waypoints-to-connectors "Direct link to Add waypoints to connectors")
+
+There are several ways you can add waypoints to connectors. The easiest way to add a waypoint is to drag the blue points on the connector to the path you want it to take.
+
+1. Select the connector you want to reroute.
+2. Drag the connector into a new position.
+
+As you drag the connector, new waypoints are added automatically and intelligently, depending on where you grabbed the connector.
+
+![Drag the connector to automatically add waypoints](/img/blog/waypoints-drag-more.gif)
+
+**Note:** When you manually add a connector waypoint, it will automatically turn off the [auto-routing orthogonal connector style](/docs/manual/connectors/connectors-auto-route/) for that connector.
+
+If you prefer not to drag connectors around, you can use the menu.
+
+1. Right-click on the connector in between two waypoints to display the context menu.
+2. Select *Add Waypoint*.
+
+![Use the context menu to add waypoints to a connector](/img/blog/waypoints-add-context-menu.png)
+
+**Tip:** To join connectors instead of overlapping them, use the [waypoint shape in the *Misc* shape library](/docs/manual/shapes/waypoint-shape/). It looks like a solid waypoint in your diagram, and acts like a normal shape. Drag connectors from the waypoint shape, and drop connectors onto the waypoint shape to better organise the connectors in your diagram.
+
+### Enter the exact position of a waypoint[​](#enter-the-exact-position-of-a-waypoint "Direct link to Enter the exact position of a waypoint")
+
+Select a connector that has waypoints, then open the *Waypoints* section in the *Arrange* tab of the format panel. Enter the *Left* and *Top* position of each waypoint.
+![Set exact positions for each waypoint in the Arrange tab of the format panel](/img/blog/waypoints-arrange-tab.png)
+
+Labels on the connector stay where they are when you drag its waypoints, segments or ends, as long as the new path still passes through the label's position.
+
+### Move a connector end onto the grid without connecting it[​](#move-a-connector-end-onto-the-grid-without-connecting-it "Direct link to Move a connector end onto the grid without connecting it")
+
+Hold `Alt+Ctrl` (`Alt+Cmd` on macOS) while you drag the end of a connector to place it on the grid without connecting it to a shape underneath. Holding only `Alt` also prevents attachment, but ignores the grid.
+
+### Snap connector segments to 45 degrees[​](#snap-connector-segments-to-45-degrees "Direct link to Snap connector segments to 45 degrees")
+
+Connector segments can snap to a 45 degree angle while you drag a waypoint or a loose end of a connector using the *Straight* waypoint style.
+
+1. Select the connector.
+2. Drag a waypoint or a loose end of the connector.
+     
+   ![The blue 45 degree guide will be shown (if Guides are enabled) when a connector is close to a 45 degree angle](/img/blog/guide-45degree.png)
+
+When a segment is close to a 45 degree angle, a [blue guide](/docs/manual/editor/panels/guides-hide-display/) will appear on the previous waypoint or the shape, and the waypoint or end of the connector will snap to that angle.
+
+New connectors with the *Straight* waypoint style also snap to 45 degrees when you drag them *from* a shape. The angle is measured from the connection point or from the centre of the shape. To draw new connectors with this style, [set a default connector style](/docs/manual/styles/connector-styles/) with *Straight* waypoints.
+
+Use this to draw diagonal segments, for example, a connector that leaves a shape horizontally, runs diagonally, and enters the next shape horizontally, such as for wiring and piping diagrams.
+
+**Note:** Hold `Alt` while you drag to place the waypoint without snapping. To turn off the 45 degree snapping, [disable the guides](/docs/manual/editor/panels/guides-hide-display/).
+
+## Remove a waypoint from a connector[​](#remove-a-waypoint-from-a-connector "Direct link to Remove a waypoint from a connector")
+
+1. Select the connector where you want to remove a waypoint.
+2. Drag the appropriate section of the connector back into a position such that the waypoint is removed.
+
+![Drag the connector back to remove waypoints](/img/blog/waypoints-drag-remove.gif)
+
+You can also use the context menu to remove waypoints.
+
+1. Select the connector first, then right-click on one of the existing waypoints.
+2. Select *Remove Waypoint*.
+
+![Use the context menu to remove a waypoint from a connector](/img/blog/waypoints-remove-context-menu.png)
+
+Or alternatively, select a different connector waypoint style to 'reset' the connector's waypoints.
+
+**Note:** If you [flip a connector horizontally or vertically](/docs/manual/connectors/connector-flip/) while it is attached to a shape, its waypoints will be changed or deleted automatically.
+
+## Clear all waypoints[​](#clear-all-waypoints "Direct link to Clear all waypoints")
+
+By clearing all of the waypoints in a connector, it will revert to the shortest path between the two shapes.
+
+1. Right-click on the connector you want to reset to see the context menu.
+2. Select *Clear Waypoints*.
+
+The labels of the connector will stay where they are. To move them back onto the connector, [reset the connector label positions](/docs/manual/connectors/connector-labels/).
+
+**Note:** You can alternately use the context menu and dragging to add and remove connectors. Use whichever method suits you best.
+
+![Use the context menu to clear all waypoints on a connector](/img/blog/waypoints-clear.gif)
+
+Adding and removing waypoints by dragging connectors and using the context menu works for most of the waypoint styles that you can set in the *Style* tab of the format panel on the right. With the *Straight* waypoint style, the connector runs in straight lines through its waypoints. The *Entity Relation* waypoint style does not use waypoints.
+
+## Move waypoints with the connected shapes[​](#move-waypoints-with-the-connected-shapes "Direct link to Move waypoints with the connected shapes")
+
+By default, the waypoints of a connector stay where they are when you move one of the connected shapes. You can make the waypoints follow the connected shapes instead.
+
+1. Select the connector.
+2. Select the *Follow Terminals* checkbox in the *Effects* section in the *Style* tab of the format panel.
+
+When you move, resize or arrange a connected shape, the waypoints of the connector will move with it, so the connector keeps its path. Orthogonal connectors keep their right-angled bends. All other connectors rotate and stretch with the line between the two shapes keeping their bends at their waypoints.
+  
+![Enable the Follow Terminals checkbox to move the waypoints of a connector when you move a connected shape](/img/blog/connectors-follow-terminals.gif)
+
+Choose this option when the path of a connector should stay the same relative to its shapes, for example, in a mind map. Keep the default when the waypoints route the connector around shapes that don't move.
+
+**Notes**
+
+* The *Follow Terminals* checkbox is not shown for connectors with the [*Auto-route around shapes*](/docs/manual/connectors/connectors-auto-route/) waypoint style. These connectors are routed around the shapes again whenever a connected shape moves.
+* Straight connectors do not have any waypoints, this setting will not appear to change the straight connector behaviour.
+
+* If you don't want to work with waypoints on connectors manually, use the [orthogonal auto-routing style](/docs/manual/connectors/connectors-auto-route/) to automatically re-path connectors around shapes on the drawing canvas.
+* How to [connect shapes quickly](/docs/manual/connectors/connect-shapes/) with shortcuts

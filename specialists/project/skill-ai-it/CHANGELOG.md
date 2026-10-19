@@ -16,6 +16,7 @@ Last rotated: 20261019_1734
 
 ## Contents
 
+- [20261019_1813 — Checker template: duplicated KEBAB_LEGACY block removed](#20261019_1813--checker-template-duplicated-kebab_legacy-block-removed)
 - [20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions](#20261019_1734--pitfalls-hand-bootstrapped-packs-write-accepted-archcore-decisions)
 - [20261019_1707 — Recipe names back to kebab-case; upgrader renames the template's snake_case recipes](#20261019_1707--recipe-names-back-to-kebab-case-upgrader-renames-the-templates-snake_case-recipes)
 - [20261015_0129 — doc_freshness: a Budget header counts only with a size](#20261015_0129--doc_freshness-a-budget-header-counts-only-with-a-size)
@@ -33,6 +34,11 @@ Last rotated: 20261019_1734
 - [20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean](#20261014_1020--coherence-pass-architecture-key-decisions-sibling-skills-sweep-clean)
 - [20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes](#20261014_1018--staleness-audit-upgrader-header-derived-index-counts-links-indexes)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261019_1813 — Checker template: duplicated KEBAB_LEGACY block removed
+
+templates/check_governance.py defined the `KEBAB_LEGACY` and `CODE_SUFFIXES` registries (and their comment) twice, so every generated checker carried the duplicate (found building skill-drawio,
+2026-10-19). The second copy is removed; skill-coder's generated checker is fixed the same way, skill-drawio's was generated without it.
 
 ## 20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions
 

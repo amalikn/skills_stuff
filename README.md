@@ -33,6 +33,7 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 | ---------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `skill-nautobot` | `specialists/platform/skill-nautobot/` | 0.4.0 — operate, model, extend, integrate and recover Nautobot 3.2.3, with tested helpers                  |
 | `skill-openwisp` | `specialists/platform/skill-openwisp/` | 0.4.0 — configuration, monitoring, RADIUS, firmware and recovery for OpenWISP 26.09.0, with tested helpers |
+| `skill-drawio`   | `specialists/platform/skill-drawio/`   | 0.1.0 — data-first draw.io diagrams (YAML map to drawing, layout audits), file format, export and reading; not yet installed |
 
 ## Current Focus
 - Project specialist coverage now includes:

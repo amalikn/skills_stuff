@@ -45,8 +45,23 @@ A contradiction uses `> **Disputed YYYY-MM-DD**` with the same fields plus `Conf
 `USER_STATED`. The CHANGELOG line names the file and the same date. The pack's checks are expected to fail on a malformed entry or on an entry with no matching CHANGELOG line (UNVERIFIED until the
 coordinator's checker implements it).
 
-If this skill's source cannot be written (read-only path, no authorisation), put the same entry in the engaging project's governed docs under a heading naming this skill, and link it from that
-project's index; the next engagement with write access promotes it.
+If this skill's source cannot be written (read-only path, no authorisation), put the same entry in the engaging project's governed docs under the heading `## skill-coder write-back candidates`, and
+link it from that project's index; the next engagement with write access promotes it.
+
+## Projects that call this skill
+
+Operator, 2026-10-19: "add the write back mechanism so that whatever learning is there, any project which is calling skill coder should write that learning back." The obligation sits with the calling
+session, in whichever project it runs:
+
+1. **Engaged means used.** A session that invoked this skill, applied one of its rules, or ran one of its helpers (or a project with a `code-map.toml`, which only this skill reads) is engaged, whether
+   or not the project's `AGENTS.md` routes to it.
+2. **At closeout** the session classifies the engagement (table above) and writes each reusable fact here, in this skill's canonical source, with its CHANGELOG line; then reads it back and runs `just
+   test` and `just check` in this pack. skill-slurp-chat Step 5b lists this skill among the engaged skills and checks the entry is present, read back and committed in `skills_stuff`.
+3. **Parked entries are collected.** `scripts/write_back.py --project-root <project>` (`just write-back`) lists entries parked under the candidates heading. The next engaged session promotes each one
+   (re-verifying it), deletes it from the project and says so in both change logs.
+4. **What stays in the project:** a fact about that project only (`project_only`), and the project's own overrides of this skill (its `code-map.toml`, its AGENTS.md rules).
+
+A project may state the trigger in its own `AGENTS.md` so every agent sees it; the line to add is in `templates/project-agents-write-back.md`.
 
 ## Release reconciliation
 

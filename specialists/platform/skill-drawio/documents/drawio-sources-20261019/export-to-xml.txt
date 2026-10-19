@@ -1,0 +1,21 @@
+Contents of https://www.drawio.com/docs/manual/export/export-to-xml/:
+By default, draw.io saves your diagrams as an XML file with the `.drawio` file extension. This is so that your operating system knows to open this file in draw.io if you are using our desktop app, or the unofficial draw.io extension for VSCode.
+
+To save your diagram instead with the `.xml` file extension instead and the initial XML version tag (`<?xml version="1.0" encoding="UTF-8"?>`), you need to export the file.
+
+1. Select *File > Export as > XML*.
+     
+   ![Export a diagram as an XML file](/img/blog/file-export-xml.png)
+2. Change the export settings to suit your requirements, then click *Export*.
+   * Click the *Selection Only* checkbox to create an XML file with just the selected elements of your diagram. This option is disabled if nothing is selected.
+   * Deselect the *Compressed* checkbox to save an uncompressed version of the XML file. You can also use [our online tool to decompress `.xml` and `.drawio` diagram files](https://jgraph.github.io/drawio-tools/tools/convert.html) created in draw.io.
+   * Deselect the *All Pages* checkbox to only export the current diagram page to the XML file.
+       
+     ![Choose the export settings when exporting a diagram as an XML file](/img/blog/export-xml-options.png)
+3. Enter a *Filename*, and select the location where you want to save the exported XML file.
+     
+   ![Choose where to save your exported XML file](/img/blog/save-as-xml.png)
+
+Depending on your browser, you may be prompted to open it with a default program, or simply save the file.
+
+[See all diagram export formats](/docs/manual/export/export-diagram/)

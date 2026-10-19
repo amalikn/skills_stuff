@@ -1,0 +1,12 @@
+Contents of https://www.drawio.com/docs/manual/layers/hide-display-layers/:
+To understand complex diagrams that use layers, you can display and hide layers.
+
+In the [*Layers* dialog](/docs/manual/layers/), click on the eye on the left of layer's name to display or hide the layer.
+
+![Click on the eye next to the layer name to display or hide the shapes and connectors on that layer](/img/blog/layers-display-hide.gif)
+
+**Hide or display layers in the diagram viewer:** Click on the *Layers* tool at the bottom of the diagram viewer, then click on the eye icons next to the layer names to hide or display the layers. This tool is not available if the diagram only has one layer.
+
+![Click on the layer tool then on the eyes next to layer names to hide or display them in the diagram viewer](/img/blog/layers-viewer-display-hide.png)
+
+**Tip:** [Use custom links to make your diagram interactive](/docs/tutorials/interactive-diagram-layers/) and toggle layers on and off when you click on a shape within the diagram.

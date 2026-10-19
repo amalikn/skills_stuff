@@ -1,0 +1,2 @@
+# Runtime packages for this pack's recipes: only what the contract test needs (tests/requirements.txt). The helpers themselves are stdlib-only.
+-r tests/requirements.txt

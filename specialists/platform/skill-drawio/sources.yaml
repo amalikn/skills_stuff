@@ -1,0 +1,378 @@
+# Claims skill-drawio makes: each load-bearing statement with its kind, evidence status, lifecycle, source and a falsifier (what would prove it wrong).
+# Operator rules are USER_STATED / user_policy with the file that records them. External pages are copied verbatim under documents/drawio-sources-20261019/.
+# Code paths "scripts/..." are this pack's; "UNC ..." paths are relative to /Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller.
+claims:
+  - id: C-D01
+    statement: "A system drawing is rendered from a hand-edited YAML map and is never drawn or edited by hand; YAML is chosen for comments, diffs and readable nesting."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Operator 2026-10-15, recorded in UNC AGENTS.md (Working rules > Documents: 'Flows are data first') and UNC docs/flows/readme.md ('Why YAML, and a stable name')."
+    falsifier: "The operator lifts the rule, or a project records that a generated drawing is maintained by hand."
+    reference: references/data-first-diagrams.md
+  - id: C-D02
+    statement: "The renderer is deterministic and validates the map (schema, unique ids, known references, existing code paths and symbols); a drift check compares a fresh render with the committed file byte for byte and runs in just check."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-skill-code-20261019]
+    environment_id: drawio-skill-code-20261019
+    source_type: implementation
+    evidence: "scripts/flowmap/pages.py render(), evaluate(); scripts/flowmap/model.py reference_problems(); scripts/drawio/mxfile.py banner(), mxfile(); scripts/code_refs.py; scripts/schema_lite.py; UNC scripts/check_governance.py check_flow_map; UNC tests/test_flows_drawio.py test_render_is_deterministic_and_one_page_per_flow, test_write_then_evaluate_reports_no_drift; read 2026-10-19."
+    falsifier: "Two renders of an unchanged map differ, or a hand edit to the drawing passes just check."
+    reference: references/data-first-diagrams.md
+  - id: C-D03
+    statement: "A drawing the operator has edited in draw.io becomes the source: it is patched or appended to only, with a backup, and never regenerated over."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/enterprise-strategy/CHANGELOG.md entry 20261012_2352 ('the .drawio is now the hand-edited source and is not regenerated'); /Volumes/Data/_ai/claude-auto-memory/feedback_preserve_user_hand_edits.md (operator, 2026-10-05)."
+    falsifier: "The operator asks for a hand-edited drawing to be regenerated from a script."
+    reference: references/data-first-diagrams.md
+  - id: C-D04
+    statement: "A draw.io file is mxfile > diagram (one per page) > mxGraphModel > root, and every page needs cell 0 (root, no parent) and cell 1 (default layer, parent 0)."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-docs-20261019]
+    environment_id: drawio-docs-20261019
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/style-reference.txt (section 1, rules 1-2); documents/drawio-sources-20261019/mxfile-xsd.txt lines 18, 251; fetched 2026-10-19."
+    falsifier: "draw.io opens a page without cell 0 or cell 1 unchanged, or the style reference drops the requirement."
+    reference: references/file-format.md
+  - id: C-D05
+    statement: "A layer is an mxCell with parent 0 and no vertex or edge attribute, its value the layer name; content names its layer (or a group) as parent. Writing layers right after the root cells is the generator's convention; the documents do not require that position."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-docs-20261019, drawio-skill-code-20261019]
+    environment_id: drawio-docs-20261019
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/mxfile-xsd.txt lines 256, 280; how-layers-work.txt; scripts/drawio/mxfile.py Page.xml(); UNC tests/test_flows_drawio.py test_layers_follow_the_root_cells_and_hold_their_arrows. Position requirement: UNVERIFIED (not stated in the fetched documents)."
+    falsifier: "draw.io rejects or misplaces a layer cell written after content that names it (would make the position a requirement), or a layer with another parent is accepted as a layer."
+    reference: references/file-format.md
+  - id: C-D06
+    statement: "A cell with a link, tooltip or custom attributes is a UserObject (or object) carrying id, label and the attributes, wrapping an mxCell with style, parent and geometry; a reader must index both element kinds."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-docs-20261019]
+    environment_id: drawio-docs-20261019
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/style-reference.txt Example 4 (UserObject with label and tooltip); mxfile-xsd.txt UserObjectType (label, link, tooltip, placeholders; UserObject and object interchangeable); UNC asbuilt_read._cells reads both."
+    falsifier: "draw.io writes a linked or tooltipped cell as a plain mxCell with link and tooltip attributes."
+    reference: references/file-format.md
+  - id: C-D07
+    statement: "A link to another page of the same file is the string data:page/id,<diagram id>."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-desktop-32-5-5]
+    environment_id: drawio-desktop-32-5-5
+    source_type: observed_install
+    evidence: "Installed draw.io desktop 32.5.5 app.asar contains 'setAttribute(\"value\",\"data:page/id,\"+a.pages[P].getId())' and the link placeholder 'https://... or data:page/id,...' (125 occurrences of 'data:page/id,'); grep 2026-10-19. Not found in the fetched help pages."
+    falsifier: "A link of that form fails to switch page in the desktop app or viewer."
+    reference: references/file-format.md
+  - id: C-D08
+    statement: "With html=1 in the style a label is HTML, and that HTML is XML-escaped inside the value (or label) attribute."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-docs-20261019]
+    environment_id: drawio-docs-20261019
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/style-reference.txt section 9 'HTML Labels' and 'HTML in Attributes'; mxfile-xsd.txt label attribute."
+    falsifier: "draw.io renders an html=1 label's tags literally."
+    reference: references/file-format.md
+  - id: C-D09
+    statement: "Edge waypoints are mxPoint elements inside <Array as=\"points\"> in the edge's mxGeometry (relative=\"1\")."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-docs-20261019]
+    environment_id: drawio-docs-20261019
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/style-reference.txt edge example e2 (lines 750-756)."
+    falsifier: "draw.io ignores waypoints written this way."
+    reference: references/file-format.md
+  - id: C-D10
+    statement: "exitX/exitY and entryX/entryY pin an edge's ends as 0-1 fractions of the source and target boxes; exitPerimeter=0 and entryPerimeter=0 keep those exact points."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-docs-20261019, drawio-skill-code-20261019]
+    environment_id: drawio-docs-20261019
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/style-reference.txt connection table (exitX, exitY, exitPerimeter, entryX, entryY, entryPerimeter); scripts/drawio/mxfile.py Page.route(); exports reviewed in UNC 2026-10-19."
+    falsifier: "An export shows a pinned end projected away from its fraction with perimeter off."
+    reference: references/file-format.md
+  - id: C-D11
+    statement: "A compressed page is base64(raw deflate(URL-encode(model XML))); decoding is base64 decode, raw inflate (Python zlib wbits -15), URL-decode."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-docs-20261019]
+    environment_id: drawio-docs-20261019
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/drawio-tools-js.txt encode() and decode() (encodeURIComponent, pako.deflateRaw, btoa; atob, pako.inflateRaw, decodeURIComponent); mxfile-xsd.txt lines 21-22, 84; UNC asbuilt_read.drawio_pages and tests/test_asbuilt_read.py; Python round trip run 2026-10-19."
+    falsifier: "A page saved compressed by draw.io fails to decode with this pipeline."
+    reference: references/file-format.md
+  - id: C-D12
+    statement: "Generators write uncompressed pages (compressed=\"false\") so files diff and drift checks compare bytes; .drawio is saved uncompressed by default, and CLI XML export of an uncompressed file stayed uncompressed in 32.5.5."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-docs-20261019, drawio-desktop-32-5-5]
+    environment_id: drawio-desktop-32-5-5
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/style-reference.txt rule 6 ('Always use uncompressed XML'); save-file-formats.txt ('.drawio ... uncompressed'); draw.io 32.5.5 -x -f xml on a scratch file wrote compressed=\"false\" with mxGraphModel children, 2026-10-19."
+    falsifier: "A later desktop version writes compressed pages by default on save or export."
+    reference: references/file-format.md
+  - id: C-D13
+    statement: "A child cell's geometry is relative to its parent group or container; page coordinates add each ancestor's x and y."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-docs-20261019]
+    environment_id: drawio-docs-20261019
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/style-reference.txt line 710 ('Child coordinates are relative to the parent container') and rule 14; UNC asbuilt_read._box and _origin."
+    falsifier: "A child inside a moved group keeps its page position in the export."
+    reference: references/reading-drawings.md
+  - id: C-D14
+    statement: "jumpSize is the full width of a crossing hop (default 6); jumpStyle chooses arc, gap, sharp or line."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-docs-20261019]
+    environment_id: drawio-docs-20261019
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/style-reference.txt lines 297-298 ('Jump width at crossings', default 6); confirmed visually in UNC exports with 32.4.1 (docs/flows/readme.md)."
+    falsifier: "An export shows a hop twice as wide as jumpSize."
+    reference: references/file-format.md
+  - id: C-D15
+    statement: "Two hops on one run need at least 2 * jumpSize + 6 between their crossings, or they merge into a double twist."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Threshold set from operator review of UNC exports, 2026-10-19: UNC docs/flows/readme.md ('Exporting and checking the drawing'); scripts/drawio/audit.py ARC_GAP = 6; UNC tests test_arc_clash, test_arc_clash_covers_thin_arrows."
+    falsifier: "An export with hops exactly 2 * jumpSize + 6 apart still shows a merged twist (raise ARC_GAP), or hops closer than that read cleanly."
+    reference: references/layout-audits.md
+  - id: C-D16
+    statement: "Static export does not route around shapes: an orthogonalEdgeStyle edge with no waypoints is drawn straight through boxes in its way."
+    kind: worked_example
+    evidence_status: VERIFIED_SECONDARY
+    lifecycle: current
+    applies_to: [drawio-desktop-32-4-1]
+    environment_id: drawio-desktop-32-4-1
+    source_type: observed_install
+    evidence: "UNC docs/flows/readme.md 'Exporting and checking the drawing' (verified with draw.io desktop 32.4.1, 2026-10-19); /Volumes/Data/_ai/claude-auto-memory/reference_drawio_cli.md. Not re-run on 32.5.5."
+    falsifier: "A 32.x CLI export of an orthogonal edge without waypoints routes around an obstacle."
+    reference: references/layout-and-routing.md
+  - id: C-D17
+    statement: "The desktop CLI exports with -x -f png -o <file>; -p selects one page and is 1-based; without -p an image export takes the first page only."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-desktop-32-5-5, drawio-desktop-32-4-1]
+    environment_id: drawio-desktop-32-5-5
+    source_type: observed_install
+    evidence: "documents/drawio-sources-20261019/drawio-desktop-cli-help-32.5.5.txt ('-p, --page-index ... (1-based); if not specified and the format is an image, the first page is selected'); scratch two-page export 2026-10-19 (no -p gave page 1, -p 2 gave page 2); UNC docs/flows/readme.md for 32.4.1."
+    falsifier: "-p 1 exports the second page, or help for a later version changes the base."
+    reference: references/export-and-self-review.md
+  - id: C-D18
+    statement: "--layers takes comma-separated layer indexes, applied to all pages; index 0 is the base layer, and exporting it alone hides content on other layers."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-desktop-32-5-5, drawio-desktop-32-4-1]
+    environment_id: drawio-desktop-32-5-5
+    source_type: observed_install
+    evidence: "drawio-desktop-cli-help-32.5.5.txt ('-l, --layers <comma separated layer indexes>'); scratch export --layers 0 on 2026-10-19 showed both boxes and hid the arrow on the second layer; UNC docs/flows/readme.md for 32.4.1."
+    falsifier: "--layers takes layer ids rather than indexes, or index 0 is not the base layer."
+    reference: references/export-and-self-review.md
+  - id: C-D19
+    statement: "-s scales the export; --crop applies to PDF only (PNG is cropped to content by --size diagram, the default); --timeout limits one file's export inside the app."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-desktop-32-5-5]
+    environment_id: drawio-desktop-32-5-5
+    source_type: observed_install
+    evidence: "drawio-desktop-cli-help-32.5.5.txt (-s, --crop 'crops PDF to diagram size', --size, --timeout); scratch export -s 2 gave 565 x 85 from 284 x 44, 2026-10-19."
+    falsifier: "--crop changes a PNG export, or -s does not scale it."
+    reference: references/export-and-self-review.md
+  - id: C-D20
+    statement: "Every CLI export runs under a subprocess timeout, and a timeout is reported as a failure."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Coordinator brief for skill-drawio, 2026-10-19 ('always with a subprocess timeout'); skill-coder error handling and timeouts; global AGENTS.md efficiency rule."
+    falsifier: "The operator accepts an unbounded export call."
+    reference: references/export-and-self-review.md
+  - id: C-D21
+    statement: "macOS sips crops a PNG in place with --cropOffset <y> <x> -c <height> <width>."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [macos-27-0-1]
+    environment_id: macos-27-0-1
+    source_type: observed_install
+    evidence: "documents/drawio-sources-20261019/macos-sips-help.txt (-c pixelsH pixelsW; --cropOffset offsetY offsetH, the second being x); scratch crop 2026-10-19 gave 80 x 50 from -c 50 80."
+    falsifier: "The crop comes out transposed, or a later macOS drops the options."
+    reference: references/export-and-self-review.md
+  - id: C-D22
+    statement: "Every rendered visual is exported, inspected in zoomed crops and traced arrow by arrow, fixed and re-rendered before it is shown to the operator."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/claude-auto-memory/feedback_self_review_visuals.md (operator, 2026-10-19: 'You should have assessed yourself before presenting it to me')."
+    falsifier: "The operator asks to see first renders unreviewed."
+    reference: references/export-and-self-review.md
+  - id: C-D23
+    statement: "Group interiors are laid out in layered rows by dependency depth, with slots for row-skipping arrows, ordered by six alternating barycentre sweeps; unlinked boxes go in a three-column grid below."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-skill-code-20261019]
+    environment_id: drawio-skill-code-20261019
+    source_type: implementation
+    evidence: "scripts/flowmap/ layout_group(), depth(), E2EGrid._place(); read 2026-10-19."
+    falsifier: "The code orders rows another way (the reference then needs updating)."
+    reference: references/layout-and-routing.md
+  - id: C-D24
+    statement: "Arrows run in channels between rows and columns, one track each; intervals share tracks by left-edge greedy colouring; a local search swaps neighbouring tracks and ports while crossings drop."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-skill-code-20261019]
+    environment_id: drawio-skill-code-20261019
+    source_type: implementation
+    evidence: "scripts/flowmap/ far_channels(), drawio.route.track(), drawio.route.interval_tracks(), E2EGrid._plan(), _channels(), _improve(), _try(), _runs_ok(), drawio.route.count_crossings(); read 2026-10-19."
+    falsifier: "The code assigns tracks or cuts crossings another way."
+    reference: references/layout-and-routing.md
+  - id: C-D25
+    statement: "Arrows sharing a box or group edge get separate ports ordered by their far end; top and bottom edges interleave their fractions so stubs from above and below never meet."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-skill-code-20261019]
+    environment_id: drawio-skill-code-20261019
+    source_type: implementation
+    evidence: "scripts/flowmap/ drawio.route.spread(), E2EGrid._port_y(), _toward(); UNC tests/test_flows_drawio.py test_forward_and_back_arrows_use_separate_ports."
+    falsifier: "The code spreads ports another way."
+    reference: references/layout-and-routing.md
+  - id: C-D26
+    statement: "An arrow's label goes on its own longest clear run at a fixed sequence of fractions, clear of other arrows, labels and boxes, falling back to the longest run's middle for the audit to report."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-skill-code-20261019]
+    environment_id: drawio-skill-code-20261019
+    source_type: implementation
+    evidence: "scripts/flowmap/ drawio.route.count_spot(), flowmap.e2e.EndToEnd._label_spot(); read 2026-10-19."
+    falsifier: "The code places labels another way."
+    reference: references/layout-and-routing.md
+  - id: C-D27
+    statement: "Boxes are sized by a conservative characters-per-line wrap estimate, and tokens of 24 or more characters get zero-width spaces after / _ . : - so they wrap inside the shape."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-skill-code-20261019]
+    environment_id: drawio-skill-code-20261019
+    source_type: implementation
+    evidence: "scripts/drawio/mxfile.py wrapped_lines(), soft_breaks(), LONG_TOKEN; scripts/flowmap/ OV_CHARS, E2E_CHARS, NOTE_CHARS; UNC tests test_long_unbroken_tokens_get_break_points, test_wrap_estimate_counts_word_breaks_and_long_tokens, test_every_box_is_tall_enough_for_its_wrapped_text."
+    falsifier: "An export shows text overflowing a box sized by the estimate."
+    reference: references/layout-and-routing.md
+  - id: C-D28
+    statement: "drawio.audit checks eight faults (box_crossings, diagonal, shared_runs, short_heads, labels_on_arrows, label_overlaps, arc_clashes, missing_layers) with head room thick 24 and thin 22, ARC_GAP 6, a 2-unit box inset and a 3-unit collinear tolerance."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-skill-code-20261019]
+    environment_id: drawio-skill-code-20261019
+    source_type: implementation
+    evidence: "scripts/drawio/audit.py AUDIT_KEYS, HEAD_ROOM, ARC_GAP, seg_hits_rect(), collinear(), layout_audit(); read 2026-10-19."
+    falsifier: "The module's constants or keys differ (the reference then needs updating)."
+    reference: references/layout-audits.md
+  - id: C-D29
+    statement: "Every layout audit has a test that feeds it a deliberately bad drawing and sees the fault reported."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "UNC CHANGELOG 20261019_1602 ('Layout audits as tests ..., each proven able to fail'); UNC docs/flows/readme.md; UNC tests/test_flows_drawio.py test_box_crossing, test_diagonal_run, test_shared_run, test_short_head, test_label_on_another_arrow_and_overlapping_labels, test_arc_clash, test_arc_clash_covers_thin_arrows, test_missing_layer, test_untouched_component_is_reported. The pack's own tests/ held fixtures only on 2026-10-19."
+    falsifier: "An audit key with no failing-case test."
+    reference: references/layout-audits.md
+  - id: C-D30
+    statement: "No two primary families share a colour; every drawn colour is at least 4.5:1 on the background; secondary arrows are one neutral thin grey; names and arrow labels are bold."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Operator 2026-10-19 recorded in scripts/flowmap/profile.py DISTINCT and scripts/flowmap/overview_layout.py THIN_GREY comments and UNC CHANGELOG 20261019_1127 (bold labels) and 20261019_1602; contrast of each DISTINCT colour and #4b5563 on white computed 2026-10-19 (5.02:1 to 17.85:1); UNC tests test_no_two_target_groups_share_a_colour, test_rendered_map_has_no_literal_double_asterisks."
+    falsifier: "A palette colour computes under 4.5:1 on white, or the operator relaxes the rule."
+    reference: references/visual-style.md
+  - id: C-D31
+    statement: "WCAG 2.2 asks 4.5:1 for normal text, 3:1 for large text and 3:1 for graphical objects; ratios are not rounded."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [wcag-2-2-docs-20261019]
+    environment_id: wcag-2-2-docs-20261019
+    source_type: official_documentation
+    evidence: "documents/drawio-sources-20261019/wcag22-contrast-minimum.txt (lines 15-18, 72-74); wcag22-non-text-contrast.txt; fetched 2026-10-19."
+    falsifier: "W3C changes the thresholds."
+    reference: references/visual-style.md
+  - id: C-D32
+    statement: "Each arrow colour or family sits in its own layer so it can be hidden in the Layers panel (Ctrl+Shift+L or Cmd+Shift+L)."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Operator 2026-10-19 (scripts/flowmap/overview.py Overview.page() layer comment; UNC docs/flows/readme.md); panel shortcut from documents/drawio-sources-20261019/layers.txt; UNC tests test_end_to_end_has_one_layer_per_family_and_a_labelled_arrow_per_step_change."
+    falsifier: "The operator drops the layer rule."
+    reference: references/visual-style.md
+  - id: C-D33
+    statement: "A reader resolves group offsets recursively, builds each line's path from pinned fractions (else the box centre, else sourcePoint/targetPoint) and waypoints, and matches a free port label to the nearest line within a reach, giving it to the port-holding end."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-unc-reader-20261019]
+    environment_id: drawio-unc-reader-20261019
+    source_type: implementation
+    evidence: "UNC wc-local/scripts/site_onboarding/asbuilt_read.py _box, _origin, _end, _wire, layout; UNC src/unc/tasks/asbuilt/drawings.py _assign_ports, _resolve, _at_point, PORT_REACH 35, CAPTION_REACH 40; UNC tests/test_asbuilt_read.py; read 2026-10-19."
+    falsifier: "A real drawing whose port labels are assigned to the wrong line by this rule."
+    reference: references/reading-drawings.md
+  - id: C-D34
+    statement: "HTML label text is read by unescaping entities, replacing each tag with a space and collapsing whitespace."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-unc-reader-20261019]
+    environment_id: drawio-unc-reader-20261019
+    source_type: implementation
+    evidence: "UNC wc-local/scripts/site_onboarding/asbuilt_read.py _text; UNC tests/test_asbuilt_read.py test_a_compressed_page_gives_its_boxes_as_text_and_its_connections_by_label."
+    falsifier: "A label whose words run together or keep markup after this treatment."
+    reference: references/reading-drawings.md

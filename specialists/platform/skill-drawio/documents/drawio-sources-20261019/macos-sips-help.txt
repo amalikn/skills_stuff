@@ -1,0 +1,58 @@
+sips - scriptable image processing system.
+This tool is used to query or modify raster image files and ColorSync ICC profiles.
+Its functionality can also be used through the "Image Events" AppleScript suite.
+
+  Usages:
+    sips [image-functions] imagefile ... 
+    sips [profile-functions] profile ... 
+
+  Profile query functions: 
+    -g, --getProperty key 
+    -X, --extractTag tag tagFile 
+        --verify 
+    -1, --oneLine 
+
+  Image query functions: 
+    -g, --getProperty key 
+    -x, --extractProfile profile 
+    -1, --oneLine 
+
+  Profile modification functions: 
+    -s, --setProperty key value 
+    -d, --deleteProperty key 
+        --deleteTag tag 
+        --copyTag srcTag dstTag 
+        --loadTag tag tagFile 
+        --repair 
+    -o, --out file-or-directory 
+
+  Image modification functions: 
+    -s, --setProperty key value 
+    -d, --deleteProperty key 
+    -e, --embedProfile profile 
+    -E, --embedProfileIfNone profile 
+    -m, --matchTo profile 
+    -M, --matchToWithIntent profile intent 
+        --deleteColorManagementProperties 
+    -r, --rotate degreesCW 
+    -f, --flip horizontal|vertical 
+    -c, --cropToHeightWidth pixelsH pixelsW 
+        --cropOffset offsetY offsetH 
+    -p, --padToHeightWidth pixelsH pixelsW 
+        --padColor hexcolor 
+    -z, --resampleHeightWidth pixelsH pixelsW 
+        --resampleWidth pixelsW 
+        --resampleHeight pixelsH 
+    -Z, --resampleHeightWidthMax pixelsWH 
+    -i, --addIcon 
+        --optimizeColorForSharing 
+    -o, --out file-or-directory 
+    -j, --js file 
+
+  Other functions: 
+        --debug           Enable debugging output
+    -h, --help            Show help
+    -H, --helpProperties  Show help for properties
+        --man             Generate man pages
+    -v, --version         Show the version
+        --formats         Show the read/write formats

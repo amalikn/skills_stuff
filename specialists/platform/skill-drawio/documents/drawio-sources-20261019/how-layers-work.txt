@@ -1,0 +1,60 @@
+Contents of https://www.drawio.com/docs/manual/layers/how-layers-work/:
+In draw.io diagrams, layers add contextual information and organise elements of the diagram. You can even make a [diagram interactive](/docs/tutorials/interactive-diagram-layers/) with layers and custom links.
+
+Layers in art, photo and diagram software all work a little differently. In draw.io, unlike in the more artistic drawing tools, you can select diagram objects on different layers and move them together on the drawing canvas - these objects stay in their own layers.
+
+Unlike in many drawing applications, connectors in draw.io 'live' on one layer, but can attach to target and source shapes that 'live' on different layers.
+
+![Connectors that exist on one layer in draw.io can have a source or target connection to a shape on another layer](/img/blog/layers-how-they-work.png)
+
+## How a draw.io diagram is organised[​](#how-a-drawio-diagram-is-organised "Direct link to How a draw.io diagram is organised")
+
+Each object in a diagram - text, shape and connector - 'lives' on a single layer. Connectors live on one layer but also can link to *source* and *target* shapes on different layers.
+
+For example, although the flowchart on the right looks flat, but it is divided into four layers, as visualised on the left. The connector in Layer 3 has a source in Layer 2 and a target in Layer 4.
+  
+[![Connectors that exist on one layer in draw.io can have a source or target connection to a shape on another layer](/img/blog/layers-object-locations.png)](https://viewer.diagrams.net/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&page=0&title=#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fjgraph%2Fdrawio-diagrams%2Fdev%2Fblog%2Flayers-how-they-work.drawio)
+  
+[*Open this example*](https://viewer.diagrams.net/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&page=0&title=#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fjgraph%2Fdrawio-diagrams%2Fdev%2Fblog%2Flayers-how-they-work.drawio)
+
+The diagram inside a `.drawio` file is structured into cells in a tree-like structure. The diagram itself is the topmost single cell, the layers in a diagram form the next level of cells, then each element on a layer is a cell nested within its layer cell.
+
+```
+"cell":Root  
+└── Layer 1  
+    ├── Rectangle (cell)  
+    ├── Connector (cell)  
+    └── Container/group (cell)  
+        ├── Circle (member of the container)  
+        └── Text (member of the container)  
+└── Layer 2  
+    └── ...
+```
+
+**Container shape objects live inside their containers, not directly in a layer**
+
+When you have a container shape or group of shapes, this is also a cell - every child object in that group or container is contained within that cell, which, with all its child elements lives only on one layer.
+
+Therefore, assigning an element that was inside a container shape or group of shapes to a different layer will also remove that element from the container/group.
+
+For example, moving the *Image Repository* shape from the Background layer into the *CaaS* container shape adds it to the Service layer. Then reassigning the *Image Repository* shape to the Management layer automatically removes it from the *CaaS* container shape.
+  
+[![Moving a shape into a container shape adds it to that container's home layer. Moving a shape inside a container to another layer will also remove it from the container shape. ](/img/blog/layers-container-shapes.gif)](https://viewer.diagrams.net/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&page=1&title=#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fjgraph%2Fdrawio-diagrams%2Fdev%2Fblog%2Flayers-how-they-work.drawio)
+  
+[*Open this example*](https://viewer.diagrams.net/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&page=1&title=#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fjgraph%2Fdrawio-diagrams%2Fdev%2Fblog%2Flayers-how-they-work.drawio)
+
+## How to use layers in technical diagrams[​](#how-to-use-layers-in-technical-diagrams "Direct link to How to use layers in technical diagrams")
+
+Once you know [how to use layers in draw.io](/docs/manual/layers/), you can do more with your technical diagrams.
+
+[Make a draw.io diagram interactive](/docs/tutorials/interactive-diagram-layers/) with custom links.
+
+[![Paste the custom link into the first text field and click Apply](/img/blog/interactive-diagram-toggle-editor.gif)](https://viewer.diagrams.net/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&page=0&nav=1&title=#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fjgraph%2Fdrawio-diagrams%2Fdev%2Fblog%2Fgitflow-interactive-custom-links.drawio)
+
+Place [watermarks](/docs/tutorials/watermark-diagrams/) on locked layers over or under diagrams for branding, draft or approval notifications.
+
+[![Lock the watermark layer to prevent any unintended changes](/img/blog/watermark-lock-layer.png)](https://app.diagrams.net/?lightbox=1&highlight=0000ff&page=1&edit=_blank&layers=1&nav=1&title=#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fjgraph%2Fdrawio-diagrams%2Fdev%2Fblog%2Fwatermark-three-examples.drawio)
+
+Hide and show layers to simplify complex diagrams and highlight important or omit irrelevant details - useful in training material and [educational infographics](/docs/tutorials/draw-infographics/).
+
+[![Reorder layers in your draw.io infographic to improve readability when colours obscure label text](/img/blog/freehand-infographic-improve-readability.gif)](https://viewer.diagrams.net/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fjgraph%2Fdrawio-diagrams%2Fdev%2Fblog%2Finfographic-rockpool.drawio)

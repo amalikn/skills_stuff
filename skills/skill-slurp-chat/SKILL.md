@@ -116,7 +116,9 @@ A skill's write-back contract binds whether or not the skill was formally invoke
 one day (2026-10-13: platform work done without invoking skill-nautobot; a skill-smc entry left uncommitted from the session before) is why this step exists.
 
 1. **Engaged skills.** List every skill whose domain the session touched: those invoked, plus those the project's AGENTS.md routes the work to
-   ("invoke skill-X before Y work"). Name them in the report even when nothing is owed.
+   ("invoke skill-X before Y work"), plus skills used by name without routing: skill-coder whenever the session wrote, refactored or promoted code,
+   applied its rules or ran its helpers (operator, 2026-10-19). Name them in the report even when nothing is owed. For skill-coder also run
+   `scripts/write_back.py --project-root <project>` from the skill: each entry parked there is owed now.
 2. **Facts owed.** Walk the Step 3 item list and the change-log entries written since the boundary; mark each fact that is true of any deployment
    (vendor, device, platform or tool behaviour, a version quirk, an API limit) with its owning skill. A fact about this project stays in the project.
 3. **Present and read back.** For each owed fact, open the skill's reference and confirm the entry is there in the skill's own format (Learned

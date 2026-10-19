@@ -1,0 +1,20 @@
+Contents of https://www.drawio.com/docs/manual/links-tooltips-tags/:
+Links, tooltips and tags in your diagram add additional information to help the audience understand the diagram faster or add interactivity.
+
+## Links[​](#links "Direct link to Links")
+
+* [Add a link](/docs/manual/insert/insert-text-link/) that redirects the user to a web page to shapes, connectors and text shapes.
+* Add a link that opens another page in a [multi-page diagram](/docs/manual/pages/) - good for technical diagrams that need to show increasing levels of details.
+* Use [custom action links](/docs/manual/links-tooltips-tags/custom-links/) on shapes, connectors, and text shapes to make your diagram interactive and perform animation actions - hide or display or highlight selected diagram elements, start or stop flow animations, change the styles of shapes and connectors, open external links in a new browser tab, and more.
+    
+  ![Add animation actions to custom links and click on the link to play the animation/action sequence](/img/blog/custom-link-animate-timeline.gif)
+
+## Tooltips[​](#tooltips "Direct link to Tooltips")
+
+Add [tooltips](/docs/manual/links-tooltips-tags/tooltips/) to diagram elements that appear when you hover over the shape or connector to add important context or notes to diagrams.
+  
+![Hover over a shape in the draw.io editor to see its tooltip](/img/blog/tooltip-hover-editor.png)
+
+Add [tags](/docs/manual/links-tooltips-tags/tags-in-diagrams/) to shapes and connectors and then use the Tags dialog to hide or display elements in your diagram. They are particularly useful for noting [feature flags in Gitflow diagrams](/docs/tutorials/gitflow-feature-flags/).
+  
+![Click on the tag names or the eye to display or hide shapes and connectors with those or other tags](/img/blog/tags-dialog-click.gif)
