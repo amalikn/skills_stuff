@@ -74,8 +74,10 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
 
 - **New project:** write `flows.yaml` against [schemas/flowmap.schema.json](schemas/flowmap.schema.json) (copy and narrow it), add an optional `drawing:` block, then `render_flowmap.py --map <map>
   --write` and wire `render_flowmap.py --map <map>` (drift check) into `just check`. The worked example is [examples/shop/flows.yaml](examples/shop/flows.yaml) (`just example`).
-- **Project with its own constants:** a thin wrapper builds a `flowmap.profile.Profile` and calls `flowmap.pages.render` / `evaluate`, loading the pack through the project's one seam to the skills
-  (unified-network-controller: `wc-local/scripts/common/skill_paths.py`).
+- **Project with its own constants:** put them in the map's `drawing:` block (kind colours, tiers, the band below, families, output, banner
+  commands) and call `render_flowmap.py --map <map> --schema <its schema>` directly; unified-network-controller retired its wrapper this way on
+  2026-10-19. Only a project that needs code of its own builds a `flowmap.profile.Profile` and calls `flowmap.pages.render` / `evaluate`,
+  loading the pack through its one seam to the skills.
 - A refactor of the engine must leave every consumer's drawing byte-identical; prove it with the before and after files.
 
 ## Standing rules

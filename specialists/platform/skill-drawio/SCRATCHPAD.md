@@ -20,8 +20,8 @@ Summary: Transient working state for skill-drawio; durable facts move to referen
   flow-map spec and the adoption guide, until a second project adopts the engine.
 - Installed 2026-10-19 (operator): directory symlinks `~/.claude/skills/skill-drawio`, `~/.codex/skills/skill-drawio` and
   `~/.hermes/skills/diagramming/skill-drawio` to this folder; listed in the skills_stuff `README.md`.
-- unified-network-controller `wc-local/scripts/site_onboarding/asbuilt_read.py` still carries its own copy of the draw.io reader now in
-  `scripts/drawio/read.py`; make it a thin caller (its KMZ part stays there) with its tests, when that project is next touched.
+- Done 2026-10-19: unified-network-controller's as-built reader re-exports `drawio.read` (byte-identical on 27 files), its flow renderer
+  retired in favour of `render_flowmap.py` and its engine tests moved to `tests/test_layout_rules.py` (ROADMAP items ticked).
 - draw.io desktop on the operator's Mac is now 32.5.5 (32.4.1 when the engine was built); the export flags were re-checked on 32.5.5, the
   "static export draws through boxes" claim (C-D16) only on 32.4.1.
 - Vendor captures `documents/drawio-sources-20261019/style-reference.txt` and `documents/drawio-sources-20261019/mxfile-xsd.txt` hold example private addresses from the vendor docs;

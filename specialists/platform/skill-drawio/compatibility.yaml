@@ -42,6 +42,16 @@ environments:
       CHANGELOG 20261019_1602), not by tests in this pack, which held fixtures only
     validation_layer: implementation_inspected
     result: pass
+  - id: drawio-pack-tests-20261019
+    product: skill-drawio engine and reader, this pack's own tests
+    product_version: "skill-drawio 0.1.0 + Unreleased, 2026-10-19"
+    components: [renderer, layout, routing, audits, text sizing, one-column End-to-end, reader]
+    observed_at: "2026-10-19"
+    evidence_locator: >-
+      tests/test_helpers.py and tests/test_layout_rules.py (50 tests, the layout and audit-threshold tests moved from UNC); UNC's drawing re-rendered through
+      render_flowmap.py with its drawing: block (diff: the banner and host lines only); UNC's 27 as-built files read byte-identically through drawio.read
+    validation_layer: offline_contract
+    result: pass
   - id: drawio-unc-reader-20261019
     product: UNC as-built drawing reader
     product_version: "UNC source as read 2026-10-19"

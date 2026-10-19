@@ -54,6 +54,11 @@ The Google Shell Style Guide, the GNU Bash manual (The Set Builtin), the ShellCh
 Where a script must run under `/bin/sh` (minimal images, some embedded systems), `pipefail` may be missing on older shells and arrays do not exist; keep such scripts tiny and say in the header why
 they are POSIX. UNVERIFIED which target shells support `pipefail`; check the target's shell manual.
 
+> **Learned 2026-10-19** · bash (agent tool calls) · USER_STATED · Source: two incidents on 2026-10-19 (skill-drawio CHANGELOG, Archcore promotion; unified-network-controller, import_graph retirement) · Falsifier: a multi-line tool command whose later line does not run after an earlier step fails without set -e
+> A multi-line command run without `set -e` carries on after a failed step: an edit script that stopped on its own assertion was followed by a
+> `git rm` on the next line, twice in one day. Guard each edit step (`... || exit 1`) or start the block with `set -euo pipefail`, and put a
+> destructive step (delete, `git rm`, push) in its own call after the edit is confirmed.
+
 ## Open items
 
 - Test framework choice and a formatter: UNVERIFIED stubs.

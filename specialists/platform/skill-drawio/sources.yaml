@@ -142,7 +142,7 @@ claims:
     applies_to: [drawio-docs-20261019]
     environment_id: drawio-docs-20261019
     source_type: official_documentation
-    evidence: "documents/drawio-sources-20261019/style-reference.txt line 710 ('Child coordinates are relative to the parent container') and rule 14; UNC asbuilt_read._box and _origin."
+    evidence: "documents/drawio-sources-20261019/style-reference.txt line 710 ('Child coordinates are relative to the parent container') and rule 14; UNC asbuilt_read._box and _origin. Since 2026-10-19: scripts/drawio/read.py box(), origin(); UNC's reader re-exports it with byte-identical output on 27 as-built files."
     falsifier: "A child inside a moved group keeps its page position in the export."
     reference: references/reading-drawings.md
   - id: C-D14
@@ -274,7 +274,7 @@ claims:
     applies_to: [drawio-skill-code-20261019]
     environment_id: drawio-skill-code-20261019
     source_type: implementation
-    evidence: "scripts/flowmap/ drawio.route.spread(), E2EGrid._port_y(), _toward(); UNC tests/test_flows_drawio.py test_forward_and_back_arrows_use_separate_ports."
+    evidence: "scripts/flowmap/ drawio.route.spread(), E2EGrid._port_y(), _toward(); UNC tests/test_flows_drawio.py test_forward_and_back_arrows_use_separate_ports (since 2026-10-19 this pack's tests/test_layout_rules.py)."
     falsifier: "The code spreads ports another way."
     reference: references/layout-and-routing.md
   - id: C-D26
@@ -318,7 +318,7 @@ claims:
     applies_to: []
     environment_id: null
     source_type: user_policy
-    evidence: "UNC CHANGELOG 20261019_1602 ('Layout audits as tests ..., each proven able to fail'); UNC docs/flows/readme.md; UNC tests/test_flows_drawio.py test_box_crossing, test_diagonal_run, test_shared_run, test_short_head, test_label_on_another_arrow_and_overlapping_labels, test_arc_clash, test_arc_clash_covers_thin_arrows, test_missing_layer, test_untouched_component_is_reported. The pack's own tests/ held fixtures only on 2026-10-19."
+    evidence: "UNC CHANGELOG 20261019_1602 ('Layout audits as tests ..., each proven able to fail'); UNC docs/flows/readme.md; UNC tests/test_flows_drawio.py test_box_crossing, test_diagonal_run, test_shared_run, test_short_head, test_label_on_another_arrow_and_overlapping_labels, test_arc_clash, test_arc_clash_covers_thin_arrows, test_missing_layer, test_untouched_component_is_reported. The pack's own tests/ held fixtures only on 2026-10-19; later that day the threshold tests moved here (tests/test_layout_rules.py AuditThresholds)."
     falsifier: "An audit key with no failing-case test."
     reference: references/layout-audits.md
   - id: C-D30
@@ -362,7 +362,7 @@ claims:
     applies_to: [drawio-unc-reader-20261019]
     environment_id: drawio-unc-reader-20261019
     source_type: implementation
-    evidence: "UNC wc-local/scripts/site_onboarding/asbuilt_read.py _box, _origin, _end, _wire, layout; UNC src/unc/tasks/asbuilt/drawings.py _assign_ports, _resolve, _at_point, PORT_REACH 35, CAPTION_REACH 40; UNC tests/test_asbuilt_read.py; read 2026-10-19."
+    evidence: "UNC wc-local/scripts/site_onboarding/asbuilt_read.py _box, _origin, _end, _wire, layout; UNC src/unc/tasks/asbuilt/drawings.py _assign_ports, _resolve, _at_point, PORT_REACH 35, CAPTION_REACH 40; UNC tests/test_asbuilt_read.py; read 2026-10-19. Since then the code is scripts/drawio/read.py, which UNC re-exports."
     falsifier: "A real drawing whose port labels are assigned to the wrong line by this rule."
     reference: references/reading-drawings.md
   - id: C-D34
@@ -373,6 +373,6 @@ claims:
     applies_to: [drawio-unc-reader-20261019]
     environment_id: drawio-unc-reader-20261019
     source_type: implementation
-    evidence: "UNC wc-local/scripts/site_onboarding/asbuilt_read.py _text; UNC tests/test_asbuilt_read.py test_a_compressed_page_gives_its_boxes_as_text_and_its_connections_by_label."
+    evidence: "UNC wc-local/scripts/site_onboarding/asbuilt_read.py _text; UNC tests/test_asbuilt_read.py test_a_compressed_page_gives_its_boxes_as_text_and_its_connections_by_label (now run against scripts/drawio/read.py through UNC's re-export)."
     falsifier: "A label whose words run together or keep markup after this treatment."
     reference: references/reading-drawings.md

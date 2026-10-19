@@ -15,6 +15,12 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261019 Adopted by unified-network-controller in full: its renderer wrapper retired (its profile is now the `drawing:` block of its map,
+  rendered by `render_flowmap.py`; the drawing changed only in its banner and `host` lines), and its as-built reader re-exports `drawio.read`
+  (byte-identical output on 27 as-built files). The engine tests it held moved here as `tests/test_layout_rules.py` (17 tests: text fitting, notes,
+  step boxes, header lines, bold spans, arrow ports, overview arrow styles and each audit at its exact threshold).
+- 20261019 Fix: a map whose components share one End-to-end tier raised IndexError (no channel between columns). The grid keeps at least one
+  channel and the page widens to hold it; drawings with two or more tiers are unchanged (UNC's and the example's byte-identical). Learned 2026-10-19 in `references/layout-and-routing.md`; regression test `test_one_column_end_to_end_page_draws_and_passes_every_audit`.
 - 20261019 `ROADMAP.md` and `SETUP.md` added (operator, 2026-10-19: "add ROADMAP.md in both the skills", "and SETUP.md"), to skill-ai-it's templates; ROADMAP from this pack's SCRATCHPAD open items and unified-network-controller's retirement assessment, SETUP from the justfile, `.mise.toml` and requirements. README lists both and links SETUP from Quick start.
 - 20261019 Archcore promoted (operator: "promote and accept"): 4 ADRs and 7 rules written `accepted` under `.archcore/`, indexed in
   `.archcore/index.guide.md` with the deferred spec and guide and the never-promoted reasons; `ARCHCORE_PROMOTION_CANDIDATES.md` deleted;

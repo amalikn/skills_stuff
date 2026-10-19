@@ -3,8 +3,8 @@ Title: Reading existing drawings
 Category: skill-reference
 Status: current
 Authority: >-
-  UNC's as-built reader (wc-local/scripts/site_onboarding/asbuilt_read.py) and its drawing interpreter (src/unc/tasks/asbuilt/drawings.py) as read on
-  2026-10-19, with the official format rules; the code wins over this summary
+  This pack's scripts/drawio/read.py (promoted from UNC's as-built reader, which re-exports it since 2026-10-19) and UNC's drawing
+  interpreter (src/unc/tasks/asbuilt/drawings.py), with the official format rules; the code wins over this summary
 Scope: >-
   Getting text, boxes and connections out of a .drawio file someone else drew: decompressing pages, both cell element kinds, HTML labels to text, group offsets,
   connection paths, and matching free-standing port labels and captions to the line or picture they describe
@@ -33,14 +33,14 @@ A drawing read this way is evidence, not something to regenerate ([data-first-di
 
 ## Steps
 
-| Step        | Function in UNC                | Output                                   |
+| Step        | Function                       | Output                                   |
 | ----------- | ------------------------------ | ---------------------------------------- |
-| Decompress  | `asbuilt_read.drawio_pages`    | One `mxGraphModel` per page              |
-| Index cells | `asbuilt_read._cells`          | `{id: (mxCell, label text)}`             |
-| Text        | `asbuilt_read._text`           | Plain label text                         |
-| Geometry    | `asbuilt_read._box`, `_origin` | Page-coordinate rectangles               |
-| Paths       | `asbuilt_read._wire`, `_end`   | Each line's polyline in page coordinates |
-| Meaning     | `unc.tasks.asbuilt.drawings`   | Units, ports and uplinks                 |
+| Decompress  | `read.models`, `read.pages`    | One `mxGraphModel` per page              |
+| Index cells | `read.cells`                   | `{id: (mxCell, label text)}`             |
+| Text        | `read.text`                    | Plain label text                         |
+| Geometry    | `read.box`, `read.origin`      | Page-coordinate rectangles               |
+| Paths       | `read.wire`, `read._end`       | Each line's polyline in page coordinates |
+| Meaning     | UNC `unc.tasks.asbuilt.drawings` | Units, ports and uplinks                 |
 
 ## 1. Decompress each page
 

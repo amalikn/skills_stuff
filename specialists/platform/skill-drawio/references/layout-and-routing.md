@@ -80,6 +80,11 @@ channel) or y (horizontal channel) [C-D24].
   track; two channels give a "far" route along a horizontal **corridor** next to the source row (`_plan`). Channels are at least `E2E_MIN_CH` (100) wide, corridors `E2E_MIN_CORR` (48), and tracks
   `E2E_SP` (24) apart.
 
+> **Learned 2026-10-19** · flowmap End-to-end · VERIFIED_PRIMARY · Source: scripts/flowmap/e2e_grid.py `nch`; tests/test_layout_rules.py
+> test_one_column_end_to_end_page_draws_and_passes_every_audit · Falsifier: a one-tier map whose page raises or fails an audit
+> Channels sit between tier columns, so a map with one tier had none and a link inside that column raised IndexError. The grid now keeps at
+> least one channel (on the right of a single column) and the page widens to hold it; maps with two or more tiers render unchanged.
+
 ## Port spreading
 
 Several arrows leaving or entering one box edge get separate **ports** along it, ordered by where each arrow's other end is, so they do not cross at the box [C-D25].

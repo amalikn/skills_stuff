@@ -333,7 +333,7 @@ class EndToEnd(E2EGrid):
             The page.
         """
         page = Page("end-to-end", "End-to-end flow")
-        right = self.col_x[-1] + E2E_BW
+        right = self.col_x[-1] + E2E_BW + (self.ch_w[-1] if self.nch >= self.ncol else 0)   # a one-column page draws its channel too
         self._frame(page, right)
         for cid, comp in self.comps.items():
             c, _r = self.cell[cid]

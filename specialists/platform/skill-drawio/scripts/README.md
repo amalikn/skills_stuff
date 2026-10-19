@@ -26,7 +26,8 @@ Run the front ends with the **project's own interpreter** (Python 3.11 or newer;
 ```
 
 A project with its own constants imports the packages instead: put this folder on `sys.path` through the project's one seam to the skills, build a
-`flowmap.profile.Profile` and call `flowmap.pages.render` and `evaluate` (unified-network-controller's `scripts/render/flows_drawio.py`).
+`flowmap.profile.Profile` and call `flowmap.pages.render` and `evaluate`. Most projects need neither: the map's `drawing:` block holds the
+constants and `render_flowmap.py` is the whole renderer (unified-network-controller since 2026-10-19).
 
 ## Runtimes
 

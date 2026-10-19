@@ -78,8 +78,7 @@ reaches, and a test asserts the list is empty. Write such checks beside the page
 
 ## Every audit must be able to fail
 
-An audit that never fails proves nothing. Each audit has a test that feeds it a deliberately bad drawing and asserts the fault is reported, beside a test that a clean route passes [C-D29]. In UNC's
-`tests/test_flows_drawio.py` these are: a clean route passes; box crossing; diagonal run; shared run; short head; label on another arrow and overlapping labels; arc clash (and arc clash on thin
+An audit that never fails proves nothing. Each audit has a test that feeds it a deliberately bad drawing and asserts the fault is reported, beside a test that a clean route passes [C-D29]. In this pack's `tests/test_layout_rules.py` (moved from UNC's `tests/test_flows_drawio.py`, 2026-10-19) these are: a clean route passes; box crossing; diagonal run; shared run; short head; label on another arrow and overlapping labels; arc clash (and arc clash on thin
 arrows); missing layer; untouched component. The real map's Overview and End-to-end pages are then checked by "passes every audit" tests.
 
 When adding an audit:

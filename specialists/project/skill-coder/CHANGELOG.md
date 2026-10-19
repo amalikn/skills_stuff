@@ -15,6 +15,14 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- Learned 2026-10-19 in `languages/python.md`: `Counter.most_common()` ties from set-built counts change order between runs; sort by `(-count, name)`.
+- Learned 2026-10-19 in `languages/shell.md`: a multi-line command without `set -e` runs on after a failed edit step; guard it and run destructive steps separately.
+- 20261019 `scripts/import_layers.py` graph report reproduces unified-network-controller's `scripts/checks/import_graph.py` field for field, so that
+  script retired: a root ending `:self` keeps its folder as the package name; the report adds entry points, `sys.path` users, never-imported modules
+  and unparsed files (`analyse()`, `render()`, `--json`); cross-package edges count each import statement; fan-in ties are ordered by name (they
+  came from a set, so equal counts swapped between runs). Proof: identical JSON on UNC's four roots (601 lines). Tests in
+  `tests/test_import_graph_report.py` (kept apart so `tests/test_helpers.py` stays within its 400-line limit). UNC's `check_import_layers` now calls
+  `layer_violations()` (same verdict, its baseline file unchanged).
 - 20261019 `ROADMAP.md` and `SETUP.md` added (operator, 2026-10-19: "add ROADMAP.md in both the skills", "and SETUP.md"), to skill-ai-it's templates; ROADMAP from this pack's SCRATCHPAD open items and unified-network-controller's retirement assessment, SETUP from the justfile, `.mise.toml` and requirements. README lists both and links SETUP from Quick start.
 - 20261019 `context-map.yaml` and `repomix.config.json` no longer name the deleted `ARCHCORE_PROMOTION_CANDIDATES.md`; routing points at
   `.archcore/index.guide.md` (skill-ai-it pitfall, 2026-10-19).

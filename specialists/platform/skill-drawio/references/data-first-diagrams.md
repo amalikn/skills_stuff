@@ -55,7 +55,7 @@ The opposite case is a drawing an operator has edited in draw.io themselves. Tha
 | Map             | `docs/flows/flows.yaml`                           | none                                                 | Source of truth: components, flows, steps, dependencies     |
 | Schema          | `docs/flows/flows.schema.json`                    | `scripts/schema_lite.py`                             | Shape of the map; a stdlib subset of JSON Schema 2020-12    |
 | Reference check | inside the renderer                               | `scripts/code_refs.py`                               | Every `path[:symbol]` a step cites exists in the repository |
-| Renderer        | `scripts/render/flows_drawio.py`                  | `scripts/flowmap/`, `scripts/drawio/mxfile.py` | Map to uncompressed `.drawio`, deterministic                |
+| Renderer        | `render_flowmap.py` + the map's `drawing:` block    | `scripts/flowmap/`, `scripts/drawio/mxfile.py` | Map to uncompressed `.drawio`, deterministic                |
 | Audits          | inside the renderer                               | `scripts/drawio/audit.py`                            | Layout faults a reviewer must never see ([layout-audits.md](layout-audits.md)) |
 | Drift check     | `check_flow_map` in `scripts/check_governance.py` | the renderer's `evaluate()`                          | Fails when the file on disk differs from a fresh render     |
 

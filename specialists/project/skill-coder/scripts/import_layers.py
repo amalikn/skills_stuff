@@ -18,6 +18,7 @@ unchanged) go in a baseline file, one line each; any other violation fails.
 Usage:
     import_layers.py --project-root . --src src --package app --layers src/app/layers.toml [--baseline scripts/import-layers-baseline.json]
     import_layers.py --project-root . --graph --roots src,scripts                    # modules, edges, fan-in, cycles (report only)
+    import_layers.py --project-root . --graph --roots lib,tools:self --json          # a root ending ":self" keeps its folder as the first name part
 Exit: 0 when no new violation (and no cycle with --fail-on-cycles), 1 otherwise, 2 on bad arguments.
 """
 
@@ -115,21 +116,26 @@ def layer_violations(src: Path, package: str, rules: dict) -> list[str]:
 
 
 def module_map(root: Path, roots: list[str]) -> dict[str, Path]:
-    """Every Python module under the roots, by dotted name relative to its root.
+    """Every Python module under the roots, by dotted name.
+
+    A root is named relative to itself (`src`: `src/app/x.py` is `app.x`), or, with a `:self` suffix, keeps its folder as the first name part
+    (`scripts:self`: `scripts/x.py` is `scripts.x`), for a folder of loose scripts that should count as one package (2026-10-19).
 
     Args:
         root: the project root.
-        roots: folders relative to the root.
+        roots: folders relative to the root, each optionally ending `:self`.
 
     Returns:
         {dotted name: path}; a package's `__init__` is named as the package.
     """
     mods: dict[str, Path] = {}
-    for folder in roots:
+    for entry in roots:
+        folder, _, naming = entry.strip().partition(":")
         base = root / folder
         for path in sorted(base.rglob("*.py")) if base.is_dir() else []:
             if "__pycache__" not in path.parts:
-                mods[".".join(path.relative_to(base).with_suffix("").parts).removesuffix(".__init__")] = path
+                rel = path.relative_to(root if naming == "self" else base).with_suffix("")
+                mods[".".join(rel.parts).removesuffix(".__init__")] = path
     return mods
 
 
@@ -217,22 +223,67 @@ def _top(module: str) -> str:
     return module.split(".")[0]
 
 
-def summary(mods: dict[str, Path], edges: dict[str, set[str]]) -> list[str]:
-    """A plain-text report: modules per top-level package, cross-package edges, top fan-in and cycles.
+def analyse(root: Path, mods: dict[str, Path], edges: dict[str, set[str]]) -> dict:
+    """The import structure as data: modules and entry points per package, cross-package edges, fan-in, never-imported modules, `sys.path` users,
+    cycles and files that did not parse (the measures a code-structure review compares stage by stage).
 
     Args:
+        root: the project root (paths are reported relative to it).
         mods: module_map()'s result.
         edges: graph()'s result.
 
     Returns:
+        {"modules", "entry_points", "edges": [{"from", "to", "count"}], "fan_in": [[module, n]] (top 30), "never_imported", "sys_path", "cycles",
+        "unparsed"}.
+    """
+    mains: collections.Counter = collections.Counter()
+    cross: collections.Counter = collections.Counter()
+    syspath, unparsed = [], []
+    for name, path in mods.items():
+        src = path.read_text(encoding="utf-8", errors="replace")
+        try:
+            tree = pyparse.parse(src)
+        except SyntaxError:
+            unparsed.append(path.relative_to(root).as_posix())
+            continue
+        if '__name__ == "__main__"' in src or "__name__ == '__main__'" in src:
+            mains[_top(name)] += 1
+        if "sys.path" in src:
+            syspath.append(path.relative_to(root).as_posix())
+        # An edge counts every import statement that crosses packages (the measure the code-structure reviews compare), not distinct pairs.
+        for imported in _graph_names(name, path, tree):
+            parts = imported.split(".")
+            hit = next((".".join(parts[:i]) for i in range(len(parts), 0, -1) if ".".join(parts[:i]) in mods), None)
+            if hit and hit != name and _top(hit) != _top(name):
+                cross[(_top(name), _top(hit))] += 1
+    counts = collections.Counter(b for bs in edges.values() for b in bs)
+    # Ties are broken by name: edges are sets, so most_common() alone would order equal counts differently from run to run.
+    fan_in = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:30]
+    return {"modules": dict(collections.Counter(map(_top, mods))), "entry_points": dict(mains),
+            "edges": [{"from": a, "to": b, "count": n} for (a, b), n in sorted(cross.items())],
+            "fan_in": [list(x) for x in fan_in], "never_imported": sorted(m for m in mods if m not in counts),
+            "sys_path": sorted(syspath), "cycles": cycles(edges, list(mods)), "unparsed": unparsed}
+
+
+def render(result: dict) -> list[str]:
+    """analyse()'s result as report lines.
+
+    Args:
+        result: analyse()'s dict.
+
+    Returns:
         Report lines.
     """
-    cross = collections.Counter((_top(a), _top(b)) for a, bs in edges.items() for b in bs if _top(a) != _top(b))
-    fan_in = collections.Counter(b for bs in edges.values() for b in bs)
-    lines = ["modules per package: " + ", ".join(f"{k} {v}" for k, v in sorted(collections.Counter(map(_top, mods)).items()))]
-    lines += [f"  {a} -> {b}: {n}" for (a, b), n in sorted(cross.items())]
-    lines.append("top fan-in: " + ", ".join(f"{m} {n}" for m, n in fan_in.most_common(15)))
-    lines.append("cycles: " + ("; ".join(" <-> ".join(c) for c in cycles(edges, list(mods))) or "none"))
+    lines = ["modules per package: " + ", ".join(f"{k} {v}" for k, v in sorted(result["modules"].items())),
+             "entry points per package: " + ", ".join(f"{k} {v}" for k, v in sorted(result["entry_points"].items())),
+             "cross-package import edges (from -> to: count):"]
+    lines += [f"  {e['from']} -> {e['to']}: {e['count']}" for e in result["edges"]]
+    lines.append("top fan-in: " + ", ".join(f"{m} {n}" for m, n in result["fan_in"]))
+    lines.append(f"sys.path manipulators: {len(result['sys_path'])}")
+    lines.append(f"never imported (entry points included): {len(result['never_imported'])}")
+    lines.append("cycles: " + ("; ".join(" <-> ".join(c) for c in result["cycles"]) or "none"))
+    if result["unparsed"]:
+        lines.append("did not parse: " + ", ".join(result["unparsed"]))
     return lines
 
 
@@ -252,7 +303,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--layers", help="TOML rules file, relative to the root")
     ap.add_argument("--baseline", help="JSON list of accepted violation lines")
     ap.add_argument("--graph", action="store_true", help="print the import graph report for --roots")
-    ap.add_argument("--roots", help="comma-separated folders for --graph and cycle checks (default: the code map's [scan] roots, else src)")
+    ap.add_argument("--roots", help="comma-separated folders for --graph and cycle checks, each optionally ending :self (default: the code map's [scan] roots, else src)")
+    ap.add_argument("--json", action="store_true", help="with --graph, print the report as JSON")
     ap.add_argument("--fail-on-cycles", action="store_true")
     ap.add_argument("--code-map", type=Path, help="the project's code-map.toml (default: code-map.toml at the root when present)")
     args = ap.parse_args(argv)
@@ -267,7 +319,8 @@ def main(argv: list[str] | None = None) -> int:
     mods = module_map(root, (args.roots or code_map.scan_roots(cmap, default="src")).split(","))
     edges = graph(mods)
     if args.graph:
-        print("\n".join(summary(mods, edges)))
+        result = analyse(root, mods, edges)
+        print(json.dumps(result, indent=1) if args.json else "\n".join(render(result)))
     if args.fail_on_cycles and (found := cycles(edges, list(mods))):
         print("\n".join("cycle: " + " <-> ".join(c) for c in found))
         rc = 1

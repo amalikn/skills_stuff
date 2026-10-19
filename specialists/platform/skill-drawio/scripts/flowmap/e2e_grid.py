@@ -96,6 +96,8 @@ class E2EGrid:
         self.data, self.profile = data, profile
         self.comps = {c["id"]: c for c in data["components"]}
         self.ncol = len(profile.tiers)
+        # Channels sit between columns; a one-column page keeps one on its right, so links inside the column still have a track (2026-10-19).
+        self.nch = max(self.ncol - 1, 1)
         self.cell, self.band = self._place()
         self.links = self._links()
         for link in self.links:
@@ -207,7 +209,7 @@ class E2EGrid:
         """
         (cs, rs), (ct, rt) = self.cell[link.src], self.cell[link.dst]
         if cs == ct:
-            ch = cs if cs < self.ncol - 1 else cs - 1
+            ch = cs if cs < self.nch else cs - 1
             sd = "R" if ch == cs else "L"
             link.exit, link.entry = (ch, rs, sd), (ch, rt, sd)
         elif cs < ct:
@@ -357,5 +359,5 @@ class E2EGrid:
             for _lo, _hi, key in sp:
                 self.vruns.setdefault((ch, got[key]), []).append(key)
         self.vslot = {ch: list(range(n)) for ch, n in count.items()}
-        self.ch_w = [max(E2E_MIN_CH, 2 * E2E_EDGE + (count.get(ch, 1) - 1) * E2E_SP) for ch in range(self.ncol - 1)]
+        self.ch_w = [max(E2E_MIN_CH, 2 * E2E_EDGE + (count.get(ch, 1) - 1) * E2E_SP) for ch in range(self.nch)]
         self.col_x = [MARGIN + sum(E2E_BW + w for w in self.ch_w[:c]) for c in range(self.ncol)]

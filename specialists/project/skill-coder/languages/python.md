@@ -56,6 +56,10 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > `importlib.import_module(...)` and plain assignments instead of `import` statements below code: the imports stay at the top of the file, so E402 never
 > fires and no `# noqa` is needed. Re-exported names are then ordinary assignments a reader can grep.
 
+> **Learned 2026-10-19** · python 3.12+ · VERIFIED_PRIMARY · Source: scripts/import_layers.py analyse() (fan-in); tests/test_import_graph_report.py · Falsifier: a report built from set-valued edges whose tied counts keep one order under different PYTHONHASHSEED values
+> `Counter.most_common()` orders equal counts by first insertion, so counts built by walking sets (an import graph's edge sets) list tied entries in
+> an order that changes between runs with string hash randomisation. A report or a top-N cut that must be stable sorts by `(-count, name)` instead.
+
 ## Size and limit tweaks
 
 | Item                | Value                                                                                                                  | Reason                                                |
