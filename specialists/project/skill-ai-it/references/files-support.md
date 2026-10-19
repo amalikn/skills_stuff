@@ -169,7 +169,7 @@ Create or update `scripts/README.md` from the template. Populate entries for eac
 
 **Only "Execution Policy" / "Preferred Execution Order" / "Maintenance Rules" belong inside the `skill-ai-it:scripts` managed block** — that is the exact content
 `upgrade_navigation_control_layer.py`'s `build_scripts_block()` regenerates. "Runtimes", "Task Inventory", "Raw Script Inventory", "Safety Labels", and "Notes" are project-specific and must sit
-OUTSIDE the markers (the template already places them there). Nesting them inside the managed block, as the template did until 2026-09-18, means the next `nav_upgrade` silently discards them — the
+OUTSIDE the markers (the template already places them there). Nesting them inside the managed block, as the template did until 2026-09-18, means the next `nav-upgrade` silently discards them — the
 upgrader reports `replaced-managed-block` and that reads like success.
 
 ### Optional/generated support files

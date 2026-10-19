@@ -93,7 +93,7 @@ that is present but unwired is still flagged.
 
 `VERSION` is restated in `upgrade_navigation_control_layer.py` and `validate_navigation_control_layer.py` and must stay identical — drift between them silently disables the staleness signal. Bumping
 it is the mechanism that tells already-upgraded projects to re-run the upgrade: their managed blocks carry the previous stamp and `validate` reports "missing current version stamp". That report is the
-intended signal, not a defect in the project. Remediation is one `just nav_upgrade` per project.
+intended signal, not a defect in the project. Remediation is one `just nav-upgrade` per project.
 
 Current stamp: `2026-10-14-compact-v2` (previous: `2026-10-07-snake-case-recipes-v1`). Projects still on the previous stamp lack the emitted governance-checks guidance.
 

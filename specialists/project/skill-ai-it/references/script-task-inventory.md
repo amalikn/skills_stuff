@@ -123,8 +123,8 @@ Governance `categories/coding-guide.md` (operator, 2026-10-07): **snake_case** f
 (`just` recipes, CLI symlinks). A Python file must be importable (PEP 8; a hyphen is the minus operator), the Google Shell Style Guide asks the same of shell, and one rule beats a per-language split.
 kebab-case only where something outside the code fixes it: skill names, document slugs (`<slug>-YYYYMMDD_hhmm.md`), repo and folder names. `check_file_naming` in `templates/check_governance.py` fails
 on a kebab-case code file under `scripts/`; a project adopting the rule lists its existing ones in `KEBAB_LEGACY` and renames each when next touched, updating every reference in the same change. This
-package's own optional template is `templates/context_preflight.sh` (renamed from the kebab form). The template's own recipes follow it since 2026-10-07 (`nav_upgrade`, `nav_validate`, `lint_md` and
-the rest); `nav_upgrade` renames the old kebab forms in a project's justfile on its next run.
+package's own optional template is `templates/context_preflight.sh` (renamed from the kebab form). The template's own recipes follow it since 2026-10-07 (`nav-upgrade`, `nav-validate`, `lint-md` and
+the rest); `nav-upgrade` renames the old kebab forms in a project's justfile on its next run.
 
 #### Function documentation
 
@@ -155,7 +155,7 @@ where you do.
 **Do not add a `.python-version` file alongside `.mise.toml`.** Two files stating the version is two places for it to drift. `.mise.toml` owns the pin.
 
 **Declare third-party dependencies in `requirements.txt`, and have `bootstrap` install them.** Pinning the interpreter without declaring the packages does not remove the hidden host dependency — it
-relocates it, and the failure arrives later and reads worse. This is not hypothetical: the moment the 2026-08-25 project switched off the host interpreter, `just nav_validate` failed on a missing
+relocates it, and the failure arrives later and reads worse. This is not hypothetical: the moment the 2026-08-25 project switched off the host interpreter, `just nav-validate` failed on a missing
 PyYAML that had been supplied invisibly by Homebrew's Python for the whole session. Nothing had ever declared it.
 
 Keep the project's **own** scripts stdlib-only where you can, and say so in the file. The governance gate in particular must never fail for environment reasons — a check that cannot run is
@@ -199,7 +199,7 @@ runtimes:
     @printf 'node    '; {{nd}} --version 2>/dev/null || echo "MISSING — pin node in .mise.toml"
 
 # Audit script/task inventory for drift
-audit_scripts:
+audit-scripts:
     @echo "== just recipes =="; just --list || true
     @echo; echo "== script files =="; find scripts -maxdepth 2 -type f 2>/dev/null | sort || true
 
@@ -213,10 +213,10 @@ stale: _require-venv
     @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
 
 # Run safe local preflight checks
-preflight: runtimes audit_scripts check
+preflight: runtimes audit-scripts check
 
 # Lint Markdown files when markdownlint-cli2 is available
-lint_md:
+lint-md:
     @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
     @markdownlint-cli2 '**/*.md'
 ```

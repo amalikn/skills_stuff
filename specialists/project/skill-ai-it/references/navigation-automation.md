@@ -41,7 +41,7 @@ Run them with the skill's venv python, `/Volumes/Data/_ai/_skills/skills-working
 4. `python3 "$SKILL_DIR/scripts/validate_navigation_control_layer.py" --project-root "$TARGET"` — validate
 5. `python3 "$SKILL_DIR/scripts/check_expected_diff.py" --project-root "$TARGET"` — verify only expected files changed (target must be a git repo)
    - when the upgrader warns that `context-map.yaml` was re-serialised: `python3 "$SKILL_DIR/scripts/yaml_key_diff.py" --project-root "$TARGET"`
-     (`just nav_check_context_map`) names the real key changes and the comments lost; restore the purpose header and rationale comments
+     (`just nav-check-context-map`) names the real key changes and the comments lost; restore the purpose header and rationale comments
 6. **Governance checker** — validate reports whether `scripts/check_governance.py` exists and is wired. If absent, create it now from `templates/check_governance.py` per the *Governance coherence
    checker* section; if present, extend its registries. This step is judgement, not mechanics: the universal checks are copied, but the Tier 3 invariants must be read out of the target's own stated
    rules. Run it and report its exit status
@@ -79,11 +79,11 @@ Available scripts:
 Available just targets (only where the project's `justfile` came from `templates/justfile`, which defines a `skill_dir` variable pointing at the skill package — a project whose justfile predates that
 variable, or was hand-written, will not have these recipes at all; use the absolute-path form above):
 
-- `just nav_upgrade_dry_run`
-- `just nav_upgrade`
-- `just nav_validate`
-- `just nav_check_diff`
-- `just nav_selftest` — the skill package's own block self-test
+- `just nav-upgrade-dry-run`
+- `just nav-upgrade`
+- `just nav-validate`
+- `just nav-check-diff`
+- `just nav-selftest` — the skill package's own block self-test
 - `just check` — the project's own governance checker, once it has one
 
-Override the skill location per invocation with `just skill_dir=/path/to/skill-ai-it nav_validate`.
+Override the skill location per invocation with `just skill_dir=/path/to/skill-ai-it nav-validate`.

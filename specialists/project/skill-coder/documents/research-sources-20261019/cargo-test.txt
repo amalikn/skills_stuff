@@ -1,0 +1,498 @@
+Contents of https://doc.rust-lang.org/cargo/commands/cargo-test.html:
+## Keyboard shortcuts
+
+Press `←` or `→` to navigate between chapters
+
+Press `S` or `/` to search in the book
+
+Press `?` to show this help
+
+Press `Esc` to hide this help
+
+## [cargo-test(1)](#cargo-test1)
+
+## [NAME](#name)
+
+cargo-test — Execute unit and integration tests of a package
+
+## [SYNOPSIS](#synopsis)
+
+`cargo test` [*options*] [*testname*] [`--` *test-options*]
+
+## [DESCRIPTION](#description)
+
+Compile and execute unit, integration, and documentation tests.
+
+The test filtering argument `TESTNAME` and all the arguments following the two
+dashes (`--`) are passed to the test binaries and thus to *libtest* (rustc’s
+built in unit-test and micro-benchmarking framework). If you’re passing
+arguments to both Cargo and the binary, the ones after `--` go to the binary,
+the ones before go to Cargo. For details about libtest’s arguments see the
+output of `cargo test -- --help` and check out the rustc book’s chapter on
+how tests work at <https://doc.rust-lang.org/rustc/tests/index.html>.
+
+As an example, this will filter for tests with `foo` in their name and run them
+on 3 threads in parallel:
+
+```
+cargo test foo -- --test-threads 3
+```
+
+Tests are built with the `--test` option to `rustc` which creates a special
+executable by linking your code with libtest. The executable automatically
+runs all functions annotated with the `#[test]` attribute in multiple threads.
+`#[bench]` annotated functions will also be run with one iteration to verify
+that they are functional.
+
+If the package contains multiple test targets, each target compiles to a
+special executable as aforementioned, and then is run serially.
+
+The libtest harness may be disabled by setting `harness = false` in the target
+manifest settings, in which case your code will need to provide its own `main`
+function to handle running tests.
+
+By default, `cargo test` uses the [`test` profile](../reference/profiles.html#test), which enables
+some optimizations and disables debugging information for fast feedback. If you need to debug a
+test, you can use the `--profile=debug` command-line option to switch to
+the debug profile. You can then run the debug-enabled test within a
+debugger.
+
+### [Documentation tests](#documentation-tests)
+
+Documentation tests are also run by default, which is handled by `rustdoc`. It
+extracts code samples from documentation comments of the library target, and
+then executes them.
+
+Different from normal test targets, each code block compiles to a doctest
+executable on the fly with `rustc`. These executables run in parallel in
+separate processes. The compilation of a code block is in fact a part of test
+function controlled by libtest, so some options such as `--jobs` might not
+take effect. Note that this execution model of doctests is not guaranteed
+and may change in the future; beware of depending on it.
+
+See the [rustdoc book](https://doc.rust-lang.org/rustdoc/) for more information
+on writing doc tests.
+
+### [Working directory of tests](#working-directory-of-tests)
+
+The working directory when running each unit and integration test is set to the
+root directory of the package the test belongs to.
+Setting the working directory of tests to the package’s root directory makes it
+possible for tests to reliably access the package’s files using relative paths,
+regardless from where `cargo test` was executed from.
+
+For documentation tests, the working directory when invoking `rustdoc` is set to
+the workspace root directory, and is also the directory `rustdoc` uses as the
+compilation directory of each documentation test.
+The working directory when running each documentation test is set to the root
+directory of the package the test belongs to, and is controlled via `rustdoc`’s
+`--test-run-directory` option.
+
+## [OPTIONS](#options)
+
+### [Test Options](#test-options)
+
+[`--no-run`](#option-cargo-test---no-run)
+:   Compile, but don’t run tests.
+
+[`--no-fail-fast`](#option-cargo-test---no-fail-fast)
+:   Run all tests regardless of failure. Without this flag, Cargo will exit
+    after the first executable fails. The Rust test harness will run all tests
+    within the executable to completion, this flag only applies to the executable
+    as a whole.
+
+### [Package Selection](#package-selection)
+
+By default, when no package selection options are given, the packages selected
+depend on the selected manifest file (based on the current working directory if
+`--manifest-path` is not given). If the manifest is the root of a workspace then
+the workspaces default members are selected, otherwise only the package defined
+by the manifest will be selected.
+
+The default members of a workspace can be set explicitly with the
+`workspace.default-members` key in the root manifest. If this is not set, a
+virtual workspace will include all workspace members (equivalent to passing
+`--workspace`), and a non-virtual workspace will include only the root crate itself.
+
+[`-p` *spec*…](#option-cargo-test--p)
+
+[`--package` *spec*…](#option-cargo-test---package)
+:   Test only the specified packages. See [cargo-pkgid(1)](cargo-pkgid.html) for the
+    SPEC format. This flag may be specified multiple times and supports common Unix
+    glob patterns like `*`, `?` and `[]`. However, to avoid your shell accidentally
+    expanding glob patterns before Cargo handles them, you must use single quotes or
+    double quotes around each pattern.
+
+[`--workspace`](#option-cargo-test---workspace)
+:   Test all members in the workspace.
+
+[`--all`](#option-cargo-test---all)
+:   Deprecated alias for `--workspace`.
+
+[`--exclude` *SPEC*…](#option-cargo-test---exclude)
+:   Exclude the specified packages. Must be used in conjunction with the
+    `--workspace` flag. This flag may be specified multiple times and supports
+    common Unix glob patterns like `*`, `?` and `[]`. However, to avoid your shell
+    accidentally expanding glob patterns before Cargo handles them, you must use
+    single quotes or double quotes around each pattern.
+
+### [Target Selection](#target-selection)
+
+When no target selection options are given, `cargo test` will build the
+following targets of the selected packages:
+
+* lib — used to link with binaries, examples, integration tests, and doc tests
+* bins (only if integration tests are built and required features are
+  available)
+* examples — to ensure they compile
+* lib as a unit test
+* bins as unit tests
+* integration tests
+* doc tests for the lib target
+
+The default behavior can be changed by setting the `test` flag for the target
+in the manifest settings. Setting examples to `test = true` will build and run
+the example as a test, replacing the example’s `main` function with the
+libtest harness. If you don’t want the `main` function replaced, also include
+`harness = false`, in which case the example will be built and executed as-is.
+
+Setting targets to `test = false` will stop them from being tested by default.
+Target selection options that take a target by name (such as `--example foo`)
+ignore the `test` flag and will always test the given target.
+
+Doc tests for libraries may be disabled by setting `doctest = false` for the
+library in the manifest.
+
+See [Configuring a target](../reference/cargo-targets.html#configuring-a-target)
+for more information on per-target settings.
+
+Binary targets are automatically built if there is an integration test or
+benchmark being selected to test. This allows an integration
+test to execute the binary to exercise and test its behavior.
+The `CARGO_BIN_EXE_<name>`
+[environment variable](../reference/environment-variables.html#environment-variables-cargo-sets-for-crates)
+is set when the integration test is built and run so that it can use the
+[`env` macro](https://doc.rust-lang.org/std/macro.env.html) or the
+[`var` function](https://doc.rust-lang.org/std/env/fn.var.html) to locate the
+executable.
+
+Passing target selection flags will test only the specified
+targets.
+
+Note that `--bin`, `--example`, `--test` and `--bench` flags also
+support common Unix glob patterns like `*`, `?` and `[]`. However, to avoid your
+shell accidentally expanding glob patterns before Cargo handles them, you must
+use single quotes or double quotes around each glob pattern.
+
+[`--lib`](#option-cargo-test---lib)
+:   Test the package’s library.
+
+[`--bin` *name*…](#option-cargo-test---bin)
+:   Test the specified binary. This flag may be specified multiple times
+    and supports common Unix glob patterns.
+
+[`--bins`](#option-cargo-test---bins)
+:   Test all binary targets.
+
+[`--example` *name*…](#option-cargo-test---example)
+:   Test the specified example. This flag may be specified multiple times
+    and supports common Unix glob patterns.
+
+[`--examples`](#option-cargo-test---examples)
+:   Test all example targets.
+
+[`--test` *name*…](#option-cargo-test---test)
+:   Test the specified integration test. This flag may be specified
+    multiple times and supports common Unix glob patterns.
+
+[`--tests`](#option-cargo-test---tests)
+:   Test all targets that have the `test = true` manifest
+    flag set. By default this includes the library and binaries built as
+    unittests, and integration tests. Be aware that this will also build any
+    required dependencies, so the lib target may be built twice (once as a
+    unittest, and once as a dependency for binaries, integration tests, etc.).
+    Targets may be enabled or disabled by setting the `test` flag in the
+    manifest settings for the target.
+
+[`--bench` *name*…](#option-cargo-test---bench)
+:   Test the specified benchmark. This flag may be specified multiple
+    times and supports common Unix glob patterns.
+
+[`--benches`](#option-cargo-test---benches)
+:   Test all targets that have the `bench = true`
+    manifest flag set. By default this includes the library and binaries built
+    as benchmarks, and bench targets. Be aware that this will also build any
+    required dependencies, so the lib target may be built twice (once as a
+    benchmark, and once as a dependency for binaries, benchmarks, etc.).
+    Targets may be enabled or disabled by setting the `bench` flag in the
+    manifest settings for the target.
+
+[`--all-targets`](#option-cargo-test---all-targets)
+:   Test all targets. This is equivalent to specifying `--lib --bins --tests --benches --examples`.
+
+[`--doc`](#option-cargo-test---doc)
+:   Test only the library’s documentation. This cannot be mixed with other
+    target options.
+
+### [Feature Selection](#feature-selection)
+
+The feature flags allow you to control which features are enabled. When no
+feature options are given, the `default` feature is activated for every
+selected package.
+
+See [the features documentation](../reference/features.html#command-line-feature-options)
+for more details.
+
+[`-F` *features*](#option-cargo-test--F)
+
+[`--features` *features*](#option-cargo-test---features)
+:   Space or comma separated list of features to activate. Features of workspace
+    members may be enabled with `package-name/feature-name` syntax. This flag may
+    be specified multiple times, which enables all specified features.
+
+[`--all-features`](#option-cargo-test---all-features)
+:   Activate all available features of all selected packages.
+
+[`--no-default-features`](#option-cargo-test---no-default-features)
+:   Do not activate the `default` feature of the selected packages.
+
+### [Compilation Options](#compilation-options)
+
+[`--target` *triple*](#option-cargo-test---target)
+:   Test for the specified target architecture. Flag may be specified multiple times. The default is the host architecture. The general format of the triple is
+    `<arch><sub>-<vendor>-<sys>-<abi>`.
+
+    Possible values:
+
+    * Any supported target in `rustc --print target-list`.
+    * `"host-tuple"`, which will internally be substituted by the host’s target. This can be particularly useful if you’re cross-compiling some crates, and don’t want to specify your host’s machine as a target (for instance, an `xtask` in a shared project that may be worked on by many hosts).
+    * A path to a custom target specification. See [Custom Target Lookup Path](../../rustc/targets/custom.html#custom-target-lookup-path) for more information.
+
+    This may also be specified with the `build.target` [config value](../reference/config.html).
+
+    Note that specifying this flag makes Cargo run in a different mode where the
+    target artifacts are placed in a separate directory. See the
+    [build cache](../reference/build-cache.html) documentation for more details.
+
+[`-r`](#option-cargo-test--r)
+
+[`--release`](#option-cargo-test---release)
+:   Test optimized artifacts with the `release` profile.
+    See also the `--profile` option for choosing a specific profile by name.
+
+[`--profile` *name*](#option-cargo-test---profile)
+:   Test with the given profile.
+    See [the reference](../reference/profiles.html) for more details on profiles.
+
+[`--timings`](#option-cargo-test---timings)
+:   Output information how long each compilation takes, and track concurrency
+    information over time.
+
+    A file `cargo-timing.html` will be written to the `target/cargo-timings`
+    directory at the end of the build. An additional report with a timestamp
+    in its filename is also written if you want to look at a previous run.
+    These reports are suitable for human consumption only, and do not provide
+    machine-readable timing data.
+
+### [Output Options](#output-options)
+
+[`--target-dir` *directory*](#option-cargo-test---target-dir)
+:   Directory for all generated artifacts and intermediate files. May also be
+    specified with the `CARGO_TARGET_DIR` environment variable, or the
+    `build.target-dir` [config value](../reference/config.html).
+    Defaults to `target` in the root of the workspace.
+
+### [Display Options](#display-options)
+
+By default the Rust test harness hides output from test execution to keep
+results readable. Test output can be recovered (e.g., for debugging) by passing
+`--no-capture` to the test binaries:
+
+```
+cargo test -- --no-capture
+```
+
+[`-v`](#option-cargo-test--v)
+
+[`--verbose`](#option-cargo-test---verbose)
+:   Use verbose output. May be specified twice for “very verbose” output which
+    includes extra output such as dependency warnings and build script output.
+    May also be specified with the `term.verbose`
+    [config value](../reference/config.html).
+
+[`-q`](#option-cargo-test--q)
+
+[`--quiet`](#option-cargo-test---quiet)
+:   Do not print cargo log messages.
+    May also be specified with the `term.quiet`
+    [config value](../reference/config.html).
+
+[`--color` *when*](#option-cargo-test---color)
+:   Control when colored output is used. Valid values:
+
+    * `auto` (default): Automatically detect if color support is available on the
+      terminal.
+    * `always`: Always display colors.
+    * `never`: Never display colors.
+
+    May also be specified with the `term.color`
+    [config value](../reference/config.html).
+
+[`--message-format` *fmt*](#option-cargo-test---message-format)
+:   The output format for diagnostic messages. Can be specified multiple times
+    and consists of comma-separated values. Valid values:
+
+    * `human` (default): Display in a human-readable text format. Conflicts with
+      `short` and `json`.
+    * `short`: Emit shorter, human-readable text messages. Conflicts with `human`
+      and `json`.
+    * `json`: Emit JSON messages to stdout. See
+      [the reference](../reference/external-tools.html#json-messages)
+      for more details. Conflicts with `human` and `short`.
+    * `json-diagnostic-short`: Ensure the `rendered` field of JSON messages contains
+      the “short” rendering from rustc. Cannot be used with `human` or `short`.
+    * `json-diagnostic-rendered-ansi`: Ensure the `rendered` field of JSON messages
+      contains embedded ANSI color codes for respecting rustc’s default color
+      scheme. Cannot be used with `human` or `short`.
+    * `json-render-diagnostics`: Instruct Cargo to not include rustc diagnostics
+      in JSON messages printed, but instead Cargo itself should render the
+      JSON diagnostics coming from rustc. Cargo’s own JSON diagnostics and others
+      coming from rustc are still emitted. Cannot be used with `human` or `short`.
+
+### [Manifest Options](#manifest-options)
+
+[`--manifest-path` *path*](#option-cargo-test---manifest-path)
+:   Path to the `Cargo.toml` file. By default, Cargo searches for the
+    `Cargo.toml` file in the current directory or any parent directory.
+
+[`--ignore-rust-version`](#option-cargo-test---ignore-rust-version)
+:   Ignore `rust-version` specification in packages.
+
+[`--locked`](#option-cargo-test---locked)
+:   Asserts that the exact same dependencies and versions are used as when the
+    existing `Cargo.lock` file was originally generated. Cargo will exit with an
+    error when either of the following scenarios arises:
+
+    * The lock file is missing.
+    * Cargo attempted to change the lock file due to a different dependency resolution.
+
+    It may be used in environments where deterministic builds are desired,
+    such as in CI pipelines.
+
+[`--offline`](#option-cargo-test---offline)
+:   Prevents Cargo from accessing the network for any reason. Without this
+    flag, Cargo will stop with an error if it needs to access the network and
+    the network is not available. With this flag, Cargo will attempt to
+    proceed without the network if possible.
+
+    Beware that this may result in different dependency resolution than online
+    mode. Cargo will restrict itself to crates that are downloaded locally, even
+    if there might be a newer version as indicated in the local copy of the index.
+    See the [cargo-fetch(1)](cargo-fetch.html) command to download dependencies before going
+    offline.
+
+    May also be specified with the `net.offline` [config value](../reference/config.html).
+
+[`--frozen`](#option-cargo-test---frozen)
+:   Equivalent to specifying both `--locked` and `--offline`.
+
+### [Common Options](#common-options)
+
+[`+`*toolchain*](#option-cargo-test-+toolchain)
+:   If Cargo has been installed with rustup, and the first argument to `cargo`
+    begins with `+`, it will be interpreted as a rustup toolchain name (such
+    as `+stable` or `+nightly`).
+    See the [rustup documentation](https://rust-lang.github.io/rustup/overrides.html)
+    for more information about how toolchain overrides work.
+
+[`--config` *KEY=VALUE* or *PATH*](#option-cargo-test---config)
+:   Overrides a Cargo configuration value. The argument should be in TOML syntax of `KEY=VALUE`,
+    or provided as a path to an extra configuration file. This flag may be specified multiple times.
+    See the [command-line overrides section](../reference/config.html#command-line-overrides) for more information.
+
+[`-C` *PATH*](#option-cargo-test--C)
+:   Changes the current working directory before executing any specified operations. This affects
+    things like where cargo looks by default for the project manifest (`Cargo.toml`), as well as
+    the directories searched for discovering `.cargo/config.toml`, for example. This option must
+    appear before the command name, for example `cargo -C path/to/my-project build`.
+
+    This option is only available on the [nightly
+    channel](https://doc.rust-lang.org/book/appendix-07-nightly-rust.html) and
+    requires the `-Z unstable-options` flag to enable (see
+    [#10098](https://github.com/rust-lang/cargo/issues/10098)).
+
+[`-h`](#option-cargo-test--h)
+
+[`--help`](#option-cargo-test---help)
+:   Prints help information.
+
+[`-Z` *flag*](#option-cargo-test--Z)
+:   Unstable (nightly-only) flags to Cargo. Run `cargo -Z help` for details.
+
+### [Miscellaneous Options](#miscellaneous-options)
+
+The `--jobs` argument affects the building of the test executable but does not
+affect how many threads are used when running the tests. The Rust test harness
+includes an option to control the number of threads used:
+
+```
+cargo test -j 2 -- --test-threads=2
+```
+
+[`-j` *N*](#option-cargo-test--j)
+
+[`--jobs` *N*](#option-cargo-test---jobs)
+:   Number of parallel jobs to run. May also be specified with the
+    `build.jobs` [config value](../reference/config.html). Defaults to
+    the number of logical CPUs. If negative, it sets the maximum number of
+    parallel jobs to the number of logical CPUs plus provided value. If
+    a string `default` is provided, it sets the value back to defaults.
+    Should not be 0.
+
+[`--future-incompat-report`](#option-cargo-test---future-incompat-report)
+:   Displays a future-incompat report for any future-incompatible warnings
+    produced during execution of this command
+
+    See [cargo-report(1)](cargo-report.html)
+
+While `cargo test` involves compilation, it does not provide a `--keep-going`
+flag. Use `--no-fail-fast` to run as many tests as possible without stopping at
+the first failure. To “compile” as many tests as possible, use `--tests` to
+build test binaries separately. For example:
+
+```
+cargo build --tests --keep-going
+cargo test --tests --no-fail-fast
+```
+
+## [ENVIRONMENT](#environment)
+
+See [the reference](../reference/environment-variables.html) for
+details on environment variables that Cargo reads.
+
+## [EXIT STATUS](#exit-status)
+
+* `0`: Cargo succeeded.
+* `101`: Cargo failed to complete.
+
+## [EXAMPLES](#examples)
+
+1. Execute all the unit and integration tests of the current package:
+
+   ```
+   cargo test
+   ```
+2. Run only tests whose names match against a filter string:
+
+   ```
+   cargo test name_filter
+   ```
+3. Run only a specific test within a specific integration test:
+
+   ```
+   cargo test --test int_test_name -- modname::test_name
+   ```
+
+## [SEE ALSO](#see-also)
+
+[cargo(1)](cargo.html), [cargo-bench(1)](cargo-bench.html), [types of tests](../reference/cargo-targets.html#tests), [how to write tests](https://doc.rust-lang.org/rustc/tests/index.html)

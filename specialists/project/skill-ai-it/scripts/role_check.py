@@ -16,7 +16,7 @@ Rules (key `<rule>:<file>`):
 6. `roadmap-done`: ROADMAP.md keeps done items past the 7-day window (`roadmap_trim.py` would move them), or narrative under `## Completed`.
 7. `duplicate-section`: two root files carry the same `##`/`###` section (same title, bodies at least 80% alike); one fact has one home.
 8. `context-map-parse`: context-map.yaml does not parse, or repeats a key (YAML keeps the last and drops the rest silently). Operator,
-   2026-10-14: `nav_validate` stays manual (it fails every project on a skill version bump), but a broken map must fail `just check`; one did
+   2026-10-14: `nav-validate` stays manual (it fails every project on a skill version bump), but a broken map must fail `just check`; one did
    that day and passed. Needs PyYAML (skill-ai-it requirements.txt); without it the rule is reported as skipped, never as passed.
 
 A baseline (`scripts/role-check-baseline.json`) records the findings on the day a project adopts the check; `--check` fails only on a finding

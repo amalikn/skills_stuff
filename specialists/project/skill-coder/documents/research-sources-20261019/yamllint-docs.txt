@@ -1,0 +1,1816 @@
+Contents of https://yamllint.readthedocs.io/en/stable/rules.html:
+When linting a document with yamllint, a series of rules (such as
+`line-length`, `trailing-spaces`, etc.) are checked against.
+
+A [configuration file](configuration.html) can be used to enable or disable
+these rules, to set their level (*error* or *warning*), but also to tweak their
+options.
+
+This page describes the rules and their options.
+
+List of rules
+
+* [anchors](#module-yamllint.rules.anchors)
+* [braces](#module-yamllint.rules.braces)
+* [brackets](#module-yamllint.rules.brackets)
+* [colons](#module-yamllint.rules.colons)
+* [commas](#module-yamllint.rules.commas)
+* [comments](#module-yamllint.rules.comments)
+* [comments-indentation](#module-yamllint.rules.comments_indentation)
+* [document-end](#module-yamllint.rules.document_end)
+* [document-start](#module-yamllint.rules.document_start)
+* [empty-lines](#module-yamllint.rules.empty_lines)
+* [empty-values](#module-yamllint.rules.empty_values)
+* [float-values](#module-yamllint.rules.float_values)
+* [hyphens](#module-yamllint.rules.hyphens)
+* [indentation](#module-yamllint.rules.indentation)
+* [key-duplicates](#module-yamllint.rules.key_duplicates)
+* [key-ordering](#module-yamllint.rules.key_ordering)
+* [line-length](#module-yamllint.rules.line_length)
+* [new-line-at-end-of-file](#module-yamllint.rules.new_line_at_end_of_file)
+* [new-lines](#module-yamllint.rules.new_lines)
+* [octal-values](#module-yamllint.rules.octal_values)
+* [quoted-strings](#module-yamllint.rules.quoted_strings)
+* [trailing-spaces](#module-yamllint.rules.trailing_spaces)
+* [truthy](#module-yamllint.rules.truthy)
+
+## [anchors](#id1)[](#module-yamllint.rules.anchors "Link to this heading")
+
+Use this rule to report duplicated anchors and aliases referencing undeclared
+anchors.
+
+Options
+
+* Set `forbid-undeclared-aliases` to `true` to avoid aliases that reference
+  an anchor that hasn’t been declared (either not declared at all, or declared
+  later in the document).
+* Set `forbid-duplicated-anchors` to `true` to avoid duplications of a same
+  anchor.
+* Set `forbid-unused-anchors` to `true` to avoid anchors being declared but
+  not used anywhere in the YAML document via alias.
+
+Default values (when enabled)
+
+```
+rules:
+  anchors:
+    forbid-undeclared-aliases: true
+    forbid-duplicated-anchors: false
+    forbid-unused-anchors: false
+```
+
+Examples
+
+1. With `anchors: {forbid-undeclared-aliases: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   ---
+   - &anchor
+     foo: bar
+   - *anchor
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   ---
+   - &anchor
+     foo: bar
+   - *unknown
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   ---
+   - &anchor
+     foo: bar
+   - <<: *unknown
+     extra: value
+   ```
+2. With `anchors: {forbid-duplicated-anchors: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   ---
+   - &anchor1 Foo Bar
+   - &anchor2 [item 1, item 2]
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   ---
+   - &anchor Foo Bar
+   - &anchor [item 1, item 2]
+   ```
+3. With `anchors: {forbid-unused-anchors: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   ---
+   - &anchor
+     foo: bar
+   - *anchor
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   ---
+   - &anchor
+     foo: bar
+   - items:
+     - item1
+     - item2
+   ```
+
+## [braces](#id2)[](#module-yamllint.rules.braces "Link to this heading")
+
+Use this rule to control the use of flow mappings or number of spaces inside
+braces (`{` and `}`).
+
+Options
+
+* `forbid` is used to forbid the use of flow mappings which are denoted by
+  surrounding braces (`{` and `}`). Use `true` to forbid the use of flow
+  mappings completely. Use `non-empty` to forbid the use of all flow
+  mappings except for empty ones.
+* `min-spaces-inside` defines the minimal number of spaces required inside
+  braces.
+* `max-spaces-inside` defines the maximal number of spaces allowed inside
+  braces.
+* `min-spaces-inside-empty` defines the minimal number of spaces required
+  inside empty braces.
+* `max-spaces-inside-empty` defines the maximal number of spaces allowed
+  inside empty braces.
+
+Default values (when enabled)
+
+```
+rules:
+  braces:
+    forbid: false
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: -1
+    max-spaces-inside-empty: -1
+```
+
+Examples
+
+1. With `braces: {forbid: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object:
+     key1: 4
+     key2: 8
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: { key1: 4, key2: 8 }
+   ```
+2. With `braces: {forbid: non-empty}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: {}
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: { key1: 4, key2: 8 }
+   ```
+3. With `braces: {min-spaces-inside: 0, max-spaces-inside: 0}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: {key1: 4, key2: 8}
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: { key1: 4, key2: 8 }
+   ```
+4. With `braces: {min-spaces-inside: 1, max-spaces-inside: 3}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: { key1: 4, key2: 8 }
+   ```
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: { key1: 4, key2: 8   }
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: {    key1: 4, key2: 8   }
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: {key1: 4, key2: 8 }
+   ```
+5. With `braces: {min-spaces-inside-empty: 0, max-spaces-inside-empty: 0}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: {}
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: { }
+   ```
+6. With `braces: {min-spaces-inside-empty: 1, max-spaces-inside-empty: -1}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: {         }
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: {}
+   ```
+
+## [brackets](#id3)[](#module-yamllint.rules.brackets "Link to this heading")
+
+Use this rule to control the use of flow sequences or the number of spaces
+inside brackets (`[` and `]`).
+
+Options
+
+* `forbid` is used to forbid the use of flow sequences which are denoted by
+  surrounding brackets (`[` and `]`). Use `true` to forbid the use of
+  flow sequences completely. Use `non-empty` to forbid the use of all flow
+  sequences except for empty ones.
+* `min-spaces-inside` defines the minimal number of spaces required inside
+  brackets.
+* `max-spaces-inside` defines the maximal number of spaces allowed inside
+  brackets.
+* `min-spaces-inside-empty` defines the minimal number of spaces required
+  inside empty brackets.
+* `max-spaces-inside-empty` defines the maximal number of spaces allowed
+  inside empty brackets.
+
+Default values (when enabled)
+
+```
+rules:
+  brackets:
+    forbid: false
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: -1
+    max-spaces-inside-empty: -1
+```
+
+Examples
+
+1. With `brackets: {forbid: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object:
+     - 1
+     - 2
+     - abc
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: [ 1, 2, abc ]
+   ```
+2. With `brackets: {forbid: non-empty}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: []
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: [ 1, 2, abc ]
+   ```
+3. With `brackets: {min-spaces-inside: 0, max-spaces-inside: 0}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: [1, 2, abc]
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: [ 1, 2, abc ]
+   ```
+4. With `brackets: {min-spaces-inside: 1, max-spaces-inside: 3}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: [ 1, 2, abc ]
+   ```
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: [ 1, 2, abc   ]
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: [    1, 2, abc   ]
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: [1, 2, abc ]
+   ```
+5. With `brackets: {min-spaces-inside-empty: 0, max-spaces-inside-empty: 0}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: []
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: [ ]
+   ```
+6. With `brackets: {min-spaces-inside-empty: 1, max-spaces-inside-empty: -1}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object: [         ]
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: []
+   ```
+
+## [colons](#id4)[](#module-yamllint.rules.colons "Link to this heading")
+
+Use this rule to control the number of spaces before and after colons (`:`).
+
+Options
+
+* `max-spaces-before` defines the maximal number of spaces allowed before
+  colons (use `-1` to disable).
+* `max-spaces-after` defines the maximal number of spaces allowed after
+  colons (use `-1` to disable).
+
+Default values (when enabled)
+
+```
+rules:
+  colons:
+    max-spaces-before: 0
+    max-spaces-after: 1
+```
+
+Examples
+
+1. With `colons: {max-spaces-before: 0, max-spaces-after: 1}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object:
+     - a
+     - b
+   key: value
+   ```
+2. With `colons: {max-spaces-before: 1}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   object :
+     - a
+     - b
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object  :
+     - a
+     - b
+   ```
+3. With `colons: {max-spaces-after: 2}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   first:  1
+   second: 2
+   third:  3
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   first: 1
+   2nd:   2
+   third: 3
+   ```
+
+## [commas](#id5)[](#module-yamllint.rules.commas "Link to this heading")
+
+Use this rule to control the number of spaces before and after commas (`,`).
+
+Options
+
+* `max-spaces-before` defines the maximal number of spaces allowed before
+  commas (use `-1` to disable).
+* `min-spaces-after` defines the minimal number of spaces required after
+  commas.
+* `max-spaces-after` defines the maximal number of spaces allowed after
+  commas (use `-1` to disable).
+
+Default values (when enabled)
+
+```
+rules:
+  commas:
+    max-spaces-before: 0
+    min-spaces-after: 1
+    max-spaces-after: 1
+```
+
+Examples
+
+1. With `commas: {max-spaces-before: 0}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   strange var:
+     [10, 20, 30, {x: 1, y: 2}]
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   strange var:
+     [10, 20 , 30, {x: 1, y: 2}]
+   ```
+2. With `commas: {max-spaces-before: 2}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   strange var:
+     [10  , 20 , 30,  {x: 1  , y: 2}]
+   ```
+3. With `commas: {max-spaces-before: -1}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   strange var:
+     [10,
+      20   , 30
+      ,   {x: 1, y: 2}]
+   ```
+4. With `commas: {min-spaces-after: 1, max-spaces-after: 1}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   strange var:
+     [10, 20, 30, {x: 1, y: 2}]
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   strange var:
+     [10, 20,30,   {x: 1,   y: 2}]
+   ```
+5. With `commas: {min-spaces-after: 1, max-spaces-after: 3}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   strange var:
+     [10, 20,  30,  {x: 1,   y: 2}]
+   ```
+6. With `commas: {min-spaces-after: 0, max-spaces-after: 1}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   strange var:
+     [10, 20,30, {x: 1, y: 2}]
+   ```
+
+## [document-end](#id8)[](#module-yamllint.rules.document_end "Link to this heading")
+
+Use this rule to require or forbid the use of document end marker (`...`).
+
+Options
+
+* Set `present` to `true` when the document end marker is required, or to
+  `false` when it is forbidden.
+
+Default values (when enabled)
+
+```
+rules:
+  document-end:
+    present: true
+```
+
+Examples
+
+1. With `document-end: {present: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   ---
+   this:
+     is: [a, document]
+   ...
+   ---
+   - this
+   - is: another one
+   ...
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   ---
+   this:
+     is: [a, document]
+   ---
+   - this
+   - is: another one
+   ...
+   ```
+2. With `document-end: {present: false}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   ---
+   this:
+     is: [a, document]
+   ---
+   - this
+   - is: another one
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   ---
+   this:
+     is: [a, document]
+   ...
+   ---
+   - this
+   - is: another one
+   ```
+
+## [document-start](#id9)[](#module-yamllint.rules.document_start "Link to this heading")
+
+Use this rule to require or forbid the use of document start marker (`---`).
+
+Options
+
+* Set `present` to `true` when the document start marker is required, or to
+  `false` when it is forbidden.
+
+Default values (when enabled)
+
+```
+rules:
+  document-start:
+    present: true
+```
+
+Examples
+
+1. With `document-start: {present: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   ---
+   this:
+     is: [a, document]
+   ---
+   - this
+   - is: another one
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   this:
+     is: [a, document]
+   ---
+   - this
+   - is: another one
+   ```
+2. With `document-start: {present: false}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   this:
+     is: [a, document]
+   ...
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   ---
+   this:
+     is: [a, document]
+   ...
+   ```
+
+## [empty-lines](#id10)[](#module-yamllint.rules.empty_lines "Link to this heading")
+
+Use this rule to set a maximal number of allowed consecutive blank lines.
+
+Options
+
+* `max` defines the maximal number of empty lines allowed in the document.
+* `max-start` defines the maximal number of empty lines allowed at the
+  beginning of the file. This option takes precedence over `max`.
+* `max-end` defines the maximal number of empty lines allowed at the end of
+  the file. This option takes precedence over `max`.
+
+Default values (when enabled)
+
+```
+rules:
+  empty-lines:
+    max: 2
+    max-start: 0
+    max-end: 0
+```
+
+Examples
+
+1. With `empty-lines: {max: 1}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   - foo:
+       - 1
+       - 2
+
+   - bar: [3, 4]
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - foo:
+       - 1
+       - 2
+
+
+   - bar: [3, 4]
+   ```
+
+## [empty-values](#id11)[](#module-yamllint.rules.empty_values "Link to this heading")
+
+Use this rule to prevent nodes with empty content, that implicitly result in
+`null` values.
+
+Options
+
+* Use `forbid-in-block-mappings` to prevent empty values in block mappings.
+* Use `forbid-in-flow-mappings` to prevent empty values in flow mappings.
+* Use `forbid-in-block-sequences` to prevent empty values in block sequences.
+
+Default values (when enabled)
+
+```
+rules:
+  empty-values:
+    forbid-in-block-mappings: true
+    forbid-in-flow-mappings: true
+    forbid-in-block-sequences: true
+```
+
+Examples
+
+1. With `empty-values: {forbid-in-block-mappings: true}`
+
+   the following code snippets would **PASS**:
+
+   ```
+   some-mapping:
+     sub-element: correctly indented
+   ```
+
+   ```
+   explicitly-null: null
+   ```
+
+   the following code snippets would **FAIL**:
+
+   ```
+   some-mapping:
+   sub-element: incorrectly indented
+   ```
+
+   ```
+   implicitly-null:
+   ```
+2. With `empty-values: {forbid-in-flow-mappings: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   {prop: null}
+   {a: 1, b: 2, c: 3}
+   ```
+
+   the following code snippets would **FAIL**:
+
+   ```
+   {prop: }
+   ```
+
+   ```
+   {a: 1, b:, c: 3}
+   ```
+3. With `empty-values: {forbid-in-block-sequences: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   some-sequence:
+     - string item
+   ```
+
+   ```
+   some-sequence:
+     - null
+   ```
+
+   the following code snippets would **FAIL**:
+
+   ```
+   some-sequence:
+     -
+   ```
+
+   ```
+   some-sequence:
+     - string item
+     -
+   ```
+
+## [float-values](#id12)[](#module-yamllint.rules.float_values "Link to this heading")
+
+Use this rule to limit the permitted values for floating-point numbers.
+YAML permits three classes of float expressions: approximation to real numbers,
+positive and negative infinity and “not a number”.
+
+Options
+
+* Use `require-numeral-before-decimal` to require floats to start
+  with a numeral (ex `0.0` instead of `.0`).
+* Use `forbid-scientific-notation` to forbid scientific notation.
+* Use `forbid-nan` to forbid NaN (not a number) values.
+* Use `forbid-inf` to forbid infinite values.
+
+Default values (when enabled)
+
+```
+rules:
+  float-values:
+    forbid-inf: false
+    forbid-nan: false
+    forbid-scientific-notation: false
+    require-numeral-before-decimal: false
+```
+
+Examples
+
+1. With `float-values: {require-numeral-before-decimal: true}`
+
+   the following code snippets would **PASS**:
+
+   ```
+   anemometer:
+     angle: 0.0
+   ```
+
+   the following code snippets would **FAIL**:
+
+   ```
+   anemometer:
+     angle: .0
+   ```
+2. With `float-values: {forbid-scientific-notation: true}`
+
+   the following code snippets would **PASS**:
+
+   ```
+   anemometer:
+     angle: 0.00001
+   ```
+
+   the following code snippets would **FAIL**:
+
+   ```
+   anemometer:
+     angle: 10e-6
+   ```
+3. With `float-values: {forbid-nan: true}`
+
+   the following code snippets would **FAIL**:
+
+   ```
+   anemometer:
+     angle: .NaN
+   ```
+4. With `float-values: {forbid-inf: true}`
+
+   the following code snippets would **FAIL**:
+
+   ```
+   anemometer:
+     angle: .inf
+   ```
+
+## [hyphens](#id13)[](#module-yamllint.rules.hyphens "Link to this heading")
+
+Use this rule to control the number of spaces after hyphens (`-`).
+
+Options
+
+* `max-spaces-after` defines the maximal number of spaces allowed after
+  hyphens.
+
+Default values (when enabled)
+
+```
+rules:
+  hyphens:
+    max-spaces-after: 1
+```
+
+Examples
+
+1. With `hyphens: {max-spaces-after: 1}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   - first list:
+       - a
+       - b
+   - - 1
+     - 2
+     - 3
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   -  first list:
+        - a
+        - b
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - - 1
+     -  2
+     - 3
+   ```
+2. With `hyphens: {max-spaces-after: 3}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   -   key
+   -  key2
+   - key42
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   -    key
+   -   key2
+   -  key42
+   ```
+
+## [indentation](#id14)[](#module-yamllint.rules.indentation "Link to this heading")
+
+Use this rule to control the indentation.
+
+Options
+
+* `spaces` defines the indentation width, in spaces. Set either to an integer
+  (e.g. `2` or `4`, representing the number of spaces in an indentation
+  level) or to `consistent` to allow any number, as long as it remains the
+  same within the file.
+* `indent-sequences` defines whether block sequences should be indented or
+  not (when in a mapping, this indentation is not mandatory – some people
+  perceive the `-` as part of the indentation). Possible values: `true`,
+  `false`, `whatever` and `consistent`. `consistent` requires either
+  all block sequences to be indented, or none to be. `whatever` means either
+  indenting or not indenting individual block sequences is OK.
+* `check-multi-line-strings` defines whether to lint indentation in
+  multi-line strings. Set to `true` to enable, `false` to disable.
+
+Default values (when enabled)
+
+```
+rules:
+  indentation:
+    spaces: consistent
+    indent-sequences: true
+    check-multi-line-strings: false
+```
+
+Examples
+
+1. With `indentation: {spaces: 1}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   history:
+    - name: Unix
+      date: 1969
+    - name: Linux
+      date: 1991
+   nest:
+    recurse:
+     - haystack:
+        needle
+   ```
+2. With `indentation: {spaces: 4}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   history:
+       - name: Unix
+         date: 1969
+       - name: Linux
+         date: 1991
+   nest:
+       recurse:
+           - haystack:
+                 needle
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   history:
+     - name: Unix
+       date: 1969
+     - name: Linux
+       date: 1991
+   nest:
+     recurse:
+       - haystack:
+           needle
+   ```
+3. With `indentation: {spaces: consistent}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   history:
+      - name: Unix
+        date: 1969
+      - name: Linux
+        date: 1991
+   nest:
+      recurse:
+         - haystack:
+              needle
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   some:
+     Russian:
+         dolls
+   ```
+4. With `indentation: {spaces: 2, indent-sequences: false}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   list:
+   - flying
+   - spaghetti
+   - monster
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   list:
+     - flying
+     - spaghetti
+     - monster
+   ```
+5. With `indentation: {spaces: 2, indent-sequences: whatever}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   list:
+   - flying:
+     - spaghetti
+     - monster
+   - not flying:
+       - spaghetti
+       - sauce
+   ```
+6. With `indentation: {spaces: 2, indent-sequences: consistent}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   - flying:
+     - spaghetti
+     - monster
+   - not flying:
+     - spaghetti
+     - sauce
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - flying:
+       - spaghetti
+       - monster
+   - not flying:
+     - spaghetti
+     - sauce
+   ```
+7. With `indentation: {spaces: 4, check-multi-line-strings: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   Blaise Pascal:
+       Je vous écris une longue lettre parce que
+       je n'ai pas le temps d'en écrire une courte.
+   ```
+
+   the following code snippet would **PASS**:
+
+   ```
+   Blaise Pascal: Je vous écris une longue lettre parce que
+                  je n'ai pas le temps d'en écrire une courte.
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   Blaise Pascal: Je vous écris une longue lettre parce que
+     je n'ai pas le temps d'en écrire une courte.
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   C code:
+       void main() {
+           printf("foo");
+       }
+   ```
+
+   the following code snippet would **PASS**:
+
+   ```
+   C code:
+       void main() {
+       printf("bar");
+       }
+   ```
+
+## [key-duplicates](#id15)[](#module-yamllint.rules.key_duplicates "Link to this heading")
+
+Use this rule to prevent multiple entries with the same key in mappings.
+
+Options
+
+* Use `forbid-duplicated-merge-keys` to forbid the usage of
+  multiple merge keys `<<`.
+
+Default values (when enabled)
+
+```
+rules:
+  key-duplicates:
+    forbid-duplicated-merge-keys: false
+```
+
+Examples
+
+1. With `key-duplicates: {}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   - key 1: v
+     key 2: val
+     key 3: value
+   - {a: 1, b: 2, c: 3}
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - key 1: v
+     key 2: val
+     key 1: value
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - {a: 1, b: 2, b: 3}
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   duplicated key: 1
+   "duplicated key": 2
+
+   other duplication: 1
+   ? >-
+       other
+       duplication
+   : 2
+   ```
+2. With `key-duplicates: {forbid-duplicated-merge-keys: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   anchor_one: &anchor_one
+     one: one
+   anchor_two: &anchor_two
+     two: two
+   anchor_reference:
+     <<: [*anchor_one, *anchor_two]
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   anchor_one: &anchor_one
+     one: one
+   anchor_two: &anchor_two
+     two: two
+   anchor_reference:
+     <<: *anchor_one
+     <<: *anchor_two
+   ```
+
+## [key-ordering](#id16)[](#module-yamllint.rules.key_ordering "Link to this heading")
+
+Use this rule to enforce alphabetical ordering of keys in mappings. The sorting
+order uses the Unicode code point number as a default. As a result, the
+ordering is case-sensitive and not accent-friendly (see examples below).
+This can be changed by setting the global `locale` option. This allows one
+to sort case and accents properly.
+
+Options
+
+* `ignored-keys` is a list of PCRE regexes to ignore some keys while checking
+  order, if they match any regex.
+
+Default values (when enabled)
+
+```
+rules:
+  key-ordering:
+    ignored-keys: []
+```
+
+Examples
+
+1. With `key-ordering: {}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   - key 1: v
+     key 2: val
+     key 3: value
+   - {a: 1, b: 2, c: 3}
+   - T-shirt: 1
+     T-shirts: 2
+     t-shirt: 3
+     t-shirts: 4
+   - hair: true
+     hais: true
+     haïr: true
+     haïssable: true
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - key 2: v
+     key 1: val
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - {b: 1, a: 2}
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - T-shirt: 1
+     t-shirt: 2
+     T-shirts: 3
+     t-shirts: 4
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - haïr: true
+     hais: true
+   ```
+2. With global option `locale: "en_US.UTF-8"` and rule `key-ordering: {}`
+
+   as opposed to before, the following code snippet would now **PASS**:
+
+   ```
+   - t-shirt: 1
+     T-shirt: 2
+     t-shirts: 3
+     T-shirts: 4
+   - hair: true
+     haïr: true
+     hais: true
+     haïssable: true
+   ```
+3. With rule `key-ordering: {ignored-keys: ["name"]}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   - a:
+     b:
+     name: ignored
+     first-name: ignored
+     c:
+     d:
+   ```
+
+## [line-length](#id17)[](#module-yamllint.rules.line_length "Link to this heading")
+
+Use this rule to set a limit to lines length.
+
+Options
+
+* `max` defines the maximal (inclusive) length of lines.
+* `allow-non-breakable-words` is used to allow non breakable words (without
+  spaces inside) to overflow the limit. This is useful for long URLs, for
+  instance. Use `true` to allow, `false` to forbid.
+* `allow-non-breakable-inline-mappings` implies `allow-non-breakable-words`
+  and extends it to also allow non-breakable words in inline mappings.
+
+Default values (when enabled)
+
+```
+rules:
+  line-length:
+    max: 80
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: false
+```
+
+Examples
+
+1. With `line-length: {max: 70}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   long sentence:
+     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+     eiusmod tempor incididunt ut labore et dolore magna aliqua.
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   long sentence:
+     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+     tempor incididunt ut labore et dolore magna aliqua.
+   ```
+2. With `line-length: {max: 60, allow-non-breakable-words: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   this:
+     is:
+       - a:
+           http://localhost/very/very/very/very/very/very/very/very/long/url
+
+   # this comment is too long,
+   # but hard to split:
+   # http://localhost/another/very/very/very/very/very/very/very/very/long/url
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - this line is waaaaaaaaaaaaaay too long but could be easily split...
+   ```
+
+   and the following code snippet would also **FAIL**:
+
+   ```
+   - foobar: http://localhost/very/very/very/very/very/very/very/very/long/url
+   ```
+3. With `line-length: {max: 60, allow-non-breakable-words: true,
+   allow-non-breakable-inline-mappings: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   - foobar: http://localhost/very/very/very/very/very/very/very/very/long/url
+   ```
+4. With `line-length: {max: 60, allow-non-breakable-words: false}`
+
+   the following code snippet would **FAIL**:
+
+   ```
+   this:
+     is:
+       - a:
+           http://localhost/very/very/very/very/very/very/very/very/long/url
+   ```
+
+## [new-line-at-end-of-file](#id18)[](#module-yamllint.rules.new_line_at_end_of_file "Link to this heading")
+
+Use this rule to require a new line character (`\n`) at the end of files.
+
+The POSIX standard [requires the last line to end with a new line character](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_206).
+All UNIX tools expect a new line at the end of files. Most text editors use
+this convention too.
+
+## [new-lines](#id19)[](#module-yamllint.rules.new_lines "Link to this heading")
+
+Use this rule to force the type of new line characters.
+
+Options
+
+* Set `type` to `unix` to enforce UNIX-typed new line characters (`\n`),
+  set `type` to `dos` to enforce DOS-typed new line characters
+  (`\r\n`), or set `type` to `platform` to infer the type from the
+  system running yamllint (`\n` on POSIX / UNIX / Linux / Mac OS systems or
+  `\r\n` on DOS / Windows systems).
+
+Default values (when enabled)
+
+```
+rules:
+  new-lines:
+    type: unix
+```
+
+## [octal-values](#id20)[](#module-yamllint.rules.octal_values "Link to this heading")
+
+Use this rule to prevent values with octal numbers. In YAML, numbers that
+start with `0` are interpreted as octal, but this is not always wanted.
+For instance `010` is the city code of Beijing, and should not be
+converted to `8`.
+
+Options
+
+* Use `forbid-implicit-octal` to prevent numbers starting with `0`.
+* Use `forbid-explicit-octal` to prevent numbers starting with `0o`.
+
+Default values (when enabled)
+
+```
+rules:
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+```
+
+Examples
+
+1. With `octal-values: {forbid-implicit-octal: true}`
+
+   the following code snippets would **PASS**:
+
+   ```
+   user:
+     city-code: '010'
+   ```
+
+   the following code snippets would **PASS**:
+
+   ```
+   user:
+     city-code: 010,021
+   ```
+
+   the following code snippets would **FAIL**:
+
+   ```
+   user:
+     city-code: 010
+   ```
+2. With `octal-values: {forbid-explicit-octal: true}`
+
+   the following code snippets would **PASS**:
+
+   ```
+   user:
+     city-code: '0o10'
+   ```
+
+   the following code snippets would **FAIL**:
+
+   ```
+   user:
+     city-code: 0o10
+   ```
+
+## [quoted-strings](#id21)[](#module-yamllint.rules.quoted_strings "Link to this heading")
+
+Use this rule to forbid any string values that are not quoted, or to prevent
+quoted strings without needing it. You can also enforce the type of the quote
+used.
+
+Options
+
+* `quote-type` defines allowed quotes: `single`, `double`, `consistent`
+  or `any` (default).
+* `required` defines whether using quotes in string values is required
+  (`true`, default) or not (`false`), or only allowed when really needed
+  (`only-when-needed`).
+* `extra-required` is a list of PCRE regexes to force string values to be
+  quoted, if they match any regex. This option can only be used with
+  `required: false` and `required: only-when-needed`.
+* `extra-allowed` is a list of PCRE regexes to allow quoted string values,
+  even if `required: only-when-needed` is set.
+* `allow-quoted-quotes` allows (`true`) using disallowed quotes for strings
+  with allowed quotes inside. Default `false`.
+* `check-keys` defines whether to apply the rules to keys in mappings. By
+  default, `quoted-strings` rules apply only to values. Set this option to
+  `true` to apply the rules to keys as well.
+
+**Note**: Multi-line strings (with `|` or `>`) will not be checked.
+
+Default values (when enabled)
+
+```
+rules:
+  quoted-strings:
+    quote-type: any
+    required: true
+    extra-required: []
+    extra-allowed: []
+    allow-quoted-quotes: false
+    check-keys: false
+```
+
+Examples
+
+1. With `quoted-strings: {quote-type: any, required: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   foo: "bar"
+   bar: 'foo'
+   number: 123
+   boolean: true
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   foo: bar
+   ```
+2. With `quoted-strings: {quote-type: single, required: only-when-needed}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   foo: bar
+   bar: foo
+   not_number: '123'
+   not_boolean: 'true'
+   not_comment: '# comment'
+   not_list: '[1, 2, 3]'
+   not_map: '{a: 1, b: 2}'
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   foo: 'bar'
+   ```
+3. With `quoted-strings: {required: false, extra-required: [^http://,
+   ^ftp://]}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   - localhost
+   - "localhost"
+   - "http://localhost"
+   - "ftp://localhost"
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - http://localhost
+   - ftp://localhost
+   ```
+4. With `quoted-strings: {required: only-when-needed, extra-allowed:
+   [^http://, ^ftp://], extra-required: [QUOTED]}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   - localhost
+   - "http://localhost"
+   - "ftp://localhost"
+   - "this is a string that needs to be QUOTED"
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - "localhost"
+   - this is a string that needs to be QUOTED
+   ```
+5. With `quoted-strings: {quote-type: double, allow-quoted-quotes: false}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   foo: "bar\"baz"
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   foo: 'bar"baz'
+   ```
+6. With `quoted-strings: {quote-type: double, allow-quoted-quotes: true}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   foo: 'bar"baz'
+   ```
+7. With `quoted-strings: {quote-type: consistent}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   foo: 'bar'
+   baz: 'quux'
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   foo: 'bar'
+   baz: "quux"
+   ```
+8. With `quoted-strings: {required: only-when-needed, check-keys: true,
+   extra-required: ["[:]"]}`
+
+   the following code snippet would **FAIL**:
+
+   ```
+   foo:bar: baz
+   ```
+
+   the following code snippet would **PASS**:
+
+   ```
+   "foo:bar": baz
+   ```
+
+## [trailing-spaces](#id22)[](#module-yamllint.rules.trailing_spaces "Link to this heading")
+
+Use this rule to forbid trailing spaces at the end of lines.
+
+Examples
+
+1. With `trailing-spaces: {}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   this document doesn't contain
+   any trailing
+   spaces
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   this document contains     
+   trailing spaces
+   on lines 1 and 3
+   ```
+
+## [truthy](#id23)[](#module-yamllint.rules.truthy "Link to this heading")
+
+Use this rule to forbid non-explicitly typed truthy values other than allowed
+ones (by default: `true` and `false`), for example `YES` or `off`.
+
+This can be useful to prevent surprises from YAML parsers transforming
+`[yes, FALSE, Off]` into `[true, false, false]` or
+`{y: 1, yes: 2, on: 3, true: 4, True: 5}` into `{y: 1, true: 5}`.
+
+Depending on the YAML specification version used by the YAML document, the list
+of truthy values can differ. In YAML 1.2, only capitalized / uppercased
+combinations of `true` and `false` are considered truthy, whereas in YAML
+1.1 combinations of `yes`, `no`, `on` and `off` are too. To make the
+YAML specification version explicit in a YAML document, a `%YAML 1.2`
+directive can be used (see example below).
+
+Options
+
+* `allowed-values` defines the list of truthy values which will be ignored
+  during linting. The default is `['true', 'false']`, but can be changed to
+  any list containing: `'TRUE'`, `'True'`, `'true'`, `'FALSE'`,
+  `'False'`, `'false'`, `'YES'`, `'Yes'`, `'yes'`, `'NO'`,
+  `'No'`, `'no'`, `'ON'`, `'On'`, `'on'`, `'OFF'`, `'Off'`,
+  `'off'`.
+* `check-keys` disables verification for keys in mappings. By default,
+  `truthy` rule applies to both keys and values. Set this option to `false`
+  to prevent this.
+
+Default values (when enabled)
+
+```
+rules:
+  truthy:
+    allowed-values: ['true', 'false']
+    check-keys: true
+```
+
+Examples
+
+1. With `truthy: {}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   boolean: true
+
+   object: {"True": 1, 1: "True"}
+
+   "yes":  1
+   "on":   2
+   "True": 3
+
+    explicit:
+      string1: !!str True
+      string2: !!str yes
+      string3: !!str off
+      encoded: !!binary |
+                 True
+                 OFF
+                 pad==  # this decodes as 'N»8Qii'
+      boolean1: !!bool true
+      boolean2: !!bool "false"
+      boolean3: !!bool FALSE
+      boolean4: !!bool True
+      boolean5: !!bool off
+      boolean6: !!bool NO
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   object: {True: 1, 1: True}
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   %YAML 1.1
+   ---
+   yes:  1
+   on:   2
+   True: 3
+   ```
+
+   the following code snippet would **PASS**:
+
+   ```
+   %YAML 1.2
+   ---
+   yes:  1
+   on:   2
+   true: 3
+   ```
+2. With `truthy: {allowed-values: ["yes", "no"]}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   - yes
+   - no
+   - "true"
+   - 'false'
+   - foo
+   - bar
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   - true
+   - false
+   - on
+   - off
+   ```
+3. With `truthy: {check-keys: false}`
+
+   the following code snippet would **PASS**:
+
+   ```
+   yes:  1
+   on:   2
+   true: 3
+   ```
+
+   the following code snippet would **FAIL**:
+
+   ```
+   yes:  Yes
+   on:   On
+   true: True
+   ```

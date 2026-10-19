@@ -793,17 +793,20 @@ def place_changelog_entry(text: str, entry: str, heading: str, newest_first: boo
     return text
 
 
-# The template's recipes were kebab-case until 2026-10-07; governance coding-guide now asks snake_case for every command name. A project bootstrapped
-# earlier still has the old names in its justfile, and its re-generated blocks would name recipes it does not have, so the upgrade renames them too.
-# Only these seven, which the template itself introduced: a project's own recipes are its own to rename when touched.
+# Recipe names the template introduced, renamed in every project's justfile by the upgrade. History: kebab-case until 2026-10-07, snake_case from
+# 2026-10-07, kebab-case again from 2026-10-19, when the operator revised governance coding-guide: code files follow their language, names people type
+# at a command line (CLI commands, task-runner recipes) are kebab-case (skill-coder references/naming-conventions.md). A project bootstrapped in the
+# snake_case window has those names in its justfile, and its re-generated blocks would name recipes it does not have, so the upgrade renames them.
+# Only the template's own recipes: a project's own recipes are its own to rename when touched.
 TEMPLATE_RECIPE_RENAMES = {
-    "nav-upgrade-dry-run": "nav_upgrade_dry_run",
-    "nav-upgrade": "nav_upgrade",
-    "nav-validate": "nav_validate",
-    "nav-check-diff": "nav_check_diff",
-    "nav-selftest": "nav_selftest",
-    "audit-scripts": "audit_scripts",
-    "lint-md": "lint_md",
+    "nav_upgrade_dry_run": "nav-upgrade-dry-run",
+    "nav_upgrade": "nav-upgrade",
+    "nav_validate": "nav-validate",
+    "nav_check_diff": "nav-check-diff",
+    "nav_check_context_map": "nav-check-context-map",
+    "nav_selftest": "nav-selftest",
+    "audit_scripts": "audit-scripts",
+    "lint_md": "lint-md",
 }
 
 # Project docs that name template recipes, renamed alongside the justfile. Not CHANGELOG.md or SCRATCHPAD.md: records state what was true then
@@ -813,9 +816,9 @@ RECIPE_DOCS = ["scripts/README.md", "README.md", "AGENTS.md", "CLAUDE.md", "AI_N
 
 
 def upgrade_justfile_recipes(path, dry_run, report_data):
-    """Rename the template's kebab-case recipes to snake_case in a project's justfile or recipe-naming doc: definitions, dependencies and mentions.
+    """Rename the template's snake_case recipes to kebab-case in a project's justfile or recipe-naming doc: definitions, dependencies and mentions.
 
-    Whole names only (a hyphen or word character on either side stops a match), so a project recipe such as `lint-md-strict` is left alone. A
+    Whole names only (a hyphen or word character on either side stops a match), so a project recipe such as `lint_md_strict` is left alone. A
     project with no justfile, or none of these names, is untouched. With --dry-run the change is reported and nothing is written.
     """
     if not os.path.isfile(path):
@@ -829,7 +832,7 @@ def upgrade_justfile_recipes(path, dry_run, report_data):
     if new == text:
         return
     if dry_run:
-        report_data["changed_files"].append(f"{relpath(path, root)} (would rename template recipes to snake_case)")
+        report_data["changed_files"].append(f"{relpath(path, root)} (would rename template recipes to kebab-case)")
         return
     with open(path, "w", encoding="utf-8") as f:
         f.write(new)
@@ -838,7 +841,7 @@ def upgrade_justfile_recipes(path, dry_run, report_data):
 
 def main():
     """Upgrade one project's navigation control layer: write or refresh each managed block from the templates, stamp the current VERSION, add
-    missing context-map keys, rename the template's kebab-case recipes in its justfile, and report what changed (nothing is written with --dry-run).
+    missing context-map keys, rename the template's snake_case recipes to kebab-case in its justfile, and report what changed (nothing is written with --dry-run).
     """
     args = parse_args()
     root = os.path.abspath(args.project_root)

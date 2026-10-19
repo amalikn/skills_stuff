@@ -1,0 +1,1616 @@
+Contents of https://docs.npmjs.com/cli/v10/configuring-npm/package-json (retrieved 2026-10-19):
+
+[Skip to search](#search-box-input)[Skip to content](#skip-to-content)
+
+[](/)
+
+![](data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjMyIiB3aWR0aD0iMzIiIHZpZXdib3g9IjAgMCA3MDAgNzAwIiBmaWxsPSJjdXJyZW50Q29sb3IiIGFyaWEtaGlkZGVuPSJ0cnVlIj48cG9seWdvbiBmaWxsPSJjdXJyZW50Q29sb3IiIHBvaW50cz0iMCw3MDAgNzAwLDcwMCA3MDAsMCAwLDAiPjwvcG9seWdvbj48cG9seWdvbiBmaWxsPSIjZmZmZmZmIiBwb2ludHM9IjE1MCw1NTAgMzUwLDU1MCAzNTAsMjUwIDQ1MCwyNTAgNDUwLDU1MCA1NTAsNTUwIDU1MCwxNTAgMTUwLDE1MCAiPjwvcG9seWdvbj48L3N2Zz4=)
+
+npm Docs
+
+[npmjs.com](https://npmjs.com/)[Status](https://status.npmjs.com/)[Support](https://npmjs.com/support/)
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tc2VhcmNoIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Ik0xMC42OCAxMS43NGE2IDYgMCAwIDEtNy45MjItOC45ODIgNiA2IDAgMCAxIDguOTgyIDcuOTIybDMuMDQgMy4wNGEuNzQ5Ljc0OSAwIDAgMS0uMzI2IDEuMjc1Ljc0OS43NDkgMCAwIDEtLjczNC0uMjE1Wk0xMS41IDdhNC40OTkgNC40OTkgMCAxIDAtOC45OTcgMEE0LjQ5OSA0LjQ5OSAwIDAgMCAxMS41IDdaIiAvPjwvc3ZnPg==)
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tdGhyZWUtYmFycyIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9ImN1cnJlbnRDb2xvciIgZGlzcGxheT0iaW5saW5lLWJsb2NrIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9InZlcnRpY2FsLWFsaWduOnRleHQtYm90dG9tIj48cGF0aCBkPSJNMSAyLjc1QS43NS43NSAwIDAgMSAxLjc1IDJoMTIuNWEuNzUuNzUgMCAwIDEgMCAxLjVIMS43NUEuNzUuNzUgMCAwIDEgMSAyLjc1Wm0wIDVBLjc1Ljc1IDAgMCAxIDEuNzUgN2gxMi41YS43NS43NSAwIDAgMSAwIDEuNUgxLjc1QS43NS43NSAwIDAgMSAxIDcuNzVaTTEuNzUgMTJoMTIuNWEuNzUuNzUgMCAwIDEgMCAxLjVIMS43NWEuNzUuNzUgMCAwIDEgMC0xLjVaIiAvPjwvc3ZnPg==)
+
+### Site navigation
+
+- 
+
+- - [About npm](/about-npm)
+
+- 
+
+- - Getting started![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+    - Setting up your npm user account![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Creating a new user account on the public registry](/creating-a-new-npm-user-account)
+      - [Creating a strong password](/creating-a-strong-password)
+      - [Receiving a one-time password over email](/receiving-a-one-time-password-over-email)
+      - [About two-factor authentication](/about-two-factor-authentication)
+      - [Configuring two-factor authentication](/configuring-two-factor-authentication)
+      - [Accessing npm using two-factor authentication](/accessing-npm-using-2fa)
+      - [Recovering your 2FA-enabled account](/recovering-your-2fa-enabled-account)
+    - Managing your npm user account![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Managing your profile settings](/managing-your-profile-settings)
+      - [Changing your npm username](/changing-your-npm-username)
+      - [Deleting your npm user account](/deleting-your-npm-user-account)
+      - [Requesting an export of your personal data](/requesting-your-data)
+    - Paying for your npm user account![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Upgrading to a paid user account plan](/upgrading-to-a-paid-user-account-plan)
+      - [Viewing, downloading, and emailing receipts for your npm user account](/viewing-downloading-and-emailing-receipts-for-your-user-account)
+      - [Updating user account billing settings](/updating-user-account-billing-settings)
+      - [Downgrading to a free user account plan](/downgrading-to-a-free-user-account-plan)
+    - Configuring your local environment![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [About npm CLI versions](/about-npm-versions)
+      - [Downloading and installing Node.js and npm](/downloading-and-installing-node-js-and-npm)
+    - Troubleshooting![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Generating and locating npm-debug.log files](/generating-and-locating-npm-debug.log-files)
+      - [Common errors](/common-errors)
+      - [Try the latest stable version of node](/try-the-latest-stable-version-of-node)
+      - [Try the latest stable version of npm](/try-the-latest-stable-version-of-npm)
+
+- 
+
+- - Packages and modules![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+    - Introduction to packages and modules![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [About the public npm registry](/about-the-public-npm-registry)
+      - [About packages and modules](/about-packages-and-modules)
+      - [About scopes](/about-scopes)
+      - [About public packages](/about-public-packages)
+      - [About private packages](/about-private-packages)
+      - [npm package scope, access level, and visibility](/package-scope-access-level-and-visibility)
+    - Contributing packages to the registry![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Creating a package.json file](/creating-a-package-json-file)
+      - [Creating Node.js modules](/creating-node-js-modules)
+      - [About package README files](/about-package-readme-files)
+      - [Creating and publishing unscoped public packages](/creating-and-publishing-unscoped-public-packages)
+      - [Creating and publishing scoped public packages](/creating-and-publishing-scoped-public-packages)
+      - [Creating and publishing private packages](/creating-and-publishing-private-packages)
+      - [Package name guidelines](/package-name-guidelines)
+      - [Specifying dependencies and devDependencies in a package.json file](/specifying-dependencies-and-devdependencies-in-a-package-json-file)
+      - [About semantic versioning](/about-semantic-versioning)
+      - [Adding dist-tags to packages](/adding-dist-tags-to-packages)
+    - Updating and managing your published packages![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Changing package visibility](/changing-package-visibility)
+      - [Adding collaborators to private packages owned by a user account](/adding-collaborators-to-private-packages-owned-by-a-user-account)
+      - [Updating your published package version number](/updating-your-published-package-version-number)
+      - [Deprecating and undeprecating packages or package versions](/deprecating-and-undeprecating-packages-or-package-versions)
+      - [Transferring a package from a user account to another user account](/transferring-a-package-from-a-user-account-to-another-user-account)
+      - [Unpublishing packages from the registry](/unpublishing-packages-from-the-registry)
+    - Getting packages from the registry![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Searching for and choosing packages to download](/searching-for-and-choosing-packages-to-download)
+      - [Downloading and installing packages locally](/downloading-and-installing-packages-locally)
+      - [Downloading and installing packages globally](/downloading-and-installing-packages-globally)
+      - [Resolving EACCES permissions errors when installing packages globally](/resolving-eacces-permissions-errors-when-installing-packages-globally)
+      - [Updating packages downloaded from the registry](/updating-packages-downloaded-from-the-registry)
+      - [Using npm packages in your projects](/using-npm-packages-in-your-projects)
+      - [Using deprecated packages](/using-deprecated-packages)
+      - [Uninstalling packages and dependencies](/uninstalling-packages-and-dependencies)
+    - Securing your code![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [About audit reports](/about-audit-reports)
+      - [Auditing package dependencies for security vulnerabilities](/auditing-package-dependencies-for-security-vulnerabilities)
+      - [Generating provenance statements](/generating-provenance-statements)
+      - [Trusted publishing with OIDC](/trusted-publishers)
+      - [Staged publishing](/staged-publishing)
+      - [About ECDSA registry signatures](/about-registry-signatures)
+      - [Verifying ECDSA registry signatures](/verifying-registry-signatures)
+      - [Requiring 2FA for package publishing and settings modification](/requiring-2fa-for-package-publishing-and-settings-modification)
+      - [Reporting malware in an npm package](/reporting-malware-in-an-npm-package)
+
+- 
+
+- - Integrations![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+    - Integrating npm with external services![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [About access tokens](/about-access-tokens)
+      - [Creating and viewing access tokens](/creating-and-viewing-access-tokens)
+      - [Revoking access tokens](/revoking-access-tokens)
+      - [Using private packages in a CI/CD workflow](/using-private-packages-in-a-ci-cd-workflow)
+      - [Docker and private modules](/docker-and-private-modules)
+
+- 
+
+- - Organizations![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+    - Creating and managing organizations![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Creating an organization](/creating-an-organization)
+      - [Converting your user account to an organization](/converting-your-user-account-to-an-organization)
+      - [Requiring two-factor authentication in your organization](/requiring-two-factor-authentication-in-your-organization)
+      - [Renaming an organization](/renaming-an-organization)
+      - [Deleting an organization](/deleting-an-organization)
+    - Paying for your organization![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Upgrading to a paid organization plan](/upgrading-to-a-paid-organization-plan)
+      - [Viewing, downloading, and emailing receipts for your organization](/viewing-downloading-and-emailing-receipts-for-your-organization)
+      - [Updating organization billing settings](/updating-organization-billing-settings)
+      - [Downgrading to a free organization plan](/downgrading-to-a-free-organization-plan)
+    - Managing organization members![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Adding members to your organization](/adding-members-to-your-organization)
+      - [Accepting or rejecting an organization invitation](/accepting-or-rejecting-an-organization-invitation)
+      - [Organization roles and permissions](/organization-roles-and-permissions)
+      - [Managing organization permissions](/managing-organization-permissions)
+      - [Removing members from your organization](/removing-members-from-your-organization)
+    - Managing teams![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [About the developers team](/about-developers-team)
+      - [Creating teams](/creating-teams)
+      - [Adding organization members to teams](/adding-organization-members-to-teams)
+      - [Removing organization members from teams](/removing-organization-members-from-teams)
+      - [Managing team access to organization packages](/managing-team-access-to-organization-packages)
+      - [Removing teams](/removing-teams)
+    - Managing organization packages![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [About organization scopes and packages](/about-organization-scopes-and-packages)
+      - [Configuring your npm client with your organization settings](/configuring-your-npm-client-with-your-organization-settings)
+      - [Creating and publishing an organization scoped package](/creating-and-publishing-an-organization-scoped-package)
+
+- 
+
+- - Policies![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+    - [Terms of Use](/policies/terms)
+    - [Open Source Terms](/policies/open-source-terms)
+    - [Dual Use Content](/policies/dual-use)
+    - [Private Terms](/policies/private-terms)
+    - [Code of Conduct](/policies/conduct)
+    - [Package Name Disputes](/policies/disputes)
+    - [npm License](/policies/npm-license)
+    - [Privacy Policy](/policies/privacy)
+    - [Unpublish Policy](/policies/unpublish)
+    - [Copyright and DMCA Policy](/policies/dmca)
+    - [Logos and Usage](/policies/logos-and-usage)
+    - [Security](/policies/security)
+    - [Replication and web crawler policy](/policies/crawlers)
+
+- 
+
+- - [Threats and mitigations](/threats-and-mitigations)
+
+- 
+
+- - npm CLI![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+    - CLI Commands![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [npm](/cli/v10/commands/npm)
+      - [npm access](/cli/v10/commands/npm-access)
+      - [npm adduser](/cli/v10/commands/npm-adduser)
+      - [npm audit](/cli/v10/commands/npm-audit)
+      - [npm bugs](/cli/v10/commands/npm-bugs)
+      - [npm cache](/cli/v10/commands/npm-cache)
+      - [npm ci](/cli/v10/commands/npm-ci)
+      - [npm completion](/cli/v10/commands/npm-completion)
+      - [npm config](/cli/v10/commands/npm-config)
+      - [npm dedupe](/cli/v10/commands/npm-dedupe)
+      - [npm deprecate](/cli/v10/commands/npm-deprecate)
+      - [npm diff](/cli/v10/commands/npm-diff)
+      - [npm dist-tag](/cli/v10/commands/npm-dist-tag)
+      - [npm docs](/cli/v10/commands/npm-docs)
+      - [npm doctor](/cli/v10/commands/npm-doctor)
+      - [npm edit](/cli/v10/commands/npm-edit)
+      - [npm exec](/cli/v10/commands/npm-exec)
+      - [npm explain](/cli/v10/commands/npm-explain)
+      - [npm explore](/cli/v10/commands/npm-explore)
+      - [npm find-dupes](/cli/v10/commands/npm-find-dupes)
+      - [npm fund](/cli/v10/commands/npm-fund)
+      - [npm help](/cli/v10/commands/npm-help)
+      - [npm help-search](/cli/v10/commands/npm-help-search)
+      - [npm hook](/cli/v10/commands/npm-hook)
+      - [npm init](/cli/v10/commands/npm-init)
+      - [npm install](/cli/v10/commands/npm-install)
+      - [npm install-ci-test](/cli/v10/commands/npm-install-ci-test)
+      - [npm install-test](/cli/v10/commands/npm-install-test)
+      - [npm link](/cli/v10/commands/npm-link)
+      - [npm login](/cli/v10/commands/npm-login)
+      - [npm logout](/cli/v10/commands/npm-logout)
+      - [npm ls](/cli/v10/commands/npm-ls)
+      - [npm org](/cli/v10/commands/npm-org)
+      - [npm outdated](/cli/v10/commands/npm-outdated)
+      - [npm owner](/cli/v10/commands/npm-owner)
+      - [npm pack](/cli/v10/commands/npm-pack)
+      - [npm ping](/cli/v10/commands/npm-ping)
+      - [npm pkg](/cli/v10/commands/npm-pkg)
+      - [npm prefix](/cli/v10/commands/npm-prefix)
+      - [npm profile](/cli/v10/commands/npm-profile)
+      - [npm prune](/cli/v10/commands/npm-prune)
+      - [npm publish](/cli/v10/commands/npm-publish)
+      - [npm query](/cli/v10/commands/npm-query)
+      - [npm rebuild](/cli/v10/commands/npm-rebuild)
+      - [npm repo](/cli/v10/commands/npm-repo)
+      - [npm restart](/cli/v10/commands/npm-restart)
+      - [npm root](/cli/v10/commands/npm-root)
+      - [npm run-script](/cli/v10/commands/npm-run-script)
+      - [npm sbom](/cli/v10/commands/npm-sbom)
+      - [npm search](/cli/v10/commands/npm-search)
+      - [npm shrinkwrap](/cli/v10/commands/npm-shrinkwrap)
+      - [npm star](/cli/v10/commands/npm-star)
+      - [npm stars](/cli/v10/commands/npm-stars)
+      - [npm start](/cli/v10/commands/npm-start)
+      - [npm stop](/cli/v10/commands/npm-stop)
+      - [npm team](/cli/v10/commands/npm-team)
+      - [npm test](/cli/v10/commands/npm-test)
+      - [npm token](/cli/v10/commands/npm-token)
+      - [npm uninstall](/cli/v10/commands/npm-uninstall)
+      - [npm unpublish](/cli/v10/commands/npm-unpublish)
+      - [npm unstar](/cli/v10/commands/npm-unstar)
+      - [npm update](/cli/v10/commands/npm-update)
+      - [npm version](/cli/v10/commands/npm-version)
+      - [npm view](/cli/v10/commands/npm-view)
+      - [npm whoami](/cli/v10/commands/npm-whoami)
+      - [npx](/cli/v10/commands/npx)
+    - Configuring npm![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Install](/cli/v10/configuring-npm/install)
+      - [Folders](/cli/v10/configuring-npm/folders)
+      - [.npmrc](/cli/v10/configuring-npm/npmrc)
+      - [npm-shrinkwrap.json](/cli/v10/configuring-npm/npm-shrinkwrap-json)
+      - [package.json](/cli/v10/configuring-npm/package-json)
+      - [package-lock.json](/cli/v10/configuring-npm/package-lock-json)
+    - Using npm![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+      - [Registry](/cli/v10/using-npm/registry)
+      - [Package spec](/cli/v10/using-npm/package-spec)
+      - [Config](/cli/v10/using-npm/config)
+      - [Logging](/cli/v10/using-npm/logging)
+      - [Scope](/cli/v10/using-npm/scope)
+      - [Scripts](/cli/v10/using-npm/scripts)
+      - [Workspaces](/cli/v10/using-npm/workspaces)
+      - [Organizations](/cli/v10/using-npm/orgs)
+      - [Dependency Selectors](/cli/v10/using-npm/dependency-selectors)
+      - [Developers](/cli/v10/using-npm/developers)
+      - [Removal](/cli/v10/using-npm/removal)
+      - [Changelog](/cli/v10/using-npm/changelog)
+
+- [npmjs.com![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluay1leHRlcm5hbCIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9ImN1cnJlbnRDb2xvciIgZGlzcGxheT0iaW5saW5lLWJsb2NrIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9InZlcnRpY2FsLWFsaWduOnRleHQtYm90dG9tIj48cGF0aCBkPSJNMy43NSAyaDMuNWEuNzUuNzUgMCAwIDEgMCAxLjVoLTMuNWEuMjUuMjUgMCAwIDAtLjI1LjI1djguNWMwIC4xMzguMTEyLjI1LjI1LjI1aDguNWEuMjUuMjUgMCAwIDAgLjI1LS4yNXYtMy41YS43NS43NSAwIDAgMSAxLjUgMHYzLjVBMS43NSAxLjc1IDAgMCAxIDEyLjI1IDE0aC04LjVBMS43NSAxLjc1IDAgMCAxIDIgMTIuMjV2LTguNUMyIDIuNzg0IDIuNzg0IDIgMy43NSAyWm02Ljg1NC0xaDQuMTQ2YS4yNS4yNSAwIDAgMSAuMjUuMjV2NC4xNDZhLjI1LjI1IDAgMCAxLS40MjcuMTc3TDEzLjAzIDQuMDMgOS4yOCA3Ljc4YS43NTEuNzUxIDAgMCAxLTEuMDQyLS4wMTguNzUxLjc1MSAwIDAgMS0uMDE4LTEuMDQybDMuNzUtMy43NS0xLjU0My0xLjU0M0EuMjUuMjUgMCAwIDEgMTAuNjA0IDFaIiAvPjwvc3ZnPg==)](https://npmjs.com/)
+
+  [Status![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluay1leHRlcm5hbCIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9ImN1cnJlbnRDb2xvciIgZGlzcGxheT0iaW5saW5lLWJsb2NrIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9InZlcnRpY2FsLWFsaWduOnRleHQtYm90dG9tIj48cGF0aCBkPSJNMy43NSAyaDMuNWEuNzUuNzUgMCAwIDEgMCAxLjVoLTMuNWEuMjUuMjUgMCAwIDAtLjI1LjI1djguNWMwIC4xMzguMTEyLjI1LjI1LjI1aDguNWEuMjUuMjUgMCAwIDAgLjI1LS4yNXYtMy41YS43NS43NSAwIDAgMSAxLjUgMHYzLjVBMS43NSAxLjc1IDAgMCAxIDEyLjI1IDE0aC04LjVBMS43NSAxLjc1IDAgMCAxIDIgMTIuMjV2LTguNUMyIDIuNzg0IDIuNzg0IDIgMy43NSAyWm02Ljg1NC0xaDQuMTQ2YS4yNS4yNSAwIDAgMSAuMjUuMjV2NC4xNDZhLjI1LjI1IDAgMCAxLS40MjcuMTc3TDEzLjAzIDQuMDMgOS4yOCA3Ljc4YS43NTEuNzUxIDAgMCAxLTEuMDQyLS4wMTguNzUxLjc1MSAwIDAgMS0uMDE4LTEuMDQybDMuNzUtMy43NS0xLjU0My0xLjU0M0EuMjUuMjUgMCAwIDEgMTAuNjA0IDFaIiAvPjwvc3ZnPg==)](https://status.npmjs.com/)
+
+  [Support![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluay1leHRlcm5hbCIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9ImN1cnJlbnRDb2xvciIgZGlzcGxheT0iaW5saW5lLWJsb2NrIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9InZlcnRpY2FsLWFsaWduOnRleHQtYm90dG9tIj48cGF0aCBkPSJNMy43NSAyaDMuNWEuNzUuNzUgMCAwIDEgMCAxLjVoLTMuNWEuMjUuMjUgMCAwIDAtLjI1LjI1djguNWMwIC4xMzguMTEyLjI1LjI1LjI1aDguNWEuMjUuMjUgMCAwIDAgLjI1LS4yNXYtMy41YS43NS43NSAwIDAgMSAxLjUgMHYzLjVBMS43NSAxLjc1IDAgMCAxIDEyLjI1IDE0aC04LjVBMS43NSAxLjc1IDAgMCAxIDIgMTIuMjV2LTguNUMyIDIuNzg0IDIuNzg0IDIgMy43NSAyWm02Ljg1NC0xaDQuMTQ2YS4yNS4yNSAwIDAgMSAuMjUuMjV2NC4xNDZhLjI1LjI1IDAgMCAxLS40MjcuMTc3TDEzLjAzIDQuMDMgOS4yOCA3Ljc4YS43NTEuNzUxIDAgMCAxLTEuMDQyLS4wMTguNzUxLjc1MSAwIDAgMS0uMDE4LTEuMDQybDMuNzUtMy43NS0xLjU0My0xLjU0M0EuMjUuMjUgMCAwIDEgMTAuNjA0IDFaIiAvPjwvc3ZnPg==)](https://npmjs.com/support/)
+
+- [GitHub![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluay1leHRlcm5hbCIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9ImN1cnJlbnRDb2xvciIgZGlzcGxheT0iaW5saW5lLWJsb2NrIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9InZlcnRpY2FsLWFsaWduOnRleHQtYm90dG9tIj48cGF0aCBkPSJNMy43NSAyaDMuNWEuNzUuNzUgMCAwIDEgMCAxLjVoLTMuNWEuMjUuMjUgMCAwIDAtLjI1LjI1djguNWMwIC4xMzguMTEyLjI1LjI1LjI1aDguNWEuMjUuMjUgMCAwIDAgLjI1LS4yNXYtMy41YS43NS43NSAwIDAgMSAxLjUgMHYzLjVBMS43NSAxLjc1IDAgMCAxIDEyLjI1IDE0aC04LjVBMS43NSAxLjc1IDAgMCAxIDIgMTIuMjV2LTguNUMyIDIuNzg0IDIuNzg0IDIgMy43NSAyWm02Ljg1NC0xaDQuMTQ2YS4yNS4yNSAwIDAgMSAuMjUuMjV2NC4xNDZhLjI1LjI1IDAgMCAxLS40MjcuMTc3TDEzLjAzIDQuMDMgOS4yOCA3Ljc4YS43NTEuNzUxIDAgMCAxLTEuMDQyLS4wMTguNzUxLjc1MSAwIDAgMS0uMDE4LTEuMDQybDMuNzUtMy43NS0xLjU0My0xLjU0M0EuMjUuMjUgMCAwIDEgMTAuNjA0IDFaIiAvPjwvc3ZnPg==)](https://github.com/npm/documentation)
+
+1.  [CLI](/cli)
+2.  [Configuring](/cli/v10/configuring-npm)
+3.  [package.json](/cli/v10/configuring-npm/package-json)
+
+# package.json
+
+Specifics of npm's package.json handling
+
+Select CLI Version:
+
+Version 10.9.9 (Legacy)![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tdHJpYW5nbGUtZG93biIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9ImN1cnJlbnRDb2xvciIgZGlzcGxheT0iaW5saW5lLWJsb2NrIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9InZlcnRpY2FsLWFsaWduOnRleHQtYm90dG9tIj48cGF0aCBkPSJtNC40MjcgNy40MjcgMy4zOTYgMy4zOTZhLjI1LjI1IDAgMCAwIC4zNTQgMGwzLjM5Ni0zLjM5NkEuMjUuMjUgMCAwIDAgMTEuMzk2IDdINC42MDRhLjI1LjI1IDAgMCAwLS4xNzcuNDI3WiIgLz48L3N2Zz4=)
+
+Table of contents
+
+- [Description](#description)
+- [name](#name)
+- [version](#version)
+- [description](#description-1)
+- [keywords](#keywords)
+- [homepage](#homepage)
+- [bugs](#bugs)
+- [license](#license)
+- [people fields: author, contributors](#people-fields-author-contributors)
+- [funding](#funding)
+- [files](#files)
+- [exports](#exports)
+- [main](#main)
+- [browser](#browser)
+- [bin](#bin)
+- [man](#man)
+- directories![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+  - [directories.bin](#directoriesbin)
+  - [directories.man](#directoriesman)
+- [repository](#repository)
+- [scripts](#scripts)
+- [config](#config)
+- dependencies![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+  - [URLs as Dependencies](#urls-as-dependencies)
+  - [Git URLs as Dependencies](#git-urls-as-dependencies)
+  - [GitHub URLs](#github-urls)
+  - [Local Paths](#local-paths)
+- [devDependencies](#devdependencies)
+- [peerDependencies](#peerdependencies)
+- [peerDependenciesMeta](#peerdependenciesmeta)
+- [bundleDependencies](#bundledependencies)
+- [optionalDependencies](#optionaldependencies)
+- [overrides](#overrides)
+- [engines](#engines)
+- [os](#os)
+- [cpu](#cpu)
+- [devEngines](#devengines)
+- [private](#private)
+- [publishConfig](#publishconfig)
+- [workspaces](#workspaces)
+- [DEFAULT VALUES](#default-values)
+- [SEE ALSO](#see-also)
+
+## [Description![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#description)
+
+This document is all you need to know about what's required in your package.json file. It must be actual JSON, not just a JavaScript object literal.
+
+A lot of the behavior described in this document is affected by the config settings described in [`config`](/cli/v10/using-npm/config).
+
+## [name![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#name)
+
+If you plan to publish your package, the *most* important things in your package.json are the name and version fields as they will be required. The name and version together form an identifier that is assumed to be completely unique. Changes to the package should come along with changes to the version. If you don't plan to publish your package, the name and version fields are optional.
+
+The name is what your thing is called.
+
+Some rules:
+
+- The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+- The names of scoped packages can begin with a dot or an underscore. This is not permitted without a scope.
+- New packages must not have uppercase letters in the name.
+- The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+
+Some tips:
+
+- Don't use the same name as a core Node module.
+- Don't put "js" or "node" in the name. It's assumed that it's js, since you're writing a package.json file, and you can specify the engine using the "[engines](#engines)" field. (See below.)
+- The name will probably be passed as an argument to require(), so it should be something short, but also reasonably descriptive.
+- You may want to check the npm registry to see if there's something by that name already, before you get too attached to it. [https://www.npmjs.com/](https://www.npmjs.com/)
+
+A name can be optionally prefixed by a scope, e.g. `@myorg/mypackage`. See [`scope`](/cli/v10/using-npm/scope) for more detail.
+
+## [version![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#version)
+
+If you plan to publish your package, the *most* important things in your package.json are the name and version fields as they will be required. The name and version together form an identifier that is assumed to be completely unique. Changes to the package should come along with changes to the version. If you don't plan to publish your package, the name and version fields are optional.
+
+Version must be parseable by [node-semver](https://github.com/npm/node-semver), which is bundled with npm as a dependency. (`npm install semver` to use it yourself.)
+
+## [description![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#description-1)
+
+Put a description in it. It's a string. This helps people discover your package, as it's listed in `npm search`.
+
+## [keywords![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#keywords)
+
+Put keywords in it. It's an array of strings. This helps people discover your package as it's listed in `npm search`.
+
+## [homepage![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#homepage)
+
+The URL to the project homepage.
+
+Example:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+"homepage": "https://github.com/owner/project#readme"
+
+## [bugs![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#bugs)
+
+The URL to your project's issue tracker and / or the email address to which issues should be reported. These are helpful for people who encounter issues with your package.
+
+It should look like this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "bugs": {
+
+    "url": "https://github.com/owner/project/issues",
+
+    "email": "project@hostname.com"
+
+  }
+
+}
+
+You can specify either one or both values. If you want to provide only a URL, you can specify the value for "bugs" as a simple string instead of an object.
+
+If a URL is provided, it will be used by the `npm bugs` command.
+
+## [license![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#license)
+
+You should specify a license for your package so that people know how they are permitted to use it, and any restrictions you're placing on it.
+
+If you're using a common license such as BSD-2-Clause or MIT, add a current SPDX license identifier for the license you're using, like this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "license": "BSD-3-Clause"
+
+}
+
+You can check [the full list of SPDX license IDs](https://spdx.org/licenses/). Ideally you should pick one that is [OSI](https://opensource.org/licenses/) approved.
+
+If your package is licensed under multiple common licenses, use an [SPDX license expression syntax version 2.0 string](https://spdx.dev/specifications/), like this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "license": "(ISC OR GPL-3.0)"
+
+}
+
+If you are using a license that hasn't been assigned an SPDX identifier, or if you are using a custom license, use a string value like this one:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "license": "SEE LICENSE IN \<filename\>"
+
+}
+
+Then include a file named `<filename>` at the top level of the package.
+
+Some old packages used license objects or a "licenses" property containing an array of license objects:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+// Not valid metadata
+
+{
+
+  "license" : {
+
+    "type" : "ISC",
+
+    "url" : "https://opensource.org/licenses/ISC"
+
+  }
+
+}
+
+\
+
+// Not valid metadata
+
+{
+
+  "licenses" : \[
+
+    {
+
+      "type": "MIT",
+
+      "url": "https://www.opensource.org/licenses/mit-license.php"
+
+    },
+
+    {
+
+      "type": "Apache-2.0",
+
+      "url": "https://opensource.org/licenses/apache2.0.php"
+
+    }
+
+  \]
+
+}
+
+Those styles are now deprecated. Instead, use SPDX expressions, like this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "license": "ISC"
+
+}
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "license": "(MIT OR Apache-2.0)"
+
+}
+
+Finally, if you do not wish to grant others the right to use a private or unpublished package under any terms:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "license": "UNLICENSED"
+
+}
+
+Consider also setting `"private": true` to prevent accidental publication.
+
+## [people fields: author, contributors![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#people-fields-author-contributors)
+
+The "author" is one person. "contributors" is an array of people. A "person" is an object with a "name" field and optionally "url" and "email", like this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "Barney Rubble",
+
+  "email": "b@rubble.com",
+
+  "url": "http://barnyrubble.tumblr.com/"
+
+}
+
+Or you can shorten that all into a single string, and npm will parse it for you:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "author": "Barney Rubble \<b@rubble.com\> (http://barnyrubble.tumblr.com/)"
+
+}
+
+Both email and url are optional either way.
+
+npm also sets a top-level "maintainers" field with your npm user info.
+
+## [funding![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#funding)
+
+You can specify an object containing a URL that provides up-to-date information about ways to help fund development of your package, a string URL, or an array of objects and string URLs:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "funding": {
+
+    "type": "individual",
+
+    "url": "http://example.com/donate"
+
+  }
+
+}
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "funding": {
+
+    "type": "patreon",
+
+    "url": "https://www.patreon.com/my-account"
+
+  }
+
+}
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "funding": "http://example.com/donate"
+
+}
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "funding": \[
+
+    {
+
+      "type": "individual",
+
+      "url": "http://example.com/donate"
+
+    },
+
+    "http://example.com/donateAlso",
+
+    {
+
+      "type": "patreon",
+
+      "url": "https://www.patreon.com/my-account"
+
+    }
+
+  \]
+
+}
+
+Users can use the `npm fund` subcommand to list the `funding` URLs of all dependencies of their project, direct and indirect. A shortcut to visit each funding URL is also available when providing the project name such as: `npm fund <projectname>` (when there are multiple URLs, the first one will be visited)
+
+## [files![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#files)
+
+The optional `files` field is an array of file patterns that describes the entries to be included when your package is installed as a dependency. File patterns follow a similar syntax to `.gitignore`, but reversed: including a file, directory, or glob pattern (`*`, `**/*`, and such) will make it so that file is included in the tarball when it's packed. Omitting the field will make it default to `["*"]`, which means it will include all files.
+
+Some special files and directories are also included or excluded regardless of whether they exist in the `files` array (see below).
+
+You can also provide a `.npmignore` file in the root of your package or in subdirectories, which will keep files from being included. At the root of your package it will not override the "files" field, but in subdirectories it will. The `.npmignore` file works just like a `.gitignore`. If there is a `.gitignore` file, and `.npmignore` is missing, `.gitignore`'s contents will be used instead.
+
+Certain files are always included, regardless of settings:
+
+- `package.json`
+- `README`
+- `LICENSE` / `LICENCE`
+- The file in the "main" field
+- The file(s) in the "bin" field
+
+`README` & `LICENSE` can have any case and extension.
+
+Some files are always ignored by default:
+
+- `*.orig`
+- `.*.swp`
+- `.DS_Store`
+- `._*`
+- `.git`
+- `.hg`
+- `.lock-wscript`
+- `.npmrc`
+- `.svn`
+- `.wafpickle-N`
+- `CVS`
+- `config.gypi`
+- `node_modules`
+- `npm-debug.log`
+- `package-lock.json` (use [`npm-shrinkwrap.json`](/cli/v10/configuring-npm/npm-shrinkwrap-json) if you wish it to be published)
+- `pnpm-lock.yaml`
+- `yarn.lock`
+
+Most of these ignored files can be included specifically if included in the `files` globs. Exceptions to this are:
+
+- `.git`
+- `.npmrc`
+- `node_modules`
+- `package-lock.json`
+- `pnpm-lock.yaml`
+- `yarn.lock`
+
+These can not be included.
+
+## [exports![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#exports)
+
+The "exports" provides a modern alternative to "main" allowing multiple entry points to be defined, conditional entry resolution support between environments, and preventing any other entry points besides those defined in "exports". This encapsulation allows module authors to clearly define the public interface for their package. For more details see the [node.js documentation on package entry points](https://nodejs.org/api/packages.html#package-entry-points)
+
+## [main![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#main)
+
+The main field is a module ID that is the primary entry point to your program. That is, if your package is named `foo`, and a user installs it, and then does `require("foo")`, then your main module's exports object will be returned.
+
+This should be a module relative to the root of your package folder.
+
+For most modules, it makes the most sense to have a main script and often not much else.
+
+If `main` is not set, it defaults to `index.js` in the package's root folder.
+
+## [browser![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#browser)
+
+If your module is meant to be used client-side the browser field should be used instead of the main field. This is helpful to hint users that it might rely on primitives that aren't available in Node.js modules. (e.g. `window`)
+
+## [bin![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#bin)
+
+A lot of packages have one or more executable files that they'd like to install into the PATH. npm makes this pretty easy (in fact, it uses this feature to install the "npm" executable.)
+
+To use this, supply a `bin` field in your package.json which is a map of command name to local file name. When this package is installed globally, that file will be either linked inside the global bins directory or a cmd (Windows Command File) will be created which executes the specified file in the `bin` field, so it is available to run by `name` or `name.cmd` (on Windows PowerShell). When this package is installed as a dependency in another package, the file will be linked where it will be available to that package either directly by `npm exec` or by name in other scripts when invoking them via `npm run-script`.
+
+For example, myapp could have this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "bin": {
+
+    "myapp": "bin/cli.js"
+
+  }
+
+}
+
+So, when you install myapp, in case of unix-like OS it'll create a symlink from the `cli.js` script to `/usr/local/bin/myapp` and in case of windows it will create a cmd file usually at `C:\Users\{Username}\AppData\Roaming\npm\myapp.cmd` which runs the `cli.js` script.
+
+If you have a single executable, and its name should be the name of the package, then you can just supply it as a string. For example:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "my-program",
+
+  "version": "1.2.5",
+
+  "bin": "path/to/program"
+
+}
+
+would be the same as this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "my-program",
+
+  "version": "1.2.5",
+
+  "bin": {
+
+    "my-program": "path/to/program"
+
+  }
+
+}
+
+Please make sure that your file(s) referenced in `bin` starts with `#!/usr/bin/env node`, otherwise the scripts are started without the node executable!
+
+Note that you can also set the executable files using [directories.bin](#directoriesbin).
+
+See [folders](/cli/v10/configuring-npm/folders#executables) for more info on executables.
+
+## [man![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#man)
+
+Specify either a single file or an array of filenames to put in place for the `man` program to find.
+
+If only a single file is provided, then it's installed such that it is the result from `man <pkgname>`, regardless of its actual filename. For example:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "foo",
+
+  "version": "1.2.3",
+
+  "description": "A packaged foo fooer for fooing foos",
+
+  "main": "foo.js",
+
+  "man": "./man/doc.1"
+
+}
+
+would link the `./man/doc.1` file in such that it is the target for `man foo`
+
+If the filename doesn't start with the package name, then it's prefixed. So, this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "foo",
+
+  "version": "1.2.3",
+
+  "description": "A packaged foo fooer for fooing foos",
+
+  "main": "foo.js",
+
+  "man": \["./man/foo.1", "./man/bar.1"\]
+
+}
+
+will create files to do `man foo` and `man foo-bar`.
+
+Man files must end with a number, and optionally a `.gz` suffix if they are compressed. The number dictates which man section the file is installed into.
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "foo",
+
+  "version": "1.2.3",
+
+  "description": "A packaged foo fooer for fooing foos",
+
+  "main": "foo.js",
+
+  "man": \["./man/foo.1", "./man/foo.2"\]
+
+}
+
+will create entries for `man foo` and `man 2 foo`
+
+## [directories![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#directories)
+
+The CommonJS [Packages](http://wiki.commonjs.org/wiki/Packages/1.0) spec details a few ways that you can indicate the structure of your package using a `directories` object. If you look at [npm's package.json](https://registry.npmjs.org/npm/latest), you'll see that it has directories for doc, lib, and man.
+
+In the future, this information may be used in other creative ways.
+
+### [directories.bin![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#directoriesbin)
+
+If you specify a `bin` directory in `directories.bin`, all the files in that folder will be added.
+
+Because of the way the `bin` directive works, specifying both a `bin` path and setting `directories.bin` is an error. If you want to specify individual files, use `bin`, and for all the files in an existing `bin` directory, use `directories.bin`.
+
+### [directories.man![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#directoriesman)
+
+A folder that is full of man pages. Sugar to generate a "man" array by walking the folder.
+
+## [repository![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#repository)
+
+Specify the place where your code lives. This is helpful for people who want to contribute. If the git repo is on GitHub, then the `npm repo` command will be able to find you.
+
+Do it like this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "repository": {
+
+    "type": "git",
+
+    "url": "git+https://github.com/npm/cli.git"
+
+  }
+
+}
+
+The URL should be a publicly available (perhaps read-only) URL that can be handed directly to a VCS program without any modification. It should not be a URL to an html project page that you put in your browser. It's for computers.
+
+For GitHub, GitHub gist, Bitbucket, or GitLab repositories you can use the same shortcut syntax you use for `npm install`:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "repository": "npm/npm",
+
+\
+
+  "repository": "github:user/repo",
+
+\
+
+  "repository": "gist:11081aaa281",
+
+\
+
+  "repository": "bitbucket:user/repo",
+
+\
+
+  "repository": "gitlab:user/repo"
+
+}
+
+If the `package.json` for your package is not in the root directory (for example if it is part of a monorepo), you can specify the directory in which it lives:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "repository": {
+
+    "type": "git",
+
+    "url": "git+https://github.com/npm/cli.git",
+
+    "directory": "workspaces/libnpmpublish"
+
+  }
+
+}
+
+## [scripts![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#scripts)
+
+The "scripts" property is a dictionary containing script commands that are run at various times in the lifecycle of your package. The key is the lifecycle event, and the value is the command to run at that point.
+
+See [`scripts`](/cli/v10/using-npm/scripts) to find out more about writing package scripts.
+
+## [config![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#config)
+
+A "config" object can be used to set configuration parameters used in package scripts that persist across upgrades. For instance, if a package had the following:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "foo",
+
+  "config": {
+
+    "port": "8080"
+
+  }
+
+}
+
+It could also have a "start" command that referenced the `npm_package_config_port` environment variable.
+
+## [dependencies![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#dependencies)
+
+Dependencies are specified in a simple object that maps a package name to a version range. The version range is a string which has one or more space-separated descriptors. Dependencies can also be identified with a tarball or git URL.
+
+**Please do not put test harnesses or transpilers or other "development" time tools in your `dependencies` object.** See `devDependencies`, below.
+
+See [semver](https://github.com/npm/node-semver#versions) for more details about specifying version ranges.
+
+- `version` Must match `version` exactly
+- `>version` Must be greater than `version`
+- `>=version` etc
+- `<version`
+- `<=version`
+- `~version` "Approximately equivalent to version" See [semver](https://github.com/npm/node-semver#versions)
+- `^version` "Compatible with version" See [semver](https://github.com/npm/node-semver#versions)
+- `1.2.x` 1.2.0, 1.2.1, etc., but not 1.3.0
+- `http://...` See 'URLs as Dependencies' below
+- `*` Matches any version
+- `""` (just an empty string) Same as `*`
+- `version1 - version2` Same as `>=version1 <=version2`.
+- `range1 || range2` Passes if either range1 or range2 are satisfied.
+- `git...` See 'Git URLs as Dependencies' below
+- `user/repo` See 'GitHub URLs' below
+- `tag` A specific version tagged and published as `tag` See [`npm dist-tag`](/cli/v10/commands/npm-dist-tag)
+- `path/path/path` See [Local Paths](#local-paths) below
+- `npm:@scope/pkg@version` Custom alias for a package See [`package-spec`](/cli/v10/using-npm/package-spec#aliases)
+
+For example, these are all valid:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "dependencies": {
+
+    "foo": "1.0.0 - 2.9999.9999",
+
+    "bar": "\>=1.0.2 \<2.1.2",
+
+    "baz": "\>1.0.2 \<=2.3.4",
+
+    "boo": "2.0.1",
+
+    "qux": "\<1.0.0 \|\| \>=2.3.1 \<2.4.5 \|\| \>=2.5.2 \<3.0.0",
+
+    "asd": "http://asdf.com/asdf.tar.gz",
+
+    "til": "~1.2",
+
+    "elf": "~1.2.3",
+
+    "two": "2.x",
+
+    "thr": "3.3.x",
+
+    "lat": "latest",
+
+    "dyl": "file:../dyl",
+
+    "kpg": "npm:pkg@1.0.0"
+
+  }
+
+}
+
+### [URLs as Dependencies![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#urls-as-dependencies)
+
+You may specify a tarball URL in place of a version range.
+
+This tarball will be downloaded and installed locally to your package at install time.
+
+### [Git URLs as Dependencies![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#git-urls-as-dependencies)
+
+Git URLs are of the form:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+\<protocol\>://\[\<user\>\[:\<password\>\]@\]\<hostname\>\[:\<port\>\]\[:\]\[/\]\<path\>\[\#\<commit-ish\> \| #semver:\<semver\>\]
+
+`<protocol>` is one of `git`, `git+ssh`, `git+http`, `git+https`, or `git+file`.
+
+If `#<commit-ish>` is provided, it will be used to clone exactly that commit. If the commit-ish has the format `#semver:<semver>`, `<semver>` can be any valid semver range or exact version, and npm will look for any tags or refs matching that range in the remote repository, much as it would for a registry dependency. If neither `#<commit-ish>` or `#semver:<semver>` is specified, then the default branch is used.
+
+Examples:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+git+ssh://git@github.com:npm/cli.git\#v1.0.27
+
+git+ssh://git@github.com:npm/cli\#semver:^5.0
+
+git+https://isaacs@github.com/npm/cli.git
+
+git://github.com/npm/cli.git\#v1.0.27
+
+When installing from a `git` repository, the presence of certain fields in the `package.json` will cause npm to believe it needs to perform a build. To do so your repository will be cloned into a temporary directory, all of its deps installed, relevant scripts run, and the resulting directory packed and installed.
+
+This flow will occur if your git dependency uses `workspaces`, or if any of the following scripts are present:
+
+- `build`
+- `prepare`
+- `prepack`
+- `preinstall`
+- `install`
+- `postinstall`
+
+If your git repository includes pre-built artifacts, you will likely want to make sure that none of the above scripts are defined, or your dependency will be rebuilt for every installation.
+
+### [GitHub URLs![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#github-urls)
+
+As of version 1.1.65, you can refer to GitHub URLs as just "foo": "user/foo-project". Just as with git URLs, a `commit-ish` suffix can be included. For example:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "foo",
+
+  "version": "0.0.0",
+
+  "dependencies": {
+
+    "express": "expressjs/express",
+
+    "mocha": "mochajs/mocha#4727d357ea",
+
+    "module": "user/repo#feature\\/branch"
+
+  }
+
+}
+
+### [Local Paths![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#local-paths)
+
+As of version 2.0.0 you can provide a path to a local directory that contains a package. Local paths can be saved using `npm install -S` or `npm install --save`, using any of these forms:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+../foo/bar
+
+~/foo/bar
+
+./foo/bar
+
+/foo/bar
+
+in which case they will be normalized to a relative path and added to your `package.json`. For example:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "baz",
+
+  "dependencies": {
+
+    "bar": "file:../foo/bar"
+
+  }
+
+}
+
+This feature is helpful for local offline development and creating tests that require npm installing where you don't want to hit an external server, but should not be used when publishing your package to the public registry.
+
+*note*: Packages linked by local path will not have their own dependencies installed when `npm install` is ran in this case. You must run `npm install` from inside the local path itself.
+
+## [devDependencies![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#devdependencies)
+
+If someone is planning on downloading and using your module in their program, then they probably don't want or need to download and build the external test or documentation framework that you use.
+
+In this case, it's best to map these additional items in a `devDependencies` object.
+
+These things will be installed when doing `npm link` or `npm install` from the root of a package, and can be managed like any other npm configuration param. See [`config`](/cli/v10/using-npm/config) for more on the topic.
+
+For build steps that are not platform-specific, such as compiling CoffeeScript or other languages to JavaScript, use the `prepare` script to do this, and make the required package a devDependency.
+
+For example:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "ethopia-waza",
+
+  "description": "a delightfully fruity coffee varietal",
+
+  "version": "1.2.3",
+
+  "devDependencies": {
+
+    "coffee-script": "~1.6.3"
+
+  },
+
+  "scripts": {
+
+    "prepare": "coffee -o lib/ -c src/waza.coffee"
+
+  },
+
+  "main": "lib/waza.js"
+
+}
+
+The `prepare` script will be run before publishing, so that users can consume the functionality without requiring them to compile it themselves. In dev mode (ie, locally running `npm install`), it'll run this script as well, so that you can test it easily.
+
+## [peerDependencies![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#peerdependencies)
+
+In some cases, you want to express the compatibility of your package with a host tool or library, while not necessarily doing a `require` of this host. This is usually referred to as a *plugin*. Notably, your module may be exposing a specific interface, expected and specified by the host documentation.
+
+For example:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "tea-latte",
+
+  "version": "1.3.5",
+
+  "peerDependencies": {
+
+    "tea": "2.x"
+
+  }
+
+}
+
+This ensures your package `tea-latte` can be installed *along* with the second major version of the host package `tea` only. `npm install tea-latte` could possibly yield the following dependency graph:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+├── tea-latte@1.3.5
+
+└── tea@2.2.0
+
+In npm versions 3 through 6, `peerDependencies` were not automatically installed, and would raise a warning if an invalid version of the peer dependency was found in the tree. As of npm v7, peerDependencies *are* installed by default.
+
+Trying to install another plugin with a conflicting requirement may cause an error if the tree cannot be resolved correctly. For this reason, make sure your plugin requirement is as broad as possible, and not to lock it down to specific patch versions.
+
+Assuming the host complies with [semver](https://semver.org/), only changes in the host package's major version will break your plugin. Thus, if you've worked with every 1.x version of the host package, use `"^1.0"` or `"1.x"` to express this. If you depend on features introduced in 1.5.2, use `"^1.5.2"`.
+
+## [peerDependenciesMeta![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#peerdependenciesmeta)
+
+The `peerDependenciesMeta` field serves to provide npm more information on how your peer dependencies are to be used. Specifically, it allows peer dependencies to be marked as optional. Npm will not automatically install optional peer dependencies. This allows you to integrate and interact with a variety of host packages without requiring all of them to be installed.
+
+For example:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "tea-latte",
+
+  "version": "1.3.5",
+
+  "peerDependencies": {
+
+    "tea": "2.x",
+
+    "soy-milk": "1.2"
+
+  },
+
+  "peerDependenciesMeta": {
+
+    "soy-milk": {
+
+      "optional": true
+
+    }
+
+  }
+
+}
+
+## [bundleDependencies![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#bundledependencies)
+
+This defines an array of package names that will be bundled when publishing the package.
+
+In cases where you need to preserve npm packages locally or have them available through a single file download, you can bundle the packages in a tarball file by specifying the package names in the `bundleDependencies` array and executing `npm pack`.
+
+For example:
+
+If we define a package.json like this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "awesome-web-framework",
+
+  "version": "1.0.0",
+
+  "bundleDependencies": \["renderized", "super-streams"\]
+
+}
+
+we can obtain `awesome-web-framework-1.0.0.tgz` file by running `npm pack`. This file contains the dependencies `renderized` and `super-streams` which can be installed in a new project by executing `npm install awesome-web-framework-1.0.0.tgz`. Note that the package names do not include any versions, as that information is specified in `dependencies`.
+
+If this is spelled `"bundledDependencies"`, then that is also honored.
+
+Alternatively, `"bundleDependencies"` can be defined as a boolean value. A value of `true` will bundle all dependencies, a value of `false` will bundle none.
+
+## [optionalDependencies![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#optionaldependencies)
+
+If a dependency can be used, but you would like npm to proceed if it cannot be found or fails to install, then you may put it in the `optionalDependencies` object. This is a map of package name to version or URL, just like the `dependencies` object. The difference is that build failures do not cause installation to fail. Running `npm install --omit=optional` will prevent these dependencies from being installed.
+
+It is still your program's responsibility to handle the lack of the dependency. For example, something like this:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+try {
+
+  var foo = require("foo");
+
+  var fooVersion = require("foo/package.json").version;
+
+} catch (er) {
+
+  foo = null;
+
+}
+
+if (notGoodFooVersion(fooVersion)) {
+
+  foo = null;
+
+}
+
+\
+
+// .. then later in your program ..
+
+\
+
+if (foo) {
+
+  foo.doFooThings();
+
+}
+
+Entries in `optionalDependencies` will override entries of the same name in `dependencies`, so it's usually best to only put in one place.
+
+## [overrides![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#overrides)
+
+If you need to make specific changes to dependencies of your dependencies, for example replacing the version of a dependency with a known security issue, replacing an existing dependency with a fork, or making sure that the same version of a package is used everywhere, then you may add an override.
+
+Overrides provide a way to replace a package in your dependency tree with another version, or another package entirely. These changes can be scoped as specific or as vague as desired.
+
+Overrides are only considered in the root `package.json` file for a project. Overrides in installed dependencies (including [workspaces](/cli/v10/using-npm/workspaces)) are not considered in dependency tree resolution. Published packages may dictate their resolutions by pinning dependencies or using an [`npm-shrinkwrap.json`](/cli/v10/configuring-npm/npm-shrinkwrap-json) file.
+
+To make sure the package `foo` is always installed as version `1.0.0` no matter what version your dependencies rely on:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "overrides": {
+
+    "foo": "1.0.0"
+
+  }
+
+}
+
+The above is a short hand notation, the full object form can be used to allow overriding a package itself as well as a child of the package. This will cause `foo` to always be `1.0.0` while also making `bar` at any depth beyond `foo` also `1.0.0`:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "overrides": {
+
+    "foo": {
+
+      ".": "1.0.0",
+
+      "bar": "1.0.0"
+
+    }
+
+  }
+
+}
+
+To only override `foo` to be `1.0.0` when it's a child (or grandchild, or great grandchild, etc) of the package `bar`:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "overrides": {
+
+    "bar": {
+
+      "foo": "1.0.0"
+
+    }
+
+  }
+
+}
+
+Keys can be nested to any arbitrary length. To override `foo` only when it's a child of `bar` and only when `bar` is a child of `baz`:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "overrides": {
+
+    "baz": {
+
+      "bar": {
+
+        "foo": "1.0.0"
+
+      }
+
+    }
+
+  }
+
+}
+
+The key of an override can also include a version, or range of versions. To override `foo` to `1.0.0`, but only when it's a child of `bar@2.0.0`:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "overrides": {
+
+    "bar@2.0.0": {
+
+      "foo": "1.0.0"
+
+    }
+
+  }
+
+}
+
+You may not set an override for a package that you directly depend on unless both the dependency and the override itself share the exact same spec. To make this limitation easier to deal with, overrides may also be defined as a reference to a spec for a direct dependency by prefixing the name of the package you wish the version to match with a `$`.
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "dependencies": {
+
+    "foo": "^1.0.0"
+
+  },
+
+  "overrides": {
+
+    // BAD, will throw an EOVERRIDE error
+
+    // "foo": "^2.0.0"
+
+    // GOOD, specs match so override is allowed
+
+    // "foo": "^1.0.0"
+
+    // BEST, the override is defined as a reference to the dependency
+
+    "foo": "\$foo",
+
+    // the referenced package does not need to match the overridden one
+
+    "bar": "\$foo"
+
+  }
+
+}
+
+## [engines![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#engines)
+
+You can specify the version of node that your stuff works on:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "engines": {
+
+    "node": "\>=0.10.3 \<15"
+
+  }
+
+}
+
+And, like with dependencies, if you don't specify the version (or if you specify "\*" as the version), then any version of node will do.
+
+You can also use the "engines" field to specify which versions of npm are capable of properly installing your program. For example:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "engines": {
+
+    "npm": "~1.0.20"
+
+  }
+
+}
+
+Unless the user has set the [`engine-strict` config](/cli/v10/using-npm/config#engine-strict) flag, this field is advisory only and will only produce warnings when your package is installed as a dependency.
+
+## [os![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#os)
+
+You can specify which operating systems your module will run on:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "os": \["darwin", "linux"\]
+
+}
+
+You can also block instead of allowing operating systems, just prepend the blocked os with a '!':
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "os": \["!win32"\]
+
+}
+
+The host operating system is determined by `process.platform`
+
+It is allowed to both block and allow an item, although there isn't any good reason to do this.
+
+## [cpu![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#cpu)
+
+If your code only runs on certain cpu architectures, you can specify which ones.
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "cpu": \["x64", "ia32"\]
+
+}
+
+Like the `os` option, you can also block architectures:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "cpu": \["!arm", "!mips"\]
+
+}
+
+The host architecture is determined by `process.arch`
+
+## [devEngines![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#devengines)
+
+The `devEngines` field aids engineers working on a codebase to all be using the same tooling.
+
+You can specify a `devEngines` property in your `package.json` which will run before `install`, `ci`, and `run` commands.
+
+> Note: `engines` and `devEngines` differ in object shape. They also function very differently. `engines` is designed to alert the user when a dependency uses a differening npm or node version that the project it's being used in, whereas `devEngines` is used to alert people interacting with the source code of a project.
+
+The supported keys under the `devEngines` property are `cpu`, `os`, `libc`, `runtime`, and `packageManager`. Each property can be an object or an array of objects. Objects must contain `name`, and optionally can specify `version`, and `onFail`. `onFail` can be `warn`, `error`, or `ignore`, and if left undefined is of the same value as `error`. `npm` will assume that you're running with `node`. Here's an example of a project that will fail if the environment is not `node` and `npm`. If you set `runtime.name` or `packageManager.name` to any other string, it will fail within the npm CLI.
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "devEngines": {
+
+    "runtime": {
+
+      "name": "node",
+
+      "onFail": "error"
+
+    },
+
+    "packageManager": {
+
+      "name": "npm",
+
+      "onFail": "error"
+
+    }
+
+  }
+
+}
+
+## [private![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#private)
+
+If you set `"private": true` in your package.json, then npm will refuse to publish it.
+
+This is a way to prevent accidental publication of private repositories. If you would like to ensure that a given package is only ever published to a specific registry (for example, an internal registry), then use the `publishConfig` dictionary described below to override the `registry` config param at publish-time.
+
+## [publishConfig![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#publishconfig)
+
+This is a set of config values that will be used at publish-time. It's especially handy if you want to set the tag, registry or access, so that you can ensure that a given package is not tagged with "latest", published to the global public registry or that a scoped module is private by default.
+
+See [`config`](/cli/v10/using-npm/config) to see the list of config options that can be overridden.
+
+## [workspaces![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#workspaces)
+
+The optional `workspaces` field is an array of file patterns that describes locations within the local file system that the install client should look up to find each [workspace](/cli/v10/using-npm/workspaces) that needs to be symlinked to the top level `node_modules` folder.
+
+It can describe either the direct paths of the folders to be used as workspaces or it can define globs that will resolve to these same folders.
+
+In the following example, all folders located inside the folder `./packages` will be treated as workspaces as long as they have valid `package.json` files inside them:
+
+![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY29weSIgdmlld2JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2NTZkNzYiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTAgNi43NUMwIDUuNzg0Ljc4NCA1IDEuNzUgNWgxLjVhLjc1Ljc1IDAgMCAxIDAgMS41aC0xLjVhLjI1LjI1IDAgMCAwLS4yNS4yNXY3LjVjMCAuMTM4LjExMi4yNS4yNS4yNWg3LjVhLjI1LjI1IDAgMCAwIC4yNS0uMjV2LTEuNWEuNzUuNzUgMCAwIDEgMS41IDB2MS41QTEuNzUgMS43NSAwIDAgMSA5LjI1IDE2aC03LjVBMS43NSAxLjc1IDAgMCAxIDAgMTQuMjVaIiAvPjxwYXRoIGQ9Ik01IDEuNzVDNSAuNzg0IDUuNzg0IDAgNi43NSAwaDcuNUMxNS4yMTYgMCAxNiAuNzg0IDE2IDEuNzV2Ny41QTEuNzUgMS43NSAwIDAgMSAxNC4yNSAxMWgtNy41QTEuNzUgMS43NSAwIDAgMSA1IDkuMjVabTEuNzUtLjI1YS4yNS4yNSAwIDAgMC0uMjUuMjV2Ny41YzAgLjEzOC4xMTIuMjUuMjUuMjVoNy41YS4yNS4yNSAwIDAgMCAuMjUtLjI1di03LjVhLjI1LjI1IDAgMCAwLS4yNS0uMjVaIiAvPjwvc3ZnPg==)
+
+{
+
+  "name": "workspace-example",
+
+  "workspaces": \["./packages/\*"\]
+
+}
+
+See [`workspaces`](/cli/v10/using-npm/workspaces) for more examples.
+
+## [DEFAULT VALUES![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#default-values)
+
+npm will default some values based on package contents.
+
+- `"scripts": {"start": "node server.js"}`
+
+  If there is a `server.js` file in the root of your package, then npm will default the `start` command to `node server.js`.
+
+- `"scripts":{"install": "node-gyp rebuild"}`
+
+  If there is a `binding.gyp` file in the root of your package and you have not defined an `install` or `preinstall` script, npm will default the `install` command to compile using node-gyp.
+
+- `"contributors": [...]`
+
+  If there is an `AUTHORS` file in the root of your package, npm will treat each line as a `Name <email> (url)` format, where email and url are optional. Lines which start with a `#` or are blank, will be ignored.
+
+## [SEE ALSO![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tbGluayBvY3RpY29uLWxpbmsgY29tcG9uZW50cy1tb2R1bGUtLU9jdGljb24tLTFhNGUxIiB2aWV3Ym94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBkaXNwbGF5PSJpbmxpbmUtYmxvY2siIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0idmVydGljYWwtYWxpZ246dGV4dC1ib3R0b20iPjxwYXRoIGQ9Im03Ljc3NSAzLjI3NSAxLjI1LTEuMjVhMy41IDMuNSAwIDEgMSA0Ljk1IDQuOTVsLTIuNSAyLjVhMy41IDMuNSAwIDAgMS00Ljk1IDAgLjc1MS43NTEgMCAwIDEgLjAxOC0xLjA0Mi43NTEuNzUxIDAgMCAxIDEuMDQyLS4wMTggMS45OTggMS45OTggMCAwIDAgMi44MyAwbDIuNS0yLjVhMi4wMDIgMi4wMDIgMCAwIDAtMi44My0yLjgzbC0xLjI1IDEuMjVhLjc1MS43NTEgMCAwIDEtMS4wNDItLjAxOC43NTEuNzUxIDAgMCAxLS4wMTgtMS4wNDJabS00LjY5IDkuNjRhMS45OTggMS45OTggMCAwIDAgMi44MyAwbDEuMjUtMS4yNWEuNzUxLjc1MSAwIDAgMSAxLjA0Mi4wMTguNzUxLjc1MSAwIDAgMSAuMDE4IDEuMDQybC0xLjI1IDEuMjVhMy41IDMuNSAwIDEgMS00Ljk1LTQuOTVsMi41LTIuNWEzLjUgMy41IDAgMCAxIDQuOTUgMCAuNzUxLjc1MSAwIDAgMS0uMDE4IDEuMDQyLjc1MS43NTEgMCAwIDEtMS4wNDIuMDE4IDEuOTk4IDEuOTk4IDAgMCAwLTIuODMgMGwtMi41IDIuNWExLjk5OCAxLjk5OCAwIDAgMCAwIDIuODNaIiAvPjwvc3ZnPg==)](#see-also)
+
+- [semver](https://github.com/npm/node-semver#versions)
+- [workspaces](/cli/v10/using-npm/workspaces)
+- [npm init](/cli/v10/commands/npm-init)
+- [npm version](/cli/v10/commands/npm-version)
+- [npm config](/cli/v10/commands/npm-config)
+- [npm help](/cli/v10/commands/npm-help)
+- [npm install](/cli/v10/commands/npm-install)
+- [npm publish](/cli/v10/commands/npm-publish)
+- [npm uninstall](/cli/v10/commands/npm-uninstall)
+
+[![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tcGVuY2lsIHBhZ2UtZm9vdGVyLW1vZHVsZS0tVGV4dC0tZWIxMGIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTExLjAxMyAxLjQyN2ExLjc1IDEuNzUgMCAwIDEgMi40NzQgMGwxLjA4NiAxLjA4NmExLjc1IDEuNzUgMCAwIDEgMCAyLjQ3NGwtOC42MSA4LjYxYy0uMjEuMjEtLjQ3LjM2NC0uNzU2LjQ0NWwtMy4yNTEuOTNhLjc1Ljc1IDAgMCAxLS45MjctLjkyOGwuOTI5LTMuMjVjLjA4MS0uMjg2LjIzNS0uNTQ3LjQ0NS0uNzU4bDguNjEtOC42MVptLjE3NiA0LjgyM0w5Ljc1IDQuODFsLTYuMjg2IDYuMjg3YS4yNTMuMjUzIDAgMCAwLS4wNjQuMTA4bC0uNTU4IDEuOTUzIDEuOTUzLS41NThhLjI1My4yNTMgMCAwIDAgLjEwOC0uMDY0Wm0xLjIzOC0zLjc2M2EuMjUuMjUgMCAwIDAtLjM1NCAwTDEwLjgxMSAzLjc1bDEuNDM5IDEuNDQgMS4yNjMtMS4yNjNhLjI1LjI1IDAgMCAwIDAtLjM1NFoiIC8+PC9zdmc+)Edit this page on GitHub](https://github.com/npm/cli/edit/release/v10/docs/lib/content/configuring-npm/package-json.md)
+
+20 contributors[![t3hmrman](https://github.com/t3hmrman.png?size=40)](https://github.com/t3hmrman)t3hmrman[![reggi](https://github.com/reggi.png?size=40)](https://github.com/reggi)reggi[![wheresrhys](https://github.com/wheresrhys.png?size=40)](https://github.com/wheresrhys)wheresrhys[![milaninfy](https://github.com/milaninfy.png?size=40)](https://github.com/milaninfy)milaninfy[![MikeMcC399](https://github.com/MikeMcC399.png?size=40)](https://github.com/MikeMcC399)MikeMcC399[![kemitchell](https://github.com/kemitchell.png?size=40)](https://github.com/kemitchell)kemitchell[![Santoshraj2](https://github.com/Santoshraj2.png?size=40)](https://github.com/Santoshraj2)Santoshraj2[![bytebit8](https://github.com/bytebit8.png?size=40)](https://github.com/bytebit8)bytebit8[![xuhdev](https://github.com/xuhdev.png?size=40)](https://github.com/xuhdev)xuhdev[![s100](https://github.com/s100.png?size=40)](https://github.com/s100)s100[![uiolee](https://github.com/uiolee.png?size=40)](https://github.com/uiolee)uiolee[![coliff](https://github.com/coliff.png?size=40)](https://github.com/coliff)coliff[![DanKaplanSES](https://github.com/DanKaplanSES.png?size=40)](https://github.com/DanKaplanSES)DanKaplanSES[![idleberg](https://github.com/idleberg.png?size=40)](https://github.com/idleberg)idleberg[![wraithgar](https://github.com/wraithgar.png?size=40)](https://github.com/wraithgar)wraithgar[![airscripts](https://github.com/airscripts.png?size=40)](https://github.com/airscripts)airscripts[![p-chan](https://github.com/p-chan.png?size=40)](https://github.com/p-chan)p-chan[![DaviDevMod](https://github.com/DaviDevMod.png?size=40)](https://github.com/DaviDevMod)DaviDevMod[![roerohan](https://github.com/roerohan.png?size=40)](https://github.com/roerohan)roerohan[![lukekarrys](https://github.com/lukekarrys.png?size=40)](https://github.com/lukekarrys)lukekarrys
+
+Last edited by [t3hmrman](https://github.com/t3hmrman) on [April 23, 2025](https://github.com/npm/cli/commit/e510f14bf6a20d67e7b37c3f25ff271d9f7a0da5)
+
+## Table of contents
+
+- [Description](#description)
+- [name](#name)
+- [version](#version)
+- [description](#description-1)
+- [keywords](#keywords)
+- [homepage](#homepage)
+- [bugs](#bugs)
+- [license](#license)
+- [people fields: author, contributors](#people-fields-author-contributors)
+- [funding](#funding)
+- [files](#files)
+- [exports](#exports)
+- [main](#main)
+- [browser](#browser)
+- [bin](#bin)
+- [man](#man)
+- directories![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+  - [directories.bin](#directoriesbin)
+  - [directories.man](#directoriesman)
+- [repository](#repository)
+- [scripts](#scripts)
+- [config](#config)
+- dependencies![](data:image/svg+xml;base64,PHN2ZyBkYXRhLWNvbXBvbmVudD0iT2N0aWNvbiIgYXJpYS1oaWRkZW49InRydWUiIGZvY3VzYWJsZT0iZmFsc2UiIGNsYXNzPSJvY3RpY29uIG9jdGljb24tY2hldnJvbi1kb3duIHByYy1BY3Rpb25MaXN0LUV4cGFuZEljb24tSjRPcUIiIHZpZXdib3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJjdXJyZW50Q29sb3IiIGRpc3BsYXk9ImlubGluZS1ibG9jayIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0ZXh0LWJvdHRvbSI+PHBhdGggZD0iTTEyLjc4IDUuMjJhLjc0OS43NDkgMCAwIDEgMCAxLjA2bC00LjI1IDQuMjVhLjc0OS43NDkgMCAwIDEtMS4wNiAwTDMuMjIgNi4yOGEuNzQ5Ljc0OSAwIDEgMSAxLjA2LTEuMDZMOCA4LjkzOWwzLjcyLTMuNzE5YS43NDkuNzQ5IDAgMCAxIDEuMDYgMFoiIC8+PC9zdmc+)
+  - [URLs as Dependencies](#urls-as-dependencies)
+  - [Git URLs as Dependencies](#git-urls-as-dependencies)
+  - [GitHub URLs](#github-urls)
+  - [Local Paths](#local-paths)
+- [devDependencies](#devdependencies)
+- [peerDependencies](#peerdependencies)
+- [peerDependenciesMeta](#peerdependenciesmeta)
+- [bundleDependencies](#bundledependencies)
+- [optionalDependencies](#optionaldependencies)
+- [overrides](#overrides)
+- [engines](#engines)
+- [os](#os)
+- [cpu](#cpu)
+- [devEngines](#devengines)
+- [private](#private)
+- [publishConfig](#publishconfig)
+- [workspaces](#workspaces)
+- [DEFAULT VALUES](#default-values)
+- [SEE ALSO](#see-also)

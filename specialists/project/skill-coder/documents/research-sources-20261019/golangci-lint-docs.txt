@@ -1,0 +1,413 @@
+[Skip to content](https://golangci-lint.run/docs/linters/#content)
+
+If golangci-lint is useful for you, please consider [supporting us](https://golangci-lint.run/docs/donate/)! You are the only one who can make a difference!
+
+[![Image 1: Logo](https://golangci-lint.run/images/logo-circle.svg)![Image 2: Dark Logo](https://golangci-lint.run/images/logo-nocircle.svg)Golangci-lint](https://golangci-lint.run/)[Documentation](https://golangci-lint.run/docs)[Support us](https://golangci-lint.run/docs/donate/ "Support us")[Linters](https://golangci-lint.run/docs/linters/)[Formatters](https://golangci-lint.run/docs/formatters/)
+
+CTRL K
+
+*    Light 
+*    Dark 
+*    System 
+
+[GitHub](https://github.com/golangci/golangci-lint "GitHub")
+
+CTRL K
+
+*   [Documentation](https://golangci-lint.run/docs/) 
+
+    *   [Welcome](https://golangci-lint.run/docs/welcome/) 
+
+        *   [Install](https://golangci-lint.run/docs/welcome/install/) 
+
+            *   [Local Installation](https://golangci-lint.run/docs/welcome/install/local/) 
+            *   [CI Installation](https://golangci-lint.run/docs/welcome/install/ci/) 
+
+        *   [Quick Start](https://golangci-lint.run/docs/welcome/quick-start/) 
+        *   [Integrations](https://golangci-lint.run/docs/welcome/integrations/) 
+        *   [FAQ](https://golangci-lint.run/docs/welcome/faq/) 
+
+    *   [Configuration](https://golangci-lint.run/docs/configuration/) 
+
+        *   [Command-Line](https://golangci-lint.run/docs/configuration/cli/) 
+        *   [Configuration File](https://golangci-lint.run/docs/configuration/file/) 
+
+    *   [Linters](https://golangci-lint.run/docs/linters/) 
+        *   [All Linters](https://golangci-lint.run/docs/linters/#all-linters)
+
+        *   [Settings](https://golangci-lint.run/docs/linters/configuration/) 
+        *   [False Positives](https://golangci-lint.run/docs/linters/false-positives/) 
+
+    *   [Formatters](https://golangci-lint.run/docs/formatters/) 
+
+        *   [Settings](https://golangci-lint.run/docs/formatters/configuration/) 
+
+    *   [Product](https://golangci-lint.run/docs/product/) 
+
+        *   [Thanks](https://golangci-lint.run/docs/product/thanks/) 
+        *   [Changelog](https://golangci-lint.run/docs/product/changelog/) 
+        *   [Migration guide](https://golangci-lint.run/docs/product/migration-guide/) 
+        *   [Roadmap](https://golangci-lint.run/docs/product/roadmap/) 
+
+    *   [Contributing](https://golangci-lint.run/docs/contributing/) 
+
+        *   [Workflow](https://golangci-lint.run/docs/contributing/workflow/) 
+        *   [Architecture](https://golangci-lint.run/docs/contributing/architecture/) 
+        *   [New linters](https://golangci-lint.run/docs/contributing/new-linters/) 
+        *   [Debugging](https://golangci-lint.run/docs/contributing/debug/) 
+        *   [FAQ](https://golangci-lint.run/docs/contributing/faq/) 
+        *   [This Website](https://golangci-lint.run/docs/contributing/website/) 
+
+    *   [Plugins](https://golangci-lint.run/docs/plugins/) 
+
+        *   [Module Plugin System](https://golangci-lint.run/docs/plugins/module-plugins/) 
+        *   [Go Plugin System](https://golangci-lint.run/docs/plugins/go-plugins/) 
+
+    *   [Support Us](https://golangci-lint.run/docs/donate/) 
+
+*   [Linters](https://golangci-lint.run/docs/linters/) 
+    *   [All Linters](https://golangci-lint.run/docs/linters/#all-linters)
+
+    *   [Settings](https://golangci-lint.run/docs/linters/configuration/) 
+    *   [False Positives](https://golangci-lint.run/docs/linters/false-positives/) 
+
+*   [Formatters](https://golangci-lint.run/docs/formatters/) 
+
+    *   [Settings](https://golangci-lint.run/docs/formatters/configuration/) 
+
+*   More
+*   [Documentation v1 ↗](https://golangci.github.io/legacy-v1-doc/) 
+
+*   [Welcome](https://golangci-lint.run/docs/welcome/) 
+
+    *   [Install](https://golangci-lint.run/docs/welcome/install/) 
+
+        *   [Local Installation](https://golangci-lint.run/docs/welcome/install/local/) 
+        *   [CI Installation](https://golangci-lint.run/docs/welcome/install/ci/) 
+
+    *   [Quick Start](https://golangci-lint.run/docs/welcome/quick-start/) 
+    *   [Integrations](https://golangci-lint.run/docs/welcome/integrations/) 
+    *   [FAQ](https://golangci-lint.run/docs/welcome/faq/) 
+
+*   [Configuration](https://golangci-lint.run/docs/configuration/) 
+
+    *   [Command-Line](https://golangci-lint.run/docs/configuration/cli/) 
+    *   [Configuration File](https://golangci-lint.run/docs/configuration/file/) 
+
+*   [Linters](https://golangci-lint.run/docs/linters/) 
+
+    *   [Settings](https://golangci-lint.run/docs/linters/configuration/) 
+    *   [False Positives](https://golangci-lint.run/docs/linters/false-positives/) 
+
+*   [Formatters](https://golangci-lint.run/docs/formatters/) 
+
+    *   [Settings](https://golangci-lint.run/docs/formatters/configuration/) 
+
+*   [Product](https://golangci-lint.run/docs/product/) 
+
+    *   [Thanks](https://golangci-lint.run/docs/product/thanks/) 
+    *   [Changelog](https://golangci-lint.run/docs/product/changelog/) 
+    *   [Migration guide](https://golangci-lint.run/docs/product/migration-guide/) 
+    *   [Roadmap](https://golangci-lint.run/docs/product/roadmap/) 
+
+*   [Contributing](https://golangci-lint.run/docs/contributing/) 
+
+    *   [Workflow](https://golangci-lint.run/docs/contributing/workflow/) 
+    *   [Architecture](https://golangci-lint.run/docs/contributing/architecture/) 
+    *   [New linters](https://golangci-lint.run/docs/contributing/new-linters/) 
+    *   [Debugging](https://golangci-lint.run/docs/contributing/debug/) 
+    *   [FAQ](https://golangci-lint.run/docs/contributing/faq/) 
+    *   [This Website](https://golangci-lint.run/docs/contributing/website/) 
+
+*   [Plugins](https://golangci-lint.run/docs/plugins/) 
+
+    *   [Module Plugin System](https://golangci-lint.run/docs/plugins/module-plugins/) 
+    *   [Go Plugin System](https://golangci-lint.run/docs/plugins/go-plugins/) 
+
+*   [Support Us](https://golangci-lint.run/docs/donate/) 
+*   More
+*   [Documentation v1 ↗](https://golangci.github.io/legacy-v1-doc/) 
+
+Light Dark System
+
+*    Light 
+*    Dark 
+*    System 
+
+On this page
+
+*   [All Linters](https://golangci-lint.run/docs/linters/#all-linters)
+
+[Edit this page on GitHub →](https://github.com/golangci/golangci-lint/edit/main/docs/content/docs/linters/_index.md)Scroll to top
+
+[Golangci-lint Documentation](https://golangci-lint.run/docs/)
+
+Linters
+
+# Linters
+
+To see a list of supported linters and which linters are enabled/disabled:
+
+```bash
+golangci-lint help linters
+```
+
+To see a list of linters enabled by your configuration, use:
+
+```bash
+golangci-lint linters
+```
+
+[Quick Start](https://golangci-lint.run/docs/welcome/quick-start/#linting)[CLI](https://golangci-lint.run/docs/configuration/cli/#run)[Global Configuration](https://golangci-lint.run/docs/configuration/file/#linters-configuration)[Linter Settings](https://golangci-lint.run/docs/linters/configuration/)
+
+## All Linters[](https://golangci-lint.run/docs/linters/#all-linters)
+
+Default
+
+New
+
+Autofix
+
+Fast
+
+Slow
+
+Deprecated
+
+Reset
+
+[arangolint Opinionated best practices for arangodb client.](https://golangci-lint.run/docs/linters/configuration/#arangolint)
+
+[asasalint Check for pass []any as any in variadic func(…any).](https://golangci-lint.run/docs/linters/configuration/#asasalint)
+
+[asciicheck Checks that all code identifiers does not have non-ASCII symbols in the name.](https://golangci-lint.run/docs/linters/configuration/#asciicheck)
+
+[bidichk Checks for dangerous unicode character sequences.](https://golangci-lint.run/docs/linters/configuration/#bidichk)
+
+[bodyclose Checks whether HTTP response body is closed successfully.](https://golangci-lint.run/docs/linters/configuration/#bodyclose)
+
+[canonicalheader Canonicalheader checks whether net/http.Header uses canonical header. Autofix](https://golangci-lint.run/docs/linters/configuration/#canonicalheader)
+
+[clickhouselint Detects common mistakes with the ClickHouse native Go driver API.](https://golangci-lint.run/docs/linters/configuration/#clickhouselint)
+
+[containedctx Containedctx is a linter that detects struct contained context.Context field.](https://golangci-lint.run/docs/linters/configuration/#containedctx)
+
+[contextcheck Check whether the function uses a non-inherited context.](https://golangci-lint.run/docs/linters/configuration/#contextcheck)
+
+[copyloopvar A linter detects places where loop variables are copied. Autofix](https://golangci-lint.run/docs/linters/configuration/#copyloopvar)
+
+[cyclop Checks function and package cyclomatic complexity.](https://golangci-lint.run/docs/linters/configuration/#cyclop)
+
+[decorder Check declaration order and count of types, constants, variables and functions.](https://golangci-lint.run/docs/linters/configuration/#decorder)
+
+[depguard Go linter that checks if package imports are in a list of acceptable packages.](https://golangci-lint.run/docs/linters/configuration/#depguard)
+
+[dogsled Checks assignments with too many blank identifiers (e.g. x, _, _, _, := f()).](https://golangci-lint.run/docs/linters/configuration/#dogsled)
+
+[dupl Detects duplicate fragments of code.](https://golangci-lint.run/docs/linters/configuration/#dupl)
+
+[dupword Checks for duplicate words in the source code. Autofix](https://golangci-lint.run/docs/linters/configuration/#dupword)
+
+[durationcheck Check for two durations multiplied together.](https://golangci-lint.run/docs/linters/configuration/#durationcheck)
+
+[embeddedstructfieldcheck Embedded types should be at the top of the field list of a struct, and there must be an empty line separating embedded fields from regular fields.](https://golangci-lint.run/docs/linters/configuration/#embeddedstructfieldcheck)
+
+[err113 Check errors handling expressions. Autofix](https://golangci-lint.run/docs/linters/configuration/#err113)
+
+[errcheck Errcheck is a program for checking for unchecked errors in Go code. These unchecked errors can be critical bugs in some cases.](https://golangci-lint.run/docs/linters/configuration/#errcheck)
+
+[errchkjson Checks types passed to the json encoding functions. Reports unsupported types and reports occurrences where the check for the returned error can be omitted.](https://golangci-lint.run/docs/linters/configuration/#errchkjson)
+
+[errname Checks that sentinel errors are prefixed with the `Err` and error types are suffixed with the `Error`.](https://golangci-lint.run/docs/linters/configuration/#errname)
+
+[errorlint Find code that can cause problems with the error wrapping scheme introduced in Go 1.13. Autofix](https://golangci-lint.run/docs/linters/configuration/#errorlint)
+
+[exhaustive Check that expression switches and type switches are exhaustive.](https://golangci-lint.run/docs/linters/configuration/#exhaustive)
+
+[exhaustruct New major version. Use `exhaustruct_v5` instead. Deprecated since v2.13.0](https://golangci-lint.run/docs/linters/configuration/#exhaustruct)
+
+[exhaustruct_v5 Checks if all structure fields are initialized.](https://golangci-lint.run/docs/linters/configuration/#exhaustruct_v5)
+
+[exptostd Detects functions from golang.org/x/exp/ that can be replaced by std functions. Autofix](https://golangci-lint.run/docs/linters/configuration/#exptostd)
+
+[fatcontext Detects nested contexts in loops and function literals. Autofix](https://golangci-lint.run/docs/linters/configuration/#fatcontext)
+
+[forbidigo Forbids identifiers.](https://golangci-lint.run/docs/linters/configuration/#forbidigo)
+
+[forcetypeassert Find forced type assertions.](https://golangci-lint.run/docs/linters/configuration/#forcetypeassert)
+
+[funcorder Checks the order of functions, methods, and constructors.](https://golangci-lint.run/docs/linters/configuration/#funcorder)
+
+[funlen Checks for long functions.](https://golangci-lint.run/docs/linters/configuration/#funlen)
+
+[ginkgolinter Enforces standards of using ginkgo and gomega. Autofix](https://golangci-lint.run/docs/linters/configuration/#ginkgolinter)
+
+[gocheckcompilerdirectives Checks that go compiler directive comments (//go:) are valid.](https://golangci-lint.run/docs/linters/configuration/#gocheckcompilerdirectives)
+
+[gochecknoglobals Check that no global variables exist.](https://golangci-lint.run/docs/linters/configuration/#gochecknoglobals)
+
+[gochecknoinits Checks that no init functions are present in Go code.](https://golangci-lint.run/docs/linters/configuration/#gochecknoinits)
+
+[gochecksumtype Check exhaustiveness of sum type switch statements.](https://golangci-lint.run/docs/linters/configuration/#gochecksumtype)
+
+[gocognit Computes and checks the cognitive complexity of functions.](https://golangci-lint.run/docs/linters/configuration/#gocognit)
+
+[goconst Finds repeated strings that could be replaced by a constant.](https://golangci-lint.run/docs/linters/configuration/#goconst)
+
+[gocritic Provides diagnostics that check for bugs, performance and style issues. Extensible without recompilation through dynamic rules. Dynamic rules are written declaratively with AST patterns, filters, report message and optional suggestion. Autofix](https://golangci-lint.run/docs/linters/configuration/#gocritic)
+
+[gocyclo Computes and checks the cyclomatic complexity of functions.](https://golangci-lint.run/docs/linters/configuration/#gocyclo)
+
+[godoclint Checks Golang’s documentation practice (godoc).](https://golangci-lint.run/docs/linters/configuration/#godoclint)
+
+[godot Check if comments end in a period. Autofix](https://golangci-lint.run/docs/linters/configuration/#godot)
+
+[godox Detects usage of FIXME, TODO and other keywords inside comments.](https://golangci-lint.run/docs/linters/configuration/#godox)
+
+[goheader Check if file header matches to pattern. Autofix](https://golangci-lint.run/docs/linters/configuration/#goheader)
+
+[gomoddirectives Manage the use of ‘replace’, ‘retract’, and ’excludes’ directives in go.mod.](https://golangci-lint.run/docs/linters/configuration/#gomoddirectives)
+
+[gomodguard New major version. Use `gomodguard_v2` instead. Deprecated since v2.12.0](https://golangci-lint.run/docs/linters/configuration/#gomodguard)
+
+[gomodguard_v2 Allow and blocklist linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations.](https://golangci-lint.run/docs/linters/configuration/#gomodguard_v2)
+
+[goprintffuncname Checks that printf-like functions are named with `f` at the end.](https://golangci-lint.run/docs/linters/configuration/#goprintffuncname)
+
+[gosec Inspects source code for security problems.](https://golangci-lint.run/docs/linters/configuration/#gosec)
+
+[gosmopolitan Report certain i18n/l10n anti-patterns in your Go codebase.](https://golangci-lint.run/docs/linters/configuration/#gosmopolitan)
+
+[govet Vet examines Go source code and reports suspicious constructs. It is roughly the same as ‘go vet’ and uses its passes. Autofix](https://golangci-lint.run/docs/linters/configuration/#govet)
+
+[grouper Analyze expression groups.](https://golangci-lint.run/docs/linters/configuration/#grouper)
+
+[iface Detect the incorrect use of interfaces, helping developers avoid interface pollution. Autofix](https://golangci-lint.run/docs/linters/configuration/#iface)
+
+[importas Enforces consistent import aliases. Autofix](https://golangci-lint.run/docs/linters/configuration/#importas)
+
+[inamedparam Reports interfaces with unnamed method parameters.](https://golangci-lint.run/docs/linters/configuration/#inamedparam)
+
+[ineffassign Detects when assignments to existing variables are not used.](https://golangci-lint.run/docs/linters/configuration/#ineffassign)
+
+[interfacebloat A linter that checks the number of methods inside an interface.](https://golangci-lint.run/docs/linters/configuration/#interfacebloat)
+
+[intrange Intrange is a linter to find places where for loops could make use of an integer range. Autofix](https://golangci-lint.run/docs/linters/configuration/#intrange)
+
+[iotamixing Checks if iotas are being used in const blocks with other non-iota declarations.](https://golangci-lint.run/docs/linters/configuration/#iotamixing)
+
+[ireturn Accept Interfaces, Return Concrete Types.](https://golangci-lint.run/docs/linters/configuration/#ireturn)
+
+[lll Reports long lines.](https://golangci-lint.run/docs/linters/configuration/#lll)
+
+[loggercheck Checks key value pairs for common logger libraries (kitlog,klog,logr,slog,zap).](https://golangci-lint.run/docs/linters/configuration/#loggercheck)
+
+[maintidx Maintidx measures the maintainability index of each function.](https://golangci-lint.run/docs/linters/configuration/#maintidx)
+
+[makezero Find slice declarations with non-zero initial length.](https://golangci-lint.run/docs/linters/configuration/#makezero)
+
+[mirror Reports wrong mirror patterns of bytes/strings usage. Autofix](https://golangci-lint.run/docs/linters/configuration/#mirror)
+
+[misspell Finds commonly misspelled English words. Autofix](https://golangci-lint.run/docs/linters/configuration/#misspell)
+
+[mnd An analyzer to detect magic numbers.](https://golangci-lint.run/docs/linters/configuration/#mnd)
+
+[modernize A suite of analyzers that suggest simplifications to Go code, using modern language and library features. Autofix](https://golangci-lint.run/docs/linters/configuration/#modernize)
+
+[musttag Enforce field tags in (un)marshaled structs.](https://golangci-lint.run/docs/linters/configuration/#musttag)
+
+[nakedret Checks that functions with naked returns are not longer than a maximum size (can be zero). Autofix](https://golangci-lint.run/docs/linters/configuration/#nakedret)
+
+[nestif Reports deeply nested if statements.](https://golangci-lint.run/docs/linters/configuration/#nestif)
+
+[nilerr Find the code that returns nil even if it checks that the error is not nil.](https://golangci-lint.run/docs/linters/configuration/#nilerr)
+
+[nilnesserr Reports constructs that checks for err != nil, but returns a different nil value error. Powered by nilness and nilerr.](https://golangci-lint.run/docs/linters/configuration/#nilnesserr)
+
+[nilnil Checks that there is no simultaneous return of `nil` error and an invalid value.](https://golangci-lint.run/docs/linters/configuration/#nilnil)
+
+[nlreturn Checks for a new line before return and branch statements to increase code clarity. Autofix](https://golangci-lint.run/docs/linters/configuration/#nlreturn)
+
+[noctx Detects function and method with missing usage of context.Context.](https://golangci-lint.run/docs/linters/configuration/#noctx)
+
+[noinlineerr Disallows inline error handling (`if err := ...; err != nil {`). Autofix](https://golangci-lint.run/docs/linters/configuration/#noinlineerr)
+
+[nolintlint Reports ill-formed or insufficient nolint directives. Autofix](https://golangci-lint.run/docs/linters/configuration/#nolintlint)
+
+[nonamedreturns Reports all named returns.](https://golangci-lint.run/docs/linters/configuration/#nonamedreturns)
+
+[nosprintfhostport Checks for misuse of Sprintf to construct a host with port in a URL.](https://golangci-lint.run/docs/linters/configuration/#nosprintfhostport)
+
+[paralleltest Detects missing usage of t.Parallel() method in your Go test.](https://golangci-lint.run/docs/linters/configuration/#paralleltest)
+
+[perfsprint Checks that fmt.Sprintf can be replaced with a faster alternative. Autofix](https://golangci-lint.run/docs/linters/configuration/#perfsprint)
+
+[prealloc Find slice declarations that could potentially be pre-allocated.](https://golangci-lint.run/docs/linters/configuration/#prealloc)
+
+[predeclared Find declarations that shadow Go’s predeclared identifiers.](https://golangci-lint.run/docs/linters/configuration/#predeclared)
+
+[promlinter Check Prometheus metrics naming via promlint.](https://golangci-lint.run/docs/linters/configuration/#promlinter)
+
+[protogetter Reports direct reads from proto message fields when getters should be used. Autofix](https://golangci-lint.run/docs/linters/configuration/#protogetter)
+
+[reassign Checks that package variables are not reassigned.](https://golangci-lint.run/docs/linters/configuration/#reassign)
+
+[recvcheck Checks for receiver type consistency.](https://golangci-lint.run/docs/linters/configuration/#recvcheck)
+
+[revive Fast, configurable, extensible, flexible, and beautiful linter for Go. Drop-in replacement of golint. Autofix](https://golangci-lint.run/docs/linters/configuration/#revive)
+
+[rowserrcheck Checks whether Rows.Err of rows is checked successfully.](https://golangci-lint.run/docs/linters/configuration/#rowserrcheck)
+
+[sloglint Ensures consistent code style when using log/slog. Autofix](https://golangci-lint.run/docs/linters/configuration/#sloglint)
+
+[spancheck Checks for mistakes with OpenTelemetry/Census spans.](https://golangci-lint.run/docs/linters/configuration/#spancheck)
+
+[sqlclosecheck Checks that sql.Rows, sql.Stmt, sqlx.NamedStmt, pgx.Query are closed.](https://golangci-lint.run/docs/linters/configuration/#sqlclosecheck)
+
+[staticcheck It’s the set of rules from staticcheck. Autofix](https://golangci-lint.run/docs/linters/configuration/#staticcheck)
+
+[tagalign Check that struct tags are well aligned. Autofix](https://golangci-lint.run/docs/linters/configuration/#tagalign)
+
+[tagliatelle Checks the struct tags.](https://golangci-lint.run/docs/linters/configuration/#tagliatelle)
+
+[testableexamples Linter checks if examples are testable (have an expected output).](https://golangci-lint.run/docs/linters/configuration/#testableexamples)
+
+[testifylint Checks usage of github.com/stretchr/testify. Autofix](https://golangci-lint.run/docs/linters/configuration/#testifylint)
+
+[testpackage Linter that makes you use a separate _test package.](https://golangci-lint.run/docs/linters/configuration/#testpackage)
+
+[thelper Thelper detects tests helpers which do not start with the t.Helper() method.](https://golangci-lint.run/docs/linters/configuration/#thelper)
+
+[tparallel Tparallel detects inappropriate usage of t.Parallel() method in your Go test codes.](https://golangci-lint.run/docs/linters/configuration/#tparallel)
+
+[unconvert Remove unnecessary type conversions.](https://golangci-lint.run/docs/linters/configuration/#unconvert)
+
+[unparam Reports unused function parameters.](https://golangci-lint.run/docs/linters/configuration/#unparam)
+
+[unqueryvet Detects SELECT * in SQL queries and SQL builders, preventing performance issues and encouraging explicit column selection.](https://golangci-lint.run/docs/linters/configuration/#unqueryvet)
+
+[unused Checks Go code for unused constants, variables, functions and types.](https://golangci-lint.run/docs/linters/configuration/#unused)
+
+[usestdlibvars A linter that detect the possibility to use variables/constants from the Go standard library. Autofix](https://golangci-lint.run/docs/linters/configuration/#usestdlibvars)
+
+[usetesting Reports uses of functions with replacement inside the testing package. Autofix](https://golangci-lint.run/docs/linters/configuration/#usetesting)
+
+[varnamelen Checks that the length of a variable’s name matches its scope.](https://golangci-lint.run/docs/linters/configuration/#varnamelen)
+
+[wastedassign Finds wasted assignment statements.](https://golangci-lint.run/docs/linters/configuration/#wastedassign)
+
+[whitespace Whitespace is a linter that checks for unnecessary newlines at the start and end of functions, if, for, etc. Autofix](https://golangci-lint.run/docs/linters/configuration/#whitespace)
+
+[wrapcheck Checks that errors returned from external packages are wrapped.](https://golangci-lint.run/docs/linters/configuration/#wrapcheck)
+
+[wsl New major version. Use `wsl_v5` instead. Deprecated since v2.2.0](https://golangci-lint.run/docs/linters/configuration/#wsl)
+
+[wsl_v5 Add or remove empty lines. Autofix](https://golangci-lint.run/docs/linters/configuration/#wsl_v5)
+
+[zerologlint Detects the wrong usage of `zerolog` that a user forgets to dispatch with `Send` or `Msg`.](https://golangci-lint.run/docs/linters/configuration/#zerologlint)
+
+Last updated on 2026-10-18 04:52:06
+
+[Powered by Hextra](https://github.com/imfing/hextra "Hextra GitHub Homepage")
+
+[](https://bsky.app/profile/golangci-lint.run "Bluesky")[](https://fosstodon.org/@golangcilint "Mastodon")[](https://twitter.com/golangci "Twitter")[](https://gophers.slack.com/archives/CS0TBRKPC "Slack")[](https://github.com/golangci/golangci-lint "GitHub")

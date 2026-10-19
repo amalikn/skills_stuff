@@ -1,0 +1,38 @@
+Contents of https://en.wikipedia.org/wiki/Characterization_test:
+From Wikipedia, the free encyclopedia
+
+In [computer programming](https://en.wikipedia.org/wiki/Computer_programming "Computer programming"), a **characterization test** (also known as **Golden Master Testing**[[1]](#cite_note-1)) is a means to describe (characterize) the **actual** behavior of an existing piece of software, and therefore protect existing behavior of [legacy code](https://en.wikipedia.org/wiki/Legacy_code "Legacy code") against unintended changes via [automated testing](https://en.wikipedia.org/wiki/Automated_testing "Automated testing"). This term was coined by Michael Feathers.[[2]](#cite_note-2)
+
+The goal of characterization tests is to help developers verify that the modifications made to a reference version of a [software system](https://en.wikipedia.org/wiki/Software_system "Software system") did not modify its behavior in unwanted or undesirable ways. They enable, and provide a safety net for, extending and [refactoring](https://en.wikipedia.org/wiki/Refactoring "Refactoring") code that does not have adequate [unit tests](https://en.wikipedia.org/wiki/Unit_test "Unit test").
+
+In [James Bach's](https://en.wikipedia.org/wiki/James_Marcus_Bach "James Marcus Bach") and Michael Bolton's classification of test oracles,[[3]](#cite_note-3) this kind of testing corresponds to the **historical oracle**. In contrast to the usual approach of [assertions](https://en.wikipedia.org/wiki/Test_assertion "Test assertion")-based [software testing](https://en.wikipedia.org/wiki/Software_testing "Software testing"), the outcome of the test is not determined by individual values or properties (that are checked with assertions), but by comparing a complex result of the tested software-process as a whole with the result of the same process in a previous [version](https://en.wikipedia.org/wiki/Software_versioning "Software versioning") of the software. In a sense, characterization testing inverts traditional testing: Traditional tests check that individual properties have certain values ([whitelists](https://en.wikipedia.org/wiki/Whitelist "Whitelist") them), whereas characterization testing checks that no properties have been changed ([blacklisted](https://en.wikipedia.org/wiki/Blacklisting "Blacklisting")).
+
+When creating a characterization test, one must observe what outputs occur for a given set of inputs. Given an observation that the legacy code gives a certain output based on given inputs, then a test can be written that asserts that the output of the legacy code matches the observed result for the given inputs. For example, if one observes that f(3.14) == 42, then this could be created as a characterization test. Then, after modifications to the system, the test can determine if the modifications caused changes in the results when given the same inputs.
+
+Unfortunately, as with any testing, it is generally not possible to create a characterization test for every possible input and output. As such, many people opt for either statement or branch coverage. However, even this can be difficult. Test writers must use their judgment to decide how much testing is appropriate. It is often sufficient to write characterization tests that only cover the specific inputs and outputs that are known to occur, paying special attention to edge cases.
+
+Unlike [regression tests](https://en.wikipedia.org/wiki/Regression_testing "Regression testing"), to which they are very similar, characterization tests do not verify the *correct* behavior of the code, which can be impossible to determine. Instead they verify the behavior that was observed when they were written. Often no specification or test suite is available, leaving only characterization tests as an option, since the conservative path is to assume that the old behavior is the required behavior. Characterization tests are, essentially, change detectors. It is up to the person analyzing the results to determine if the detected change was expected and/or desirable, or unexpected and/or undesirable.
+
+One of the interesting aspects of characterization tests is that, since they are based on existing code, it's possible to generate some characterization tests automatically. An automated characterization test tool will exercise existing code with a wide range of relevant and/or random input values, record the output values (or state changes) and generate a set of characterization tests. When the generated tests are executed against a new version of the code, they will produce one or more failures/warnings if that version of the code has been modified in a way that changes a previously established behavior.
+
+When testing on the [GUI](https://en.wikipedia.org/wiki/Graphical_user_interface "Graphical user interface") level, characterization testing can be combined with [intelligent monkey testing](https://en.wikipedia.org/wiki/Monkey_testing "Monkey testing") to create complex test cases that capture use cases and special cases thereof.
+
+Golden Master testing has the following advantages over the traditional assertions-based software testing:
+
+* It is relatively easy to implement for complex [legacy systems](https://en.wikipedia.org/wiki/Legacy_system "Legacy system").
+* As such allows refactoring.
+* It is generally a sensible approach for complex results such as [PDFs](https://en.wikipedia.org/wiki/PDF "PDF"), [XML](https://en.wikipedia.org/wiki/XML "XML"), images, etc. where checking all relevant attributes with assertions would be both insensible due to the amount of attributes and result in unreadable/[unmaintainable](https://en.wikipedia.org/wiki/Maintainability "Maintainability") test code.
+
+Golden Master testing has the following disadvantages over traditional assertions-based software testing:
+
+* It depends on [repeatability](https://en.wikipedia.org/wiki/Repeatability "Repeatability"). Volatile and non-deterministic values need to be [masked](https://en.wikipedia.org/wiki/Mask_(computing) "Mask (computing)") / removed, both from the Golden Master as well as from the result of the process. If too many elements need to be removed or removing them is too complex, it can render Golden Master testing impractical.
+* It depends not only on the software to be repeatable but also on the stability of the environment and input values.
+* Golden Master testing does not imply correctness of the results. It merely helps detect unwanted effects of software changes.
+
+1. [↑](#cite_ref-1) ["J. B. Rainsberger - Surviving Legacy Code with Golden Master and Sampling"](http://blog.thecodewhisperer.com/permalink/surviving-legacy-code-with-golden-master-and-sampling). 28 September 2014. Retrieved 2017-05-30.
+2. [↑](#cite_ref-2) Feathers, Michael C. *Working Effectively with Legacy Code* ([ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [0-13-117705-2](https://en.wikipedia.org/wiki/Special:BookSources/0-13-117705-2 "Special:BookSources/0-13-117705-2")).
+3. [↑](#cite_ref-3) Bolton, Michael (January 2005). ["Testing Without a Map"](http://www.developsense.com/articles/2005-01-TestingWithoutAMap.pdf) (PDF). *Better Software*. Sticky Minds / TechWell. Retrieved 2017-05-30.
+
+* [Characterization Tests](http://c2.com/cgi/wiki?CharacterizationTest)
+* [Working Effectively With Characterization Tests](http://www.artima.com/weblogs/viewpost.jsp?thread=198296) first in a blog-based series of tutorials on characterization tests.
+* [Change Code Without Fear](http://www.ddj.com/development-tools/206105233) DDJ article on characterization tests.

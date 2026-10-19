@@ -1,0 +1,18 @@
+# Code map for skill-coder itself: the pack is held to the rules it ships (`just self-check`). Decisions only; baselines are machine-written.
+
+[meta]
+summary = "skill-coder's own code intent: scan scripts and tests, Python 3.11 grammar (the oldest the helpers support)."
+
+[scan]
+roots = ["scripts", "tests"]
+python = "3.11"
+
+[write_gates]
+roots = ["scripts"]
+
+[modules."scripts/check_governance.py"]
+status = "project_only"
+reason = "generated from skill-ai-it templates/check_governance.py and tuned here; its canonical source is skill-ai-it"
+
+[scan.exclude]
+"scripts/check_governance.py" = "generated from skill-ai-it templates/check_governance.py; its size rule is skill-ai-it's checker-size (split at 800 lines)"

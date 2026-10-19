@@ -1,0 +1,95 @@
+Contents of https://github.com/OWASP/secure-coding-practices-quick-reference-guide:
+## Archived
+
+*This repository is now archived*.
+You can still access the downloads but it is read only, the content having been moved to
+the [OWASP project pages](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide).
+
+The [latest stable English language version](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/)
+is available on the OWASP project pages along with
+the [latest stable Spanish language version](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-es/).
+
+There is also a [work in progress English language version](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/draft-en/),
+which have all been migrated to the [OWASP project pages](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide).
+
+## Note that this repository is in the process of being migrated
+
+OWASP is moving to a 'web first' philosphy and moving away from downloads.
+We will still be providing PDF and ePub, but the emphasis will be on providing web page documents.
+
+Part of this migration will be the use of the [OWASP project page](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)
+as the source of the document.
+Version 2.0 of [this repo](https://github.com/OWASP/secure-coding-practices-quick-reference-guide) will become `stable` in the [OWASP project pages](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)
+and work-in-progress will be under `draft` in the [OWASP project pages](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/).
+
+When the migration is complete [this repo](https://github.com/OWASP/secure-coding-practices-quick-reference-guide) will be archived as Read Only.
+
+### Welcome to the Secure Coding Practices Quick Reference Guide Project
+
+The OWASP Secure Coding Practices Quick Reference Guide is a technology agnostic
+set of general software security coding practices, in a comprehensive checklist
+format, that can be integrated into the development life-cycle.
+
+The focus is on secure coding requirements, rather than on vulnerabilities and
+exploits. It includes an introduction to Software Security principles and a
+glossary of key terms.
+It is designed to serve as a secure coding kick-start tool and easy reference,
+to help development teams quickly understand secure coding practices.
+
+Downloads for the [latest version](https://github.com/OWASP/secure-coding-practices-quick-reference-guide/releases/tag/v2.0.1) are available for:
+
+* English (en-US)
+* español (es-UY)
+* 한국어 (ko-KO)
+* português (pt-BR & pt-PT)
+* 中文 (zh-CN)
+
+The guide is maintained by [OWASP](https://owasp.org/),
+refer to the [project page](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/) for further information.
+
+### Sections of the Guide
+
+* Introduction
+* Secure Coding Practices Checklist
+* Software Security Principles Overview
+* Glossary of important terminology
+* Links to useful resources
+
+### Other materials
+
+* [Project pamphlet](https://github.com/OWASP/secure-coding-practices-quick-reference-guide/blob/main/materials/Flyer_Secure_Coding_Practices_Quick_Reference_Guide_V2.pdf)
+* [Project presentation](https://github.com/OWASP/secure-coding-practices-quick-reference-guide/blob/main/materials/Secure_Coding_Practices_Quick_Ref_6.ppt)
+* [Slide deck](https://github.com/OWASP/secure-coding-practices-quick-reference-guide/blob/main/materials/Secure_Coding_Practices_Quick_Ref_5.ppt) - presented by Keith Turpin on OWASP AppSec USA 2010
+* [Feedback and revisions history](https://github.com/OWASP/secure-coding-practices-quick-reference-guide/blob/main/materials/SCP-QRG_Revisions_History.xls)
+
+---
+
+#### Feedback and Participation
+
+We hope you find the OWASP Secure Coding Practices Quick Reference Guide Project
+useful. Please contribute to this project by adding your comments, questions,
+and suggestions using the [change request](https://github.com/OWASP/secure-coding-practices-quick-reference-guide/issues/new?assignees=&labels=enhancement&template=request.md&title=) form.
+The Secure Coding Practices Guide is international,
+if you would like to provide additional translations
+then we can provide the directory framework to support this.
+
+The content has been migrated from the orginal `doc` format to markdown,
+following [pandoc's markdown format](https://garrettgman.github.io/rmarkdown/authoring_pandoc_markdown.html#pandoc_markdown).
+We welcome additions and corrections to the existing documents;
+create a [pull request](https://github.com/OWASP/secure-coding-practices-quick-reference-guide/issues/new?assignees=&labels=enhancement&template=request.md&title=) and we will review and accept your changes.
+
+#### Related Projects
+
+* [Go programming language secure coding practices guide](https://owasp.org/www-project-go-secure-coding-practices-guide/)
+* [OWASP developer guide](https://owasp.org/www-project-developer-guide/)
+
+#### Editors
+
+* [Gerardo Canedo](mailto:gerardo.canedo@owasp.org) (español)
+* [Paulo Silva](mailto:paulo.silva@owasp.org) (português)
+* [Jon Gadsden](mailto:jon.gadsden@owasp.org) (English)
+
+#### Project leaders
+
+* [Keith Turpin](mailto:Keith.Turpin@owasp.org)
+* [Jon Gadsden](mailto:jon.gadsden@owasp.org)

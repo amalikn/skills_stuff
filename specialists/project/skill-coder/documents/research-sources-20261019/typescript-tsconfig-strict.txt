@@ -1,0 +1,5960 @@
+Contents of https://www.typescriptlang.org/tsconfig/#strict:
+These options make up the bulk of TypeScript’s configuration and it covers how the language should work.
+
+## [#](#Type_Checking_6248)Type Checking
+
+### [#](#allowUnreachableCode) Allow Unreachable Code - `allowUnreachableCode`
+
+When:
+
+* `undefined` (default) provide suggestions as warnings to editors
+* `true` unreachable code is ignored
+* `false` raises compiler errors about unreachable code
+
+These warnings are only about code which is provably unreachable due to the use of JavaScript syntax, for example:
+
+```
+ts
+
+
+
+function fn(n: number) {
+
+
+
+if (n > 5) {
+
+
+
+return true;
+
+
+
+} else {
+
+
+
+return false;
+
+
+
+}
+
+
+
+return true;
+
+
+
+}
+```
+
+With `"allowUnreachableCode": false`:
+
+```
+ts
+
+
+
+function fn(n: number) {
+
+
+
+if (n > 5) {
+
+
+
+return true;
+
+
+
+} else {
+
+
+
+return false;
+
+
+
+}
+
+
+
+return true;
+
+Unreachable code detected.7027Unreachable code detected.
+
+}
+
+Try
+```
+
+This does not affect errors on the basis of code which *appears* to be unreachable due to type analysis.
+
+* Released:
+
+  1.8
+
+### [#](#allowUnusedLabels) Allow Unused Labels - `allowUnusedLabels`
+
+When:
+
+* `undefined` (default) provide suggestions as warnings to editors
+* `true` unused labels are ignored
+* `false` raises compiler errors about unused labels
+
+Labels are very rare in JavaScript and typically indicate an attempt to write an object literal:
+
+```
+ts
+
+
+
+function verifyAge(age: number) {
+
+
+
+// Forgot 'return' statement
+
+
+
+if (age > 18) {
+
+
+
+verified: true;
+
+Unused label.7028Unused label.
+
+}
+
+
+
+}
+
+Try
+```
+
+* Released:
+
+  1.8
+
+### [#](#alwaysStrict) Always Strict - `alwaysStrict`
+
+Ensures that your files are parsed in the ECMAScript strict mode, and emit “use strict” for each source file.
+
+[ECMAScript strict](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Strict_mode) mode was introduced in ES5 and provides behavior tweaks to the runtime of the JavaScript engine to improve performance, and makes a set of errors throw instead of silently ignoring them.
+
+* Default:
+
+  `true` if [`strict`](#strict); `false` otherwise.
+* Related:
+  + strict
+* Released:
+
+  2.1
+
+### [#](#exactOptionalPropertyTypes) Exact Optional Property Types - `exactOptionalPropertyTypes`
+
+With exactOptionalPropertyTypes enabled, TypeScript applies stricter rules around how it handles properties on `type` or `interfaces` which have a `?` prefix.
+
+For example, this interface declares that there is a property which can be one of two strings: ‘dark’ or ‘light’ or it should not be in the object.
+
+```
+ts
+
+
+
+interface UserDefaults {
+
+
+
+// The absence of a value represents 'system'
+
+
+
+colorThemeOverride?: "dark" | "light";
+
+
+
+}
+```
+
+Without this flag enabled, there are three values which you can set `colorThemeOverride` to be: “dark”, “light” and `undefined`.
+
+Setting the value to `undefined` will allow most JavaScript runtime checks for the existence to fail, which is effectively falsy. However, this isn’t quite accurate; `colorThemeOverride: undefined` is not the same as `colorThemeOverride` not being defined. For example, `"colorThemeOverride" in settings` would have different behavior with `undefined` as the key compared to not being defined.
+
+`exactOptionalPropertyTypes` makes TypeScript truly enforce the definition provided as an optional property:
+
+```
+ts
+
+
+
+const settings = getUserSettings();
+
+
+
+settings.colorThemeOverride = "dark";
+
+
+
+settings.colorThemeOverride = "light";
+
+
+
+// But not:
+
+
+
+settings.colorThemeOverride = undefined;
+
+Type 'undefined' is not assignable to type '"dark" | "light"' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.2412Type 'undefined' is not assignable to type '"dark" | "light"' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.Try
+```
+
+* Recommended
+* Released:
+
+  4.4
+
+### [#](#noFallthroughCasesInSwitch) No Fallthrough Cases In Switch - `noFallthroughCasesInSwitch`
+
+Report errors for fallthrough cases in switch statements.
+Ensures that any non-empty case inside a switch statement includes either `break`, `return`, or `throw`.
+This means you won’t accidentally ship a case fallthrough bug.
+
+```
+ts
+
+
+
+const a: number = 6;
+
+
+
+switch (a) {
+
+
+
+case 0:
+
+Fallthrough case in switch.7029Fallthrough case in switch.
+
+console.log("even");
+
+
+
+case 1:
+
+
+
+console.log("odd");
+
+
+
+break;
+
+
+
+}
+
+Try
+```
+
+* Released:
+
+  1.8
+
+### [#](#noImplicitAny) No Implicit Any - `noImplicitAny`
+
+In some cases where no type annotations are present, TypeScript will fall back to a type of `any` for a variable when it cannot infer the type.
+
+This can cause some errors to be missed, for example:
+
+```
+ts
+
+
+
+function fn(s) {
+
+
+
+// No error?
+
+
+
+console.log(s.subtr(3));
+
+
+
+}
+
+
+
+fn(42);
+
+Try
+```
+
+Turning on `noImplicitAny` however TypeScript will issue an error whenever it would have inferred `any`:
+
+```
+ts
+
+
+
+function fn(s) {
+
+Parameter 's' implicitly has an 'any' type.7006Parameter 's' implicitly has an 'any' type.
+
+console.log(s.subtr(3));
+
+
+
+}
+
+Try
+```
+
+* Recommended
+* Default:
+
+  `true` if [`strict`](#strict); `false` otherwise.
+* Related:
+  + strict
+* Released:
+
+  1.0
+
+### [#](#noImplicitOverride) No Implicit Override - `noImplicitOverride`
+
+When working with classes which use inheritance, it’s possible for a sub-class to get “out of sync” with the functions it overloads when they are renamed in the base class.
+
+For example, imagine you are modeling a music album syncing system:
+
+```
+ts
+
+
+
+class Album {
+
+
+
+download() {
+
+
+
+// Default behavior
+
+
+
+}
+
+
+
+}
+
+
+
+class SharedAlbum extends Album {
+
+
+
+download() {
+
+
+
+// Override to get info from many sources
+
+
+
+}
+
+
+
+}
+
+Try
+```
+
+Then when you add support for machine-learning generated playlists, you refactor the `Album` class to have a ‘setup’ function instead:
+
+```
+ts
+
+
+
+class Album {
+
+
+
+setup() {
+
+
+
+// Default behavior
+
+
+
+}
+
+
+
+}
+
+
+
+class MLAlbum extends Album {
+
+
+
+setup() {
+
+
+
+// Override to get info from algorithm
+
+
+
+}
+
+
+
+}
+
+
+
+class SharedAlbum extends Album {
+
+
+
+download() {
+
+
+
+// Override to get info from many sources
+
+
+
+}
+
+
+
+}
+
+Try
+```
+
+In this case, TypeScript has provided no warning that `download` on `SharedAlbum` *expected* to override a function in the base class.
+
+Using `noImplicitOverride` you can ensure that the sub-classes never go out of sync, by ensuring that functions which override include the keyword `override`.
+
+The following example has `noImplicitOverride` enabled, and you can see the error received when `override` is missing:
+
+```
+ts
+
+
+
+class Album {
+
+
+
+setup() {}
+
+
+
+}
+
+
+
+class MLAlbum extends Album {
+
+
+
+override setup() {}
+
+
+
+}
+
+
+
+class SharedAlbum extends Album {
+
+
+
+setup() {}
+
+This member must have an 'override' modifier because it overrides a member in the base class 'Album'.4114This member must have an 'override' modifier because it overrides a member in the base class 'Album'.
+
+}
+
+Try
+```
+
+* Released:
+
+  4.3
+
+### [#](#noImplicitReturns) No Implicit Returns - `noImplicitReturns`
+
+When enabled, TypeScript will check all code paths in a function to ensure they return a value.
+
+```
+ts
+
+
+
+function lookupHeadphonesManufacturer(color: "blue" | "black"): string {
+
+Function lacks ending return statement and return type does not include 'undefined'.2366Function lacks ending return statement and return type does not include 'undefined'.
+
+if (color === "blue") {
+
+
+
+return "beats";
+
+
+
+} else {
+
+
+
+("bose");
+
+
+
+}
+
+
+
+}
+
+Try
+```
+
+* Released:
+
+  1.8
+
+### [#](#noImplicitThis) No Implicit This - `noImplicitThis`
+
+Raise error on ‘this’ expressions with an implied ‘any’ type.
+
+For example, the class below returns a function which tries to access `this.width` and `this.height` – but the context
+for `this` inside the function inside `getAreaFunction` is not the instance of the Rectangle.
+
+```
+ts
+
+
+
+class Rectangle {
+
+
+
+width: number;
+
+
+
+height: number;
+
+
+
+constructor(width: number, height: number) {
+
+
+
+this.width = width;
+
+
+
+this.height = height;
+
+
+
+}
+
+
+
+getAreaFunction() {
+
+
+
+return function () {
+
+
+
+return this.width * this.height;
+
+'this' implicitly has type 'any' because it does not have a type annotation.  
+'this' implicitly has type 'any' because it does not have a type annotation.2683  
+2683'this' implicitly has type 'any' because it does not have a type annotation.  
+'this' implicitly has type 'any' because it does not have a type annotation.
+
+};
+
+
+
+}
+
+
+
+}
+
+Try
+```
+
+* Recommended
+* Default:
+
+  `true` if [`strict`](#strict); `false` otherwise.
+* Related:
+  + strict
+* Released:
+
+  2.0
+
+### [#](#noPropertyAccessFromIndexSignature) No Property Access From Index Signature - `noPropertyAccessFromIndexSignature`
+
+This setting ensures consistency between accessing a field via the “dot” (`obj.key`) syntax, and “indexed” (`obj["key"]`) and the way which the property is declared in the type.
+
+Without this flag, TypeScript will allow you to use the dot syntax to access fields which are not defined:
+
+```
+ts
+
+
+
+interface GameSettings {
+
+
+
+// Known up-front properties
+
+
+
+speed: "fast" | "medium" | "slow";
+
+
+
+quality: "high" | "low";
+
+
+
+// Assume anything unknown to the interface
+
+
+
+// is a string.
+
+
+
+[key: string]: string;
+
+
+
+}
+
+
+
+const settings = getSettings();
+
+
+
+settings.speed;
+
+
+
+(property) GameSettings.speed: "fast" | "medium" | "slow"
+
+
+
+settings.quality;
+
+
+
+(property) GameSettings.quality: "high" | "low"
+
+
+
+// Unknown key accessors are allowed on
+
+
+
+// this object, and are `string`
+
+
+
+settings.username;
+
+
+
+(index) GameSettings[string]: string
+
+Try
+```
+
+Turning the flag on will raise an error because the unknown field uses dot syntax instead of indexed syntax.
+
+```
+ts
+
+
+
+const settings = getSettings();
+
+
+
+settings.speed;
+
+
+
+settings.quality;
+
+
+
+// This would need to be settings["username"];
+
+
+
+settings.username;
+
+Property 'username' comes from an index signature, so it must be accessed with ['username'].4111Property 'username' comes from an index signature, so it must be accessed with ['username'].
+
+(index) GameSettings[string]: string
+
+Try
+```
+
+The goal of this flag is to signal intent in your calling syntax about how certain you are this property exists.
+
+* Released:
+
+  4.2
+
+### [#](#noUncheckedIndexedAccess) No Unchecked Indexed Access - `noUncheckedIndexedAccess`
+
+TypeScript has a way to describe objects which have unknown keys but known values on an object, via index signatures.
+
+```
+ts
+
+
+
+interface EnvironmentVars {
+
+
+
+NAME: string;
+
+
+
+OS: string;
+
+
+
+// Unknown properties are covered by this index signature.
+
+
+
+[propName: string]: string;
+
+
+
+}
+
+
+
+declare const env: EnvironmentVars;
+
+
+
+// Declared as existing
+
+
+
+const sysName = env.NAME;
+
+
+
+const os = env.OS;
+
+
+
+const os: string
+
+
+
+// Not declared, but because of the index
+
+
+
+// signature, then it is considered a string
+
+
+
+const nodeEnv = env.NODE_ENV;
+
+
+
+const nodeEnv: string
+
+Try
+```
+
+Turning on `noUncheckedIndexedAccess` will add `undefined` to any un-declared field in the type.
+
+```
+ts
+
+
+
+declare const env: EnvironmentVars;
+
+
+
+// Declared as existing
+
+
+
+const sysName = env.NAME;
+
+
+
+const os = env.OS;
+
+
+
+const os: string
+
+
+
+// Not declared, but because of the index
+
+
+
+// signature, then it is considered a string
+
+
+
+const nodeEnv = env.NODE_ENV;
+
+
+
+const nodeEnv: string | undefined
+
+Try
+```
+
+* Released:
+
+  4.1
+
+### [#](#noUnusedLocals) No Unused Locals - `noUnusedLocals`
+
+Report errors on unused local variables.
+
+```
+ts
+
+
+
+const createKeyboard = (modelID: number) => {
+
+
+
+const defaultModelID = 23;
+
+'defaultModelID' is declared but its value is never read.6133'defaultModelID' is declared but its value is never read.
+
+return { type: "keyboard", modelID };
+
+
+
+};
+
+Try
+```
+
+* Released:
+
+  2.0
+
+### [#](#noUnusedParameters) No Unused Parameters - `noUnusedParameters`
+
+Report errors on unused parameters in functions.
+
+```
+ts
+
+
+
+const createDefaultKeyboard = (modelID: number) => {
+
+'modelID' is declared but its value is never read.6133'modelID' is declared but its value is never read.
+
+const defaultModelID = 23;
+
+
+
+return { type: "keyboard", modelID: defaultModelID };
+
+
+
+};
+
+Try
+```
+
+Parameters declaration with names starting with an underscore (`_`) are exempt from the unused parameter checking. e.g.:
+
+```
+ts
+
+
+
+const createDefaultKeyboard = (_modelID: number) => {
+
+
+
+return { type: "keyboard" };
+
+
+
+};
+
+Try
+```
+
+* Released:
+
+  2.0
+
+### [#](#strict) Strict - `strict`
+
+The `strict` flag enables a wide range of type checking behavior that results in stronger guarantees of program correctness.
+Turning this on is equivalent to enabling all of the *strict mode family* options, which are outlined below.
+You can then turn off individual strict mode family checks as needed.
+
+Future versions of TypeScript may introduce additional stricter checking under this flag, so upgrades of TypeScript might result in new type errors in your program.
+When appropriate and possible, a corresponding flag will be added to disable that behavior.
+
+* Recommended
+* Default:
+
+  `true`
+* Related:
+  + alwaysStrict
+  + strictNullChecks
+  + strictBindCallApply
+  + strictBuiltinIteratorReturn
+  + strictFunctionTypes
+  + strictPropertyInitialization
+  + noImplicitAny
+  + noImplicitThis
+  + useUnknownInCatchVariables
+* Released:
+
+  2.3
+
+### [#](#strictBindCallApply) Strict Bind Call Apply - `strictBindCallApply`
+
+When set, TypeScript will check that the built-in methods of functions `call`, `bind`, and `apply` are invoked with correct argument for the underlying function:
+
+```
+ts
+
+
+
+// With strictBindCallApply on
+
+
+
+function fn(x: string) {
+
+
+
+return parseInt(x);
+
+
+
+}
+
+
+
+const n1 = fn.call(undefined, "10");
+
+
+
+const n2 = fn.call(undefined, false);
+
+Argument of type 'boolean' is not assignable to parameter of type 'string'.2345Argument of type 'boolean' is not assignable to parameter of type 'string'.Try
+```
+
+Otherwise, these functions accept any arguments and will return `any`:
+
+```
+ts
+
+
+
+// With strictBindCallApply off
+
+
+
+function fn(x: string) {
+
+
+
+return parseInt(x);
+
+
+
+}
+
+
+
+// Note: No error; return type is 'any'
+
+
+
+const n = fn.call(undefined, false);
+
+Try
+```
+
+* Recommended
+* Default:
+
+  `true` if [`strict`](#strict); `false` otherwise.
+* Related:
+  + strict
+* Released:
+
+  3.2
+
+### [#](#strictBuiltinIteratorReturn) strictBuiltinIteratorReturn - `strictBuiltinIteratorReturn`
+
+Built-in iterators are instantiated with a `TReturn` type of undefined instead of `any`.
+
+* Recommended
+* Default:
+
+  `true` if [`strict`](#strict); `false` otherwise.
+* Related:
+  + strict
+* Released:
+
+  5.6
+
+### [#](#strictFunctionTypes) Strict Function Types - `strictFunctionTypes`
+
+When enabled, this flag causes functions parameters to be checked more correctly.
+
+Here’s a basic example with `strictFunctionTypes` off:
+
+```
+ts
+
+
+
+function fn(x: string) {
+
+
+
+console.log("Hello, " + x.toLowerCase());
+
+
+
+}
+
+
+
+type StringOrNumberFunc = (ns: string | number) => void;
+
+
+
+// Unsafe assignment
+
+
+
+let func: StringOrNumberFunc = fn;
+
+
+
+// Unsafe call - will crash
+
+
+
+func(10);
+
+Try
+```
+
+With `strictFunctionTypes` *on*, the error is correctly detected:
+
+```
+ts
+
+
+
+function fn(x: string) {
+
+
+
+console.log("Hello, " + x.toLowerCase());
+
+
+
+}
+
+
+
+type StringOrNumberFunc = (ns: string | number) => void;
+
+
+
+// Unsafe assignment is prevented
+
+
+
+let func: StringOrNumberFunc = fn;
+
+Type '(x: string) => void' is not assignable to type 'StringOrNumberFunc'.
+  Types of parameters 'x' and 'ns' are incompatible.
+    Type 'string | number' is not assignable to type 'string'.
+      Type 'number' is not assignable to type 'string'.2322Type '(x: string) => void' is not assignable to type 'StringOrNumberFunc'.
+  Types of parameters 'x' and 'ns' are incompatible.
+    Type 'string | number' is not assignable to type 'string'.
+      Type 'number' is not assignable to type 'string'.Try
+```
+
+During development of this feature, we discovered a large number of inherently unsafe class hierarchies, including some in the DOM.
+Because of this, the setting only applies to functions written in *function* syntax, not to those in *method* syntax:
+
+```
+ts
+
+
+
+type Methodish = {
+
+
+
+func(x: string | number): void;
+
+
+
+};
+
+
+
+function fn(x: string) {
+
+
+
+console.log("Hello, " + x.toLowerCase());
+
+
+
+}
+
+
+
+// Ultimately an unsafe assignment, but not detected
+
+
+
+const m: Methodish = {
+
+
+
+func: fn,
+
+
+
+};
+
+
+
+m.func(10);
+
+Try
+```
+
+* Recommended
+* Default:
+
+  `true` if [`strict`](#strict); `false` otherwise.
+* Related:
+  + strict
+* Released:
+
+  2.6
+
+### [#](#strictNullChecks) Strict Null Checks - `strictNullChecks`
+
+When `strictNullChecks` is `false`, `null` and `undefined` are effectively ignored by the language.
+This can lead to unexpected errors at runtime.
+
+When `strictNullChecks` is `true`, `null` and `undefined` have their own distinct types and you’ll get a type error if you try to use them where a concrete value is expected.
+
+For example with this TypeScript code, `users.find` has no guarantee that it will actually find a user, but you can
+write code as though it will:
+
+```
+ts
+
+
+
+declare const loggedInUsername: string;
+
+
+
+const users = [
+
+
+
+{ name: "Oby", age: 12 },
+
+
+
+{ name: "Heera", age: 32 },
+
+
+
+];
+
+
+
+const loggedInUser = users.find((u) => u.name === loggedInUsername);
+
+
+
+console.log(loggedInUser.age);
+
+Try
+```
+
+Setting `strictNullChecks` to `true` will raise an error that you have not made a guarantee that the `loggedInUser` exists before trying to use it.
+
+```
+ts
+
+
+
+declare const loggedInUsername: string;
+
+
+
+const users = [
+
+
+
+{ name: "Oby", age: 12 },
+
+
+
+{ name: "Heera", age: 32 },
+
+
+
+];
+
+
+
+const loggedInUser = users.find((u) => u.name === loggedInUsername);
+
+
+
+console.log(loggedInUser.age);
+
+'loggedInUser' is possibly 'undefined'.18048'loggedInUser' is possibly 'undefined'.Try
+```
+
+The second example failed because the array’s `find` function looks a bit like this simplification:
+
+```
+ts
+
+
+
+// When strictNullChecks: true
+
+
+
+type Array = {
+
+
+
+find(predicate: (value: any, index: number) => boolean): S | undefined;
+
+
+
+};
+
+
+
+// When strictNullChecks: false the undefined is removed from the type system,
+
+
+
+// allowing you to write code which assumes it always found a result
+
+
+
+type Array = {
+
+
+
+find(predicate: (value: any, index: number) => boolean): S;
+
+
+
+};
+```
+
+* Recommended
+* Default:
+
+  `true` if [`strict`](#strict); `false` otherwise.
+* Related:
+  + strict
+* Released:
+
+  2.0
+
+### [#](#strictPropertyInitialization) Strict Property Initialization - `strictPropertyInitialization`
+
+When set to true, TypeScript will raise an error when a class property was declared but not set in the constructor.
+
+```
+ts
+
+
+
+class UserAccount {
+
+
+
+name: string;
+
+
+
+accountType = "user";
+
+
+
+email: string;
+
+Property 'email' has no initializer and is not definitely assigned in the constructor.2564Property 'email' has no initializer and is not definitely assigned in the constructor.
+
+address: string | undefined;
+
+
+
+constructor(name: string) {
+
+
+
+this.name = name;
+
+
+
+// Note that this.email is not set
+
+
+
+}
+
+
+
+}
+
+Try
+```
+
+In the above case:
+
+* `this.name` is set specifically.
+* `this.accountType` is set by default.
+* `this.email` is not set and raises an error.
+* `this.address` is declared as potentially `undefined` which means it does not have to be set.
+
+* Recommended
+* Default:
+
+  `true` if [`strict`](#strict); `false` otherwise.
+* Related:
+  + strict
+* Released:
+
+  2.7
+
+### [#](#useUnknownInCatchVariables) Use Unknown In Catch Variables - `useUnknownInCatchVariables`
+
+In TypeScript 4.0, support was added to allow changing the type of the variable in a catch clause from `any` to `unknown`. Allowing for code like:
+
+```
+ts
+
+
+
+try {
+
+
+
+// ...
+
+
+
+} catch (err: unknown) {
+
+
+
+// We have to verify err is an
+
+
+
+// error before using it as one.
+
+
+
+if (err instanceof Error) {
+
+
+
+console.log(err.message);
+
+
+
+}
+
+
+
+}
+
+Try
+```
+
+This pattern ensures that error handling code becomes more comprehensive because you cannot guarantee that the object being thrown *is* a Error subclass ahead of time. With the flag `useUnknownInCatchVariables` enabled, then you do not need the additional syntax (`: unknown`) nor a linter rule to try enforce this behavior.
+
+* Recommended
+* Default:
+
+  `true` if [`strict`](#strict); `false` otherwise.
+* Related:
+  + strict
+* Released:
+
+  4.4
+
+## [#](#Modules_6244)Modules
+
+### [#](#allowArbitraryExtensions) Allow Arbitrary Extensions - `allowArbitraryExtensions`
+
+In TypeScript 5.0, when an import path ends in an extension that isn’t a known JavaScript or TypeScript file extension, the compiler will look for a declaration file for that path in the form of `{file basename}.d.{extension}.ts`.
+For example, if you are using a CSS loader in a bundler project, you might want to write (or generate) declaration files for those stylesheets:
+
+```
+css
+
+
+
+/* app.css */
+
+
+
+.cookie-banner {
+
+
+
+display: none;
+
+
+
+}
+```
+
+```
+ts
+
+
+
+// app.d.css.ts
+
+
+
+declare const css: {
+
+
+
+cookieBanner: string;
+
+
+
+};
+
+
+
+export default css;
+```
+
+```
+ts
+
+
+
+// App.tsx
+
+
+
+import styles from "./app.css";
+
+
+
+styles.cookieBanner; // string
+```
+
+By default, this import will raise an error to let you know that TypeScript doesn’t understand this file type and your runtime might not support importing it.
+But if you’ve configured your runtime or bundler to handle it, you can suppress the error with the new `--allowArbitraryExtensions` compiler option.
+
+Note that historically, a similar effect has often been achievable by adding a declaration file named `app.css.d.ts` instead of `app.d.css.ts` - however, this just worked through Node’s `require` resolution rules for CommonJS.
+Strictly speaking, the former is interpreted as a declaration file for a JavaScript file named `app.css.js`.
+Because relative files imports need to include extensions in Node’s ESM support, TypeScript would error on our example in an ESM file under `--moduleResolution node16` or `nodenext`.
+
+For more information, read up [the proposal for this feature](https://github.com/microsoft/TypeScript/issues/50133) and [its corresponding pull request](https://github.com/microsoft/TypeScript/pull/51435).
+
+* Released:
+
+  5.0
+
+### [#](#allowImportingTsExtensions) Allow Importing TS Extensions - `allowImportingTsExtensions`
+
+`--allowImportingTsExtensions` allows TypeScript files to import each other with a TypeScript-specific extension like `.ts`, `.mts`, or `.tsx`.
+
+This flag is only allowed when `--noEmit` or `--emitDeclarationOnly` is enabled, since these import paths would not be resolvable at runtime in JavaScript output files.
+The expectation here is that your resolver (e.g. your bundler, a runtime, or some other tool) is going to make these imports between `.ts` files work.
+
+* Default:
+
+  `true` if [`rewriteRelativeImportExtensions`](#rewriteRelativeImportExtensions); `false` otherwise.
+* Released:
+
+  5.0
+
+### [#](#allowUmdGlobalAccess) Allow Umd Global Access - `allowUmdGlobalAccess`
+
+When set to true, `allowUmdGlobalAccess` lets you access UMD exports as globals from inside module files. A module file is a file that has imports and/or exports. Without this flag, using an export from a UMD module requires an import declaration.
+
+An example use case for this flag would be a web project where you know the particular library (like jQuery or Lodash) will always be available at runtime, but you can’t access it with an import.
+
+* Released:
+
+  3.5
+
+### [#](#baseUrl) Base URL - `baseUrl`
+
+Sets a base directory from which to resolve bare specifier module names. For example, in the directory structure:
+
+```
+project
+
+
+
+├── ex.ts
+
+
+
+├── hello
+
+
+
+│   └── world.ts
+
+
+
+└── tsconfig.json
+```
+
+With `"baseUrl": "./"`, TypeScript will look for files starting at the same folder as the `tsconfig.json`:
+
+```
+ts
+
+
+
+import { helloWorld } from "hello/world";
+
+
+
+console.log(helloWorld);
+```
+
+This resolution has higher priority than lookups from `node_modules`.
+
+This feature was designed for use in conjunction with AMD module loaders in the browser, and is not recommended in any other context. As of TypeScript 4.1, `baseUrl` is no longer required to be set when using [`paths`](#paths).
+
+* Released:
+
+  2.0
+
+### [#](#customConditions) Custom Conditions - `customConditions`
+
+`--customConditions` takes a list of additional [conditions](https://nodejs.org/api/packages.html#nested-conditions) that should succeed when TypeScript resolves from an [`exports`](https://nodejs.org/api/packages.html#exports) or [`imports`](https://nodejs.org/api/packages.html#imports) field of a `package.json`.
+These conditions are added to whatever existing conditions a resolver will use by default.
+
+For example, when this field is set in a `tsconfig.json` as so:
+
+```
+jsonc
+
+
+
+{
+
+
+
+"compilerOptions": {
+
+
+
+"target": "es2022",
+
+
+
+"moduleResolution": "bundler",
+
+
+
+"customConditions": ["my-condition"]
+
+
+
+}
+
+
+
+}
+```
+
+Any time an `exports` or `imports` field is referenced in `package.json`, TypeScript will consider conditions called `my-condition`.
+
+So when importing from a package with the following `package.json`
+
+```
+jsonc
+
+
+
+{
+
+
+
+// ...
+
+
+
+"exports": {
+
+
+
+".": {
+
+
+
+"my-condition": "./foo.mjs",
+
+
+
+"node": "./bar.mjs",
+
+
+
+"import": "./baz.mjs",
+
+
+
+"require": "./biz.mjs"
+
+
+
+}
+
+
+
+}
+
+
+
+}
+```
+
+TypeScript will try to look for files corresponding to `foo.mjs`.
+
+This field is only valid under the `node16`, `nodenext`, and `bundler` options for [`--moduleResolution`](#moduleResolution).
+
+* Related:
+  + moduleResolution
+  + resolvePackageJsonExports
+  + resolvePackageJsonImports
+* Released:
+
+  5.0
+
+### [#](#module) Module - `module`
+
+Sets the module system for the program. See the [theory behind TypeScript’s `module` option](/docs/handbook/modules/theory.html#the-module-output-format) and [its reference page](/docs/handbook/modules/reference.html#the-module-compiler-option) for more information. You very likely want `"nodenext"` for modern Node.js projects and `preserve` or `esnext` for code that will be bundled.
+
+Changing `module` affects [`moduleResolution`](#moduleResolution) which [also has a reference page](/docs/handbook/modules/reference.html#the-moduleresolution-compiler-option).
+
+Here’s some example output for this file:
+
+```
+ts
+
+
+
+// @filename: index.ts
+
+
+
+import { valueOfPi } from "./constants";
+
+
+
+export const twoPi = valueOfPi * 2;
+
+Try
+```
+
+#### `CommonJS`
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+exports.twoPi = void 0;
+
+
+
+const constants_1 = require("./constants");
+
+
+
+exports.twoPi = constants_1.valueOfPi * 2;
+
+Try
+```
+
+#### `UMD`
+
+```
+ts
+
+
+
+(function (factory) {
+
+
+
+if (typeof module === "object" && typeof module.exports === "object") {
+
+
+
+var v = factory(require, exports);
+
+
+
+if (v !== undefined) module.exports = v;
+
+
+
+}
+
+
+
+else if (typeof define === "function" && define.amd) {
+
+
+
+define(["require", "exports", "./constants"], factory);
+
+
+
+}
+
+
+
+})(function (require, exports) {
+
+
+
+"use strict";
+
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+exports.twoPi = void 0;
+
+
+
+const constants_1 = require("./constants");
+
+
+
+exports.twoPi = constants_1.valueOfPi * 2;
+
+
+
+});
+
+Try
+```
+
+#### `AMD`
+
+```
+ts
+
+
+
+define(["require", "exports", "./constants"], function (require, exports, constants_1) {
+
+
+
+"use strict";
+
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+exports.twoPi = void 0;
+
+
+
+exports.twoPi = constants_1.valueOfPi * 2;
+
+
+
+});
+
+Try
+```
+
+#### `System`
+
+```
+ts
+
+
+
+System.register(["./constants"], function (exports_1, context_1) {
+
+
+
+"use strict";
+
+
+
+var constants_1, twoPi;
+
+
+
+var __moduleName = context_1 && context_1.id;
+
+
+
+return {
+
+
+
+setters: [
+
+
+
+function (constants_1_1) {
+
+
+
+constants_1 = constants_1_1;
+
+
+
+}
+
+
+
+],
+
+
+
+execute: function () {
+
+
+
+exports_1("twoPi", twoPi = constants_1.valueOfPi * 2);
+
+
+
+}
+
+
+
+};
+
+
+
+});
+
+Try
+```
+
+#### `ESNext`
+
+```
+ts
+
+
+
+import { valueOfPi } from "./constants";
+
+
+
+export const twoPi = valueOfPi * 2;
+
+Try
+```
+
+#### `ES2015`/`ES6`/`ES2020`/`ES2022`
+
+```
+ts
+
+
+
+import { valueOfPi } from "./constants";
+
+
+
+export const twoPi = valueOfPi * 2;
+
+Try
+```
+
+In addition to the base functionality of `ES2015`/`ES6`, `ES2020` adds support for [dynamic `import`s](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import), and [`import.meta`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import.meta) while `ES2022` further adds support for [top level `await`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await#top_level_await).
+
+#### `node16`/`node18`/`node20`/`nodenext`
+
+The `node16`, `node18`, `node20`, and `nodenext` modes integrate with Node’s [native ECMAScript Module support](https://nodejs.org/api/esm.html). The emitted JavaScript uses either `CommonJS` or `ES2020` output depending on the file extension and the value of the `type` setting in the nearest `package.json`. Module resolution also works differently. You can learn more in the [handbook](/docs/handbook/esm-node.html) and [Modules Reference](/docs/handbook/modules/reference.html#node16-node18-node20-nodenext).
+
+* `node16` is available from TypeScript 4.7
+* `node18` is available from TypeScript 5.8 as a replacement for `node16`, with added support for import attributes.
+* `node20` adds support for require(ESM).
+* `nodenext` is available from TypeScript 4.7, but its behavior changes with the latest stable versions of Node.js. `--module nodenext` implies the floating `--target esnext`.
+
+#### `preserve`
+
+In `--module preserve` ([added](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-4.html#support-for-require-calls-in---moduleresolution-bundler-and---module-preserve) in TypeScript 5.4), ECMAScript imports and exports written in input files are preserved in the output, and CommonJS-style `import x = require("...")` and `export = ...` statements are emitted as CommonJS `require` and `module.exports`. In other words, the format of each individual import or export statement is preserved, rather than being coerced into a single format for the whole compilation (or even a whole file).
+
+```
+ts
+
+
+
+import { valueOfPi } from "./constants";
+
+
+
+const constants = require("./constants");
+
+
+
+export const piSquared = valueOfPi * constants.valueOfPi;
+
+Try
+```
+
+While it’s rare to need to mix imports and require calls in the same file, this `module` mode best reflects the capabilities of most modern bundlers, as well as the Bun runtime.
+
+> Why care about TypeScript’s `module` emit with a bundler or with Bun, where you’re likely also setting `noEmit`? TypeScript’s type checking and module resolution behavior are affected by the module format that it *would* emit. Setting `module` gives TypeScript information about how your bundler or runtime will process imports and exports, which ensures that the types you see on imported values accurately reflect what will happen at runtime or after bundling.
+
+#### `None`
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+exports.twoPi = void 0;
+
+
+
+const constants_1 = require("./constants");
+
+
+
+exports.twoPi = constants_1.valueOfPi * 2;
+
+Try
+```
+
+* Default:
+
+  `CommonJS` if [`target`](#target) is `ES5`; `ES6`/`ES2015` otherwise.
+* Allowed:
+  + `none`
+  + `commonjs`
+  + `amd`
+  + `umd`
+  + `system`
+  + `es6`/`es2015`
+  + `es2020`
+  + `es2022`
+  + `esnext`
+  + `node16`
+  + `node18`
+  + `node20`
+  + `nodenext`
+  + `preserve`
+* Related:
+  + moduleResolution
+  + esModuleInterop
+  + allowImportingTsExtensions
+  + allowArbitraryExtensions
+  + resolveJsonModule
+* Released:
+
+  1.0
+
+### [#](#moduleResolution) Module Resolution - `moduleResolution`
+
+Specify the module resolution strategy:
+
+* `'node16'` or `'nodenext'` for modern versions of Node.js. Node.js v12 and later supports both ECMAScript imports and CommonJS `require`, which resolve using different algorithms. These `moduleResolution` values, when combined with the corresponding [`module`](#module) values, picks the right algorithm for each resolution based on whether Node.js will see an `import` or `require` in the output JavaScript code.
+* `'node10'` (previously called `'node'`) for Node.js versions older than v10, which only support CommonJS `require`. You probably won’t need to use `node10` in modern code.
+* `'bundler'` for use with bundlers. Like `node16` and `nodenext`, this mode supports package.json `"imports"` and `"exports"`, but unlike the Node.js resolution modes, `bundler` never requires file extensions on relative paths in imports.
+* `'classic'` was used in TypeScript before the release of 1.6. `classic` should not be used.
+
+There are reference pages explaining the [theory behind TypeScript’s module resolution](https://www.typescriptlang.org/docs/handbook/modules/theory.html#module-resolution) and the [details of each option](/docs/handbook/modules/reference.html#the-moduleresolution-compiler-option).
+
+* Default:
+
+  `Node10` if [`module`](#module) is `CommonJS`; `Node16` if [`module`](#module) is `Node16`, `Node18`, or `Node20`; `NodeNext` if [`module`](#module) is `NodeNext`; `Bundler` if [`module`](#module) is `Preserve`; `Classic` otherwise.
+* Allowed:
+  + `classic`
+  + `node10`/`node`
+  + `node16`
+  + `nodenext`
+  + `bundler`
+* Related:
+  + module
+  + paths
+  + baseUrl
+  + rootDirs
+  + moduleSuffixes
+  + customConditions
+  + resolvePackageJsonExports
+  + resolvePackageJsonImports
+* Released:
+
+  1.6
+
+### [#](#moduleSuffixes) Module Suffixes - `moduleSuffixes`
+
+Provides a way to override the default list of file name suffixes to search when resolving a module.
+
+```
+{
+
+
+
+"": {
+
+
+
+"": [".ios", ".native", ""]
+
+
+
+}
+
+
+
+}
+```
+
+Given the above configuration, an import like the following:
+
+```
+ts
+
+
+
+import * as foo from "./foo";
+```
+
+TypeScript will look for the relative files `./foo.ios.ts`, `./foo.native.ts`, and finally `./foo.ts`.
+
+Note the empty string `""` in [`moduleSuffixes`](#moduleSuffixes) which is necessary for TypeScript to also look-up `./foo.ts`.
+
+This feature can be useful for React Native projects where each target platform can use a separate tsconfig.json with differing `moduleSuffixes`.
+
+* Released:
+
+  4.7
+
+### [#](#noResolve) No Resolve - `noResolve`
+
+By default, TypeScript will examine the initial set of files for `import` and `<reference` directives and add these resolved files to your program.
+
+If `noResolve` is set, this process doesn’t happen.
+However, `import` statements are still checked to see if they resolve to a valid module, so you’ll need to make sure this is satisfied by some other means.
+
+* Released:
+
+  1.0
+
+### [#](#noUncheckedSideEffectImports) noUncheckedSideEffectImports - `noUncheckedSideEffectImports`
+
+In JavaScript it’s possible to `import` a module without actually importing any values from it.
+
+```
+ts
+
+
+
+import "some-module";
+```
+
+These imports are often called *side effect imports* because the only useful behavior they can provide is by executing some side effect (like registering a global variable, or adding a polyfill to a prototype).
+
+By default, TypeScript will not check these imports for validity. If the import resolves to a valid source file, TypeScript will load and check the file.
+If no source file is found, TypeScript will silently ignore the import.
+
+This is surprising behavior, but it partially stems from modeling patterns in the JavaScript ecosystem.
+For example, this syntax has also been used with special loaders in bundlers to load CSS or other assets.
+Your bundler might be configured in such a way where you can include specific `.css` files by writing something like the following:
+
+```
+tsx
+
+
+
+import "./button-component.css";
+
+
+
+export function Button() {
+
+
+
+// ...
+
+
+
+}
+```
+
+Still, this masks potential typos on side effect imports.
+
+When `--noUncheckedSideEffectImports` is enabled, TypeScript will error if it can’t find a source file for a side effect import.
+
+```
+ts
+
+
+
+import "oops-this-module-does-not-exist";
+
+
+
+//     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+// error: Cannot find module 'oops-this-module-does-not-exist' or its corresponding
+
+
+
+//        type declarations.
+```
+
+When enabling this option, some working code may now receive an error, like in the CSS example above.
+To work around this, users who want to just write side effect `import`s for assets might be better served by writing what’s called an *ambient module declaration* with a wildcard specifier.
+It would go in a global file and look something like the following:
+
+```
+ts
+
+
+
+// ./src/globals.d.ts
+
+
+
+// Recognize all CSS files as module imports.
+
+
+
+declare module "*.css" {}
+```
+
+In fact, you might already have a file like this in your project!
+For example, running something like `vite init` might create a similar `vite-env.d.ts`.
+
+* Default:
+
+  `true`
+* Released:
+
+  5.6
+
+### [#](#paths) Paths - `paths`
+
+A series of entries which re-map imports to lookup locations relative to the [`baseUrl`](#baseUrl) if set, or to the tsconfig file itself otherwise. There is a larger coverage of `paths` in [the `moduleResolution` reference page](/docs/handbook/modules/reference.html#paths).
+
+`paths` lets you declare how TypeScript should resolve an import in your `require`/`import`s.
+
+```
+{
+
+
+
+"": {
+
+
+
+"": {
+
+
+
+"jquery": ["./vendor/jquery/dist/jquery"]
+
+
+
+}
+
+
+
+}
+
+
+
+}
+```
+
+This would allow you to be able to write `import "jquery"`, and get all of the correct typing locally.
+
+```
+{
+
+
+
+"": {
+
+
+
+"": {
+
+
+
+"app/*": ["./src/app/*"],
+
+
+
+"config/*": ["./src/app/_config/*"],
+
+
+
+"environment/*": ["./src/environments/*"],
+
+
+
+"shared/*": ["./src/app/_shared/*"],
+
+
+
+"helpers/*": ["./src/helpers/*"],
+
+
+
+"tests/*": ["./src/tests/*"]
+
+
+
+}
+
+
+
+}
+
+
+
+}
+```
+
+In this case, you can tell the TypeScript file resolver to support a number of custom prefixes to find code.
+
+Note that this feature does not change how import paths are emitted by `tsc`, so `paths` should only be used to inform TypeScript that another tool has this mapping and will use it at runtime or when bundling.
+
+* Released:
+
+  2.0
+
+### [#](#resolveJsonModule) Resolve JSON Module - `resolveJsonModule`
+
+Allows importing modules with a `.json` extension, which is a common practice in node projects. This includes
+generating a type for the `import` based on the static JSON shape.
+
+TypeScript does not support resolving JSON files by default:
+
+```
+ts
+
+
+
+// @filename: settings.json
+
+
+
+{
+
+
+
+"repo": "TypeScript",
+
+
+
+"dry": false,
+
+
+
+"debug": false
+
+
+
+}
+
+
+
+// @filename: index.ts
+
+
+
+import settings from "./settings.json";
+
+Cannot find module './settings.json' or its corresponding type declarations.2307Cannot find module './settings.json' or its corresponding type declarations.
+
+settings.debug === true;
+
+
+
+settings.dry === 2;
+
+Try
+```
+
+Enabling the option allows importing JSON, and validating the types in that JSON file.
+
+```
+ts
+
+
+
+// @filename: settings.json
+
+
+
+{
+
+
+
+"repo": "TypeScript",
+
+
+
+"dry": false,
+
+
+
+"debug": false
+
+
+
+}
+
+
+
+// @filename: index.ts
+
+
+
+import settings from "./settings.json";
+
+
+
+settings.debug === true;
+
+
+
+settings.dry === 2;
+
+This comparison appears to be unintentional because the types 'boolean' and 'number' have no overlap.2367This comparison appears to be unintentional because the types 'boolean' and 'number' have no overlap.Try
+```
+
+* Released:
+
+  2.9
+
+### [#](#resolvePackageJsonExports) Resolve package.json Exports - `resolvePackageJsonExports`
+
+`--resolvePackageJsonExports` forces TypeScript to consult [the `exports` field of `package.json` files](https://nodejs.org/api/packages.html#exports) if it ever reads from a package in `node_modules`.
+
+This option defaults to `true` under the `node16`, `nodenext`, and `bundler` options for [`--moduleResolution`](#moduleResolution).
+
+* Default:
+
+  `true` when [`moduleResolution`](#moduleResolution) is `node16`, `nodenext`, or `bundler`; otherwise `false`
+* Related:
+  + moduleResolution
+  + customConditions
+  + resolvePackageJsonImports
+* Released:
+
+  5.0
+
+### [#](#resolvePackageJsonImports) Resolve package.json Imports - `resolvePackageJsonImports`
+
+`--resolvePackageJsonImports` forces TypeScript to consult [the `imports` field of `package.json` files](https://nodejs.org/api/packages.html#imports) when performing a lookup that starts with `#` from a file whose ancestor directory contains a `package.json`.
+
+This option defaults to `true` under the `node16`, `nodenext`, and `bundler` options for [`--moduleResolution`](#moduleResolution).
+
+* Default:
+
+  `true` when [`moduleResolution`](#moduleResolution) is `node16`, `nodenext`, or `bundler`; otherwise `false`
+* Related:
+  + moduleResolution
+  + customConditions
+  + resolvePackageJsonExports
+* Released:
+
+  5.0
+
+### [#](#rewriteRelativeImportExtensions) rewriteRelativeImportExtensions - `rewriteRelativeImportExtensions`
+
+Rewrite `.ts`, `.tsx`, `.mts`, and `.cts` file extensions in relative import paths to their JavaScript equivalent in output files.
+
+For more information, see the [TypeScript 5.7 release notes](/docs/handbook/release-notes/typescript-5-7.html#path-rewriting-for-relative-paths).
+
+* Released:
+
+  5.7
+
+### [#](#rootDir) Root Dir - `rootDir`
+
+**Default**: The longest common path of all non-declaration input files. If [`composite`](#composite) is set, the default is instead the directory containing the `tsconfig.json` file.
+
+When TypeScript compiles files, it keeps the same directory structure in the output directory as exists in the input directory.
+
+For example, let’s say you have some input files:
+
+```
+MyProj
+
+
+
+├── tsconfig.json
+
+
+
+├── core
+
+
+
+│   ├── a.ts
+
+
+
+│   ├── b.ts
+
+
+
+│   ├── sub
+
+
+
+│   │   ├── c.ts
+
+
+
+├── types.d.ts
+```
+
+The inferred value for `rootDir` is the longest common path of all non-declaration input files, which in this case is `core/`.
+
+If your [`outDir`](#outDir) was `dist`, TypeScript would write this tree:
+
+```
+MyProj
+
+
+
+├── dist
+
+
+
+│   ├── a.js
+
+
+
+│   ├── b.js
+
+
+
+│   ├── sub
+
+
+
+│   │   ├── c.js
+```
+
+However, you may have intended for `core` to be part of the output directory structure.
+By setting `rootDir: "."` in `tsconfig.json`, TypeScript would write this tree:
+
+```
+MyProj
+
+
+
+├── dist
+
+
+
+│   ├── core
+
+
+
+│   │   ├── a.js
+
+
+
+│   │   ├── b.js
+
+
+
+│   │   ├── sub
+
+
+
+│   │   │   ├── c.js
+```
+
+Importantly, `rootDir` **does not affect which files become part of the compilation**.
+It has no interaction with the [`include`](#include), [`exclude`](#exclude), or [`files`](#files) `tsconfig.json` settings.
+
+Note that TypeScript will never write an output file to a directory outside of [`outDir`](#outDir), and will never skip emitting a file.
+For this reason, `rootDir` also enforces that all files which need to be emitted are underneath the `rootDir` path.
+
+For example, let’s say you had this tree:
+
+```
+MyProj
+
+
+
+├── tsconfig.json
+
+
+
+├── core
+
+
+
+│   ├── a.ts
+
+
+
+│   ├── b.ts
+
+
+
+├── helpers.ts
+```
+
+It would be an error to specify `rootDir` as `core` *and* [`include`](#include) as `*` because it creates a file (`helpers.ts`) that would need to be emitted *outside* the [`outDir`](#outDir) (i.e. `../helpers.js`).
+
+* Default:
+
+  Computed from the list of input files.
+* Released:
+
+  1.5
+
+### [#](#rootDirs) Root Dirs - `rootDirs`
+
+Using `rootDirs`, you can inform the compiler that there are many “virtual” directories acting as a single root.
+This allows the compiler to resolve relative module imports within these “virtual” directories, as if they were merged in to one directory.
+
+For example:
+
+```
+src
+
+
+
+└── views
+
+
+
+└── view1.ts (can import "./template1", "./view2`)
+
+
+
+└── view2.ts (can import "./template1", "./view1`)
+
+
+
+generated
+
+
+
+└── templates
+
+
+
+└── views
+
+
+
+└── template1.ts (can import "./view1", "./view2")
+```
+
+```
+{
+
+
+
+"": {
+
+
+
+"": ["src/views", "generated/templates/views"]
+
+
+
+}
+
+
+
+}
+```
+
+This does not affect how TypeScript emits JavaScript, it only emulates the assumption that they will be able to
+work via those relative paths at runtime.
+
+`rootDirs` can be used to provide a separate “type layer” to files that are not TypeScript or JavaScript by providing a home for generated `.d.ts` files in another folder. This technique is useful for bundled applications where you use `import` of files that aren’t necessarily code:
+
+```
+sh
+
+
+
+src
+
+
+
+└── index.ts
+
+
+
+└── css
+
+
+
+└── main.css
+
+
+
+└── navigation.css
+
+
+
+generated
+
+
+
+└── css
+
+
+
+└── main.css.d.ts
+
+
+
+└── navigation.css.d.ts
+```
+
+```
+{
+
+
+
+"": {
+
+
+
+"": ["src", "generated"]
+
+
+
+}
+
+
+
+}
+```
+
+This technique lets you generate types ahead of time for the non-code source files. Imports then work naturally based off the source file’s location.
+For example `./src/index.ts` can import the file `./src/css/main.css` and TypeScript will be aware of the bundler’s behavior for that filetype via the corresponding generated declaration file.
+
+```
+ts
+
+
+
+// @filename: index.ts
+
+
+
+import { appClass } from "./main.css";
+
+Try
+```
+
+* Default:
+
+  Computed from the list of input files.
+* Released:
+
+  2.0
+
+### [#](#typeRoots) Type Roots - `typeRoots`
+
+By default all *visible* ”`@types`” packages are included in your compilation.
+Packages in `node_modules/@types` of any enclosing folder are considered *visible*.
+For example, that means packages within `./node_modules/@types/`, `../node_modules/@types/`, `../../node_modules/@types/`, and so on.
+
+If `typeRoots` is specified, *only* packages under `typeRoots` will be included. For example:
+
+```
+{
+
+
+
+"": {
+
+
+
+"": ["./typings", "./vendor/types"]
+
+
+
+}
+
+
+
+}
+```
+
+This config file will include *all* packages under `./typings` and `./vendor/types`, and no packages from `./node_modules/@types`.
+All paths are relative to the `tsconfig.json`.
+
+* Related:
+  + types
+* Released:
+
+  2.0
+
+### [#](#types) Types - `types`
+
+By default `types` is set to `[]`. For versions below TypeScript 6.0, by default all *visible* ”`@types`” packages are included in your compilation.
+Packages in `node_modules/@types` of any enclosing folder are considered *visible*.
+For example, that means packages within `./node_modules/@types/`, `../node_modules/@types/`, `../../node_modules/@types/`, and so on.
+
+If `types` is specified, only packages listed will be included in the global scope. For instance:
+
+```
+{
+
+
+
+"": {
+
+
+
+"": ["node", "jest", "express"]
+
+
+
+}
+
+
+
+}
+```
+
+This `tsconfig.json` file will *only* include `./node_modules/@types/node`, `./node_modules/@types/jest` and `./node_modules/@types/express`.
+Other packages under `node_modules/@types/*` will not be included.
+
+### What does this affect?
+
+This option does not affect how `@types/*` are included in your application code, for example if you had the above `compilerOptions` example with code like:
+
+```
+ts
+
+
+
+import * as moment from "moment";
+
+
+
+moment().format("MMMM Do YYYY, h:mm:ss a");
+```
+
+The `moment` import would be fully typed.
+
+When you have this option set, by not including a module in the `types` array it:
+
+* Will not add globals to your project (e.g `process` in node, or `expect` in Jest)
+* Will not have exports appear as auto-import recommendations
+
+This feature differs from [`typeRoots`](#typeRoots) in that it is about specifying only the exact types you want included, whereas [`typeRoots`](#typeRoots) supports saying you want particular folders.
+
+* Related:
+  + typeRoots
+* Released:
+
+  2.0
+
+## [#](#Emit_6246)Emit
+
+### [#](#declaration) Declaration - `declaration`
+
+Generate `.d.ts` files for every TypeScript or JavaScript file inside your project.
+These `.d.ts` files are type definition files which describe the external API of your module.
+With `.d.ts` files, tools like TypeScript can provide intellisense and accurate types for un-typed code.
+
+When `declaration` is set to `true`, running the compiler with this TypeScript code:
+
+```
+ts
+
+
+
+export let helloWorld = "hi";
+
+Try
+```
+
+Will generate an `index.js` file like this:
+
+```
+ts
+
+
+
+export let helloWorld = "hi";
+
+Try
+```
+
+With a corresponding `helloWorld.d.ts`:
+
+```
+ts
+
+
+
+export declare let helloWorld: string;
+
+Try
+```
+
+When working with `.d.ts` files for JavaScript files you may want to use [`emitDeclarationOnly`](#emitDeclarationOnly) or use [`outDir`](#outDir) to ensure that the JavaScript files are not overwritten.
+
+* Default:
+
+  `true` if [`composite`](#composite); `false` otherwise.
+* Related:
+  + declarationDir
+  + emitDeclarationOnly
+* Released:
+
+  1.0
+
+### [#](#declarationDir) Declaration Dir - `declarationDir`
+
+Offers a way to configure the root directory for where declaration files are emitted.
+
+```
+example
+
+
+
+├── index.ts
+
+
+
+├── package.json
+
+
+
+└── tsconfig.json
+```
+
+with this `tsconfig.json`:
+
+```
+{
+
+
+
+"": {
+
+
+
+"": true,
+
+
+
+"": "./types"
+
+
+
+}
+
+
+
+}
+```
+
+Would place the d.ts for the `index.ts` in a `types` folder:
+
+```
+example
+
+
+
+├── index.js
+
+
+
+├── index.ts
+
+
+
+├── package.json
+
+
+
+├── tsconfig.json
+
+
+
+└── types
+
+
+
+└── index.d.ts
+```
+
+* Related:
+  + declaration
+* Released:
+
+  2.0
+
+### [#](#declarationMap) Declaration Map - `declarationMap`
+
+Generates a source map for `.d.ts` files which map back to the original `.ts` source file.
+This will allow editors such as VS Code to go to the original `.ts` file when using features like *Go to Definition*.
+
+You should strongly consider turning this on if you’re using project references.
+
+* Released:
+
+  2.9
+
+### [#](#downlevelIteration) Downlevel Iteration - `downlevelIteration`
+
+Downleveling is TypeScript’s term for transpiling to an older version of JavaScript.
+This flag is to enable support for a more accurate implementation of how modern JavaScript iterates through new concepts in older JavaScript runtimes.
+
+ECMAScript 6 added several new iteration primitives: the `for / of` loop (`for (el of arr)`), Array spread (`[a, ...b]`), argument spread (`fn(...args)`), and `Symbol.iterator`.
+`downlevelIteration` allows for these iteration primitives to be used more accurately in ES5 environments if a `Symbol.iterator` implementation is present.
+
+#### Example: Effects on `for / of`
+
+With this TypeScript code:
+
+```
+ts
+
+
+
+const str = "Hello!";
+
+
+
+for (const s of str) {
+
+
+
+console.log(s);
+
+
+
+}
+
+Try
+```
+
+Without `downlevelIteration` enabled, a `for / of` loop on any object is downleveled to a traditional `for` loop:
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+var str = "Hello!";
+
+
+
+for (var _i = 0, str_1 = str; _i < str_1.length; _i++) {
+
+
+
+var s = str_1[_i];
+
+
+
+console.log(s);
+
+
+
+}
+
+Try
+```
+
+This is often what people expect, but it’s not 100% compliant with ECMAScript iteration protocol.
+Certain strings, such as emoji (😜), have a `.length` of 2 (or even more!), but should iterate as 1 unit in a `for-of` loop.
+See [this blog post by Jonathan New](https://blog.jonnew.com/posts/poo-dot-length-equals-two) for a longer explanation.
+
+When `downlevelIteration` is enabled, TypeScript will use a helper function that checks for a `Symbol.iterator` implementation (either native or polyfill).
+If this implementation is missing, you’ll fall back to index-based iteration.
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+var __values = (this && this.__values) || function(o) {
+
+
+
+var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+
+
+
+if (m) return m.call(o);
+
+
+
+if (o && typeof o.length === "number") return {
+
+
+
+next: function () {
+
+
+
+if (o && i >= o.length) o = void 0;
+
+
+
+return { value: o && o[i++], done: !o };
+
+
+
+}
+
+
+
+};
+
+
+
+throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+
+
+
+};
+
+
+
+var e_1, _a;
+
+
+
+var str = "Hello!";
+
+
+
+try {
+
+
+
+for (var str_1 = __values(str), str_1_1 = str_1.next(); !str_1_1.done; str_1_1 = str_1.next()) {
+
+
+
+var s = str_1_1.value;
+
+
+
+console.log(s);
+
+
+
+}
+
+
+
+}
+
+
+
+catch (e_1_1) { e_1 = { error: e_1_1 }; }
+
+
+
+finally {
+
+
+
+try {
+
+
+
+if (str_1_1 && !str_1_1.done && (_a = str_1.return)) _a.call(str_1);
+
+
+
+}
+
+
+
+finally { if (e_1) throw e_1.error; }
+
+
+
+}
+
+Try
+```
+
+You can use [tslib](https://www.npmjs.com/package/tslib) via [`importHelpers`](#importHelpers) to reduce the amount of inline JavaScript too:
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+var __values = (this && this.__values) || function(o) {
+
+
+
+var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+
+
+
+if (m) return m.call(o);
+
+
+
+if (o && typeof o.length === "number") return {
+
+
+
+next: function () {
+
+
+
+if (o && i >= o.length) o = void 0;
+
+
+
+return { value: o && o[i++], done: !o };
+
+
+
+}
+
+
+
+};
+
+
+
+throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+
+
+
+};
+
+
+
+var e_1, _a;
+
+
+
+var str = "Hello!";
+
+
+
+try {
+
+
+
+for (var str_1 = __values(str), str_1_1 = str_1.next(); !str_1_1.done; str_1_1 = str_1.next()) {
+
+
+
+var s = str_1_1.value;
+
+
+
+console.log(s);
+
+
+
+}
+
+
+
+}
+
+
+
+catch (e_1_1) { e_1 = { error: e_1_1 }; }
+
+
+
+finally {
+
+
+
+try {
+
+
+
+if (str_1_1 && !str_1_1.done && (_a = str_1.return)) _a.call(str_1);
+
+
+
+}
+
+
+
+finally { if (e_1) throw e_1.error; }
+
+
+
+}
+
+Try
+```
+
+**Note:** enabling `downlevelIteration` does not improve compliance if `Symbol.iterator` is not present in the runtime.
+
+#### Example: Effects on Array Spreads
+
+This is an array spread:
+
+```
+js
+
+
+
+// Make a new array whose elements are 1 followed by the elements of arr2
+
+
+
+const arr = [1, ...arr2];
+```
+
+Based on the description, it sounds easy to downlevel to ES5:
+
+```
+js
+
+
+
+// The same, right?
+
+
+
+const arr = [1].concat(arr2);
+```
+
+However, this is observably different in certain rare cases.
+
+For example, if a source array is missing one or more items (contains a hole), the spread syntax will replace each empty item with `undefined`, whereas `.concat` will leave them intact.
+
+```
+js
+
+
+
+// Make an array where the element at index 1 is missing
+
+
+
+let arrayWithHole = ["a", , "c"];
+
+
+
+let spread = [...arrayWithHole];
+
+
+
+let concatenated = [].concat(arrayWithHole);
+
+
+
+console.log(arrayWithHole);
+
+
+
+// [ 'a', <1 empty item>, 'c' ]
+
+
+
+console.log(spread);
+
+
+
+// [ 'a', undefined, 'c' ]
+
+
+
+console.log(concatenated);
+
+
+
+// [ 'a', <1 empty item>, 'c' ]
+```
+
+Just as with `for / of`, `downlevelIteration` will use `Symbol.iterator` (if present) to more accurately emulate ES 6 behavior.
+
+* Related:
+  + importHelpers
+* Released:
+
+  2.3
+
+### [#](#emitBOM) Emit BOM - `emitBOM`
+
+Controls whether TypeScript will emit a [byte order mark (BOM)](https://wikipedia.org/wiki/Byte_order_mark) when writing output files.
+Some runtime environments require a BOM to correctly interpret a JavaScript files; others require that it is not present.
+The default value of `false` is generally best unless you have a reason to change it.
+
+* Released:
+
+  1.0
+
+### [#](#emitDeclarationOnly) Emit Declaration Only - `emitDeclarationOnly`
+
+*Only* emit `.d.ts` files; do not emit `.js` files.
+
+This setting is useful in two cases:
+
+* You are using a transpiler other than TypeScript to generate your JavaScript.
+* You are using TypeScript to only generate `d.ts` files for your consumers.
+
+* Related:
+  + declaration
+* Released:
+
+  2.8
+
+### [#](#importHelpers) Import Helpers - `importHelpers`
+
+For certain downleveling operations, TypeScript uses some helper code for operations like extending class, spreading arrays or objects, and async operations.
+By default, these helpers are inserted into files which use them.
+This can result in code duplication if the same helper is used in many different modules.
+
+If the `importHelpers` flag is on, these helper functions are instead imported from the [tslib](https://www.npmjs.com/package/tslib) module.
+You will need to ensure that the `tslib` module is able to be imported at runtime.
+This only affects modules; global script files will not attempt to import modules.
+
+For example, with this TypeScript:
+
+```
+ts
+
+
+
+export function fn(arr: number[]) {
+
+
+
+const arr2 = [1, ...arr];
+
+
+
+}
+```
+
+Turning on [`downlevelIteration`](#downlevelIteration) and `importHelpers` is still false:
+
+```
+ts
+
+
+
+var __read = (this && this.__read) || function (o, n) {
+
+
+
+var m = typeof Symbol === "function" && o[Symbol.iterator];
+
+
+
+if (!m) return o;
+
+
+
+var i = m.call(o), r, ar = [], e;
+
+
+
+try {
+
+
+
+while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+
+
+
+}
+
+
+
+catch (error) { e = { error: error }; }
+
+
+
+finally {
+
+
+
+try {
+
+
+
+if (r && !r.done && (m = i["return"])) m.call(i);
+
+
+
+}
+
+
+
+finally { if (e) throw e.error; }
+
+
+
+}
+
+
+
+return ar;
+
+
+
+};
+
+
+
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+
+
+
+if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+
+
+
+if (ar || !(i in from)) {
+
+
+
+if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+
+
+
+ar[i] = from[i];
+
+
+
+}
+
+
+
+}
+
+
+
+return to.concat(ar || Array.prototype.slice.call(from));
+
+
+
+};
+
+
+
+export function fn(arr) {
+
+
+
+var arr2 = __spreadArray([1], __read(arr), false);
+
+
+
+}
+
+Try
+```
+
+Then turning on both [`downlevelIteration`](#downlevelIteration) and `importHelpers`:
+
+```
+ts
+
+
+
+import { __read, __spreadArray } from "tslib";
+
+
+
+export function fn(arr) {
+
+
+
+var arr2 = __spreadArray([1], __read(arr), false);
+
+
+
+}
+
+Try
+```
+
+You can use [`noEmitHelpers`](#noEmitHelpers) when you provide your own implementations of these functions.
+
+* Related:
+  + noEmitHelpers
+  + downlevelIteration
+* Released:
+
+  2.1
+
+### [#](#inlineSourceMap) Inline Source Map - `inlineSourceMap`
+
+When set, instead of writing out a `.js.map` file to provide source maps, TypeScript will embed the source map content in the `.js` files.
+Although this results in larger JS files, it can be convenient in some scenarios.
+For example, you might want to debug JS files on a webserver that doesn’t allow `.map` files to be served.
+
+Mutually exclusive with [`sourceMap`](#sourceMap).
+
+For example, with this TypeScript:
+
+```
+ts
+
+
+
+const helloWorld = "hi";
+
+
+
+console.log(helloWorld);
+```
+
+Converts to this JavaScript:
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+const helloWorld = "hi";
+
+
+
+console.log(helloWorld);
+
+Try
+```
+
+Then enable building it with `inlineSourceMap` enabled there is a comment at the bottom of the file which includes
+a source-map for the file.
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+const helloWorld = "hi";
+
+
+
+console.log(helloWorld);
+
+
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsTUFBTSxVQUFVLEdBQUcsSUFBSSxDQUFDO0FBQ3hCLE9BQU8sQ0FBQyxHQUFHLENBQUMsVUFBVSxDQUFDLENBQUMifQ==
+
+Try
+```
+
+* Released:
+
+  1.5
+
+### [#](#inlineSources) Inline Sources - `inlineSources`
+
+When set, TypeScript will include the original content of the `.ts` file as an embedded string in the source map (using the source map’s `sourcesContent` property).
+This is often useful in the same cases as [`inlineSourceMap`](#inlineSourceMap).
+
+Requires either [`sourceMap`](#sourceMap) or [`inlineSourceMap`](#inlineSourceMap) to be set.
+
+For example, with this TypeScript:
+
+```
+ts
+
+
+
+const helloWorld = "hi";
+
+
+
+console.log(helloWorld);
+
+Try
+```
+
+By default converts to this JavaScript:
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+const helloWorld = "hi";
+
+
+
+console.log(helloWorld);
+
+Try
+```
+
+Then enable building it with `inlineSources` and [`inlineSourceMap`](#inlineSourceMap) enabled there is a comment at the bottom of the file which includes
+a source-map for the file.
+Note that the end is different from the example in [`inlineSourceMap`](#inlineSourceMap) because the source-map now contains the original source code also.
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+const helloWorld = "hi";
+
+
+
+console.log(helloWorld);
+
+
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsTUFBTSxVQUFVLEdBQUcsSUFBSSxDQUFDO0FBQ3hCLE9BQU8sQ0FBQyxHQUFHLENBQUMsVUFBVSxDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJjb25zdCBoZWxsb1dvcmxkID0gXCJoaVwiO1xuY29uc29sZS5sb2coaGVsbG9Xb3JsZCk7Il19
+
+Try
+```
+
+* Released:
+
+  1.5
+
+### [#](#mapRoot) Map Root - `mapRoot`
+
+Specify the location where debugger should locate map files instead of generated locations.
+This string is treated verbatim inside the source-map, for example:
+
+```
+{
+
+
+
+"": {
+
+
+
+"": true,
+
+
+
+"": "https://my-website.com/debug/sourcemaps/"
+
+
+
+}
+
+
+
+}
+```
+
+Would declare that `index.js` will have sourcemaps at `https://my-website.com/debug/sourcemaps/index.js.map`.
+
+* Released:
+
+  1.0
+
+### [#](#newLine) New Line - `newLine`
+
+Specify the end of line sequence to be used when emitting files: ‘CRLF’ (dos) or ‘LF’ (unix).
+
+* Default:
+
+  `lf`
+* Allowed:
+  + `crlf`
+  + `lf`
+* Released:
+
+  1.5
+
+### [#](#noEmit) No Emit - `noEmit`
+
+Do not emit compiler output files like JavaScript source code, source-maps or declarations.
+
+This makes room for another tool like [Babel](https://babeljs.io/), or [swc](https://github.com/swc-project/swc) to handle converting the TypeScript file to a file which can run inside a JavaScript environment.
+
+You can then use TypeScript as a tool for providing editor integration, and as a source code type-checker.
+
+* Released:
+
+  1.5
+
+### [#](#noEmitHelpers) No Emit Helpers - `noEmitHelpers`
+
+Instead of importing helpers with [`importHelpers`](#importHelpers), you can provide implementations in the global scope for the helpers you use and completely turn off emitting of helper functions.
+
+For example, using this `async` function in ES5 requires a `await`-like function and `generator`-like function to run:
+
+```
+ts
+
+
+
+const getAPI = async (url: string) => {
+
+
+
+// Get API
+
+
+
+return {};
+
+
+
+};
+
+Try
+```
+
+Which creates quite a lot of JavaScript:
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+
+
+
+function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+
+
+
+return new (P || (P = Promise))(function (resolve, reject) {
+
+
+
+function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+
+
+
+function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+
+
+
+function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+
+
+
+step((generator = generator.apply(thisArg, _arguments || [])).next());
+
+
+
+});
+
+
+
+};
+
+
+
+var __generator = (this && this.__generator) || function (thisArg, body) {
+
+
+
+var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+
+
+
+return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+
+
+
+function verb(n) { return function (v) { return step([n, v]); }; }
+
+
+
+function step(op) {
+
+
+
+if (f) throw new TypeError("Generator is already executing.");
+
+
+
+while (g && (g = 0, op[0] && (_ = 0)), _) try {
+
+
+
+if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+
+
+
+if (y = 0, t) op = [op[0] & 2, t.value];
+
+
+
+switch (op[0]) {
+
+
+
+case 0: case 1: t = op; break;
+
+
+
+case 4: _.label++; return { value: op[1], done: false };
+
+
+
+case 5: _.label++; y = op[1]; op = [0]; continue;
+
+
+
+case 7: op = _.ops.pop(); _.trys.pop(); continue;
+
+
+
+default:
+
+
+
+if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+
+
+
+if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+
+
+
+if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+
+
+
+if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+
+
+
+if (t[2]) _.ops.pop();
+
+
+
+_.trys.pop(); continue;
+
+
+
+}
+
+
+
+op = body.call(thisArg, _);
+
+
+
+} catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+
+
+
+if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+
+
+
+}
+
+
+
+};
+
+
+
+var getAPI = function (url) { return __awaiter(void 0, void 0, void 0, function () {
+
+
+
+return __generator(this, function (_a) {
+
+
+
+// Get API
+
+
+
+return [2 /*return*/, {}];
+
+
+
+});
+
+
+
+}); };
+
+Try
+```
+
+Which can be switched out with your own globals via this flag:
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+var getAPI = function (url) { return __awaiter(void 0, void 0, void 0, function () {
+
+
+
+return __generator(this, function (_a) {
+
+
+
+// Get API
+
+
+
+return [2 /*return*/, {}];
+
+
+
+});
+
+
+
+}); };
+
+Try
+```
+
+* Related:
+  + importHelpers
+* Released:
+
+  1.5
+
+### [#](#noEmitOnError) No Emit On Error - `noEmitOnError`
+
+Do not emit compiler output files like JavaScript source code, source-maps or declarations if any errors were reported.
+
+This defaults to `false`, making it easier to work with TypeScript in a watch-like environment where you may want to see results of changes to your code in another environment before making sure all errors are resolved.
+
+* Released:
+
+  1.4
+
+### [#](#outDir) Out Dir - `outDir`
+
+If specified, `.js` (as well as `.d.ts`, `.js.map`, etc.) files will be emitted into this directory.
+The directory structure of the original source files is preserved; see [`rootDir`](#rootDir) if the computed root is not what you intended.
+
+If not specified, `.js` files will be emitted in the same directory as the `.ts` files they were generated from:
+
+```
+sh
+
+
+
+$ tsc
+
+
+
+example
+
+
+
+├── index.js
+
+
+
+└── index.ts
+```
+
+With a `tsconfig.json` like this:
+
+```
+{
+
+
+
+"": {
+
+
+
+"": "dist"
+
+
+
+}
+
+
+
+}
+```
+
+Running `tsc` with these settings moves the files into the specified `dist` folder:
+
+```
+sh
+
+
+
+$ tsc
+
+
+
+example
+
+
+
+├── dist
+
+
+
+│   └── index.js
+
+
+
+├── index.ts
+
+
+
+└── tsconfig.json
+```
+
+* Related:
+  + out
+  + outFile
+* Released:
+
+  1.0
+
+### [#](#outFile) Out File - `outFile`
+
+If specified, all *global* (non-module) files will be concatenated into the single output file specified.
+
+If `module` is `system` or `amd`, all module files will also be concatenated into this file after all global content.
+
+Note: `outFile` cannot be used unless `module` is `None`, `System`, or `AMD`.
+This option *cannot* be used to bundle CommonJS or ES6 modules.
+
+* Related:
+  + out
+  + outDir
+* Released:
+
+  1.6
+
+### [#](#preserveConstEnums) Preserve Const Enums - `preserveConstEnums`
+
+Do not erase `const enum` declarations in generated code. `const enum`s provide a way to reduce the overall memory footprint
+of your application at runtime by emitting the enum value instead of a reference.
+
+For example with this TypeScript:
+
+```
+ts
+
+
+
+const enum Album {
+
+
+
+JimmyEatWorldFutures = 1,
+
+
+
+TubRingZooHypothesis = 2,
+
+
+
+DogFashionDiscoAdultery = 3,
+
+
+
+}
+
+
+
+const selectedAlbum = Album.JimmyEatWorldFutures;
+
+
+
+if (selectedAlbum === Album.JimmyEatWorldFutures) {
+
+
+
+console.log("That is a great choice.");
+
+
+
+}
+
+Try
+```
+
+The default `const enum` behavior is to convert any `Album.Something` to the corresponding number literal, and to remove a reference
+to the enum from the JavaScript completely.
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+const selectedAlbum = 1 /* Album.JimmyEatWorldFutures */;
+
+
+
+if (selectedAlbum === 1 /* Album.JimmyEatWorldFutures */) {
+
+
+
+console.log("That is a great choice.");
+
+
+
+}
+
+Try
+```
+
+With `preserveConstEnums` set to `true`, the `enum` exists at runtime and the numbers are still emitted.
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+var Album;
+
+
+
+(function (Album) {
+
+
+
+Album[Album["JimmyEatWorldFutures"] = 1] = "JimmyEatWorldFutures";
+
+
+
+Album[Album["TubRingZooHypothesis"] = 2] = "TubRingZooHypothesis";
+
+
+
+Album[Album["DogFashionDiscoAdultery"] = 3] = "DogFashionDiscoAdultery";
+
+
+
+})(Album || (Album = {}));
+
+
+
+const selectedAlbum = 1 /* Album.JimmyEatWorldFutures */;
+
+
+
+if (selectedAlbum === 1 /* Album.JimmyEatWorldFutures */) {
+
+
+
+console.log("That is a great choice.");
+
+
+
+}
+
+Try
+```
+
+This essentially makes such `const enums` a source-code feature only, with no runtime traces.
+
+* Default:
+
+  `true` if [`isolatedModules`](#isolatedModules); `false` otherwise.
+* Released:
+
+  1.4
+
+Strips all comments from TypeScript files when converting into JavaScript. Defaults to `false`.
+
+For example, this is a TypeScript file which has a JSDoc comment:
+
+```
+ts
+
+
+
+/** The translation of 'Hello world' into Portuguese */
+
+
+
+export const helloWorldPTBR = "Olá Mundo";
+```
+
+When `removeComments` is set to `true`:
+
+```
+ts
+
+
+
+export const helloWorldPTBR = "Olá Mundo";
+
+Try
+```
+
+Without setting `removeComments` or having it as `false`:
+
+```
+ts
+
+
+
+/** The translation of 'Hello world' into Portuguese */
+
+
+
+export const helloWorldPTBR = "Olá Mundo";
+
+Try
+```
+
+This means that your comments will show up in the JavaScript code.
+
+* Released:
+
+  1.0
+
+### [#](#sourceMap) Source Map - `sourceMap`
+
+Enables the generation of [sourcemap files](https://developer.mozilla.org/docs/Tools/Debugger/How_to/Use_a_source_map).
+These files allow debuggers and other tools to display the original TypeScript source code when actually working with the emitted JavaScript files.
+Source map files are emitted as `.js.map` (or `.jsx.map`) files next to the corresponding `.js` output file.
+
+The `.js` files will in turn contain a sourcemap comment to indicate where the files are to external tools, for example:
+
+```
+ts
+
+
+
+// helloWorld.ts
+
+
+
+export declare const helloWorld = "hi";
+```
+
+Compiling with `sourceMap` set to `true` creates the following JavaScript file:
+
+```
+js
+
+
+
+// helloWorld.js
+
+
+
+"use strict";
+
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+exports.helloWorld = "hi";
+
+
+
+//# sourceMappingURL=// helloWorld.js.map
+```
+
+And this also generates this json map:
+
+```
+json
+
+
+
+// helloWorld.js.map
+
+
+
+{
+
+
+
+"version": 3,
+
+
+
+"file": "ex.js",
+
+
+
+"sourceRoot": "",
+
+
+
+"sources": ["../ex.ts"],
+
+
+
+"names": [],
+
+
+
+"mappings": ";;AAAa,QAAA,UAAU,GAAG,IAAI,CAAA"
+
+
+
+}
+```
+
+* Released:
+
+  1.0
+
+### [#](#sourceRoot) Source Root - `sourceRoot`
+
+Specify the location where a debugger should locate TypeScript files instead of relative source locations.
+This string is treated verbatim inside the source-map where you can use a path or a URL:
+
+```
+{
+
+
+
+"": {
+
+
+
+"": true,
+
+
+
+"": "https://my-website.com/debug/source/"
+
+
+
+}
+
+
+
+}
+```
+
+Would declare that `index.js` will have a source file at `https://my-website.com/debug/source/index.ts`.
+
+* Released:
+
+  1.0
+
+### [#](#stripInternal) Strip Internal - `stripInternal`
+
+Do not emit declarations for code that has an `@internal` annotation in its JSDoc comment.
+This is an internal compiler option; use at your own risk, because the compiler does not check that the result is valid.
+If you are searching for a tool to handle additional levels of visibility within your `d.ts` files, look at [api-extractor](https://api-extractor.com/).
+
+```
+ts
+
+
+
+/**
+
+
+
+* Days available in a week
+
+
+
+* @internal
+
+
+
+*/
+
+
+
+export const daysInAWeek = 7;
+
+
+
+/** Calculate how much someone earns in a week */
+
+
+
+export function weeklySalary(dayRate: number) {
+
+
+
+return daysInAWeek * dayRate;
+
+
+
+}
+
+Try
+```
+
+With the flag set to `false` (default):
+
+```
+ts
+
+
+
+/**
+
+
+
+* Days available in a week
+
+
+
+* @internal
+
+
+
+*/
+
+
+
+export declare const daysInAWeek = 7;
+
+
+
+/** Calculate how much someone earns in a week */
+
+
+
+export declare function weeklySalary(dayRate: number): number;
+
+Try
+```
+
+With `stripInternal` set to `true` the `d.ts` emitted will be redacted.
+
+```
+ts
+
+
+
+/** Calculate how much someone earns in a week */
+
+
+
+export declare function weeklySalary(dayRate: number): number;
+
+Try
+```
+
+The JavaScript output is still the same.
+
+* Internal
+* Released:
+
+  1.5
+
+## [#](#JavaScript_Support_6247)JavaScript Support
+
+### [#](#allowJs) Allow JS - `allowJs`
+
+Allow JavaScript files to be imported inside your project, instead of just `.ts` and `.tsx` files. For example, this JS file:
+
+```
+js
+
+
+
+// @filename: card.js
+
+
+
+export const defaultCardDeck = "Heart";
+
+Try
+```
+
+When imported into a TypeScript file will raise an error:
+
+```
+ts
+
+
+
+// @filename: index.ts
+
+
+
+import { defaultCardDeck } from "./card";
+
+
+
+console.log(defaultCardDeck);
+
+Try
+```
+
+Imports fine with `allowJs` enabled:
+
+```
+ts
+
+
+
+// @filename: index.ts
+
+
+
+import { defaultCardDeck } from "./card";
+
+
+
+console.log(defaultCardDeck);
+
+Try
+```
+
+This flag can be used as a way to incrementally add TypeScript files into JS projects by allowing the `.ts` and `.tsx` files to live along-side existing JavaScript files.
+
+It can also be used along-side [`declaration`](#declaration) and [`emitDeclarationOnly`](#emitDeclarationOnly) to [create declarations for JS files](/docs/handbook/declaration-files/dts-from-js.html).
+
+* Default:
+
+  `false`, unless `checkJs` is set
+* Related:
+  + checkJs
+  + emitDeclarationOnly
+* Released:
+
+  1.8
+
+### [#](#checkJs) Check JS - `checkJs`
+
+Works in tandem with [`allowJs`](#allowJs). When `checkJs` is enabled then errors are reported in JavaScript files. This is
+the equivalent of including `// @ts-check` at the top of all JavaScript files which are included in your project.
+
+For example, this is incorrect JavaScript according to the `parseFloat` type definition which comes with TypeScript:
+
+```
+js
+
+
+
+// parseFloat only takes a string
+
+
+
+module.exports.pi = parseFloat(3.142);
+```
+
+When imported into a TypeScript module:
+
+```
+ts
+
+
+
+// @filename: constants.js
+
+
+
+module.exports.pi = parseFloat(3.142);
+
+
+
+// @filename: index.ts
+
+
+
+import { pi } from "./constants";
+
+
+
+console.log(pi);
+
+Try
+```
+
+You will not get any errors. However, if you turn on `checkJs` then you will get error messages from the JavaScript file.
+
+```
+ts
+
+
+
+// @filename: constants.js
+
+
+
+module.exports.pi = parseFloat(3.142);
+
+Argument of type 'number' is not assignable to parameter of type 'string'.2345Argument of type 'number' is not assignable to parameter of type 'string'.
+
+// @filename: index.ts
+
+
+
+import { pi } from "./constants";
+
+
+
+console.log(pi);
+
+Try
+```
+
+* Related:
+  + allowJs
+  + emitDeclarationOnly
+* Released:
+
+  2.3
+
+### [#](#maxNodeModuleJsDepth) Max Node Module JS Depth - `maxNodeModuleJsDepth`
+
+The maximum dependency depth to search under `node_modules` and load JavaScript files.
+
+This flag can only be used when [`allowJs`](#allowJs) is enabled, and is used if you want to have TypeScript infer types for all of the JavaScript inside your `node_modules`.
+
+Ideally this should stay at 0 (the default), and `d.ts` files should be used to explicitly define the shape of modules.
+However, there are cases where you may want to turn this on at the expense of speed and potential accuracy.
+
+* Released:
+
+  2.0
+
+## [#](#Editor_Support_6249)Editor Support
+
+### [#](#disableSizeLimit) Disable Size Limit - `disableSizeLimit`
+
+To avoid a possible memory bloat issues when working with very large JavaScript projects, there is an upper limit to the amount of memory TypeScript will allocate. Turning this flag on will remove the limit.
+
+* Released:
+
+  2.0
+
+### [#](#plugins) Plugins - `plugins`
+
+List of language service plugins to run inside the editor.
+
+Language service plugins are a way to provide additional information to a user based on existing TypeScript files. They can enhance existing messages between TypeScript and an editor, or to provide their own error messages.
+
+For example:
+
+* [ts-sql-plugin](https://github.com/xialvjun/ts-sql-plugin#readme) — Adds SQL linting with a template strings SQL builder.
+* [typescript-styled-plugin](https://github.com/Microsoft/typescript-styled-plugin) — Provides CSS linting inside template strings .
+* [typescript-eslint-language-service](https://github.com/Quramy/typescript-eslint-language-service) — Provides eslint error messaging and fix-its inside the compiler’s output.
+* [ts-graphql-plugin](https://github.com/Quramy/ts-graphql-plugin) — Provides validation and auto-completion inside GraphQL query template strings.
+
+VS Code has the ability for a extension to [automatically include language service plugins](https://code.visualstudio.com/api/references/contribution-points#contributes.typescriptServerPlugins), and so you may have some running in your editor without needing to define them in your `tsconfig.json`.
+
+* Released:
+
+  2.2
+
+## [#](#Interop_Constraints_6252)Interop Constraints
+
+### [#](#allowSyntheticDefaultImports) Allow Synthetic Default Imports - `allowSyntheticDefaultImports`
+
+When set to true, `allowSyntheticDefaultImports` allows you to write an import like:
+
+```
+ts
+
+
+
+import React from "react";
+```
+
+instead of:
+
+```
+ts
+
+
+
+import * as React from "react";
+```
+
+When the module **does not** explicitly specify a default export.
+
+For example, without `allowSyntheticDefaultImports` as true:
+
+```
+ts
+
+
+
+// @filename: utilFunctions.js
+
+
+
+const getStringLength = (str) => str.length;
+
+
+
+module.exports = {
+
+
+
+getStringLength,
+
+
+
+};
+
+
+
+// @filename: index.ts
+
+
+
+import utils from "./utilFunctions";
+
+
+
+const count = utils.getStringLength("Check JS");
+
+Try
+```
+
+This code raises an error because there isn’t a `default` object which you can import. Even though it feels like it should.
+For convenience, transpilers like Babel will automatically create a default if one isn’t created. Making the module look a bit more like:
+
+```
+js
+
+
+
+// @filename: utilFunctions.js
+
+
+
+const getStringLength = (str) => str.length;
+
+
+
+const allFunctions = {
+
+
+
+getStringLength,
+
+
+
+};
+
+
+
+module.exports = allFunctions;
+
+
+
+module.exports.default = allFunctions;
+```
+
+This flag does not affect the JavaScript emitted by TypeScript, it’s only for the type checking.
+This option brings the behavior of TypeScript in-line with Babel, where extra code is emitted to make using a default export of a module more ergonomic.
+
+* Default:
+
+  `true` if [`esModuleInterop`](#esModuleInterop) is enabled, [`module`](#module) is `system`, or [`moduleResolution`](#module-resolution) is `bundler`; `false` otherwise.
+* Related:
+  + esModuleInterop
+* Released:
+
+  1.8
+
+### [#](#erasableSyntaxOnly) Erasable Syntax Only - `erasableSyntaxOnly`
+
+Node.js [supports running TypeScript files directly](https://nodejs.org/api/typescript.html#type-stripping) as of v23.6;
+however, only TypeScript-specific syntax that does not have runtime semantics are supported under this mode.
+In other words, it must be possible to easily *erase* any TypeScript-specific syntax from a file, leaving behind a valid JavaScript file.
+
+That means the following constructs are not supported:
+
+* `enum` declarations
+* `namespace`s and `module`s with runtime code
+* parameter properties in classes
+* Non-ECMAScript `import =` and `export =` assignments
+* `<prefix>`-style type assertions
+
+```
+ts
+
+
+
+// ❌ error: An `import ... = require(...)` alias
+
+
+
+import foo = require("foo");
+
+
+
+// ❌ error: A namespace with runtime code.
+
+
+
+namespace container {
+
+
+
+foo.method();
+
+
+
+export type Bar = string;
+
+
+
+}
+
+
+
+// ❌ error: An `import =` alias
+
+
+
+import Bar = container.Bar;
+
+
+
+class Point {
+
+
+
+// ❌ error: Parameter properties
+
+
+
+constructor(public x: number, public y: number) {}
+
+
+
+}
+
+
+
+// ❌ error: An `export =` assignment.
+
+
+
+export = Point;
+
+
+
+// ❌ error: An enum declaration.
+
+
+
+enum Direction {
+
+
+
+Up,
+
+
+
+Down,
+
+
+
+Left,
+
+
+
+Right,
+
+
+
+}
+
+
+
+// ❌ error: <prefix>-style type assertion.
+
+
+
+const num = <number>1;
+```
+
+Similar tools like [ts-blank-space](https://github.com/bloomberg/ts-blank-space) or [Amaro](https://github.com/nodejs/amaro) (the underlying library for type-stripping in Node.js) have the same limitations.
+These tools will provide helpful error messages if they encounter code that doesn’t meet these requirements, but you still won’t find out your code doesn’t work until you actually try to run it.
+
+The `--erasableSyntaxOnly` flag will cause TypeScript to error on most TypeScript-specific constructs that have runtime behavior.
+
+```
+ts
+
+
+
+class C {
+
+
+
+constructor(public x: number) { }
+
+
+
+//          ~~~~~~~~~~~~~~~~
+
+
+
+// error! This syntax is not allowed when 'erasableSyntaxOnly' is enabled.
+
+
+
+}
+
+
+
+}
+```
+
+Typically, you will want to combine this flag with the `--verbatimModuleSyntax`, which ensures that a module contains the appropriate import syntax, and that import elision does not take place.
+
+### [#](#esModuleInterop) ES Module Interop - `esModuleInterop`
+
+By default (with `esModuleInterop` false or not set) TypeScript treats CommonJS/AMD/UMD modules similar to ES6 modules. In doing this, there are two parts in particular which turned out to be flawed assumptions:
+
+* a namespace import like `import * as moment from "moment"` acts the same as `const moment = require("moment")`
+* a default import like `import moment from "moment"` acts the same as `const moment = require("moment").default`
+
+This mis-match causes these two issues:
+
+* the ES6 modules spec states that a namespace import (`import * as x`) can only be an object, by having TypeScript
+  treating it the same as `= require("x")` then TypeScript allowed for the import to be treated as a function and be callable. That’s not valid according to the spec.
+* while accurate to the ES6 modules spec, most libraries with CommonJS/AMD/UMD modules didn’t conform as strictly as TypeScript’s implementation.
+
+Turning on `esModuleInterop` will fix both of these problems in the code transpiled by TypeScript. The first changes the behavior in the compiler, the second is fixed by two new helper functions which provide a shim to ensure compatibility in the emitted JavaScript:
+
+```
+ts
+
+
+
+import * as fs from "fs";
+
+
+
+import _ from "lodash";
+
+
+
+fs.readFileSync("file.txt", "utf8");
+
+
+
+_.chunk(["a", "b", "c", "d"], 2);
+```
+
+With `esModuleInterop` disabled:
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+const fs = require("fs");
+
+
+
+const lodash_1 = require("lodash");
+
+
+
+fs.readFileSync("file.txt", "utf8");
+
+
+
+lodash_1.default.chunk(["a", "b", "c", "d"], 2);
+
+Try
+```
+
+With `esModuleInterop` set to `true`:
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+
+
+
+if (k2 === undefined) k2 = k;
+
+
+
+var desc = Object.getOwnPropertyDescriptor(m, k);
+
+
+
+if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+
+
+
+desc = { enumerable: true, get: function() { return m[k]; } };
+
+
+
+}
+
+
+
+Object.defineProperty(o, k2, desc);
+
+
+
+}) : (function(o, m, k, k2) {
+
+
+
+if (k2 === undefined) k2 = k;
+
+
+
+o[k2] = m[k];
+
+
+
+}));
+
+
+
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+
+
+
+Object.defineProperty(o, "default", { enumerable: true, value: v });
+
+
+
+}) : function(o, v) {
+
+
+
+o["default"] = v;
+
+
+
+});
+
+
+
+var __importStar = (this && this.__importStar) || (function () {
+
+
+
+var ownKeys = function(o) {
+
+
+
+ownKeys = Object.getOwnPropertyNames || function (o) {
+
+
+
+var ar = [];
+
+
+
+for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+
+
+
+return ar;
+
+
+
+};
+
+
+
+return ownKeys(o);
+
+
+
+};
+
+
+
+return function (mod) {
+
+
+
+if (mod && mod.__esModule) return mod;
+
+
+
+var result = {};
+
+
+
+if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+
+
+
+__setModuleDefault(result, mod);
+
+
+
+return result;
+
+
+
+};
+
+
+
+})();
+
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+
+
+
+return (mod && mod.__esModule) ? mod : { "default": mod };
+
+
+
+};
+
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+const fs = __importStar(require("fs"));
+
+
+
+const lodash_1 = __importDefault(require("lodash"));
+
+
+
+fs.readFileSync("file.txt", "utf8");
+
+
+
+lodash_1.default.chunk(["a", "b", "c", "d"], 2);
+
+Try
+```
+
+*Note*: The namespace import `import * as fs from "fs"` only accounts for properties which [are owned](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty) (basically properties set on the object and not via the prototype chain) on the imported object. If the module you’re importing defines its API using inherited properties, you need to use the default import form (`import fs from "fs"`), or disable `esModuleInterop`.
+
+*Note*: You can make JS emit terser by enabling [`importHelpers`](#importHelpers):
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+const tslib_1 = require("tslib");
+
+
+
+const fs = tslib_1.__importStar(require("fs"));
+
+
+
+const lodash_1 = tslib_1.__importDefault(require("lodash"));
+
+
+
+fs.readFileSync("file.txt", "utf8");
+
+
+
+lodash_1.default.chunk(["a", "b", "c", "d"], 2);
+
+Try
+```
+
+Enabling `esModuleInterop` will also enable [`allowSyntheticDefaultImports`](#allowSyntheticDefaultImports).
+
+* Recommended
+* Default:
+
+  `true` if [`module`](#module) is `node16`, `nodenext`, or `preserve`; `false` otherwise.
+* Related:
+  + allowSyntheticDefaultImports
+* Released:
+
+  2.7
+
+### [#](#forceConsistentCasingInFileNames) Force Consistent Casing In File Names - `forceConsistentCasingInFileNames`
+
+TypeScript follows the case sensitivity rules of the file system it’s running on.
+This can be problematic if some developers are working in a case-sensitive file system and others aren’t.
+If a file attempts to import `fileManager.ts` by specifying `./FileManager.ts` the file will be found in a case-insensitive file system, but not on a case-sensitive file system.
+
+When this option is set, TypeScript will issue an error if a program tries to include a file by a casing different from the casing on disk.
+
+* Recommended
+* Default:
+
+  `true`
+* Released:
+
+  1.8
+
+### [#](#isolatedDeclarations) isolatedDeclarations - `isolatedDeclarations`
+
+Require sufficient annotation on exports so other tools can trivially generate declaration files.
+
+For more information, see the [5.5 release notes](/docs/handbook/release-notes/typescript-5-5.html#isolated-declarations)
+
+* Released:
+
+  5.5
+
+### [#](#isolatedModules) Isolated Modules - `isolatedModules`
+
+While you can use TypeScript to produce JavaScript code from TypeScript code, it’s also common to use other transpilers such as [Babel](https://babeljs.io/) to do this.
+However, other transpilers only operate on a single file at a time, which means they can’t apply code transforms that depend on understanding the full type system.
+This restriction also applies to TypeScript’s `ts.transpileModule` API which is used by some build tools.
+
+These limitations can cause runtime problems with some TypeScript features like `const enum`s and `namespace`s.
+Setting the `isolatedModules` flag tells TypeScript to warn you if you write certain code that can’t be correctly interpreted by a single-file transpilation process.
+
+It does not change the behavior of your code, or otherwise change the behavior of TypeScript’s checking and emitting process.
+
+Some examples of code which does not work when `isolatedModules` is enabled.
+
+#### Exports of Non-Value Identifiers
+
+In TypeScript, you can import a *type* and then subsequently export it:
+
+```
+ts
+
+
+
+import { someType, someFunction } from "someModule";
+
+
+
+someFunction();
+
+
+
+export { someType, someFunction };
+
+Try
+```
+
+Because there’s no value for `someType`, the emitted `export` will not try to export it (this would be a runtime error in JavaScript):
+
+```
+js
+
+
+
+export { someFunction };
+```
+
+Single-file transpilers don’t know whether `someType` produces a value or not, so it’s an error to export a name that only refers to a type.
+
+#### Non-Module Files
+
+If `isolatedModules` is set, namespaces are only allowed in *modules* (which means it has some form of `import`/`export`). An error occurs if a namespace is found in a non-module file:
+
+```
+ts
+
+
+
+namespace Instantiated {
+
+Namespaces are not allowed in global script files when 'isolatedModules' is enabled. If this file is not intended to be a global script, set 'moduleDetection' to 'force' or add an empty 'export {}' statement.1280Namespaces are not allowed in global script files when 'isolatedModules' is enabled. If this file is not intended to be a global script, set 'moduleDetection' to 'force' or add an empty 'export {}' statement.
+
+export const x = 1;
+
+
+
+}
+
+Try
+```
+
+This restriction doesn’t apply to `.d.ts` files.
+
+#### References to `const enum` members
+
+In TypeScript, when you reference a `const enum` member, the reference is replaced by its actual value in the emitted JavaScript. Changing this TypeScript:
+
+```
+ts
+
+
+
+declare const enum Numbers {
+
+
+
+Zero = 0,
+
+
+
+One = 1,
+
+
+
+}
+
+
+
+console.log(Numbers.Zero + Numbers.One);
+
+Try
+```
+
+To this JavaScript:
+
+```
+ts
+
+
+
+"use strict";
+
+
+
+console.log(0 + 1);
+
+Try
+```
+
+Without knowledge of the values of these members, other transpilers can’t replace the references to `Numbers`, which would be a runtime error if left alone (since there are no `Numbers` object at runtime).
+Because of this, when `isolatedModules` is set, it is an error to reference an ambient `const enum` member.
+
+* Default:
+
+  `true` if [`verbatimModuleSyntax`](#verbatimModuleSyntax); `false` otherwise.
+* Released:
+
+  1.5
+
+### [#](#preserveSymlinks) Preserve Symlinks - `preserveSymlinks`
+
+This is to reflect the same flag in Node.js; which does not resolve the real path of symlinks.
+
+This flag also exhibits the opposite behavior to Webpack’s `resolve.symlinks` option (i.e. setting TypeScript’s `preserveSymlinks` to true parallels setting Webpack’s `resolve.symlinks` to false, and vice-versa).
+
+With this enabled, references to modules and packages (e.g. `import`s and `/// <reference type="..." />` directives) are all resolved relative to the location of the symbolic link file, rather than relative to the path that the symbolic link resolves to.
+
+* Released:
+
+  2.5
+
+### [#](#verbatimModuleSyntax) Verbatim Module Syntax - `verbatimModuleSyntax`
+
+By default, TypeScript does something called *import elision*.
+Basically, if you write something like
+
+```
+ts
+
+
+
+import { Car } from "./car";
+
+
+
+export function drive(car: Car) {
+
+
+
+// ...
+
+
+
+}
+```
+
+TypeScript detects that you’re only using an import for types and drops the import entirely.
+Your output JavaScript might look something like this:
+
+```
+js
+
+
+
+export function drive(car) {
+
+
+
+// ...
+
+
+
+}
+```
+
+Most of the time this is good, because if `Car` isn’t a value that’s exported from `./car`, we’ll get a runtime error.
+
+But it does add a layer of complexity for certain edge cases.
+For example, notice there’s no statement like `import "./car";` - the import was dropped entirely.
+That actually makes a difference for modules that have side-effects or not.
+
+TypeScript’s emit strategy for JavaScript also has another few layers of complexity - import elision isn’t always just driven by how an import is used - it often consults how a value is declared as well.
+So it’s not always clear whether code like the following
+
+```
+ts
+
+
+
+export { Car } from "./car";
+```
+
+should be preserved or dropped.
+If `Car` is declared with something like a `class`, then it can be preserved in the resulting JavaScript file.
+But if `Car` is only declared as a `type` alias or `interface`, then the JavaScript file shouldn’t export `Car` at all.
+
+While TypeScript might be able to make these emit decisions based on information from across files, not every compiler can.
+
+The `type` modifier on imports and exports helps with these situations a bit.
+We can make it explicit whether an import or export is only being used for type analysis, and can be dropped entirely in JavaScript files by using the `type` modifier.
+
+```
+ts
+
+
+
+// This statement can be dropped entirely in JS output
+
+
+
+import type * as car from "./car";
+
+
+
+// The named import/export 'Car' can be dropped in JS output
+
+
+
+import { type Car } from "./car";
+
+
+
+export { type Car } from "./car";
+```
+
+`type` modifiers are not quite useful on their own - by default, module elision will still drop imports, and nothing forces you to make the distinction between `type` and plain imports and exports.
+So TypeScript has the flag `--importsNotUsedAsValues` to make sure you use the `type` modifier, `--preserveValueImports` to prevent *some* module elision behavior, and `--isolatedModules` to make sure that your TypeScript code works across different compilers.
+Unfortunately, understanding the fine details of those 3 flags is hard, and there are still some edge cases with unexpected behavior.
+
+TypeScript 5.0 introduces a new option called `--verbatimModuleSyntax` to simplify the situation.
+The rules are much simpler - any imports or exports without a `type` modifier are left around.
+Anything that uses the `type` modifier is dropped entirely.
+
+```
+ts
+
+
+
+// Erased away entirely.
+
+
+
+import type { A } from "a";
+
+
+
+// Rewritten to 'import { b } from "bcd";'
+
+
+
+import { b, type c, type d } from "bcd";
+
+
+
+// Rewritten to 'import {} from "xyz";'
+
+
+
+import { type xyz } from "xyz";
+```
+
+With this new option, what you see is what you get.
+
+That does have some implications when it comes to module interop though.
+Under this flag, ECMAScript `import`s and `export`s won’t be rewritten to `require` calls when your settings or file extension implied a different module system.
+Instead, you’ll get an error.
+If you need to emit code that uses `require` and `module.exports`, you’ll have to use TypeScript’s module syntax that predates ES2015:
+
+| Input TypeScript | Output JavaScript |
+| --- | --- |
+| ```  ts  import foo = require("foo"); ``` | ```  js  const foo = require("foo"); ``` |
+| ```  ts  function foo() {}  function bar() {}  function baz() {}  export = {  foo,  bar,  baz,  }; ``` | ```  js  function foo() {}  function bar() {}  function baz() {}  module.exports = {  foo,  bar,  baz,  }; ``` |
+
+While this is a limitation, it does help make some issues more obvious.
+For example, it’s very common to forget to set the [`type` field in `package.json`](https://nodejs.org/api/packages.html#type) under `--module node16`.
+As a result, developers would start writing CommonJS modules instead of ES modules without realizing it, giving surprising lookup rules and JavaScript output.
+This new flag ensures that you’re intentional about the file type you’re using because the syntax is intentionally different.
+
+Because `--verbatimModuleSyntax` provides a more consistent story than `--importsNotUsedAsValues` and `--preserveValueImports`, those two existing flags are being deprecated in its favor.
+
+For more details, read up on [the original pull request](https://github.com/microsoft/TypeScript/pull/52203) and [its proposal issue](https://github.com/microsoft/TypeScript/issues/51479).
+
+* Released:
+
+  5.0
+
+## [#](#Backwards_Compatibility_6253)Backwards Compatibility
+
+### [#](#charset) Charset - `charset`
+
+In prior versions of TypeScript, this controlled what encoding was used when reading text files from disk.
+Today, TypeScript assumes UTF-8 encoding, but will correctly detect UTF-16 (BE and LE) or UTF-8 BOMs.
+
+* Deprecated
+* Default:
+
+  `utf8`
+* Released:
+
+  1.0
+
+### [#](#importsNotUsedAsValues) Imports Not Used As Values - `importsNotUsedAsValues`
+
+Deprecated in favor of [`verbatimModuleSyntax`](#verbatimModuleSyntax).
+
+This flag controls how `import` works, there are 3 different options:
+
+* `remove`: The default behavior of dropping `import` statements which only reference types.
+* `preserve`: Preserves all `import` statements whose values or types are never used. This can cause imports/side-effects to be preserved.
+* `error`: This preserves all imports (the same as the preserve option), but will error when a value import is only used as a type. This might be useful if you want to ensure no values are being accidentally imported, but still make side-effect imports explicit.
+
+This flag works because you can use `import type` to explicitly create an `import` statement which should never be emitted into JavaScript.
+
+* Default:
+
+  `remove`
+* Allowed:
+  + `remove`
+  + `preserve`
+  + `error`
+* Related:
+  + preserveValueImports
+  + verbatimModuleSyntax
+* Released:
+
+  3.8
+
+### [#](#keyofStringsOnly) Keyof Strings Only - `keyofStringsOnly`
+
+This flag changes the `keyof` type operator to return `string` instead of `string | number` when applied to a type with a string index signature.
+
+This flag is used to help people keep this behavior from [before TypeScript 2.9’s release](/docs/handbook/release-notes/typescript-2-9.html#support-number-and-symbol-named-properties-with-keyof-and-mapped-types).
+
+* Deprecated
+* Released:
+
+  2.9
+
+### [#](#noImplicitUseStrict) No Implicit Use Strict - `noImplicitUseStrict`
+
+You shouldn’t need this. By default, when emitting a module file to a non-ES6 target, TypeScript emits a `"use strict";` prologue at the top of the file.
+This setting disables the prologue.
+
+* Released:
+
+  1.8
+
+### [#](#noStrictGenericChecks) No Strict Generic Checks - `noStrictGenericChecks`
+
+TypeScript will unify type parameters when comparing two generic functions.
+
+```
+ts
+
+
+
+type A = <T, U>(x: T, y: U) => [T, U];
+
+
+
+type B = <S>(x: S, y: S) => [S, S];
+
+
+
+function f(a: A, b: B) {
+
+
+
+b = a; // Ok
+
+
+
+a = b; // Error
+
+Type 'B' is not assignable to type 'A'.
+  Types of parameters 'y' and 'y' are incompatible.
+    Type 'U' is not assignable to type 'T'.
+      'T' could be instantiated with an arbitrary type which could be unrelated to 'U'.2322Type 'B' is not assignable to type 'A'.
+  Types of parameters 'y' and 'y' are incompatible.
+    Type 'U' is not assignable to type 'T'.
+      'T' could be instantiated with an arbitrary type which could be unrelated to 'U'.
+
+}
+
+Try
+```
+
+This flag can be used to remove that check.
+
+* Released:
+
+  2.5
+
+### [#](#out) Out - `out`
+
+Use [`outFile`](#outFile) instead.
+
+The `out` option computes the final file location in a way that is not predictable or consistent.
+This option is retained for backward compatibility only and is deprecated.
+
+* Deprecated
+* Related:
+  + outDir
+  + outFile
+* Released:
+
+  1.0
+
+### [#](#preserveValueImports) Preserve Value Imports - `preserveValueImports`
+
+Deprecated in favor of [`verbatimModuleSyntax`](#verbatimModuleSyntax).
+
+There are some cases where TypeScript can’t detect that you’re using an import. For example, take the following code:
+
+```
+ts
+
+
+
+import { Animal } from "./animal.js";
+
+
+
+eval("console.log(new Animal().isDangerous())");
+```
+
+or code using ‘Compiles to HTML’ languages like Svelte or Vue. `preserveValueImports` will prevent TypeScript from removing the import, even if it appears unused.
+
+When combined with [`isolatedModules`](#isolatedModules): imported types *must* be marked as type-only because compilers that process single files at a time have no way of knowing whether imports are values that appear unused, or a type that must be removed in order to avoid a runtime crash.
+
+* Related:
+  + isolatedModules
+  + importsNotUsedAsValues
+  + verbatimModuleSyntax
+* Released:
+
+  4.5
+
+### [#](#suppressExcessPropertyErrors) Suppress Excess Property Errors - `suppressExcessPropertyErrors`
+
+This disables reporting of excess property errors, such as the one shown in the following example:
+
+```
+ts
+
+
+
+type Point = { x: number; y: number };
+
+
+
+const p: Point = { x: 1, y: 3, m: 10 };
+
+Object literal may only specify known properties, and 'm' does not exist in type 'Point'.2353Object literal may only specify known properties, and 'm' does not exist in type 'Point'.Try
+```
+
+This flag was added to help people migrate to the stricter checking of new object literals in [TypeScript 1.6](/docs/handbook/release-notes/typescript-1-6.html#stricter-object-literal-assignment-checks).
+
+We don’t recommend using this flag in a modern codebase, you can suppress one-off cases where you need it using `// @ts-ignore`.
+
+* Released:
+
+  1.6
+
+### [#](#suppressImplicitAnyIndexErrors) Suppress Implicit Any Index Errors - `suppressImplicitAnyIndexErrors`
+
+Turning `suppressImplicitAnyIndexErrors` on suppresses reporting the error about implicit anys when indexing into objects, as shown in the following example:
+
+```
+ts
+
+
+
+const obj = { x: 10 };
+
+
+
+console.log(obj["foo"]);
+
+Element implicitly has an 'any' type because expression of type '"foo"' can't be used to index type '{ x: number; }'.
+  Property 'foo' does not exist on type '{ x: number; }'.7053Element implicitly has an 'any' type because expression of type '"foo"' can't be used to index type '{ x: number; }'.
+  Property 'foo' does not exist on type '{ x: number; }'.Try
+```
+
+Using `suppressImplicitAnyIndexErrors` is quite a drastic approach. It is recommended to use a `@ts-ignore` comment instead:
+
+```
+ts
+
+
+
+const obj = { x: 10 };
+
+
+
+// @ts-ignore
+
+
+
+console.log(obj["foo"]);
+
+Try
+```
+
+* Related:
+  + noImplicitAny
+* Released:
+
+  1.4
+
+## [#](#Language_and_Environment_6254)Language and Environment
+
+### [#](#emitDecoratorMetadata) Emit Decorator Metadata - `emitDecoratorMetadata`
+
+Enables experimental support for emitting type metadata for decorators which works with the module [`reflect-metadata`](https://www.npmjs.com/package/reflect-metadata).
+
+For example, here is the TypeScript
+
+```
+ts
+
+
+
+function LogMethod(
+
+
+
+target: any,
+
+
+
+propertyKey: string | symbol,
+
+
+
+descriptor: PropertyDescriptor
+
+
+
+) {
+
+
+
+console.log(target);
+
+
+
+console.log(propertyKey);
+
+
+
+console.log(descriptor);
+
+
+
+}
+
+
+
+class Demo {
+
+
+
+@LogMethod
+
+
+
+p
+
+<error>Content truncated. Call the fetch tool with a start_index of 100000 to get more content.</error>

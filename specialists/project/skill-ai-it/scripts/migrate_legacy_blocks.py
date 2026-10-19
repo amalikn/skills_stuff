@@ -3,7 +3,7 @@
 
 Before 2026-09-23 the managed blocks were where projects wrote their own material: the scripts block held the whole scripts
 README (task catalogue, runtimes table, notes), and projects added rules and routing rows inside the navigation and agents
-blocks. `nav_upgrade` replaces a block wholesale, so on those projects it deletes that material; the upgrader now refuses
+blocks. `nav-upgrade` replaces a block wholesale, so on those projects it deletes that material; the upgrader now refuses
 them (`refused-legacy-layout`). This script is the `refresh` step that makes them upgradeable.
 
 For each legacy block it splits the body into sections by heading and compares each one with every block the skill could

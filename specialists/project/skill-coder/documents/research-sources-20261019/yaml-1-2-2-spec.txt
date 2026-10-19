@@ -1,0 +1,2695 @@
+Contents of https://yaml.org/spec/1.2.2/:
+## Revision 1.2.2 (2021-10-01)
+
+Copyright presently by YAML Language Development Team[1](#fn:team)  
+Copyright 2001-2009 by Oren Ben-Kiki, Clark Evans, Ingy döt Net
+
+This document may be freely copied, provided it is not modified.
+
+**Status of this Document**
+
+This is the **YAML specification v1.2.2**.
+It defines the **YAML 1.2 data language**.
+There are no normative changes from the **YAML specification v1.2**.
+The primary objectives of this revision are to correct errors and add clarity.
+
+This revision also strives to make the YAML language development process more
+open, more transparent and easier for people to contribute to.
+The input format is now Markdown instead of DocBook, and the images are made
+from plain text LaTeX files rather than proprietary drawing software.
+All the source content for the specification is publicly hosted[2](#fn:spec-repo).
+
+The previous YAML specification[3](#fn:1-2-spec) was published 12 years ago.
+In that time span, YAML’s popularity has grown significantly.
+Efforts are ongoing to improve the language and grow it to meet the needs and
+expectations of its users.
+While this revision of the specification makes no actual changes to YAML, it
+begins a process by which the language intends to evolve and stay modern.
+
+The YAML specification is often seen as overly complicated for something which
+appears to be so simple.
+Even though YAML often is used for software configuration, it has always been
+and will continue to be a complete data serialization language.
+Future YAML plans are focused on making the language and ecosystem more
+powerful and reliable while simultaneously simplifying the development process
+for implementers.
+
+While this revision of the specification is limiting itself to informational
+changes only, there is companion documentation intended to guide YAML framework
+implementers and YAML language users.
+This documentation can continue to evolve and expand continually between
+published revisions of this specification.
+
+See:
+
+* [YAML Resources Index](ext/resources)
+* [YAML Vocabulary Glossary](ext/glossary)
+* [YAML Specification Changes](ext/changes)
+* [YAML Specification Errata](ext/errata)
+
+**Abstract**
+
+YAML™ (rhymes with “camel”) is a human-friendly, cross language, Unicode based
+data serialization language designed around the common native data types of
+dynamic programming languages.
+It is broadly useful for programming needs ranging from configuration files to
+internet messaging to object persistence to data auditing and visualization.
+Together with the Unicode standard for characters[4](#fn:unicode), this specification
+provides all the information necessary to understand YAML version 1.2 and to
+create programs that process YAML information.
+
+**Contents**
+
+* [YAML Ain’t Markup Language (YAML™) version 1.2](#yaml-aint-markup-language-yaml-version-12)
+  + [Revision 1.2.2 (2021-10-01)](#revision-122-2021-10-01)
+* [Chapter 1. Introduction to YAML](#chapter-1-introduction-to-yaml)
+  + [1.1. Goals](#11-goals)
+  + [1.2. YAML History](#12-yaml-history)
+  + [1.3. Terminology](#13-terminology)
+* [Chapter 2. Language Overview](#chapter-2-language-overview)
+  + [2.1. Collections](#21-collections)
+  + [2.2. Structures](#22-structures)
+  + [2.3. Scalars](#23-scalars)
+  + [2.4. Tags](#24-tags)
+  + [2.5. Full Length Example](#25-full-length-example)
+* [Chapter 3. Processes and Models](#chapter-3-processes-and-models)
+  + [3.1. Processes](#31-processes)
+    - [3.1.1. Dump](#311-dump)
+    - [3.1.2. Load](#312-load)
+  + [3.2. Information Models](#32-information-models)
+    - [3.2.1. Representation Graph](#321-representation-graph)
+      * [3.2.1.1. Nodes](#3211-nodes)
+      * [3.2.1.2. Tags](#3212-tags)
+      * [3.2.1.3. Node Comparison](#3213-node-comparison)
+    - [3.2.2. Serialization Tree](#322-serialization-tree)
+      * [3.2.2.1. Mapping Key Order](#3221-mapping-key-order)
+      * [3.2.2.2. Anchors and Aliases](#3222-anchors-and-aliases)
+    - [3.2.3. Presentation Stream](#323-presentation-stream)
+      * [3.2.3.1. Node Styles](#3231-node-styles)
+      * [3.2.3.2. Scalar Formats](#3232-scalar-formats)
+      * [3.2.3.3. Comments](#3233-comments)
+      * [3.2.3.4. Directives](#3234-directives)
+  + [3.3. Loading Failure Points](#33-loading-failure-points)
+    - [3.3.1. Well-Formed Streams and Identified Aliases](#331-well-formed-streams-and-identified-aliases)
+    - [3.3.2. Resolved Tags](#332-resolved-tags)
+    - [3.3.3. Recognized and Valid Tags](#333-recognized-and-valid-tags)
+    - [3.3.4. Available Tags](#334-available-tags)
+* [Chapter 4. Syntax Conventions](#chapter-4-syntax-conventions)
+  + [4.1. Production Syntax](#41-production-syntax)
+  + [4.2. Production Parameters](#42-production-parameters)
+  + [4.3. Production Naming Conventions](#43-production-naming-conventions)
+* [Chapter 5. Character Productions](#chapter-5-character-productions)
+  + [5.1. Character Set](#51-character-set)
+  + [5.2. Character Encodings](#52-character-encodings)
+  + [5.3. Indicator Characters](#53-indicator-characters)
+  + [5.4. Line Break Characters](#54-line-break-characters)
+  + [5.5. White Space Characters](#55-white-space-characters)
+  + [5.6. Miscellaneous Characters](#56-miscellaneous-characters)
+  + [5.7. Escaped Characters](#57-escaped-characters)
+* [Chapter 6. Structural Productions](#chapter-6-structural-productions)
+  + [6.1. Indentation Spaces](#61-indentation-spaces)
+  + [6.2. Separation Spaces](#62-separation-spaces)
+  + [6.3. Line Prefixes](#63-line-prefixes)
+  + [6.4. Empty Lines](#64-empty-lines)
+  + [6.5. Line Folding](#65-line-folding)
+  + [6.6. Comments](#66-comments)
+  + [6.7. Separation Lines](#67-separation-lines)
+  + [6.8. Directives](#68-directives)
+    - [6.8.1. “`YAML`” Directives](#681-yaml-directives)
+    - [6.8.2. “`TAG`” Directives](#682-tag-directives)
+      * [6.8.2.1. Tag Handles](#6821-tag-handles)
+      * [6.8.2.2. Tag Prefixes](#6822-tag-prefixes)
+  + [6.9. Node Properties](#69-node-properties)
+    - [6.9.1. Node Tags](#691-node-tags)
+    - [6.9.2. Node Anchors](#692-node-anchors)
+* [Chapter 7. Flow Style Productions](#chapter-7-flow-style-productions)
+  + [7.1. Alias Nodes](#71-alias-nodes)
+  + [7.2. Empty Nodes](#72-empty-nodes)
+  + [7.3. Flow Scalar Styles](#73-flow-scalar-styles)
+    - [7.3.1. Double-Quoted Style](#731-double-quoted-style)
+    - [7.3.2. Single-Quoted Style](#732-single-quoted-style)
+    - [7.3.3. Plain Style](#733-plain-style)
+  + [7.4. Flow Collection Styles](#74-flow-collection-styles)
+    - [7.4.1. Flow Sequences](#741-flow-sequences)
+    - [7.4.2. Flow Mappings](#742-flow-mappings)
+  + [7.5. Flow Nodes](#75-flow-nodes)
+* [Chapter 8. Block Style Productions](#chapter-8-block-style-productions)
+  + [8.1. Block Scalar Styles](#81-block-scalar-styles)
+    - [8.1.1. Block Scalar Headers](#811-block-scalar-headers)
+      * [8.1.1.1. Block Indentation Indicator](#8111-block-indentation-indicator)
+      * [8.1.1.2. Block Chomping Indicator](#8112-block-chomping-indicator)
+    - [8.1.2. Literal Style](#812-literal-style)
+    - [8.1.3. Folded Style](#813-folded-style)
+  + [8.2. Block Collection Styles](#82-block-collection-styles)
+    - [8.2.1. Block Sequences](#821-block-sequences)
+    - [8.2.2. Block Mappings](#822-block-mappings)
+    - [8.2.3. Block Nodes](#823-block-nodes)
+* [Chapter 9. Document Stream Productions](#chapter-9-document-stream-productions)
+  + [9.1. Documents](#91-documents)
+    - [9.1.1. Document Prefix](#911-document-prefix)
+    - [9.1.2. Document Markers](#912-document-markers)
+    - [9.1.3. Bare Documents](#913-bare-documents)
+    - [9.1.4. Explicit Documents](#914-explicit-documents)
+    - [9.1.5. Directives Documents](#915-directives-documents)
+  + [9.2. Streams](#92-streams)
+* [Chapter 10. Recommended Schemas](#chapter-10-recommended-schemas)
+  + [10.1. Failsafe Schema](#101-failsafe-schema)
+    - [10.1.1. Tags](#1011-tags)
+      * [10.1.1.1. Generic Mapping](#10111-generic-mapping)
+      * [10.1.1.2. Generic Sequence](#10112-generic-sequence)
+      * [10.1.1.3. Generic String](#10113-generic-string)
+    - [10.1.2. Tag Resolution](#1012-tag-resolution)
+  + [10.2. JSON Schema](#102-json-schema)
+    - [10.2.1. Tags](#1021-tags)
+      * [10.2.1.1. Null](#10211-null)
+      * [10.2.1.2. Boolean](#10212-boolean)
+      * [10.2.1.3. Integer](#10213-integer)
+      * [10.2.1.4. Floating Point](#10214-floating-point)
+    - [10.2.2. Tag Resolution](#1022-tag-resolution)
+  + [10.3. Core Schema](#103-core-schema)
+    - [10.3.1. Tags](#1031-tags)
+    - [10.3.2. Tag Resolution](#1032-tag-resolution)
+  + [10.4. Other Schemas](#104-other-schemas)
+* [Reference Links](#reference-links)
+
+## Chapter 1. Introduction to YAML
+
+YAML (a recursive acronym for “YAML Ain’t Markup Language”) is a data
+serialization language designed to be human-friendly and work well with modern
+programming languages for common everyday tasks.
+This specification is both an introduction to the YAML language and the
+concepts supporting it.
+It is also a complete specification of the information needed to develop
+[applications](#processes-and-models) for processing YAML.
+
+Open, interoperable and readily understandable tools have advanced computing
+immensely.
+YAML was designed from the start to be useful and friendly to people working
+with data.
+It uses Unicode [printable](#character-set) characters, [some](#indicator-characters) of which provide structural
+information and the rest containing the data itself.
+YAML achieves a unique cleanness by minimizing the amount of structural
+characters and allowing the data to show itself in a natural and meaningful
+way.
+For example, [indentation](#indentation-spaces) may be used for structure, [colons](#flow-mappings) separate
+[key/value pairs](#mapping) and [dashes](#block-sequences) are used to create “bulleted” [lists](#sequence).
+
+There are many kinds of [data structures](#dump), but they can all be adequately
+[represented](#representation-graph) with three basic primitives: [mappings](#mapping) (hashes/dictionaries),
+[sequences](#sequence) (arrays/lists) and [scalars](#scalars) (strings/numbers).
+YAML leverages these primitives and adds a simple typing system and [aliasing](#anchors-and-aliases)
+mechanism to form a complete language for [serializing](#serializing-the-representation-graph) any [native data
+structure](#representing-native-data-structures).
+While most programming languages can use YAML for data serialization, YAML
+excels in working with those languages that are fundamentally built around the
+three basic primitives.
+These include common dynamic languages such as JavaScript, Perl, PHP, Python
+and Ruby.
+
+There are hundreds of different languages for programming, but only a handful
+of languages for storing and transferring data.
+Even though its potential is virtually boundless, YAML was specifically created
+to work well for common use cases such as: configuration files, log files,
+interprocess messaging, cross-language data sharing, object persistence and
+debugging of complex data structures.
+When data is easy to view and understand, programming becomes a simpler task.
+
+## 1.1. Goals
+
+The design goals for YAML are, in decreasing priority:
+
+1. YAML should be easily readable by humans.
+2. YAML data should be portable between programming languages.
+3. YAML should match the [native data structures](#representing-native-data-structures) of dynamic languages.
+4. YAML should have a consistent model to support generic tools.
+5. YAML should support one-pass processing.
+6. YAML should be expressive and extensible.
+7. YAML should be easy to implement and use.
+
+## 1.2. YAML History
+
+The YAML 1.0 specification was published in early 2004 by by Clark Evans, Oren
+Ben-Kiki, and Ingy döt Net after 3 years of collaborative design work through
+the yaml-core mailing list[5](#fn:yaml-core).
+The project was initially rooted in Clark and Oren’s work on the
+SML-DEV[6](#fn:sml-dev) mailing list (for simplifying XML) and Ingy’s plain text
+serialization module[7](#fn:denter) for Perl.
+The language took a lot of inspiration from many other technologies and formats
+that preceded it.
+
+The first YAML framework was written in Perl in 2001 and Ruby was the first
+language to ship a YAML framework as part of its core language distribution in
+2003.
+
+The YAML 1.1[8](#fn:1-1-spec) specification was published in 2005.
+Around this time, the developers became aware of JSON[9](#fn:json).
+By sheer coincidence, JSON was almost a complete subset of YAML (both
+syntactically and semantically).
+
+In 2006, Kyrylo Simonov produced PyYAML[10](#fn:pyyaml) and LibYAML[11](#fn:libyaml).
+A lot of the YAML frameworks in various programming languages are built over
+LibYAML and many others have looked to PyYAML as a solid reference for their
+implementations.
+
+The YAML 1.2[3](#fn:1-2-spec) specification was published in 2009.
+Its primary focus was making YAML a strict superset of JSON.
+It also removed many of the problematic implicit typing recommendations.
+
+Since the release of the 1.2 specification, YAML adoption has continued to
+grow, and many large-scale projects use it as their primary interface language.
+In 2020, the new [YAML language design team](ext/team) began meeting regularly
+to discuss improvements to the YAML language and specification; to better meet
+the needs and expectations of its users and use cases.
+
+This YAML 1.2.2 specification, published in October 2021, is the first step in
+YAML’s rejuvenated development journey.
+YAML is now more popular than it has ever been, but there is a long list of
+things that need to be addressed for it to reach its full potential.
+The YAML design team is focused on making YAML as good as possible.
+
+## 1.3. Terminology
+
+The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”,
+“SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be
+interpreted as described in RFC 2119[12](#fn:rfc-2119).
+
+The rest of this document is arranged as follows.
+Chapter [2](#language-overview) provides a short preview of the main YAML features.
+Chapter [3](#processes-and-models) describes the YAML information model and the processes for
+converting from and to this model and the YAML text format.
+The bulk of the document, chapters [4](#syntax-conventions), [5](#character-productions), [6](#structural-productions), [7](#flow-style-productions), [8](#block-style-productions) and [9](#document-stream-productions), formally
+define this text format.
+Finally, chapter [10](#recommended-schemas) recommends basic YAML schemas.
+
+## Chapter 2. Language Overview
+
+This section provides a quick glimpse into the expressive power of YAML.
+It is not expected that the first-time reader grok all of the examples.
+Rather, these selections are used as motivation for the remainder of the
+specification.
+
+## 2.1. Collections
+
+YAML’s [block collections](#block-collection-styles) use [indentation](#indentation-spaces) for scope and begin each entry on
+its own line.
+[Block sequences](#block-sequences) indicate each entry with a dash and space (“`-` ”).
+[Mappings](#mapping) use a colon and space (“`:` ”) to mark each [key/value pair](#mapping).
+[Comments](#comments) begin with an octothorpe (also called a “hash”, “sharp”, “pound” or
+“number sign” - “`#`”).
+
+**Example 2.1 Sequence of Scalars (ball players)**
+
+```
+- Mark McGwire
+- Sammy Sosa
+- Ken Griffey
+```
+
+**Example 2.2 Mapping Scalars to Scalars (player statistics)**
+
+```
+hr:  65    # Home runs
+avg: 0.278 # Batting average
+rbi: 147   # Runs Batted In
+```
+
+**Example 2.3 Mapping Scalars to Sequences (ball clubs in each league)**
+
+```
+american:
+- Boston Red Sox
+- Detroit Tigers
+- New York Yankees
+national:
+- New York Mets
+- Chicago Cubs
+- Atlanta Braves
+```
+
+**Example 2.4 Sequence of Mappings (players’ statistics)**
+
+```
+-
+  name: Mark McGwire
+  hr:   65
+  avg:  0.278
+-
+  name: Sammy Sosa
+  hr:   63
+  avg:  0.288
+```
+
+YAML also has [flow styles](#flow-style-productions), using explicit [indicators](#indicator-characters) rather than
+[indentation](#indentation-spaces) to denote scope.
+The [flow sequence](#flow-sequences) is written as a [comma](#flow-collection-styles) separated list within [square](#flow-sequences)
+[brackets](#flow-sequences).
+In a similar manner, the [flow mapping](#flow-mappings) uses [curly](#flow-mappings) [braces](#flow-mappings).
+
+**Example 2.5 Sequence of Sequences**
+
+```
+- [name        , hr, avg  ]
+- [Mark McGwire, 65, 0.278]
+- [Sammy Sosa  , 63, 0.288]
+```
+
+**Example 2.6 Mapping of Mappings**
+
+```
+Mark McGwire: {hr: 65, avg: 0.278}
+Sammy Sosa: {
+    hr: 63,
+    avg: 0.288,
+ }
+```
+
+## 2.2. Structures
+
+YAML uses three dashes (“`---`”) to separate [directives](#directives) from [document](#documents)
+[content](#nodes).
+This also serves to signal the start of a document if no [directives](#directives) are
+present.
+Three dots ( “`...`”) indicate the end of a document without starting a new
+one, for use in communication channels.
+
+**Example 2.7 Two Documents in a Stream (each with a leading comment)**
+
+```
+# Ranking of 1998 home runs
+---
+- Mark McGwire
+- Sammy Sosa
+- Ken Griffey
+
+# Team ranking
+---
+- Chicago Cubs
+- St Louis Cardinals
+```
+
+**Example 2.8 Play by Play Feed from a Game**
+
+```
+---
+time: 20:03:20
+player: Sammy Sosa
+action: strike (miss)
+...
+---
+time: 20:03:47
+player: Sammy Sosa
+action: grand slam
+...
+```
+
+Repeated [nodes](#nodes) (objects) are first [identified](#anchors-and-aliases) by an [anchor](#anchors-and-aliases) (marked with
+the ampersand - “`&`”) and are then [aliased](#anchors-and-aliases) (referenced with an asterisk -
+“`*`”) thereafter.
+
+**Example 2.10 Node for “`Sammy Sosa`” appears twice in this document**
+
+```
+---
+hr:
+- Mark McGwire
+# Following node labeled SS
+- &SS Sammy Sosa
+rbi:
+- *SS # Subsequent occurrence
+- Ken Griffey
+```
+
+A question mark and space (“`?` ”) indicate a complex [mapping](#mapping) [key](#nodes).
+Within a [block collection](#block-collection-styles), [key/value pairs](#mapping) can start immediately following
+the [dash](#block-sequences), [colon](#flow-mappings) or [question mark](#flow-mappings).
+
+**Example 2.11 Mapping between Sequences**
+
+```
+? - Detroit Tigers
+  - Chicago cubs
+: - 2001-07-23
+
+? [ New York Yankees,
+    Atlanta Braves ]
+: [ 2001-07-02, 2001-08-12,
+    2001-08-14 ]
+```
+
+**Example 2.12 Compact Nested Mapping**
+
+```
+---
+# Products purchased
+- item    : Super Hoop
+  quantity: 1
+- item    : Basketball
+  quantity: 4
+- item    : Big Shoes
+  quantity: 1
+```
+
+## 2.3. Scalars
+
+[Scalar content](#scalar) can be written in [block](#scalars) notation, using a [literal style](#literal-style)
+(indicated by “`|`”) where all [line breaks](#line-break-characters) are significant.
+Alternatively, they can be written with the [folded style](#folded-style) (denoted by “`>`”)
+where each [line break](#line-break-characters) is [folded](#line-folding) to a [space](#white-space-characters) unless it ends an [empty](#empty-lines) or a
+[more-indented](#example-more-indented-lines) line.
+
+**Example 2.13 In literals, newlines are preserved**
+
+```
+# ASCII Art
+--- |
+  \//||\/||
+  // ||  ||__
+```
+
+**Example 2.14 In the folded scalars, newlines become spaces**
+
+```
+--- >
+  Mark McGwire's
+  year was crippled
+  by a knee injury.
+```
+
+**Example 2.15 Folded newlines are preserved for “more indented” and blank
+lines**
+
+```
+--- >
+ Sammy Sosa completed another
+ fine season with great stats.
+
+   63 Home Runs
+   0.288 Batting Average
+
+ What a year!
+```
+
+**Example 2.16 Indentation determines scope**
+
+```
+name: Mark McGwire
+accomplishment: >
+  Mark set a major league
+  home run record in 1998.
+stats: |
+  65 Home Runs
+  0.278 Batting Average
+```
+
+YAML’s [flow scalars](#flow-scalar-styles) include the [plain style](#plain-style) (most examples thus far) and
+two quoted styles.
+The [double-quoted style](#double-quoted-style) provides [escape sequences](#escaped-characters).
+The [single-quoted style](#single-quoted-style) is useful when [escaping](#escaped-characters) is not needed.
+All [flow scalars](#flow-scalar-styles) can span multiple lines; [line breaks](#line-break-characters) are always [folded](#line-folding).
+
+**Example 2.17 Quoted Scalars**
+
+```
+unicode: "Sosa did fine.\u263A"
+control: "\b1998\t1999\t2000\n"
+hex esc: "\x0d\x0a is \r\n"
+
+single: '"Howdy!" he cried.'
+quoted: ' # Not a ''comment''.'
+tie-fighter: '|\-*-/|'
+```
+
+**Example 2.18 Multi-line Flow Scalars**
+
+```
+plain:
+  This unquoted scalar
+  spans many lines.
+
+quoted: "So does this
+  quoted scalar.\n"
+```
+
+In YAML, [untagged nodes](#resolved-tags) are given a type depending on the [application](#processes-and-models).
+The examples in this specification generally use the `seq`, `map` and `str`
+types from the [fail safe schema](#failsafe-schema).
+A few examples also use the `int`, `float` and `null` types from the [JSON
+schema](#json-schema).
+
+**Example 2.19 Integers**
+
+```
+canonical: 12345
+decimal: +12345
+octal: 0o14
+hexadecimal: 0xC
+```
+
+**Example 2.20 Floating Point**
+
+```
+canonical: 1.23015e+3
+exponential: 12.3015e+02
+fixed: 1230.15
+negative infinity: -.inf
+not a number: .nan
+```
+
+**Example 2.21 Miscellaneous**
+
+```
+null:
+booleans: [ true, false ]
+string: '012345'
+```
+
+**Example 2.22 Timestamps**
+
+```
+canonical: 2001-12-15T02:59:43.1Z
+iso8601: 2001-12-14t21:59:43.10-05:00
+spaced: 2001-12-14 21:59:43.10 -5
+date: 2002-12-14
+```
+
+Explicit typing is denoted with a [tag](#tags) using the exclamation point (“`!`”)
+symbol.
+[Global tags](#tags) are URIs and may be specified in a [tag shorthand](#tag-shorthands) notation using
+a [handle](#tag-handles).
+[Application](#processes-and-models)-specific [local tags](#tags) may also be used.
+
+**Example 2.25 Unordered Sets**
+
+```
+# Sets are represented as a
+# Mapping where each key is
+# associated with a null value
+--- !!set
+? Mark McGwire
+? Sammy Sosa
+? Ken Griffey
+```
+
+**Example 2.26 Ordered Mappings**
+
+```
+# Ordered maps are represented as
+# A sequence of mappings, with
+# each mapping having one key
+--- !!omap
+- Mark McGwire: 65
+- Sammy Sosa: 63
+- Ken Griffey: 58
+```
+
+## 2.5. Full Length Example
+
+Below are two full-length examples of YAML.
+The first is a sample invoice; the second is a sample log file.
+
+**Example 2.27 Invoice**
+
+```
+--- !<tag:clarkevans.com,2002:invoice>
+invoice: 34843
+date   : 2001-01-23
+bill-to: &id001
+  given  : Chris
+  family : Dumars
+  address:
+    lines: |
+      458 Walkman Dr.
+      Suite #292
+    city    : Royal Oak
+    state   : MI
+    postal  : 48046
+ship-to: *id001
+product:
+- sku         : BL394D
+  quantity    : 4
+  description : Basketball
+  price       : 450.00
+- sku         : BL4438H
+  quantity    : 1
+  description : Super Hoop
+  price       : 2392.00
+tax  : 251.42
+total: 4443.52
+comments:
+  Late afternoon is best.
+  Backup contact is Nancy
+  Billsmer @ 338-4338.
+```
+
+**Example 2.28 Log File**
+
+```
+---
+Time: 2001-11-23 15:01:42 -5
+User: ed
+Warning:
+  This is an error message
+  for the log file
+---
+Time: 2001-11-23 15:02:31 -5
+User: ed
+Warning:
+  A slightly different error
+  message.
+---
+Date: 2001-11-23 15:03:17 -5
+User: ed
+Fatal:
+  Unknown variable "bar"
+Stack:
+- file: TopClass.py
+  line: 23
+  code: |
+    x = MoreObject("345\n")
+- file: MoreClass.py
+  line: 58
+  code: |-
+    foo = bar
+```
+
+## Chapter 3. Processes and Models
+
+YAML is both a text format and a method for [presenting](#presenting-the-serialization-tree) any [native data
+structure](#representing-native-data-structures) in this format.
+Therefore, this specification defines two concepts: a class of data objects
+called YAML [representations](#representation-graph) and a syntax for [presenting](#presenting-the-serialization-tree) YAML
+[representations](#representation-graph) as a series of characters, called a YAML [stream](#streams).
+
+A YAML *processor* is a tool for converting information between these
+complementary views.
+It is assumed that a YAML processor does its work on behalf of another module,
+called an *application*.
+This chapter describes the information structures a YAML processor must provide
+to or obtain from the application.
+
+YAML information is used in two ways: for machine processing and for human
+consumption.
+The challenge of reconciling these two perspectives is best done in three
+distinct translation stages: [representation](#representation-graph), [serialization](#serialization-tree) and
+[presentation](#presentation-stream).
+[Representation](#representation-graph) addresses how YAML views [native data structures](#representing-native-data-structures) to achieve
+portability between programming environments.
+[Serialization](#serialization-tree) concerns itself with turning a YAML [representation](#representation-graph) into a
+serial form, that is, a form with sequential access constraints.
+[Presentation](#presentation-stream) deals with the formatting of a YAML [serialization](#serialization-tree) as a series
+of characters in a human-friendly manner.
+
+## 3.1. Processes
+
+Translating between [native data structures](#representing-native-data-structures) and a character [stream](#streams) is done
+in several logically distinct stages, each with a well defined input and output
+data model, as shown in the following diagram:
+
+**Figure 3.1. Processing Overview**
+
+![Processing Overview](/spec/1.2.2/img/overview2.svg)
+
+A YAML processor need not expose the [serialization](#serialization-tree) or [representation](#representation-graph)
+stages.
+It may translate directly between [native data structures](#representing-native-data-structures) and a character
+[stream](#streams) ([dump](#dump) and [load](#load) in the diagram above).
+However, such a direct translation should take place so that the [native data
+structures](#representing-native-data-structures) are [constructed](#constructing-native-data-structures) only from information available in the
+[representation](#representation-graph).
+In particular, [mapping key order](#mapping), [comments](#comments) and [tag handles](#tag-handles) should not be
+referenced during [construction](#constructing-native-data-structures).
+
+### 3.1.1. Dump
+
+*Dumping* native data structures to a character [stream](#streams) is done using the
+following three stages:
+
+Representing Native Data Structures
+:   YAML *represents* any *native data structure* using three [node kinds](#nodes):
+    [sequence](#sequence) - an ordered series of entries; [mapping](#mapping) - an unordered association
+    of [unique](#node-comparison) [keys](#nodes) to [values](#nodes); and [scalar](#scalar) - any datum with opaque structure
+    presentable as a series of Unicode characters.
+:   Combined, these primitives generate directed graph structures.
+    These primitives were chosen because they are both powerful and familiar: the
+    [sequence](#sequence) corresponds to a Perl array and a Python list, the [mapping](#mapping)
+    corresponds to a Perl hash table and a Python dictionary.
+    The [scalar](#scalar) represents strings, integers, dates and other atomic data types.
+:   Each YAML [node](#nodes) requires, in addition to its [kind](#nodes) and [content](#nodes), a [tag](#tags)
+    specifying its data type.
+    Type specifiers are either [global](#tags) URIs or are [local](#tags) in scope to a single
+    [application](#processes-and-models).
+    For example, an integer is represented in YAML with a [scalar](#scalar) plus the [global
+    tag](#tags) “`tag:yaml.org,2002:int`”.
+    Similarly, an invoice object, particular to a given organization, could be
+    represented as a [mapping](#mapping) together with the [local tag](#tags) “`!invoice`”.
+    This simple model can represent any data structure independent of programming
+    language.
+
+Serializing the Representation Graph
+:   For sequential access mediums, such as an event callback API, a YAML
+    [representation](#representation-graph) must be *serialized* to an ordered tree.
+    Since in a YAML [representation](#representation-graph), [mapping keys](#nodes) are unordered and [nodes](#nodes) may
+    be referenced more than once (have more than one incoming “arrow”), the
+    serialization process is required to impose an [ordering](#mapping-key-order) on the [mapping keys](#nodes)
+    and to replace the second and subsequent references to a given [node](#nodes) with
+    place holders called [aliases](#anchors-and-aliases).
+    YAML does not specify how these *serialization details* are chosen.
+    It is up to the YAML [processor](#processes-and-models) to come up with human-friendly [key order](#mapping-key-order) and
+    [anchor](#anchors-and-aliases) names, possibly with the help of the [application](#processes-and-models).
+    The result of this process, a YAML [serialization tree](#serialization-tree), can then be traversed
+    to produce a series of event calls for one-pass processing of YAML data.
+
+Presenting the Serialization Tree
+:   The final output process is *presenting* the YAML [serializations](#serialization-tree) as a
+    character [stream](#streams) in a human-friendly manner.
+    To maximize human readability, YAML offers a rich set of stylistic options
+    which go far beyond the minimal functional needs of simple data storage.
+    Therefore the YAML [processor](#processes-and-models) is required to introduce various *presentation
+    details* when creating the [stream](#streams), such as the choice of [node styles](#node-styles), how
+    to [format scalar content](#scalar-formats), the amount of [indentation](#indentation-spaces), which [tag handles](#tag-handles) to
+    use, the [node tags](#node-tags) to leave [unspecified](#resolved-tags), the set of [directives](#directives) to provide
+    and possibly even what [comments](#comments) to add.
+    While some of this can be done with the help of the [application](#processes-and-models), in general
+    this process should be guided by the preferences of the user.
+
+### 3.1.2. Load
+
+*Loading* [native data structures](#representing-native-data-structures) from a character [stream](#streams) is done using the
+following three stages:
+
+Parsing the Presentation Stream
+:   *Parsing* is the inverse process of [presentation](#presentation-stream), it takes a [stream](#streams) of
+    characters and produces a [serialization tree](#serialization-tree).
+    Parsing discards all the [details](#presenting-the-serialization-tree) introduced in the [presentation](#presentation-stream) process,
+    reporting only the [serialization tree](#serialization-tree).
+    Parsing can fail due to [ill-formed](#well-formed-streams-and-identified-aliases) input.
+
+Composing the Representation Graph
+:   *Composing* takes a [serialization tree](#serialization-tree) and produces a [representation graph](#representation-graph).
+    Composing discards all the [details](#presenting-the-serialization-tree) introduced in the [serialization](#serialization-tree) process,
+    producing only the [representation graph](#representation-graph).
+    Composing can fail due to any of several reasons, detailed [below](#loading-failure-points).
+
+Constructing Native Data Structures
+:   The final input process is *constructing* [native data structures](#representing-native-data-structures) from the
+    YAML [representation](#representation-graph).
+    Construction must be based only on the information available in the
+    [representation](#representation-graph) and not on additional [serialization](#serialization-tree) or [presentation
+    details](#presenting-the-serialization-tree) such as [comments](#comments), [directives](#directives), [mapping key order](#mapping), [node styles](#node-styles),
+    [scalar content format](#scalar-formats), [indentation](#indentation-spaces) levels etc.
+    Construction can fail due to the [unavailability](#available-tags) of the required [native data
+    types](#representing-native-data-structures).
+
+## 3.2. Information Models
+
+This section specifies the formal details of the results of the above
+processes.
+To maximize data portability between programming languages and implementations,
+users of YAML should be mindful of the distinction between [serialization](#serialization-tree) or
+[presentation](#presentation-stream) properties and those which are part of the YAML
+[representation](#representation-graph).
+Thus, while imposing a [order](#mapping-key-order) on [mapping keys](#nodes) is necessary for flattening
+YAML [representations](#representation-graph) to a sequential access medium, this [serialization
+detail](#serializing-the-representation-graph) must not be used to convey [application](#processes-and-models) level information.
+In a similar manner, while [indentation](#indentation-spaces) technique and a choice of a [node
+style](#node-styles) are needed for the human readability, these [presentation details](#presenting-the-serialization-tree) are
+neither part of the YAML [serialization](#serialization-tree) nor the YAML [representation](#representation-graph).
+By carefully separating properties needed for [serialization](#serialization-tree) and
+[presentation](#presentation-stream), YAML [representations](#representation-graph) of [application](#processes-and-models) information will be
+consistent and portable between various programming environments.
+
+The following diagram summarizes the three *information models*.
+Full arrows denote composition, hollow arrows denote inheritance, “`1`” and
+“`*`” denote “one” and “many” relationships.
+A single “`+`” denotes [serialization](#serialization-tree) details, a double “`++`” denotes
+[presentation](#presentation-stream) details.
+
+**Figure 3.2. Information Models**
+
+![Information Models](/spec/1.2.2/img/model2.svg)
+
+### 3.2.1. Representation Graph
+
+YAML’s *representation* of [native data structure](#representing-native-data-structures) is a rooted, connected,
+directed graph of [tagged](#tags) [nodes](#nodes).
+By “directed graph” we mean a set of [nodes](#nodes) and directed edges (“arrows”),
+where each edge connects one [node](#nodes) to another (see a formal directed graph
+definition[13](#fn:digraph)).
+All the [nodes](#nodes) must be reachable from the *root node* via such edges.
+Note that the YAML graph may include cycles and a [node](#nodes) may have more than one
+incoming edge.
+
+[Nodes](#nodes) that are defined in terms of other [nodes](#nodes) are [collections](#collections); [nodes](#nodes)
+that are independent of any other [nodes](#nodes) are [scalars](#scalars).
+YAML supports two [kinds](#nodes) of [collection nodes](#mapping): [sequences](#sequence) and [mappings](#mapping).
+[Mapping nodes](#mapping) are somewhat tricky because their [keys](#nodes) are unordered and must
+be [unique](#node-comparison).
+
+**Figure 3.3. Representation Model**
+
+![Representation Model](/spec/1.2.2/img/represent2.svg)
+
+#### 3.2.1.1. Nodes
+
+A YAML *node* [represents](#representation-graph) a single [native data structure](#representing-native-data-structures).
+Such nodes have *content* of one of three *kinds*: scalar, sequence or mapping.
+In addition, each node has a [tag](#tags) which serves to restrict the set of possible
+values the content can have.
+
+Scalar
+:   The content of a *scalar* node is an opaque datum that can be [presented](#presenting-the-serialization-tree) as a
+    series of zero or more Unicode characters.
+
+Sequence
+:   The content of a *sequence* node is an ordered series of zero or more nodes.
+    In particular, a sequence may contain the same node more than once.
+    It could even contain itself.
+
+Mapping
+:   The content of a *mapping* node is an unordered set of *key/value* node
+    *pairs*, with the restriction that each of the keys is [unique](#node-comparison).
+    YAML places no further restrictions on the nodes.
+    In particular, keys may be arbitrary nodes, the same node may be used as the
+    value of several key/value pairs and a mapping could even contain itself as a
+    key or a value.
+
+#### 3.2.1.2. Tags
+
+YAML [represents](#representation-graph) type information of [native data structures](#representing-native-data-structures) with a simple
+identifier, called a *tag*.
+*Global tags* are URIs and hence globally unique across all [applications](#processes-and-models).
+The “`tag:`” URI scheme[14](#fn:tag-uri) is recommended for all global YAML tags.
+In contrast, *local tags* are specific to a single [application](#processes-and-models).
+Local tags start with “`!`”, are not URIs and are not expected to be globally
+unique.
+YAML provides a “`TAG`” directive to make tag notation less verbose; it also
+offers easy migration from local to global tags.
+To ensure this, local tags are restricted to the URI character set and use URI
+character [escaping](#escaped-characters).
+
+YAML does not mandate any special relationship between different tags that
+begin with the same substring.
+Tags ending with URI fragments (containing “`#`”) are no exception; tags that
+share the same base URI but differ in their fragment part are considered to be
+different, independent tags.
+By convention, fragments are used to identify different “variants” of a tag,
+while “`/`” is used to define nested tag “namespace” hierarchies.
+However, this is merely a convention and each tag may employ its own rules.
+For example, Perl tags may use “`::`” to express namespace hierarchies, Java
+tags may use “`.`”, etc.
+
+YAML tags are used to associate meta information with each [node](#nodes).
+In particular, each tag must specify the expected [node kind](#nodes) ([scalar](#scalar),
+[sequence](#sequence) or [mapping](#mapping)).
+[Scalar](#scalar) tags must also provide a mechanism for converting [formatted content](#scalar-formats)
+to a [canonical form](#canonical-form) for supporting [equality](#equality) testing.
+Furthermore, a tag may provide additional information such as the set of
+allowed [content](#nodes) values for validation, a mechanism for [tag resolution](#tag-resolution) or
+any other data that is applicable to all of the tag’s [nodes](#nodes).
+
+#### 3.2.1.3. Node Comparison
+
+Since YAML [mappings](#mapping) require [key](#nodes) uniqueness, [representations](#representation-graph) must include
+a mechanism for testing the equality of [nodes](#nodes).
+This is non-trivial since YAML allows various ways to [format scalar content](#scalar-formats).
+For example, the integer eleven can be written as “`0o13`” (octal) or “`0xB`”
+(hexadecimal).
+If both notations are used as [keys](#nodes) in the same [mapping](#mapping), only a YAML
+[processor](#processes-and-models) which recognizes integer [formats](#scalar-formats) would correctly flag the
+duplicate [key](#nodes) as an error.
+
+Canonical Form
+:   YAML supports the need for [scalar](#scalar) equality by requiring that every [scalar](#scalar)
+    [tag](#tags) must specify a mechanism for producing the *canonical form* of any
+    [formatted content](#scalar-formats).
+    This form is a Unicode character string which also [presents](#presenting-the-serialization-tree) the same
+    [content](#nodes) and can be used for equality testing.
+
+Equality
+:   Two [nodes](#nodes) must have the same [tag](#tags) and [content](#nodes) to be *equal*.
+    Since each [tag](#tags) applies to exactly one [kind](#nodes), this implies that the two
+    [nodes](#nodes) must have the same [kind](#nodes) to be equal.
+:   Two [scalars](#scalars) are equal only when their [tags](#tags) and canonical forms are equal
+    character-by-character.
+    Equality of [collections](#collections) is defined recursively.
+:   Two [sequences](#sequence) are equal only when they have the same [tag](#tags) and length and
+    each [node](#nodes) in one [sequence](#sequence) is equal to the corresponding [node](#nodes) in the other
+    [sequence](#sequence).
+:   Two [mappings](#mapping) are equal only when they have the same [tag](#tags) and an equal set of
+    [keys](#nodes) and each [key](#nodes) in this set is associated with equal [values](#nodes) in both
+    [mappings](#mapping).
+:   Different URI schemes may define different rules for testing the equality of
+    URIs.
+    Since a YAML [processor](#processes-and-models) cannot be reasonably expected to be aware of them all,
+    it must resort to a simple character-by-character comparison of [tags](#tags) to
+    ensure consistency.
+    This also happens to be the comparison method defined by the “`tag:`” URI
+    scheme.
+    [Tags](#tags) in a YAML stream must therefore be [presented](#presenting-the-serialization-tree) in a canonical way so
+    that such comparison would yield the correct results.
+:   If a node has itself as a descendant (via an alias), then determining the
+    equality of that node is implementation-defined.
+:   A YAML [processor](#processes-and-models) may treat equal [scalars](#scalars) as if they were identical.
+
+Uniqueness
+:   A [mapping’s](#mapping) [keys](#nodes) are *unique* if no two keys are equal to each other.
+    Obviously, identical nodes are always considered equal.
+
+### 3.2.2. Serialization Tree
+
+To express a YAML [representation](#representation-graph) using a serial API, it is necessary to
+impose an [order](#mapping-key-order) on [mapping keys](#nodes) and employ [alias nodes](#alias-nodes) to indicate a
+subsequent occurrence of a previously encountered [node](#nodes).
+The result of this process is a *serialization tree*, where each [node](#nodes) has an
+ordered set of children.
+This tree can be traversed for a serial event-based API.
+[Construction](#constructing-native-data-structures) of [native data structures](#representing-native-data-structures) from the serial interface should not
+use [key order](#mapping-key-order) or [anchor names](#anchors-and-aliases) for the preservation of [application](#processes-and-models) data.
+
+**Figure 3.4. Serialization Model**
+
+![Serialization Model](/spec/1.2.2/img/serialize2.svg)
+
+#### 3.2.2.1. Mapping Key Order
+
+In the [representation](#representation-graph) model, [mapping keys](#nodes) do not have an order.
+To [serialize](#serializing-the-representation-graph) a [mapping](#mapping), it is necessary to impose an *ordering* on its
+[keys](#nodes).
+This order is a [serialization detail](#serializing-the-representation-graph) and should not be used when [composing](#composing-the-representation-graph)
+the [representation graph](#representation-graph) (and hence for the preservation of [application](#processes-and-models)
+data).
+In every case where [node](#nodes) order is significant, a [sequence](#sequence) must be used.
+For example, an ordered [mapping](#mapping) can be [represented](#representation-graph) as a [sequence](#sequence) of
+[mappings](#mapping), where each [mapping](#mapping) is a single [key/value pair](#mapping).
+YAML provides convenient [compact notation](#example-flow-mapping-adjacent-values) for this case.
+
+#### 3.2.2.2. Anchors and Aliases
+
+In the [representation graph](#representation-graph), a [node](#nodes) may appear in more than one
+[collection](#collections).
+When [serializing](#serializing-the-representation-graph) such data, the first occurrence of the [node](#nodes) is
+*identified* by an *anchor*.
+Each subsequent occurrence is [serialized](#serializing-the-representation-graph) as an [alias node](#alias-nodes) which refers back
+to this anchor.
+Otherwise, anchor names are a [serialization detail](#serializing-the-representation-graph) and are discarded once
+[composing](#composing-the-representation-graph) is completed.
+When [composing](#composing-the-representation-graph) a [representation graph](#representation-graph) from [serialized](#serializing-the-representation-graph) events, an alias
+event refers to the most recent event in the [serialization](#serialization-tree) having the
+specified anchor.
+Therefore, anchors need not be unique within a [serialization](#serialization-tree).
+In addition, an anchor need not have an alias node referring to it.
+
+### 3.2.3. Presentation Stream
+
+A YAML *presentation* is a [stream](#streams) of Unicode characters making use of
+[styles](#node-styles), [scalar content formats](#scalar-formats), [comments](#comments), [directives](#directives) and other
+[presentation details](#presenting-the-serialization-tree) to [present](#presenting-the-serialization-tree) a YAML [serialization](#serialization-tree) in a human readable
+way.
+YAML allows several [serialization trees](#serialization-tree) to be contained in the same YAML
+presentation stream, as a series of [documents](#documents) separated by [markers](#document-markers).
+
+**Figure 3.5. Presentation Model**
+
+![Presentation Model](/spec/1.2.2/img/present2.svg)
+
+#### 3.2.3.1. Node Styles
+
+Each [node](#nodes) is presented in some *style*, depending on its [kind](#nodes).
+The node style is a [presentation detail](#presenting-the-serialization-tree) and is not reflected in the
+[serialization tree](#serialization-tree) or [representation graph](#representation-graph).
+There are two groups of styles.
+[Block styles](#block-style-productions) use [indentation](#indentation-spaces) to denote structure.
+In contrast, [flow styles](#flow-style-productions) rely on explicit [indicators](#indicator-characters).
+
+YAML provides a rich set of *scalar styles*.
+[Block scalar](#block-scalar-styles) styles include the [literal style](#literal-style) and the [folded style](#folded-style).
+[Flow scalar](#flow-scalar-styles) styles include the [plain style](#plain-style) and two quoted styles, the
+[single-quoted style](#single-quoted-style) and the [double-quoted style](#double-quoted-style).
+These styles offer a range of trade-offs between expressive power and
+readability.
+
+Normally, [block sequences](#block-sequences) and [mappings](#mapping) begin on the next line.
+In some cases, YAML also allows nested [block](#scalars) [collections](#collections) to start in-line
+for a more [compact notation](#example-flow-mapping-adjacent-values).
+In addition, YAML provides a [compact notation](#example-flow-mapping-adjacent-values) for [flow mappings](#flow-mappings) with a
+single [key/value pair](#mapping), nested inside a [flow sequence](#flow-sequences).
+These allow for a natural “ordered mapping” notation.
+
+**Figure 3.6. Kind/Style Combinations**
+
+![Kind/Style Combinations](/spec/1.2.2/img/styles2.svg)
+
+#### 3.2.3.2. Scalar Formats
+
+YAML allows [scalars](#scalars) to be [presented](#presenting-the-serialization-tree) in several *formats*.
+For example, the integer “`11`” might also be written as “`0xB`”.
+[Tags](#tags) must specify a mechanism for converting the formatted content to a
+[canonical form](#canonical-form) for use in [equality](#equality) testing.
+Like [node style](#node-styles), the format is a [presentation detail](#presenting-the-serialization-tree) and is not reflected
+in the [serialization tree](#serialization-tree) and [representation graph](#representation-graph).
+
+[Comments](#comments) are a [presentation detail](#presenting-the-serialization-tree) and must not have any effect on the
+[serialization tree](#serialization-tree) or [representation graph](#representation-graph).
+In particular, comments are not associated with a particular [node](#nodes).
+The usual purpose of a comment is to communicate between the human maintainers
+of a file.
+A typical example is comments in a configuration file.
+Comments must not appear inside [scalars](#scalars), but may be interleaved with such
+[scalars](#scalars) inside [collections](#collections).
+
+#### 3.2.3.4. Directives
+
+Each [document](#documents) may be associated with a set of [directives](#directives).
+A directive has a name and an optional sequence of parameters.
+Directives are instructions to the YAML [processor](#processes-and-models) and like all other
+[presentation details](#presenting-the-serialization-tree) are not reflected in the YAML [serialization tree](#serialization-tree) or
+[representation graph](#representation-graph).
+This version of YAML defines two directives, “`YAML`” and “`TAG`”.
+All other directives are [reserved](#directives) for future versions of YAML.
+
+## 3.3. Loading Failure Points
+
+The process of [loading](#load) [native data structures](#representing-native-data-structures) from a YAML [stream](#streams) has
+several potential *failure points*.
+The character [stream](#streams) may be [ill-formed](#well-formed-streams-and-identified-aliases), [aliases](#anchors-and-aliases) may be [unidentified](#well-formed-streams-and-identified-aliases),
+[unspecified tags](#resolved-tags) may be [unresolvable](#resolved-tags), [tags](#tags) may be [unrecognized](#recognized-and-valid-tags), the
+[content](#nodes) may be [invalid](#recognized-and-valid-tags), [mapping](#mapping) [keys](#nodes) may not be [unique](#node-comparison) and a native
+type may be [unavailable](#available-tags).
+Each of these failures results with an incomplete loading.
+
+A *partial representation* need not [resolve](#resolved-tags) the [tag](#tags) of each [node](#nodes) and the
+[canonical form](#canonical-form) of [formatted scalar content](#scalar-formats) need not be available.
+This weaker representation is useful for cases of incomplete knowledge of the
+types used in the [document](#documents).
+
+In contrast, a *complete representation* specifies the [tag](#tags) of each [node](#nodes) and
+provides the [canonical form](#canonical-form) of [formatted scalar content](#scalar-formats), allowing for
+[equality](#equality) testing.
+A complete representation is required in order to [construct](#constructing-native-data-structures) [native data
+structures](#representing-native-data-structures).
+
+**Figure 3.7. Loading Failure Points**
+
+![Loading Failure Points](/spec/1.2.2/img/validity2.svg)
+
+### 3.3.1. Well-Formed Streams and Identified Aliases
+
+A [well-formed](#example-stream) character [stream](#streams) must match the BNF productions specified in
+the following chapters.
+Successful loading also requires that each [alias](#anchors-and-aliases) shall refer to a previous
+[node](#nodes) [identified](#anchors-and-aliases) by the [anchor](#anchors-and-aliases).
+A YAML [processor](#processes-and-models) should reject *ill-formed streams* and *unidentified
+aliases*.
+A YAML [processor](#processes-and-models) may recover from syntax errors, possibly by ignoring certain
+parts of the input, but it must provide a mechanism for reporting such errors.
+
+### 3.3.2. Resolved Tags
+
+Typically, most [tags](#tags) are not explicitly specified in the character [stream](#streams).
+During [parsing](#parsing-the-presentation-stream), [nodes](#nodes) lacking an explicit [tag](#tags) are given a *non-specific
+tag*: “`!`” for non-[plain scalars](#plain-style) and “`?`” for all other [nodes](#nodes).
+[Composing](#composing-the-representation-graph) a [complete representation](#loading-failure-points) requires each such non-specific tag to
+be *resolved* to a *specific tag*, be it a [global tag](#tags) or a [local tag](#tags).
+
+Resolving the [tag](#tags) of a [node](#nodes) must only depend on the following three
+parameters: (1) the non-specific tag of the [node](#nodes), (2) the path leading from
+the [root](#representation-graph) to the [node](#nodes) and (3) the [content](#nodes) (and hence the [kind](#nodes)) of the
+[node](#nodes).
+When a [node](#nodes) has more than one occurrence (using [aliases](#anchors-and-aliases)), tag resolution
+must depend only on the path to the first ([anchored](#anchors-and-aliases)) occurrence of the
+[node](#nodes).
+
+Note that resolution must not consider [presentation details](#presenting-the-serialization-tree) such as
+[comments](#comments), [indentation](#indentation-spaces) and [node style](#node-styles).
+Also, resolution must not consider the [content](#nodes) of any other [node](#nodes), except
+for the [content](#nodes) of the [key nodes](#mapping) directly along the path leading from the
+[root](#representation-graph) to the resolved [node](#nodes).
+Finally, resolution must not consider the [content](#nodes) of a sibling [node](#nodes) in a
+[collection](#collections) or the [content](#nodes) of the [value node](#nodes) associated with a [key node](#mapping)
+being resolved.
+
+These rules ensure that tag resolution can be performed as soon as a [node](#nodes) is
+first encountered in the [stream](#streams), typically before its [content](#nodes) is [parsed](#parsing-the-presentation-stream).
+Also, tag resolution only requires referring to a relatively small number of
+previously parsed [nodes](#nodes).
+Thus, in most cases, tag resolution in one-pass [processors](#processes-and-models) is both possible
+and practical.
+
+YAML [processors](#processes-and-models) should resolve [nodes](#nodes) having the “`!`” non-specific tag as
+“`tag:yaml.org,2002:seq`”, “`tag:yaml.org,2002:map`” or
+“`tag:yaml.org,2002:str`” depending on their [kind](#nodes).
+This *tag resolution convention* allows the author of a YAML character [stream](#streams)
+to effectively “disable” the tag resolution process.
+By explicitly specifying a “`!`” non-specific [tag property](#node-tags), the [node](#nodes) would
+then be resolved to a “vanilla” [sequence](#sequence), [mapping](#mapping) or string, according to
+its [kind](#nodes).
+
+[Application](#processes-and-models) specific tag resolution rules should be restricted to resolving
+the “`?`” non-specific tag, most commonly to resolving [plain scalars](#plain-style).
+These may be matched against a set of regular expressions to provide automatic
+resolution of integers, floats, timestamps and similar types.
+An [application](#processes-and-models) may also match the [content](#nodes) of [mapping nodes](#mapping) against sets
+of expected [keys](#nodes) to automatically resolve points, complex numbers and similar
+types.
+Resolved [sequence node](#sequence) types such as the “ordered mapping” are also possible.
+
+That said, tag resolution is specific to the [application](#processes-and-models).
+YAML [processors](#processes-and-models) should therefore provide a mechanism allowing the
+[application](#processes-and-models) to override and expand these default tag resolution rules.
+
+If a [document](#documents) contains *unresolved tags*, the YAML [processor](#processes-and-models) is unable to
+[compose](#composing-the-representation-graph) a [complete representation](#loading-failure-points) graph.
+In such a case, the YAML [processor](#processes-and-models) may [compose](#composing-the-representation-graph) a [partial representation](#loading-failure-points),
+based on each [node’s kind](#nodes) and allowing for non-specific tags.
+
+### 3.3.3. Recognized and Valid Tags
+
+To be *valid*, a [node](#nodes) must have a [tag](#tags) which is *recognized* by the YAML
+[processor](#processes-and-models) and its [content](#nodes) must satisfy the constraints imposed by this
+[tag](#tags).
+If a [document](#documents) contains a [scalar node](#nodes) with an *unrecognized tag* or *invalid
+content*, only a [partial representation](#loading-failure-points) may be [composed](#composing-the-representation-graph).
+In contrast, a YAML [processor](#processes-and-models) can always [compose](#composing-the-representation-graph) a [complete
+representation](#loading-failure-points) for an unrecognized or an invalid [collection](#collections), since
+[collection](#collections) [equality](#equality) does not depend upon knowledge of the [collection’s](#mapping)
+data type.
+However, such a [complete representation](#loading-failure-points) cannot be used to [construct](#constructing-native-data-structures) a
+[native data structure](#representing-native-data-structures).
+
+### 3.3.4. Available Tags
+
+In a given processing environment, there need not be an *available* native type
+corresponding to a given [tag](#tags).
+If a [node’s tag](#tags) is *unavailable*, a YAML [processor](#processes-and-models) will not be able to
+[construct](#constructing-native-data-structures) a [native data structure](#representing-native-data-structures) for it.
+In this case, a [complete representation](#loading-failure-points) may still be [composed](#composing-the-representation-graph) and an
+[application](#processes-and-models) may wish to use this [representation](#representation-graph) directly.
+
+## Chapter 4. Syntax Conventions
+
+The following chapters formally define the syntax of YAML character [streams](#streams),
+using parameterized BNF productions.
+Each BNF production is both named and numbered for easy reference.
+Whenever possible, basic structures are specified before the more complex
+structures using them in a “bottom up” fashion.
+
+The productions are accompanied by examples which are presented in a two-pane
+side-by-side format.
+The left-hand side is the YAML example and the right-hand side is an alternate
+YAML view of the example.
+The right-hand view uses JSON when possible.
+Otherwise it uses a YAML form that is as close to JSON as possible.
+
+## 4.1. Production Syntax
+
+Productions are defined using the syntax `production-name ::= term`, where a
+term is either:
+
+An atomic term
+:   * A quoted string (`"abc"`), which matches that concatenation of characters. A
+      single character is usually written with single quotes (`'a'`).
+    * A hexadecimal number (`x0A`), which matches the character at that Unicode
+      code point.
+    * A range of hexadecimal numbers (`[x20-x7E]`), which matches any character
+      whose Unicode code point is within that range.
+    * The name of a production (`c-printable`), which matches that production.
+
+A lookaround
+:   * `[ lookahead = term ]`, which matches the empty string if `term` would match.
+    * `[ lookahead ≠ term ]`, which matches the empty string if `term` would not
+      match.
+    * `[ lookbehind = term ]`, which matches the empty string if `term` would match
+      beginning at any prior point on the line and ending at the current position.
+
+A special production
+:   * `<start-of-line>`, which matches the empty string at the beginning of a line.
+    * `<end-of-input>`, matches the empty string at the end of the input.
+    * `<empty>`, which (always) matches the empty string.
+
+A parenthesized term
+:   Matches its contents.
+
+A concatenation
+:   Is `term-one term-two`, which matches `term-one` followed by `term-two`.
+
+A alternation
+:   Is `term-one | term-two`, which matches the `term-one` if possible, or
+    `term-two` otherwise.
+
+A quantified term:
+:   * `term?`, which matches `(term | <empty>)`.
+    * `term*`, which matches `(term term* | <empty>)`.
+    * `term+`, which matches `(term term*)`.
+
+> Note: Quantified terms are always greedy.
+
+The order of precedence is parenthesization, then quantification, then
+concatenation, then alternation.
+
+Some lines in a production definition might have a comment like:
+
+```
+production-a ::=
+  production-b      # clarifying comment
+```
+
+These comments are meant to be informative only.
+For instance a comment that says `# not followed by non-ws char` just means
+that you should be aware that actual production rules will behave as described
+even though it might not be obvious from the content of that particular
+production alone.
+
+## 4.2. Production Parameters
+
+Some productions have parameters in parentheses after the name, such as
+[`s-line-prefix(n,c)`](#rule-s-line-prefix).
+A parameterized production is shorthand for a (infinite) series of productions,
+each with a fixed value for each parameter.
+
+For instance, this production:
+
+```
+production-a(n) ::= production-b(n)
+```
+
+Is shorthand for:
+
+```
+production-a(0) ::= production-b(0)
+production-a(1) ::= production-b(1)
+…
+```
+
+And this production:
+
+```
+production-a(n) ::=
+  ( production-b(n+m) production-c(n+m) )+
+```
+
+Is shorthand for:
+
+```
+production-a(0) ::=
+    ( production-b(0) production-c(0) )+
+  | ( production-b(1) production-c(1) )+
+  | …
+production-a(1) ::=
+    ( production-b(1) production-c(1) )+
+  | ( production-b(2) production-c(2) )+
+  | …
+…
+```
+
+The parameters are as follows:
+
+Indentation: `n` or `m`
+:   May be any natural number, including zero. `n` may also be -1.
+
+Context: `c`
+:   This parameter allows productions to tweak their behavior according to their
+    surrounding.
+    YAML supports two groups of *contexts*, distinguishing between [block styles](#block-style-productions)
+    and [flow styles](#flow-style-productions).
+:   May be any of the following values:
+:   * `BLOCK-IN` – inside block context
+    * `BLOCK-OUT` – outside block context
+    * `BLOCK-KEY` – inside block key context
+    * `FLOW-IN` – inside flow context
+    * `FLOW-OUT` – outside flow context
+    * `FLOW-KEY` – inside flow key context
+
+(Block) Chomping: `t`
+:   The [line break](#line-break-characters) chomping behavior for flow scalars.
+    May be any of the following values:
+
+* `STRIP` – remove all trailing newlines
+* `CLIP` – remove all trailing newlines except the first
+* `KEEP` – retain all trailing newlines
+
+## 4.3. Production Naming Conventions
+
+To make it easier to follow production combinations, production names use a
+prefix-style naming convention.
+Each production is given a prefix based on the type of characters it begins and
+ends with.
+
+`e-`
+:   A production matching no characters.
+
+`c-`
+:   A production starting and ending with a special character.
+
+`b-`
+:   A production matching a single [line break](#line-break-characters).
+
+`nb-`
+:   A production starting and ending with a non-[break](#line-break-characters) character.
+
+`s-`
+:   A production starting and ending with a [white space](#white-space-characters) character.
+
+`ns-`
+:   A production starting and ending with a non-[space](#white-space-characters) character.
+
+`l-`
+:   A production matching complete line(s).
+
+`X-Y-`
+:   A production starting with an `X-` character and ending with a `Y-` character,
+    where `X-` and `Y-` are any of the above prefixes.
+
+`X+`, `X-Y+`
+:   A production as above, with the additional property that the matched content
+    [indentation](#indentation-spaces) level is greater than the specified `n` parameter.
+
+## Chapter 5. Character Productions
+
+## 5.1. Character Set
+
+To ensure readability, YAML [streams](#streams) use only the *printable* subset of the
+Unicode character set.
+The allowed character range explicitly excludes the C0 control block[15](#fn:c0-block)
+`x00-x1F` (except for TAB `x09`, LF `x0A` and CR `x0D` which are allowed), DEL
+`x7F`, the C1 control block `x80-x9F` (except for NEL `x85` which is allowed),
+the surrogate block[16](#fn:surrogates) `xD800-xDFFF`, `xFFFE` and `xFFFF`.
+
+On input, a YAML [processor](#processes-and-models) must accept all characters in this printable
+subset.
+
+On output, a YAML [processor](#processes-and-models) must only produce only characters in this
+printable subset.
+Characters outside this set must be [presented](#presenting-the-serialization-tree) using [escape](#escaped-characters) sequences.
+In addition, any allowed characters known to be non-printable should also be
+[escaped](#escaped-characters).
+
+> Note: This isn’t mandatory since a full implementation would require
+> extensive character property tables.
+
+```
+[1] c-printable ::=
+                         # 8 bit
+    x09                  # Tab (\t)
+  | x0A                  # Line feed (LF \n)
+  | x0D                  # Carriage Return (CR \r)
+  | [x20-x7E]            # Printable ASCII
+                         # 16 bit
+  | x85                  # Next Line (NEL)
+  | [xA0-xD7FF]          # Basic Multilingual Plane (BMP)
+  | [xE000-xFFFD]        # Additional Unicode Areas
+  | [x010000-x10FFFF]    # 32 bit
+```
+
+To ensure [JSON compatibility](#yaml-directives), YAML [processors](#processes-and-models) must allow all non-C0
+characters inside [quoted scalars](#double-quoted-style).
+To ensure readability, non-printable characters should be [escaped](#escaped-characters) on output,
+even inside such [scalars](#scalars).
+
+> Note: JSON [quoted scalars](#double-quoted-style) cannot span multiple lines or contain [tabs](#white-space-characters), but
+> YAML [quoted scalars](#double-quoted-style) can.
+
+```
+[2] nb-json ::=
+    x09              # Tab character
+  | [x20-x10FFFF]    # Non-C0-control characters
+```
+
+> Note: The production name `nb-json` means “non-break JSON compatible” here.
+
+## 5.2. Character Encodings
+
+All characters mentioned in this specification are Unicode code points.
+Each such code point is written as one or more bytes depending on the
+*character encoding* used.
+Note that in UTF-16, characters above `xFFFF` are written as four bytes, using
+a surrogate pair.
+
+The character encoding is a [presentation detail](#presenting-the-serialization-tree) and must not be used to
+convey [content](#nodes) information.
+
+On input, a YAML [processor](#processes-and-models) must support the UTF-8 and UTF-16 character
+encodings.
+For [JSON compatibility](#yaml-directives), the UTF-32 encodings must also be supported.
+
+If a character [stream](#streams) begins with a *byte order mark*, the character encoding
+will be taken to be as indicated by the byte order mark.
+Otherwise, the [stream](#streams) must begin with an ASCII character.
+This allows the encoding to be deduced by the pattern of null (`x00`)
+characters.
+
+Byte order marks may appear at the start of any [document](#documents), however all
+[documents](#documents) in the same [stream](#streams) must use the same character encoding.
+
+To allow for [JSON compatibility](#yaml-directives), byte order marks are also allowed inside
+[quoted scalars](#double-quoted-style).
+For readability, such [content](#nodes) byte order marks should be [escaped](#escaped-characters) on output.
+
+The encoding can therefore be deduced by matching the first few bytes of the
+[stream](#streams) with the following table rows (in order):
+
+|  | Byte0 | Byte1 | Byte2 | Byte3 | Encoding |
+| --- | --- | --- | --- | --- | --- |
+| Explicit BOM | x00 | x00 | xFE | xFF | UTF-32BE |
+| ASCII first character | x00 | x00 | x00 | any | UTF-32BE |
+| Explicit BOM | xFF | xFE | x00 | x00 | UTF-32LE |
+| ASCII first character | any | x00 | x00 | x00 | UTF-32LE |
+| Explicit BOM | xFE | xFF |  |  | UTF-16BE |
+| ASCII first character | x00 | any |  |  | UTF-16BE |
+| Explicit BOM | xFF | xFE |  |  | UTF-16LE |
+| ASCII first character | any | x00 |  |  | UTF-16LE |
+| Explicit BOM | xEF | xBB | xBF |  | UTF-8 |
+| Default |  |  |  |  | UTF-8 |
+
+The recommended output encoding is UTF-8.
+If another encoding is used, it is recommended that an explicit byte order mark
+be used, even if the first [stream](#streams) character is ASCII.
+
+For more information about the byte order mark and the Unicode character
+encoding schemes see the Unicode FAQ[17](#fn:uni-faq).
+
+```
+[3] c-byte-order-mark ::= xFEFF
+```
+
+In the examples, byte order mark characters are displayed as “`⇔`”.
+
+**Example 5.1 Byte Order Mark**
+
+|  |  |
+| --- | --- |
+| ``` ⇔# Comment only. ``` | ``` # This stream contains no # documents, only comments. ``` |
+
+**Example 5.2 Invalid Byte Order Mark**
+
+|  |  |
+| --- | --- |
+| ``` - Invalid use of BOM ⇔ - Inside a document. ``` | ``` ERROR:  A BOM must not appear  inside a document. ``` |
+
+## 5.3. Indicator Characters
+
+*Indicators* are characters that have special semantics.
+
+”`-`” (`x2D`, hyphen) denotes a [block sequence](#block-sequences) entry.
+
+```
+[4] c-sequence-entry ::= '-'
+```
+
+”`?`” (`x3F`, question mark) denotes a [mapping key](#nodes).
+
+```
+[5] c-mapping-key ::= '?'
+```
+
+”`:`” (`x3A`, colon) denotes a [mapping value](#mapping).
+
+```
+[6] c-mapping-value ::= ':'
+```
+
+**Example 5.3 Block Structure Indicators**
+
+|  |  |
+| --- | --- |
+| ``` sequence: - one - two mapping:   ? sky   : blue   sea : green ``` | ``` { "sequence": [     "one",     "two" ],   "mapping": {     "sky": "blue",     "sea": "green" } } ``` |
+
+”`,`” (`x2C`, comma) ends a [flow collection](#flow-collection-styles) entry.
+
+```
+[7] c-collect-entry ::= ','
+```
+
+”`[`” (`x5B`, left bracket) starts a [flow sequence](#flow-sequences).
+
+```
+[8] c-sequence-start ::= '['
+```
+
+”`]`” (`x5D`, right bracket) ends a [flow sequence](#flow-sequences).
+
+```
+[9] c-sequence-end ::= ']'
+```
+
+”`{`” (`x7B`, left brace) starts a [flow mapping](#flow-mappings).
+
+```
+[10] c-mapping-start ::= '{'
+```
+
+”`}`” (`x7D`, right brace) ends a [flow mapping](#flow-mappings).
+
+```
+[11] c-mapping-end ::= '}'
+```
+
+**Example 5.4 Flow Collection Indicators**
+
+|  |  |
+| --- | --- |
+| ``` sequence: [ one, two, ] mapping: { sky: blue, sea: green } ``` | ``` { "sequence": [ "one", "two" ],   "mapping":     { "sky": "blue", "sea": "green" } } ``` |
+
+**Legend:**
+
+* `c-sequence-start c-sequence-end`
+* `c-mapping-start c-mapping-end`
+* `c-collect-entry`
+
+”`#`” (`x23`, octothorpe, hash, sharp, pound, number sign) denotes a [comment](#comments).
+
+```
+[12] c-comment ::= '#'
+```
+
+”`&`” (`x26`, ampersand) denotes a [node’s anchor property](#anchors-and-aliases).
+
+```
+[13] c-anchor ::= '&'
+```
+
+”`*`” (`x2A`, asterisk) denotes an [alias node](#alias-nodes).
+
+```
+[14] c-alias ::= '*'
+```
+
+The “`!`” (`x21`, exclamation) is used for specifying [node tags](#node-tags).
+It is used to denote [tag handles](#tag-handles) used in [tag directives](#tag-directives) and [tag
+properties](#node-tags); to denote [local tags](#tags); and as the [non-specific tag](#resolved-tags) for
+non-[plain scalars](#plain-style).
+
+```
+[15] c-tag ::= '!'
+```
+
+**Example 5.6 Node Property Indicators**
+
+|  |  |
+| --- | --- |
+| ``` anchored: !local &anchor value alias: *anchor ``` | ``` { "anchored": !local &A1 "value",   "alias": *A1 } ``` |
+
+**Legend:**
+
+* `c-tag`
+* `c-anchor`
+* `c-alias`
+
+”`|`” (`7C`, vertical bar) denotes a [literal block scalar](#literal-style).
+
+```
+[16] c-literal ::= '|'
+```
+
+”`>`” (`x3E`, greater than) denotes a [folded block scalar](#block-folding).
+
+```
+[17] c-folded ::= '>'
+```
+
+**Example 5.7 Block Scalar Indicators**
+
+|  |  |
+| --- | --- |
+| ``` literal: |   some   text folded: >   some   text ``` | ``` { "literal": "some\ntext\n",   "folded": "some text\n" } ``` |
+
+**Legend:**
+
+* `c-literal`
+* `c-folded`
+
+”`'`” (`x27`, apostrophe, single quote) surrounds a [single-quoted flow
+scalar](#single-quoted-style).
+
+```
+[18] c-single-quote ::= "'"
+```
+
+”`"`” (`x22`, double quote) surrounds a [double-quoted flow scalar](#double-quoted-style).
+
+```
+[19] c-double-quote ::= '"'
+```
+
+**Example 5.8 Quoted Scalar Indicators**
+
+|  |  |
+| --- | --- |
+| ``` single: 'text' double: "text" ``` | ``` { "single": "text",   "double": "text" } ``` |
+
+”`%`” (`x25`, percent) denotes a [directive](#directives) line.
+
+```
+[20] c-directive ::= '%'
+```
+
+**Example 5.9 Directive Indicator**
+
+|  |  |
+| --- | --- |
+| ``` %YAML 1.2 --- text ``` | ``` "text" ``` |
+
+The “`@`” (`x40`, at) and “`` ` ``” (`x60`, grave accent) are
+*reserved* for future use.
+
+```
+[21] c-reserved ::=
+    '@' | '`'
+```
+
+**Example 5.10 Invalid use of Reserved Indicators**
+
+|  |  |
+| --- | --- |
+| ``` commercial-at: @text grave-accent: `text ``` | ``` ERROR:  Reserved indicators can't  start a plain scalar. ``` |
+
+Any indicator character:
+
+```
+[22] c-indicator ::=
+    c-sequence-entry    # '-'
+  | c-mapping-key       # '?'
+  | c-mapping-value     # ':'
+  | c-collect-entry     # ','
+  | c-sequence-start    # '['
+  | c-sequence-end      # ']'
+  | c-mapping-start     # '{'
+  | c-mapping-end       # '}'
+  | c-comment           # '#'
+  | c-anchor            # '&'
+  | c-alias             # '*'
+  | c-tag               # '!'
+  | c-literal           # '|'
+  | c-folded            # '>'
+  | c-single-quote      # "'"
+  | c-double-quote      # '"'
+  | c-directive         # '%'
+  | c-reserved          # '@' '`'
+```
+
+The “`[`”, “`]`”, “`{`”, “`}`” and “`,`” indicators denote structure in [flow
+collections](#flow-collection-styles).
+They are therefore forbidden in some cases, to avoid ambiguity in several
+constructs.
+This is handled on a case-by-case basis by the relevant productions.
+
+```
+[23] c-flow-indicator ::=
+    c-collect-entry     # ','
+  | c-sequence-start    # '['
+  | c-sequence-end      # ']'
+  | c-mapping-start     # '{'
+  | c-mapping-end       # '}'
+```
+
+## 5.4. Line Break Characters
+
+YAML recognizes the following ASCII *line break* characters.
+
+```
+[24] b-line-feed ::= x0A
+```
+
+```
+[25] b-carriage-return ::= x0D
+```
+
+```
+[26] b-char ::=
+    b-line-feed          # x0A
+  | b-carriage-return    # X0D
+```
+
+All other characters, including the form feed (`x0C`), are considered to be
+non-break characters.
+Note that these include the *non-ASCII line breaks*: next line (`x85`), line
+separator (`x2028`) and paragraph separator (`x2029`).
+
+[YAML version 1.1](#yaml-directives) did support the above non-ASCII line break characters;
+however, JSON does not.
+Hence, to ensure [JSON compatibility](#yaml-directives), YAML treats them as non-break characters
+as of version 1.2.
+YAML 1.2 [processors](#processes-and-models) [parsing](#parsing-the-presentation-stream) a [version 1.1](#yaml-directives) [document](#documents) should therefore
+treat these line breaks as non-break characters, with an appropriate warning.
+
+```
+[27] nb-char ::=
+  c-printable - b-char - c-byte-order-mark
+```
+
+Line breaks are interpreted differently by different systems and have multiple
+widely used formats.
+
+```
+[28] b-break ::=
+    (
+      b-carriage-return  # x0A
+      b-line-feed
+    )                    # x0D
+  | b-carriage-return
+  | b-line-feed
+```
+
+Line breaks inside [scalar content](#scalar) must be *normalized* by the YAML
+[processor](#processes-and-models).
+Each such line break must be [parsed](#parsing-the-presentation-stream) into a single line feed character.
+The original line break format is a [presentation detail](#presenting-the-serialization-tree) and must not be used
+to convey [content](#nodes) information.
+
+```
+[29] b-as-line-feed ::=
+  b-break
+```
+
+Outside [scalar content](#scalar), YAML allows any line break to be used to terminate
+lines.
+
+```
+[30] b-non-content ::=
+  b-break
+```
+
+On output, a YAML [processor](#processes-and-models) is free to emit line breaks using whatever
+convention is most appropriate.
+
+In the examples, line breaks are sometimes displayed using the “`↓`” glyph for
+clarity.
+
+**Example 5.11 Line Break Characters**
+
+|  |  |
+| --- | --- |
+| ``` |   Line break (no glyph)   Line break (glyphed)↓ ``` | ``` "Line break (no glyph)\nLine break (glyphed)\n" ``` |
+
+## 5.5. White Space Characters
+
+YAML recognizes two *white space* characters: *space* and *tab*.
+
+```
+[31] s-space ::= x20
+```
+
+```
+[32] s-tab ::= x09
+```
+
+```
+[33] s-white ::=
+  s-space | s-tab
+```
+
+The rest of the ([printable](#character-set)) non-[break](#line-break-characters) characters are considered to be
+non-space characters.
+
+```
+[34] ns-char ::=
+  nb-char - s-white
+```
+
+In the examples, tab characters are displayed as the glyph “`→`”.
+Space characters are sometimes displayed as the glyph “`·`” for clarity.
+
+**Example 5.12 Tabs and Spaces**
+
+|  |  |
+| --- | --- |
+| ``` # Tabs and spaces quoted:·"Quoted →" block:→| ··void main() { ··→printf("Hello, world!\n"); ··} ``` | ``` { "quoted": "Quoted \t",   "block": "void main()     {\n\tprintf(\"Hello, world!\\n\");\n}\n" } ``` |
+
+## 5.6. Miscellaneous Characters
+
+The YAML syntax productions make use of the following additional character
+classes:
+
+A decimal digit for numbers:
+
+```
+[35] ns-dec-digit ::=
+  [x30-x39]             # 0-9
+```
+
+A hexadecimal digit for [escape sequences](#escaped-characters):
+
+```
+[36] ns-hex-digit ::=
+    ns-dec-digit        # 0-9
+  | [x41-x46]           # A-F
+  | [x61-x66]           # a-f
+```
+
+ASCII letter (alphabetic) characters:
+
+```
+[37] ns-ascii-letter ::=
+    [x41-x5A]           # A-Z
+  | [x61-x7A]           # a-z
+```
+
+Word (alphanumeric) characters for identifiers:
+
+```
+[38] ns-word-char ::=
+    ns-dec-digit        # 0-9
+  | ns-ascii-letter     # A-Z a-z
+  | '-'                 # '-'
+```
+
+URI characters for [tags](#tags), as defined in the URI specification[18](#fn:uri).
+
+By convention, any URI characters other than the allowed printable ASCII
+characters are first *encoded* in UTF-8 and then each byte is *escaped* using
+the “`%`” character.
+The YAML [processor](#processes-and-models) must not expand such escaped characters.
+[Tag](#tags) characters must be preserved and compared exactly as [presented](#presenting-the-serialization-tree) in the
+YAML [stream](#streams), without any processing.
+
+```
+[39] ns-uri-char ::=
+    (
+      '%'
+      ns-hex-digit{2}
+    )
+  | ns-word-char
+  | '#'
+  | ';'
+  | '/'
+  | '?'
+  | ':'
+  | '@'
+  | '&'
+  | '='
+  | '+'
+  | '$'
+  | ','
+  | '_'
+  | '.'
+  | '!'
+  | '~'
+  | '*'
+  | "'"
+  | '('
+  | ')'
+  | '['
+  | ']'
+```
+
+The “`!`” character is used to indicate the end of a [named tag handle](#tag-handles); hence
+its use in [tag shorthands](#tag-shorthands) is restricted.
+In addition, such [shorthands](#tag-shorthands) must not contain the “`[`”, “`]`”, “`{`”, “`}`”
+and “`,`” characters.
+These characters would cause ambiguity with [flow collection](#flow-collection-styles) structures.
+
+```
+[40] ns-tag-char ::=
+    ns-uri-char
+  - c-tag               # '!'
+  - c-flow-indicator
+```
+
+## 5.7. Escaped Characters
+
+All non-[printable](#character-set) characters must be *escaped*.
+YAML escape sequences use the “`\`” notation common to most modern computer
+languages.
+Each escape sequence must be [parsed](#parsing-the-presentation-stream) into the appropriate Unicode character.
+The original escape sequence is a [presentation detail](#presenting-the-serialization-tree) and must not be used to
+convey [content](#nodes) information.
+
+Note that escape sequences are only interpreted in [double-quoted scalars](#double-quoted-style).
+In all other [scalar styles](#node-styles), the “`\`” character has no special meaning and
+non-[printable](#character-set) characters are not available.
+
+```
+[41] c-escape ::= '\'
+```
+
+YAML escape sequences are a superset of C’s escape sequences:
+
+Escaped ASCII null (`x00`) character.
+
+```
+[42] ns-esc-null ::= '0'
+```
+
+Escaped ASCII bell (`x07`) character.
+
+```
+[43] ns-esc-bell ::= 'a'
+```
+
+Escaped ASCII backspace (`x08`) character.
+
+```
+[44] ns-esc-backspace ::= 'b'
+```
+
+Escaped ASCII horizontal tab (`x09`) character.
+This is useful at the start or the end of a line to force a leading or trailing
+tab to become part of the [content](#nodes).
+
+```
+[45] ns-esc-horizontal-tab ::=
+  't' | x09
+```
+
+Escaped ASCII line feed (`x0A`) character.
+
+```
+[46] ns-esc-line-feed ::= 'n'
+```
+
+Escaped ASCII vertical tab (`x0B`) character.
+
+```
+[47] ns-esc-vertical-tab ::= 'v'
+```
+
+Escaped ASCII form feed (`x0C`) character.
+
+```
+[48] ns-esc-form-feed ::= 'f'
+```
+
+Escaped ASCII carriage return (`x0D`) character.
+
+```
+[49] ns-esc-carriage-return ::= 'r'
+```
+
+Escaped ASCII escape (`x1B`) character.
+
+```
+[50] ns-esc-escape ::= 'e'
+```
+
+Escaped ASCII space (`x20`) character.
+This is useful at the start or the end of a line to force a leading or trailing
+space to become part of the [content](#nodes).
+
+```
+[51] ns-esc-space ::= x20
+```
+
+Escaped ASCII double quote (`x22`).
+
+```
+[52] ns-esc-double-quote ::= '"'
+```
+
+Escaped ASCII slash (`x2F`), for [JSON compatibility](#yaml-directives).
+
+```
+[53] ns-esc-slash ::= '/'
+```
+
+Escaped ASCII back slash (`x5C`).
+
+```
+[54] ns-esc-backslash ::= '\'
+```
+
+Escaped Unicode next line (`x85`) character.
+
+```
+[55] ns-esc-next-line ::= 'N'
+```
+
+Escaped Unicode non-breaking space (`xA0`) character.
+
+```
+[56] ns-esc-non-breaking-space ::= '_'
+```
+
+Escaped Unicode line separator (`x2028`) character.
+
+```
+[57] ns-esc-line-separator ::= 'L'
+```
+
+Escaped Unicode paragraph separator (`x2029`) character.
+
+```
+[58] ns-esc-paragraph-separator ::= 'P'
+```
+
+Escaped 8-bit Unicode character.
+
+```
+[59] ns-esc-8-bit ::=
+  'x'
+  ns-hex-digit{2}
+```
+
+Escaped 16-bit Unicode character.
+
+```
+[60] ns-esc-16-bit ::=
+  'u'
+  ns-hex-digit{4}
+```
+
+Escaped 32-bit Unicode character.
+
+```
+[61] ns-esc-32-bit ::=
+  'U'
+  ns-hex-digit{8}
+```
+
+Any escaped character:
+
+```
+[62] c-ns-esc-char ::=
+  c-escape         # '\'
+  (
+      ns-esc-null
+    | ns-esc-bell
+    | ns-esc-backspace
+    | ns-esc-horizontal-tab
+    | ns-esc-line-feed
+    | ns-esc-vertical-tab
+    | ns-esc-form-feed
+    | ns-esc-carriage-return
+    | ns-esc-escape
+    | ns-esc-space
+    | ns-esc-double-quote
+    | ns-esc-slash
+    | ns-esc-backslash
+    | ns-esc-next-line
+    | ns-esc-non-breaking-space
+    | ns-esc-line-separator
+    | ns-esc-paragraph-separator
+    | ns-esc-8-bit
+    | ns-esc-16-bit
+    | ns-esc-32-bit
+  )
+```
+
+**Example 5.13 Escaped Characters**
+
+|  |  |
+| --- | --- |
+| ``` - "Fun with \\" - "\" \a \b \e \f" - "\n \r \t \v \0" - "\  \_ \N \L \P \   \x41 \u0041 \U00000041" ``` | ``` [ "Fun with \\",   "\" \u0007 \b \u001b \f",   "\n \r \t \u000b \u0000",   "\u0020 \u00a0 \u0085 \u2028 \u2029 A A A" ] ``` |
+
+**Example 5.14 Invalid Escaped Characters**
+
+|  |  |
+| --- | --- |
+| ``` Bad escapes:   "\c   \xq-" ``` | ``` ERROR: - c is an invalid escaped character. - q and - are invalid hex digits. ``` |
+
+## Chapter 6. Structural Productions
+
+## 6.1. Indentation Spaces
+
+In YAML [block styles](#block-style-productions), structure is determined by *indentation*.
+In general, indentation is defined as a zero or more [space](#white-space-characters) characters at the
+start of a line.
+
+To maintain portability, [tab](#white-space-characters) characters must not be used in indentation,
+since different systems treat [tabs](#white-space-characters) differently.
+Note that most modern editors may be configured so that pressing the [tab](#white-space-characters) key
+results in the insertion of an appropriate number of [spaces](#white-space-characters).
+
+The amount of indentation is a [presentation detail](#presenting-the-serialization-tree) and must not be used to
+convey [content](#nodes) information.
+
+```
+[63]
+s-indent(0) ::=
+  <empty>
+
+# When n≥0
+s-indent(n+1) ::=
+  s-space s-indent(n)
+```
+
+A [block style](#block-style-productions) construct is terminated when encountering a line which is less
+indented than the construct.
+The productions use the notation “`s-indent-less-than(n)`” and
+“`s-indent-less-or-equal(n)`” to express this.
+
+```
+[64]
+s-indent-less-than(1) ::=
+  <empty>
+
+# When n≥1
+s-indent-less-than(n+1) ::=
+  s-space s-indent-less-than(n)
+  | <empty>
+```
+
+```
+[65]
+s-indent-less-or-equal(0) ::=
+  <empty>
+
+# When n≥0
+s-indent-less-or-equal(n+1) ::=
+  s-space s-indent-less-or-equal(n)
+  | <empty>
+```
+
+Each [node](#nodes) must be indented further than its parent [node](#nodes).
+All sibling [nodes](#nodes) must use the exact same indentation level.
+However the [content](#nodes) of each sibling [node](#nodes) may be further indented
+independently.
+
+**Example 6.1 Indentation Spaces**
+
+|  |  |
+| --- | --- |
+| ``` ··# Leading comment line spaces are ···# neither content nor indentation. ···· Not indented: ·By one space: | ····By four ······spaces ·Flow style: [    # Leading spaces ···By two,        # in flow style ··Also by two,    # are neither ··→Still by two   # content nor ····]             # indentation. ``` | ``` { "Not indented": {     "By one space": "By four\n  spaces\n",     "Flow style": [       "By two",       "Also by two",       "Still by two" ] } } ``` |
+
+**Legend:**
+
+* `s-indent(n)`
+* `Content`
+* `Neither content nor indentation`
+
+The “`-`”, “`?`” and “`:`” characters used to denote [block collection](#block-collection-styles) entries
+are perceived by people to be part of the indentation.
+This is handled on a case-by-case basis by the relevant productions.
+
+**Example 6.2 Indentation Indicators**
+
+|  |  |
+| --- | --- |
+| ``` ?·a :·-→b ··-··-→c ·····-·d ``` | ``` { "a":   [ "b",     [ "c",       "d" ] ] } ``` |
+
+**Legend:**
+
+* `Total Indentation`
+* `s-indent(n)`
+* `Indicator as indentation`
+
+## 6.2. Separation Spaces
+
+Outside [indentation](#indentation-spaces) and [scalar content](#scalar), YAML uses [white space](#white-space-characters) characters
+for *separation* between tokens within a line.
+Note that such [white space](#white-space-characters) may safely include [tab](#white-space-characters) characters.
+
+Separation spaces are a [presentation detail](#presenting-the-serialization-tree) and must not be used to convey
+[content](#nodes) information.
+
+```
+[66] s-separate-in-line ::=
+    s-white+
+  | <start-of-line>
+```
+
+**Example 6.3 Separation Spaces**
+
+|  |  |
+| --- | --- |
+| ``` -·foo:→·bar - -·baz   -→baz ``` | ``` [ { "foo": "bar" },   [ "baz",     "baz" ] ] ``` |
+
+## 6.3. Line Prefixes
+
+Inside [scalar content](#scalar), each line begins with a non-[content](#nodes) *line prefix*.
+This prefix always includes the [indentation](#indentation-spaces).
+For [flow scalar styles](#flow-scalar-styles) it additionally includes all leading [white space](#white-space-characters),
+which may contain [tab](#white-space-characters) characters.
+
+Line prefixes are a [presentation detail](#presenting-the-serialization-tree) and must not be used to convey
+[content](#nodes) information.
+
+```
+[67]
+s-line-prefix(n,BLOCK-OUT) ::= s-block-line-prefix(n)
+s-line-prefix(n,BLOCK-IN)  ::= s-block-line-prefix(n)
+s-line-prefix(n,FLOW-OUT)  ::= s-flow-line-prefix(n)
+s-line-prefix(n,FLOW-IN)   ::= s-flow-line-prefix(n)
+```
+
+```
+[68] s-block-line-prefix(n) ::=
+  s-indent(n)
+```
+
+```
+[69] s-flow-line-prefix(n) ::=
+  s-indent(n)
+  s-separate-in-line?
+```
+
+**Example 6.4 Line Prefixes**
+
+|  |  |
+| --- | --- |
+| ``` plain: text ··lines quoted: "text ··→lines" block: | ··text ···→lines ``` | ``` { "plain": "text lines",   "quoted": "text lines",   "block": "text\n \tlines\n" } ``` |
+
+## 6.4. Empty Lines
+
+An *empty line* line consists of the non-[content](#nodes) [prefix](#tag-prefixes) followed by a [line
+break](#line-break-characters).
+
+```
+[70] l-empty(n,c) ::=
+  (
+      s-line-prefix(n,c)
+    | s-indent-less-than(n)
+  )
+  b-as-line-feed
+```
+
+The semantics of empty lines depend on the [scalar style](#node-styles) they appear in.
+This is handled on a case-by-case basis by the relevant productions.
+
+**Example 6.5 Empty Lines**
+
+|  |  |
+| --- | --- |
+| ``` Folding:   "Empty line ···→   as a line feed" Chomping: |   Clipped empty lines · ``` | ``` { "Folding": "Empty line\nas a line feed",   "Chomping": "Clipped empty lines\n" } ``` |
+
+## 6.5. Line Folding
+
+*Line folding* allows long lines to be broken for readability, while retaining
+the semantics of the original long line.
+If a [line break](#line-break-characters) is followed by an [empty line](#empty-lines), it is *trimmed*; the first
+[line break](#line-break-characters) is discarded and the rest are retained as [content](#nodes).
+
+```
+[71] b-l-trimmed(n,c) ::=
+  b-non-content
+  l-empty(n,c)+
+```
+
+Otherwise (the following line is not [empty](#empty-lines)), the [line break](#line-break-characters) is converted to
+a single [space](#white-space-characters) (`x20`).
+
+```
+[72] b-as-space ::=
+  b-break
+```
+
+A folded non-[empty line](#empty-lines) may end with either of the above [line breaks](#line-break-characters).
+
+```
+[73] b-l-folded(n,c) ::=
+  b-l-trimmed(n,c) | b-as-space
+```
+
+**Example 6.6 Line Folding**
+
+|  |  |
+| --- | --- |
+| ``` >-   trimmed↓ ··↓ ·↓ ↓   as↓   space ``` | ``` "trimmed\n\n\nas space" ``` |
+
+The above rules are common to both the [folded block style](#block-folding) and the [scalar
+flow styles](#flow-scalar-styles).
+Folding does distinguish between these cases in the following way:
+
+Block Folding
+:   In the [folded block style](#block-folding), the final [line break](#line-break-characters) and trailing [empty lines](#empty-lines)
+    are subject to [chomping](#block-chomping-indicator) and are never folded.
+    In addition, folding does not apply to [line breaks](#line-break-characters) surrounding text lines
+    that contain leading [white space](#white-space-characters).
+    Note that such a [more-indented](#example-more-indented-lines) line may consist only of such leading [white
+    space](#white-space-characters).
+:   The combined effect of the *block line folding* rules is that each “paragraph”
+    is interpreted as a line, [empty lines](#empty-lines) are interpreted as a line feed and the
+    formatting of [more-indented](#example-more-indented-lines) lines is preserved.
+
+**Example 6.7 Block Folding**
+
+|  |  |
+| --- | --- |
+| ``` > ··foo·↓ ·↓ ··→·bar↓ ↓ ··baz↓ ``` | ``` "foo \n\n\t bar\n\nbaz\n" ``` |
+
+**Legend:**
+
+* `b-l-folded(n,c)`
+* `Non-content spaces`
+* `Content spaces`
+
+Flow Folding
+:   Folding in [flow styles](#flow-style-productions) provides more relaxed semantics.
+    [Flow styles](#flow-style-productions) typically depend on explicit [indicators](#indicator-characters) rather than
+    [indentation](#indentation-spaces) to convey structure.
+    Hence spaces preceding or following the text in a line are a [presentation
+    detail](#presenting-the-serialization-tree) and must not be used to convey [content](#nodes) information.
+    Once all such spaces have been discarded, all [line breaks](#line-break-characters) are folded without
+    exception.
+:   The combined effect of the *flow line folding* rules is that each “paragraph”
+    is interpreted as a line, [empty lines](#empty-lines) are interpreted as line feeds and text
+    can be freely [more-indented](#example-more-indented-lines) without affecting the [content](#nodes) information.
+
+```
+[74] s-flow-folded(n) ::=
+  s-separate-in-line?
+  b-l-folded(n,FLOW-IN)
+  s-flow-line-prefix(n)
+```
+
+**Example 6.8 Flow Folding**
+
+|  |  |
+| --- | --- |
+| ``` "↓ ··foo·↓ ·↓ ··→·bar↓ ↓ ··baz↓ " ``` | ``` " foo\nbar\nbaz " ``` |
+
+**Legend:**
+
+* `s-flow-folded(n)`
+* `Non-content spaces`
+
+An explicit *comment* is marked by a “`#`” indicator.
+Comments are a [presentation detail](#presenting-the-serialization-tree) and must not be used to convey [content](#nodes)
+information.
+
+Comments must be [separated](#separation-spaces) from other tokens by [white space](#white-space-characters) characters.
+
+> Note: To ensure [JSON compatibility](#yaml-directives), YAML [processors](#processes-and-models) must allow for the
+> omission of the final comment [line break](#line-break-characters) of the input [stream](#streams).
+> However, as this confuses many tools, YAML [processors](#processes-and-models) should terminate the
+> [stream](#streams) with an explicit [line break](#line-break-characters) on output.
+
+```
+[75] c-nb-comment-text ::=
+  c-comment    # '#'
+  nb-char*
+```
+
+```
+[76] b-comment ::=
+    b-non-content
+  | <end-of-input>
+```
+
+```
+[77] s-b-comment ::=
+  (
+    s-separate-in-line
+    c-nb-comment-text?
+  )?
+  b-comment
+```
+
+Outside [scalar content](#scalar), comments may appear on a line of their own,
+independent of the [indentation](#indentation-spaces) level.
+Note that outside [scalar content](#scalar), a line containing only [white space](#white-space-characters)
+characters is taken to be a comment line.
+
+```
+[78] l-comment ::=
+  s-separate-in-line
+  c-nb-comment-text?
+  b-comment
+```
+
+In most cases, when a line may end with a comment, YAML allows it to be
+followed by additional comment lines.
+The only exception is a comment ending a [block scalar header](#block-scalar-headers).
+
+```
+[79] s-l-comments ::=
+  (
+      s-b-comment
+    | <start-of-line>
+  )
+  l-comment*
+```
+
+## 6.7. Separation Lines
+
+[Implicit keys](#example-single-pair-explicit-entry) are restricted to a single line.
+In all other cases, YAML allows tokens to be separated by multi-line (possibly
+empty) [comments](#comments).
+
+Note that structures following multi-line comment separation must be properly
+[indented](#indentation-spaces), even though there is no such restriction on the separation
+[comment](#comments) lines themselves.
+
+```
+[80]
+s-separate(n,BLOCK-OUT) ::= s-separate-lines(n)
+s-separate(n,BLOCK-IN)  ::= s-separate-lines(n)
+s-separate(n,FLOW-OUT)  ::= s-separate-lines(n)
+s-separate(n,FLOW-IN)   ::= s-separate-lines(n)
+s-separate(n,BLOCK-KEY) ::= s-separate-in-line
+s-separate(n,FLOW-KEY)  ::= s-separate-in-line
+```
+
+```
+[81] s-separate-lines(n) ::=
+    (
+      s-l-comments
+      s-flow-line-prefix(n)
+    )
+  | s-separate-in-line
+```
+
+**Example 6.12 Separation Spaces**
+
+|  |  |
+| --- | --- |
+| ``` {·first:·Sammy,·last:·Sosa·}:↓ # Statistics: ··hr:··# Home runs ·····65 ··avg:·# Average ···0.278 ``` | ``` { { "first": "Sammy",     "last": "Sosa" }: {     "hr": 65,     "avg": 0.278 } } ``` |
+
+## 6.8. Directives
+
+*Directives* are instructions to the YAML [processor](#processes-and-models).
+This specification defines two directives, “`YAML`” and “`TAG`”, and *reserves*
+all other directives for future use.
+There is no way to define private directives.
+This is intentional.
+
+Directives are a [presentation detail](#presenting-the-serialization-tree) and must not be used to convey [content](#nodes)
+information.
+
+```
+[82] l-directive ::=
+  c-directive            # '%'
+  (
+      ns-yaml-directive
+    | ns-tag-directive
+    | ns-reserved-directive
+  )
+  s-l-comments
+```
+
+Each directive is specified on a separate non-[indented](#indentation-spaces) line starting with the
+“`%`” indicator, followed by the directive name and a list of parameters.
+The semantics of these parameters depends on the specific directive.
+A YAML [processor](#processes-and-models) should ignore unknown directives with an appropriate
+warning.
+
+```
+[83] ns-reserved-directive ::=
+  ns-directive-name
+  (
+    s-separate-in-line
+    ns-directive-parameter
+  )*
+```
+
+```
+[84] ns-directive-name ::=
+  ns-char+
+```
+
+```
+[85] ns-directive-parameter ::=
+  ns-char+
+```
+
+**Example 6.13 Reserved Directives**
+
+|  |  |
+| --- | --- |
+| ``` %FOO  bar baz # Should be ignored                # with a warning. --- "foo" ``` | ``` "foo" ``` |
+
+### 6.8.1. “`YAML`” Directives
+
+The “`YAML`” directive specifies the version of YAML the [document](#documents) conforms
+to.
+This specification defines version “`1.2`”, including recommendations for *YAML
+1.1 processing*.
+
+A version 1.2 YAML [processor](#processes-and-models) must accept [documents](#documents) with an explicit “`%YAML
+1.2`” directive, as well as [documents](#documents) lacking a “`YAML`” directive.
+Such [documents](#documents) are assumed to conform to the 1.2 version specification.
+[Documents](#documents) with a “`YAML`” directive specifying a higher minor version (e.g.
+“`%YAML 1.3`”) should be processed with an appropriate warning.
+[Documents](#documents) with a “`YAML`” directive specifying a higher major version (e.g.
+“`%YAML 2.0`”) should be rejected with an appropriate error message.
+
+A version 1.2 YAML [processor](#processes-and-models) must also accept [documents](#documents) with an explicit
+“`%YAML 1.1`” directive.
+Note that version 1.2 is mostly a superset of version 1.1, defined for the
+purpose of ensuring *JSON compatibility*.
+Hence a version 1.2 [processor](#processes-and-models) should process version 1.1 [documents](#documents) as if
+they were version 1.2, giving a warning on points of incompatibility (handling
+of [non-ASCII line breaks](#line-break-characters), as described [above](#line-break-characters)).
+
+```
+[86] ns-yaml-directive ::=
+  "YAML"
+  s-separate-in-line
+  ns-yaml-version
+```
+
+```
+[87] ns-yaml-version ::=
+  ns-dec-digit+
+  '.'
+  ns-dec-digit+
+```
+
+**Example 6.14 “`YAML`” directive**
+
+|  |  |
+| --- | --- |
+| ``` %YAML 1.3 # Attempt parsing            # with a warning --- "foo" ``` | ``` "foo" ``` |
+
+It is an error to specify more than one “`YAML`” directive for the same
+document, even if both occurrences give the same version number.
+
+**Example 6.15 Invalid Repeated YAML directive**
+
+|  |  |
+| --- | --- |
+| ``` %YAML 1.2 %YAML 1.1 foo ``` | ``` ERROR: The YAML directive must only be given at most once per document. ``` |
+
+### 6.8.2. “`TAG`” Directives
+
+The “`TAG`” directive establishes a [tag shorthand](#tag-shorthands) notation for specifying
+[node tags](#node-tags).
+Each “`TAG`” directive associates a [handle](#tag-handles) with a [prefix](#tag-prefixes).
+This allows for compact and readable [tag](#tags) notation.
+
+```
+[88] ns-tag-directive ::=
+  "TAG"
+  s-separate-in-line
+  c-tag-handle
+  s-separate-in-line
+  ns-tag-prefix
+```
+
+**Example 6.16 “`TAG`” directive**
+
+|  |  |
+| --- | --- |
+| ``` %TAG !yaml! tag:yaml.org,2002: --- !yaml!str "foo" ``` | ``` "foo" ``` |
+
+It is an error to specify more than one “`TAG`” directive for the same [handle](#tag-handles)
+in the same document, even if both occurrences give the same [prefix](#tag-prefixes).
+
+**Example 6.17 Invalid Repeated TAG directive**
+
+|  |  |
+| --- | --- |
+| ``` %TAG ! !foo %TAG ! !foo bar ``` | ``` ERROR: The TAG directive must only be given at most once per handle in the same document. ``` |
+
+#### 6.8.2.1. Tag Handles
+
+The *tag handle* exactly matches the prefix of the affected [tag shorthand](#tag-shorthands).
+There are three tag handle variants:
+
+```
+[89] c-tag-handle ::=
+    c-named-tag-handle
+  | c-secondary-tag-handle
+  | c-primary-tag-handle
+```
+
+Primary Handle
+:   The *primary tag handle* is a single “`!`” character.
+    This allows using the most compact possible notation for a single “primary”
+    name space.
+    By default, the prefix associated with this handle is “`!`”.
+    Thus, by default, [shorthands](#tag-shorthands) using this handle are interpreted as [local
+    tags](#tags).
+:   It is possible to override the default behavior by providing an explicit
+    “`TAG`” directive, associating a different prefix for this handle.
+    This provides smooth migration from using [local tags](#tags) to using [global tags](#tags)
+    by the simple addition of a single “`TAG`” directive.
+
+```
+[90] c-primary-tag-handle ::= '!'
+```
+
+**Example 6.18 Primary Tag Handle**
+
+|  |  |
+| --- | --- |
+| ``` # Private !foo "bar" ... # Global %TAG ! tag:example.com,2000:app/ --- !foo "bar" ``` | ``` !<!foo> "bar" --- !<tag:example.com,2000:app/foo> "bar" ``` |
+
+Secondary Handle
+:   The *secondary tag handle* is written as “`!!`”.
+    This allows using a compact notation for a single “secondary” name space.
+    By default, the prefix associated with this handle is “`tag:yaml.org,2002:`”.
+:   It is possible to override this default behavior by providing an explicit
+    “`TAG`” directive associating a different prefix for this handle.
+
+```
+[91] c-secondary-tag-handle ::= "!!"
+```
+
+**Example 6.19 Secondary Tag Handle**
+
+|  |  |
+| --- | --- |
+| ``` %TAG !! tag:example.com,2000:app/ --- !!int 1 - 3 # Interval, not integer ``` | ``` !<tag:example.com,2000:app/int> "1 - 3" ``` |
+
+Named Handles
+:   A *named tag handle* surrounds a non-empty name with “`!`” characters.
+    A handle name must not be used in a [tag shorthand](#tag-shorthands) unless an explicit “`TAG`”
+    directive has associated some prefix with it.
+:   The name of the handle is a [presentation detail](#presenting-the-serialization-tree) and must not be used to
+    convey [content](#nodes) information.
+    In particular, the YAML [processor](#processes-and-models) need not preserve the handle name once
+    [parsing](#parsing-the-presentation-stream) is completed.
+
+```
+[92] c-named-tag-handle ::=
+  c-tag            # '!'
+  ns-word-char+
+  c-tag            # '!'
+```
+
+**Example 6.20 Tag Handles**
+
+|  |  |
+| --- | --- |
+| ``` %TAG !e! tag:example.com,2000:app/ --- !e!foo "bar" ``` | ``` !<tag:example.com,2000:app/foo> "bar" ``` |
+
+#### 6.8.2.2. Tag Prefixes
+
+There are two *tag prefix* variants:
+
+```
+[93] ns-tag-prefix ::=
+  c-ns-local-tag-prefix | ns-global-tag-prefix
+```
+
+Local Tag Prefix
+:   If the prefix begins with a “`!`” character, [shorthands](#tag-shorthands) using the [handle](#tag-handles)
+    are expanded to a [local tag](#tags).
+    Note that such a [tag](#tags) is intentionally not a valid URI and its semantics are
+    specific to the [application](#processes-and-models).
+    In particular, two [documents](#documents) in the same [stream](#streams) may assign different
+    semantics to the same [local tag](#tags).
+
+```
+[94] c-ns-local-tag-prefix ::=
+  c-tag           # '!'
+  ns-uri-char*
+```
+
+**Example 6.21 Local Tag Prefix**
+
+|  |  |
+| --- | --- |
+| ``` %TAG !m! !my- --- # Bulb here !m!light fluorescent ... %TAG !m! !my- --- # Color here !m!light green ``` | ``` !<!my-light> "fluorescent" --- !<!my-light> "green" ``` |
+
+Global Tag Prefix
+:   If the prefix begins with a character other than “`!`”, it must be a valid URI
+    prefix, and should contain at least the scheme.
+    [Shorthands](#tag-shorthands) using the associated [handle](#tag-handles) are expanded to globally unique URI
+    tags and their semantics is consistent across [applications](#processes-and-models).
+    In particular, every [document](#documents) in every [stream](#streams) must assign the same
+    semantics to the same [global tag](#tags).
+
+```
+[95] ns-global
+
+<error>Content truncated. Call the fetch tool with a start_index of 100000 to get more content.</error>

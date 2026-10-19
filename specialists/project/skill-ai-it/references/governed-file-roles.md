@@ -60,7 +60,7 @@ Three rules make the tiers work:
 |                  |      |   local models)        |                                                               |                                     |                                             |
 | **CLAUDE.md**    | 1    | Claude Code only       | `@AGENTS.md` first, then Claude-only additions                | Anything that applies to            | Rarely                                      |
 |                  |      |                        |                                                               |   every agent                       |                                             |
-| **AI_NAVIGATION.md** | 1    | An agent arriving cold | Read order, source priority, task routing, what is canonical, | The rules themselves (AGENTS.md),   | Managed block via `just nav_upgrade`;       |
+| **AI_NAVIGATION.md** | 1    | An agent arriving cold | Read order, source priority, task routing, what is canonical, | The rules themselves (AGENTS.md),   | Managed block via `just nav-upgrade`;       |
 |                  |      |                        |   generated or transient, recovery; a rule summarised in at   |   the design (ARCHITECTURE.md)      |   preamble by hand when files move          |
 |                  |      |                        |   most one line with its owner named                          |                                     |                                             |
 | **ARCHITECTURE.md** | 3    | Whoever changes        | Components, data flow, source of truth, boundaries, key       | Setup steps, dated history, rules   | Edit in place when the design changes; a    |
@@ -117,7 +117,7 @@ work.
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------- |
 | Front matter on root files (CLAUDE.md exempt)                                 | `role_check.py` rule `front-matter`; `adopt_governed_files.py` adds it at every slurp (legacy     | Gate, ratchet    |
 |                                                                               |   blocks fenced, `Review by` 30 days on)                                                          |                  |
-| CLAUDE.md opens with `@AGENTS.md`                                             | `role_check.py` `claude-import`; `nav_validate` warns                                             | Gate, ratchet    |
+| CLAUDE.md opens with `@AGENTS.md`                                             | `role_check.py` `claude-import`; `nav-validate` warns                                             | Gate, ratchet    |
 | README quick start or SETUP link; no status/history heading                   | `role_check.py` `readme-quick-start`, `readme-history`                                            | Gate, ratchet    |
 | ROADMAP dated phase; no done items past 7 days or Completed narrative         | `role_check.py` `roadmap-phase`, `roadmap-done`; `roadmap_trim.py` from `just rotate` and         | Gate, ratchet    |
 |                                                                               |   `just budget` (slurp)                                                                           |                  |
@@ -131,6 +131,6 @@ work.
 |                                                                               |                                                                                                   |   key is set     |
 | context-map.yaml parses, no repeated key | `role_check.py` `context-map-parse` (PyYAML; reported skipped without it) | Gate, ratchet |
 | Total loaded before work (CLAUDE.md, AGENTS.md and their `@` imports, AI_NAVIGATION.md) | `role_check.py` prints `always loaded: N files, X KB (~T tokens)` in `just roles` and `govern` | Report |
-| AI_NAVIGATION managed block current                                           | `just nav_validate` (not part of `check`; run after an upgrade)                                   | Manual           |
+| AI_NAVIGATION managed block current                                           | `just nav-validate` (not part of `check`; run after an upgrade)                                   | Manual           |
 | Nothing contradicted, no rules in ARCHITECTURE, no durable facts              | drift-audit section 14                                                                            | Manual           |
 |   in SCRATCHPAD                                                               |                                                                                                   |                  |

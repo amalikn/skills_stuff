@@ -1,0 +1,48 @@
+Contents of https://docs.sqlfluff.com/en/stable/reference/rules.html:
+SQLFluff has **79 linting rules** organized into 11 categories.
+
+## Rule Categories [​](#rule-categories)
+
+### [Aliasing](/en/stable/reference/rules/aliasing) [​](#aliasing)
+
+10 rule(s) - Table and column aliasing conventions
+
+### [Ambiguous](/en/stable/reference/rules/ambiguous) [​](#ambiguous)
+
+9 rule(s) - Potentially ambiguous SQL constructs
+
+### [Capitalisation](/en/stable/reference/rules/capitalisation) [​](#capitalisation)
+
+5 rule(s) - Keyword and identifier capitalization
+
+### [Convention](/en/stable/reference/rules/convention) [​](#convention)
+
+13 rule(s) - General SQL coding conventions
+
+### [Jinja](/en/stable/reference/rules/jinja) [​](#jinja)
+
+1 rule(s) - Jinja templating best practices
+
+### [Layout](/en/stable/reference/rules/layout) [​](#layout)
+
+15 rule(s) - Spacing, indentation, and line breaks
+
+### [Oracle](/en/stable/reference/rules/oracle) [​](#oracle)
+
+1 rule(s) - SQL linting rules
+
+### [Postgres](/en/stable/reference/rules/postgres) [​](#postgres)
+
+2 rule(s) - SQL linting rules
+
+### [References](/en/stable/reference/rules/references) [​](#references)
+
+7 rule(s) - Column and table reference validation
+
+### [Structure](/en/stable/reference/rules/structure) [​](#structure)
+
+12 rule(s) - SQL statement structure and organization
+
+### [Tsql](/en/stable/reference/rules/tsql) [​](#tsql)
+
+4 rule(s) - T-SQL specific conventions

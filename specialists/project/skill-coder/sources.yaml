@@ -1,0 +1,556 @@
+# Claims skill-coder makes: each load-bearing statement with its kind, evidence status, source type, evidence and the file that states it.
+# Operator rules are USER_STATED / user_policy with the file that records them. External pages are copied under documents/research-sources-20261019/.
+claims:
+  - id: C-C01
+    statement: "Project rules outrank skill-coder, and when two project sources disagree the agent stops and reports rather than guessing."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "Coordinator brief from the operator 2026-10-19; /Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/AGENTS.md (AI navigation and context preflight: 'Sources disagree: stop and report, never guess')."
+    reference: SKILL.md
+  - id: C-C02
+    statement: "Dependencies point inward, with no import cycles, and the layer table is checked mechanically."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md section 5 principle 2 and section 15 rules R2, R3."
+    reference: references/design-principles.md
+  - id: C-C03
+    statement: "A contract, layer or service is earned by two real consumers or a named future consumer, and names its consumers in its docstring."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md section 5 principle 8 and rule R28."
+    reference: references/design-principles.md
+  - id: C-C04
+    statement: "Facts the code acts on live in one data file that code reads, with a check that every kind answers every key."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md section 5 principle 4 and rule R10."
+    reference: references/design-principles.md
+  - id: C-C05
+    statement: "Each external system is reached through one seam that owns retries, timeouts, paging and error translation."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md section 5 principle 5 and rule R11."
+    reference: references/design-principles.md
+  - id: C-C06
+    statement: "Platform-native objects and existing libraries are recommended before custom fields, models or code, with the reason native cannot fit stated."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/AGENTS.md (Native first; Reuse before build); /Volumes/Data/_ai/claude-auto-memory/feedback_native_first.md."
+    reference: references/design-principles.md
+  - id: C-C07
+    statement: "Modules stay under 400 lines and functions under 60, with older oversize units held by a shrink-only baseline."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md rule R34; /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/governance-checks.md (Structure and growth)."
+    reference: references/module-and-function-shape.md
+  - id: C-C08
+    statement: "Files an agent loads whole stay within 200 lines and 25 KB."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md rule R36; /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/SKILL.md (Governed files: Budget)."
+    reference: references/module-and-function-shape.md
+  - id: C-C09
+    statement: "Every code file and command name a repo defines is snake_case, except where something outside the code fixes the name."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/governance/categories/coding-guide.md (File and command naming, 2026-10-07)."
+    reference: references/module-and-function-shape.md
+  - id: C-C10
+    statement: "Every file states its purpose in its type's native header."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md rule R35 and section 13.8; /Volumes/Data/_ai/governance/categories/naming-and-file-summary-guide.md."
+    reference: references/documentation-and-headers.md
+  - id: C-C11
+    statement: "Every module, class and function created or changed documents each parameter under Args, the return shape under Returns, and raise or exit conditions under Raises."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/governance/categories/naming-and-file-summary-guide.md (Code docstrings, 2026-10-08); /Volumes/Data/_ai/governance/categories/coding-guide.md."
+    reference: references/documentation-and-headers.md
+  - id: C-C12
+    statement: "Docstring shortfalls are held by a per-file baseline that may only fall, with new files at zero."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/governance/categories/naming-and-file-summary-guide.md (Enforcement pattern); first implementation in /Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/scripts/check_governance.py check_docstrings."
+    reference: references/documentation-and-headers.md
+  - id: C-C13
+    statement: "Lint violations are fixed at the cause, never silenced with an inline suppression comment."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/claude-auto-memory/feedback_no_noqa.md."
+    reference: references/documentation-and-headers.md
+  - id: C-C14
+    statement: "A program that can write prints its plan by default and writes only with an explicit apply flag enforced by the writing layer."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/AGENTS.md (A script that writes takes --apply); /Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md rules R17, R18 and section 13.5."
+    reference: references/safety-and-writes.md
+  - id: C-C15
+    statement: "A change is recorded only after the target confirms it, and each record or field has exactly one writer."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md section 13.5 and rule R33."
+    reference: references/safety-and-writes.md
+  - id: C-C16
+    statement: "Work across many targets goes one unit end to end, then a one-plus-five canary, then stops and hands the batch command to the operator."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/claude-auto-memory/feedback_depth_before_breadth.md."
+    reference: references/safety-and-writes.md
+  - id: C-C17
+    statement: "Before changing an identifier, every file type that can reference it is searched, including templates, and each hit is classified."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/claude-auto-memory/feedback_trace_all_references_before_ansible_change.md."
+    reference: references/safety-and-writes.md
+  - id: C-C18
+    statement: "Every network call and subprocess has a timeout taken from settings."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md rule R15 and section 13.4."
+    reference: references/errors-and-timeouts.md
+  - id: C-C19
+    statement: "PEP 8 recommends against a bare except clause because it catches SystemExit and KeyboardInterrupt."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://peps.python.org/pep-0008/ retrieved 2026-10-19; copy documents/research-sources-20261019/pep-0008.txt"
+    reference: references/errors-and-timeouts.md
+  - id: C-C20
+    statement: "Python's subprocess.run accepts a timeout argument and raises TimeoutExpired when it expires."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://docs.python.org/3/library/subprocess.html retrieved 2026-10-19; copy documents/research-sources-20261019/python-subprocess.txt"
+    reference: languages/python.md
+  - id: C-C21
+    statement: "On an unexpected third-party error, the upstream issue tracker and documentation are searched for the exact message before a local workaround."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/claude-auto-memory/feedback_proactive_upstream_research.md."
+    reference: references/errors-and-timeouts.md
+  - id: C-C22
+    statement: "No module contains an absolute path, hostname, URL or token; one settings module reads the environment and config files."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md rule R16 and section 13.1."
+    reference: references/configuration-and-literals.md
+  - id: C-C23
+    statement: "The Twelve-Factor App requires strict separation of config from code."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://12factor.net/config retrieved 2026-10-19; copy documents/research-sources-20261019/twelve-factor-config.txt"
+    reference: references/configuration-and-literals.md
+  - id: C-C24
+    statement: "Config directives, template syntax, API calls and flags are checked against the documentation for the exact deployed version before use."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/claude-auto-memory/feedback_verify_docs_correct_version.md."
+    reference: references/configuration-and-literals.md
+  - id: C-C25
+    statement: "Every pinned version is recorded in one file and changed together with the pin it mirrors, with a check that fails when they disagree."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/AGENTS.md (Versions are pinned, 2026-10-12)."
+    reference: references/configuration-and-literals.md
+  - id: C-C26
+    statement: "A new check lands with a negative test that turns it red, because a check that cannot fail is not coverage."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/governance-checks.md."
+    reference: references/testing.md
+  - id: C-C27
+    statement: "A capability is claimed only after verification against a real target, not a mock."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/AGENTS.md (Before claiming a controller capability works, verify it against a real device)."
+    reference: references/testing.md
+  - id: C-C28
+    statement: "Refactoring changes internal structure without changing observable behaviour."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://martinfowler.com/bliki/DefinitionOfRefactoring.html retrieved 2026-10-19; copy documents/research-sources-20261019/fowler-refactoring-definition.txt"
+    reference: references/refactoring-and-promotion.md
+  - id: C-C29
+    statement: "A characterisation test, a term from Michael Feathers, pins the existing behaviour of code before it is changed."
+    kind: generic_invariant
+    evidence_status: VERIFIED_SECONDARY
+    source_type: report_synthesis
+    evidence: "https://en.wikipedia.org/wiki/Characterization_test retrieved 2026-10-19; copy documents/research-sources-20261019/wikipedia-characterization-test.txt"
+    reference: references/testing.md
+  - id: C-C30
+    statement: "A refactor carries a before-and-after comparison, and a moved module leaves a shim and a moved-paths entry until no caller remains."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md rules R23, R31; /Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/AGENTS.md (Moving or renaming a script also updates its string paths)."
+    reference: references/refactoring-and-promotion.md
+  - id: C-C31
+    statement: "Scripts carry a promotion status of project_only, candidate or promoted, and reusable ones move to a skill as a tested engine behind a thin project wrapper."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Users/malik.ahmad/.agents/AGENTS.md (promote reusable scripts); /Volumes/Data/_ai/_skills/skills_stuff/specialists/platform/skill-nautobot/references/evolution-and-write-back.md (Promoting a project script)."
+    reference: references/refactoring-and-promotion.md
+  - id: C-C32
+    statement: "Anything that runs repeatedly states a runtime budget, is measured per phase on a real run and reports its runtime with its correctness evidence."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/governance/categories/validation-and-change-discipline-guide.md (Efficiency Is Part of Done, 2026-10-09)."
+    reference: references/efficiency-and-measurement.md
+  - id: C-C33
+    statement: "A generated file is rendered from its hand-edited source by one command and never edited by hand, with a drift check."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/AGENTS.md (Flows are data first; guides rendered from guide-map.yaml; catalog rendered by just catalog)."
+    reference: references/generated-artifacts.md
+  - id: C-C34
+    statement: "Task-runner recipes address the interpreter by path and require the venv, rather than relying on a bare interpreter or mise exec."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/templates/justfile (RUNTIME PINNING header)."
+    reference: references/tooling-and-runtime.md
+  - id: C-C35
+    statement: "A project's virtual environment lives in the working-cache peer and its runtime state in the runtime peer, never inside the source repo."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/governance/categories/storage-routing-guide.md (venv and ephemeral runtime placement, 2026-04-23)."
+    reference: references/tooling-and-runtime.md
+  - id: C-C36
+    statement: "Python's documentation says a virtual environment is not checked into source control and is not movable."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://docs.python.org/3/library/venv.html retrieved 2026-10-19; copy documents/research-sources-20261019/python-venv.txt"
+    reference: references/tooling-and-runtime.md
+  - id: C-C37
+    statement: "New Python work defaults to Python 3.14 unless the project's manifest excludes it."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/claude-auto-memory/feedback_python_version_default.md; /Volumes/Data/_ai/_project/project_stuff/AGENTS.md (venv placement)."
+    reference: references/tooling-and-runtime.md
+  - id: C-C38
+    statement: "A new third-party dependency names its seam, version range and upgrade test, and the core uses the standard library only."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/engineering/unc-code-architecture-target-design-20261010_1221.md rules R26, section 5 principle 9 and section 13.7."
+    reference: references/dependencies.md
+  - id: C-C39
+    statement: "The Twelve-Factor App never relies on implicit system-wide packages and declares and isolates all dependencies."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://12factor.net/dependencies retrieved 2026-10-19; copy documents/research-sources-20261019/twelve-factor-dependencies.txt"
+    reference: references/dependencies.md
+  - id: C-C40
+    statement: "OWASP names prepared statements with parameterised queries as the first defence against SQL injection."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html retrieved 2026-10-19; copy documents/research-sources-20261019/owasp-cheatsheet-sql-injection.txt"
+    reference: references/security.md
+  - id: C-C41
+    statement: "OWASP recommends allowlist validation that defines what is accepted over denylists."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html retrieved 2026-10-19; copy documents/research-sources-20261019/owasp-cheatsheet-input-validation.txt"
+    reference: references/security.md
+  - id: C-C42
+    statement: "OWASP states secrets should never be hardcoded."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html retrieved 2026-10-19; copy documents/research-sources-20261019/owasp-cheatsheet-secrets.txt"
+    reference: references/security.md
+  - id: C-C43
+    statement: "The OWASP Top 10:2025 lists Software Supply Chain Failures as A03 and Injection as A05."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://owasp.org/Top10/2025/ retrieved 2026-10-19; copy documents/research-sources-20261019/owasp-top10-2025.txt"
+    reference: references/security.md
+  - id: C-C44
+    statement: "OpenSSF Scorecard includes Pinned-Dependencies, Token-Permissions and Dangerous-Workflow checks."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://github.com/ossf/scorecard/blob/main/docs/checks.md retrieved 2026-10-19; copy documents/research-sources-20261019/openssf-scorecard-checks.txt"
+    reference: references/security.md
+  - id: C-C45
+    statement: "SLSA 1.0 Build L3 requires a hardened build platform to protect against tampering during the build."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://slsa.dev/spec/v1.0/levels retrieved 2026-10-19; copy documents/research-sources-20261019/slsa-levels.txt"
+    reference: references/security.md
+  - id: C-C46
+    statement: "A commit, push or deploy is gated on the check's own captured exit code, never through a pipe or a semicolon."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/claude-auto-memory/feedback_gate_on_check_exit_code.md."
+    reference: references/version-control-and-review.md
+  - id: C-C47
+    statement: "In Bash, pipefail makes a pipeline's status that of the last command to exit non-zero."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html retrieved 2026-10-19; copy documents/research-sources-20261019/bash-set-builtin.txt"
+    reference: languages/shell.md
+  - id: C-C48
+    statement: "SemVer 2.0.0 increments MAJOR for incompatible changes, and a released version must not be modified."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://semver.org/ retrieved 2026-10-19; copy documents/research-sources-20261019/semver-2.txt"
+    reference: references/version-control-and-review.md
+  - id: C-C49
+    statement: "Keep a Changelog 1.1.0 keeps an Unreleased section and groups changes by type."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://keepachangelog.com/en/1.1.0/ retrieved 2026-10-19; copy documents/research-sources-20261019/keep-a-changelog.txt"
+    reference: references/version-control-and-review.md
+  - id: C-C50
+    statement: "Skill rules are applied in the target project's own environment, skill helpers are stdlib-only with a 3.11 minimum and read code as files, the skill's pinned interpreter is a fallback only, and a project importing skill code pins the skill revision."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "Operator decision relayed by the coordinator 2026-10-19 (final runtime rule)."
+    reference: references/runtime-boundaries.md
+  - id: C-C51
+    statement: "Touching a skill's domain engages its write-back contract, recorded as dated Learned or Disputed entries with evidence and a falsifier plus a CHANGELOG line."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/AGENTS.md (Touching a skill's domain engages its write-back, 2026-10-13); /Volumes/Data/_ai/_skills/skills_stuff/specialists/platform/skill-nautobot/references/evolution-and-write-back.md."
+    reference: references/evolution-and-write-back.md
+  - id: C-C52
+    statement: "ruff's pydocstyle setting accepts convention google."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://docs.astral.sh/ruff/faq/ retrieved 2026-10-19; copy documents/research-sources-20261019/ruff-faq.txt"
+    reference: languages/python.md
+  - id: C-C53
+    statement: "The Google Python Style Guide documents functions with Args, Returns and Raises sections."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://google.github.io/styleguide/pyguide.html retrieved 2026-10-19; copy documents/research-sources-20261019/google-python-style.txt"
+    reference: languages/python.md
+  - id: C-C54
+    statement: "The src layout prevents accidental import of the in-development working copy."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/ retrieved 2026-10-19; copy documents/research-sources-20261019/python-packaging-src-layout.txt"
+    reference: languages/python.md
+  - id: C-C55
+    statement: "The Google Shell Style Guide recommends ShellCheck for all scripts, documents functions with Globals, Arguments, Outputs and Returns, and says a script over 100 lines should be rewritten in a structured language."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://google.github.io/styleguide/shellguide.html retrieved 2026-10-19; copy documents/research-sources-20261019/google-shell-style.txt"
+    reference: languages/shell.md
+  - id: C-C56
+    statement: "ShellCheck SC2086 advises double quoting to prevent globbing and word splitting."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://www.shellcheck.net/wiki/SC2086 retrieved 2026-10-19; copy documents/research-sources-20261019/shellcheck-sc2086.txt"
+    reference: languages/shell.md
+  - id: C-C57
+    statement: "The Google TypeScript Style Guide warns that any disables type checking and asks for triple-equals comparison."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://google.github.io/styleguide/tsguide.html retrieved 2026-10-19; copy documents/research-sources-20261019/google-tsguide.txt"
+    reference: languages/javascript-typescript.md
+  - id: C-C58
+    statement: "Go 1.13 wraps errors with the %w verb and inspects them with errors.Is and errors.As."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://go.dev/blog/go1.13-errors retrieved 2026-10-19; copy documents/research-sources-20261019/go-blog-go113-errors.txt"
+    reference: languages/go.md
+  - id: C-C59
+    statement: "Go Code Review Comments says error strings are not capitalised and normal error handling does not panic, and the context package says a Context is the first parameter."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://go.dev/wiki/CodeReviewComments retrieved 2026-10-19; copy documents/research-sources-20261019/go-code-review-comments.txt; https://pkg.go.dev/context retrieved 2026-10-19; copy documents/research-sources-20261019/go-context-pkg.txt"
+    reference: languages/go.md
+  - id: C-C60
+    statement: "The Rust API Guidelines require function docs to include Errors, Panics and Safety sections where they apply."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://rust-lang.github.io/api-guidelines/documentation.html retrieved 2026-10-19; copy documents/research-sources-20261019/rust-api-guidelines-documentation.txt"
+    reference: languages/rust.md
+  - id: C-C61
+    statement: "Rust uses Result for recoverable errors and panic for unrecoverable ones."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://doc.rust-lang.org/book/ch09-00-error-handling.html retrieved 2026-10-19; copy documents/research-sources-20261019/rust-book-error-handling.txt"
+    reference: languages/rust.md
+  - id: C-C62
+    statement: "The Mozilla SQL style guide uses uppercase reserved keywords and asks for explicit SQL."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://docs.telemetry.mozilla.org/concepts/sql_style.html retrieved 2026-10-19; copy documents/research-sources-20261019/mozilla-sql-style.txt"
+    reference: languages/sql.md
+  - id: C-C63
+    statement: "yamllint's truthy rule forbids non-explicit truthy values to stop parsers turning yes or off into booleans."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://yamllint.readthedocs.io/en/stable/rules.html retrieved 2026-10-19; copy documents/research-sources-20261019/yamllint-docs.txt"
+    reference: languages/yaml-json-toml.md
+  - id: C-C64
+    statement: "RFC 8259 says JSON object names should be unique, and TOML 1.0.0 makes defining a key twice invalid."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://www.rfc-editor.org/rfc/rfc8259.txt retrieved 2026-10-19; copy documents/research-sources-20261019/json-rfc8259.txt; https://toml.io/en/v1.0.0 retrieved 2026-10-19; copy documents/research-sources-20261019/toml-1-0.txt"
+    reference: languages/yaml-json-toml.md
+  - id: C-C65
+    statement: "In Ansible check mode, modules that do not support check mode report nothing and do nothing."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html retrieved 2026-10-19; copy documents/research-sources-20261019/ansible-check-mode.txt"
+    reference: languages/ansible.md
+  - id: C-C66
+    statement: "A renamed Ansible tag fails silently: the old command exits 0 and runs only the tasks tagged always."
+    kind: worked_example
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/claude-auto-memory/feedback_trace_all_references_before_ansible_change.md (incident 2026-07-28)."
+    reference: languages/ansible.md
+  - id: C-C67
+    statement: "Ansible no_log keeps sensitive values out of logs, and Vault protects only data at rest."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://docs.ansible.com/ansible/latest/reference_appendices/logging.html retrieved 2026-10-19; copy documents/research-sources-20261019/ansible-logging-no-log.txt; https://docs.ansible.com/ansible/latest/vault_guide/vault.html retrieved 2026-10-19; copy documents/research-sources-20261019/ansible-vault.txt"
+    reference: languages/ansible.md
+  - id: C-C68
+    statement: "An Ansible handler runs only once however many tasks notify it."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html retrieved 2026-10-19; copy documents/research-sources-20261019/ansible-handlers.txt"
+    reference: languages/ansible.md
+  - id: C-C69
+    statement: "Ansible tag selection supersedes block error handling, so an untagged rescue or always section does not trigger."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_tags.html retrieved 2026-10-19; copy documents/research-sources-20261019/ansible-tags.txt"
+    reference: languages/ansible.md
+  - id: C-C70
+    statement: "ansible-lint checks fully qualified collection names and requires changed_when or creates and removes on tasks that do not detect change."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://ansible.readthedocs.io/projects/lint/rules/fqcn/ retrieved 2026-10-19; copy documents/research-sources-20261019/ansible-lint-rules-fqcn.txt; https://ansible.readthedocs.io/projects/lint/rules/no-changed-when/ retrieved 2026-10-19; copy documents/research-sources-20261019/ansible-lint-rules-no-changed-when.txt"
+    reference: languages/ansible.md
+  - id: C-C71
+    statement: "User hand edits to a generated or drafted file are patched or appended, never regenerated over, with a backup kept."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "/Volumes/Data/_ai/claude-auto-memory/feedback_preserve_user_hand_edits.md."
+    reference: references/generated-artifacts.md
+  - id: C-C72
+    statement: "Code files and identifiers follow their language, typed commands are kebab-case, and a tool's own parser wins for its names."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "Operator, 2026-10-19, after the per-language sources were checked; replaces the snake_case-for-recipes clause of /Volumes/Data/_ai/governance/categories/coding-guide.md (2026-10-07)."
+    reference: references/naming-conventions.md
+  - id: C-C73
+    statement: "PEP 8 names modules and functions in lowercase with underscores and classes in CapWords."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://peps.python.org/pep-0008/ retrieved 2026-10-19; copy documents/research-sources-20261019/pep-0008.txt"
+    reference: references/naming-conventions.md
+  - id: C-C74
+    statement: "The Google Shell Style Guide names source files, functions and variables in lowercase with underscores, and constants and exported names in capitals."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://google.github.io/styleguide/shellguide.html retrieved 2026-10-19; copy documents/research-sources-20261019/google-shell-style.txt"
+    reference: references/naming-conventions.md
+  - id: C-C75
+    statement: "GNU long option names are hyphenated words, such as dry-run, while POSIX utility conventions allow only single-character options."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "GNU Coding Standards option table and POSIX Utility Conventions retrieved 2026-10-19; copies documents/research-sources-20261019/gnu-standards-option-table.txt, documents/research-sources-20261019/posix-utility-conventions.txt"
+    reference: references/naming-conventions.md
+  - id: C-C76
+    statement: "Go package names are lowercase single words with no underscores or mixedCaps, and identifiers use MixedCaps."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://go.dev/doc/effective_go retrieved 2026-10-19; copy documents/research-sources-20261019/effective-go.txt"
+    reference: references/naming-conventions.md
+  - id: C-C77
+    statement: "Rust uses snake_case for modules and functions, UpperCamelCase for types and SCREAMING_SNAKE_CASE for constants, and Cargo maps a hyphenated package name to an underscored library name."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "Rust API Guidelines naming and the Cargo book targets page retrieved 2026-10-19; copies documents/research-sources-20261019/rust-api-guidelines-naming.txt, documents/research-sources-20261019/cargo-targets.txt"
+    reference: references/naming-conventions.md
+  - id: C-C78
+    statement: "Ansible variable, role and collection names allow only lowercase letters, digits and underscores."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "ansible-lint var-naming and role-name rules and the Galaxy collection metadata page retrieved 2026-10-19; copies documents/research-sources-20261019/ansible-lint-rules-var-naming.txt, documents/research-sources-20261019/ansible-lint-rules-role-name.txt, documents/research-sources-20261019/ansible-collections-galaxy-meta.txt"
+    reference: references/naming-conventions.md
+  - id: C-C79
+    statement: "just recipe names may contain hyphens and underscores, and GNU standard make targets are hyphenated."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "just grammar and GNU standard targets retrieved 2026-10-19; copies documents/research-sources-20261019/just-grammar.txt, documents/research-sources-20261019/gnu-standards-standard-targets.txt"
+    reference: references/naming-conventions.md

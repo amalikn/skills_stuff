@@ -16,6 +16,7 @@ Last rotated: 20261015_0129
 
 ## Contents
 
+- [20261019_1707 — Recipe names back to kebab-case; upgrader renames the template's snake_case recipes](#20261019_1707--recipe-names-back-to-kebab-case-upgrader-renames-the-templates-snake_case-recipes)
 - [20261015_0129 — doc_freshness: a Budget header counts only with a size](#20261015_0129--doc_freshness-a-budget-header-counts-only-with-a-size)
 - [20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade](#20261014_1247--yaml_key_diff-context-map-key-changes-and-lost-comments-after-an-upgrade)
 - [20261014_1234 — pitfalls: the navigation upgrade drops context-map.yaml comments](#20261014_1234--pitfalls-the-navigation-upgrade-drops-context-mapyaml-comments)
@@ -32,6 +33,20 @@ Last rotated: 20261015_0129
 - [20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes](#20261014_1018--staleness-audit-upgrader-header-derived-index-counts-links-indexes)
 - [20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)](#20261014_1006--graphify-confirmed-disabled-slurp-write-backs-token-budget-rule-roles_fleet)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261019_1707 — Recipe names back to kebab-case; upgrader renames the template's snake_case recipes
+
+- Recipe names are kebab-case again (operator, 2026-10-19, revising governance `coding-guide.md`: code files follow their language; names people type at
+  a command line, including task-runner recipes, are kebab-case; verified mapping in skill-coder `references/naming-conventions.md`).
+- `templates/justfile` and this package's `justfile`: `nav-upgrade-dry-run`, `nav-upgrade`, `nav-validate`, `nav-check-diff`, `nav-check-context-map`,
+  `nav-selftest`, `audit-scripts`, `lint-md`; the package's own `nav-check-blocks`, `nav-migrate-legacy`, `roles-fleet`, `skills-registry`, `agent-usage`.
+  Live references renamed (templates, scripts README, references, patterns, ARCHITECTURE, script docstrings); records (CHANGELOG, docs/history,
+  reviews, dated ROADMAP and requirements notes) keep the names they had.
+- `scripts/upgrade_navigation_control_layer.py` `TEMPLATE_RECIPE_RENAMES` inverted (snake_case to kebab-case) and gains `nav_check_context_map`, so a
+  project bootstrapped between 2026-10-07 and 2026-10-19 converges at its next upgrade; a project's own recipes stay its own to rename when touched.
+- `check_file_naming` docstring (template and this package's checker): it checks code files only; command names are kebab-case.
+- Verified: 102 tests, 29 managed-block self-tests. `just check` still reports one finding that predates this change: `patterns/archcore-routing.md`
+  passed its review date (2026-10-18).
 
 ## 20261015_0129 — doc_freshness: a Budget header counts only with a size
 

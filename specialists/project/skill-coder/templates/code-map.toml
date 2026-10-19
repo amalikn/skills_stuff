@@ -1,0 +1,52 @@
+# Code map: the human decisions about this project's code that skill-coder's checkers act on (copy to the project root as code-map.toml).
+# Only decisions live here, never facts the code states (line counts, import edges, header text): the checkers measure those, and their
+# shrink-only baselines are separate machine-written files. TOML so the checkers read it with the project's own Python 3.11+ (tomllib).
+# Status: template
+
+[meta]
+summary = "Code intent for <project>: what is scanned, size limits, import layers, write gates and where each module stands."
+
+[scan]
+roots = ["src", "scripts"]   # folders every checker scans unless its own section says otherwise
+python = "3.11"              # the project's Python grammar, so newer syntax is reported rather than misread
+
+# Size limits: warn = plan the split along a seam when next touched; the hard limit fails unless the baseline records the unit.
+# The pack defaults (modules 300/400, functions 40/60; shell 100/200, 30/40) apply where nothing is set.
+[limits.python]
+module = 400
+function = 60
+
+[limits.shell]
+module = 200
+warn_module = 100
+
+# Import layers (Python): a module in subpackage P may import the package root, P itself and what P's may_import lists. A subpackage not
+# listed is not checked yet, so layers are adopted one package at a time.
+[layers]
+src = "src"
+package = "app"
+baseline = "scripts/import-layers-baseline.json"
+
+[layers.rules.core]
+layer = "L0"
+may_import = []
+
+[layers.rules.services]
+layer = "L5"
+may_import = ["core"]
+
+# Entry points that write without --apply, each with the gate it uses instead. A stale entry (gone, no longer writes, now gated) fails.
+[write_gates]
+roots = ["scripts"]
+write_patterns = []   # project-specific writes, e.g. a client library's create call
+
+[write_gates.exceptions]
+# "scripts/collector.py" = "pushes metrics by design; --dry-run reads only"
+
+[timeouts]
+roots = ["src", "scripts"]
+
+# Where each module stands for promotion to a shared skill: project_only (reason), candidate (needs), promoted (skill = the file it moved to).
+[modules."scripts/example.py"]
+status = "project_only"
+reason = "tied to this project's data layout"

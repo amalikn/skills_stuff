@@ -1,0 +1,315 @@
+# Naming conventions by language and element: the source of truth for skill-coder's naming rule (operator, 2026-10-19).
+# references/naming-conventions.md's table is rendered from this file (`just naming-table`), and scripts/naming_check.py checks a project against it.
+# Rule: code files and identifiers follow their language; names people type at a command line are kebab-case; a tool's own parser wins.
+# `check`: "file" (file names matched by `globs`), "recipe" (just recipe names), or "linter" (inside code: the language's linter checks it, named in `tool`).
+# Every row cites the capture in documents/research-sources-20261019/ it was verified against on 2026-10-19.
+
+[meta]
+summary = "Naming conventions by language and element, each with its convention, how it is checked and its primary source."
+
+[conventions]
+snake_case = "^[a-z0-9]+(?:_[a-z0-9]+)*$"
+# snake_case that is also a valid identifier (cannot start with a digit): what an importable Python or Rust module name must be.
+snake_case_identifier = "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+kebab-case = "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+lowercase = "^[a-z][a-z0-9]*$"
+CapWords = "^[A-Z][A-Za-z0-9]*$"
+lowerCamelCase = "^[a-z][A-Za-z0-9]*$"
+UPPER_CASE = "^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$"
+
+[[rule]]
+language = "python"
+element = "module and file"
+convention = "snake_case_identifier"
+check = "file"
+globs = ["*.py"]
+source = "PEP 8"
+capture = "pep-0008.txt"
+
+[[rule]]
+language = "python"
+element = "function, method, variable"
+convention = "snake_case"
+check = "linter"
+tool = "ruff (pep8-naming, N8xx)"
+source = "PEP 8"
+capture = "pep-0008.txt"
+
+[[rule]]
+language = "python"
+element = "class"
+convention = "CapWords"
+check = "linter"
+tool = "ruff (pep8-naming, N801)"
+source = "PEP 8"
+capture = "pep-0008.txt"
+
+[[rule]]
+language = "python"
+element = "constant"
+convention = "UPPER_CASE"
+check = "linter"
+tool = "review"
+source = "PEP 8"
+capture = "pep-0008.txt"
+
+[[rule]]
+language = "shell"
+element = "script source file"
+convention = "snake_case"
+check = "file"
+globs = ["*.sh", "*.bash"]
+source = "Google Shell Style Guide"
+capture = "google-shell-style.txt"
+
+[[rule]]
+language = "shell"
+element = "function and variable"
+convention = "snake_case"
+check = "linter"
+tool = "review (ShellCheck does not check case)"
+source = "Google Shell Style Guide"
+capture = "google-shell-style.txt"
+
+[[rule]]
+language = "shell"
+element = "constant and exported environment name"
+convention = "UPPER_CASE"
+check = "linter"
+tool = "review"
+source = "Google Shell Style Guide"
+capture = "google-shell-style.txt"
+
+[[rule]]
+language = "go"
+element = "package"
+convention = "lowercase"
+check = "linter"
+tool = "golangci-lint (revive var-naming)"
+source = "Effective Go"
+capture = "effective-go.txt"
+
+[[rule]]
+language = "go"
+element = "identifier"
+convention = "MixedCaps (exported) or mixedCaps"
+check = "linter"
+tool = "golangci-lint (revive)"
+source = "Effective Go"
+capture = "effective-go.txt"
+
+[[rule]]
+language = "go"
+element = "file"
+convention = "lowercase; `_test.go` marks tests"
+check = "linter"
+tool = "review (no primary separator rule; not enforced)"
+source = "go command (only `_test.go` is defined; the separator is UNVERIFIED as a rule)"
+capture = "go-cmd-go.txt"
+
+[[rule]]
+language = "rust"
+element = "module, function, variable, crate"
+convention = "snake_case_identifier"
+check = "file"
+globs = ["*.rs"]
+exclude_globs = ["src/bin/*.rs"]   # a binary's file may carry its hyphenated command name (Cargo keeps dashes for binaries)
+source = "Rust API Guidelines; RFC 430 for crates"
+capture = "rust-api-guidelines-naming.txt"
+
+[[rule]]
+language = "rust"
+element = "type and trait"
+convention = "CapWords"
+check = "linter"
+tool = "rustc (non_camel_case_types)"
+source = "Rust API Guidelines"
+capture = "rust-api-guidelines-naming.txt"
+
+[[rule]]
+language = "rust"
+element = "constant and static"
+convention = "UPPER_CASE"
+check = "linter"
+tool = "rustc (non_upper_case_globals)"
+source = "Rust API Guidelines"
+capture = "rust-api-guidelines-naming.txt"
+
+[[rule]]
+language = "javascript"
+element = "file"
+convention = "project's choice of snake_case or kebab-case"
+check = "linter"
+tool = "review: follow the project"
+source = "Google JS Style Guide"
+capture = "google-jsguide.txt"
+
+[[rule]]
+language = "typescript"
+element = "file"
+convention = "snake_case"
+check = "file"
+globs = ["*.ts", "*.tsx"]
+source = "Google TS Style Guide"
+capture = "google-tsguide.txt"
+
+[[rule]]
+language = "javascript-typescript"
+element = "variable and function"
+convention = "lowerCamelCase"
+check = "linter"
+tool = "eslint (camelcase / @typescript-eslint/naming-convention)"
+source = "Google JS and TS style guides"
+capture = "google-jsguide.txt"
+
+[[rule]]
+language = "javascript-typescript"
+element = "class and type"
+convention = "CapWords"
+check = "linter"
+tool = "@typescript-eslint/naming-convention"
+source = "Google JS and TS style guides"
+capture = "google-tsguide.txt"
+
+[[rule]]
+language = "npm"
+element = "package name"
+convention = "lowercase, URL-safe (hyphens in practice)"
+check = "linter"
+tool = "npm"
+source = "npm package.json docs"
+capture = "npm-package-json.txt"
+
+[[rule]]
+language = "ansible"
+element = "variable"
+convention = "snake_case"
+check = "linter"
+tool = "ansible-lint (var-naming)"
+source = "Ansible docs; ansible-lint var-naming"
+capture = "ansible-lint-rules-var-naming.txt"
+
+[[rule]]
+language = "ansible"
+element = "role"
+convention = "snake_case"
+check = "linter"
+tool = "ansible-lint (role-name)"
+source = "ansible-lint role-name"
+capture = "ansible-lint-rules-role-name.txt"
+
+[[rule]]
+language = "ansible"
+element = "collection namespace and name"
+convention = "snake_case (no hyphen)"
+check = "linter"
+tool = "ansible-galaxy"
+source = "Galaxy collection metadata"
+capture = "ansible-collections-galaxy-meta.txt"
+
+[[rule]]
+language = "kubernetes"
+element = "API JSON field"
+convention = "lowerCamelCase"
+check = "linter"
+tool = "the API schema"
+source = "Kubernetes API conventions"
+capture = "kubernetes-api-conventions.txt"
+
+[[rule]]
+language = "kubernetes"
+element = "object name"
+convention = "kebab-case (DNS label; `.` allowed in subdomains)"
+check = "linter"
+tool = "the API server"
+source = "Kubernetes object names"
+capture = "kubernetes-object-names.txt"
+
+[[rule]]
+language = "oci"
+element = "image repository name"
+convention = "lowercase with `-`, `_`, `__` or `.` separators"
+check = "linter"
+tool = "the registry"
+source = "OCI distribution spec"
+capture = "oci-distribution-spec.txt"
+
+[[rule]]
+language = "css"
+element = "class and ID name"
+convention = "kebab-case"
+check = "linter"
+tool = "stylelint (selector-class-pattern)"
+source = "Google HTML/CSS Style Guide"
+capture = "google-htmlcss-style.txt"
+
+[[rule]]
+language = "web"
+element = "URL path"
+convention = "kebab-case"
+check = "linter"
+tool = "review"
+source = "Google Search Central URL structure"
+capture = "google-search-url-structure.txt"
+
+[[rule]]
+language = "command line"
+element = "long option"
+convention = "kebab-case"
+check = "linter"
+tool = "review (argparse, getopt_long)"
+source = "GNU Coding Standards option table"
+capture = "gnu-standards-option-table.txt"
+
+[[rule]]
+language = "command line"
+element = "multi-word command and subcommand"
+convention = "kebab-case"
+check = "linter"
+tool = "review"
+source = "Git (cherry-pick); GNU practice"
+capture = "git-cherry-pick.txt"
+
+[[rule]]
+language = "just"
+element = "recipe"
+convention = "kebab-case"
+check = "recipe"
+source = "just grammar and manual (both separators allowed; the manual uses `-`); GNU standard targets"
+capture = "just-grammar.txt"
+
+[[rule]]
+language = "yaml-json-toml"
+element = "key"
+convention = "the consuming tool's schema"
+check = "linter"
+tool = "the tool's schema"
+source = "Kubernetes (camelCase) and Ansible (snake_case) show there is no universal rule"
+capture = "kubernetes-api-conventions.txt"
+
+[[rule]]
+language = "git"
+element = "branch name"
+convention = "no primary convention (character rules only); kebab-case by habit"
+check = "linter"
+tool = "git check-ref-format"
+source = "git-check-ref-format"
+capture = "git-check-ref-format.txt"
+
+[[rule]]
+language = "documents"
+element = "time-bound markdown file"
+convention = "`<slug>-YYYYMMDD_hhmm.md`"
+check = "linter"
+tool = "governance markdown hooks"
+source = "Governance naming guide (USER_STATED)"
+capture = ""
+
+[[rule]]
+language = "skills"
+element = "skill name"
+convention = "kebab-case"
+check = "linter"
+tool = "the skill spec"
+source = "Governance coding guide (USER_STATED)"
+capture = ""

@@ -71,7 +71,7 @@ inventory:
     @test -f scripts/README.md && sed -n '1,220p' scripts/README.md || true
 
 # Audit script/task inventory for obvious drift
-audit_scripts:
+audit-scripts:
     @echo "== just recipes =="
     @just --list || true
     @echo
@@ -97,27 +97,27 @@ stale: _require-venv
     @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
 
 # Run safe local preflight checks
-preflight: runtimes audit_scripts check lint_md
+preflight: runtimes audit-scripts check lint-md
 
 # Lint Markdown files when markdownlint-cli2 is available
-lint_md:
+lint-md:
     @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
     @markdownlint-cli2 '**/*.md'
 
 # The navigation-control scripts live in the skill package, NOT in this project. Override on the
-# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav_validate
+# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav-validate
 skill_dir := justfile_directory()
 
 # Upgrade navigation control layer (dry-run preview)
-nav_upgrade_dry_run: _require-venv
+nav-upgrade-dry-run: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
 
 # Upgrade navigation control layer (apply changes) — review the dry-run first
-nav_upgrade: _require-venv
+nav-upgrade: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
 
 # Validate navigation control layer
-nav_validate: _require-venv
+nav-validate: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
 
 # Docstring standard as a ratchet (global policy, 2026-10-08): report against the target's baseline; exit 1 on a regression
@@ -128,43 +128,43 @@ docstrings *flags: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/docstring_ratchet.py" --project-root . {{flags}}
 
 # Check only expected files changed after upgrade (requires a git repo)
-nav_check_diff: _require-venv
+nav-check-diff: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
 
 # After an upgrade, before commit: text outside the managed blocks must match HEAD (or REF). Read-only
-nav_check_blocks REF="HEAD": _require-venv
+nav-check-blocks REF="HEAD": _require-venv
 	@{{py}} "{{skill_dir}}/scripts/check_outside_blocks.py" --project-root . --ref "{{REF}}"
 
 # Context map after an upgrade: key changes by content and comments lost vs a git ref (default HEAD); exit 1 while a comment is lost. Read-only
-nav_check_context_map REF="HEAD": _require-venv
+nav-check-context-map REF="HEAD": _require-venv
 	@{{py}} "{{skill_dir}}/scripts/yaml_key_diff.py" --project-root . --ref "{{REF}}"
 
 # Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
-# package's templates change, before trusting nav_upgrade to rewrite this project's blocks.
-nav_selftest: _require-venv
+# package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
+nav-selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"
 
 # Move a project's pre-2026-09-23 managed blocks to the template-sourced layout, keeping project content. The upgrader
 # refuses those blocks (legacy-layout); this is the refresh step that makes them upgradeable. Review with --dry-run first:
-#   just nav_migrate_legacy /path/to/project --dry-run
-nav_migrate_legacy target *flags: _require-venv
+#   just nav-migrate-legacy /path/to/project --dry-run
+nav-migrate-legacy target *flags: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/migrate_legacy_blocks.py" --project-root "{{target}}" {{flags}}
 
 # Role findings across every governed project (AI_NAVIGATION.md with a skill-ai-it stamp), one line each: track the rollout. Read-only
-roles_fleet:
+roles-fleet:
     #!/usr/bin/env bash
     for p in $(grep -rl "skill-ai-it-version" --include=AI_NAVIGATION.md /Volumes/Data/_ai/_project/project_stuff /Volumes/Data/_ai/_skills/skills_stuff/specialists 2>/dev/null | grep -v /templates/ | xargs -n1 dirname | sort); do
       printf "%-60s %s\n" "${p#/Volumes/Data/_ai/}" "$({{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$p" | tail -1)"
     done
 
 # Pass --print to see a generated skills.md, --write to create one (it refuses to replace an existing file without --force,
-# which keeps a backup). Example: just skills_registry /Volumes/Data/_ai/_project/project_stuff/apn --also /Volumes/Data/_ansible/ansible-wifi/AGENTS.md
+# which keeps a backup). Example: just skills-registry /Volumes/Data/_ai/_project/project_stuff/apn --also /Volumes/Data/_ansible/ansible-wifi/AGENTS.md
 # Skills list for a project area: check its skills.md against the skills its governance files name (exit 1 on drift)
-skills_registry root *args: _require-venv
+skills-registry root *args: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/skills_registry.py" --project-root "{{root}}" {{args}}
 
 # How often agents touch a file, folder or command in recent Claude transcripts (keep or retire a navigation aid on evidence)
-agent_usage *args: _require-venv
+agent-usage *args: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/agent_usage.py" {{args}}
 
 # Root governance files outside their roles (references/governed-file-roles.md). Read-only.

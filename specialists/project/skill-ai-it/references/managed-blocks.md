@@ -47,11 +47,11 @@ want it. The validator reports it as a pass, not a missing-block failure. `--for
 `.proposed` file and decided against your own content.
 
 3. **Layout (added 2026-10-07).** A block stamped before `2026-09-23` (`LAYOUT_SINCE`) comes from the layout in which projects wrote their own content inside the block: the whole scripts README with
-   its task catalogue, project rules in the navigation and agents blocks. A stamp alone did not protect it: the first `nav_upgrade` run after the snake_case bump removed 171 catalogue lines from
+   its task catalogue, project rules in the navigation and agents blocks. A stamp alone did not protect it: the first `nav-upgrade` run after the snake_case bump removed 171 catalogue lines from
    cambium-swap and 113 rules from unified-network-controller before the diff review caught it. The upgrader now refuses these blocks (`refused-legacy-layout`, exit 3) and points at `/skill-ai-it
-   refresh`. There `just nav_migrate_legacy <project> --dry-run` (`scripts/migrate_legacy_blocks.py`) classifies every section of the old
+   refresh`. There `just nav-migrate-legacy <project> --dry-run` (`scripts/migrate_legacy_blocks.py`) classifies every section of the old
    block against every block the skill emitted in that era and today: skill text is replaced, project sections move outside the block, and a skill section the
-   project edited is copied verbatim under `## Moved from the managed block` for trimming by hand. Then `nav_upgrade` as usual.
+   project edited is copied verbatim under `## Moved from the managed block` for trimming by hand. Then `nav-upgrade` as usual.
 
 `context-map.yaml` is edited as text: a stamp change rewrites one line and missing top-level keys are appended, so comments and quoting survive. Only a nested `update_rules` merge re-serialises the
 whole file, and that path flags the run for review. Recipe renames reach `scripts/README.md`, the root governance docs, `SETUP.md` and `requirements.txt` as well as the justfile; `CHANGELOG.md` keeps

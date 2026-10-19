@@ -1,0 +1,32 @@
+Contents of https://owasp.org/www-project-application-security-verification-standard/:
+## About OWASP Application Security Verification Standard (ASVS)
+
+### What is the ASVS?
+
+The OWASP Application Security Verification Standard (ASVS) Project provides a basis for testing web application technical security controls and also provides developers with a list of requirements for secure development.
+
+### Support the ASVS
+
+For more details on how to financially support the ASVS, see our Supporters Page.
+
+### Stay up to date with the ASVS
+
+Follow us on social media to ensure you don’t miss updates about the ASVS:
+
+### More Details on the ASVS
+
+The primary aim of the OWASP Application Security Verification Standard (ASVS) Project is to normalize the range in the coverage and level of rigor available in the market when it comes to performing Web application security verification using a commercially-workable open standard. The standard provides a basis for testing application technical security controls, as well as any technical security controls in the environment, that are relied on to protect against vulnerabilities such as Cross-Site Scripting (XSS) and SQL injection. This standard can be used to establish a level of confidence in the security of Web applications. The requirements were developed with the following objectives in mind:
+Get the latest stable version of the ASVS (5.0.0) from the Downloads page.
+
+### How To Reference ASVS Requirements
+
+Each requirement has an identifier in the format .., where each element is a number. For example, 1.11.3.
+> Verify that the application protects against OS command injection and that operating system calls use parameterized OS queries or use contextual command line output encoding.
+Since the identifiers may change between versions of the standard, it is preferable for other documents, reports, or tools to use the following format: v-.., where: ‘version’ is the ASVS version tag. For example: v5.0.0-1.2.5 would be understood to mean specifically the 5th requirement in the ‘Injection Prevention’ section of the ‘Encoding and Sanitization’ chapter from version 5.0.0. (This could be summarized as v-.)
+Note: The v preceding the version number in the format should always be lowercase.
+If identifiers are used without including the v element then they should be assumed to refer to the latest Application Security Verification Standard content. As the standard grows and changes this becomes problematic, which is why writers or developers should include the version element.
+ASVS requirement lists are made available in CSV, JSON, and other formats which may be useful for reference or programmatic use.
+
+### Related Projects
+
+OWASP Resources:

@@ -325,7 +325,7 @@ CODE_SUFFIXES: frozenset[str] = frozenset({".py", ".sh", ".bash", ".js", ".mjs",
 def check_file_naming() -> None:
     """Every code file under scripts/ is named in snake_case; a hyphen in its name fails unless the file is listed in KEBAB_LEGACY.
 
-    Governance coding-guide (operator, 2026-10-07): snake_case for every code file and command name. A Python file must be an importable identifier
+    Governance coding-guide (operator, 2026-10-07; revised 2026-10-19): snake_case for every code file (command names are kebab-case and are not checked here). A Python file must be an importable identifier
     (PEP 8; a hyphen is the minus operator to `import`), and the Google Shell Style Guide asks the same of shell ("make_template but not
     make-template"). One rule for every language is what stops a `survey-summary.py` appearing beside `survey_summary.py`. kebab-case belongs only to
     names fixed outside the code: skill names, document slugs, repo and folder names. A KEBAB_LEGACY entry whose file no longer exists also fails, so

@@ -62,24 +62,24 @@ rather than silently falling back to the host interpreter. The one sanctioned ex
 
 ## Task Inventory
 
-Everything below `## Task Inventory` lives OUTSIDE the managed block above and is agent-maintained — `nav_upgrade` never touches it. Fill in the project's actual `just` recipes.
+Everything below `## Task Inventory` lives OUTSIDE the managed block above and is agent-maintained — `nav-upgrade` never touches it. Fill in the project's actual `just` recipes.
 
 | Task / Script              | Purpose                                 | Inputs                                 | Outputs            | Safety            | Idempotent | When to use                    |
 | -------------------------- | --------------------------------------- | -------------------------------------- | ------------------ | ----------------- | ---------- | ------------------------------ |
 | `just inventory`           | Lists available tasks and               | `justfile`, `scripts/README.md`        | Console output     | `safe`            | Yes        | First check before running     |
 |                            |   this inventory.                       |                                        |                    |                   |            |   project automation           |
-| `just audit_scripts`       | Checks for obvious                      | `scripts/`, `scripts/README.md`        | Console output     | `safe`            | Yes        | During refresh/audit or before |
+| `just audit-scripts`       | Checks for obvious                      | `scripts/`, `scripts/README.md`        | Console output     | `safe`            | Yes        | During refresh/audit or before |
 |                            |   script/catalog drift.                 |                                        |                    |                   |            |   agent automation             |
 | `just preflight`           | Runs safe local validation checks.      | Project files                          | Console output     | `safe`            | Yes        | Before edits, commits,         |
 |                            |                                         |                                        |                    |                   |            |   or handoff                   |
-| `just nav_upgrade_dry_run` | Preview navigation control              | `upgrade_navigation_control_layer.py`  | Console output     | `safe`            | Yes        | Before running nav_upgrade     |
+| `just nav-upgrade-dry-run` | Preview navigation control              | `upgrade_navigation_control_layer.py`  | Console output     | `safe`            | Yes        | Before running nav-upgrade     |
 |                            |   layer upgrade.                        |                                        |                    |                   |            |                                |
-| `just nav_upgrade`         | Apply navigation control                | `upgrade_navigation_control_layer.py`  | Console output,    | `review-required` | Yes        | After reviewing dry-run output |
+| `just nav-upgrade`         | Apply navigation control                | `upgrade_navigation_control_layer.py`  | Console output,    | `review-required` | Yes        | After reviewing dry-run output |
 |                            |   layer upgrades.                       |                                        |   file changes     |                   |            |                                |
-| `just nav_validate`        | Validate navigation control             | `validate_navigation_control_layer.py` | Console output     | `safe`            | Yes        | After upgrade or               |
+| `just nav-validate`        | Validate navigation control             | `validate_navigation_control_layer.py` | Console output     | `safe`            | Yes        | After upgrade or               |
 |                            |   layer coherence.                      |                                        |                    |                   |            |   periodic audit               |
-| `just nav_check_diff`      | Check only expected files changed.      | `check_expected_diff.py`               | Console output     | `safe`            | Yes        | After upgrade                  |
-| `just lint_md`             | Lints markdown                          | `.markdownlint-cli2.jsonc`             | Console output     | `safe`            | Yes        | Before commit; part            |
+| `just nav-check-diff`      | Check only expected files changed.      | `check_expected_diff.py`               | Console output     | `safe`            | Yes        | After upgrade                  |
+| `just lint-md`             | Lints markdown                          | `.markdownlint-cli2.jsonc`             | Console output     | `safe`            | Yes        | Before commit; part            |
 |                            |   against `.markdownlint-cli2.jsonc`.   |                                        |                    |                   |            |   of preflight                 |
 | `just check`               | Governance coherence checks — asserts   | `check_governance.py`,                 | Console output,    | `safe`            | Yes        | Before claiming any durable    |
 |                            |   this project's governance claims      |   governance surfaces                  |   exit status      |                   |            |   change complete; after       |

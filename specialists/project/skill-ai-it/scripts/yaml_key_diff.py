@@ -5,7 +5,7 @@ Why: the navigation upgrade's `update_rules` merge re-serialises `context-map.ya
 change is a key or two, and every comment (the purpose header included) is dropped (smc-resiliency refresh, 2026-10-14; references/pitfalls.md).
 This prints the real change and the lost comments so they can be checked and restored.
 
-Run: `just nav_check_context_map` in a project, or
+Run: `just nav-check-context-map` in a project, or
 `<venv python> scripts/yaml_key_diff.py --project-root <project> [--file context-map.yaml] [--ref HEAD]`. Needs PyYAML.
 Read-only. Exit 0 when no comment was lost, 1 when one was, 2 on a usage or read error.
 """

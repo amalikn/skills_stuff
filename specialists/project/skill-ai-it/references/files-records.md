@@ -181,7 +181,7 @@ Create during `bootstrap`, `navigation-add`, and `refresh` unless the project al
 `.markdownlint.json(c)`, `.markdownlint.yaml`, or a `markdownlint-cli2` key in `package.json` first, and skip (report as skipped, not overwritten) if any is present.
 
 Preferred source template: `templates/.markdownlint-cli2.jsonc`. It encodes the same rule the *Markdown quality rules* section already enforces on every file this skill writes — prose wraps at 200
-columns, tables/code/headings exempt, `MD024` allows repeated headings across non-sibling sections — so `just lint_md` (or a bare `markdownlint-cli2` run) checks the same standard the skill already
+columns, tables/code/headings exempt, `MD024` allows repeated headings across non-sibling sections — so `just lint-md` (or a bare `markdownlint-cli2` run) checks the same standard the skill already
 applies by hand, instead of a stricter or looser one fighting it.
 
 The template's `ignores` list covers generated/support surfaces common across this skill's own vocabulary (`graphify-out/`, `.ai-context/`, `.remember/`, `.code-context-notes/`, `.staleness-audit/`,

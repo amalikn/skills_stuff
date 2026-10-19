@@ -1,0 +1,271 @@
+Contents of https://ansible.readthedocs.io/projects/lint/rules/var-naming/ (retrieved 2026-10-19):
+
+[](../.. "Ansible Lint Documentation")
+
+![](data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Ym94PSIwIDAgMjU2IDI1NiIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxuczpzZXJpZj0iaHR0cDovL3d3dy5zZXJpZi5jb20vIiBzdHlsZT0iZmlsbC1ydWxlOmV2ZW5vZGQ7Y2xpcC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjI7Ij4KICAgIDxnIGlkPSJhbnNpYmxlLWFhcCI+CiAgICAgICAgPHBhdGggZD0iTTEyOCwwQzE5OC42NDUsMCAyNTYsNTcuMzU1IDI1NiwxMjhDMjU2LDE5OC42NDUgMTk4LjY0NSwyNTYgMTI4LDI1NkM1Ny4zNTUsMjU2IDAsMTk4LjY0NSAwLDEyOEMwLDU3LjM1NSA1Ny4zNTUsMCAxMjgsMFpNMTg5LjA5NCwxNzguNjg2TDEzOC4wMDIsNTUuOTU4QzEzNi43ODYsNTIuNzE0IDEzMy42NzcsNTAuNDE2IDEzMC4xNjMsNTAuNTUxQzEyNi41MTMsNTAuNDE2IDEyMy4yNjksNTIuNzE0IDEyMi4wNTMsNTUuOTU4TDY2LjIzLDE5MC40NDZMODUuNDIzLDE5MC40NDZMMTA3LjQ1NSwxMzUuMDI5TDE3My41NSwxODguNDE4QzE3NS40NDIsMTkwLjMxIDE3OC4wMTEsMTkxLjM5MiAxODAuNTc5LDE5MS41MjdDMTg1LjU4LDE5MS42NjIgMTg5Ljc3LDE4Ny43NDIgMTg5LjkwNSwxODIuNjA2TDE4OS45MDUsMTgyLjMzNkMxODkuNzcsMTgxLjExOSAxODkuNDk5LDE3OS45MDMgMTg5LjA5NCwxNzguNjg2Wk0xMzAuMjk4LDc4LjEyNUwxNjMuNDEzLDE1OS44OTlMMTEzLjQwMiwxMjAuNDMxTDEzMC4yOTgsNzguMTI1WiIgc3R5bGU9ImZpbGw6d2hpdGU7IiAvPgogICAgPC9nPgo8L3N2Zz4=)
+Ansible Lint Documentation
+
+[](https://github.com/ansible/ansible-lint "Go to repository")
+
+![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCA0NDggNTEyIj48IS0tISBGb250IEF3ZXNvbWUgRnJlZSA3LjEuMCBieSBAZm9udGF3ZXNvbWUgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbSBMaWNlbnNlIC0gaHR0cHM6Ly9mb250YXdlc29tZS5jb20vbGljZW5zZS9mcmVlIChJY29uczogQ0MgQlkgNC4wLCBGb250czogU0lMIE9GTCAxLjEsIENvZGU6IE1JVCBMaWNlbnNlKSBDb3B5cmlnaHQgMjAyNSBGb250aWNvbnMsIEluYy4tLT48cGF0aCBkPSJNNDM5LjYgMjM2LjEgMjQ0IDQwLjVjLTUuNC01LjUtMTIuOC04LjUtMjAuNC04LjVzLTE1IDMtMjAuNCA4LjRMMTYyLjUgODFsNTEuNSA1MS41YzI3LjEtOS4xIDUyLjcgMTYuOCA0My40IDQzLjdsNDkuNyA0OS43YzM0LjItMTEuOCA2MS4yIDMxIDM1LjUgNTYuNy0yNi41IDI2LjUtNzAuMi0yLjktNTYtMzcuM0wyNDAuMyAxOTl2MTIxLjljMjUuMyAxMi41IDIyLjMgNDEuOCA5LjEgNTUtNi40IDYuNC0xNS4yIDEwLjEtMjQuMyAxMC4xcy0xNy44LTMuNi0yNC4zLTEwLjFjLTE3LjYtMTcuNi0xMS4xLTQ2LjkgMTEuMi01NnYtMTIzYy0yMC44LTguNS0yNC42LTMwLjctMTguNi00NUwxNDIuNiAxMDEgOC41IDIzNS4xQzMgMjQwLjYgMCAyNDcuOSAwIDI1NS41czMgMTUgOC41IDIwLjRsMTk1LjYgMTk1LjdjNS40IDUuNCAxMi43IDguNCAyMC40IDguNHMxNS0zIDIwLjQtOC40bDE5NC43LTE5NC43YzUuNC01LjQgOC40LTEyLjggOC40LTIwLjRzLTMtMTUtOC40LTIwLjQiIC8+PC9zdmc+)
+
+GitHub
+
+- [
+  Home
+  ](../..)
+- [
+  Setup
+  ](../../installing/)
+- [x]
+  [
+  Rules
+  ](../)
+
+  Rules
+  - [
+    args
+    ](../args/)
+  - [
+    avoid-implicit
+    ](../avoid-implicit/)
+  - [
+    complexity
+    ](../complexity/)
+  - [
+    command-instead-of-module
+    ](../command-instead-of-module/)
+  - [
+    command-instead-of-shell
+    ](../command-instead-of-shell/)
+  - [
+    deprecated-bare-vars
+    ](../deprecated-bare-vars/)
+  - [
+    deprecated-local-action
+    ](../deprecated-local-action/)
+  - [
+    deprecated-module
+    ](../deprecated-module/)
+  - [
+    empty-string-compare
+    ](../empty-string-compare/)
+  - [
+    fqcn
+    ](../fqcn/)
+  - [
+    galaxy-version-incorrect
+    ](../galaxy-version-incorrect/)
+  - [
+    galaxy
+    ](../galaxy/)
+  - [
+    ignore-errors
+    ](../ignore-errors/)
+  - [
+    inline-env-var
+    ](../inline-env-var/)
+  - [
+    internal-error
+    ](../internal-error/)
+  - [
+    jinja
+    ](../jinja/)
+  - [
+    jinja-template-extension
+    ](../jinja-template-extension/)
+  - [
+    key-order
+    ](../key-order/)
+  - [
+    latest
+    ](../latest/)
+  - [
+    literal-compare
+    ](../literal-compare/)
+  - [
+    load-failure
+    ](../load-failure/)
+  - [
+    loop-var-prefix
+    ](../loop-var-prefix/)
+  - [
+    meta-incorrect
+    ](../meta-incorrect/)
+  - [
+    meta-no-tags
+    ](../meta-no-tags/)
+  - [
+    meta-runtime
+    ](../meta-runtime/)
+  - [
+    meta-video-links
+    ](../meta-video-links/)
+  - [
+    name
+    ](../name/)
+  - [
+    no-changed-when
+    ](../no-changed-when/)
+  - [
+    no-free-form
+    ](../no-free-form/)
+  - [
+    no-handler
+    ](../no-handler/)
+  - [
+    no-jinja-when
+    ](../no-jinja-when/)
+  - [
+    no-log-password
+    ](../no-log-password/)
+  - [
+    no-prompting
+    ](../no-prompting/)
+  - [
+    no-relative-paths
+    ](../no-relative-paths/)
+  - [
+    no-same-owner
+    ](../no-same-owner/)
+  - [
+    no-tabs
+    ](../no-tabs/)
+  - [
+    only-builtins
+    ](../only-builtins/)
+  - [
+    package-latest
+    ](../package-latest/)
+  - [
+    parser-error
+    ](../parser-error/)
+  - [
+    partial-become
+    ](../partial-become/)
+  - [
+    playbook-extension
+    ](../playbook-extension/)
+  - [
+    risky-file-permissions
+    ](../risky-file-permissions/)
+  - [
+    risky-octal
+    ](../risky-octal/)
+  - [
+    risky-shell-pipe
+    ](../risky-shell-pipe/)
+  - [
+    role-name
+    ](../role-name/)
+  - [
+    run-once
+    ](../run-once/)
+  - [
+    sanity
+    ](../sanity/)
+  - [
+    schema
+    ](../schema/)
+  - [
+    syntax-check
+    ](../syntax-check/)
+  - ☐
+    var-naming
+    [
+    var-naming
+    ](./)
+    Table of contents
+    - [
+      Settings
+      ](#settings)
+    - [
+      Problematic Code
+      ](#problematic-code)
+    - [
+      Correct Code
+      ](#correct-code)
+  - [
+    warning
+    ](../warning/)
+  - [
+    yaml
+    ](../yaml/)
+- [
+  Developer Guide
+  ](../../contributing/)
+
+[![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEwIDIwSDZWNGg3djVoNXYzLjFsMi0yVjhsLTYtNkg2Yy0xLjEgMC0yIC45LTIgMnYxNmMwIDEuMS45IDIgMiAyaDR6bTEwLjItN2MuMSAwIC4zLjEuNC4ybDEuMyAxLjNjLjIuMi4yLjYgMCAuOGwtMSAxLTIuMS0yLjEgMS0xYy4xLS4xLjItLjIuNC0uMm0wIDMuOUwxNC4xIDIzSDEydi0yLjFsNi4xLTYuMXoiIC8+PC9zdmc+)](https://github.com/ansible/ansible-lint/blob/main/docs/rules/var-naming.md "Edit this page")
+[![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTE3IDE4Yy41NiAwIDEgLjQ0IDEgMXMtLjQ0IDEtMSAxLTEtLjQ0LTEtMSAuNDQtMSAxLTFtMC0zYy0yLjczIDAtNS4wNiAxLjY2LTYgNCAuOTQgMi4zNCAzLjI3IDQgNiA0czUuMDYtMS42NiA2LTRjLS45NC0yLjM0LTMuMjctNC02LTRtMCA2LjVhMi41IDIuNSAwIDAgMS0yLjUtMi41IDIuNSAyLjUgMCAwIDEgMi41LTIuNSAyLjUgMi41IDAgMCAxIDIuNSAyLjUgMi41IDIuNSAwIDAgMS0yLjUgMi41TTkuMjcgMjBINlY0aDd2NWg1djQuMDdjLjcuMDggMS4zNi4yNSAyIC40OVY4bC02LTZINmEyIDIgMCAwIDAtMiAydjE2YTIgMiAwIDAgMCAyIDJoNC41YTguMiA4LjIgMCAwIDEtMS4yMy0yIiAvPjwvc3ZnPg==)](https://github.com/ansible/ansible-lint/raw/main/docs/rules/var-naming.md "View source of this page")
+
+# var-naming[¶](#var-naming "Permanent link")
+
+This rule checks variable names to ensure they conform with requirements.
+
+Variable names must contain only lowercase alphanumeric characters and the
+underscore `_` character. Variable names must also start with either an
+alphabetic or underscore `_` character.
+
+For more information see the [creating valid variable names](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_variables.html#creating-valid-variable-names) topic in
+Ansible documentation and [Naming things (Good Practices for Ansible)](https://redhat-cop.github.io/automation-good-practices/#_naming_things).
+
+You should also be fully aware of [special variables](https://docs.ansible.com/projects/ansible/latest/reference_appendices/special_variables.html), also known as
+magic variables, especially as most of them can only be read. While Ansible will
+just ignore any attempt to set them, the linter will notify the user, so they
+would not be confused about a line that does not effectively do anything.
+
+Possible errors messages:
+
+- `var-naming[non-string]`: Variables names must be strings.
+- `var-naming[non-ascii]`: Variables names must be ASCII.
+- `var-naming[no-keyword]`: Variables names must not be Python keywords.
+- `var-naming[no-jinja]`: Variables names must not contain jinja2 templating.
+- `var-naming[pattern]`: Variables names should match ... regex.
+- `var-naming[no-role-prefix]`: Variables names from within roles should use
+  `role_name_` as a prefix. Underlines are accepted before the prefix.
+- `var-naming[no-reserved]`: Variables names must not be Ansible reserved names.
+- `var-naming[read-only]`: This special variable is read-only.
+
+Note
+
+When using `include_role` or `import_role` with `vars`, vars should start
+with included role name prefix. As this role might not be compliant
+with this rule yet, you might need to temporarily disable this rule using
+a `# noqa: var-naming[no-role-prefix]` comment.
+
+In all other task types variable names defined in `vars` are considered
+task-scoped and do not require the role prefix.
+
+## Settings[¶](#settings "Permanent link")
+
+This rule behavior can be changed by altering the below settings:
+
+[](#__codelineno-0-1)`# .ansible-lint`\
+[](#__codelineno-0-2)`var_naming_pattern``:`` ``"^[a-z_][a-z0-9_]*$"`\
+
+## Problematic Code[¶](#problematic-code "Permanent link")
+
+[](#__codelineno-1-1)`---`\
+[](#__codelineno-1-2)`-`` ``name``:`` ``Example playbook`\
+[](#__codelineno-1-3)`  ``hosts``:`` ``localhost`\
+[](#__codelineno-1-4)`  ``vars``:`\
+[](#__codelineno-1-5)`    ``CamelCase``:`` ``true`` ``# <- Contains a mix of lowercase and uppercase characters.`\
+[](#__codelineno-1-6)`    ``ALL_CAPS``:`` ``bar`` ``# <- Contains only uppercase characters.`\
+[](#__codelineno-1-7)`    ``v@r!able``:`` ``baz`` ``# <- Contains special characters.`\
+[](#__codelineno-1-8)`    ``hosts``:`` ``[]`` ``# <- hosts is an Ansible reserved name`\
+[](#__codelineno-1-9)`    ``role_name``:`` ``boo`` ``# <-- invalid as being Ansible special magic variable`\
+
+## Correct Code[¶](#correct-code "Permanent link")
+
+[](#__codelineno-2-1)`---`\
+[](#__codelineno-2-2)`-`` ``name``:`` ``Example playbook`\
+[](#__codelineno-2-3)`  ``hosts``:`` ``localhost`\
+[](#__codelineno-2-4)`  ``vars``:`\
+[](#__codelineno-2-5)`    ``lowercase``:`` ``true`` ``# <- Contains only lowercase characters.`\
+[](#__codelineno-2-6)`    ``no_caps``:`` ``bar`` ``# <- Does not contains uppercase characters.`\
+[](#__codelineno-2-7)`    ``variable``:`` ``baz`` ``# <- Does not contain special characters.`\
+[](#__codelineno-2-8)`    ``my_hosts``:`` ``[]`` ``# <- Does not use a reserved names.`\
+[](#__codelineno-2-9)`    ``my_role_name``:`` ``boo`\
+
+![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEzIDIwaC0yVjhsLTUuNSA1LjUtMS40Mi0xLjQyTDEyIDQuMTZsNy45MiA3LjkyLTEuNDIgMS40MkwxMyA4eiIgLz48L3N2Zz4=)
+Back to top
