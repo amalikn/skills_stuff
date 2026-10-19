@@ -14,6 +14,8 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 (a) and (b) in `app-development.md`: HomeView panels ignore hidden navigation (wrap render_to_response per request); Nautobot 3 theme `gap-2` is 2px, no `column-gap-*`.
+- 20261020 Learned 2026-10-20 (c) in `apps-jobs-validation.md`: an API run of an approval-gated Job only schedules it; approve stays with a person.
 - 20261019 Learned 2026-10-19 (UNC stage-16 gate rename) in `apps-jobs-validation.md`: approval definitions match a Job by display name; rename with both names listed, constraint first.
 - 20261019 Learned 2026-10-19 (UNC isolation-test guard) in `operations-cookbook.md`: /api/status/ lists installed apps under `nautobot-apps` (`plugins` is a deprecated alias).
 - 20261019 Learned 2026-10-16 (UNC backlog audit, Friday's Codex work) in `operations-cookbook.md`: native Cancel kills a running Job with SIGKILL (no `finally`, no lock release).

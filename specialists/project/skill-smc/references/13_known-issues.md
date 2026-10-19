@@ -1270,3 +1270,25 @@ APN box (`teleport.apn.au`) and about 30 s through arawerr and wandawuy (`telepo
 answers as fast in both; the difference is tunnel set-up on the NBN Accelerate cluster. Budget a per-site job on the NBN cluster at several times
 the APN figure, and reuse one connection per SMC where the code allows it (the collector's `smc_snmp.SSH_REUSE`). Classification: candidate
 (two sites, one day).
+
+## 2026-10-20 — skill scripts on a Machine ID host need the bot identity and sshpass (INFO)
+
+On apn-unc01 (tbot per cluster, no user `tsh login`), `mikrotik_exec.sh` and `tplink-switch.sh` reach the SMC only when the caller passes
+`TSH_IDENTITY=/opt/tbot-<cluster>/identity` (both scripts accept it): without it the port-forward "did not come up". `mikrotik_exec.sh` also needs
+`sshpass` on the host running it; apn-unc01 had none until it was pinned (1.09-1) and installed. Unified-network-controller passes the identity
+for every skill-script call through `common.teleport.script_env(proxy)`. VERIFIED-OBSERVED 2026-10-19 (20-mile land dry run from apn-unc01).
+
+## 2026-10-20 — dhcpd's shared networks and a lease summary that keeps client MACs on the box (INFO)
+
+The SMC's `/etc/dhcp/dhcpd.conf` groups subnets in named shared networks: `public`, `management`, and on low-touch sites `provisioning`
+(old-looma: public 10.0.0.0/18 range 10.0.32.0-10.0.63.254, provisioning 192.168.11.0/24, management 10.255.0.0/19 range 10.255.10.0-254;
+20-mile: public 10.0.0.0/23, management 10.255.0.0/24 range .100-.110). The boxes run Python 3.10.12, so a summary can be computed on the SMC:
+pool size per shared network from its `range` lines and active leases from `binding state active`, with only the `management` network's leases
+returned in full (old-looma 2026-10-20: 204 active of 21,256 lease-file lines). Public clients then never leave the box as MACs (the rule above).
+Implemented by unified-network-controller `wc-local/scripts/collector/dhcp_leases.py`. VERIFIED-OBSERVED 2026-10-20 (read-only).
+
+## 2026-10-20 — an uplink's gateway is in its policy routing table (INFO)
+
+With per-uplink policy routing (`ip rule` from the uplink's address), the main table may hold no default route for that uplink. Read its gateway
+with `ip -4 route show table all dev <iface>` and take the first `default via` (unified-network-controller `uplink_health.py`, 2026-10-19).
+

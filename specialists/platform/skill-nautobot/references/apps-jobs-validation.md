@@ -155,3 +155,9 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > `object_tags`) and apply them by those assignments and the software's platform (parity 120 of 120 Devices). `DeviceSoftwareValidationResult` stays
 > empty until DLM's validation Job runs, so it cannot be the page's source on its own. **Golden Config JSON compliance `missing`/`extra`** hold deepdiff
 > paths (`root['nvram.SNMPGetCommunity']`), so a summary must parse the bracketed parts; a flattened key keeps its dots inside one part.
+
+> **Learned 2026-10-20 (c)** · Nautobot 3.2.3 · VERIFIED_PRIMARY (`nautobot/extras/api/views.py` JobViewSet.run and ApprovalWorkflowStageViewSet read in the 3.2.3 container) · Source: the run action's `has_approval_workflow_definition()` branch; the stage `approve` action · Falsifier: a release where an API run of an approval-gated Job enqueues a JobResult directly
+> **An API run of an approval-gated Job only schedules it.** `POST /api/extras/jobs/<id>/run/` returns `{"scheduled_job": ..., "job_result": null}` when an
+> approval workflow definition matches (a `dryrun` run is exempt and executes); the work runs after `POST /api/extras/approval-workflow-stages/<id>/approve/`
+> by a member of the stage's approver group (or a superuser). Automation that both submits and approves defeats the approval's purpose: keep the
+> approve step with a person (agent tooling was refused for it on 2026-10-19).

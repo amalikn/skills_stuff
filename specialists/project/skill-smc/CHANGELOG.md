@@ -13,6 +13,7 @@ Last rotated: 20261019_1121
 
 ## Contents
 
+- [20261020_0049 — Bot-host skill scripts, dhcpd shared networks, uplink gateway (v0.4.9 -> v0.5.0)](#20261020_0049--bot-host-skill-scripts-dhcpd-shared-networks-uplink-gateway-v049---v050)
 - [20261019_1119 — Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)](#20261019_1119--working-teleport-ssh-reads-take-79-s-10-s-attempts-two-tries-random-nodes-v048---v049)
 - [20261015_1751 — WireGuard and NETMAP kernel modules present on rcp and rct SMCs; no overlay tools installed (no version change)](#20261015_1751--wireguard-and-netmap-kernel-modules-present-on-rcp-and-rct-smcs-no-overlay-tools-installed-no-version-change)
 - [20261015_1632 — Operator's account of the 1 Sep trigger, monthly PIN expiry, two incident-evidence scripts (v0.4.7 -> v0.4.8)](#20261015_1632--operators-account-of-the-1-sep-trigger-monthly-pin-expiry-two-incident-evidence-scripts-v047---v048)
@@ -35,6 +36,12 @@ Last rotated: 20261019_1121
 - [20261009_1552 — An SMC's DHCP history lives in a short journal and is not a unit's boot history (v0.3.1 -> v0.3.2)](#20261009_1552--an-smcs-dhcp-history-lives-in-a-short-journal-and-is-not-a-units-boot-history-v031---v032)
 - [20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)](#20261008_1206--pi-identity-probe-and-rct-site-ata-settings-reader-promoted-to-scripts-v022---v023)
 - [20261008_1147 — Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)](#20261008_1147--raspberry-pi-smc-identity-and-ports-rct-site-ata-vendor-sources-linked-v021---v022)
+
+## 20261020_0049 — Bot-host skill scripts, dhcpd shared networks, uplink gateway (v0.4.9 -> v0.5.0)
+
+- `references/13_known-issues.md`: three entries from unified-network-controller, 2026-10-19/20: skill scripts on a Machine ID host need
+  `TSH_IDENTITY` and `sshpass`; dhcpd's shared networks (`public`, `management`, `provisioning`) and an on-box lease summary that keeps client
+  MACs on the SMC; an uplink's gateway is in its policy routing table (`ip -4 route show table all dev <iface>`).
 
 ## 20261019_1119 — Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)
 

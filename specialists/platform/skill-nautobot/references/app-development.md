@@ -480,3 +480,16 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 > that adds its own `hx-headers` with `X-CSRFToken` makes htmx send the token twice; Django joins the two values and refuses the POST with 403 "incorrect
 > length". htmx shows nothing on a 403 by default, so the button looks dead. Add no CSRF header of your own inside a Nautobot page, and handle
 > `htmx:responseError` / `htmx:sendError` so a refused request is shown in words.
+
+> **Learned 2026-10-20 (a)** · Nautobot 3.2.3 · VERIFIED_PRIMARY (core `nautobot/core/views/__init__.py` HomeView read in a running 3.2.3 container; live test-client check on UNC) · Source: `HomeView.get` builds `homepage_layout_panels` from `registry["homepage_layout"]["panels"]` filtered only by `has_one_or_more_perms` · Falsifier: a release whose home view consults the navigation filter or exposes a panel hook
+> **Home page panels ignore anything that hides navigation.** An app that hides menus per user (a context processor over `nav_menu`) leaves the
+> home page showing those areas: core filters panels by permissions only. The seam that stays per request is wrapping `HomeView.render_to_response`
+> in the app's `ready()` and filtering `context["homepage_layout_panels"]` (a list of `{panel name: details}` per column); never edit the shared
+> registry, which serves every user. Items carry a URL name (`link`, reverse it), the navigation keys items by path; item-less panels (Approval
+> Workflow, Job History, Change Log) need an explicit panel-to-path map. Rendering the home page through the test client as a user writes that
+> user's `homepage_layout.panels` config (core keeps the layout in step), so a read-only check is not entirely write-free.
+
+> **Learned 2026-10-20 (b)** · Nautobot 3.2.3 UI theme · VERIFIED_PRIMARY (computed styles measured in a live 3.2.3 page with headless Chromium) · Source: `getComputedStyle` on app markup in the Location page · Falsifier: a theme release where `.gap-2` computes to 0.5rem or `column-gap-*` exists
+> **Bootstrap spacing utilities are not stock in Nautobot 3's theme.** `.gap-2` computes to 2px (not 0.5rem) and `column-gap-*` / `row-gap-*` are
+> absent, and `.badge` renders near heading size. App markup that relies on them looks crowded; give the container its own small style
+> (`column-gap`, badge `font-size`) and check computed styles on a live page, not a Bootstrap preview.

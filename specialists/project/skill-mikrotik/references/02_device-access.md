@@ -40,3 +40,13 @@ with the operator's go-ahead for a specific change.
 
 Not pinned (`StrictHostKeyChecking=no`, `UserKnownHostsFile=/dev/null`): the local port and the device behind it change on every run, so a pinned key would be wrong more often than right. The trust
 anchor is the Teleport session to the SMC.
+
+## On a Machine ID host (2026-10-20)
+
+`mikrotik_exec.sh` runs on a host with tbot instead of a user login (apn-unc01) when the caller sets `TSH_IDENTITY=/opt/tbot-<cluster>/identity`;
+without it the port-forward never comes up. The host also needs `sshpass` (apn-unc01 had none: pinned 1.09-1 and installed 2026-10-19).
+VERIFIED-OBSERVED 2026-10-19: 20-mile from apn-unc01 read `RB450Gx4` serial HD4086NEMR1 (identity `450Gx4`, RouterOS 7.8) and the Metal 52 ac
+`RBMetalG-52SHPacn` serial HE208T81F2B (identity `AP1`). For a configuration copy, `/export terse` (RouterOS 7 hides sensitive values unless
+`show-sensitive` is given) passes the read-only guard; unified-network-controller also redacts `password=`, `secret=`, `*-pre-shared-key=` and
+`community=` values before saving.
+

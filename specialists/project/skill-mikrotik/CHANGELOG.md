@@ -11,6 +11,11 @@ Last rotated: 20261010_1806
 
 # Changelog
 
+## 20261020_0049 — mikrotik_exec on a Machine ID host; 20-mile units read from apn-unc01 (v0.1.26 -> v0.1.27)
+
+- `references/02_device-access.md` "On a Machine ID host": `TSH_IDENTITY` and `sshpass` for `scripts/mikrotik_exec.sh` on apn-unc01; 20-mile's two
+  units read from there (models, serials, identities); `/export terse` as the configuration copy, with the caller's redaction. VERIFIED-OBSERVED 2026-10-19.
+
 ## 20261010_1805 — Governed-file standard: recipes, CHANGELOG rotated (v0.1.25 -> v0.1.26)
 
 - Workspace standard (operator, 2026-10-10; skill-ai-it "Governed files: headers, budgets, rotation and the checker's shape"): `justfile` gains
