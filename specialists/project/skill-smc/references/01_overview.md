@@ -210,6 +210,10 @@ Operational implications:
 - Prometheus remote_write and federation scrapes must tolerate high latency
 - Any continuous disk writer (pcap, journal, large logs) has compounding impact since data cannot be quickly offloaded over the link
 
+**Learned 2026-10-16 — a working Teleport SSH read takes 7–9 s** (unified-network-controller host verifier, VERIFIED_PRIMARY): fresh `tsh ssh`
+reads from an AWS host to norton-bore, indulkana and areyonga took 7–9 s, so a 6 s deadline failed healthy boxes. Give each attempt 10 s and allow
+two attempts; put outer deadlines on `tsh status` and `tsh ls` too; pick random current `*-smc01` nodes from `tsh ls` rather than one fixed box.
+
 ### WAN Uplink Topology Pattern — Direct-to-NTD and Switch-Trunked Access-VLANs Can Coexist on One Box
 
 Confirmed at `galiwinku-smc01` (`nbn_accelerate`, multi-WAN NBN business site), 2026-09-08. Do not assume every `role: internet`/`role: starlink` interface on a multi-WAN site shares the same

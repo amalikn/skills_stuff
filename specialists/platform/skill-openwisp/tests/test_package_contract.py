@@ -48,8 +48,8 @@ def _load(path: Path) -> dict:
 
 
 LEARNED = re.compile(
-    r"^> \*\*(Learned|Disputed) (\d{4}-\d{2}-\d{2})\*\* · (?P<product>[^·]+?) · "
-    r"(?P<evidence>VERIFIED_PRIMARY|VERIFIED_SECONDARY|UNVERIFIED|USER_STATED) · Source: (?P<source>[^·]+?) · Falsifier: (?P<falsifier>[^·]+?)"
+    r"^> \*\*(Learned|Disputed) (\d{4}-\d{2}-\d{2})(?: \([a-z]\))?\*\* · (?P<product>[^·]+?) · "
+    r"(?P<evidence>VERIFIED_PRIMARY|VERIFIED_SECONDARY|UNVERIFIED|USER_STATED)(?: \([^·]*\))? · Source: (?P<source>[^·]+?) · Falsifier: (?P<falsifier>[^·]+?)"
     r"(?: · Conflicts: (?P<conflicts>.+))?$"
 )
 

@@ -73,6 +73,11 @@ before loading data. `LOCATION_LIST_DEFAULT_MAX_DEPTH` limits the default list v
 Source: `nautobot/dcim/models/locations.py:34-48,81-101,126,218,272-333`, `nautobot/dcim/models/devices.py:755`, `nautobot/dcim/api/serializers.py:242-251`;
 `docs/user-guide/core-data-model/dcim/locationtype.html`, `docs/user-guide/core-data-model/dcim/location.html`.
 
+> **Learned 2026-10-16** · Nautobot 3.2.3 · VERIFIED_PRIMARY (dry run on a deployment) · Source: UNC 0.8.38 catalog `renamed_from` preflight against UNC01 (31 and 160 Locations of the two types) · Falsifier: a 3.2.3 LocationType PATCH of `name` that changes its id or its Locations.
+> Since a Location's type can never change, rename a Location Type in place (PATCH its `name` on the existing id): the UUID, every child Location
+> and every Device placement stay. Creating a new type and moving Locations is impossible. Refuse when both the old and the new name exist, and accept
+> both names in readers while the rename rolls out.
+
 ## 2. Tenancy
 
 Decision: a Tenant is who the object is for (customer, programme, business unit); Tenant Groups form a tree for grouping tenants. Use Tenant, not a tag, when permissions or uniqueness should follow

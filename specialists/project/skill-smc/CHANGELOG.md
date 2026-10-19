@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261015_1554
+Last rotated: 20261019_1121
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261019_1119 — Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)](#20261019_1119--working-teleport-ssh-reads-take-79-s-10-s-attempts-two-tries-random-nodes-v048---v049)
 - [20261015_1751 — WireGuard and NETMAP kernel modules present on rcp and rct SMCs; no overlay tools installed (no version change)](#20261015_1751--wireguard-and-netmap-kernel-modules-present-on-rcp-and-rct-smcs-no-overlay-tools-installed-no-version-change)
 - [20261015_1632 — Operator's account of the 1 Sep trigger, monthly PIN expiry, two incident-evidence scripts (v0.4.7 -> v0.4.8)](#20261015_1632--operators-account-of-the-1-sep-trigger-monthly-pin-expiry-two-incident-evidence-scripts-v047---v048)
 - [20261015_1558 — Why the 2025 portal misconfiguration stayed latent; 1 Sep trigger checks (v0.4.6 -> v0.4.7)](#20261015_1558--why-the-2025-portal-misconfiguration-stayed-latent-1-sep-trigger-checks-v046---v047)
@@ -34,8 +35,10 @@ Last rotated: 20261015_1554
 - [20261009_1552 — An SMC's DHCP history lives in a short journal and is not a unit's boot history (v0.3.1 -> v0.3.2)](#20261009_1552--an-smcs-dhcp-history-lives-in-a-short-journal-and-is-not-a-units-boot-history-v031---v032)
 - [20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)](#20261008_1206--pi-identity-probe-and-rct-site-ata-settings-reader-promoted-to-scripts-v022---v023)
 - [20261008_1147 — Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)](#20261008_1147--raspberry-pi-smc-identity-and-ports-rct-site-ata-vendor-sources-linked-v021---v022)
-- [20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)](#20260930_1221--terminology-access-is-free-via-tc-acceptance-not-a-paid-pin-v0175---v0176)
-- [20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)](#20260930_1202--bot-cw-dashboard-wipes-pin-marks-on-koonibbaamata-a-zero-eclipse_mark-count-is-not-normal-v0173---v0174)
+
+## 20261019_1119 — Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)
+
+references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-16 entry from the unified-network-controller host verifier: fresh tsh ssh reads took 7–9 s and a 6 s deadline failed healthy boxes. Written in the 2026-10-19 backlog audit of 15–17 Oct.
 
 ## 20261015_1751 — WireGuard and NETMAP kernel modules present on rcp and rct SMCs; no overlay tools installed (no version change)
 
@@ -188,18 +191,3 @@ VERIFIED-OBSERVED 2026-10-08, read-only over Teleport apn on 20-mile and adjamar
   identical, the short `Content-Length`, unreachable units. Routed from RUNBOOK, SKILL.md, AI_NAVIGATION.md and context-map.yaml, with both vendor-sources folders.
 - `references/13_known-issues.md`: 2026-10-08 entry (kintore-smc01 not in Teleport, aeroplane-1 and 20-mile ATAs, empty ATA PIN, Pi bootloaders behind); Contents gains the missing 2026-10-07 lines.
 - `manifest.json`: 0.2.1 -> 0.2.2.
-
-## 20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)
-
-- `references/13_known-issues.md` (2026-09-30 section): "paid PIN" / "paid device" wording replaced with "access mark" / "T&C-accepted device". Per the
-  operator, users at these sites never buy a PIN: they accept a terms-and-conditions page and a PIN/mark is issued in the background (Eclipse
-  free-PIN flow). A note saying so was added. The heading changed, so its anchor changed too. The v0.1.74 CHANGELOG entry keeps its original wording
-  (append-only).
-
-## 20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)
-
-- `references/13_known-issues.md`: new 2026-09-30 section. Teleport user `bot-cw-dashboard` (54.66.73.128) restarts netfilter-persistent on koonibba (137/24h) and amata (45/24h) through a "usage fix"
-  routine. Each restart reloads a mark-less `rules.v4` and removes every paid PIN, leaving koonibba with 0 authorised devices for 45% of sampled minutes. This is the root cause of koonibba's ~90%
-  usage drop. The 2026-09-15 carrier-throttling conclusion is withdrawn. Fleet survey of 31 SMCs included; side findings and 2 `correlate-pin-activation.sh` bugs recorded.
-- `references/14_pin-activation-diagnosis.md`: CORRECTED the 2026-09-11 bullet that called a 0-mark snapshot normal on a healthy site (amata). Healthy sites hold a steady non-zero count; a zero means
-  the chain was wiped. Added per-minute sampling as the detection method and the correct mark-count command.

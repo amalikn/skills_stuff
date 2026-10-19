@@ -155,5 +155,8 @@ Read the file, not this pack's memory of it, before acting on a specific device 
 - **Replacements.** When a model or vendor runs out of stock, Rob researches and recommends the replacement. MikroTik and UniFi are being looked at; hardware is ordered, not yet tested.
 - **Asset registers.** The NOC maintains the site asset registers.
 - **RF planning.** Mark's desktop study uses Google Earth and Google Maps; Cambium LINKPlanner only rarely.
+  Learned 2026-10-16, VERIFIED_PRIMARY ([LINKPlanner 6.4.3 best-server analysis](https://lp.cambiumnetworks.com/doc/best_server_analysis.html)):
+  best-server analysis ranks eligible network devices by predicted link performance per subscriber site; it is not an overlap of drawn sector
+  footprints, so a footprint intersection must never be labelled best-server or interference.
 - **Low-touch sites.** 8 production `smc_ltp` sites; `pia` is not low touch, although the `big_push` branch lists it.
 

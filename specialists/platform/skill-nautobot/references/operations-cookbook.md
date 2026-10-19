@@ -128,6 +128,10 @@ Source: `nautobot/core/settings.py:375-417`, `nautobot/core/api/versioning.py` (
 > transaction committed (all 322 written). Send bulk writes in bounded batches (50 Devices kept each request well under 60 s), each atomic on its
 > own, and after a timeout read the objects back before retrying rather than assuming nothing was written.
 
+> **Learned 2026-10-16** · Nautobot 3.2.3 REST · VERIFIED_PRIMARY (observed on a deployment) · Source: UNC 0.8.33 drawn-tower writer status and tag lookups · Falsifier: a 3.2.3 list response at `depth=0` that includes related objects' names.
+> At `depth=0` related objects (status, role, tags) come back as ids/URLs without names; a check that compares names needs `depth=1` (or a separate lookup
+> of the ids). Read a large subtree with one paged query on the root rather than one query per child Location.
+
 ## 3. Dynamic Groups and Saved Views
 
 Decision: a Dynamic Group is a named, reusable member set (for Config Contexts, Jobs and permissions); a Saved View is only a remembered list-view layout.
@@ -413,6 +417,12 @@ is deprecated). A run that matches an approval definition returns a `scheduled_j
 
 Source: `nautobot/extras/api/serializers.py:896-910`, `nautobot/extras/api/views.py:843,995-1022,1165`, `nautobot/extras/filters.py:1248-1259`, `nautobot/extras/choices.py:289-297`, `nautobot/extras/models/jobs.py:1019`,
 `nautobot/apps/jobs.py:3`; `nautobot-core-3.2.3-job-structure.html`, `-job-execution.html`, `-jobs-running.html`, `-job-queues.html`.
+
+> **Learned 2026-10-16** · Nautobot 3.2.3, Celery 5.6.3 · VERIFIED_PRIMARY · Source: Nautobot 3.2.3 Job cancellation docs and `extras` cancel source (revoke with `terminate=True, signal="SIGKILL"`), saved in UNC `docs/reports/nautobot/onboarding-abort-and-forced-revoke-recovery-sources-20261016_1210/` · Falsifier: a 3.2.3 Cancel of a running Job whose `finally` block runs.
+> Native Cancel of a running Job terminates its Celery child with SIGKILL: no `finally`, no last log line, no lock release, no signal handler. Work the Job
+> handed to another process keeps running. A Job that holds a lock or drives external work needs recovery outside the Job (an owner-matched lock with a
+> reaper or reconciler that reads the real work state). The submitter can cancel their own Job without `extras.cancel_job`, so removing that permission
+> does not hide Cancel.
 
 ## 12. Circuits for WAN uplinks
 

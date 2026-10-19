@@ -70,6 +70,11 @@ PostgreSQL. Turning a module off is not a data deletion; turning it back on find
 Source: `/opt/openwisp/openwisp/settings.py:455-480`; https://openwisp.io/docs/26.09/docker/user/customization.html; https://openwisp.io/docs/26.09/ansible/index.html;
 https://openwisp.io/docs/26.09/ansible/user/enabling-modules.html; https://openwisp.io/docs/26.09/ansible/user/role-variables.html.
 
+> **Learned 2026-10-16** · docker-openwisp (images 26.09.0) · VERIFIED_PRIMARY · Source: nginx access log (observed on a deployment) (login POST 302 then redirect to login) and live cookie headers on UNC01 · Falsifier: a dashboard opened by IP that keeps its session with domain-scoped cookies.
+> The images scope session and CSRF cookies to the configured domain (`.openwisp.dev` by default), so a dashboard opened by IP address loses its session
+> after every login, and an IP request also falls to nginx's API default virtual host. To serve it by IP: host-only cookies (no cookie domain), a session
+> cookie name distinct from any other app on the host, and the exact HTTPS origin including port in `CSRF_TRUSTED_ORIGINS`; cookie security stays on.
+
 ## 2. Process roles
 
 Decision: map every symptom to the process that owns it before restarting anything.

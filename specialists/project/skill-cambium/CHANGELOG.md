@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261010_1801
+Last rotated: 20261019_1121
 ---
 
 # Changelog — skill-cambium
 
 ## Contents
 
+- [20261019_1119 — LINKPlanner best-server analysis is not footprint overlap (no version change)](#20261019_1119--linkplanner-best-server-analysis-is-not-footprint-overlap-no-version-change)
 - [20261015_1750 — Volatile config keys per family; no family has a change marker (no version change)](#20261015_1750--volatile-config-keys-per-family-no-family-has-a-change-marker-no-version-change)
 - [20261015_1553 — Concurrent SNMP walks lose no evidence; SNMP is not a login (no version change)](#20261015_1553--concurrent-snmp-walks-lose-no-evidence-snmp-is-not-a-login-no-version-change)
 - [20261015_1442 — Radio parameters over SNMP per family; no azimuth or beamwidth anywhere (no version change)](#20261015_1442--radio-parameters-over-snmp-per-family-no-azimuth-or-beamwidth-anywhere-no-version-change)
@@ -20,6 +21,7 @@ Last rotated: 20261010_1801
 - [20261015_1115 — LLDP as each family sends it: cnWave V5000 sends its address as the port id (no version change)](#20261015_1115--lldp-as-each-family-sends-it-cnwave-v5000-sends-its-address-as-the-port-id-no-version-change)
 - [20261015_0130 — LAN MAC rule measured per family; cambiumLANMACAddress in the OID registry (v0.8.1 -> v0.8.2)](#20261015_0130--lan-mac-rule-measured-per-family-cambiumlanmacaddress-in-the-oid-registry-v081---v082)
 - [20261014_2230 — MAC identity by family; Option 82 pairs no unit; as-built patterns across seven sets (v0.8.0 -> v0.8.1)](#20261014_2230--mac-identity-by-family-option-82-pairs-no-unit-as-built-patterns-across-seven-sets-v080---v081)
+- [20261014_1956 — ePMP ARP MAC = LAN + 1 confirmed on Force 300-25 (v0.7.10 -> v0.8.0)](#20261014_1956--epmp-arp-mac--lan--1-confirmed-on-force-300-25-v0710---v080)
 - [20261013_2226 — Sidekick commissioning leaves no installer record; as-built sets (v0.7.9 -> v0.7.10)](#20261013_2226--sidekick-commissioning-leaves-no-installer-record-as-built-sets-v079---v0710)
 - [20261011_1744 — Correction: SM bridge table shows the router (show bridge sta), intermittently (v0.7.8 -> v0.7.9)](#20261011_1744--correction-sm-bridge-table-shows-the-router-show-bridge-sta-intermittently-v078---v079)
 - [20261011_1431 — Router-to-SM facts by site type; no CFM on ePMP (v0.7.7 -> v0.7.8)](#20261011_1431--router-to-sm-facts-by-site-type-no-cfm-on-epmp-v077---v078)
@@ -37,9 +39,12 @@ Last rotated: 20261010_1801
 - [20261009_0207 — epmp_field_probe.py: an ePMP unit's fields with values withheld, and the installer's record (v0.6.48 -> v0.6.49)](#20261009_0207--epmp_field_probepy-an-epmp-units-fields-with-values-withheld-and-the-installers-record-v0648---v0649)
 - [20261009_0153 — Installer record in sysDescr, Force 300 position fields, coarse range, cnWave sites (v0.6.47 -> v0.6.48)](#20261009_0153--installer-record-in-sysdescr-force-300-position-fields-coarse-range-cnwave-sites-v0647---v0648)
 - [20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)](#20261009_0120--station-table-range-and-angle-force-300-has-no-mac-table-r195p-attachment-not-readable-v0646---v0647)
-- [20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)](#20260930_1221--terminology-paid-pin-corrected-to-access-mark-v0626---v0627)
 
 **20261016_2115 — v0.8.3:** Reference 03 adds observed as-built label variants, unique-match and conflict guards from UNC's conversion audit. No device changes.
+
+## 20261019_1119 — LINKPlanner best-server analysis is not footprint overlap (no version change)
+
+references/01_overview.md (RF planning) gains a Learned 2026-10-16 entry from LINKPlanner 6.4.3 documentation, found during unified-network-controller coverage research. Written in the 2026-10-19 backlog audit of 15–17 Oct.
 
 ## 20261015_1750 — Volatile config keys per family; no family has a change marker (no version change)
 
@@ -193,8 +198,3 @@ Last rotated: 20261010_1801
   300-16: no BRIDGE, Q-BRIDGE or ARP MIB over SNMP, REST bridge table lists only itself (kalumburu, 2026-10-09).
 - `references/05_known-issues.md`: which subscriber an R195P is cabled to cannot be read from the units; the two-fact chain rule used instead.
   From unified-network-controller's D10 link discovery.
-
-## 20260930_1221 — Terminology: "paid PIN" corrected to access mark (v0.6.26 -> v0.6.27)
-
-- `references/05_known-issues.md` (dashboard bots section): the nbn bot's routine now reads "wipes every device's access mark", not "every paid PIN".
-  Access at these sites is free via T&C acceptance (operator, 2026-09-30).

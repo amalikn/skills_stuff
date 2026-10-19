@@ -63,6 +63,11 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > `nautobot_dns_models__CNAME_RESTRICTION_ENABLED` (default False), read directly from constance, so `PLUGINS_CONFIG` cannot set it; set it in nbshell with
 > `setattr(constance.config, key, True)`. **htmx polling that must not close a pop-up:** add a trigger filter, `every 10s[!document.querySelector('.modal.show')]`.
 
+> **Learned 2026-10-16** · Nautobot 3.2.3 · VERIFIED_PRIMARY (built and run on a deployment) · Source: Nautobot Job docs on `ObjectVar.query_params` field references; UNC unc_ownership 0.8.30 onboarding Job (Site filtered by `$flavour`) · Falsifier: a 3.2.3 ObjectVar whose `$field` reference is not re-queried when that field changes.
+> Unlike `ChoiceVar`, an `ObjectVar` can depend on an earlier field natively: a `query_params` value written `"$<field>"` is replaced by that field's
+> current value, e.g. `ObjectVar(model=Location, query_params={"location_type": "Site", "cf_smc_flavors": "$flavour"})`. No custom JavaScript; still
+> recheck the pair in `run()`.
+
 > **Learned 2026-10-14 (c)** · Nautobot 3.2.3 · VERIFIED_PRIMARY (live on a 3.2.3 instance, UNC 0.8.12) · Source: `users/models.py` `get_config`/`set_config`,
 > `extras/plugins/__init__.py` `banner_function` and `BannerClassChoices` read on the container; a Django test client run against the live app · Falsifier:
 > a 3.2.x release dropping `User.config_data`, or app banners no longer called on every page
