@@ -353,6 +353,12 @@ nautobot-server audit_dynamic_groups ; nautobot-server audit_graphql_queries
 nautobot-server remove_stale_scheduled_jobs
 ```
 
+> **Learned 2026-10-19** · Nautobot 3.2.3 · VERIFIED_PRIMARY (observed on a deployment, read-only) · Source: `docker exec <container> nautobot-server nbshell` fed a heredoc, then the same code with `--command`
+> · Falsifier: a 3.2.x `nbshell` that runs a piped `for` block with no blank line after it.
+> Piped stdin goes to the interactive console: a compound statement (`for`, `if`, `def`) is not run until a blank line closes it, so a heredoc that ends
+> inside the block prints only the banner and `>>> ... ...` and exits 0. Scripted reads use `nautobot-server nbshell --command '<code>'` (one-line
+> loops as comprehensions), which runs the code and prints its output after the banner; filter the output with `grep` on a marker prefix.
+
 Gotcha: `invalidate` (django-cacheops) no longer exists. Clearing the cache is `clear_cache` (django-extensions), which `post_upgrade` runs since 3.0.10. `runjob --data` defaults to `{}` from 3.2.0,
 and `null` is now an error. `init` and `--version` belong to the `nautobot-server` wrapper, not Django subcommands.
 

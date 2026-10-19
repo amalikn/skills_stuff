@@ -14,6 +14,9 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261019 Learned 2026-10-19 (UNC read-only Location Type count on unc01): `references/operations-cookbook.md` records that a heredoc piped to
+  `nbshell` skips an unclosed compound block silently (exit 0); scripted reads use `nbshell --command`.
+
 - 20261016 Learned 2026-10-16 (UNC deployed log-header check, reusable candidate): `references/app-development.md` records a table-header selector
   specificity conflict observed in the live browser and the need to test sticky headers with the platform stylesheets; exact stock behavior remains unverified.
   Follow-up physical scrolling also identified the native responsive wrapper as a nested scrollport; the candidate now requires actual header movement checks.
