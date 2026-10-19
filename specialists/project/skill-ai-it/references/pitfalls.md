@@ -60,3 +60,10 @@ hundreds of lines (532 there) while the real change was one version key and one 
 header standard requires. After applying: `just nav-check-context-map`
 (`scripts/yaml_key_diff.py`) compares the old (`git show HEAD:./context-map.yaml`) and new files by key and lists the comments lost; put the
 purpose header and any rationale comments back by script. A lost `# skill-ai-it-version:` comment is expected: the key replaces it.
+
+**A pack bootstrapped by hand tends to write `.archcore/` decisions as `accepted`.** Building skill-coder (2026-10-19), the agent wrote an ADR and a rule
+straight into `.archcore/` during bootstrap and marked them `accepted`, because the operator had just decided them in chat. That skips `promote`, the only
+mode that writes Archcore content, and the operator's authorization it requires ([../patterns/archcore-routing.md](../patterns/archcore-routing.md)). It
+surfaced only when that pattern's review date fell due and was read. In bootstrap, list the decisions as promotion candidates and ask; a decision made
+in chat is a candidate until the operator approves its promotion. Re-read `.archcore/` before editing it after a gap: a parallel session added seven
+documents to the same folder within the hour.

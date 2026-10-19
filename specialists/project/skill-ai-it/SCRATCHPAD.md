@@ -80,6 +80,8 @@ under `just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitab
 - [ ] **20261019_1708** `patterns/archcore-routing.md` passed its review date (2026-10-18); review the content, then update `Last reviewed` (`just check` fails on it).
 - [ ] **20261019_1708** skill-coder's helpers overlap three code checks here (`check_function_docs`/`docstring_ratchet.py`, `check_file_naming`, `check_interpreter_pinning`): once skill-coder is the
   default, call its helpers from the template instead of keeping a second copy of each rule.
+- [ ] **20261019_1732** `scripts/audit_rotations.py` compares records line by line, so a re-wrap by the markdown hook reads as lost (41 SCRATCHPAD lines
+  on 2026-10-19, baselined with a word-for-word check). Compare the text with line breaks folded, so only real loss is reported, then drop those rows.
 - Older open items are tracked in [open-items-20261010_1830.md](docs/trackers/open-items-20261010_1830.md).
 - [x] **2026-10-07, done (operator: fix it):** the upgrader's CHANGELOG entry now follows the file's order. `changelog_is_newest_first` reads the dated `##` headings; a newest-first file gets the
   entry on top and first in Contents, any other file gets it appended.

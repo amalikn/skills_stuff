@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261015_0129
+Last rotated: 20261019_1734
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions](#20261019_1734--pitfalls-hand-bootstrapped-packs-write-accepted-archcore-decisions)
 - [20261019_1707 — Recipe names back to kebab-case; upgrader renames the template's snake_case recipes](#20261019_1707--recipe-names-back-to-kebab-case-upgrader-renames-the-templates-snake_case-recipes)
 - [20261015_0129 — doc_freshness: a Budget header counts only with a size](#20261015_0129--doc_freshness-a-budget-header-counts-only-with-a-size)
 - [20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade](#20261014_1247--yaml_key_diff-context-map-key-changes-and-lost-comments-after-an-upgrade)
@@ -31,8 +32,11 @@ Last rotated: 20261015_0129
 - [20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted](#20261014_1027--stamping-unstamped-projects-canary-on-agent-stack-failed-and-was-reverted)
 - [20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean](#20261014_1020--coherence-pass-architecture-key-decisions-sibling-skills-sweep-clean)
 - [20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes](#20261014_1018--staleness-audit-upgrader-header-derived-index-counts-links-indexes)
-- [20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)](#20261014_1006--graphify-confirmed-disabled-slurp-write-backs-token-budget-rule-roles_fleet)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions
+
+- `references/pitfalls.md` gains the 2026-10-19 skill-coder case: archcore content written outside `promote` and marked `accepted`; in bootstrap, list decisions as promotion candidates and ask.
 
 ## 20261019_1707 — Recipe names back to kebab-case; upgrader renames the template's snake_case recipes
 
@@ -167,19 +171,6 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
   `scripts/render/`); SCRATCHPAD 2026-08-11 counts superseded in place and a done open item ticked; folder indexes for `docs/`, `docs/archive/`,
   `patterns/`, `templates/`, `docs/reviews/`; baselines named in scripts/README.md. Both new checks negative-tested red and green. Why it
   survived: the upgrader builds its header in code, a generation path the template review did not reach. Residual register in SCRATCHPAD.
-
-## 20261014_1006 — Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)
-
-- **Graphify confirmed disabled** (operator, 2026-10-14: "confirm and make sure that Graphify is disabled"). Every `graphify update` in this
-  package (templates/context_preflight.sh, the embedded preflight in references/files-support.md, templates/context-map.yaml) and in the nine
-  project justfiles that keep a `graph` recipe is gated by `GRAPHIFY_ENABLED=1`; no git hook, LaunchAgent, Claude hook or running process calls
-  it; `~/.claude.json` holds only skill usage counts, no Graphify MCP server. Two ungated recovery steps fixed: this package's `context-map.yaml`
-  `context_recovery` and `patterns/navigation/recovery-and-audit.md` step 3 (the reference the managed block links to).
-- **Slurp:** operator rule on token budget added to AGENTS.md working rules (loading tiers; never inline what a link carries, never delete to
-  save space); `just roles_fleet` recipe (one role-check line per governed project, to track the rollout); skill-slurp-chat Step 6 names what
-  adoption now adds and that `just budget` trims ROADMAP. Canary entry written in cambium-swap's CHANGELOG (its changes are not committed).
-- **Check surface retired:** CHANGELOG.md no longer a `managed-block-version` surface in `scripts/check_governance.py`. Rotation (`just budget`)
-  moved the only entry stating the stamp to docs/history and the check failed on a past fact; a rotating log cannot hold a live claim.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

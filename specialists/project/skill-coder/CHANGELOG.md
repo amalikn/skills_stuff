@@ -15,6 +15,8 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261019 Seven of the nine archcore entries (activation and naming ADRs; write-back, helpers, generic text, precedence and cite-sources rules)
+  were written by a parallel session on the operator's instruction to add the missing entries, then reviewed here.
 - 20261019 Archcore review (operator: "assess the archcore entries ... are they correct logically? any missing?", then "yes apply all"): all nine accepted
   (runtime ADR and code-map rule promoted); helpers rule allows the explicit `--write-baseline` write and exempts imported modules from recipes;
   code-map rule names `[scan.exclude]`, `[naming]` and their reason checks; rules-cite-sources limited to load-bearing rules; runtime ADR lists the

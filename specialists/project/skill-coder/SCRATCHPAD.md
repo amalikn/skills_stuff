@@ -30,6 +30,8 @@ Summary: Transient working state for skill-coder; durable facts move to referenc
   register, owning-skill check, canary then hand-over, exit-code gating). Caveat: the baseline is not clean, as subagents inherit the global CLAUDE.md and auto-memory index. One gap found and fixed:
   `languages/ansible.md` had no tag-rename transition rule (the run contradicted itself on an alias); step 6 added.
 
+- Next actions (20261019_1732): continue skill-drawio in a new chat (memory key `skills_stuff.skill-drawio.handoff-prompt-20261019`), building it
+  to this pack's rules; activation when the operator says so; `mise install python@3.11` then `just test-matrix` to prove the floor by a run.
 - Adopt the helpers in unified-network-controller: a `code-map.toml` replacing `src/unc/layers.toml`, the WRITE_GATES register and the promotion register's statuses; characterise its
   `check_write_gates`/`check_import_layers` against the helpers before switching.
 - Ansible and YAML: `code_size.py` measures no `.yml` files yet; decide a module limit for task files once `languages/ansible.md` has a source.
