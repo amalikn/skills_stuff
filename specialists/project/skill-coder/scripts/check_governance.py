@@ -94,6 +94,7 @@ CONDITIONAL_PATHS: frozenset[str] = frozenset({
     # Named by the generic skill-ai-it navigation block; this pack does not have them.
     "graphify-out/GRAPH_REPORT.md",     # Graphify disabled (operator, 2026-10-10)
     "Taskfile.yml", "Makefile", "package.json",
+    "ARCHCORE_PROMOTION_CANDIDATES.md",  # transient queue, deleted by promote 2026-10-19; CHANGELOG mentions are history
     "ARCHITECTURE.md", "ROADMAP.md",    # a guidance pack: SKILL.md + references/ carry the design; open items live in SCRATCHPAD.md
     "memory-bank/activeContext.md", "memory-bank/progress.md", "memory-bank/decisionLog.md",
     ".ai-context/repo-pack.md",

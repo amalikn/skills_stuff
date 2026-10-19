@@ -15,6 +15,13 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261019 Archcore promoted (operator: "promote and accept"): 4 ADRs and 7 rules written `accepted` under `.archcore/`, indexed in
+  `.archcore/index.guide.md` with the deferred spec and guide and the never-promoted reasons; `ARCHCORE_PROMOTION_CANDIDATES.md` deleted;
+  `context-map.yaml`, `repomix.config.json` and the checker's `CONDITIONAL_PATHS` updated to match.
+  Incident, no harm: a heredoc edit script failed its assertion, but the `git rm` on the following line still ran (the delete was intended).
+
+- 20261019 Installed (operator: "Install skill-drawio into Claude, Codex and Hermes, as skill-coder was"): directory symlinks into the Claude and
+  Codex skill folders and Hermes's `diagramming` category, all pointing at this canonical folder; Claude Code lists the skill.
 - 20261019 Process notes from the build (no effect on the pack's content): `# noqa` imports were written twice (UNC wrapper, `tests/test_helpers.py`)
   and replaced with `importlib` the same hour (skill-coder Learned entry in its Python override); one check log went to `/tmp` instead of the
   scratchpad; skill-drawio files were marked intent-to-add in the skills_stuff index (`git add -N`) so doc freshness could see them before the commit.

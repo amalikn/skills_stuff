@@ -16,9 +16,10 @@ Summary: Transient working state for skill-drawio; durable facts move to referen
 
 ## Open items
 
-- Archcore: no decision is recorded in `.archcore/` yet. Candidates for the operator to approve through skill-ai-it promote mode (they stay
-  `proposed` until then) are in [ARCHCORE_PROMOTION_CANDIDATES.md](ARCHCORE_PROMOTION_CANDIDATES.md).
-- Installed? Not yet linked into `~/.claude/skills`, `~/.codex/skills` or `~/.hermes/skills`, nor listed in the skills_stuff `README.md`; ask the operator.
+- Archcore: 4 ADRs and 7 rules accepted 2026-10-19 (operator: "promote and accept"), indexed in `.archcore/index.guide.md`. Deferred: the
+  flow-map spec and the adoption guide, until a second project adopts the engine.
+- Installed 2026-10-19 (operator): directory symlinks `~/.claude/skills/skill-drawio`, `~/.codex/skills/skill-drawio` and
+  `~/.hermes/skills/diagramming/skill-drawio` to this folder; listed in the skills_stuff `README.md`.
 - unified-network-controller `wc-local/scripts/site_onboarding/asbuilt_read.py` still carries its own copy of the draw.io reader now in
   `scripts/drawio/read.py`; make it a thin caller (its KMZ part stays there) with its tests, when that project is next touched.
 - draw.io desktop on the operator's Mac is now 32.5.5 (32.4.1 when the engine was built); the export flags were re-checked on 32.5.5, the

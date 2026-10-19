@@ -24,5 +24,5 @@ Last reviewed: 2026-10-10
 - [navigation-automation.md](navigation-automation.md) (89 lines) Deterministic navigation-control automation.
 - [package-layout.md](package-layout.md) (68 lines) Skill package layout.
 - [phases-1-3.md](phases-1-3.md) (114 lines) Phases 1 to 3: inventory, understand, infer.
-- [pitfalls.md](pitfalls.md) (69 lines) Pitfalls observed in practice.
+- [pitfalls.md](pitfalls.md) (75 lines) Pitfalls observed in practice.
 - [script-task-inventory.md](script-task-inventory.md) (224 lines) Script and task inventory.

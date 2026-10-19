@@ -15,6 +15,8 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261019 `context-map.yaml` and `repomix.config.json` no longer name the deleted `ARCHCORE_PROMOTION_CANDIDATES.md`; routing points at
+  `.archcore/index.guide.md` (skill-ai-it pitfall, 2026-10-19).
 - 20261019 Learned entry in `languages/python.md` (2026-10-19): after a `sys.path` seam, load modules with `importlib.import_module` instead of
   imports below code, so no `# noqa` is needed (from building skill-drawio's UNC wrapper and tests). `AI_NAVIGATION.md` pack routing mirrors the
   `SKILL.md` row for `module_groups.py`.

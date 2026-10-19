@@ -67,3 +67,9 @@ mode that writes Archcore content, and the operator's authorization it requires 
 surfaced only when that pattern's review date fell due and was read. In bootstrap, list the decisions as promotion candidates and ask; a decision made
 in chat is a candidate until the operator approves its promotion. Re-read `.archcore/` before editing it after a gap: a parallel session added seven
 documents to the same folder within the hour.
+
+**`promote` deletes the candidates file but leaves the routing that names it (2026-10-19, skill-drawio and skill-coder).** After promotion both packs'
+`context-map.yaml` still listed `ARCHCORE_PROMOTION_CANDIDATES.md` in `authority_order` and the `planning` and `governance` routing lists, and
+`repomix.config.json` still included it; `just check` passed because the name sits in `CONDITIONAL_PATHS`. In the same pass as the delete: drop the
+`authority_order` entry, replace the routing-list entries with `.archcore/index.guide.md`, drop the repomix include, and remove the promoted folders
+(`.archcore/adr`, `.archcore/rules`) from `CONDITIONAL_PATHS`. Keep `promotion_rules.archcore.candidates_report`: it names where the next refresh writes.
