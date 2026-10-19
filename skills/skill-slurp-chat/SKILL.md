@@ -189,6 +189,7 @@ lines reach the partners and their inbox lines show in the report. Exit 1 means 
 Then regenerate the project's wiki page from those files (operator, 2026-10-10; the page is generated, never hand-written):
 `just -f /Volumes/Data/_ai/_wiki/wiki_stuff/justfile project_page <project-path>`. It rewrites only its generated block in
 `projects/<folder-name>.md` and appends to the wiki's `log.md`; add the page to `index.md` the first time it prints a note. Report it in the coverage table.
+When the request includes "commit and push", commit and push those wiki_stuff paths too, staged by name (operator, 2026-10-19).
 
 ## Step 8 — Closeout mode only
 One more memory-keeper `progress` entry, key `session.closeout.<YYYYMMDD>.<topic>`: Session / Workstream, Scope, Completed, Files Changed, Decisions, Open Issues, Next Actions, Persistence Status
