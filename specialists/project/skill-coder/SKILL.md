@@ -133,6 +133,13 @@ promotion: [references/evolution-and-write-back.md](references/evolution-and-wri
 or ran its helpers is engaged, and its closeout (skill-slurp-chat Step 5b) classifies, writes and commits the entry here. When this source cannot be written, the entry is parked in the project under
 `## skill-coder write-back candidates`; `scripts/write_back.py --project-root <project>` lists parked entries, and the next engagement promotes them and removes them there.
 
+**Evidence with every entry (operator, 2026-10-20; every calling project owes it).** A write-back that records how something is done carries
+(1) a **code excerpt** of the logic that does it: the few lines that matter (about 30 at most), as a fenced block with its source path and
+commit, secrets and customer identifiers removed; and (2) for anything with a visual surface (Nautobot, OpenWISP, a device web UI, a draw.io
+render) a **screenshot** as reference, saved under `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md` naming each image, what it
+shows and where it was taken. Site names, addresses, MACs and serials are redacted or the shot is taken on a lab or sample instance; when the
+surface is not live yet, the entry says "screenshot pending: <page>, after <deploy>" and the next engagement adds it.
+
 ## Evidence
 
 Load-bearing claims are in `sources.yaml` (IDs `C-C..`), with the operator's rules as `USER_STATED`. External sources are kept verbatim under `documents/research-sources-20261019/` with a `readme.md`

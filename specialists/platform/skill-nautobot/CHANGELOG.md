@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261020 Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20).
 - 20261020 Learned 2026-10-20 (n) and (o) in `data-model.md`: native wireless models, per-group assignment and site child groups; Relationship rows hidden per side.
 - 20261020 Learned 2026-10-20 (d) in `app-development.md`: high-volume observations in a plain model through one bulk endpoint, no change-log flood.
 - 20261020 Learned 2026-10-20 (a) and (b) in `app-development.md`: HomeView panels ignore hidden navigation (wrap render_to_response per request); Nautobot 3 theme `gap-2` is 2px, no `column-gap-*`.

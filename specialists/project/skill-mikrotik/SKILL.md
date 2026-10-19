@@ -43,6 +43,13 @@ own `AGENTS.md`/`CLAUDE.md` says so. Invoking this skill carries that obligation
   both the SMC's eth0 and this switch's ether1) is written to every pack it touches, cross-referenced, not copied wholesale.
 - **Never write a password or any secret value into this pack.** Reference it as `<secret:keepassxc:Network/mikrotik switch & metal ap>`.
 
+**Evidence with every entry (operator, 2026-10-20; every calling project owes it).** A write-back that records how something is done carries
+(1) a **code excerpt** of the logic that does it: the few lines that matter (about 30 at most), as a fenced block with its source path and
+commit, secrets and customer identifiers removed; and (2) for anything with a visual surface (Nautobot, OpenWISP, a device web UI, a draw.io
+render) a **screenshot** as reference, saved under `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md` naming each image, what it
+shows and where it was taken. Site names, addresses, MACs and serials are redacted or the shot is taken on a lab or sample instance; when the
+surface is not live yet, the entry says "screenshot pending: <page>, after <deploy>" and the next engagement adds it.
+
 ## What This Pack Covers
 
 The MikroTik devices that sit between an SMC and the rest of a site: on `rct` sites an RB450Gx4 used as the site switch and a Metal 52 ac outdoor AP, both on RouterOS 7.8 at the sites surveyed. Their

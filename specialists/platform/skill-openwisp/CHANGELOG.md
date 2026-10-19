@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261020 Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20).
 - 20261019 Learned 2026-10-16 (UNC backlog audit, OpenWISP dashboard by IP on UNC01, verified): `references/deployment-and-recovery.md` gains that the images'
   domain-scoped cookies lose the session on an IP URL; host-only cookies, a distinct session name and the exact HTTPS origin with port fix it.
 - 20261015 Learned 2026-10-15 (b) (UNC SSoT read-only role, verified update): `references/identity-and-registration.md` gains the live check of the health query's columns and the column-level grants that keep device keys unreadable.

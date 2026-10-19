@@ -123,6 +123,10 @@ one day (2026-10-13: platform work done without invoking skill-nautobot; a skill
    (vendor, device, platform or tool behaviour, a version quirk, an API limit) with its owning skill. A fact about this project stays in the project.
 3. **Present and read back.** For each owed fact, open the skill's reference and confirm the entry is there in the skill's own format (Learned
    entry, known-issues entry, CHANGELOG line), reading the file body, not a session note. Missing: write it now, from the source the project cites.
+3b. **Evidence** (operator, 2026-10-20). Each entry that records how something is done carries a code excerpt of the logic (fenced, with its
+   source path and commit, secrets and customer identifiers removed), and for a visual surface (Nautobot, OpenWISP, a device UI, a render) a
+   screenshot under the skill's `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md`, redacted or from a lab or sample instance; a
+   surface not live yet is marked "screenshot pending" and caught at the next slurp. The skill's own contract states the same.
 4. **Committed.** `git status` in the skills repo for every engaged skill. A write-back that is not committed is not done: commit it (and push
    it when the session commits and pushes) as part of the write-back; the operator's "commit and push is single-repo scoped" limits the request,
    not the skill contracts. Run the skill's own tests first.

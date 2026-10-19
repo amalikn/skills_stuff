@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261020 Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20).
 - 20261019 Adopted by unified-network-controller in full: its renderer wrapper retired (its profile is now the `drawing:` block of its map,
   rendered by `render_flowmap.py`; the drawing changed only in its banner and `host` lines), and its as-built reader re-exports `drawio.read`
   (byte-identical output on 27 as-built files). The engine tests it held moved here as `tests/test_layout_rules.py` (17 tests: text fitting, notes,

@@ -72,6 +72,14 @@ nodes, 0.5 s for teleport.communitywifi.net.au's 34). Seen on a Pi: `hostname`, 
 `/var/local/tstiklatlon/lat`: 20-mile's label says -16.08550 and the file -16.08567, so read the file for a Pi's position (operator, 2026-10-20).
 A failed label command shows as `exit status N output:` (bungardi's `versions`). VERIFIED-OBSERVED 2026-10-20.
 
+Excerpt (unified-network-controller `wc-local/scripts/collector/teleport_labels.py`, commit b0f5bfc):
+
+```python
+nodes = json.loads(subprocess.run(teleport.tsh("ls", proxy, "--format=json"), capture_output=True, text=True, timeout=120).stdout)
+modes = {n["spec"]["hostname"]: r for n in nodes
+         if (r := str((n["spec"].get("cmd_labels") or {}).get("overlay", {}).get("result", "")).strip()) in ("readonly", "persistent", "unconfigured")}
+```
+
 ### Backdoor SSH Access (raw reverse tunnel, bypasses Teleport's node agent)
 
 Use this when `tsh ssh <site>` hangs, refuses to connect, or the box is registered in Teleport (shows up in `tsh ls`) but is unresponsive over it — the Teleport agent on the SMC has stalled, but the

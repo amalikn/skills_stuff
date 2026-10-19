@@ -75,6 +75,20 @@ VERIFIED-OBSERVED 2026-10-20, read-only from 20-mile-smc01 over Teleport apn, on
 
 UNC reads both generations (`identify_candidates.identify_ddc`, `s11_identity`); its catalog has the DDC_VoIP-BIA type.
 
+Excerpt (unified-network-controller `wc-local/scripts/site_onboarding/identify_candidates.py` `DDC_AGENT`, commit 04c3a7f), run on the SMC:
+
+```python
+def raw_get(path):                       # the S11 reply starts with a blank line: http.client and curl refuse it
+    s = socket.create_connection((ip, 80), timeout=20)
+    s.sendall(("GET %s HTTP/1.0\r\nHost: %s\r\n\r\n" % (path, ip)).encode())
+    ...                                  # read to EOF, cut at the first "HTTP/", split head and body at the blank line
+if raw_get("/auth=,%d" % int(time.time() * 1000))[0] == "200":   # empty PIN
+    facts = s11_identity(raw_get("/SYS")[1], raw_get("/_REG")[1], raw_get("/webdata")[1])
+# s11_identity: /SYS "model,mac,firmware,..." split on ","; /_REG starts "Yes"; /webdata JSON n.user_number, n.sip_proxy only
+```
+
+Screenshot pending: the ATA's `DDC_VoIP Settings` page, taken from the SMC through a port forward with its SIP number and server redacted.
+
 ## Vendor sources
 
 Manuals, datasheets, web pages, the IANA and IEEE excerpts and a firmware note are in [vendor-sources-dallas-delta-20261008_1043/](vendor-sources-dallas-delta-20261008_1043/readme.md). No firmware

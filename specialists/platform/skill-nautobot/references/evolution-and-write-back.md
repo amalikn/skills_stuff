@@ -33,6 +33,15 @@ malformed entry, or on an entry with no matching CHANGELOG line, so a write-back
 If this skill's source cannot be written (read-only path, no authorization), put the same entry in the engaging project's governed docs under a heading naming this
 skill, and link it from that project's index; the next engagement with write access promotes it.
 
+## Evidence with every entry
+
+Operator, 2026-10-20 (every calling project owes it): A write-back that records how something is done carries
+(1) a **code excerpt** of the logic that does it: the few lines that matter (about 30 at most), as a fenced block with its source path and
+commit, secrets and customer identifiers removed; and (2) for anything with a visual surface (Nautobot, OpenWISP, a device web UI, a draw.io
+render) a **screenshot** as reference, saved under `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md` naming each image, what it
+shows and where it was taken. Site names, addresses, MACs and serials are redacted or the shot is taken on a lab or sample instance; when the
+surface is not live yet, the entry says "screenshot pending: <page>, after <deploy>" and the next engagement adds it.
+
 ## Release reconciliation
 
 Learned entries are cheap on purpose. At a release, the maintainer: promotes each still-valid Learned entry into the reference prose; adds a `sources.yaml` claim

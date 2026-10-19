@@ -6,10 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261010_1806
+Last rotated: 20261020_0944
 ---
 
 # Changelog
+
+## 20261020_0944 — Write-back evidence: code excerpts and screenshots (v0.1.27 -> v0.1.28)
+
+Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20). In `SKILL.md`.
 
 ## 20261020_0049 — mikrotik_exec on a Machine ID host; 20-mile units read from apn-unc01 (v0.1.26 -> v0.1.27)
 
@@ -193,8 +197,3 @@ VERIFIED-OBSERVED 2026-10-08 from unified-network-controller work over Teleport 
 
 - `references/04_failure-modes.md`: arrkapa finding with evidence; new signature section (watchdog timer + kernel failure loop) and how to tell it from a power cut.
 - `references/05_known-issues.md`: item 1 closed; batavia-downs left open.
-
-## 20261007_1602 — Fleet survey host list without word splitting (v0.1.6 -> v0.1.7)
-
-- `scripts/mikrotik-fleet-survey.sh`: Teleport host list read one per line into an array instead of an unquoted `$(...)` (shellcheck SC2046); works on
-  bash 3.2 and with an empty list under `set -u`.

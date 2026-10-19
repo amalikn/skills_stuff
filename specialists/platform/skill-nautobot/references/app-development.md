@@ -360,6 +360,18 @@ Source: `nautobot/apps/jobs.py:36`, `nautobot/extras/models/jobs.py:148`, `nauto
 > endpoint with `bulk_create`, `bulk_update` and queryset `update`/`delete` in a transaction: those bypass the save signals, so no change-log rows
 > flood the log. Check the endpoint's rights with `request.user.has_perm(...)` under `IsAuthenticated` (an APIView without a queryset fails
 > TokenPermissions). Verify a hand-written migration with a throwaway image: `nautobot-server check` and `makemigrations <app> --check`.
+>
+> Excerpt (unified-network-controller `unc_ownership/dhcp_sync.py` `apply`, commit 5281117):
+>
+> ```python
+> with transaction.atomic():
+>     rows = {key(r.mac_address, r.ip_address): r for r in DhcpLease.objects.select_for_update().filter(location=loc, ended__isnull=True)}
+>     opened, carried, ended = merge(have, leases)          # pure: which sessions open, carry on, end
+>     DhcpLease.objects.bulk_create([DhcpLease(location=loc, ip_address=x["ip"], ..., first_seen=read_at, last_seen=read_at) for x in opened])
+>     DhcpLease.objects.bulk_update(moved, ["last_seen", "network", "hostname", "starts", "ends"], batch_size=500)
+>     DhcpLease.objects.filter(pk__in=[rows[k].pk for k in ended]).update(ended=read_at)
+>     DhcpLease.objects.filter(location=loc, ended__lt=read_at - timedelta(days=90)).delete()
+> ```
 
 ## 11. Testing
 

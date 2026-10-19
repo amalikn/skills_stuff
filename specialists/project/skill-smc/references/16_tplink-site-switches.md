@@ -189,7 +189,11 @@ days.
 **Update 2026-10-20:** UNC's discovery now treats `IPSSH` as TP-Link (`discovery.ssh_banner: [TPSSH, IPSSH]`), on the wandawuy proof below; its
 identify login reads the model before anything lands, so a host that is not a TP-Link stops there. gan-gan (nbn_accelerate) has two hosts at
 10.255.0.2 and 10.255.0.3 answering `SSH-1.99-IPSSH-6.6.0` and no SNMP; before the change its Switch ports stage failed with no switch found.
-Not logged in to (VERIFIED-OBSERVED banner only, 2026-10-20).
+Not logged in to (VERIFIED-OBSERVED banner only, 2026-10-20). The catalog line (unified-network-controller `wc-local/nautobot/catalog/vendors/tp-link/manufacturer.yaml`, commit 04c3a7f):
+
+```yaml
+discovery: {ssh_banner: [TPSSH, IPSSH], family: tplink-switch}
+```
 
 **Update 2026-10-14 (VERIFIED_PRIMARY for one site, read-only login):** wandawuy (nbn_accelerate) has two hosts at 10.255.0.2 and 10.255.0.3, OUI `98:25:4A`, banner `SSH-1.99-IPSSH-6.6.0`.
 `scripts/tplink-switch.sh wandawuy <ip> --backup` logged in to both with the `/Network/tplink switch` entry (`enable-no-password`): TP-Link SG2428P, firmware 5.20.0 Build 20230818 Rel.72032, system

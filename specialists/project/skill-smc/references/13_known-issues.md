@@ -1287,6 +1287,17 @@ MACs make a stored MAC a record of one session, not a lasting device identity (U
 two forms: `starts 1 2026/10/19 20:50:31;` (UTC) and, with `db-time-format local`, `starts epoch 1792403431; # Mon Oct 19 20:50:31 2026`
 (gan-gan, nbn_accelerate); a parser must accept both. VERIFIED-OBSERVED 2026-10-20 (gan-gan 28 leases, old-looma 135, read-only).
 
+Excerpt (unified-network-controller `wc-local/scripts/collector/dhcp_leases.py` `AGENT`, commit 5281117), run on the SMC:
+
+```python
+def when(body, word):
+    m = re.search(word + r"\s+epoch\s+(\d+);", body)                  # db-time-format local
+    if m:
+        return datetime.datetime.fromtimestamp(int(m.group(1)), datetime.timezone.utc).isoformat()
+    m = re.search(word + r"\s+\d\s+(\d{4})/(\d\d)/(\d\d)\s+(\d\d:\d\d:\d\d);", body)   # default, UTC
+    return "%s-%s-%sT%s+00:00" % m.groups() if m else None
+```
+
 ## 2026-10-20 — dhcpd's shared networks and a lease summary that keeps client MACs on the box (INFO)
 
 > **Superseded 2026-10-20** (operator): client MACs may be stored in UNC; see the entry above. The shared-network facts here stand.

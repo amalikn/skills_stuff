@@ -56,6 +56,14 @@ milestone.
 > when the product changes, and a stale mirror passes its own checks while proving nothing: one preview loaded two of a template's five scripts
 > and drew an empty canvas, one verifier built from a context the Dockerfile no longer used. Keep the mirrored list as a named constant and test it
 > against the source it copies (the template's script tags, the Dockerfile's context), and prove that test fails on the old list.
+>
+> Excerpt (unified-network-controller `tests/test_topology_preview_scripts.py`, commit 15159f3):
+>
+> ```python
+> drawing = block.split("{% else %}")[1].split("{% endif %}")[0]          # the template's drawing branch
+> keys = re.findall(r"assets\.(\w+)", block.split("{% if map_data %}")[0]) + re.findall(r"assets\.(\w+)", drawing)
+> self.assertEqual(tuple(asset_to_file[key_to_asset[k]] for k in keys), SCRIPTS)   # the preview's own constant
+> ```
 
 ## Proof against the real target
 

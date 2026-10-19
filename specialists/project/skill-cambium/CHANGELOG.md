@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261019_1121
+Last rotated: 20261020_0944
 ---
 
 # Changelog — skill-cambium
 
 ## Contents
 
+- [20261020_0944 — Write-back evidence: code excerpts and screenshots (no version change)](#20261020_0944--write-back-evidence-code-excerpts-and-screenshots-no-version-change)
 - [20261019_1119 — LINKPlanner best-server analysis is not footprint overlap (no version change)](#20261019_1119--linkplanner-best-server-analysis-is-not-footprint-overlap-no-version-change)
 - [20261015_1750 — Volatile config keys per family; no family has a change marker (no version change)](#20261015_1750--volatile-config-keys-per-family-no-family-has-a-change-marker-no-version-change)
 - [20261015_1553 — Concurrent SNMP walks lose no evidence; SNMP is not a login (no version change)](#20261015_1553--concurrent-snmp-walks-lose-no-evidence-snmp-is-not-a-login-no-version-change)
@@ -38,9 +39,12 @@ Last rotated: 20261019_1121
 - [20261009_0330 — Which SM an R195P hangs from: the 3000L bridge table and Option 82, not the units (v0.6.49 -> v0.6.50)](#20261009_0330--which-sm-an-r195p-hangs-from-the-3000l-bridge-table-and-option-82-not-the-units-v0649---v0650)
 - [20261009_0207 — epmp_field_probe.py: an ePMP unit's fields with values withheld, and the installer's record (v0.6.48 -> v0.6.49)](#20261009_0207--epmp_field_probepy-an-epmp-units-fields-with-values-withheld-and-the-installers-record-v0648---v0649)
 - [20261009_0153 — Installer record in sysDescr, Force 300 position fields, coarse range, cnWave sites (v0.6.47 -> v0.6.48)](#20261009_0153--installer-record-in-sysdescr-force-300-position-fields-coarse-range-cnwave-sites-v0647---v0648)
-- [20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)](#20261009_0120--station-table-range-and-angle-force-300-has-no-mac-table-r195p-attachment-not-readable-v0646---v0647)
 
 **20261016_2115 — v0.8.3:** Reference 03 adds observed as-built label variants, unique-match and conflict guards from UNC's conversion audit. No device changes.
+
+## 20261020_0944 — Write-back evidence: code excerpts and screenshots (no version change)
+
+Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20). In `SKILL.md`.
 
 ## 20261019_1119 — LINKPlanner best-server analysis is not footprint overlap (no version change)
 
@@ -190,11 +194,3 @@ references/01_overview.md (RF planning) gains a Learned 2026-10-16 entry from LI
   low-touch sites; station range is coarse (149 m steps at old-looma).
 - `references/05_known-issues.md`: the installer's record (old-looma 57 of 60 radios) and cnWave controller sites. From
   unified-network-controller's D10 work.
-
-## 20261009_0120 — Station table range and angle, Force 300 has no MAC table, R195P attachment not readable (v0.6.46 -> v0.6.47)
-
-- `references/snmp-oid-registry.yaml`: cambiumAPConnectedSTAEntry column 29 is often 0 (not ranged); no column is an angle and the 3000L has no angle
-  of arrival (2x2 MIMO, external antenna; product page read 2026-10-09); subscriber MACs are the record's + 1 with the address agreeing. Force
-  300-16: no BRIDGE, Q-BRIDGE or ARP MIB over SNMP, REST bridge table lists only itself (kalumburu, 2026-10-09).
-- `references/05_known-issues.md`: which subscriber an R195P is cabled to cannot be read from the units; the two-fact chain rule used instead.
-  From unified-network-controller's D10 link discovery.

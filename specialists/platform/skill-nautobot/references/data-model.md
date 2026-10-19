@@ -360,7 +360,34 @@ Source: `nautobot/extras/models/contacts.py:49-125`, `nautobot/extras/models/sta
 > `/api/wireless/controller-managed-device-group-wireless-network-assignments/` (with an optional `vlan`) and `...-radio-profile-assignments/`.
 > The group is a tree (`parent`) with a required `controller` and `capabilities` (`["wireless"]`, the only choice), so per-site wireless means a
 > child group per site under the controller's group, with that site's devices in it. Because names are unique, prefix them with the site.
+>
+> Excerpt (unified-network-controller `wc-local/scripts/nautobot_tools/wireless_networks.py`, commit 6110916):
+>
+> ```python
+> rec = c.call("POST", "/wireless/wireless-networks/", {"name": f"{site}: {ssid}", "ssid": ssid, "mode": "Standalone (Autonomous)",
+>                                                      "authentication": "WPA2 Personal", "enabled": True, "hidden": hidden})
+> c.call("POST", "/wireless/controller-managed-device-group-wireless-network-assignments/",
+>        {"controller_managed_device_group": site_group["id"], "wireless_network": rec["id"], "vlan": vlan_id})
+> # the site's group: a child of the controller's, wireless-capable (site_link_fixes.site_group)
+> c.call("POST", "/dcim/controller-managed-device-groups/", {"name": f"{site} ({ctl_group['name']})", "controller": controller_id,
+>                                                            "parent": ctl_group["id"], "capabilities": ["wireless"]})
+> ```
+>
+> Screenshot pending: a site group's page with its Wireless Networks and Radio Profiles, after UNC 0.8.47 is deployed and `wireless-networks --apply` runs.
 
 > **Learned 2026-10-20 (o)** · Nautobot 3.2.3 · VERIFIED_SECONDARY · Source: UNC `site_link_fixes.py` VIEW_SITE with `destination_hidden: true`, operator's screenshot of the site page before it · Falsifier: a Relationship with `destination_hidden` still listed on its destination object's Relationships panel
 > A Relationship row on an object's page is hidden per side with `source_hidden` / `destination_hidden`; the link itself stays and the other side
 > still shows it. Use it for plumbing links the team should not meet (a DNS view's link to its site), rather than deleting the Relationship.
+>
+> Excerpt (unified-network-controller `wc-local/scripts/nautobot_tools/site_link_fixes.py`, commit eee167a): the spec, and converging an existing one.
+>
+> ```python
+> VIEW_SITE = {"key": "unc_dns_view_site", "type": "one-to-one", "source_type": "nautobot_dns_models.dnsview", "destination_type": "dcim.location",
+>              "destination_hidden": True}
+> drift = {k: v for k, v in spec.items() if k not in ("key", "type", "source_type", "destination_type") and found.get(k) != v}
+> if drift and apply:
+>     c.call("PATCH", f"/extras/relationships/{found['id']}/", drift)
+> ```
+>
+> Screenshot pending: a site's Relationships panel without the DNS View row, after link-fixes runs on the deployed host (the operator's
+> before-shot showed the row "DNS View 20-mile").

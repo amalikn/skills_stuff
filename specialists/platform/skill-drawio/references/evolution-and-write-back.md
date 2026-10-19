@@ -55,6 +55,15 @@ without one. Read the file back after writing, run `just test` and `just check`,
    skill-drawio` lists parked entries; the next engaged session promotes each one (re-verifying it), deletes it from the project and says so in both change logs.
 4. A layout or style change found in a project's review goes into the engine with a test (and every consumer's drawing re-proven), not only into prose.
 
+## Evidence with every entry
+
+Operator, 2026-10-20 (every calling project owes it): A write-back that records how something is done carries
+(1) a **code excerpt** of the logic that does it: the few lines that matter (about 30 at most), as a fenced block with its source path and
+commit, secrets and customer identifiers removed; and (2) for anything with a visual surface (Nautobot, OpenWISP, a device web UI, a draw.io
+render) a **screenshot** as reference, saved under `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md` naming each image, what it
+shows and where it was taken. Site names, addresses, MACs and serials are redacted or the shot is taken on a lab or sample instance; when the
+surface is not live yet, the entry says "screenshot pending: <page>, after <deploy>" and the next engagement adds it.
+
 ## Release reconciliation
 
 At a release the maintainer folds each still-valid Learned entry into the prose, adds a `sources.yaml` claim when a decision depends on it, moves `## Unreleased` under the new version and reruns the

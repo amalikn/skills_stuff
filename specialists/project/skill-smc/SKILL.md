@@ -53,6 +53,13 @@ remind you; invoking this skill at all carries that obligation, including the fi
 - A project's own `AGENTS.md`/`CLAUDE.md` MAY restate this obligation with project-specific detail (its own routing-table rows, its own verification rule number) — that's reinforcement, not the source
   of the rule. A project that says nothing about skill-smc at all still carries this obligation the moment it invokes this skill.
 
+**Evidence with every entry (operator, 2026-10-20; every calling project owes it).** A write-back that records how something is done carries
+(1) a **code excerpt** of the logic that does it: the few lines that matter (about 30 at most), as a fenced block with its source path and
+commit, secrets and customer identifiers removed; and (2) for anything with a visual surface (Nautobot, OpenWISP, a device web UI, a draw.io
+render) a **screenshot** as reference, saved under `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md` naming each image, what it
+shows and where it was taken. Site names, addresses, MACs and serials are redacted or the shot is taken on a lab or sample instance; when the
+surface is not live yet, the entry says "screenshot pending: <page>, after <deploy>" and the next engagement adds it.
+
 ## What This Pack Covers
 
 SMC boxes and the `ansible-wifi` repo that builds them. An SMC is an x86 PC (`rcp`, `nbn_accelerate`) or an ARM64 Raspberry Pi (`rct`, `wh`, `nbn_wh`) on Ubuntu 22.04, acting as
