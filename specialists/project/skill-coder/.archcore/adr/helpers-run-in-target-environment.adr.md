@@ -1,14 +1,15 @@
 ---
 title: Helpers run in the target project's environment
 type: adr
-status: proposed
-tags: [runtime, helpers]
+status: accepted
+tags: [helpers, runtime]
 created: 2026-10-19
+Last reviewed: 2026-10-19
 ---
 
 # ADR: Helpers run in the target project's environment
 
-Status: proposed (decided by the operator in chat, 2026-10-19; written outside `promote` mode, so it awaits the operator's promotion approval)
+Status: accepted (decided by the operator in chat, 2026-10-19; first written outside `promote` mode, promotion approved by the operator the same day)
 
 ## Context
 
@@ -28,3 +29,5 @@ the project pins the skill revision.
 - The project's tool versions decide; the pack never fights a project's configuration.
 - Helpers cannot use third-party libraries; the contract test enforces stdlib-only and the 3.11 grammar; `just test-matrix` runs them on each installed Python.
 - The pack's own venv stays on the operator's default (3.14) and exists only for its recipes and tests.
+- Open (2026-10-19): no project pins a skill revision yet (unified-network-controller's `skill_paths.py` loads the working tree), and
+  `just test-matrix` cannot run 3.11 until `mise install python@3.11`; the floor is proven by the 3.11 grammar parse only.

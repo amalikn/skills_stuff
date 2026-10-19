@@ -31,6 +31,19 @@ Every file states its purpose in its type's native header, so a reader can judge
 The module header says what the file is for, why it exists (the decision or incident behind it), what it reads and writes, and how it is run (a `Usage:` block with real command lines). Why: a reader
 should not need the code to know whether running it is safe.
 
+**A runnable script's header is its front matter** (operator, 2026-10-19: "should we also define front matter ... for individual scripts"), in the form its
+language allows, never a YAML `---` block that would break the code. A script meant to be run (a Python file with a `__main__` block, a shell script
+with a shebang) states three things in it:
+
+| Part    | Says                                                                                       | Recognised by `scripts/script_headers.py`                    |
+| ------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| Summary | The first line: what the script is for                                                     | A non-empty first line                                        |
+| Run     | How to run it (`Usage:` or `Run:` with real command lines), or `Imported, not run`          | A `Usage` or `Run` line                                       |
+| Safety  | What it touches: read-only, files only, or how its writes are gated (`--apply`, a plan step) | Words such as read-only, files only, `--apply`, dry run, writes |
+
+A module that is only imported needs its summary only. Why: before running a script a reader must know what it is for, how to call it and whether it
+can change anything. `script_headers.py` checks it as a shrink-only ratchet; skill-ai-it's `doc_freshness.py` already fails a file with no summary.
+
 Canonical sources for these rules: governance [`coding-guide.md`](/Volumes/Data/_ai/governance/categories/coding-guide.md) (2026-10-07) and
 [`naming-and-file-summary-guide.md`](/Volumes/Data/_ai/governance/categories/naming-and-file-summary-guide.md) "Code docstrings" (2026-10-08); this file restates
 them and links there rather than diverging. A script that takes inputs (flags, environment variables, arguments) has an `Inputs:` section in its header with a

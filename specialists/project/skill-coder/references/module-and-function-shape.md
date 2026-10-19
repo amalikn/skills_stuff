@@ -21,6 +21,18 @@ Summary: >-
 | File an agent loads whole (AGENTS.md, SKILL.md, SCRATCHPAD.md) | 200 lines and 25 KB | Always-loaded context stays cheap                             |
 | Check or rule in a checker                                     | under 60 lines      | The check is its own documentation                            |
 
+**Two thresholds per unit** (operator, 2026-10-19: "the number of lines before a script has to be modularised"): past the warning, plan the split along a real
+seam the next time the unit is touched (it never fails a check); past the hard limit the unit must be split, and a check fails unless the shrink-only
+baseline records it.
+
+| Language       | Module: warn / must split | Function: warn / must split | Source                                                                  |
+| -------------- | ------------------------- | --------------------------- | ----------------------------------------------------------------------- |
+| Default (any)  | 300 / 400                 | 40 / 60                     | Operator; the hard limits are a governed project's rule R34              |
+| Shell          | 100 / 200                 | 30 / 40                     | Operator; past about 100 lines a script belongs in a structured language (Google Shell Style Guide, UNVERIFIED until captured) |
+
+`scripts/code_size.py` applies both tiers (`DEFAULT_LIMITS`, `LANG_LIMITS`); a project sets its own per language or file suffix in `code-map.toml`
+`[limits.<language>]` (`module`, `function`, `warn_module`, `warn_function`).
+
 The numbers are the operator's defaults (a governed project, unified-network-controller, rule R34; skill-ai-it checker structure). A language override may adjust them with a stated reason
 ([../languages/readme.md](../languages/readme.md)); a project's own numbers win.
 
