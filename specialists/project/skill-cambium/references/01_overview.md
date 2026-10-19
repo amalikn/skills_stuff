@@ -82,6 +82,19 @@ Source: Cambium company statement "Sep 23 2026 Update" (`https://www.cambiumnetw
 Consequence for APN's own fleet: cnWave backhaul now has a named buyer; ePMP/Force and the Enterprise Wi-Fi APs do not. Treat new XV2/E-series or cnMatrix purchases as spares-only until a buyer is
 announced. `cambium-swap` owns the continuity analysis and should log this statement as new evidence.
 
+### Vendor status after the Univastu acquisition (received 2026-10-16, vendor claim)
+
+Source: Cambium marketing email "Announcement: Univastu Acquisition of Cambium Networks' ePMP, Enterprise, and cnMaestro", 16 Oct 2026 (cambium-swap evidence E146, archived copy and source note there).
+
+- **14 Oct 2026: Univastu India Limited** (NSE: UNIVASTU, an engineering, procurement and construction company) completed the acquisition of Cambium Networks: the **ePMP and Enterprise businesses
+  and cnMaestro**. Cambium runs as a standalone Univastu subsidiary and says it will resume production.
+- **cnMaestro Cloud "will continue to operate on a go-forward basis"**, with no date or terms. Cambium's earlier Enterprise guidance ("may not support Enterprise devices post the end of October,
+  2026", E144) is not withdrawn by name.
+- Not stated: the Cloud Anchor, expired device certificates, onboarding of new devices, and whether cnPilot R195P and cnMatrix sit inside "Enterprise" (`UNKNOWN`).
+
+Consequence for APN's own fleet: ePMP/Force and Enterprise Wi-Fi now have a named owner (Univastu), cnWave has Airspan. The spares-only rule above holds until production and supply are confirmed through
+APN's distributor. Corroborate against a Univastu NSE disclosure before treating this as more than a vendor claim.
+
 ## Evidence-State Discipline
 
 Borrowed from `cambium-swap`'s own convention — apply it in this pack too. Tag any non-trivial claim:
