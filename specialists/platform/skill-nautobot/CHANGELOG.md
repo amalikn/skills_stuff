@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261019 Learned 2026-10-19 (UNC isolation-test guard) in `operations-cookbook.md`: /api/status/ lists installed apps under `nautobot-apps` (`plugins` is a deprecated alias).
 - 20261019 Learned 2026-10-16 (UNC backlog audit, Friday's Codex work) in `operations-cookbook.md`: native Cancel kills a running Job with SIGKILL (no `finally`, no lock release).
 - 20261019 Learned 2026-10-16 (UNC backlog audit) in `operations-cookbook.md`: REST `depth=0` gives related ids without names; compare names at `depth=1`.
 - 20261019 Learned 2026-10-16 (UNC backlog audit) in `apps-jobs-validation.md`: `ObjectVar.query_params` `"$<field>"` makes a natively dependent field.

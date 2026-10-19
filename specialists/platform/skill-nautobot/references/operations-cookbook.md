@@ -132,6 +132,10 @@ Source: `nautobot/core/settings.py:375-417`, `nautobot/core/api/versioning.py` (
 > At `depth=0` related objects (status, role, tags) come back as ids/URLs without names; a check that compares names needs `depth=1` (or a separate lookup
 > of the ids). Read a large subtree with one paged query on the root rather than one query per child Location.
 
+> **Learned 2026-10-19** · Nautobot 3.2.3 REST · VERIFIED_PRIMARY · Source: installed `nautobot/core/api/views.py` lines 540-589 (status view schema and body) · Falsifier: a 3.2.x /api/status/ body without a `nautobot-apps` object.
+> `/api/status/` lists installed apps under `nautobot-apps` (app module name to version); `plugins` carries the same mapping as a deprecated alias marked for
+> removal. A script that must refuse the wrong instance can read the installed app name from there instead of trusting a flag or a URL.
+
 ## 3. Dynamic Groups and Saved Views
 
 Decision: a Dynamic Group is a named, reusable member set (for Config Contexts, Jobs and permissions); a Saved View is only a remembered list-view layout.
