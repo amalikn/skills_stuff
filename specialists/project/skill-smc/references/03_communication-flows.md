@@ -63,6 +63,15 @@ run on a period (hostname, `site.txt`, Teleport version, `disk` when `disk_count
 2026-10-14: if `/var/lib/teleport` is lost, deleting it and restarting Teleport re-joins the node from `/etc/teleport.yaml`; smc-resiliency's identity
 partition design relies on this.
 
+**Command labels as read (2026-10-20, `tsh ls --format=json`, read-only):** each node object carries them under `spec.cmd_labels.<name>.result`
+and the static ones under `metadata.labels`, so one list per cluster gives the whole fleet's labels with no login (0.9 s for teleport.apn.au's 340
+nodes, 0.5 s for teleport.communitywifi.net.au's 34). Seen on a Pi: `hostname`, `id` (site.txt, 20-mile `183`), `kernel`, `os`, `overlay`,
+`lat`, `lon`, `teleport`, `fluent-bit`, `kohana`, `sidecar`, `telemetry`, `uuid`, `watchdog`, `wifi`, `zram`, `healthcheck`. `overlay` runs
+`[ -f /root/.overlay_bash_settings ] && (mount | grep -q 'overlayroot on / type overlay' && echo readonly || echo persistent) || echo unconfigured`:
+309 Pis report one, 306 `readonly` and 3 `unconfigured` (bungardi, kupungarri, warehouse-rct01); x86 boxes have none. The `lat` label is not
+`/var/local/tstiklatlon/lat`: 20-mile's label says -16.08550 and the file -16.08567, so read the file for a Pi's position (operator, 2026-10-20).
+A failed label command shows as `exit status N output:` (bungardi's `versions`). VERIFIED-OBSERVED 2026-10-20.
+
 ### Backdoor SSH Access (raw reverse tunnel, bypasses Teleport's node agent)
 
 Use this when `tsh ssh <site>` hangs, refuses to connect, or the box is registered in Teleport (shows up in `tsh ls`) but is unresponsive over it — the Teleport agent on the SMC has stalled, but the

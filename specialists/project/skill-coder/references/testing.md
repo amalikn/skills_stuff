@@ -51,6 +51,12 @@ A governance check, lint rule or validator lands with a negative test that turns
 (skill-ai-it governance-check doctrine). When a check starts in warn mode, its count is held by a shrink-only baseline and switches to fail mode at a named
 milestone.
 
+> **Learned 2026-10-20** · any project · VERIFIED_PRIMARY · Source: unified-network-controller `tests/test_topology_preview_scripts.py`, `wc-local/scripts/nautobot_tools/app_verify.py` (both fixed 2026-10-20) · Falsifier: a mirror tool kept in step with its source for months with no test tying them
+> A helper that mirrors product inputs (a preview page that loads the page's scripts, a verifier that builds the product's image) drifts silently
+> when the product changes, and a stale mirror passes its own checks while proving nothing: one preview loaded two of a template's five scripts
+> and drew an empty canvas, one verifier built from a context the Dockerfile no longer used. Keep the mirrored list as a named constant and test it
+> against the source it copies (the template's script tags, the Dockerfile's context), and prove that test fails on the old list.
+
 ## Proof against the real target
 
 - Before claiming a capability works, verify it against a real target (an isolated or spare one), not only a mock. Why: a stub only proves the code agrees with

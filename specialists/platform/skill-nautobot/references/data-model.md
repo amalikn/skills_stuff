@@ -351,3 +351,16 @@ Source: `nautobot/extras/models/contacts.py:49-125`, `nautobot/extras/models/sta
 > **Learned 2026-10-15 (m)** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `ipam/models.py` `Namespace.location = ForeignKey("dcim.Location", on_delete=PROTECT, related_name="namespaces")` · Falsifier: a 3.2.x Location delete that succeeds while a Namespace names it
 > A Location delete is refused while any Namespace's optional `location` points at it (`on_delete=PROTECT`). A Job or script that removes a site must
 > clear or delete the site's Namespaces (after their Prefixes and VRFs, whose `namespace` is also PROTECT) before deleting the Location.
+
+> **Learned 2026-10-20 (n)** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `wireless/models.py`, `wireless/choices.py`, `wireless/api/urls.py`, `dcim/models/devices.py` `ControllerManagedDeviceGroup` · Falsifier: a 3.2.x Wireless Network assignable to a Device directly, or a Radio Profile name that may repeat
+> Wireless is native: `WirelessNetwork` (name unique estate-wide, `ssid`, `mode` such as `Standalone (Autonomous)`, `Central`, `Bridge`,
+> `authentication` such as `Open`, `WPA2 Personal`, `WPA2 Enterprise`, `enabled`, `hidden`, an optional `secrets_group` for the passphrase) and
+> `RadioProfile` (name unique, `frequency` `2.4GHz`/`5GHz`/`6GHz`, `channel_width` a list of 20/40/80/160, `allowed_channel_list`,
+> `regulatory_domain` such as `AU`, tx/rx power). Both are assigned to a Controller Managed Device Group, never to one Device, through
+> `/api/wireless/controller-managed-device-group-wireless-network-assignments/` (with an optional `vlan`) and `...-radio-profile-assignments/`.
+> The group is a tree (`parent`) with a required `controller` and `capabilities` (`["wireless"]`, the only choice), so per-site wireless means a
+> child group per site under the controller's group, with that site's devices in it. Because names are unique, prefix them with the site.
+
+> **Learned 2026-10-20 (o)** · Nautobot 3.2.3 · VERIFIED_SECONDARY · Source: UNC `site_link_fixes.py` VIEW_SITE with `destination_hidden: true`, operator's screenshot of the site page before it · Falsifier: a Relationship with `destination_hidden` still listed on its destination object's Relationships panel
+> A Relationship row on an object's page is hidden per side with `source_hidden` / `destination_hidden`; the link itself stays and the other side
+> still shows it. Use it for plumbing links the team should not meet (a DNS view's link to its site), rather than deleting the Relationship.

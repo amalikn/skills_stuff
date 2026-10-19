@@ -1123,7 +1123,7 @@ At low-touch (`smc_ltp`) sites the 3000L APs relay DHCP with Option 82, and the 
 (`/etc/dhcp/dhcpd.conf` `on commit`, `cnmaestro-provisioning.py`) and keeps it in `/var/lib/dhcp/dhcpd.leases` as `option agent.remote-id x:x:xx:...;`
 (leading zeros dropped). The Remote ID is the radio MAC of the SM the request came through (its record + 1). old-looma-smc01: 212 of 1,949 leases
 carry one, all public Wi-Fi clients; the R195Ps' own leases carry none. The file holds public client MACs: read it in memory and keep only what
-Nautobot knows, never store it raw (unified-network-controller topology reader `smc-dhcp-relay`; skill-cambium 05_known-issues for the join that
+Nautobot knows, never store it raw (superseded 2026-10-20: storing client MACs is allowed, see that entry) (unified-network-controller topology reader `smc-dhcp-relay`; skill-cambium 05_known-issues for the join that
 places a router behind its SM). Nothing here depends on cnMaestro: the AP inserts the option and dhcpd records it.
 
 ## 2026-10-09 — the provisioning hook's logs are the site's install-time pairing (INFO)
@@ -1278,7 +1278,19 @@ On apn-unc01 (tbot per cluster, no user `tsh login`), `mikrotik_exec.sh` and `tp
 `sshpass` on the host running it; apn-unc01 had none until it was pinned (1.09-1) and installed. Unified-network-controller passes the identity
 for every skill-script call through `common.teleport.script_env(proxy)`. VERIFIED-OBSERVED 2026-10-19 (20-mile land dry run from apn-unc01).
 
+## 2026-10-20 — client MACs may be stored in UNC; dhcpd lease times in epoch form (INFO, supersedes the never-store rule)
+
+Operator, 2026-10-20: "We can save the client MAC address in UNC. There is no problem in that." The rule below and in the 2026-10-09 entry that
+public client MACs never leave the box or are never stored was an agent's assumption, not the operator's; it is superseded (USER_STATED). UNC now
+reads every active lease (address, MAC, hostname, shared network, start, end) and keeps lease sessions with 90 days of history. Randomised client
+MACs make a stored MAC a record of one session, not a lasting device identity (UNC options register, T1/T2 test). The lease file's times come in
+two forms: `starts 1 2026/10/19 20:50:31;` (UTC) and, with `db-time-format local`, `starts epoch 1792403431; # Mon Oct 19 20:50:31 2026`
+(gan-gan, nbn_accelerate); a parser must accept both. VERIFIED-OBSERVED 2026-10-20 (gan-gan 28 leases, old-looma 135, read-only).
+
 ## 2026-10-20 — dhcpd's shared networks and a lease summary that keeps client MACs on the box (INFO)
+
+> **Superseded 2026-10-20** (operator): client MACs may be stored in UNC; see the entry above. The shared-network facts here stand.
+
 
 The SMC's `/etc/dhcp/dhcpd.conf` groups subnets in named shared networks: `public`, `management`, and on low-touch sites `provisioning`
 (old-looma: public 10.0.0.0/18 range 10.0.32.0-10.0.63.254, provisioning 192.168.11.0/24, management 10.255.0.0/19 range 10.255.10.0-254;

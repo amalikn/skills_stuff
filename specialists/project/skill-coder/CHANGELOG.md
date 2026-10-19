@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 in `references/testing.md`: tie a mirror tool's inputs (preview scripts, image build context) to their source by a test that can fail (unified-network-controller).
 - 20261020 Learned 2026-10-20 in `references/tooling-and-runtime.md`: forward recipe arguments with `[positional-arguments]` and `"$@"`, never `{{args}}` (unified-network-controller).
 - Learned 2026-10-19 in `languages/python.md`: `Counter.most_common()` ties from set-built counts change order between runs; sort by `(-count, name)`.
 - Learned 2026-10-19 in `languages/shell.md`: a multi-line command without `set -e` runs on after a failed edit step; guard it and run destructive steps separately.

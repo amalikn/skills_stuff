@@ -52,9 +52,28 @@ All facts VERIFIED-OBSERVED 2026-10-08, read-only from the site's SMC over Telep
 ## Reading quirks and unreachable units
 
 - The settings page declares 43 bytes more `Content-Length` than it sends. Python's `http.client` raises `IncompleteRead`; `curl` tolerates it. Catch the exception and keep the partial body.
-- 20-mile's unit never answers HTTP.
+- 20-mile's unit never answers HTTP. **Superseded 2026-10-20:** it answers; see "The S11 generation" below.
 - aeroplane-1's unit drops the HTTP connection.
 - kintore-smc01 is not registered in Teleport (`subsystem request failed`, twice), so its ATA could not be reached.
+
+## The S11 generation (20-mile, 2026-10-20)
+
+VERIFIED-OBSERVED 2026-10-20, read-only from 20-mile-smc01 over Teleport apn, one login with the empty PIN.
+
+- 20-mile's ATA is a **DDC_VoIP-BIA** on firmware **s11.0920.04** (the vendor's S11 generation), MAC `38:b1:9e:d0:02:14`, at 192.168.5.253. It is not
+  silent: its replies start with a blank line before the status line, so `curl` refuses them ("Received HTTP/0.9 when not allowed") unless given
+  `--http0.9`, and Python's `http.client` refuses them too (read with a plain socket). That is why it looked as if it never answered HTTP.
+- Its page (`DDC_VoIP Settings`, footer "Dallas Delta Corp Web Page") has no login form and fills its fields by script. The script's reads:
+  `GET /auth=<PIN>,<ms>` logs in (200, body `OK`, with the empty PIN), then `GET /SYS` gives `model,mac,firmware,...`
+  (`DDC_VoIP-BIA,38:b1:9e:d0:02:14,s11.0920.04,show`), `GET /_REG` the registration (`Yes > Server 1,27,0`), and `GET /webdata` the settings as JSON
+  `{"i": {checkboxes}, "n": {field: value}}` with the same field names as DDC_VoIP-m's form (`user_number`, `sip_proxy`; the SIP password is in there,
+  so parse it on the box). Before `/auth` they return 404. `/dotest`, `/getrst` and `POST /settings` also exist; they test, reset or write, so a
+  reader never calls them.
+- A marker matching both generations' pages is "Dallas Delta Corp" (DDC_VoIP-m's comment and the S11 footer).
+- adjamarragu's DDC_VoIP-m now reports MAC `00:18:1F:01:F1:6A`, not the `00-18-1F-01-E6-16` read on 2026-10-08: the unit may have been replaced
+  (UNVERIFIED; same model and firmware 042112, registered).
+
+UNC reads both generations (`identify_candidates.identify_ddc`, `s11_identity`); its catalog has the DDC_VoIP-BIA type.
 
 ## Vendor sources
 

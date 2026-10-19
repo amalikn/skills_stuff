@@ -355,6 +355,12 @@ Workers import the app, so the worker image needs the same package version.
 Source: `nautobot/apps/jobs.py:36`, `nautobot/extras/models/jobs.py:148`, `nautobot_golden_config/jobs.py:54,630-638` (an installed app doing the same);
 `docs/development/apps/api/platform-features/jobs.html`.
 
+> **Learned 2026-10-20 (d)** · Nautobot 3.2.3 apps · VERIFIED_SECONDARY · Source: UNC `unc_ownership` DhcpLease and `dhcp_sync.apply` (bulk_create, bulk_update, queryset update and delete inside one transaction) · Falsifier: ObjectChange rows written for a `bulk_update` of a plain model
+> A high-volume observation (hundreds of rows a cycle, such as DHCP lease sessions) belongs in a plain `models.Model` written through one custom
+> endpoint with `bulk_create`, `bulk_update` and queryset `update`/`delete` in a transaction: those bypass the save signals, so no change-log rows
+> flood the log. Check the endpoint's rights with `request.user.has_perm(...)` under `IsAuthenticated` (an APIView without a queryset fails
+> TokenPermissions). Verify a hand-written migration with a throwaway image: `nautobot-server check` and `makemigrations <app> --check`.
+
 ## 11. Testing
 
 Decision: use Nautobot's runner and the base classes in `nautobot.apps.testing`; they create the user, token and statuses the views expect.

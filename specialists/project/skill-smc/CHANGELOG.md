@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261019_1121
+Last rotated: 20261020_0939
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261020_0939 — Client MACs may be stored; S11 ATA reads; IPSSH as TP-Link; Teleport command labels (v0.5.0 -> v0.5.1)](#20261020_0939--client-macs-may-be-stored-s11-ata-reads-ipssh-as-tp-link-teleport-command-labels-v050---v051)
 - [20261020_0049 — Bot-host skill scripts, dhcpd shared networks, uplink gateway (v0.4.9 -> v0.5.0)](#20261020_0049--bot-host-skill-scripts-dhcpd-shared-networks-uplink-gateway-v049---v050)
 - [20261019_1119 — Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)](#20261019_1119--working-teleport-ssh-reads-take-79-s-10-s-attempts-two-tries-random-nodes-v048---v049)
 - [20261015_1751 — WireGuard and NETMAP kernel modules present on rcp and rct SMCs; no overlay tools installed (no version change)](#20261015_1751--wireguard-and-netmap-kernel-modules-present-on-rcp-and-rct-smcs-no-overlay-tools-installed-no-version-change)
@@ -35,7 +36,14 @@ Last rotated: 20261019_1121
 - [20261009_1652 — Low-touch provisioning logs live only on the SMC; sizes per site, backup in UNC (v0.3.2 -> v0.3.3)](#20261009_1652--low-touch-provisioning-logs-live-only-on-the-smc-sizes-per-site-backup-in-unc-v032---v033)
 - [20261009_1552 — An SMC's DHCP history lives in a short journal and is not a unit's boot history (v0.3.1 -> v0.3.2)](#20261009_1552--an-smcs-dhcp-history-lives-in-a-short-journal-and-is-not-a-units-boot-history-v031---v032)
 - [20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)](#20261008_1206--pi-identity-probe-and-rct-site-ata-settings-reader-promoted-to-scripts-v022---v023)
-- [20261008_1147 — Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)](#20261008_1147--raspberry-pi-smc-identity-and-ports-rct-site-ata-vendor-sources-linked-v021---v022)
+
+## 20261020_0939 — Client MACs may be stored; S11 ATA reads; IPSSH as TP-Link; Teleport command labels (v0.5.0 -> v0.5.1)
+
+From unified-network-controller's 2026-10-20 run. `references/13_known-issues.md`: the never-store-client-MACs rule superseded (operator), dhcpd's
+`epoch` lease-time form. `references/17_site-ata-dallas-delta.md`: 20-mile's ATA is a DDC_VoIP-BIA on S11 firmware, read with `--http0.9` and
+`/auth` then `/SYS`, `/_REG`, `/webdata`; adjamarragu's ATA MAC changed. `references/16_tplink-site-switches.md`: UNC treats IPSSH as TP-Link;
+gan-gan's two IPSSH hosts. `references/03_communication-flows.md`: Teleport command labels read from one `tsh ls` per cluster, `overlay` values
+across the fleet, the `lat` label differs from tstiklatlon. All read back after writing.
 
 ## 20261020_0049 — Bot-host skill scripts, dhcpd shared networks, uplink gateway (v0.4.9 -> v0.5.0)
 
@@ -182,19 +190,3 @@ Promoted from a 2026-10-08 unified-network-controller session (scratchpad origin
 - `scripts/README.md`: both catalogued with safety labels. `justfile`: the two recipes.
 - `references/17_site-ata-dallas-delta.md` and `references/07_hardware-overlay.md` (Raspberry Pi SMC identity) link the scripts; 17 records the digitmap difference.
 - `manifest.json`: 0.2.2 -> 0.2.3.
-
-## 20261008_1147 — Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)
-
-VERIFIED-OBSERVED 2026-10-08, read-only over Teleport apn on 20-mile and adjamarragu (`rct`), areyonga and glen-hill (`wh`), from unified-network-controller work.
-
-- `references/07_hardware-overlay.md`: new section, Raspberry Pi SMC identity, ports and bootloader. No DMI; model from `/proc/device-tree/model`, revision `d03115` (4B Rev 1.5, 8 GB, Sony UK);
-  SoC serial as the identity anchor; eth0 MAC not derived from the serial on the Pi 4; one wired port `eth0` carrying the WAN `/30` and VLANs 500, 501, 521, 522; `wlan0` AP on areyonga; no snmpd
-  (operator: no SNMP on the Pis for now); EEPROM 2023-01-11 vs upstream 2026-09-23 and the misleading `rpi-eeprom-update`. Links the vendor-sources folder and `firmware-files/raspberry-pi/`.
-  Contents also gains the two 2026-10-07 sections it was missing.
-- `references/03_communication-flows.md` (rct Site Addressing): `bridge_500` holds both management addresses live; the `[10.255.0.0/24, 192.168.5.0/24]` pair is in every rct, wh and nbn_wh
-  topology file and no x86 one; the four site VLANs.
-- `references/02_service-map.md` (snmpd on the SMC): Pi boxes have no agent, by decision.
-- New `references/17_site-ata-dallas-delta.md`: the rct site ATA (DDC_VoIP-m `042112` at `192.168.5.253`), web UI only, empty PIN, no SSH or SNMP, SIP `Registered` readout, 83 of 93 settings
-  identical, the short `Content-Length`, unreachable units. Routed from RUNBOOK, SKILL.md, AI_NAVIGATION.md and context-map.yaml, with both vendor-sources folders.
-- `references/13_known-issues.md`: 2026-10-08 entry (kintore-smc01 not in Teleport, aeroplane-1 and 20-mile ATAs, empty ATA PIN, Pi bootloaders behind); Contents gains the missing 2026-10-07 lines.
-- `manifest.json`: 0.2.1 -> 0.2.2.
