@@ -14,6 +14,10 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261019 Learned 2026-10-15 (w, x, y) (UNC backlog audit of 15-17 Oct, verified on unc01): `references/operations-cookbook.md` gains that a bulk PATCH past uWSGI's
+  default 60 s http-timeout commits while the client sees a failure (batch it; read back before retrying) and that a required rule cannot hold a foreign key
+  (use an app CustomValidator); `references/app-development.md` gains that an explicit setuptools packages list must name every subpackage.
+
 - 20261019 Learned 2026-10-19 (UNC read-only Location Type count on unc01): `references/operations-cookbook.md` records that a heredoc piped to
   `nbshell` skips an unclosed compound block silently (exit 0); scripted reads use `nbshell --command`.
 

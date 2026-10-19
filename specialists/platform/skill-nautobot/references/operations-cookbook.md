@@ -123,6 +123,11 @@ Source: `nautobot/core/settings.py:375-417`, `nautobot/core/api/versioning.py` (
 `nautobot/core/api/constants.py:1-12`, `nautobot/core/api/serializers.py:55-120,804,932`, `nautobot/dcim/api/serializers.py:582`, `nautobot/core/api/views.py:90-175,226-241`, `nautobot/core/api/fields.py:134-145,234-237`,
 `nautobot/extras/filters.py:586` (CustomField filter fields); `nautobot-core-3.2.3-rest-api-overview.html`, `-rest-api-filtering.html`, `-rest-api-authentication.html`.
 
+> **Learned 2026-10-15 (w)** · Nautobot 3.2.3 (stock image uwsgi.ini) · VERIFIED_PRIMARY (observed on a deployment) · Source: `/opt/nautobot/uwsgi.ini` in the 3.2.3 image sets no `http-timeout`, so uWSGI's default 60 s applies; UNC onboarding promote log 2026-10-15 11:41 · Falsifier: a single bulk PATCH running past 60 s that the client sees succeed.
+> A bulk PATCH on a list endpoint is one request: 322 Devices took 91 s, the HTTP connection was cut at 60 s and the client saw a failure, yet the
+> transaction committed (all 322 written). Send bulk writes in bounded batches (50 Devices kept each request well under 60 s), each atomic on its
+> own, and after a timeout read the objects back before retrying rather than assuming nothing was written.
+
 ## 3. Dynamic Groups and Saved Views
 
 Decision: a Dynamic Group is a named, reusable member set (for Config Contexts, Jobs and permissions); a Saved View is only a remembered list-view layout.
@@ -299,6 +304,10 @@ Gotcha: an existing record that breaks a newly added rule is not flagged until i
 
 Source: `nautobot/core/api/urls.py:47`, `nautobot/data_validation/api/urls.py:9-17`, `nautobot/data_validation/models.py:109-333`, `nautobot/data_validation/custom_validators.py:44,154-165,240-303`,
 `nautobot/core/jobs/__init__.py:447,539`; `nautobot-core-3.2.3-data-validation.html`.
+
+> **Learned 2026-10-15 (x)** · Nautobot 3.2.3, nautobot-app-data-validation-engine · VERIFIED_PRIMARY (refused on a deployment) · Source: REST 400 on creating a required rule for `dcim.device` field `tenant` (the field's type does not support required validation; the engine excludes RelatedField) · Falsifier: a 3.2.3 required rule on a foreign key that saves and is enforced.
+> A required rule cannot hold a foreign key (`tenant`, `location`, `role`): the API refuses it. Enforce a required relation with an app `CustomValidator`
+> (`clean()` raising `ValidationError` when the field is empty), registered in the app's `custom_validators`; keep required rules for plain fields.
 
 ## 9. Permissions, tokens, Statuses, Roles, change log
 

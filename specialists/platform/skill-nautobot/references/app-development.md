@@ -400,6 +400,11 @@ Gotcha: run `post_upgrade` after every app install or upgrade. Templates and sta
 Source: `nautobot/core/management/commands/post_upgrade.py:101-158`; `docs/user-guide/administration/installation/app-install.html`, `docs/development/apps/api/setup.html`;
 `https://github.com/nautobot/nautobot-app-ssot/blob/v4.7.0/pyproject.toml` lines 31-33.
 
+> **Learned 2026-10-15 (y)** · Nautobot 3.2.3 app packaging (setuptools) · VERIFIED_PRIMARY (observed on a deployment) · Source: live page 500 `'<lib>' is not a registered tag library` after an image build whose `[tool.setuptools] packages` omitted `<app>.templatetags` · Falsifier: an explicit packages list that ships an unlisted subpackage.
+> With an explicit `[tool.setuptools] packages = [...]` list, every subpackage (`templatetags`, `api`, `jobs`, `migrations`...) must be named, or it is
+> left out of the wheel. Offline tests run from the source tree still pass, so the gap shows only on the deployed page. Add a test that walks the
+> source for `__init__.py` folders and asserts each is in the list (or use `packages.find`).
+
 ## 13. Minimal working skeleton
 
 ```text
