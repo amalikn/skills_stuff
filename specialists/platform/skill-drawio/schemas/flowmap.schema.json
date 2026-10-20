@@ -315,6 +315,11 @@
           "description": "Overview: {group name: columns} for the grid of boxes with no arrow inside the group (default 3); 1 stacks them vertically.",
           "additionalProperties": {"type": "integer", "minimum": 1}
         },
+        "group_layout": {
+          "type": "object",
+          "description": "Overview: {group name: vertical | horizontal | grid N} for the boxes with no arrow inside the group; the readable form of group_columns (one column, one row, N columns).",
+          "additionalProperties": {"type": "string", "pattern": "^(vertical|horizontal|grid [1-9][0-9]*)$"}
+        },
         "default_tier": {
           "type": "integer"
         },

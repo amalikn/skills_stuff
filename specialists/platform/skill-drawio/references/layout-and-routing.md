@@ -212,10 +212,11 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 >   group: On the SMC        # was its own tier "Site services"
 > ```
 
-> **Learned 2026-10-20 (b)** · flowmap Overview unlinked boxes · VERIFIED_PRIMARY · Source: scripts/flowmap/overview_layout.py `_rows_and_chains` (skills_stuff, this
+> **Learned 2026-10-20** · flowmap Overview unlinked boxes · VERIFIED_PRIMARY · Source: scripts/flowmap/overview_layout.py `_rows_and_chains` (skills_stuff, this
 > change); smc-resiliency docs/flows/flows.yaml · Falsifier: a map without `group_columns` whose drawing changes, or a group set to 1 still drawn side by side
 > Boxes with no arrow inside their group sit in a grid of `OV_GRID_COLS` (3) columns, which leaves a wide, empty group when its boxes are few and tall
-> neighbours set the row height. The map's `drawing.group_columns: {<group>: <n>}` sets that grid per group (1 stacks them); it changes only the grid of
+> neighbours set the row height. The map's `drawing.group_layout: {<group>: vertical | horizontal | grid N}` sets that grid per group (one column, one
+> row, N columns); `drawing.group_columns: {<group>: <n>}` is the numeric form, and a group named in both is refused. It changes only the grid of
 > unlinked boxes, not the layered rows that arrows inside the group decide. Proved byte-identical for unified-network-controller and the shop example
 > (drift checks clean); screenshots in [screenshots/20261020-group-columns/](screenshots/20261020-group-columns/readme.md).
 >

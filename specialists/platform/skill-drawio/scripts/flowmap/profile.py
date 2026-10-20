@@ -34,7 +34,8 @@ class Profile:
         check: the command that fails on drift (named in the banner).
         kind_style: {component kind: (fill, stroke)}, in legend order.
         groups_per_row: overview groups per grid row.
-        group_columns: {group name: columns} for an overview group's unlinked boxes (default OV_GRID_COLS, 3); 1 stacks them.
+        group_columns: {group name: columns} for an overview group's unlinked boxes (default OV_GRID_COLS, 3); 1 stacks them, 0 puts
+            them in one row. Built from the map's `group_columns` and `group_layout` (see layout_columns).
         tiers: End-to-end tier columns, left to right: (heading, the map groups placed in it).
         below_groups: groups drawn in the band below the columns.
         below_kinds: kinds drawn in that band.
@@ -110,6 +111,47 @@ class Profile:
         return cls(map=map_path, schema=schema, output=out, generator=generator, host=d.get("host", "flowmap"),
                    command=d.get("command", "just flows"), check=d.get("check", "just check"), kind_style=style,
                    groups_per_row=int(d.get("groups_per_row", 3)),
-                   group_columns={k: int(v) for k, v in (d.get("group_columns") or {}).items()}, tiers=tiers, below_groups=below_groups, below_kinds=below_kinds,
+                   group_columns=group_columns(d), tiers=tiers, below_groups=below_groups, below_kinds=below_kinds,
                    kind_tier=dict(d.get("kind_tier") or {}), default_tier=int(d.get("default_tier", 0)), families=families,
                    family_by_category=by_cat, band_title=d.get("band_title", "Stores and secrets"))
+
+def layout_columns(spec: str) -> int:
+    """Columns for a `group_layout` value.
+
+    Args:
+        spec: "vertical", "horizontal" or "grid N".
+
+    Returns:
+        1 for vertical, 0 (one row, however many boxes) for horizontal, N for a grid.
+
+    Raises:
+        ValueError: on any other value.
+    """
+    if spec == "vertical":
+        return 1
+    if spec == "horizontal":
+        return 0
+    word, _, n = spec.partition(" ")
+    if word == "grid" and n.isdigit() and int(n) > 0:
+        return int(n)
+    raise ValueError(f"group_layout: {spec!r} is not vertical, horizontal or grid N")
+
+
+def group_columns(drawing: dict) -> dict:
+    """{group name: columns} from a drawing block's `group_columns` and `group_layout`.
+
+    Args:
+        drawing: the map's `drawing:` block.
+
+    Returns:
+        The merged columns per group.
+
+    Raises:
+        ValueError: when both settings name the same group, or a layout value is not understood.
+    """
+    cols = {k: int(v) for k, v in (drawing.get("group_columns") or {}).items()}
+    for group, spec in (drawing.get("group_layout") or {}).items():
+        if group in cols:
+            raise ValueError(f"group {group!r} is in both group_columns and group_layout: keep one")
+        cols[group] = layout_columns(spec)
+    return cols

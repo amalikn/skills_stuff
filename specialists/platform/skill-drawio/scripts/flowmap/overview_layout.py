@@ -83,7 +83,7 @@ def _rows_and_chains(ids: list, same: dict, cols: int = OV_GRID_COLS) -> tuple[l
     Args:
         ids: the group's component ids, in map order.
         same: {component id: the components it needs in its own group}.
-        cols: columns in the grid of unlinked boxes.
+        cols: columns in the grid of unlinked boxes; 0 puts them all in one row.
 
     Returns:
         (rows, chains).
@@ -96,8 +96,9 @@ def _rows_and_chains(ids: list, same: dict, cols: int = OV_GRID_COLS) -> tuple[l
     for cid in ids:
         if cid in linked:
             rows[top - dep[cid]].append(cid)
-    for i in range(0, len(alone), cols):
-        rows.append(alone[i:i + cols])
+    step = cols or max(len(alone), 1)
+    for i in range(0, len(alone), step):
+        rows.append(alone[i:i + step])
     chains = []
     for cid in ids:
         for d in same[cid]:
@@ -138,7 +139,7 @@ def layout_group(ids: list, same: dict, cols: int = OV_GRID_COLS) -> GroupLayout
     Args:
         ids: the group's component ids, in map order.
         same: {component id: the components it needs in its own group}.
-        cols: columns in the grid of unlinked boxes (the map's `drawing.group_columns`, default 3).
+        cols: columns in the grid of unlinked boxes (the map's `drawing.group_columns` or `group_layout`, default 3; 0 is one row).
 
     Returns:
         The group layout.
