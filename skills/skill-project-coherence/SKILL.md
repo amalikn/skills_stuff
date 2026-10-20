@@ -25,6 +25,7 @@ rate card, updating a data source, resolving an investigation item.
 - [Step 5 — Edge Cases](#step-5--edge-cases)
 - [Step 6 — Final Checklist](#step-6--final-checklist)
 - [Tool hazards](#tool-hazards)
+- [Code changes](#code-changes)
 
 ---
 
@@ -253,3 +254,8 @@ Check only what exists in this project (skip missing files without marking):
 - **`stale_refs.py` matches line by line, so a phrase the rewrap tool split across two lines is invisible to it.** On 2026-09-27 a runbook kept a superseded time window ("22:35 to" /
   "23:06") through a sweep reporting 0 active. Until the script joins lines, follow a 0-active result with a whitespace-tolerant regex over whole files for each multi-word old phrase.
 - **An unquoted heredoc (`<<EOF`) runs every backticked word as a command.** Write markdown with `<<'EOF'`, or with the Write tool, and read the result back.
+
+## Code changes
+
+Invoke `skill-coder` before adding or changing any script in this pack (operator, 2026-10-20; the skills_stuff root rule): its rules apply
+(purpose header, docstrings, `--apply` for writes, timeouts, tests, measured runtime) and the session owes it a write-back.

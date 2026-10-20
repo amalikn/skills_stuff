@@ -422,3 +422,8 @@ Before writing to the thread file, verify:
 - [ ] Any date/name in the source conflicts with an already-tracked fact? — confirmed with the user, not assumed
 
 If any check fails, fix it before writing.
+
+## Code changes
+
+Invoke `skill-coder` before adding or changing any script in this pack (operator, 2026-10-20; the skills_stuff root rule): its rules apply
+(purpose header, docstrings, `--apply` for writes, timeouts, tests, measured runtime) and the session owes it a write-back.

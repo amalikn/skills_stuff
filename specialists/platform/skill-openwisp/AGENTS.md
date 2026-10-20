@@ -19,6 +19,7 @@ work complete.
 - [AI navigation and context preflight](#ai-navigation-and-context-preflight)
 - [Governance coherence checks](#governance-coherence-checks)
 - [Canonical governance linkage](#canonical-governance-linkage)
+- [Code changes](#code-changes)
 
 ---
 
@@ -142,3 +143,8 @@ pattern](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/
 - Counterpart pack: [../skill-nautobot/SKILL.md](../skill-nautobot/SKILL.md)
 - skill-ai-it (bootstrap source): [/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/SKILL.md](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/SKILL.md)
 - Cross-repo governance root: [/Volumes/Data/_ai/governance/README.md](/Volumes/Data/_ai/governance/README.md)
+
+## Code changes
+
+Invoke `skill-coder` before adding or changing any script in this pack (operator, 2026-10-20; the skills_stuff root rule): its rules apply
+(purpose header, docstrings, `--apply` for writes, timeouts, tests, measured runtime) and the session owes it a write-back.

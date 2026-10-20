@@ -24,6 +24,7 @@ version: 0.7.0
 - [Per-repo setup](#per-repo-setup)
 - [Anti-patterns](#anti-patterns)
 - [Reference](#reference)
+- [Code changes](#code-changes)
 
 ## When to use
 
@@ -315,3 +316,8 @@ matching a symlink) and a file watcher, in the same setup, and neither failed lo
 - Flags: `--workspace` (required), `--agent` (enables writes), `--storage-dir` (match `codeContextNotes.storageDirectory`), `--require-existing` (exit 3 if no notes dir)
 - Docs: `docs/guide/agents-and-mcp.md`, `docs/guide/trust-model.md`, `docs/guide/note-types-metadata.md`, `docs/reference/note-schema.md`
 - Keep the extension and MCP server on compatible versions — they share the on-disk format through `@jnahian/code-notes-core`.
+
+## Code changes
+
+Invoke `skill-coder` before adding or changing any script in this pack (operator, 2026-10-20; the skills_stuff root rule): its rules apply
+(purpose header, docstrings, `--apply` for writes, timeouts, tests, measured runtime) and the session owes it a write-back.

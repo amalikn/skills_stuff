@@ -27,6 +27,7 @@ description: "Repo-wide audit for stale facts, superseded figures, checks that c
 - [Tool hazards](#tool-hazards)
 - [Skill package layout](#skill-package-layout)
 - [Completion checklist](#completion-checklist)
+- [Code changes](#code-changes)
 
 ---
 
@@ -413,3 +414,8 @@ Work through every item explicitly; this is a blocking gate, not a post-hoc revi
 - [ ] Full validation run, check count reported before and after
 - [ ] **Scratch cleared** — on PASS the gate writes its result into the report, then deletes both `.staleness-audit-snapshot-*` and `.staleness-audit/`. On FAIL it keeps and names them: a failed gate
   is exactly when the pre-audit state and the receipts are worth having. Leaving the receipts behind blocks the NEXT run, which refuses to start while a state file exists
+
+## Code changes
+
+Invoke `skill-coder` before adding or changing any script in this pack (operator, 2026-10-20; the skills_stuff root rule): its rules apply
+(purpose header, docstrings, `--apply` for writes, timeouts, tests, measured runtime) and the session owes it a write-back.

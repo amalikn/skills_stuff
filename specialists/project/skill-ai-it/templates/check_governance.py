@@ -600,6 +600,47 @@ def check_evidence_provenance() -> None:
                  f"{EVIDENCE_DIR}/{item.name} defers its provenance to {corrector}, which does not exist")
 
 
+# skill-coder owns the code map's format and reader (code_map.load); skill-ai-it's adopt_code_map.py creates and extends the map (2026-10-20).
+CODER_SKILL = Path("/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-coder")
+CODE_MAP_FILE = "code-map.toml"
+#: The placeholder reason adopt_code_map.py writes; a real decision replaces it, so it must not pass as one.
+UNREVIEWED = "unreviewed:"
+#: Script folders whose Python files need a [modules] entry (the application package under src/ is not listed).
+MODULE_ROOTS: tuple[str, ...] = ("scripts", "adapters", "tools", "wc-local/scripts")
+
+
+def check_code_map() -> None:
+    """code-map.toml loads under skill-coder's reader, lists every Python script in MODULE_ROOTS, names no file that is gone, and holds no
+    `unreviewed:` placeholder (adoption writes one per new script so the map exists; this stays red until each status is decided).
+
+    Skipped when the project has no code-map.toml and no script in MODULE_ROOTS; a project with scripts and no map fails (run `just govern`).
+    """
+    scripts = {p.relative_to(ROOT).as_posix() for d in MODULE_ROOTS for p in (ROOT / d).rglob("*.py")
+               if p.name != "__init__.py" and "__pycache__" not in p.parts}
+    if not (ROOT / CODE_MAP_FILE).is_file():
+        if scripts:
+            counted()
+            fail("code-map", f"{len(scripts)} script(s) and no {CODE_MAP_FILE}; run `just govern` (skill-ai-it adopt_code_map.py)")
+        return
+    counted()
+    try:
+        sys.path.insert(0, str(CODER_SKILL / "scripts"))
+        import importlib
+        modules = importlib.import_module("code_map").load(ROOT / CODE_MAP_FILE).get("modules", {})
+    except (ImportError, OSError, ValueError) as exc:
+        fail("code-map", f"{CODE_MAP_FILE} does not load under skill-coder's reader ({exc})")
+        return
+    for rel in sorted(scripts - set(modules)):
+        counted()
+        fail("code-map", f"{rel} has no [modules] entry in {CODE_MAP_FILE}; run `just govern`, then decide its status")
+    for rel, entry in sorted(modules.items()):
+        counted()
+        if not (ROOT / rel).exists():
+            fail("code-map", f"{CODE_MAP_FILE} lists {rel}, which does not exist; remove it or record the move")
+        if str(entry.get("reason", "")).startswith(UNREVIEWED):
+            fail("code-map", f"{rel}: status not decided (adoption placeholder); set project_only with a reason, candidate or promoted")
+
+
 # --------------------------------------------------------------------------------------------------------------- MAIN
 
 CHECKS = (
@@ -615,6 +656,7 @@ CHECKS = (
     check_constant_sync,
     check_append_only_grain,
     check_evidence_provenance,
+    check_code_map,
 )
 
 

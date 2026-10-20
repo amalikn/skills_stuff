@@ -20,6 +20,7 @@ Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget
 - [.graphifyignore or .graphifyignore.sample — create when: Graphify is part of the navigation stack and no ignore file exists](#graphifyignore-or-graphifyignoresample--create-when-graphify-is-part-of-the-navigation-stack-and-no-ignore-file-exists)
 - [memory-bank/ structure — create when: project is long-running, conceptual, planning-heavy, or user asks for persistent working context](#memory-bank-structure--create-when-project-is-long-running-conceptual-planning-heavy-or-user-asks-for-persistent-working-context)
 - [scripts/README.md — create when: scripts, tasks, or automation are present, or when script inventory is explicitly requested](#scriptsreadmemd--create-when-scripts-tasks-or-automation-are-present-or-when-script-inventory-is-explicitly-requested)
+- [code-map.toml — create when: the project has code](#code-maptoml--create-when-the-project-has-code)
 - [Optional/generated support files](#optionalgenerated-support-files)
 
 #### repomix.config.json — create when: project has multiple governance/docs/code files and Repomix is part of the navigation stack
@@ -171,6 +172,16 @@ Create or update `scripts/README.md` from the template. Populate entries for eac
 `upgrade_navigation_control_layer.py`'s `build_scripts_block()` regenerates. "Runtimes", "Task Inventory", "Raw Script Inventory", "Safety Labels", and "Notes" are project-specific and must sit
 OUTSIDE the markers (the template already places them there). Nesting them inside the managed block, as the template did until 2026-09-18, means the next `nav-upgrade` silently discards them — the
 upgrader reports `replaced-managed-block` and that reads like success.
+
+#### code-map.toml — create when: the project has code
+
+Operator, 2026-10-20: "coder-map to be created.. it should be part of skill-ai-it bootstrap/refresh". The code map is skill-coder's file (format and
+reader: skill-coder `templates/code-map.toml`, `scripts/code_map.py`); this skill only creates and extends it. `scripts/adopt_code_map.py` (run by
+`govern`, so by bootstrap and refresh) writes it from the template when a project has code under `src/`, `scripts/`, `adapters/`, `tools/` or
+`wc-local/scripts/` and no map, and adds a `[modules]` entry for each Python script outside `src/` that the map does not list. Every entry it
+writes says `reason = "unreviewed: ..."`: a placeholder, not a decision. The checker template's `check_code_map` fails on it, on a script with no
+entry and on an entry for a file that is gone, so the project stays red until each status is decided (`project_only` with a reason, `candidate`
+with `needs`, `promoted` with `skill`). The template's import-layer example is dropped: layers are adopted one package at a time.
 
 ### Optional/generated support files
 

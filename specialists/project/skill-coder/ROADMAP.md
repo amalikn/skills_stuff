@@ -20,7 +20,7 @@ the default for code work. skill-drawio is built to its rules. Open work is acti
 
 ## Activation
 
-- [ ] **Make it the default** (waits on the operator: "make it default once we have tested the skill") — in one pass: the global policy line beside `safe-change-validation` and the Codex sync; the
+- [x] **Make it the default** (done 2026-10-20, operator: "if you are now happy with skill-coder, promote it as well") — in one pass: the global policy line beside `safe-change-validation` and the Codex sync; the
   `skill-surfaces.md` row; restore the broad `SKILL.md` trigger; link it from the governance `coding-guide.md` (check `sync-map.yaml`). Steps in `SCRATCHPAD.md` Open items.
 - [ ] **skill-ai-it calls these helpers** — after activation, skill-ai-it's code checks call this pack's helpers, so each rule has one source.
 

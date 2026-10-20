@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261019_1734
+Last rotated: 20261020_1308
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261020_1308 — Code map in bootstrap and refresh: adopt_code_map.py, check_code_map](#20261020_1308--code-map-in-bootstrap-and-refresh-adopt_code_mappy-check_code_map)
 - [20261019_1829 — pitfalls: promote leaves routing to the deleted candidates file](#20261019_1829--pitfalls-promote-leaves-routing-to-the-deleted-candidates-file)
 - [20261019_1813 — Checker template: duplicated KEBAB_LEGACY block removed](#20261019_1813--checker-template-duplicated-kebab_legacy-block-removed)
 - [20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions](#20261019_1734--pitfalls-hand-bootstrapped-packs-write-accepted-archcore-decisions)
@@ -33,8 +34,16 @@ Last rotated: 20261019_1734
 - [20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)](#20261014_1030--role_check-context-mapyaml-must-parse-nav_validate-stays-manual)
 - [20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted](#20261014_1027--stamping-unstamped-projects-canary-on-agent-stack-failed-and-was-reverted)
 - [20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean](#20261014_1020--coherence-pass-architecture-key-decisions-sibling-skills-sweep-clean)
-- [20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes](#20261014_1018--staleness-audit-upgrader-header-derived-index-counts-links-indexes)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261020_1308 — Code map in bootstrap and refresh: adopt_code_map.py, check_code_map
+
+Operator: "coder-map to be created.. it should be part of skill-ai-it bootstrap/refresh". New `scripts/adopt_code_map.py` creates skill-coder's
+`code-map.toml` when a project has code and none, and adds an `unreviewed:` `[modules]` entry for each Python script outside `src/` that the map
+does not list; `govern` (template justfile) runs it after `adopt_governed_files.py`. The checker template's `check_code_map` fails on a placeholder,
+a script with no entry or an entry for a gone file (side-agent finding: a placeholder must not pass as a decision). First runs: smc-resiliency
+(created, then decided by hand), unified-network-controller (current, unchanged). AGENTS.md gains a Code changes section (skill-coder for any
+script here, operator 2026-10-20). Reference: `references/files-support.md` (code-map.toml); catalogued in `scripts/README.md`; SKILL.md refresh bullet.
 
 ## 20261019_1829 — pitfalls: promote leaves routing to the deleted candidates file
 
@@ -174,15 +183,6 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
   carries today's decisions; scripts/README.md `adopt_governed_files.py` row describes what adoption now adds. Siblings: skill-project-coherence
   Tier 5 no longer regenerates Graphify (its CHANGELOG 2026-10-14); all-scraper SCRATCHPAD intro uses rotation wording. Stale-reference sweep
   across this package, skill-slurp-chat, skill-project-coherence, skill-staleness-audit and all-scraper: 0 active. No repomix config here.
-
-## 20261014_1018 — Staleness audit: upgrader header, derived index counts, links, indexes
-
-- **Staleness audit, whole package** (operator, 2026-10-14; report `docs/reviews/staleness-audit-20261014_1017.md`, gate PASSED). No money
-  band. Fixed: the upgrader created AGENTS.md with an unfenced header that would fail `role_check.py` on first contact (latent; now fenced, test
-  added); stale references index counts (now derived by `check_reference_index_lines`); ROADMAP links to UNC `target_map.py` (moved to
-  `scripts/render/`); SCRATCHPAD 2026-08-11 counts superseded in place and a done open item ticked; folder indexes for `docs/`, `docs/archive/`,
-  `patterns/`, `templates/`, `docs/reviews/`; baselines named in scripts/README.md. Both new checks negative-tested red and green. Why it
-  survived: the upgrader builds its header in code, a generation path the template review did not reach. Residual register in SCRATCHPAD.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

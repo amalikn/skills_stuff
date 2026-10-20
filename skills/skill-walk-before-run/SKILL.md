@@ -31,6 +31,7 @@ Step 0's ledger check below depends on it matching.
 - [Stand down (state in one line, no lecturing)](#stand-down-state-in-one-line-no-lecturing)
 - [Ledger (RED, waiver, or RED-to-resolved only — never GREEN or AMBER)](#ledger-red-waiver-or-red-to-resolved-only--never-green-or-amber)
 - [Project write-back (RED or RESOLVED only — same condition as the ledger)](#project-write-back-red-or-resolved-only--same-condition-as-the-ledger)
+- [Code changes](#code-changes)
 
 ---
 
@@ -140,3 +141,8 @@ On resolution, append a new line rather than editing the one above:
 ```
 
 If the target project has no `SCRATCHPAD.md`, the script skips the pointer silently — the mirror still happens regardless.
+
+## Code changes
+
+Invoke `skill-coder` before adding or changing any script in this pack (operator, 2026-10-20; the skills_stuff root rule): its rules apply
+(purpose header, docstrings, `--apply` for writes, timeouts, tests, measured runtime) and the session owes it a write-back.

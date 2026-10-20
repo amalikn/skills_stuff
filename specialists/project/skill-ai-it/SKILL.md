@@ -136,7 +136,9 @@ Every governed project runs `scripts/doc_freshness.py` from this skill (not a co
 `superseded` file outside `archive/`, a `Depends on` file committed after `Last reviewed`.
 
 - `bootstrap`, `navigation-add`, `refresh`: `scripts/adopt_governed_files.py --project-root . --apply` (recipes incl. `check`, record keys, baseline), then `just stale`; add `just stale` to the
-  `AGENTS.md` preflight (outside the managed block).
+  `AGENTS.md` preflight (outside the managed block). Then `scripts/adopt_code_map.py --project-root . --apply` (operator, 2026-10-20): a project with
+  code gets skill-coder's `code-map.toml`, and every new Python script an `unreviewed:` `[modules]` entry; the project's `check_code_map` fails until
+  each status is decided ([files-support](references/files-support.md#code-maptoml--create-when-the-project-has-code)).
 - `audit`: run `just stale` and report the counts per rule; also report whether the project's LLM wiki page (`/Volumes/Data/_ai/_wiki/wiki_stuff/projects/<folder>.md`) exists and is older than the
   project's newest CHANGELOG entry.
 - Prefer fixing over baselining: date an undated living document from its content, move a superseded file to `archive/` (update links and the folder index in the same pass).

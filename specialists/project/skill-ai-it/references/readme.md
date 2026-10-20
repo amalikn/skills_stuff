@@ -15,7 +15,7 @@ Last reviewed: 2026-10-10
 - [files-context-map.md](files-context-map.md) (319 lines) Conditional file: context-map.yaml.
 - [files-readme-agents-claude.md](files-readme-agents-claude.md) (131 lines) Always-created files: README, AGENTS, CLAUDE.
 - [files-records.md](files-records.md) (192 lines) Always-created files: SCRATCHPAD, CHANGELOG, markdownlint.
-- [files-support.md](files-support.md) (187 lines) Conditional support files.
+- [files-support.md](files-support.md) (198 lines) Conditional support files.
 - [finishing.md](finishing.md) (153 lines) Finishing: parent update, conventions, quality check, audit format.
 - [generation-policy.md](generation-policy.md) (160 lines) Generation policy and optional tools.
 - [governed-file-roles.md](governed-file-roles.md) (136 lines) What each governed root file is for, and the role check.
