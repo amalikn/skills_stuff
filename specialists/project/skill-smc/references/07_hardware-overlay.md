@@ -1014,3 +1014,13 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 > ```
 >
 > Screenshot: not applicable (no visual surface).
+
+## Executables under /etc and other new-image constraints from the S2 spike (2026-10-20)
+
+> **Learned 2026-10-20** · Ubuntu 22.04 rct and wh Pis; Ubuntu 24.04 spike VM · VERIFIED_PRIMARY · Source: read-only `find /etc -xdev -type f -perm
+> /111` on frasier-downs-station-smc01 and kunawarritji-smc01 (same set); smc-resiliency S2 reports · Falsifier: a Pi whose /etc holds no executables run at run time
+> Run at run time from `/etc`, so stopped by a noexec `/etc` (a merged confext on systemd 255 unless `--noexec=false`): `/etc/cron.daily` (8),
+> `/etc/networkd-dispatcher/routable.d` and `carrier.d` (4), `/etc/network/if-up.d` (2), `/etc/rc.local`, `/etc/update-motd.d` (13), the squid
+> blocklist scripts, `/etc/init.d` (43, for services without units). Also for the new image: Unbound needs systemd-resolved's stub off
+> (`DNSStubListener=no`, as `resolved.conf.j2` sets) and its remote-control keys from `unbound-control-setup` in `/etc/unbound/` (a per-box
+> secret written into `/etc`). `overlay-usage-breakdown.sh --etc` now prints the executables list too.

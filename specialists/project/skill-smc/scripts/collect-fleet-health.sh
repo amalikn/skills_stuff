@@ -34,6 +34,8 @@
 #   <OUTDIR_ROOT>/evidence/<YYYYMMDD_hhmm>/MANIFEST.txt
 #
 # Requires: tsh, already logged in to the relevant Teleport cluster (`tsh status` to check).
+# TSH_PROXY (optional, 2026-10-20): the cluster's proxy, e.g. teleport.communitywifi.net.au, so a CW box is reached without
+#   switching the active profile (skill-smc 01: name the proxy on every tsh call).
 # For the NBN Accelerate cluster this is teleport.communitywifi.net.au — `tsh ssh root@<host>`
 # uses the bare node name once logged in, NOT `<host>.teleport.<domain>` (that FQDN form is the
 # Ansible-side ansible_host convention, not the tsh CLI target syntax — confirmed live 2026-08-03,
@@ -96,6 +98,9 @@ CAPTURES=(
   # + audit-pin-activation.sh is the live-impact half — run both when investigating a suspected
   # portal-issuance problem.
   "05-portal-fqdn-status:echo '--deny-info--'; grep -m1 -i 'deny_info.*captive_portal' /etc/squid/squid.conf 2>/dev/null; echo '--squid-conf-mtime--'; stat -c '%y' /etc/squid/squid.conf 2>/dev/null; echo '--apache-sites-enabled--'; ls /etc/apache2/sites-enabled/ 2>/dev/null; echo '--sslcertcopy-cron--'; grep -h sslcertcopy /var/spool/cron/crontabs/root 2>/dev/null; true"
+
+  # fqdn2ip should be removed on every flavour (operator, 2026-10-20); it was still active on darlngunaya-smc01 (nbn_wh). Read-only.
+  "06-fqdn2ip-state:echo '--unit-file--'; ls -l /etc/systemd/system/fqdn2ip.service 2>&1; echo '--active-enabled--'; systemctl is-active fqdn2ip 2>&1; systemctl is-enabled fqdn2ip 2>&1; echo '--ipset-data--'; ls -la --time-style=full-iso /etc/iptables/ipset.d/ 2>&1; echo '--process--'; pgrep -af fqdn2ip.py 2>/dev/null; true"
 )
 
 die() { echo "ERROR: $*" >&2; exit 1; }
@@ -141,7 +146,7 @@ for host in "${hosts[@]}"; do
     cmd="${entry#*:}"
     out="${hostdir}/${name}.txt"
 
-    if tsh ssh "${SSH_USER}@${host}" "$cmd" > "$out" 2>"${out}.err"; then
+    if tsh ${TSH_PROXY:+--proxy="$TSH_PROXY"} ssh "${SSH_USER}@${host}" "$cmd" > "$out" 2>"${out}.err"; then
       lines=$(wc -l < "$out" | tr -d ' ')
       rm -f "${out}.err"
       printf '  %-24s %s\n' "$name" "ok (${lines} lines)"

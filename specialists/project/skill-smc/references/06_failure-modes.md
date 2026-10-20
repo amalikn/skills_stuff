@@ -563,3 +563,22 @@ port. Worth checking on a production box after any of those: `systemctl is-activ
 unc-dhcpd-debounce --collect systemctl restart isc-dhcp-server`, re-armed per event) kept it active with 1 restart in each case. The drop-in survives the storm, the debounce removes it; both together
 cover a handler restart landing inside a burst. Recorded, with the box restored, in local-knowledge-ansible issues/rcp-fleet/rcp-dhcpd-start-limit-on-link-flap-20260927_0238.md. `UNVERIFIED` on a
 physical SMC: the count of links that flap under a real reload there.
+
+## A netplan change to a VLAN, bond or bridge does not take effect until a reboot (2026-10-20)
+
+> **Learned 2026-10-20** · systemd-networkd 255 (Ubuntu 24.04; 249 on 22.04 works the same way, `UNVERIFIED` on a site) · VERIFIED_PRIMARY ·
+> Source: networkctl(1) on the smc-resiliency spike VM; smc-resiliency `docs/pi/pi-spike-s2-config-swap-20261020_1856.md` S2-1 · Falsifier: a
+> `netplan apply` that changes an existing VLAN's id on a running box
+> networkctl(1): "even if an existing .netdev is modified or removed, systemd-networkd does not update or remove the netdev." So an ansible-wifi
+> run that changes a VLAN id, a bond mode or a bridge setting through `netplan apply` leaves the old device running; the change bites at the next
+> reboot, when nobody is checking. Deleting the device after `networkctl reload` is not enough: networkd recreated it from the old definition.
+> What works: write the new config (`netplan generate`), delete the changed devices, restart systemd-networkd, then `netplan apply`.
+>
+> ```python
+> # smc-resiliency spike/onbox/smcbox/activate.py (apply_runtime)
+> sh(["netplan", "generate"])
+> gone = drop_changed_netdevs(before_defs, netdev_defs())   # ip link delete each VLAN/bridge/bond whose netplan stanza changed
+> if gone:
+>     sh(["systemctl", "restart", "systemd-networkd"])
+> sh(["netplan", "apply"])
+> ```

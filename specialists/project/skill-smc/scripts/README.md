@@ -483,7 +483,7 @@ Written 2026-10-07 for the WH "sites get stuck until a technician reboots them" 
    cleanup minutes, auto_reboot) for a stable-vs-unstable comparison.
 5. `overlay-usage-breakdown.sh <host>...` lists what fills the overlayroot tmpfs upper layer, plus the auth.log message shapes, timers, cron
    and snaps behind the growth. `--etc` prints only the `/etc` census (every `/etc` file changed since boot, or modified since boot on a box
-   without overlayroot) with true uptime; `HOST_DEADLINE` (60 s) bounds each host.
+   without overlayroot) with true uptime, then the executables under `/etc` per folder; `HOST_DEADLINE` (60 s) bounds each host.
 
 6. `vlan-traffic-timeline.py <site> --gap '<last_seen>' '<back>'` shows what crossed each interface while a box was invisible
    (cumulative counters, valid when it did not reboot). Only the WAN interface silent = WAN/satellite fault; every VLAN on the trunk

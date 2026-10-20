@@ -97,3 +97,10 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 ## Open items
 
 - Pinned ansible-lint profile recommendation and Molecule driver choice: UNVERIFIED stubs.
+
+> **Learned 2026-10-20** · ansible-core 2.21.5 · VERIFIED_PRIMARY · Source: smc-resiliency spike/render_site.sh and spike/render/tasks (apn
+> e764a3e) against ansible-wifi f3a5dca8 · Falsifier: a template that renders identically without its task's options
+> To render a role's template outside the role (to build a config image, a diff, a preview), copy what the real task and play pass, not just the
+> `src`: the task's options (`lstrip_blocks: yes` here: without it the netplan file came out unparseable), the role vars the playbook sets (the role
+> defaults were null placeholders), and the defaults at role precedence (a throwaway role linking the real `defaults/main.yml`; `include_vars` would
+> outrank the inventory). Prove it against a file the real role wrote on a live host.

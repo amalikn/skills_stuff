@@ -2,7 +2,8 @@
 # Read-only breakdown of what occupies the overlayroot tmpfs upper layer on SMC boxes, plus the usual suspects behind its growth.
 #
 # usage: overlay-usage-breakdown.sh [--etc] <host> [<host> ...]   e.g. overlay-usage-breakdown.sh laramba-smc01 mimbi-smc01
-#   --etc      only the /etc census: every /etc file the box changed since boot (upper-layer files, links and whiteouts with their times);
+#   --etc      only the /etc census: every /etc file the box changed since boot (upper-layer files, links and whiteouts with their times),
+#              then the executables under /etc per folder;
 #              on a box without overlayroot, /etc files modified since boot. Used to find run-time writers under /etc (2026-10-20).
 #   TSH_PROXY  Teleport proxy (default teleport.apn.au; nbn_wh/nbn_accelerate use teleport.communitywifi.net.au)
 #   HOST_DEADLINE  seconds allowed per host (default 60); a host past it is reported as "deadline" and the run goes on.
@@ -26,6 +27,8 @@ if [ -d "$U/etc" ]; then echo "-- /etc changed since boot (overlay upper: f file
 else echo "-- no overlayroot: /etc files modified since boot"
   nice ionice -c3 find /etc -xdev -newermt "$(uptime -s)" \( -type f -o -type l \) -printf "%TY-%Tm-%Td_%TH:%TM %y %s %p\n" 2>/dev/null | sort -k4
 fi
+echo "-- executables under /etc (stop under a noexec /etc; counted per folder)"
+find /etc -xdev -type f -perm /111 2>/dev/null | sed -E "s#^(/etc/[^/]+(/[^/]+)?)/.*#\1/*#" | sort | uniq -c | sort -rn
 EOF
 )
 

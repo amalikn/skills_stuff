@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 (b) in `references/testing.md`: a helper's OK says nothing about folders outside its roots (`--list` it). Learned 2026-10-20 in `languages/shell.md`: perl alarm before exec does not stop tsh; a watcher does. Learned 2026-10-20 in `languages/ansible.md`: render a role template outside the role with the task's options, role vars and role-precedence defaults.
 - 20261020 Learned 2026-10-20 (b) in `languages/python.md`: place an inserted import from the AST, never by matching lines (imports inside remote-agent strings matched; unified-network-controller).
 - 20261020 `group_timeouts.py` also counts a `Popen(...)` stopped with `.kill()`/`.terminate()` in the same function without `start_new_session=`/`process_group=` (a collector's per-site limit; flagged the old code, passes the fix, unified-network-controller 36fa18e).
 - 20261020 `group_timeouts.py`: `tsh` is not a spawner (`tsh ssh` connects in-process; it is what ssh starts as the proxy); seven false positives in its first project run.

@@ -97,3 +97,9 @@ milestone.
   the stub.
 - Report success at the outcome the operator sees (stored, visible, healthy), not at "the call returned 200" ([safety-and-writes.md](safety-and-writes.md)).
 - A single success is a candidate, not a rule, until a second environment, the official docs or the source agrees ([evolution-and-write-back.md](evolution-and-write-back.md)).
+
+> **Learned 2026-10-20 (b)** · core (helpers and checks over a project) · VERIFIED_PRIMARY · Source: smc-resiliency code-map.toml `roots` and
+> scripts/govcheck/checks/scripts.py `check_code_map` (apn e764a3e) · Falsifier: a helper that lists the files it scanned and still missed a new folder
+> A helper's "OK" says nothing about code it never read: `script_headers`, `write_gates` and `call_timeouts` passed on a new `spike/` folder because
+> `code-map.toml` set `roots = ["scripts"]`, and the project's code-map check globbed `scripts/` only. Run the helper with `--list` and confirm the new
+> files appear; widen the roots (or the check) in the same change that adds a code folder; then the real gaps showed (a test header, two unmapped tests).

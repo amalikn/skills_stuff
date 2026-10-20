@@ -76,3 +76,19 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 ## Open items
 
 - Test framework choice and a formatter: UNVERIFIED stubs.
+
+> **Learned 2026-10-20** · bash on macOS, tsh 17/18 · VERIFIED_PRIMARY · Source: skill-smc scripts/overlay-usage-breakdown.sh `with_deadline`
+> (skills_stuff 01f5bb3) · Falsifier: `perl -e 'alarm 60; exec @ARGV' tsh ssh ...` ending at 60 s
+> macOS has no `timeout(1)`, and `perl -e 'alarm N; exec @ARGV' cmd` did not stop `tsh ssh` (it ran 2 min 50 s past a 60 s alarm). A watcher does:
+>
+> ```bash
+> with_deadline() {
+>   "$@" & local pid=$!
+>   ( sleep "$deadline"; kill -TERM "$pid" 2>/dev/null; sleep 5; kill -KILL "$pid" 2>/dev/null ) & local watcher=$!
+>   wait "$pid"; local rc=$?
+>   kill "$watcher" 2>/dev/null; wait "$watcher" 2>/dev/null
+>   return $rc
+> }
+> ```
+>
+> Prove it with a short limit (3 s stopped the host in 8 s, the 5 s KILL grace included).

@@ -2058,3 +2058,13 @@ On re-run, the unhold step should list only `1065` packages on a fresh upgrade. 
 
 **General lesson:** `dpkg_selections` works only on packages already in dpkg's database. Filter its loop through `dpkg-query` first. `apt-mark` on a package
 that is not installed carries the same risk.
+
+### Rendering a role's template outside the role: copy the task's options (2026-10-20)
+
+> **Learned 2026-10-20** · ansible-core 2.21.5 · VERIFIED_PRIMARY · Source: smc-resiliency `spike/render_site.sh` against ansible-wifi f3a5dca8 ·
+> Falsifier: `netplan.yml.j2` rendering cleanly without `lstrip_blocks`
+> The smc_network and smc_dhcpd template tasks set `lstrip_blocks: yes`; a render without it produced an unparseable netplan file, while the live
+> file (honeymoon-bay, written 2026-10-04) is clean. A render outside the role must also pass the role vars `smc_bases.yml` passes
+> (`interfaces: '{{ topology_interfaces }}'`, `dhcp_scopes: '{{ topology_dhcp_scopes }}'`, `bridges`, `portal_fqdn`, `portal_address`; the role
+> defaults are null placeholders) and load role defaults at role precedence (a throwaway role whose `defaults/main.yml` links the real one),
+> never `include_vars`, which would outrank the inventory. The topology plugin is found with `ANSIBLE_VARS_PLUGINS=<ansible-wifi>/vars_plugins`.

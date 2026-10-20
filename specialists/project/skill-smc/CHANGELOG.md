@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_1752
+Last rotated: 20261020_1905
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261020_1905 — networkd keeps changed netdevs; render with the task's options; /etc executables; fleet-health TSH_PROXY and fqdn2ip bundle (v0.5.8 -> v0.5.9)](#20261020_1905--networkd-keeps-changed-netdevs-render-with-the-tasks-options-etc-executables-fleet-health-tsh_proxy-and-fqdn2ip-bundle-v058---v059)
 - [20261020_1752 — Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky Muster read cost (v0.5.7 -> v0.5.8)](#20261020_1752--pi-uplink-on-the-eth0-trunk-ssh-forwards-detach-from-the-caller-sky-muster-read-cost-v057---v058)
 - [20261020_1706 — /etc census in overlay-usage-breakdown; fqdn2ip still on darlngunaya (v0.5.6 -> v0.5.7)](#20261020_1706--etc-census-in-overlay-usage-breakdown-fqdn2ip-still-on-darlngunaya-v056---v057)
 - [20261020_1647 — Run-time writers under /etc; read-only /etc on the new image (v0.5.5 -> v0.5.6)](#20261020_1647--run-time-writers-under-etc-read-only-etc-on-the-new-image-v055---v056)
@@ -37,7 +38,13 @@ Last rotated: 20261020_1752
 - [20261013_2352 — umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)](#20261013_2352--umoona-vlan621-dark-again-uplink-check-cost-v038---v039)
 - [20261013_2225 — Teleport Machine ID facts, site topology, two 2026-10-13 entries recorded (v0.3.7 -> v0.3.8)](#20261013_2225--teleport-machine-id-facts-site-topology-two-2026-10-13-entries-recorded-v037---v038)
 - [20261010_1805 — Governed-file standard: recipes, records rotated (v0.3.6 -> v0.3.7)](#20261010_1805--governed-file-standard-recipes-records-rotated-v036---v037)
-- [20261009_1806 — Sidekick and the low-touch hook: confirmed and unplugged releases a unit (v0.3.5 -> v0.3.6)](#20261009_1806--sidekick-and-the-low-touch-hook-confirmed-and-unplugged-releases-a-unit-v035---v036)
+
+## 20261020_1905 — networkd keeps changed netdevs; render with the task's options; /etc executables; fleet-health TSH_PROXY and fqdn2ip bundle (v0.5.8 -> v0.5.9)
+
+From smc-resiliency's S2 spike and slurp. `references/06_failure-modes.md`: a netplan change to a VLAN, bond or bridge takes effect only at reboot
+(networkctl(1)). `references/08_ansible-authoring.md`: rendering a role template outside the role. `references/07_hardware-overlay.md`: executables
+under /etc, Unbound's stub and keys on the new image. `scripts/collect-fleet-health.sh`: `TSH_PROXY` (it used only the active profile, so every CW
+capture failed) and a read-only `06-fqdn2ip-state` bundle (smoke: darlngunaya, all six ok). `scripts/overlay-usage-breakdown.sh --etc`: executables list.
 
 ## 20261020_1752 — Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky Muster read cost (v0.5.7 -> v0.5.8)
 
@@ -188,9 +195,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
   grandfathers existing findings (scripts/doc-freshness-baseline.json, 27 entries), so only new ones fail.
 - CHANGELOG.md rotated 2,046 -> 152 lines, this entry included (118 entries to `docs/history/`), and SCRATCHPAD.md 561 -> 240 lines
   (62 entries); SCRATCHPAD stays over budget (24 undated entries and 3 open items kept) and is a ratchet finding until they are reviewed.
-
-## 20261009_1806 — Sidekick and the low-touch hook: confirmed and unplugged releases a unit (v0.3.5 -> v0.3.6)
-
-- `references/13_known-issues.md`: what Sidekick is and how it is deployed, its addresses per family, the hook's release condition (`confirmed`
-  and no ping to 169.254.1.17), what the hook copies from the record, `lotno` versus `locid`, `tower` dropped, replacement records. Read from the
-  sidekick repository (operator, 2026-10-09).
