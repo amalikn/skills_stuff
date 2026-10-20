@@ -6,7 +6,7 @@ Authority: The skill's renderer code (scripts/flowmap/, scripts/drawio/mxfile.py
 Scope: >-
   How a generator places boxes and routes arrows so a static draw.io export is clean: layered rows, barycentre ordering, channels and tracks, port spreading,
   interval track assignment, crossing-cutting local search, label placement and text-fit sizing
-Last reviewed: 2026-10-19
+Last reviewed: 2026-10-20
 Summary: The layout techniques the flow-map renderer uses, each with its constant, so another generator can reuse them and pass the layout audits.
 ---
 
@@ -84,6 +84,42 @@ channel) or y (horizontal channel) [C-D24].
 > test_one_column_end_to_end_page_draws_and_passes_every_audit · Falsifier: a one-tier map whose page raises or fails an audit
 > Channels sit between tier columns, so a map with one tier had none and a link inside that column raised IndexError. The grid now keeps at
 > least one channel (on the right of a single column) and the page widens to hold it; maps with two or more tiers render unchanged.
+
+> **Learned 2026-10-20** · flowmap Overview thin arrows · VERIFIED_PRIMARY · Source: scripts/drawio/route.py `gap_crossings`, `gap_order`,
+> `gap_ranks`; scripts/flowmap/overview.py `_thin_routes`; tests/test_layout_rules.py ThinTrackOrder · Falsifier: a group whose thin arrows
+> cross in a row gap where another track order would not, or a drawing that changes with no fewer crossings
+> Thin arrows took their tracks in a row gap in chain order, so an arrow detouring around a box could take the upper track and hop its right-hand
+> neighbour twice (smc-resiliency's S2 Overview, operator: "unnecessary overlaps on p1"). In one gap every crossing is fixed by the track order
+> alone: run i crosses run j's way in when i is above j and j's start x is inside i's run, and j's way out when i is below and j's end x is inside.
+> The tracks now start in chain order and swap neighbours only while a swap strictly lowers that count, so a drawing already at its best renders
+> byte-identical (the shop example did). UNC's Overview went from 19 thin crossings to 15, audit clean. Screenshots:
+> [before and after](screenshots/20261020-thin-track-order/readme.md).
+>
+> ```python
+> # scripts/drawio/route.py (skill-drawio; commit named in CHANGELOG 20261020)
+> def gap_crossings(seq: list, span: dict) -> int:
+>     n = 0
+>     for a, i in enumerate(seq):
+>         lo, hi = sorted(span[i])
+>         for b, j in enumerate(seq):
+>             if i == j:
+>                 continue
+>             x0, x1 = span[j]
+>             n += (a < b and lo < x0 < hi) + (a > b and lo < x1 < hi)
+>     return n
+>
+> def gap_order(seq: list, span: dict) -> list:
+>     seq, best = list(seq), gap_crossings(seq, span)
+>     better = True
+>     while better and best:
+>         better = False
+>         for k in range(len(seq) - 1):
+>             trial = seq[:k] + [seq[k + 1], seq[k]] + seq[k + 2:]
+>             cost = gap_crossings(trial, span)
+>             if cost < best:
+>                 seq, best, better = trial, cost, True
+>     return seq
+> ```
 
 ## Port spreading
 

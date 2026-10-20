@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 # scripts/ goes on sys.path first, as a consuming project's seam does, so the modules are loaded by name after it.
-audit, mxfile = (importlib.import_module(f"drawio.{n}") for n in ("audit", "mxfile"))
+audit, mxfile, route = (importlib.import_module(f"drawio.{n}") for n in ("audit", "mxfile", "route"))
 e2e, layout, overview, pages, profile = (importlib.import_module(f"flowmap.{n}") for n in ("e2e", "overview_layout", "overview", "pages", "profile"))
 CLEAN = {k: [] for k in audit.AUDIT_KEYS}
 
@@ -207,6 +207,29 @@ class Arrows(unittest.TestCase):
         page = e2e.end_to_end_page(data, _profile(data))
         self.assertEqual(audit.faults(audit.page_audit(page)), [])
         self.assertEqual(e2e.e2e_untouched(data, page), [])
+
+
+class ThinTrackOrder(unittest.TestCase):
+    """Thin arrows sharing a row gap take tracks that minimise their crossings there (route.gap_order, 2026-10-20)."""
+
+    def test_counts_a_run_crossing_a_neighbours_drop(self) -> None:
+        """Two arrows leaving one box to the right: the left one on the upper track crosses the right one's way in, and its own way out is
+        crossed by the right one's run below (two hops); swapped, never."""
+        span = {"a": (655, 795), "b": (733, 880)}
+        self.assertEqual(route.gap_crossings(["a", "b"], span), 2)
+        self.assertEqual(route.gap_crossings(["b", "a"], span), 0)
+
+    def test_reorders_only_when_it_strictly_helps(self) -> None:
+        """smc-resiliency's S2 overview (2026-10-20): the activation step's arrows crossed; reordered they do not. An order with no crossing,
+        or one where no swap helps, comes back unchanged, so a drawing already at its best renders byte-identical."""
+        span = {"health": (575, 570), "timer": (655, 795), "confext": (733, 880)}
+        order = route.gap_order(["health", "timer", "confext"], span)
+        self.assertEqual(route.gap_crossings(order, span), 0)
+        self.assertEqual(order, ["health", "confext", "timer"])
+        clean = {"a": (10, 10), "b": (50, 90)}
+        self.assertEqual(route.gap_order(["a", "b"], clean), ["a", "b"])
+        tie = {"a": (0, 100), "b": (50, 50)}   # a straight drop inside a run is crossed whichever track is above
+        self.assertEqual(route.gap_order(["a", "b"], tie), ["a", "b"])
 
 
 class AuditThresholds(unittest.TestCase):

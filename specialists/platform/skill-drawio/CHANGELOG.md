@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261020 Fix: thin arrows in an Overview row gap take tracks that cut their crossings there (`drawio.route.gap_order`, `gap_ranks`; operator in smc-resiliency: "unnecessary overlaps on p1"). Chain order is kept unless a neighbour swap strictly helps, so the example renders byte-identical; UNC's Overview drops from 19 to 15 thin crossings and changes at its next `just flows`. Learned 2026-10-20 in `references/layout-and-routing.md`, screenshots in `references/screenshots/20261020-thin-track-order/`; tests `ThinTrackOrder`. Found: `just test-matrix` fails on 3.12 to 3.14 before and after this change (the bare mise interpreters have no PyYAML).
 - 20261020 Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20).
 - 20261019 Adopted by unified-network-controller in full: its renderer wrapper retired (its profile is now the `drawing:` block of its map,
   rendered by `render_flowmap.py`; the drawing changed only in its banner and `host` lines), and its as-built reader re-exports `drawio.read`

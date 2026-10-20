@@ -244,3 +244,69 @@ def untwist(routes: dict, jump: float, ends: dict, box_w: float, limit: float = 
     for _ in range(60):
         if not _untwist_once(routes, need, start, bound):
             return
+
+
+def gap_crossings(seq: list, span: dict) -> int:
+    """How many times the thin arrows in one row gap cross there, for one top-to-bottom order of their horizontal runs.
+
+    A run enters the gap from above at its start x, runs across on its track and leaves downwards at its end x. So run i's horizontal crosses
+    run j's way in when i's track is above j's and j's start x lies strictly inside i's run, and j's way out when i's track is below j's and
+    j's end x lies strictly inside it. A straight drop (start x equal to end x) spans the whole gap and is crossed by any run around its x.
+
+    Args:
+        seq: the runs' keys, top track first.
+        span: {key: (start x, end x)}.
+
+    Returns:
+        The number of crossings in the gap.
+    """
+    n = 0
+    for a, i in enumerate(seq):
+        lo, hi = sorted(span[i])
+        for b, j in enumerate(seq):
+            if i == j:
+                continue
+            x0, x1 = span[j]
+            n += (a < b and lo < x0 < hi) + (a > b and lo < x1 < hi)
+    return n
+
+
+def gap_order(seq: list, span: dict) -> list:
+    """The runs of one row gap reordered by neighbour swaps that each strictly lower gap_crossings; the given order when none does.
+
+    Args:
+        seq: the runs' keys in their default order, top track first.
+        span: {key: (start x, end x)}.
+
+    Returns:
+        The new order, top track first.
+    """
+    seq, best = list(seq), gap_crossings(seq, span)
+    better = True
+    while better and best:
+        better = False
+        for k in range(len(seq) - 1):
+            trial = seq[:k] + [seq[k + 1], seq[k]] + seq[k + 2:]
+            cost = gap_crossings(trial, span)
+            if cost < best:
+                seq, best, better = trial, cost, True
+    return seq
+
+
+def gap_ranks(runs: list) -> list:
+    """Each horizontal run's track number in its row gap (1 = top): chain order per gap, improved by gap_order.
+
+    Args:
+        runs: [(row, start x, end x)], one per run, in chain order.
+
+    Returns:
+        The track numbers, one per run, in the same order.
+    """
+    gaps: dict[int, list] = {}
+    for i, (row, _, _) in enumerate(runs):
+        gaps.setdefault(row, []).append(i)
+    rank = [0] * len(runs)
+    for idx in gaps.values():
+        for n, i in enumerate(gap_order(idx, {i: (runs[i][1], runs[i][2]) for i in idx})):
+            rank[i] = n + 1
+    return rank

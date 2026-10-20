@@ -161,7 +161,6 @@ class Overview:
         """
         gl, pos = self.lay[gi], self.pos
         row_of = {k: i for i, row in enumerate(gl.rows) for k in row}
-        used = [0] * len(gl.rows)
         thin: dict[tuple[str, str], list] = {}
         outs: dict[str, list] = {}
         ins: dict[str, list] = {}
@@ -172,20 +171,27 @@ class Overview:
             outs[k].sort(key=lambda ch: pos[ch[1]][0] + key_width(ch[1]) / 2)
         for k in ins:
             ins[k].sort(key=lambda ch: pos[ch[-2]][0] + key_width(ch[-2]) / 2)
+        # First the x of every horizontal run (one per chain hop, in its row gap), then the tracks: each gap keeps its runs in chain order unless
+        # swapping two neighbouring tracks strictly lowers that gap's crossings (route.gap_order), so a layout that is already best is unchanged.
+        runs: list[tuple[int, float, float]] = []   # (row, start x, end x), one per chain hop in chain order
+        for ch in gl.chains:
+            fi = (ins[ch[-1]].index(ch) + 1) / (len(ins[ch[-1]]) + 1)
+            px = pos[ch[0]][0] + OV_BW * (outs[ch[0]].index(ch) + 1) / (len(outs[ch[0]]) + 1)
+            for a, b in zip(ch, ch[1:]):
+                nx = (pos[b][0] + OV_SLOT / 2) if b.startswith("slot:") else (pos[b][0] + OV_BW * fi)
+                runs.append((row_of[a], px, nx))
+                px = nx
+        rank = route.gap_ranks(runs)
+        hop = 0
         for ch in gl.chains:
             s, d = ch[0], ch[-1]
-            fo = (outs[s].index(ch) + 1) / (len(outs[s]) + 1)
-            fi = (ins[d].index(ch) + 1) / (len(ins[d]) + 1)
-            px = pos[s][0] + OV_BW * fo
-            pts = [(px, pos[s][1] + self.box_h[s])]
-            for a, b in zip(ch, ch[1:]):
-                ra = row_of[a]
-                used[ra] += 1
-                ty = self.row_y[gi][ra] + self.row_bh[gi][ra] + 8 + (self.row_gap[gi][ra] - 8 - OV_MIN_THIN) * used[ra] / (gl.gaps[ra] + 1)
-                nx = (pos[b][0] + OV_SLOT / 2) if b.startswith("slot:") else (pos[b][0] + OV_BW * fi)
+            pts = [(runs[hop][1], pos[s][1] + self.box_h[s])]
+            for _ in zip(ch, ch[1:]):
+                ra, px, nx = runs[hop]
+                ty = self.row_y[gi][ra] + self.row_bh[gi][ra] + 8 + (self.row_gap[gi][ra] - 8 - OV_MIN_THIN) * rank[hop] / (gl.gaps[ra] + 1)
                 pts += [(px, ty), (nx, ty)]
-                px = nx
-            pts.append((px, pos[d][1]))
+                hop += 1
+            pts.append((pts[-1][0], pos[d][1]))
             thin[(s, d)] = pts
         route.untwist(thin, OV_THIN_JUMP, {(s, d): (pos[s][0], pos[d][0]) for s, d in thin}, OV_BW)
         return thin
