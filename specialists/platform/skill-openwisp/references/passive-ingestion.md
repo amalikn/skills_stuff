@@ -46,3 +46,20 @@ The original tests verify schema shape and metric-producing fields for local fix
 
 > **Learned 2026-10-05** · OpenWISP 26.09.0 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: an SNMP read that returns running firmware for these families
 > A one-pass SNMP read gave model for 99.9% of answering units but firmware only for one family of four; firmware for the others has to come from the device API or a controller. Omit what a source does not report rather than filling it.
+
+> **Learned 2026-10-20** · OpenWISP Monitoring push API and agents · VERIFIED_PRIMARY (OpenWISP Monitoring REST API and OpenWrt agent docs, saved
+> verbatim 2026-10-20) · Source: unified-network-controller `docs/reports/monitoring/smc-push-collector-research-sources-20261020_2042/`
+> `openwisp-monitoring-rest-api.txt`, `openwisp-openwrt-monitoring-agent.txt` · Falsifier: a documented bulk endpoint, or a monitoring agent packaged for Debian or Ubuntu
+> The push is one device per request: `POST /api/v1/monitoring/device/{pk}/?key={key}&time={datetime}[&current=true]` with a NetJSON
+> DeviceMonitoring body. `time` (format `%d-%m-%Y_%H:%M:%S.%f`, else HTTP 400) stores the data at that moment, added "to support resilient
+> collection": a collector that buffers through an outage can send late with the original time; without it the server's time is used. No bulk
+> endpoint is documented (UNVERIFIED that none exists). OpenWISP's own monitoring agent is an OpenWrt package that reports only the device it
+> runs on, so a box collecting many devices (an SMC) needs its own pusher that builds the URL and key per device:
+>
+> ```text
+> POST /api/v1/monitoring/device/{pk}/?key={key}&time=20-10-2026_21:05:31.000000&current=true
+> Content-Type: application/json      {"type": "DeviceMonitoring", "general": {...}, "resources": {...}, "interfaces": [...]}
+> ```
+>
+> No visual surface.
+

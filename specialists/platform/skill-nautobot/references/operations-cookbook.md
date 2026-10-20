@@ -448,3 +448,25 @@ Gotcha: a termination must attach to exactly one of `location`, `provider_networ
 Circuit Type are `PROTECT`ed while circuits use them.
 
 Source: `nautobot/circuits/models.py:60-78,96-103,123-177,192-247`, `nautobot/circuits/api/urls.py:8-15`; `nautobot-core-3.2.3-circuits.html`, `-circuit-terminations.html`.
+
+> **Learned 2026-10-20 (b)** · Nautobot 3.2.3 REST filters and custom-field choices · VERIFIED_PRIMARY (UNC01, read and changed 2026-10-20) ·
+> Source: unified-network-controller `wc-local/scripts/collector/run_collector.py` `collector_paused` (commit f6448a0), CHANGELOG 20261020_2051
+> · Falsifier: a 3.2.x release where an unknown tag name filters to an empty list
+> `GET /api/dcim/locations/?tags=<tag name>` selects by a Tag's name; a name that does not exist answers HTTP 400 `{"tags": ["Select a valid
+> choice. <name> is not one of the available choices."]}`, not an empty list. A reader that runs before the Tag is created (a code deploy ahead
+> of the catalog step) must treat that as "nothing tagged" and log it, never as a crash or as "everything". Removing a choice from a select or
+> multi-select custom field does not touch the objects that hold it: read each object's `_custom_field_data` for the value first, migrate the
+> holders, then delete the `CustomFieldChoice` row:
+>
+> ```python
+> try:
+>     found = nautobot_get(f"/dcim/locations/?tags={PAUSED_TAG}&depth=0&limit=500")["results"]
+> except Exception as exc:      # HTTP 400 until the catalog defines the tag: fail open
+>     return {}, f"paused sites unreadable, none paused ({type(exc).__name__})"
+> # nbshell: holders first, then the choice
+> holders = [l.name for l in Location.objects.all() if "register" in ((l._custom_field_data or {}).get(key) or [])]
+> if not holders: CustomFieldChoice.objects.filter(custom_field=cf, value="register").delete()
+> ```
+>
+> Screenshot pending: a Location page showing the `collector-paused` tag (UNC01, bidyadanga).
+

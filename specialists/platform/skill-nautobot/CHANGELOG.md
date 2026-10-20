@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 (b) in `references/operations-cookbook.md`: `?tags=<name>` answers 400 for an unknown tag (fail open); remove a custom-field choice only after migrating its holders (unified-network-controller).
 - 20261020 Learned 2026-10-20 (f) in `references/app-development.md`: a moved Job's "not installed" record stays until removed; remove by pk once the new record exists and the old has no results (unified-network-controller).
 - 20261020 Learned 2026-10-20 (e) in `references/app-development.md`: a Job is keyed by its module path (a moved Job module orphans its record, buttons and schedules); explicit pyproject packages; run-time module names; import every module in the built image.
 - 20261020 Learned 2026-10-20 (p) in `references/data-model.md`: a Cable cannot end on an IEEE 802.11 interface (HTTP 400 text); reading a cable's far end with `cable_peer`.

@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 in `references/passive-ingestion.md`: the monitoring push is one device per request, `time` for late data; OpenWISP's monitoring agent is OpenWrt-only (unified-network-controller SMC push research).
 - 20261020 Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20).
 - 20261019 Learned 2026-10-16 (UNC backlog audit, OpenWISP dashboard by IP on UNC01, verified): `references/deployment-and-recovery.md` gains that the images'
   domain-scoped cookies lose the session on an IP URL; host-only cookies, a distinct session name and the exact HTTPS origin with port fix it.
