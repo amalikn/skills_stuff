@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261020 `group_timeouts.py` also counts a `Popen(...)` stopped with `.kill()`/`.terminate()` in the same function without `start_new_session=`/`process_group=` (a collector's per-site limit; flagged the old code, passes the fix, unified-network-controller 36fa18e).
 - 20261020 `group_timeouts.py`: `tsh` is not a spawner (`tsh ssh` connects in-process; it is what ssh starts as the proxy); seven false positives in its first project run.
 - 20261020 `code_map.py` accepts `[group_timeouts]` and `[suppressions]` (roots, baseline); `templates/code-map.toml` shows both; SETUP.md reviewed (still accurate).
 - 20261020 New read-only helpers (operator, 2026-10-20: more rules as checkers, and a skeleton rather than written code): `scripts/suppressions.py` (inline linter suppressions per language, ratchet), `scripts/group_timeouts.py` (timed ssh/shell subprocess calls whose children outlive the timeout, ratchet), `scripts/scaffold.py` (prints a Python or shell script and its test meeting the pack's rules; writes nothing). Recipes, catalogue, SKILL.md routing, `just self-check` runs the two checkers on the pack; tests in `tests/test_quality_helpers.py`; the contract test now reads every `tests/test_*.py`. First finding: the `# type: ignore` in `scripts/check_governance.py`, fixed in skill-ai-it's template and this copy with an explicit type check.

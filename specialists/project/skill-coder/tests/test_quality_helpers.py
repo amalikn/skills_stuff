@@ -79,6 +79,22 @@ class GroupTimeouts(unittest.TestCase):
         ''')
         self.assertEqual([line for line, _t in group_timeouts.group_unsafe_calls(src)], [3, 4, 5, 6])
 
+    def test_popen_killed_alone(self) -> None:
+        """A Popen stopped with .kill() in its own function counts unless it started its own session; a Popen never killed does not."""
+        src = textwrap.dedent('''
+            import subprocess
+            def a(cmd):
+                with subprocess.Popen(cmd, stdout=subprocess.PIPE) as proc:
+                    proc.kill()
+            def b(cmd):
+                proc = subprocess.Popen(cmd, start_new_session=True)
+                proc.kill()
+            def c(cmd):
+                proc = subprocess.Popen(cmd)
+                proc.wait(timeout=5)
+        ''')
+        self.assertEqual([line for line, _t in group_timeouts.group_unsafe_calls(src)], [4])
+
     def test_cli_ratchet(self) -> None:
         """A new call fails; at its baseline the run passes."""
         root = _tree({"src/a.py": "import subprocess\nsubprocess.run(['ssh', 'h'], timeout=5)\n"})

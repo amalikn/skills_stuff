@@ -9,6 +9,8 @@ load rose. The fix is a runner that starts the child in its own session and ends
 
 Counted, through `ast`: subprocess.run/call/check_call/check_output with `timeout=` whose command is a list or tuple starting with one of
 SPAWNERS, a call to a function named like one (`ssh_argv(...)`, `bash_cmd(...)`), or `shell=True`. A call passing `**kwargs` is trusted.
+Also a `Popen(...)` stopped with `.kill()` or `.terminate()` in the same function without `start_new_session=`/`process_group=` (2026-10-20:
+a collector's per-site limit killed only the child, and the child's ssh proxies and forwards ran on).
 
 Usage:
     group_timeouts.py --project-root . [--roots src,scripts] [--baseline scripts/group-timeout-baseline.json] [--list] [--write-baseline]
@@ -56,6 +58,41 @@ def _command_name(node: ast.AST) -> str:
     return ""
 
 
+def _popen_killed_alone(tree: ast.AST) -> list[tuple[int, str]]:
+    """Popen children stopped with `.kill()` or `.terminate()` that were not started in their own session: the signal reaches only the child.
+
+    Per function: a name bound to `Popen(...)` (assignment or `with ... as`), a `<name>.kill()`/`.terminate()` anywhere in that function, and no
+    `start_new_session=` or `process_group=` on the Popen call (with them, the caller can end the group with os.killpg).
+
+    Args:
+        tree: the parsed module.
+
+    Returns:
+        (line of the Popen call, "Popen(...).kill()") per finding.
+    """
+    out: list[tuple[int, str]] = []
+    for func in ast.walk(tree):
+        if not isinstance(func, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        bound: dict[str, ast.Call] = {}
+        for node in ast.walk(func):
+            pairs = []
+            if isinstance(node, ast.Assign) and isinstance(node.value, ast.Call):
+                pairs = [(t, node.value) for t in node.targets]
+            elif isinstance(node, (ast.With, ast.AsyncWith)):
+                pairs = [(i.optional_vars, i.context_expr) for i in node.items if isinstance(i.context_expr, ast.Call)]
+            for target, call in pairs:
+                if isinstance(target, ast.Name) and call_timeouts._dotted(call.func).endswith("Popen"):
+                    bound[target.id] = call
+        stopped = {n.func.value.id for n in ast.walk(func) if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
+                   and n.func.attr in {"kill", "terminate"} and isinstance(n.func.value, ast.Name)}
+        for name in sorted(stopped & bound.keys()):
+            call = bound[name]
+            if not {k.arg for k in call.keywords} & {"start_new_session", "process_group", None}:
+                out.append((call.lineno, f"Popen(...) stopped with {name}.kill()/terminate()"))
+    return out
+
+
 def group_unsafe_calls(text: str, grammar: tuple[int, int] | None = None) -> list[tuple[int, str]]:
     """Timed run-family calls whose command starts children the timeout would leave running.
 
@@ -69,8 +106,9 @@ def group_unsafe_calls(text: str, grammar: tuple[int, int] | None = None) -> lis
     Raises:
         SyntaxError: when the source does not parse (the caller reports it).
     """
-    out: list[tuple[int, str]] = []
-    for node in ast.walk(pyparse.parse(text, grammar)):
+    tree = pyparse.parse(text, grammar)
+    out: list[tuple[int, str]] = _popen_killed_alone(tree)
+    for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
         name = call_timeouts._dotted(node.func)

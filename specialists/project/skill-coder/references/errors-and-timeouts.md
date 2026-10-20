@@ -38,6 +38,9 @@ Language idioms differ (exceptions in Python and TypeScript, error values in Go,
 - A timeout ends everything the call started. `subprocess.run(timeout=)` kills only its own child: an `ssh` through a ProxyCommand, `scp`,
   `rsync` or a shell leaves its children running. Start such a command in its own session and end the process group on timeout. Why: proxies
   piled up on a host after each timed-out read (Learned below). The pack's `scripts/group_timeouts.py` finds the Python calls that do not.
+- The same holds for a `Popen` stopped by hand at a deadline: start it with `start_new_session=True` and end the group, SIGTERM first so the child
+  can close what it detached (an `ssh -f` forward leaves the group and is found only by the child's own record of it), then SIGKILL after a
+  grace. `group_timeouts.py` counts a `Popen` stopped with `.kill()`/`.terminate()` that did not start its own session.
 
 > **Learned 2026-10-20** · Python subprocess, ssh through a ProxyCommand (Teleport `tsh proxy ssh`) · VERIFIED_PRIMARY (reproduced with
 > `ProxyCommand=sleep`: after `run(timeout=1)` the sleep was still alive; with the group runner it was gone; run on macOS and on the Linux host)
