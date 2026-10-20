@@ -218,7 +218,10 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 > neighbours set the row height. The map's `drawing.group_layout: {<group>: vertical | horizontal | grid N}` sets that grid per group (one column, one
 > row, N columns); `drawing.group_columns: {<group>: <n>}` is the numeric form, and a group named in both is refused. It changes only the grid of
 > unlinked boxes, not the layered rows that arrows inside the group decide. Proved byte-identical for unified-network-controller and the shop example
-> (drift checks clean); screenshots in [screenshots/20261020-group-columns/](screenshots/20261020-group-columns/readme.md).
+> (drift checks clean). Groups themselves sit on a grid `groups_per_row` wide in map order, so a fourth group wraps to row 2, column 1 whatever
+> it connects to; `drawing.group_cell: {<group>: [row, column]}` (counted from 1) places a group, the rest fill the free cells in map order
+> (`overview_layout.grid_cells`; an unknown group, a column past the grid or a shared cell is refused). Screenshots in
+> [screenshots/20261020-group-columns/](screenshots/20261020-group-columns/readme.md).
 >
 > ```python
 > # scripts/flowmap/overview.py

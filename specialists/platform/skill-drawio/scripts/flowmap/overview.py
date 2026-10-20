@@ -15,7 +15,8 @@ from drawio.mxfile import Page, Point, Rect, label
 
 from .model import GROUP_HEAD, MARGIN, comp_style
 from .overview_layout import (OV_BH, OV_BW, OV_CHANNEL, OV_GRID_COLS, OV_HGAP, OV_JUMP, OV_LEFT, OV_MIN_HEAD, OV_MIN_THIN, OV_PAD, OV_SIDE, OV_SLOT, OV_SP,
-                              OV_THIN_JUMP, OV_THIN_SP, OV_TOP, THIN_GREY, box_lines, far_channels, key_width, layout_group, side, text_height)
+                              OV_THIN_JUMP, OV_THIN_SP, OV_TOP, THIN_GREY, box_lines, far_channels, grid_cells, key_width, layout_group, side,
+                              text_height)
 from .profile import DISTINCT, Profile
 
 
@@ -59,11 +60,12 @@ class Overview:
             self.gh_of[gi] = (GROUP_HEAD + sum(self.row_bh[gi][:-1]) + sum(self.row_gap[gi][:-1]) + (self.row_bh[gi][-1] if self.row_bh[gi] else 0)
                               + OV_PAD)
         self.ncol = ncol = self.profile.groups_per_row
-        self.nrow = (len(self.lay) + ncol - 1) // ncol
-        self.grow = {gi: gi // ncol for gi in self.lay}
-        self.gcol = {gi: gi % ncol for gi in self.lay}
+        cells = grid_cells(list(self.groups), self.profile.group_cells, ncol)
+        self.grow = {gi: cells[name][0] for gi, name in enumerate(self.groups)}
+        self.gcol = {gi: cells[name][1] for gi, name in enumerate(self.groups)}
+        self.nrow = max(self.grow.values(), default=0) + 1
         self.col_w = [max([self.lay[gi].width for gi in self.lay if self.gcol[gi] == c], default=0) for c in range(ncol)]
-        self.row_h = [max(self.gh_of[gi] for gi in self.lay if self.grow[gi] == r) for r in range(self.nrow)]
+        self.row_h = [max([self.gh_of[gi] for gi in self.lay if self.grow[gi] == r], default=0) for r in range(self.nrow)]
 
     def _plan(self) -> None:
         """One thick arrow plan per group pair, with the channels it uses.

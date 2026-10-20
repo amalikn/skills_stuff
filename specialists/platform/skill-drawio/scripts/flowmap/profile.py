@@ -36,6 +36,7 @@ class Profile:
         groups_per_row: overview groups per grid row.
         group_columns: {group name: columns} for an overview group's unlinked boxes (default OV_GRID_COLS, 3); 1 stacks them, 0 puts
             them in one row. Built from the map's `group_columns` and `group_layout` (see layout_columns).
+        group_cells: {group name: (row, column)} counted from 0, from the map's `group_cell` (counted from 1); other groups fill the rest.
         tiers: End-to-end tier columns, left to right: (heading, the map groups placed in it).
         below_groups: groups drawn in the band below the columns.
         below_kinds: kinds drawn in that band.
@@ -56,6 +57,7 @@ class Profile:
     kind_style: dict = field(default_factory=dict)
     groups_per_row: int = 3
     group_columns: dict = field(default_factory=dict)
+    group_cells: dict = field(default_factory=dict)
     tiers: tuple = ()
     below_groups: tuple = ()
     below_kinds: tuple = ()
@@ -111,7 +113,8 @@ class Profile:
         return cls(map=map_path, schema=schema, output=out, generator=generator, host=d.get("host", "flowmap"),
                    command=d.get("command", "just flows"), check=d.get("check", "just check"), kind_style=style,
                    groups_per_row=int(d.get("groups_per_row", 3)),
-                   group_columns=group_columns(d), tiers=tiers, below_groups=below_groups, below_kinds=below_kinds,
+                   group_columns=group_columns(d),
+                   group_cells={k: (int(v[0]) - 1, int(v[1]) - 1) for k, v in (d.get("group_cell") or {}).items()}, tiers=tiers, below_groups=below_groups, below_kinds=below_kinds,
                    kind_tier=dict(d.get("kind_tier") or {}), default_tier=int(d.get("default_tier", 0)), families=families,
                    family_by_category=by_cat, band_title=d.get("band_title", "Stores and secrets"))
 

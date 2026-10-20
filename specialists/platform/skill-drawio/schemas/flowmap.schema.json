@@ -320,6 +320,11 @@
           "description": "Overview: {group name: vertical | horizontal | grid N} for the boxes with no arrow inside the group; the readable form of group_columns (one column, one row, N columns).",
           "additionalProperties": {"type": "string", "pattern": "^(vertical|horizontal|grid [1-9][0-9]*)$"}
         },
+        "group_cell": {
+          "type": "object",
+          "description": "Overview: {group name: [row, column]}, counted from 1, to place a group in the group grid; other groups fill the free cells in map order.",
+          "additionalProperties": {"type": "array", "items": {"type": "integer", "minimum": 1}, "minItems": 2, "maxItems": 2}
+        },
         "default_tier": {
           "type": "integer"
         },

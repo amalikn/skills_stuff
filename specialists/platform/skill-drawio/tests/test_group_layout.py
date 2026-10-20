@@ -40,5 +40,16 @@ class GroupLayout(unittest.TestCase):
 
 
 
+    def test_group_cell_places_groups(self) -> None:
+        """Placed groups take their cell; the rest fill free cells in map order; an unknown group, a column past the grid or a shared cell is refused."""
+        names = ["Lab", "On the SMC", "Outside", "Storage"]
+        self.assertEqual(overview_layout.grid_cells(names, {}, 3), {"Lab": (0, 0), "On the SMC": (0, 1), "Outside": (0, 2), "Storage": (1, 0)})
+        self.assertEqual(overview_layout.grid_cells(names, {"Storage": (1, 1)}, 3)["Storage"], (1, 1))
+        self.assertEqual(overview_layout.grid_cells(names, {"Lab": (0, 1)}, 3), {"Lab": (0, 1), "On the SMC": (0, 0), "Outside": (0, 2), "Storage": (1, 0)})
+        for bad in ({"Nope": (0, 0)}, {"Lab": (0, 3)}, {"Lab": (1, 1), "Storage": (1, 1)}):
+            with self.assertRaises(ValueError):
+                overview_layout.grid_cells(names, bad, 3)
+
+
 if __name__ == "__main__":
     unittest.main()

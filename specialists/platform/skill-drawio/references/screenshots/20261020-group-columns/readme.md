@@ -14,3 +14,5 @@ Summary: Two Overview groups of unlinked boxes in the default three-column grid,
 - [after-one-column.png](after-one-column.png) The same group with `group_columns: {Outside the box: 1}`: the three boxes stacked (crop of page 1 exported at scale 1).
 - [storage-before-three-columns.png](storage-before-three-columns.png) Four boxes in the default grid of three: a lone fourth box on its own row (operator's screenshot).
 - [storage-after-grid-2.png](storage-after-grid-2.png) The same group with `group_layout: {Storage on the box: grid 2}` (crop of page 1, scale 1).
+- [storage-cell-before-left.png](storage-cell-before-left.png) Storage as the fourth group, wrapped to row 2, column 1, under Lab and far from its main writer (operator's screenshot).
+- [storage-cell-after-2-2.png](storage-cell-after-2-2.png) The same with `group_cell: {Storage on the box: [2, 2]}`: under On the SMC, both thick arrows straight down (crop of page 1).

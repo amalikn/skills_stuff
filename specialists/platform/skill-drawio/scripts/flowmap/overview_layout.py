@@ -228,3 +228,36 @@ def far_channels(plan: dict, grow: dict, gcol: dict) -> tuple[int, int, int]:
     r1 = grow[a] if down else grow[a] - 1
     r2 = (grow[b] - 1) if (down and grow[b] != grow[a]) else grow[b]
     return r1, r2, (gcol[b] if gcol[b] > 0 else 1)
+
+def grid_cells(names: list, placed: dict, ncol: int) -> dict:
+    """Each overview group's (row, column) in the group grid: placed groups where the map puts them, the rest in the free cells in map order.
+
+    Args:
+        names: the group names, in map order.
+        placed: {group name: (row, column)} counted from 0 (the map's `drawing.group_cell`).
+        ncol: groups per grid row.
+
+    Returns:
+        {group name: (row, column)}.
+
+    Raises:
+        ValueError: a placed group the map does not have, a column past ncol, or two groups in one cell.
+    """
+    for name, (r, c) in placed.items():
+        if name not in names:
+            raise ValueError(f"group_cell: no group named {name!r}")
+        if not (0 <= c < ncol and r >= 0):
+            raise ValueError(f"group_cell: {name!r} at row {r + 1}, column {c + 1} is outside a grid {ncol} wide (groups_per_row)")
+    taken = list(placed.values())
+    if len(set(taken)) != len(taken):
+        raise ValueError("group_cell: two groups in one cell")
+    cells, used, i = {}, set(taken), 0
+    for name in names:
+        if name in placed:
+            cells[name] = placed[name]
+            continue
+        while (i // ncol, i % ncol) in used:
+            i += 1
+        cells[name] = (i // ncol, i % ncol)
+        used.add(cells[name])
+    return cells
