@@ -183,7 +183,7 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 
 | Constant                                                       | Value              | Meaning                                                                           |
 | -------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------- |
-| `OV_HGAP`, `OV_SLOT`, `OV_PAD`, `OV_GRID_COLS`                 | 34, 22, 26, 3      | Box gap, slot width, group padding, grid columns                                  |
+| `OV_HGAP`, `OV_SLOT`, `OV_PAD`, `OV_GRID_COLS`                 | 34, 22, 26, 3      | Box gap, slot width, group padding, grid columns (per group: `group_columns`)     |
 | `OV_THIN_SP`, `OV_THIN_JUMP`                                   | 16, 4              | Thin track spacing, thin hop size                                                 |
 | `OV_CHANNEL`, `OV_MIN_THIN`, `OV_MIN_HEAD`, `OV_SP`, `OV_JUMP` | 210, 22, 34, 24, 7 | Channel width, thin and thick head clearance, thick track spacing, thick hop size |
 | `OV_CHARS`, `OV_LINE_H`                                        | 26, 13             | Overview text budget and line height                                              |
@@ -210,4 +210,20 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 >   # no depends_on: [activate] (the activation step arms it; the reverse edge drew through its title)
 > - id: site-units
 >   group: On the SMC        # was its own tier "Site services"
+> ```
+
+> **Learned 2026-10-20 (b)** · flowmap Overview unlinked boxes · VERIFIED_PRIMARY · Source: scripts/flowmap/overview_layout.py `_rows_and_chains` (skills_stuff, this
+> change); smc-resiliency docs/flows/flows.yaml · Falsifier: a map without `group_columns` whose drawing changes, or a group set to 1 still drawn side by side
+> Boxes with no arrow inside their group sit in a grid of `OV_GRID_COLS` (3) columns, which leaves a wide, empty group when its boxes are few and tall
+> neighbours set the row height. The map's `drawing.group_columns: {<group>: <n>}` sets that grid per group (1 stacks them); it changes only the grid of
+> unlinked boxes, not the layered rows that arrows inside the group decide. Proved byte-identical for unified-network-controller and the shop example
+> (drift checks clean); screenshots in [screenshots/20261020-group-columns/](screenshots/20261020-group-columns/readme.md).
+>
+> ```python
+> # scripts/flowmap/overview.py
+> cols = self.profile.group_columns
+> self.lay = {gi: layout_group(ids, self.same, cols.get(name, OV_GRID_COLS)) for gi, (name, ids) in enumerate(self.groups.items())}
+> # scripts/flowmap/overview_layout.py, _rows_and_chains
+> for i in range(0, len(alone), cols):
+>     rows.append(alone[i:i + cols])
 > ```

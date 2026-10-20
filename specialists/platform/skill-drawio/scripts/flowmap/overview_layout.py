@@ -77,12 +77,13 @@ def key_width(key: str) -> float:
     return OV_SLOT if key.startswith("slot:") else OV_BW
 
 
-def _rows_and_chains(ids: list, same: dict) -> tuple[list, list]:
+def _rows_and_chains(ids: list, same: dict, cols: int = OV_GRID_COLS) -> tuple[list, list]:
     """A group's rows by dependency depth (unlinked boxes in a grid below) and each same-group arrow's chain of slots.
 
     Args:
         ids: the group's component ids, in map order.
         same: {component id: the components it needs in its own group}.
+        cols: columns in the grid of unlinked boxes.
 
     Returns:
         (rows, chains).
@@ -95,8 +96,8 @@ def _rows_and_chains(ids: list, same: dict) -> tuple[list, list]:
     for cid in ids:
         if cid in linked:
             rows[top - dep[cid]].append(cid)
-    for i in range(0, len(alone), OV_GRID_COLS):
-        rows.append(alone[i:i + OV_GRID_COLS])
+    for i in range(0, len(alone), cols):
+        rows.append(alone[i:i + cols])
     chains = []
     for cid in ids:
         for d in same[cid]:
@@ -131,17 +132,18 @@ def _barycentre(rows: list, chains: list) -> None:
                 order[k] = i
 
 
-def layout_group(ids: list, same: dict) -> GroupLayout:
+def layout_group(ids: list, same: dict, cols: int = OV_GRID_COLS) -> GroupLayout:
     """Lay out one group's interior: layered rows, slots for row-skipping arrows, barycentre ordering, unlinked boxes in a grid below.
 
     Args:
         ids: the group's component ids, in map order.
         same: {component id: the components it needs in its own group}.
+        cols: columns in the grid of unlinked boxes (the map's `drawing.group_columns`, default 3).
 
     Returns:
         The group layout.
     """
-    rows, chains = _rows_and_chains(ids, same)
+    rows, chains = _rows_and_chains(ids, same, cols)
     _barycentre(rows, chains)
     row_w = [sum(key_width(k) for k in row) + OV_HGAP * (len(row) - 1) for row in rows]
     gw = max(row_w, default=OV_BW) + 2 * OV_PAD

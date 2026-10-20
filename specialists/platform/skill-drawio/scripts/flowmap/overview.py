@@ -14,7 +14,7 @@ from drawio import route
 from drawio.mxfile import Page, Point, Rect, label
 
 from .model import GROUP_HEAD, MARGIN, comp_style
-from .overview_layout import (OV_BH, OV_BW, OV_CHANNEL, OV_HGAP, OV_JUMP, OV_LEFT, OV_MIN_HEAD, OV_MIN_THIN, OV_PAD, OV_SIDE, OV_SLOT, OV_SP,
+from .overview_layout import (OV_BH, OV_BW, OV_CHANNEL, OV_GRID_COLS, OV_HGAP, OV_JUMP, OV_LEFT, OV_MIN_HEAD, OV_MIN_THIN, OV_PAD, OV_SIDE, OV_SLOT, OV_SP,
                               OV_THIN_JUMP, OV_THIN_SP, OV_TOP, THIN_GREY, box_lines, far_channels, key_width, layout_group, side, text_height)
 from .profile import DISTINCT, Profile
 
@@ -39,7 +39,8 @@ class Overview:
         by_id, gof = self.by_id, self.gof
         self.same = {cid: [d for d in by_id[cid].get("depends_on", []) if gof[d] == gof[cid] and d != cid] for cid in by_id}
         self.far = {cid: [by_id[d]["name"] for d in by_id[cid].get("depends_on", []) if gof[d] != gof[cid]] for cid in by_id}
-        self.lay = {gi: layout_group(ids, self.same) for gi, ids in enumerate(self.groups.values())}
+        cols = self.profile.group_columns
+        self.lay = {gi: layout_group(ids, self.same, cols.get(name, OV_GRID_COLS)) for gi, (name, ids) in enumerate(self.groups.items())}
         self._measure()
         self._plan()
         self._grid()
