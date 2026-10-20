@@ -14,6 +14,8 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 (e) in `references/app-development.md`: a Job is keyed by its module path (a moved Job module orphans its record, buttons and schedules); explicit pyproject packages; run-time module names; import every module in the built image.
+- 20261020 Learned 2026-10-20 (p) in `references/data-model.md`: a Cable cannot end on an IEEE 802.11 interface (HTTP 400 text); reading a cable's far end with `cable_peer`.
 - 20261020 Learned 2026-10-20 (c) in `references/app-development.md`: rename a core field everywhere from `ready()` (verbose_name for the detail panel; form base_fields and table base_columns copied it at build). Screenshot pending after the UNC 0.8.48 deploy.
 - 20261020 Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20).
 - 20261020 Learned 2026-10-20 (n) and (o) in `data-model.md`: native wireless models, per-group assignment and site child groups; Relationship rows hidden per side.

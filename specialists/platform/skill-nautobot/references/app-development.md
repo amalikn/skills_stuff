@@ -536,3 +536,27 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 > ```
 >
 > Screenshot pending: a Location's detail panel and the Locations list, after unc_ownership 0.8.48 is deployed.
+
+> **Learned 2026-10-20 (e)** · Nautobot 3.2.3 apps · VERIFIED-OBSERVED (a throwaway container from the rebuilt image, against a test stack's
+> database) · Source: unified-network-controller `scripts/checks/app_import_check.py` and the A-21 package layout (commits af71572, 8eaba7c)
+> · Falsifier: a Nautobot release that keys Job records by something other than module and class name
+> Moving an app's modules into sub-packages changes nothing a user sees except where something is keyed by module path. A Job is (module_name,
+> job_class_name): a Job class defined outside `jobs.py` (an SSoT `DataSource`, a Job in its own module) that moves is registered again under
+> the new path at the next start, and its old record turns "not installed" with its Job Buttons, schedules and results attached to it. Keep
+> every module that defines a Job where it is, or plan the record move. Two other traps of the same move: setuptools' explicit
+> `packages = [...]` in the app's pyproject leaves new sub-packages out of the image, and a module name built at run time
+> (`f"from {pkg}.ownership import ..."`) escapes a text rewrite. Tests that load modules by file path with Django stubbed see none of the three;
+> importing every module inside the built image does:
+>
+> ```python
+> # app_import_check.py PROBE (run as `python /tmp/probe.py` in `docker compose run --rm --no-deps nautobot`)
+> import nautobot; nautobot.setup()
+> for m in pkgutil.walk_packages(pkg.__path__, "PACKAGE."):
+>     if ".migrations." not in m.name:
+>         importlib.import_module(m.name)              # each failure is reported, not raised
+> for j in Job.objects.filter(module_name__startswith="PACKAGE"):
+>     print(j.class_path, "installed" if j.installed else "NOT installed")   # a moved Job shows both paths
+> ```
+>
+> No visual surface.
+

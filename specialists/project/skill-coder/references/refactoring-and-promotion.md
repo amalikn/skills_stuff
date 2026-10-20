@@ -84,3 +84,24 @@ Engines a project imports run in the project's interpreter and the project pins 
 > WRITE_GATES: dict[str, str] = dict(CODE_MAP["write_gates"].get("exceptions", {}))
 > ```
 
+> **Learned 2026-10-20 (b)** · moving modules into packages and a folder up a level, Python with a framework that imports by name ·
+> VERIFIED-OBSERVED (two moves in one project, each deployed) · Source: unified-network-controller decisions A-21 and A-22 (commits af71572,
+> e4a92af, 03e4a8e) · Falsifier: a move proved by these steps that still breaks a caller
+> Prove a move unchanged on four counts, each run before and after: the test count and result; the rendered outputs byte for byte, the
+> "before" rendered from HEAD in a `git worktree` so the comparison needs no stash; the built artefact importing every module in its real
+> runtime; the closing check. Write the rewrite as one script that maps old to new once and runs once: a second pass is not idempotent when
+> a new name contains an old one (`drift.py` into package `drift/` turned `unc_ownership.drift.network` into `.drift.drift.network`), and a
+> half-run leaves a mixed tree, so reset to HEAD and rerun rather than repair. Search separately for what a text rewrite cannot see: names
+> built at run time (`f"from {pkg}.ownership import"`), paths climbed from `__file__` (`parents[2] / "nautobot"` needs one more level), a
+> packaging list kept by hand, and anything a framework keys by module path (Nautobot Jobs). A dated record keeps its old paths; map a moved
+> folder once by prefix rather than every file:
+>
+> ```python
+> def _moved_exists(tok, moved):                 # govcheck paths.py (e4a92af): exact entries first, then a moved folder's prefix
+>     if tok in moved:
+>         return (ROOT / moved[tok]).exists()
+>     return any(tok.startswith(old + "/") and (ROOT / new / tok[len(old) + 1:]).exists() for old, new in moved.items())
+> ```
+>
+> No visual surface.
+

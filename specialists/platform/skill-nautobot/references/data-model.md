@@ -391,3 +391,22 @@ Source: `nautobot/extras/models/contacts.py:49-125`, `nautobot/extras/models/sta
 >
 > Screenshot pending: a site's Relationships panel without the DNS View row, after link-fixes runs on the deployed host (the operator's
 > before-shot showed the row "DNS View 20-mile").
+
+> **Learned 2026-10-20 (p)** · Nautobot 3.2.3 · VERIFIED-OBSERVED (a refused POST on a production stack; the interface API read live) ·
+> Source: unified-network-controller `wc-local/scripts/site_onboarding/site_cables.py` `cable_end` (commit 5e1ae68) · Falsifier: a Cable to an
+> `ieee802.11*` interface accepted
+> A Cable cannot end on a wireless interface: `POST /dcim/cables/` with a radio (`type` `ieee802.11n`, `ieee802.11ac`, ...) as a termination
+> fails with HTTP 400 `{"terminations":{"b":{"1":{"__all__":["Cables cannot be terminated to IEEE 802.11n interfaces"]}}}}`. A writer that
+> matches a MAC learned on a switch port to an interface must exclude radios as well as virtual, bridge and LAG interfaces; an AP's radio MAC
+> still identifies the AP, so on a unit with one wired port it stands for that port. Reading the far end of a cable: `GET
+> /dcim/interfaces/?device_id=<id>&depth=1` gives each interface's `cable_peer` (and `connected_endpoint`) as objects with an `id`, and the
+> peer's own record (`/dcim/interfaces/<id>/?depth=1`) its `untagged_vlan.vid` and `mode`.
+>
+> ```python
+> def cable_end(iface: dict) -> bool:          # site_cables.py (5e1ae68)
+>     kind = (iface.get("type") or {}).get("value") or ""
+>     return kind not in {"virtual", "bridge", "lag"} and not kind.startswith("ieee802.11")
+> ```
+>
+> No visual surface.
+

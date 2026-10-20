@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_1141
+Last rotated: 20261020_1336
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261020_1335 — A Pi SMC's internet is eth0 untagged, read on five rct sites (v0.5.4 -> v0.5.5)](#20261020_1335--a-pi-smcs-internet-is-eth0-untagged-read-on-five-rct-sites-v054---v055)
 - [20261020_1322 — Ubuntu 24.04 arm64 spike VM for the read-only Pi image (v0.5.3 -> v0.5.4)](#20261020_1322--ubuntu-2404-arm64-spike-vm-for-the-read-only-pi-image-v053---v054)
 - [20261020_1141 — ATA page markers by position; lingering tsh proxy after an ssh timeout (v0.5.2 -> v0.5.3)](#20261020_1141--ata-page-markers-by-position-lingering-tsh-proxy-after-an-ssh-timeout-v052---v053)
 - [20261020_0944 — Write-back evidence: code excerpts and screenshots (v0.5.1 -> v0.5.2)](#20261020_0944--write-back-evidence-code-excerpts-and-screenshots-v051---v052)
@@ -37,7 +38,12 @@ Last rotated: 20261020_1141
 - [20261009_1714 — What else the low-touch hook logs record: state and secret, events, the SM by its own MAC, preferred_ssid names the AP (v0.3.4 -> v0.3.5)](#20261009_1714--what-else-the-low-touch-hook-logs-record-state-and-secret-events-the-sm-by-its-own-mac-preferred_ssid-names-the-ap-v034---v035)
 - [20261009_1705 — The provisioning hook's per-unit logs are a low-touch site's install-time pairing (v0.3.3 -> v0.3.4)](#20261009_1705--the-provisioning-hooks-per-unit-logs-are-a-low-touch-sites-install-time-pairing-v033---v034)
 - [20261009_1652 — Low-touch provisioning logs live only on the SMC; sizes per site, backup in UNC (v0.3.2 -> v0.3.3)](#20261009_1652--low-touch-provisioning-logs-live-only-on-the-smc-sizes-per-site-backup-in-unc-v032---v033)
-- [20261009_1552 — An SMC's DHCP history lives in a short journal and is not a unit's boot history (v0.3.1 -> v0.3.2)](#20261009_1552--an-smcs-dhcp-history-lives-in-a-short-journal-and-is-not-a-units-boot-history-v031---v032)
+
+## 20261020_1335 — A Pi SMC's internet is eth0 untagged, read on five rct sites (v0.5.4 -> v0.5.5)
+
+References: `references/03_communication-flows.md`, Learned 2026-10-20: the default route and the public IP (AS38172 IPSTAR) are on `eth0`;
+`vlan521` only reaches the modem's subnet (curl rc 7), `vlan522` has no address; read the default route's interface, not only a role's
+interfaces (unified-network-controller `uplink_provider.read`, 03e4a8e). manifest 0.5.4 -> 0.5.5.
 
 ## 20261020_1322 — Ubuntu 24.04 arm64 spike VM for the read-only Pi image (v0.5.3 -> v0.5.4)
 
@@ -189,8 +195,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 - `references/13_known-issues.md`: `/var/local/cnmaestro-provisioning` (one log per provisioned unit, Option 82 Remote ID included) is kept only
   on the box; sizes read on seven low-touch SMCs; the copy is unified-network-controller `just wc::provisioning-backup` (operator, 2026-10-09:
   keep them in case an SMC is replaced).
-
-## 20261009_1552 — An SMC's DHCP history lives in a short journal and is not a unit's boot history (v0.3.1 -> v0.3.2)
-
-- 13_known-issues.md: dhcpd logs to the journal only (about 13 hours at old-looma-smc01), Prometheus keeps no per-unit history, and low-touch
-  units leave DHCP after provisioning; read-only probe 2026-10-09 for unified-network-controller pairing.

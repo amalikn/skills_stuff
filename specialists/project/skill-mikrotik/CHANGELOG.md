@@ -6,10 +6,15 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_0944
+Last rotated: 20261020_1336
 ---
 
 # Changelog
+
+## 20261020_1335 — The rct switch learns the Metal AP's radio MAC on its port (v0.1.28 -> v0.1.29)
+
+`references/01_overview.md` "One AP per rct site", Learned 2026-10-20: cabling by learned MAC maps the AP's radio MAC to its ether1
+(unified-network-controller site_cables.py, 5e1ae68). manifest 0.1.28 -> 0.1.29.
 
 ## 20261020_0944 — Write-back evidence: code excerpts and screenshots (v0.1.27 -> v0.1.28)
 
@@ -192,8 +197,3 @@ VERIFIED-OBSERVED 2026-10-08 from unified-network-controller work over Teleport 
 - `references/05_known-issues.md`: items 3 (time zone and NTP) and 4 (logging to disk) updated from the script; new 12 (script location, owner, APs) and 13
   (shared clear-text admin password, MAC access on all ports, HTTP on, protected RouterBOOT off).
 - `RUNBOOK.md`, `SKILL.md`: routing for `references/06_provisioning.md`. `SCRATCHPAD.md`: cause corrected.
-
-## 20261007_1605 — arrkapa root cause: switch kernel-failure / watchdog reboot loop (v0.1.7 -> v0.1.8)
-
-- `references/04_failure-modes.md`: arrkapa finding with evidence; new signature section (watchdog timer + kernel failure loop) and how to tell it from a power cut.
-- `references/05_known-issues.md`: item 1 closed; batavia-downs left open.

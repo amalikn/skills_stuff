@@ -603,6 +603,25 @@ VERIFIED-OBSERVED 2026-10-08 on the boxes (20-mile and adjamarragu `rct`, areyon
 - topology_vars defines the same four site VLANs on every Pi site checked: 500 management, 501 public, 521 nbn_modem, 522 internet02.
 - All of them ride the Pi's one wired port, `eth0` (`07_hardware-overlay.md`, Raspberry Pi SMC identity).
 
+> **Learned 2026-10-20** · Pi SMC uplinks (`rct`) · VERIFIED-OBSERVED 2026-10-20 on akwalirrumanja, adjamarragu, alamirra, alice-well and
+> alkngarrija (Teleport apn, read-only from apn-unc01; arrkapa did not answer) · Source: unified-network-controller
+> `wc-local/scripts/smc/uplink_provider.py` `read` (commit 03e4a8e) · Falsifier: a Pi site whose default route leaves on vlan521 or vlan522
+> The internet leaves on `eth0` untagged: it holds the default route (`10.181.x.x/30` DHCP from the switch's untagged VLAN 521, the Sky Muster
+> NTD on the switch's ether2) and `curl --interface eth0 https://ipinfo.io` answers an `AS38172 IPSTAR Australia` address (119.12.x.x).
+> `vlan521` (`192.168.100.50/24`) only reaches the satellite modem's own subnet: `curl --interface vlan521` fails at once (rc 7, no route out).
+> `vlan522` (internet02) has no address (rc 28). A reader that picks uplinks by a role (Nautobot's Internet role on vlan521/vlan522, since eth0
+> is also the switch trunk) misses the real one; read the interface carrying the default route as well:
+>
+> ```python
+> # uplink_provider.read (03e4a8e): the listed uplinks, then the default route's interface when it is not one of them
+> fn = (f"u() {{ echo \"@@ $1\"; ... curl -s --max-time 8 --interface \"$1\" https://ipinfo.io/json ...; }}")
+> default = ("d=$(ip -4 route show default | awk '{for (i = 1; i < NF; i++) if ($i == \"dev\") { print $(i + 1); exit }}'); "
+>            f"case \" {' '.join(interfaces)} \" in *\" $d \"*) ;; *) [ -n \"$d\" ] && u \"$d\" ;; esac")
+> lines = [fn] + [f"u {shlex.quote(i)}" for i in interfaces] + [default]
+> ```
+>
+> No visual surface.
+
 ### Alert Flows
 
 ```

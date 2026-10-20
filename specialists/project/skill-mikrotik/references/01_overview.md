@@ -124,3 +124,21 @@ identity names a unit: the serial is the only identity.
 
 `rct` sites have a single AP (the Metal 52 ac) and no point-to-point bridges (operator, 2026-10-07). `wh` point-to-point bridges are Cambium ePMP and are tracked in
 skill-cambium `references/05_known-issues.md`.
+
+> **Learned 2026-10-20** · rct switch and Metal AP · VERIFIED-OBSERVED 2026-10-20 at akwalirrumanja (read-only bridge host table through the SMC)
+> · Source: unified-network-controller `wc-local/scripts/site_onboarding/site_cables.py` (commit 5e1ae68) · Falsifier: an rct switch whose AP
+> port shows only the AP's ether1 MAC
+> The switch learns the Metal AP's radio (wlan) MAC on the AP's port (ether5 at akwalirrumanja), beside or instead of its ether1 MAC. A tool
+> that cables by "the MAC this port learned" must map a radio MAC to the AP's single wired port, never to the radio itself (Nautobot refuses a
+> cable on an 802.11 interface):
+>
+> ```python
+> # site_cables.py (5e1ae68): a radio's own MAC seen on a switch port stands for the unit's one wired port, as its mgmt MAC does
+> for i in ifaces:
+>     kind = (i.get("type") or {}).get("value") or ""
+>     if port and i.get("mac_address") and kind.startswith("ieee802.11"):
+>         known.setdefault(i["mac_address"].upper(), (d["name"], port["id"], port["name"]))
+> ```
+>
+> No visual surface.
+
