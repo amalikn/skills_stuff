@@ -80,6 +80,17 @@ milestone.
 >     self.assertEqual(cands["192.0.2.53"].get("family"), "ddc-voip", cut)
 > ```
 
+> **Learned 2026-10-20** · core (negative tests for a script's guards) · VERIFIED_PRIMARY · Source: smc-resiliency justfile `_script-guards` and
+> scripts/confext_probe.sh (apn, 2026-10-20) · Falsifier: a script whose guards exit with distinct codes, where the exit code alone tells them apart
+> A guard test that asserts only the exit code can pass for the wrong guard: a probe refusing "not the named lab host" and "not root" both exit 2,
+> so a copy with the host check removed still exited 2 on a non-root machine and the proof was void. Assert the guard's own message (or give each
+> guard its own code), then prove red on a copy with that one guard removed.
+>
+> ```bash
+> out=$(bash "${PROBE:-scripts/confext_probe.sh}" --lab-host "not-$(hostname)" --apply 2>&1); rc=$?
+> { [ $rc -eq 2 ] && [[ "$out" == *"refusing: this box is"* ]]; } || { echo "guard: did not refuse a box it was not named for (rc $rc)"; fail=1; }
+> ```
+
 ## Proof against the real target
 
 - Before claiming a capability works, verify it against a real target (an isolated or spare one), not only a mock. Why: a stub only proves the code agrees with

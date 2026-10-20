@@ -5,7 +5,8 @@ This file is identical in every governed project (canonical: skill-ai-it `templa
 `helpers.py`, checks in `checks/<family>.py`. Imports point one way: checks -> helpers -> config -> core.
 
 Run through the entry point: `python scripts/check_governance.py [--select FAMILY,...] [--json] [--timings]`. The default output is one line on
-a pass and one line per failure, so an agent's tokens do not grow with the number of checks.
+a pass and one line per failure, so an agent's tokens do not grow with the number of checks. Read-only: it reads the project and writes
+nothing.
 """
 
 from __future__ import annotations

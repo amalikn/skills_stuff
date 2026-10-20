@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 in `references/testing.md`: a guard test asserts which guard refused (message or distinct code), not the exit code alone; prove red with only that guard removed (smc-resiliency `_script-guards`).
 - 20261020 `just test` green again: the five 7f4a7fc-era entries labelled `VERIFIED-OBSERVED` relabelled `VERIFIED_PRIMARY` (observed in the project's running code; text otherwise unchanged) in `references/refactoring-and-promotion.md`, `references/tooling-and-runtime.md`, `languages/python.md`, `languages/shell.md`; the private ATA address in `references/testing.md`'s excerpt replaced by the documentation address 192.0.2.53.
 - 20261020 Learned 2026-10-20 in `references/version-control-and-review.md`: `rebase -X theirs` keeps the local side on conflicting hunks only; non-conflicting remote hunks still apply, so diff against a pre-rebase backup branch (vagrant_stuff 62f03f1).
 - 20261020 Learned 2026-10-20 (b) in `references/refactoring-and-promotion.md`: proving a package or folder move unchanged (tests, byte-identical renders from a HEAD worktree, imports in the built runtime, the check); one-pass rewrites; what a text rewrite cannot see; a moved folder mapped by prefix.

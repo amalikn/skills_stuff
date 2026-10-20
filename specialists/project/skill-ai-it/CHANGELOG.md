@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_1322
+Last rotated: 20261020_1632
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261020_1632 — Template: govcheck/core.py header states it is read-only](#20261020_1632--template-govcheckcorepy-header-states-it-is-read-only)
 - [20261020_1322 — pitfalls: navigation dry run exits 2 when changes are pending](#20261020_1322--pitfalls-navigation-dry-run-exits-2-when-changes-are-pending)
 - [20261020_1308 — Code map in bootstrap and refresh: adopt_code_map.py, check_code_map](#20261020_1308--code-map-in-bootstrap-and-refresh-adopt_code_mappy-check_code_map)
 - [20261019_1829 — pitfalls: promote leaves routing to the deleted candidates file](#20261019_1829--pitfalls-promote-leaves-routing-to-the-deleted-candidates-file)
@@ -33,8 +34,12 @@ Last rotated: 20261020_1322
 - [20261014_1051 — govern fixes from the UNC run: folded legacy headers stay fenced; audit failures named](#20261014_1051--govern-fixes-from-the-unc-run-folded-legacy-headers-stay-fenced-audit-failures-named)
 - [20261014_1039 — govern: one-step governance recipe and skill mode; refresh runs it first](#20261014_1039--govern-one-step-governance-recipe-and-skill-mode-refresh-runs-it-first)
 - [20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)](#20261014_1030--role_check-context-mapyaml-must-parse-nav_validate-stays-manual)
-- [20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted](#20261014_1027--stamping-unstamped-projects-canary-on-agent-stack-failed-and-was-reverted)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261020_1632 — Template: govcheck/core.py header states it is read-only
+
+`templates/govcheck/core.py`'s docstring gains "Read-only: it reads the project and writes nothing.": skill-coder's `script_headers.py` flagged every
+copy for a missing safety statement (found in smc-resiliency, which recopied it). Other governed projects pick it up at their next refresh.
 
 ## 20261020_1322 — pitfalls: navigation dry run exits 2 when changes are pending
 
@@ -171,15 +176,6 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
   context-map.yaml must parse"). Fails when the map does not parse or repeats a key; PyYAML absent reports SKIPPED, never passed. All 26
   context-map.yaml files under project_stuff and specialists parse today, so no project turns red. Test added; proven on this package (a repeated
   `version` key failed `just check`, restored green). `nav_validate` stays out of `check` (it fails every project on a skill version bump).
-
-## 20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted
-
-- **Stamping unstamped projects: canary failed, reverted** (operator, 2026-10-14: "yes" to stamping the 13 projects whose AI_NAVIGATION.md
-  has no stamp). Dry run: 2 would update in place, 11 have hand-written AI_NAVIGATION.md and get only a `.proposed-navigation-block`. Canary
-  `nav_upgrade` on agent-stack re-serialised context-map.yaml (comments and quoting lost), refused AGENTS.md (block stamped before 2026-09-23
-  holds project content), left 2 `nav_validate` failures and 3 new freshness findings; reverted with `git checkout` (tree was clean), check green.
-  Stamping goes through `/skill-ai-it refresh` per project instead (ROADMAP). Finding for the upgrader: the update_rules merge rewrites the whole
-  context-map.yaml on a project with an older schema.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 
