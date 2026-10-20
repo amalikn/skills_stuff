@@ -196,6 +196,8 @@ Then regenerate the project's wiki page from those files (operator, 2026-10-10; 
 When the request includes "commit and push", commit and push those wiki_stuff paths too, staged by name (operator, 2026-10-19).
 
 ## Step 8 — Closeout mode only
+Before the closeout entry, run Step 6b over the whole conversation, not only since the last slurp (operator, 2026-10-20: "why did I had to remind
+you"): every operator message in both passes traced to its entry in the governed record; an item an earlier slurp missed is written now.
 One more memory-keeper `progress` entry, key `session.closeout.<YYYYMMDD>.<topic>`: Session / Workstream, Scope, Completed, Files Changed, Decisions, Open Issues, Next Actions, Persistence Status
 (memory-keeper, project-context, checkpoints, commits).
 
@@ -220,6 +222,8 @@ companion rules, the Step 6b result, and the last memory-keeper and project-cont
 | "The time is about HH:MM."                        | Run `date`.                                                                   |
 | "The compaction summary covers the early part"    | It is lossy. Run `scripts/transcript_passes.py` on the raw transcript        |
 | "I saved a summary earlier, so that work is done" | A mid-session note is not a slurp; the boundary is the last slurp (Step 2)     |
+| "I wrote CHANGELOG entries as I worked, so it is covered" | Not until each operator message is traced to one (6b); a 2026-10-20 rename and a half-done review had none |
+| "Close only needs the delta since the last slurp" | Close re-runs 6b over the whole chat: an item an earlier slurp missed stays missed |
 | "The early part of the chat is covered"           | Walk it in order (Step 3); early incidents and ops are the ones that get lost |
 | "One row for all the decisions is enough"         | One decision, one row, one record_decision                                    |
 | "The skill was not invoked, so nothing is owed"   | Touching its domain engaged it; Step 5b applies                               |
