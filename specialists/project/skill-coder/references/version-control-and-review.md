@@ -45,6 +45,20 @@ Summary: >-
 >   && git show --stat --format="%h %s" HEAD
 > ```
 
+> **Learned 2026-10-20** · git rebase onto a diverged remote · VERIFIED_PRIMARY · Source: vagrant_stuff commits 08c81b3 and 62f03f1 (smc-resiliency
+> CHANGELOG 20261020 push entry) · Falsifier: a `rebase -X theirs` whose result equals the local branch file for file when the remote changed other hunks
+> In a rebase, `-X theirs` means the commits being replayed (the local side) win **conflicting** hunks only; a remote hunk the local side never
+> touched still applies without a word. Here a three-year-old remote line pointed a synced folder at a path that does not exist, and it landed
+> in a file the operator had asked to keep local. Before the rebase, branch the local head as a backup; after it, diff every file both sides
+> changed against that backup and restore any line the operator did not choose. `--autostash` re-applies uncommitted edits onto the new base,
+> so check the working copy too. On a real conflict, `git rebase --abort` and ask which side wins; never pick it.
+>
+> ```bash
+> git branch backup/pre-rebase-$(date +%Y%m%d_%H%M) HEAD
+> git rebase -X theirs --autostash @{u} || git rebase --abort
+> git diff backup/pre-rebase-<stamp> HEAD -- <files both sides changed>
+> ```
+
 ## Gate on the exit code
 
 Gate a commit, push or deploy on the validation command's own exit code, never through a pipe or a `;`:

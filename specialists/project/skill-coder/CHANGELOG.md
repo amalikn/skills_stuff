@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 in `references/version-control-and-review.md`: `rebase -X theirs` keeps the local side on conflicting hunks only; non-conflicting remote hunks still apply, so diff against a pre-rebase backup branch (vagrant_stuff 62f03f1).
 - 20261020 Learned 2026-10-20 (b) in `references/refactoring-and-promotion.md`: proving a package or folder move unchanged (tests, byte-identical renders from a HEAD worktree, imports in the built runtime, the check); one-pass rewrites; what a text rewrite cannot see; a moved folder mapped by prefix.
 - 20261020 Learned 2026-10-20 in `references/version-control-and-review.md`: in a clone shared by concurrent sessions commit by pathspec (`git commit -- <paths>`, `git add -N` for new files); a plain `git add` then commit let another session's commit take the staged files (apn b64a075).
 - 20261020 Learned 2026-10-20 in `references/security.md`: gpg-agent's socket path limit breaks a throwaway GNUPGHOME under a deep folder; short `$HOME/.k.XXXX`, `--passphrase-file`, keep the creation-time revocation certificate (smc-resiliency `/Volumes/Data/_ai/_project/project_stuff/apn/smc-resiliency/scripts/make_release_key.sh`).
