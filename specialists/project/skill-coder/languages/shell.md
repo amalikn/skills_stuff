@@ -65,6 +65,13 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > `pkill -f <pattern>` matches full command lines, including the remote shell running it: `ssh host 'cd /tmp/x; pkill -f /tmp/x/run.sh; ...'`
 > killed its own `bash -c` (whose command line contains the pattern) and dropped the session. Match on something only the target has, or read
 > the PID first (`pgrep -f` then exclude `$$`), or make the pattern not match itself (`pkill -f '[/]tmp/x/run.sh'`).
+>
+> ```bash
+> # wrong: the remote bash -c line contains the pattern, so pkill ends its own session (ssh exit 255)
+> ssh host 'cd /tmp/x; pkill -f /tmp/x/run.sh; nohup /tmp/x/run.sh &'
+> # right: a bracket the pattern matches but its own text does not
+> ssh host "pkill -f '[/]tmp/x/run.sh'; nohup /tmp/x/run.sh >/tmp/x/log 2>&1 &"
+> ```
 
 ## Open items
 
