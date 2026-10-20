@@ -92,3 +92,16 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > ```
 >
 > Prove it with a short limit (3 s stopped the host in 8 s, the 5 s KILL grace included).
+
+> **Learned 2026-10-20 (c)** · bash, a script sent over ssh on stdin (`ssh host bash -s < script`) · VERIFIED_PRIMARY (three trial runs did
+> nothing past their first line; with `ssh -n` they ran) · Source: unified-network-controller `infra/apn-unc01/ops/collector-trial.sh` (its
+> predecessor in a session scratchpad, 2026-10-20) · Falsifier: an ssh release that does not read stdin when given a remote command
+> A script that reaches a host as `bash -s` reads its own lines from stdin. Any command inside it that reads stdin, `ssh` first of all (also
+> `read`, `docker exec -i`, a Python program without input), swallows the rest of the script, which then ends silently after that line with
+> exit 0. Give every such inner command its own stdin:
+>
+> ```bash
+> la() { timeout 30 ssh -n -o BatchMode=yes "$h" cat /proc/loadavg; }          # -n: stdin from /dev/null
+> timeout 900 "$PY" batch_push_devices.py ... --dry-run < /dev/null > "$out" 2>&1
+> ```
+

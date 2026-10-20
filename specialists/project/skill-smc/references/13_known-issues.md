@@ -1356,3 +1356,12 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 > (bidyadanga: about 90 of 292 reachable units per cycle). The work waits on the link, not on bandwidth, so more reads in flight is the lever;
 > a terrestrial site of the same size finishes well inside the window. No visual surface.
 
+> **Learned 2026-10-20 (e)** · reading units through a Sky Muster Plus SMC, concurrency and session set-up · VERIFIED-OBSERVED (read-only dry
+> runs and ssh timings from apn-unc01, bidyadanga against umoona over Starlink) · Source: unified-network-controller
+> `docs/reports/monitoring/collector-satellite-concurrency-20261020_2023.md` and its sources folder · Falsifier: a GEO site whose per-unit time
+> falls linearly with reads in flight
+> A fresh Teleport ssh session to a Sky Muster SMC takes 6.9 to 8.0 s (Starlink: 1.3 s); a forward added to an open shared connection 0.01 s.
+> The same 23 units read at 8.3, 5.8 and 4.3 s per unit with 4, 8 and 12 in flight and chunks of 24 (13 s at 4 and chunks of 10): each read
+> slows as more share the link (33, 46, 52 s), so returns fall with concurrency, and the SMC's load rose to about 2. The fresh-session time,
+> not a Circuit's type, tells which link a site is on now (a site with a GEO Circuit may run over Starlink). No visual surface.
+

@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_1905
+Last rotated: 20261020_2028
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.5.10)](#20261020_2028--sky-muster-reads-session-set-up-and-the-concurrency-curve-v059---v0510)
 - [20261020_1905 — networkd keeps changed netdevs; render with the task's options; /etc executables; fleet-health TSH_PROXY and fqdn2ip bundle (v0.5.8 -> v0.5.9)](#20261020_1905--networkd-keeps-changed-netdevs-render-with-the-tasks-options-etc-executables-fleet-health-tsh_proxy-and-fqdn2ip-bundle-v058---v059)
 - [20261020_1752 — Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky Muster read cost (v0.5.7 -> v0.5.8)](#20261020_1752--pi-uplink-on-the-eth0-trunk-ssh-forwards-detach-from-the-caller-sky-muster-read-cost-v057---v058)
 - [20261020_1706 — /etc census in overlay-usage-breakdown; fqdn2ip still on darlngunaya (v0.5.6 -> v0.5.7)](#20261020_1706--etc-census-in-overlay-usage-breakdown-fqdn2ip-still-on-darlngunaya-v056---v057)
@@ -37,7 +38,11 @@ Last rotated: 20261020_1905
 - [20261014_0900 — Pi bootloader already supports tryboot A/B (v0.3.9 -> v0.4.0)](#20261014_0900--pi-bootloader-already-supports-tryboot-ab-v039---v040)
 - [20261013_2352 — umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)](#20261013_2352--umoona-vlan621-dark-again-uplink-check-cost-v038---v039)
 - [20261013_2225 — Teleport Machine ID facts, site topology, two 2026-10-13 entries recorded (v0.3.7 -> v0.3.8)](#20261013_2225--teleport-machine-id-facts-site-topology-two-2026-10-13-entries-recorded-v037---v038)
-- [20261010_1805 — Governed-file standard: recipes, records rotated (v0.3.6 -> v0.3.7)](#20261010_1805--governed-file-standard-recipes-records-rotated-v036---v037)
+
+## 20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.5.10)
+
+`references/13_known-issues.md` Learned (e): a fresh Teleport session to a Sky Muster SMC 7 to 8 s against 0.01 s on a shared connection;
+8.3, 5.8 and 4.3 s per unit at 4, 8 and 12 in flight (unified-network-controller satellite concurrency report).
 
 ## 20261020_1905 — networkd keeps changed netdevs; render with the task's options; /etc executables; fleet-health TSH_PROXY and fqdn2ip bundle (v0.5.8 -> v0.5.9)
 
@@ -186,12 +191,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 - **Central chassis port plan from an as-built** (`references/16_tplink-site-switches.md`, new section; old-looma rcp low-touch, v1.0 drawing): SWP n =
   gigabitEthernet 1/0/n; SMC, sectors via injectors, AP1, V5000, Starlink Direct NTDs on SMC VLANs enp2s0.521-526, nbn NTD enp2s0.621, tower router on
   Switch2; two uplinks straight on SMC ports; each row checked against Nautobot cables and LLDP.
-
-## 20261010_1805 — Governed-file standard: recipes, records rotated (v0.3.6 -> v0.3.7)
-
-- Workspace standard (operator, 2026-10-10; skill-ai-it "Governed files: headers, budgets, rotation and the checker's shape"): `justfile` gains
-  `ai_it`, a second `check` line running skill-ai-it's `doc_freshness.py --check`, and the `stale`, `docs`, `history`, `history-show` and `rotate`
-  recipes; `AGENTS.md` Working rules gain the triage line (`just docs <folder>`, `just stale`, `just history`); `doc_freshness.py --write-baseline`
-  grandfathers existing findings (scripts/doc-freshness-baseline.json, 27 entries), so only new ones fail.
-- CHANGELOG.md rotated 2,046 -> 152 lines, this entry included (118 entries to `docs/history/`), and SCRATCHPAD.md 561 -> 240 lines
-  (62 entries); SCRATCHPAD stays over budget (24 undated entries and 3 open items kept) and is a ratchet finding until they are reviewed.

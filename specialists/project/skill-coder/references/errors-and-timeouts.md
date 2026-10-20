@@ -41,6 +41,17 @@ Language idioms differ (exceptions in Python and TypeScript, error values in Go,
 - The same holds for a `Popen` stopped by hand at a deadline: start it with `start_new_session=True` and end the group, SIGTERM first so the child
   can close what it detached (an `ssh -f` forward leaves the group and is found only by the child's own record of it), then SIGKILL after a
   grace. `group_timeouts.py` counts a `Popen` stopped with `.kill()`/`.terminate()` that did not start its own session.
+- A program stopped from outside (its SIGTERM handler about to exit) also ends the children it started in sessions of their own, which its
+  caller's group kill cannot reach: keep them in a registry and end each group before cleaning up by name. Measured on a live host
+  (2026-10-20): without it, one `ssh -f` still connecting at the stop outlived it; with it the handler reported "ended 1 start(s) in flight,
+  closed 23 forward(s)" and nothing was left. Unified-network-controller `src/unc/drivers/transports/process.py` `end_all` (commit 3f3bfcb):
+
+  ```python
+  with _ACTIVE_LOCK:                       # run() adds each child on start and removes it on exit
+      procs = list(_ACTIVE.values())
+  for proc in procs:
+      _signal_group(proc.pid, signal.SIGTERM)   # then SIGKILL after the grace, as end_group does
+  ```
 
 > **Learned 2026-10-20** · Python subprocess, ssh through a ProxyCommand (Teleport `tsh proxy ssh`) · VERIFIED_PRIMARY (reproduced with
 > `ProxyCommand=sleep`: after `run(timeout=1)` the sleep was still alive; with the group runner it was gone; run on macOS and on the Linux host)
