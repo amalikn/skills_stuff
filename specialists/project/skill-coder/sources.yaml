@@ -554,3 +554,24 @@ claims:
     source_type: official_documentation
     evidence: "just grammar and GNU standard targets retrieved 2026-10-19; copies documents/research-sources-20261019/just-grammar.txt, documents/research-sources-20261019/gnu-standards-standard-targets.txt"
     reference: references/naming-conventions.md
+  - id: C-C80
+    statement: "subprocess.run(timeout=) kills only the process it started; an ssh ProxyCommand or a shell's children outlive it, so such a call ends the whole process group."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: implementation_and_test
+    evidence: "Reproduced 2026-10-20 with ssh -o ProxyCommand='sleep N' on macOS and Linux (unified-network-controller tests/test_transport_process.py, commit 3efcb27): the sleep survives run(timeout=1) and does not survive the process-group runner."
+    reference: references/errors-and-timeouts.md
+  - id: C-C81
+    statement: "The project writes its code; skill-coder supplies the practice, read-only checkers and a printed skeleton, and never writes code into a project."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "Operator, 2026-10-20 (unified-network-controller session): agreed the skill guides and checks while the project writes the code; asked for more rules as checkers and a scaffold helper."
+    reference: references/documentation-and-headers.md
+  - id: C-C82
+    statement: "Inline linter suppressions are counted per file as a shrink-only ratchet, so a new one fails the check."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "Operator rule against inline suppression (auto-memory feedback_no_noqa); checker asked for 2026-10-20 after a noqa slipped into a new test."
+    reference: references/documentation-and-headers.md

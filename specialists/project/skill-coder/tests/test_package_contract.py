@@ -186,7 +186,7 @@ class PackageContract(unittest.TestCase):
 
     def test_helpers_portable_tested_and_documented(self) -> None:
         """Each helper is tested, stdlib-only, declares REQUIRES_PYTHON, parses at that grammar and documents every function."""
-        tests = (ROOT / "tests" / "test_helpers.py").read_text(encoding="utf-8")
+        tests = "\n".join(p.read_text(encoding="utf-8") for p in sorted((ROOT / "tests").glob("test_*.py")) if p.name != "test_package_contract.py")
         local = {p.stem for p in (ROOT / "scripts").glob("*.py")}
         for path in helpers():
             text = path.read_text(encoding="utf-8")

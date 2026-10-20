@@ -49,6 +49,10 @@ Canonical sources for these rules: governance [`coding-guide.md`](/Volumes/Data/
 them and links there rather than diverging. A script that takes inputs (flags, environment variables, arguments) has an `Inputs:` section in its header with a
 concrete usage example immediately after it (coding-guide). Why: the operator sees the parameter surface and a valid invocation together.
 
+`scripts/scaffold.py` prints a new Python or shell script and its offline test with this header, documented functions, the `--apply` gate when
+`--writes` is given and bounded calls already in place; it writes nothing, and the agent adapts it to the project's layout and runner. Why
+(operator, 2026-10-20): the project writes its code and the skill supplies the practice, so the skill's help is a skeleton, not the code.
+
 ## Docstrings and doc comments
 
 Operator standard for every script created or changed in any repo (2026-10-08):
@@ -73,6 +77,9 @@ Every new layer, contract or service names its consumers in its docstring. Why: 
 - Never silence a linter with an inline suppression (`# noqa`, `// eslint-disable-line`, `#[allow]` on one line, `# shellcheck disable`) to make a check pass. Fix the cause: rename, refactor,
   configure the rule project-wide with a reason. Why: the operator rejected inline suppression (lesson, recorded in auto-memory `feedback_no_noqa`). A language override may name the rare legitimate
   case (generated code, a false positive filed upstream) and how to record it.
+- The pack's `scripts/suppressions.py` counts inline suppressions per file in each language (Python through `tokenize`, so text in a string never
+  counts) as a shrink-only ratchet: an existing one is baselined on adoption, a new one fails. Why: on 2026-10-20 an agent wrote `# noqa: E402`
+  into a new test under time pressure; only review caught it, and a rule nobody runs is a rule nobody keeps.
 
 ## Enforcement: the docstring ratchet
 

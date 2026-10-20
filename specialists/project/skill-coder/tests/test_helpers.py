@@ -22,7 +22,7 @@ call_timeouts, code_map, code_size, import_layers, module_groups, naming_check, 
                                          "pyparse", "ratchet", "script_headers", "write_back", "write_gates"))
 
 #: Every helper named here, so the contract test can see each one has tests: "ratchet", "code_size", "import_layers", "write_gates", "script_headers", "code_map", "pyparse", "naming_check", "naming_table",
-#: "call_timeouts", "module_groups", "write_back".
+#: "call_timeouts", "module_groups", "write_back". The quality helpers ("suppressions", "group_timeouts", "scaffold") are in test_quality_helpers.py.
 
 
 def _tree(files: dict[str, str]) -> Path:

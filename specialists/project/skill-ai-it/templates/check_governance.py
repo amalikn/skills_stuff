@@ -512,7 +512,10 @@ def check_constant_sync() -> None:
     """
     for name, entry in CONSTANT_SURFACES.items():
         pattern = re.compile(str(entry["pattern"]))
-        registered = {str(s) for s in entry["surfaces"]}  # type: ignore[union-attr]
+        surfaces = entry["surfaces"]
+        if not isinstance(surfaces, (list, tuple)):   # a single string would be read character by character
+            raise TypeError(f"CONSTANT_SURFACES[{name!r}]['surfaces'] must be a list, not {type(surfaces).__name__}")
+        registered = {str(s) for s in surfaces}
         owner = str(entry.get("owner", ""))
 
         for surface in sorted(registered):

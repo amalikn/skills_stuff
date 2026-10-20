@@ -35,6 +35,34 @@ Language idioms differ (exceptions in Python and TypeScript, error values in Go,
 - Every network call and subprocess has a timeout, taken from settings, not a literal at the call site. Why: a call without a timeout can hang a scheduled job forever (a governed project found 16 of
   96 calls without one; rule R15). The pack's `scripts/call_timeouts.py` finds Python calls without one.
 - Size the timeout to the answer: a reachability probe is short; a bulk export is long and stated.
+- A timeout ends everything the call started. `subprocess.run(timeout=)` kills only its own child: an `ssh` through a ProxyCommand, `scp`,
+  `rsync` or a shell leaves its children running. Start such a command in its own session and end the process group on timeout. Why: proxies
+  piled up on a host after each timed-out read (Learned below). The pack's `scripts/group_timeouts.py` finds the Python calls that do not.
+
+> **Learned 2026-10-20** · Python subprocess, ssh through a ProxyCommand (Teleport `tsh proxy ssh`) · VERIFIED_PRIMARY (reproduced with
+> `ProxyCommand=sleep`: after `run(timeout=1)` the sleep was still alive; with the group runner it was gone; run on macOS and on the Linux host)
+> · Source: unified-network-controller `src/unc/drivers/transports/process.py`, `tests/test_transport_process.py` (commit 3efcb27)
+> · Falsifier: an ssh release that ends its ProxyCommand when ssh itself is killed with SIGKILL
+> `ssh` starts the ProxyCommand as its own child; SIGKILL to ssh cannot pass anything on, so the proxy stays until its own idle exit (ten
+> minutes and more seen, host load rising with each timed-out read). Start the child with `start_new_session=True`, and on timeout signal the
+> group (SIGTERM, then SIGKILL after a short grace); reap the leader before testing the group, and on macOS treat EPERM from `killpg(pgid, 0)`
+> as "gone" (a group holding only the leader's zombie answers EPERM). Move every such call site in one pass, and move any test that patched
+> `subprocess.run` to the new seam, or it silently runs the real command.
+>
+> ```python
+> # unified-network-controller src/unc/drivers/transports/process.py (commit 3efcb27)
+> with subprocess.Popen(argv, start_new_session=True, **kwargs) as proc:
+>     try:
+>         out, err = proc.communicate(input, timeout=timeout)
+>     except subprocess.TimeoutExpired as exc:
+>         end_group(proc, grace)            # killpg SIGTERM, wait up to grace, killpg SIGKILL
+>         try:                              # pipes close once the group is gone
+>             out, err = proc.communicate(timeout=grace)
+>         except subprocess.TimeoutExpired:
+>             proc.kill()
+>             out, err = exc.output, exc.stderr
+>         raise subprocess.TimeoutExpired(argv, timeout, out, err) from None
+> ```
 - A scheduled job holds a lock so a manual run cannot overlap it. Why: two runs writing the same state corrupt it.
 
 ## Retries

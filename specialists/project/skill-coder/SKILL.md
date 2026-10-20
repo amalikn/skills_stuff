@@ -49,9 +49,9 @@ commit on its own.
 | Size, split, group into packages or name modules and functions; adopt a size budget on        | [references/module-and-function-shape.md](references/module-and-function-shape.md) | `scripts/code_size.py`,                                   |
 |   old code                                                                                    |                                          |   `scripts/ratchet.py`, `scripts/module_groups.py`        |
 | Name files, identifiers, commands and recipes in any language                                 | [references/naming-conventions.md](references/naming-conventions.md) | the language file                                         |
-| File headers, docstrings, doc comments, comments, lint suppression                            | [references/documentation-and-headers.md](references/documentation-and-headers.md) | the language file's doc convention                        |
+| File headers, docstrings, doc comments, comments, lint suppression                            | [references/documentation-and-headers.md](references/documentation-and-headers.md) | `scripts/suppressions.py`, `scaffold.py`                  |
 | Anything that writes: files, databases, devices, remote systems; deletes; batches; renames    | [references/safety-and-writes.md](references/safety-and-writes.md) | `scripts/write_gates.py`                                  |
-| Error types, exit codes, timeouts, retries, unknown third-party errors                        | [references/errors-and-timeouts.md](references/errors-and-timeouts.md) | `scripts/call_timeouts.py`                                |
+| Error types, exit codes, timeouts, retries, unknown third-party errors                        | [references/errors-and-timeouts.md](references/errors-and-timeouts.md) | `scripts/call_timeouts.py`, `group_timeouts.py`            |
 | Settings, paths, hosts, tokens, version pins, catalog data, config directives                 | [references/configuration-and-literals.md](references/configuration-and-literals.md) |                                                           |
 | Tests, fakes, characterisation, negative tests for checks, real-target proof                  | [references/testing.md](references/testing.md) | the language file's test runner                           |
 | Refactor, move code, shims, promote a script to a skill                                       | [references/refactoring-and-promotion.md](references/refactoring-and-promotion.md) |                                                           |
@@ -93,6 +93,9 @@ inputs, outputs and safety labels.
 | `scripts/module_groups.py`  | Folders where three or more code files share a prefix: candidate packages (warn only) |
 | `scripts/write_back.py`     | Write-back entries a project parked for this skill, to promote                        |
 | `scripts/naming_check.py`   | File and recipe names off the naming mapping (`naming.toml`)                          |
+| `scripts/suppressions.py`  | Inline linter suppressions (`noqa`, `type: ignore`, `shellcheck disable`, `eslint-disable`, ...) |
+| `scripts/group_timeouts.py` | Timed subprocess calls (ssh, a shell) whose children outlive the timeout             |
+| `scripts/scaffold.py`       | Prints a new script and its test skeleton that meet these rules (writes nothing)     |
 
 ## How the override layer works
 

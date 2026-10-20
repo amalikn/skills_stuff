@@ -178,7 +178,7 @@ test-matrix:
       bin="$where/bin/python3"
       [ -x "$bin" ] || { echo "python $v: no interpreter at $bin, NOT TESTED"; continue; }
       ran=$((ran + 1))
-      if "$bin" -m unittest discover -s tests -p 'test_helpers.py' >/dev/null 2>&1; then echo "python $v: OK"; else echo "python $v: FAIL"; rc=1; fi
+      if "$bin" -m unittest discover -s tests -p 'test_*helpers.py' >/dev/null 2>&1; then echo "python $v: OK"; else echo "python $v: FAIL"; rc=1; fi
     done
     [ "$ran" -gt 0 ] || { echo "no interpreter from 3.11 up is installed through mise" >&2; exit 1; }
     exit $rc
@@ -196,6 +196,21 @@ code-size *args: _require-venv
 [positional-arguments]
 call-timeouts *args: _require-venv
     @{{py}} scripts/call_timeouts.py "$@"
+
+# Read-only: inline linter suppressions (noqa, type: ignore, shellcheck disable, eslint-disable, nolint, allow), e.g. just suppressions --project-root /path --list
+[positional-arguments]
+suppressions *args: _require-venv
+    @{{py}} scripts/suppressions.py "$@"
+
+# Read-only: timed subprocess calls whose command (ssh, a shell) starts children the timeout leaves running, e.g. just group-timeouts --project-root /path --list
+[positional-arguments]
+group-timeouts *args: _require-venv
+    @{{py}} scripts/group_timeouts.py "$@"
+
+# Read-only: print the skeleton of a new script and its test (writes nothing), e.g. just scaffold --lang python --name sync_x --summary "Sync X" --writes
+[positional-arguments]
+scaffold *args: _require-venv
+    @{{py}} scripts/scaffold.py "$@"
 
 # Read-only: entry points that write without --apply, e.g. just write-gates --project-root /path/to/project --config scripts/write-gates.json
 [positional-arguments]
@@ -231,10 +246,12 @@ write-back *args: _require-venv
 naming-table: _require-venv
     @{{py}} scripts/naming_table.py --write
 
-# The pack held to its own rules: sizes, timeouts, write gates, headers, names, and the naming table in step (each against its baseline in scripts/)
+# The pack held to its own rules: sizes, timeouts (and process groups), suppressions, write gates, headers, names, and the naming table in step (each against its baseline in scripts/)
 self-check: _require-venv
     @{{py}} scripts/code_size.py --project-root . --roots scripts,tests
     @{{py}} scripts/call_timeouts.py --project-root . --roots scripts,tests
+    @{{py}} scripts/group_timeouts.py --project-root . --roots scripts,tests
+    @{{py}} scripts/suppressions.py --project-root . --roots scripts,tests
     @{{py}} scripts/write_gates.py --project-root .
     @{{py}} scripts/script_headers.py --project-root . --roots scripts
     @{{py}} scripts/naming_check.py --project-root .
