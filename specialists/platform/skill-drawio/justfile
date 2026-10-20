@@ -178,8 +178,14 @@ test-matrix:
       where=$(mise where "python@$v" 2>/dev/null) || { echo "python $v: not installed through mise, NOT TESTED"; continue; }
       bin="$where/bin/python3"
       [ -x "$bin" ] || { echo "python $v: no interpreter at $bin, NOT TESTED"; continue; }
+      # A project reading a map has PyYAML, so each interpreter gets its own venv with requirements.txt (made once, rebuildable cache)
+      venv="{{wc}}/matrix/py$v"
+      if [ ! -x "$venv/bin/python" ]; then
+        "$bin" -m venv "$venv" && "$venv/bin/python" -m pip install --quiet --disable-pip-version-check --timeout 30 -r requirements.txt \
+          || { echo "python $v: venv or PyYAML install failed, NOT TESTED"; rc=1; continue; }
+      fi
       ran=$((ran + 1))
-      if "$bin" -m unittest discover -s tests -p 'test_helpers.py' >/dev/null 2>&1; then echo "python $v: OK"; else echo "python $v: FAIL"; rc=1; fi
+      if "$venv/bin/python" -m unittest discover -s tests -p 'test_helpers.py' >/dev/null 2>&1; then echo "python $v: OK"; else echo "python $v: FAIL"; rc=1; fi
     done
     [ "$ran" -gt 0 ] || { echo "no interpreter from 3.11 up is installed through mise" >&2; exit 1; }
     exit $rc

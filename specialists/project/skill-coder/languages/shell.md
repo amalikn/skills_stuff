@@ -59,7 +59,7 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > `git rm` on the next line, twice in one day. Guard each edit step (`... || exit 1`) or start the block with `set -euo pipefail`, and put a
 > destructive step (delete, `git rm`, push) in its own call after the edit is confirmed.
 
-> **Learned 2026-10-20** · bash, procps `pkill -f` over ssh · VERIFIED-OBSERVED (one incident: the remote session ended with ssh exit 255) · Source:
+> **Learned 2026-10-20** · bash, procps `pkill -f` over ssh · VERIFIED_PRIMARY (one incident: the remote session ended with ssh exit 255) · Source:
 > unified-network-controller session 2026-10-20, a scratch check on apn-unc01 · Falsifier: a `pkill -f <path>` run through `ssh host '<command>'`
 > that leaves its own session alive
 > `pkill -f <pattern>` matches full command lines, including the remote shell running it: `ssh host 'cd /tmp/x; pkill -f /tmp/x/run.sh; ...'`

@@ -75,9 +75,9 @@ milestone.
 > ```python
 > page = (ROOT / "tests" / "fixtures" / "ddc-voip" / "s11-home-page.txt").read_text(encoding="utf-8")
 > for cut in (PAGE_BYTES, 4096):                                   # the production cut, and the old one
->     cands = {"192.168.5.253": {"vendor": "other"}}
->     classify_by_page(cands, {"192.168.5.253": page[:cut]}, vendor_markers())
->     self.assertEqual(cands["192.168.5.253"].get("family"), "ddc-voip", cut)
+>     cands = {"192.0.2.53": {"vendor": "other"}}
+>     classify_by_page(cands, {"192.0.2.53": page[:cut]}, vendor_markers())
+>     self.assertEqual(cands["192.0.2.53"].get("family"), "ddc-voip", cut)
 > ```
 
 ## Proof against the real target

@@ -37,11 +37,11 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
 - [ ] **Archcore flow-map spec and adoption guide** — unblocked by the second project; write them (see `.archcore/index.guide.md`).
 - [ ] **C-D16 on the current app** — re-check "static export draws orthogonal edges through boxes" on draw.io desktop 32.5.5 (checked only on 32.4.1; `compatibility.yaml`).
 - [ ] **Python 3.11 floor** — `mise install python@3.11`, then `just test-matrix` (3.11 is not installed, so the declared floor is untested).
-- [ ] **test-matrix needs PyYAML** — 3.12 to 3.14 fail `test_helpers.py` with `No module named 'yaml'` on the bare mise interpreters (found 2026-10-20):
-  install it per interpreter in the recipe or skip map tests there.
 - [ ] **Redaction test decision** — vendor captures under `documents/drawio-sources-20261019/` hold example private addresses from the vendor docs; decide before adding a redaction test like
   skill-nautobot's (verbatim captures are exempt by design).
 
 ## Completed
+
+- [x] **test-matrix needs PyYAML** (2026-10-20): one venv per interpreter under the working cache (`matrix/py<v>`); 3.12 to 3.14 OK.
 
 Done items move to `docs/history/roadmap-*.md` (`just rotate`; find one with `just history <term>`).

@@ -56,7 +56,7 @@ Source: governance `storage-routing-guide.md` (2026-04-23). A project's own layo
 Use the project's configured formatter and linter; the language override names the usual ones. Configure rules project-wide in the tool's config file with a comment saying why, never per line
 ([documentation-and-headers.md](documentation-and-headers.md)). Why: one place to see what the project accepts.
 
-> **Learned 2026-10-20** · just 1.58/1.59 (task runner) · VERIFIED-OBSERVED (unified-network-controller `unc01::run`, regression test tests/test_host_run.py) · Source: a recipe `run *args:` calling `wrapper {{args}}` · Falsifier: a just release where `{{args}}` interpolation keeps each argument's quoting
+> **Learned 2026-10-20** · just 1.58/1.59 (task runner) · VERIFIED_PRIMARY (unified-network-controller `unc01::run`, regression test tests/test_host_run.py) · Source: a recipe `run *args:` calling `wrapper {{args}}` · Falsifier: a just release where `{{args}}` interpolation keeps each argument's quoting
 > **A recipe that forwards arguments must not interpolate them.** `{{args}}` is pasted into the shell line, so `just x::run -c 'a; b; ls ~'` ran only
 > `a` remotely and the rest locally. Mark the recipe `[positional-arguments]` and pass `"$@"`; let the runner be swapped by an environment variable
 > (`export RUNNER := env("RUNNER", "real-runner")`) so a test can point it at a stub that prints its argv and prove a compound command and a

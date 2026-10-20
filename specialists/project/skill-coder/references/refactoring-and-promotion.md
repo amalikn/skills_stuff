@@ -66,7 +66,7 @@ asked (operator, 2026-10-07).
 
 Engines a project imports run in the project's interpreter and the project pins the skill revision; see [runtime-boundaries.md](runtime-boundaries.md).
 
-> **Learned 2026-10-20** · adopting `code-map.toml` in a project with its own checks · VERIFIED-OBSERVED (unified-network-controller: layers, 13
+> **Learned 2026-10-20** · adopting `code-map.toml` in a project with its own checks · VERIFIED_PRIMARY (unified-network-controller: layers, 13
 > write-gate exceptions, 11 write patterns and 198 module statuses moved; equality asserted against the old files; `just check` 8,699 to 8,701 checks
 > pass; four negative cases each fail) · Source: unified-network-controller `scripts/govcheck/config.py`, `code-map.toml` (2026-10-20) · Falsifier: a
 > project whose old register cannot be expressed in the map's sections without loss
@@ -85,7 +85,7 @@ Engines a project imports run in the project's interpreter and the project pins 
 > ```
 
 > **Learned 2026-10-20 (b)** · moving modules into packages and a folder up a level, Python with a framework that imports by name ·
-> VERIFIED-OBSERVED (two moves in one project, each deployed) · Source: unified-network-controller decisions A-21 and A-22 (commits af71572,
+> VERIFIED_PRIMARY (two moves in one project, each deployed) · Source: unified-network-controller decisions A-21 and A-22 (commits af71572,
 > e4a92af, 03e4a8e) · Falsifier: a move proved by these steps that still breaks a caller
 > Prove a move unchanged on four counts, each run before and after: the test count and result; the rendered outputs byte for byte, the
 > "before" rendered from HEAD in a `git worktree` so the comparison needs no stash; the built artefact importing every module in its real

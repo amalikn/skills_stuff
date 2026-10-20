@@ -16,9 +16,6 @@ Summary: Transient working state for skill-coder; durable facts move to referenc
 
 ## Open items
 
-- **20261020** open: `just test` fails on two entries from commit 7f4a7fc (unified-network-controller write-backs): `references/testing.md` holds a private
-  address (`test_text_is_safe`), and a Learned entry uses the label `VERIFIED-OBSERVED`, which the write-back format does not allow
-  (`test_write_back_entries_logged`). Found by smc-resiliency 2026-10-20; fix in the entries (redact, relabel), not in the tests.
 - KEEP Activation DONE 2026-10-20 (operator: "if you are now happy with skill-coder, promote it as well"; all four steps below, in one pass).
   Was PENDING until the pack is tested (operator, 2026-10-19: "make it default once we have tested the skill"). Then, in one pass:
   1. global policy `~/.agents/AGENTS.md`, "Skills, context, and task routing": "for any code use `skill-coder`" beside `safe-change-validation`; re-run
