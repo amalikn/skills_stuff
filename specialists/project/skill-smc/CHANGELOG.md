@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_1648
+Last rotated: 20261020_1706
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261020_1706 — /etc census in overlay-usage-breakdown; fqdn2ip still on darlngunaya (v0.5.6 -> v0.5.7)](#20261020_1706--etc-census-in-overlay-usage-breakdown-fqdn2ip-still-on-darlngunaya-v056---v057)
 - [20261020_1647 — Run-time writers under /etc; read-only /etc on the new image (v0.5.5 -> v0.5.6)](#20261020_1647--run-time-writers-under-etc-read-only-etc-on-the-new-image-v055---v056)
 - [20261020_1335 — A Pi SMC's internet is eth0 untagged, read on five rct sites (v0.5.4 -> v0.5.5)](#20261020_1335--a-pi-smcs-internet-is-eth0-untagged-read-on-five-rct-sites-v054---v055)
 - [20261020_1322 — Ubuntu 24.04 arm64 spike VM for the read-only Pi image (v0.5.3 -> v0.5.4)](#20261020_1322--ubuntu-2404-arm64-spike-vm-for-the-read-only-pi-image-v053---v054)
@@ -37,7 +38,12 @@ Last rotated: 20261020_1648
 - [20261010_1805 — Governed-file standard: recipes, records rotated (v0.3.6 -> v0.3.7)](#20261010_1805--governed-file-standard-recipes-records-rotated-v036---v037)
 - [20261009_1806 — Sidekick and the low-touch hook: confirmed and unplugged releases a unit (v0.3.5 -> v0.3.6)](#20261009_1806--sidekick-and-the-low-touch-hook-confirmed-and-unplugged-releases-a-unit-v035---v036)
 - [20261009_1714 — What else the low-touch hook logs record: state and secret, events, the SM by its own MAC, preferred_ssid names the AP (v0.3.4 -> v0.3.5)](#20261009_1714--what-else-the-low-touch-hook-logs-record-state-and-secret-events-the-sm-by-its-own-mac-preferred_ssid-names-the-ap-v034---v035)
-- [20261009_1705 — The provisioning hook's per-unit logs are a low-touch site's install-time pairing (v0.3.3 -> v0.3.4)](#20261009_1705--the-provisioning-hooks-per-unit-logs-are-a-low-touch-sites-install-time-pairing-v033---v034)
+
+## 20261020_1706 — /etc census in overlay-usage-breakdown; fqdn2ip still on darlngunaya (v0.5.6 -> v0.5.7)
+
+`scripts/overlay-usage-breakdown.sh` gains `--etc` (the `/etc` census, true uptime) and a per-host deadline (`HOST_DEADLINE`, 60 s; a perl alarm
+before exec did not stop `tsh`, so a watcher sends TERM then KILL; proved with a 3 s limit). `references/07_hardware-overlay.md`: census of six
+long-up boxes. `references/13_known-issues.md`: fqdn2ip still active on darlngunaya-smc01 (nbn_wh), removed on bungardi; to look at later.
 
 ## 20261020_1647 — Run-time writers under /etc; read-only /etc on the new image (v0.5.5 -> v0.5.6)
 
@@ -187,11 +193,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 
 - `references/13_known-issues.md`: beyond the 0.3.4 pairing section: the state dump, events, more description keys, and the cnMaestro client secret;
   upstream-wait MAC = Remote ID - 1 (60 of 60); `preferred_ssid` `WifiBridge_N` = AP `3000L-ap-N` (59 of 59); measured on old-looma's logs.
-
-## 20261009_1705 — The provisioning hook's per-unit logs are a low-touch site's install-time pairing (v0.3.3 -> v0.3.4)
-
-- `references/13_known-issues.md`: new section "the provisioning hook's logs are the site's install-time pairing": what each `log.<MAC>` records
-  (vendor class, Option 82 Remote ID, the cnMaestro description with `us`, `lot no`, `ext`, `locid`); at old-looma 63 of 66 routers name one SM
-  and 3 tower routers have an empty Remote ID; an XV2 beyond a PtP link reports the first SM on its path; 10 logged units never landed in
-  Nautobot; read reduced on the box. Complements the 0.3.3 entry on where the logs live and their backup.
-- Write-back from unified-network-controller (CHANGELOG 20261009_1705, reader `smc-dhcp-relay`, correlate rule 4h).

@@ -482,7 +482,8 @@ Written 2026-10-07 for the WH "sites get stuck until a technician reboots them" 
 4. `fleet-resource-profile.py [selector] [window]` gives one CSV row per site (memory, PSI, temperature, overlay peak, hours >=70%, watchdog
    cleanup minutes, auto_reboot) for a stable-vs-unstable comparison.
 5. `overlay-usage-breakdown.sh <host>...` lists what fills the overlayroot tmpfs upper layer, plus the auth.log message shapes, timers, cron
-   and snaps behind the growth.
+   and snaps behind the growth. `--etc` prints only the `/etc` census (every `/etc` file changed since boot, or modified since boot on a box
+   without overlayroot) with true uptime; `HOST_DEADLINE` (60 s) bounds each host.
 
 6. `vlan-traffic-timeline.py <site> --gap '<last_seen>' '<back>'` shows what crossed each interface while a box was invisible
    (cumulative counters, valid when it did not reboot). Only the WAN interface silent = WAN/satellite fault; every VLAN on the trunk
@@ -501,7 +502,7 @@ work as CLIs. Recipes: `just -f fleet-health.justfile stability-timeline|stabili
 | `fleet-resource-profile.py`   | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | CSV to stdout; failed columns are reported on stderr        |
 | `graylog-health.sh`           | AWS ELB/EC2 (noc-admin), apn-graylog01 and apn-datanode01 via `tsh ssh`, Graylog API | **read-only**, `external-network` | Every layer of the 2026-10-08/09 outage; exit 1 on any failure; `just -f fleet-health.justfile graylog-health` |
 | `undervoltage-profile.py`     | Graylog (via `smc_graylog.py`)                   | **read-only**, `external-network` | `hourly` makes 24 queries per day; keep ranges short        |
-| `overlay-usage-breakdown.sh`  | Live SMC appliances via `tsh ssh`                | **read-only**                     | du/find under nice+ionice; `TSH_PROXY` for the CW cluster   |
+| `overlay-usage-breakdown.sh`  | Live SMC appliances via `tsh ssh`                | **read-only**                     | du/find under nice+ionice; `TSH_PROXY` for the CW cluster; `--etc` census; per-host deadline |
 | `vlan-traffic-timeline.py`    | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | Per-interface rates, or counter deltas across a dark gap |
 | `tstik-capture.sh`            | Live RCT box via `tsh ssh`                       | **read-only**                     | TSTIK stats + reset history + eth0 link log; `WAIT_UP=1` polls Teleport first; never copies `config.json` |
 

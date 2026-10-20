@@ -1332,3 +1332,17 @@ except subprocess.TimeoutExpired:
     os.killpg(p.pid, signal.SIGTERM)          # ssh and its tsh proxy child together
     raise
 ```
+
+## 2026-10-20 — fqdn2ip still runs on some nbn_wh boxes though it is to be disabled everywhere (OPEN, look at later)
+
+The operator's intent (2026-10-20, `USER_STATED`): fqdn2ip is disabled on every flavour, nbn_wh included, as on rcp, wh and rct. ansible-wifi
+`smc_bases.yml` play "Disable and remove fqdn2ip" runs role smc_fqdn2ip `when: smc_bases_smp|default(false)`, and `smc_bases_smp` is `true` in
+nbn_wh's `group_vars/smc_bases.yml` as in wh's, so a run of that play removes it. Read on 2026-10-20 (read-only, `tsh --proxy=teleport.communitywifi.net.au`):
+
+| Box | fqdn2ip | Evidence |
+| --- | --- | --- |
+| darlngunaya-smc01 (nbn_wh) | **active and enabled**, unit from 22 Oct 2024 | `fqdn2ip.py` running; resyncs ipset `restricted` every few minutes; writes `/etc/iptables/ipset.d/restricted` (15:44) and `/var/local/fqdn2ip/cache` |
+| bungardi-smc01 (nbn_wh) | removed (no unit, no `/etc/iptables/ipset.d`) | `ansible_role_versions.txt` at 7cfb7a3 |
+
+So the play has not been run on darlngunaya since its build; the nbn_accelerate boxes were not checked. Next step (operator: "something to look at
+later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play with `--tags fqdn2ip` box by box under the usual approval.

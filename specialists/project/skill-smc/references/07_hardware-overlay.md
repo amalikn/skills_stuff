@@ -998,7 +998,10 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 > hourly), the squid blocklist scripts (smc_squid, `/etc/squid/blocklists/`, twice a day) and multipathd (`/etc/multipath/`). On Pi and WH
 > boxes the same writes go to overlayroot's tmpfs, which fatrace does not see; reading `/media/root-rw/overlay/etc` (read-only, 2026-10-20 on
 > two rct and one wh box) adds `rise_logcap.py` (smc_rise_logcaps, wh: `/etc/logrotate.d/rise-logcaps`, on its timer) and snapd
-> (`/etc/systemd/system/snap-*` units at each snap refresh). The upper dir is the cheap census of a Pi's run-time `/etc` writes. On the new read-only image (smc-resiliency) a merged site
+> (`/etc/systemd/system/snap-*` units at each snap refresh). The upper dir is the cheap census of a Pi's run-time `/etc` writes.
+> A census of four more Pis up over a year (`overlay-usage-breakdown.sh --etc`) showed only fake-hwclock and snapd in a year; machine-id,
+> `.pwd.lock` and multipath sit in the upper dir with 2022 times (opened for writing, not changed). On nbn_wh (no overlay yet) `fqdn2ip.py`
+> (`/etc/iptables/ipset.d/`) and `sslcertcopy.sh` (`/etc/ssl/<domain>/`) also write; fqdn2ip should be gone (13_known-issues, 2026-10-20). On the new read-only image (smc-resiliency) a merged site
 > confext makes all of `/etc` read-only and noexec on systemd 255, the OS's own scripts included; `--noexec=false` restores execution, not
 > writes, so these writers must move out of `/etc` (risk R18 there).
 >
