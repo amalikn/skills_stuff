@@ -189,7 +189,7 @@ class PackageContract(unittest.TestCase):
         """Each module parses at Python 3.11, imports only the stdlib and this pack at module level, is catalogued and tested, documents every
         function, and declares REQUIRES_PYTHON when it is runnable."""
         catalogue = (ROOT / "scripts" / "README.md").read_text(encoding="utf-8")
-        tests = (ROOT / "tests" / "test_helpers.py").read_text(encoding="utf-8")
+        tests = "\n".join(p.read_text(encoding="utf-8") for p in sorted((ROOT / "tests").glob("test_*.py")))   # any test module may hold a module's tests
         local = {p.stem for p in (ROOT / "scripts").glob("*.py")} | {p.name for p in (ROOT / "scripts").iterdir() if p.is_dir()}
         for path in engine():
             rel = path.relative_to(ROOT).as_posix()

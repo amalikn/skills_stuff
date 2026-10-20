@@ -7,6 +7,7 @@
 - Bring-up procedure
 - Useful commands
 - OrbStack virtual SMC (malik-rcp01): container-style host adaptations
+- Ubuntu 24.04 arm64 spike VM (smc-pi-spike01) for the read-only Pi image
 
 ## 12. Vagrant Lab — family-friendly-vsmc01
 
@@ -190,3 +191,24 @@ Two Mac-side facts from the same run: `setsid` does not exist on macOS, so a pla
 shell unless the tool's own background mode is used; and `ntp`'s postinst takes about a minute in the container before `ntpd` comes up
 (not a hang). The roles' package tasks retry until success (`retries: 60`, `delay: 60`), so a package that cannot install shows as up to
 an hour of silence, not an error.
+
+### 12.7 Ubuntu 24.04 arm64 spike VM (`smc-pi-spike01`) for the read-only Pi image
+
+> **Learned 2026-10-20** · Ubuntu 24.04 arm64 under Parallels · VERIFIED_PRIMARY · Source: `vagrant up` and `vagrant ssh` on smc-pi-spike01; Vagrant Cloud API
+> `bento/ubuntu-24.04`; smc-resiliency CHANGELOG 20261020_1223 · Falsifier: a 24.04 box where `systemd-sysupdate` is not in package `systemd`
+> On Apple Silicon a Parallels VM is arm64, the Pi's CPU architecture, so the Pi image's systemd steps (sysext, confext, sysupdate) can be tried
+> before a spare Pi exists; the Pi firmware's tryboot A/B boot cannot (a VM boots through UEFI). `bento/ubuntu-24.04` 202510.26.0 has a Parallels
+> arm64 build. On it: Ubuntu 24.04.3, systemd 255.4-1ubuntu8.18, kernel 6.8.0-86-generic; `systemd-sysext`, `systemd-confext` and
+> `/usr/lib/systemd/systemd-sysupdate` ship in package `systemd`, `systemd-dissect` in `systemd-container`; the erofs module loads. The
+> 22.04 boxes (`malik-rct01`, systemd 249) have no confext or sysupdate. Keep Teleport off such a VM so it never joins a production cluster.
+>
+> ```ruby
+> # /Volumes/Data/_vagrant/vagrant_stuff/smc-pi-spike01/Vagrantfile (excerpt)
+> config.vm.box = "bento/ubuntu-24.04"
+> config.vm.box_version = "202510.26.0"
+> config.vm.provider "parallels" do |p|
+>   p.memory = 4096
+>   p.cpus = 4
+> end
+> # provisioner report: for t in systemd-sysext systemd-confext systemd-dissect /usr/lib/systemd/systemd-sysupdate; do ...; done
+> ```

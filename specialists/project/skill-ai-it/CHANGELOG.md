@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_1308
+Last rotated: 20261020_1322
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261020_1322 — pitfalls: navigation dry run exits 2 when changes are pending](#20261020_1322--pitfalls-navigation-dry-run-exits-2-when-changes-are-pending)
 - [20261020_1308 — Code map in bootstrap and refresh: adopt_code_map.py, check_code_map](#20261020_1308--code-map-in-bootstrap-and-refresh-adopt_code_mappy-check_code_map)
 - [20261019_1829 — pitfalls: promote leaves routing to the deleted candidates file](#20261019_1829--pitfalls-promote-leaves-routing-to-the-deleted-candidates-file)
 - [20261019_1813 — Checker template: duplicated KEBAB_LEGACY block removed](#20261019_1813--checker-template-duplicated-kebab_legacy-block-removed)
@@ -33,8 +34,12 @@ Last rotated: 20261020_1308
 - [20261014_1039 — govern: one-step governance recipe and skill mode; refresh runs it first](#20261014_1039--govern-one-step-governance-recipe-and-skill-mode-refresh-runs-it-first)
 - [20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)](#20261014_1030--role_check-context-mapyaml-must-parse-nav_validate-stays-manual)
 - [20261014_1027 — Stamping unstamped projects: canary on agent-stack failed and was reverted](#20261014_1027--stamping-unstamped-projects-canary-on-agent-stack-failed-and-was-reverted)
-- [20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean](#20261014_1020--coherence-pass-architecture-key-decisions-sibling-skills-sweep-clean)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261020_1322 — pitfalls: navigation dry run exits 2 when changes are pending
+
+References: `references/pitfalls.md`, Learned 2026-10-20 (smc-resiliency refresh): `nav_upgrade_dry_run` exits 2 when changes are pending, not on
+an error; `govern` needs a commit after a working session.
 
 ## 20261020_1308 — Code map in bootstrap and refresh: adopt_code_map.py, check_code_map
 
@@ -175,14 +180,6 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
   holds project content), left 2 `nav_validate` failures and 3 new freshness findings; reverted with `git checkout` (tree was clean), check green.
   Stamping goes through `/skill-ai-it refresh` per project instead (ROADMAP). Finding for the upgrader: the update_rules merge rewrites the whole
   context-map.yaml on a project with an older schema.
-
-## 20261014_1020 — Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean
-
-- **Coherence pass** (operator, 2026-10-14) over the file-roles, staleness-audit and all-scraper changes: ARCHITECTURE.md gains "Key decisions"
-  (roles and loading tiers, ratchet via adoption, README budget per project, record rotation, Graphify disabled), so the page readers open first
-  carries today's decisions; scripts/README.md `adopt_governed_files.py` row describes what adoption now adds. Siblings: skill-project-coherence
-  Tier 5 no longer regenerates Graphify (its CHANGELOG 2026-10-14); all-scraper SCRATCHPAD intro uses rotation wording. Stale-reference sweep
-  across this package, skill-slurp-chat, skill-project-coherence, skill-staleness-audit and all-scraper: 0 active. No repomix config here.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

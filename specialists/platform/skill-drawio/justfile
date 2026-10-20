@@ -189,6 +189,11 @@ test-matrix:
 render-flowmap *args: _require-venv
     @{{py}} scripts/render_flowmap.py "$@"
 
+# [read-only] Count crossing arrows on one page, to compare a consumer's drawing before and after an engine change: just count-crossings FILE --page 1 --prefix ov-d-
+[positional-arguments]
+count-crossings *args: _require-venv
+    @{{py}} scripts/count_crossings.py "$@"
+
 # Render the example map (examples/shop/flows.yaml) into examples/shop/drawio/flows.drawio (modifies that file only)
 example: _require-venv
     @{{py}} scripts/render_flowmap.py --root examples/shop --map flows.yaml --write

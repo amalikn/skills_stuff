@@ -81,6 +81,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `just render-flowmap`  | `scripts/render_flowmap.py` (validate, drift, `--write`, `--list`, `--audit`) | A map, its schema              | Drawing with `--write`      | `safe` (`modifies-files` with `--write`) | Yes | Drawing a project's flows       |
 | `just drawio-export`   | `scripts/drawio_export.py`: pages and layers to images                       | A .drawio file                 | Images in `--out-dir`       | `modifies-files`  | Yes        | Self-review before showing a drawing     |
 | `just drawio-read`     | `scripts/drawio_read.py`: an existing drawing as text or JSON                | .drawio files                  | Console, JSON with `--json` | `safe`            | Yes        | Comparing a drawing with other data      |
+| `just count-crossings` | `scripts/count_crossings.py`: crossings between arrows on one page (full paths from `drawio.read`), optionally an id prefix | a .drawio file, page, prefix | Console | `safe` | Yes | Before and after an engine change that alters a consumer's drawing |
 | `just yaml-list-patch` | `scripts/yaml_list_patch.py`: add to lists in a map, comments kept           | A YAML map, a JSON spec        | Diff, or the file with `--apply` | `safe` (`modifies-files` with `--apply`) | Yes | Adding reviewed dependencies to a map |
 | `just bootstrap`       | Builds the pack's working-cache venv from the mise pin                       | `.mise.toml`, requirements     | venv outside the repo       | `modifies-files`  | Yes        | First use, or after a pin change         |
 | `just inventory` / `just audit-scripts` | Tasks and this inventory; script and catalog drift          | `justfile`, this file          | Console                     | `safe`            | Yes        | Orientation, audits                      |
@@ -94,6 +95,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/render_flowmap.py` | Front end: validate a flow map, report drift, render (`--write`), list flows, audit the layout | `safe` (`modifies-files` with `--write`) |
 | `scripts/drawio_export.py` | Front end: export pages (from 1) and layers with the desktop CLI, each under a timeout | `modifies-files` (images only) |
 | `scripts/drawio_read.py` | Front end: print an existing drawing's boxes and connections; JSON with geometry | `safe` |
+| `scripts/count_crossings.py` | Front end: count crossings between routed arrows on one page (full paths from `drawio.read`), optionally an id prefix | `safe` |
 | `scripts/yaml_list_patch.py` | Add values to flow-style lists in a YAML map's items, comments kept; plan, then `--apply` | `safe` (`modifies-files` with `--apply`) |
 | `scripts/schema_lite.py` | A stdlib JSON Schema subset for maps (imported) | `safe` |
 | `scripts/code_refs.py` | Check `path[:symbol]` code references in a map against the repository (imported) | `safe` |

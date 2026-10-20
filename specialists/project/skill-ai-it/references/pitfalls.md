@@ -73,3 +73,19 @@ documents to the same folder within the hour.
 `repomix.config.json` still included it; `just check` passed because the name sits in `CONDITIONAL_PATHS`. In the same pass as the delete: drop the
 `authority_order` entry, replace the routing-list entries with `.archcore/index.guide.md`, drop the repomix include, and remove the promoted folders
 (`.archcore/adr`, `.archcore/rules`) from `CONDITIONAL_PATHS`. Keep `promotion_rules.archcore.candidates_report`: it names where the next refresh writes.
+
+**`nav_upgrade_dry_run` exits 2 when changes are pending (2026-10-20, smc-resiliency).** `upgrade_navigation_control_layer.py` exits 0 when
+nothing would change, 2 when it would change files and 3 when a change needs manual review; `just` reports exit 2 as "recipe failed". Read the
+"Changed files" line, not the exit code: on 2026-10-20 it was the template recipes' rename to kebab-case, which `govern` then applied.
+`govern` also stops on any uncommitted governed file, so a refresh after a working session starts with a commit (ask; never `GOVERN_ALLOW_DIRTY` unasked).
+
+```python
+# skill-ai-it scripts/upgrade_navigation_control_layer.py (end of main)
+final_changed = bool(report_data["changed_files"])
+if report_data.get("requires_manual_review"):
+    sys.exit(3)
+elif final_changed:
+    sys.exit(2)
+else:
+    sys.exit(0)
+```

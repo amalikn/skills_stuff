@@ -92,7 +92,7 @@ channel) or y (horizontal channel) [C-D24].
 > neighbour twice (smc-resiliency's S2 Overview, operator: "unnecessary overlaps on p1"). In one gap every crossing is fixed by the track order
 > alone: run i crosses run j's way in when i is above j and j's start x is inside i's run, and j's way out when i is below and j's end x is inside.
 > The tracks now start in chain order and swap neighbours only while a swap strictly lowers that count, so a drawing already at its best renders
-> byte-identical (the shop example did). UNC's Overview went from 19 thin crossings to 15, audit clean. Screenshots:
+> byte-identical (the shop example did). UNC's Overview went from 19 thin crossings to 15 on stored points (54 to 44 on full paths, `just count-crossings --prefix ov-d-`), audit clean. Screenshots:
 > [before and after](screenshots/20261020-thin-track-order/readme.md).
 >
 > ```python
@@ -192,3 +192,22 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 | `E2E_CHARS`, `E2E_LINE_H`, `E2E_BOX_PAD`                       | 27, 14, 18         | End-to-end text budget, line height, port padding                                 |
 | `NOTE_CHARS`, `NOTE_LINE_H`                                    | 44, 15             | Flow note text budget and line height                                             |
 | `LONG_TOKEN`                                                   | 24                 | Shortest token given soft breaks                                                  |
+
+> **Learned 2026-10-20** · flow map authoring · VERIFIED_PRIMARY · Source: smc-resiliency docs/flows/flows.yaml (commits 4d6e1b0, 31ab9eb); `render_flowmap.py --audit` and page exports
+> · Falsifier: a mutual `depends_on` that draws cleanly, or a one-group tier that audits clean where the merged tier did not
+> Two map-level causes of a bad drawing, both fixed in the map, not the engine: (1) two components that list each other in `depends_on` (an
+> activation step and the timer it arms) draw a thin arrow back up through the first box's title; a dependency is one-way, so drop the reverse.
+> (2) A tier holding a single small group ("Site services") put three End-to-end labels on other flows' arrows (`labels_on_arrows`); moving the
+> group's one box into the group where it actually runs cleared the audit. Try such variants on scratch copies of the map (strip `docs:` entries,
+> which resolve against the project root) and keep the first that audits clean.
+>
+> ```yaml
+> # smc-resiliency docs/flows/flows.yaml (excerpt, after the fix)
+> - id: revert-timer
+>   kind: timer
+>   group: On the SMC
+>   notes: Covers the case where the swap cuts the box off before the health check can report.
+>   # no depends_on: [activate] (the activation step arms it; the reverse edge drew through its title)
+> - id: site-units
+>   group: On the SMC        # was its own tier "Site services"
+> ```

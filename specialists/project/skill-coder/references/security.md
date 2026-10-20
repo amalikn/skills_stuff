@@ -70,3 +70,20 @@ The Python subprocess documentation warns about shell injection when `shell=True
 
 A01 Broken Access Control; A02 Security Misconfiguration; A03 Software Supply Chain Failures; A04 Cryptographic Failures; A05 Injection; A06 Insecure Design; A07 Authentication Failures; A08 Software
 or Data Integrity Failures; A09 Security Logging and Alerting Failures; A10 Mishandling of Exceptional Conditions.
+
+> **Learned 2026-10-20** · gpg 2.5 in a script · VERIFIED_PRIMARY · Source: smc-resiliency scripts/make_release_key.sh (commit 4d6e1b0); gpg exit 2 with a
+> deep GNUPGHOME, success under `$HOME/.k.XXXX` · Falsifier: gpg-agent starting with a GNUPGHOME path over about 100 characters on macOS
+> A throwaway keyring for making a key keeps the private key out of `~/.gnupg`, but gpg-agent's socket lives in GNUPGHOME and a Unix socket path
+> has a hard limit (about 104 bytes on macOS), so a GNUPGHOME under a deep session scratchpad fails with exit 2 and nothing useful on stderr. Use a
+> short `mktemp -d "$HOME/.k.XXXX"`, pass the passphrase with `--passphrase-file` (mode 600 in the work folder) rather than on the command line,
+> keep the revocation certificate gpg writes at key creation before removing the folder, and `gpgconf --kill all` for each throwaway keyring.
+> `--gen-revoke` refuses `--batch`; answer it through `--command-fd 0` without `--batch` if a certificate must be made later.
+>
+> ```bash
+> # smc-resiliency scripts/make_release_key.sh (excerpt)
+> WORK=$(mktemp -d "$HOME/.k.XXXX"); trap cleanup EXIT
+> ( umask 077; printf '%s' "$PASS" > "$WORK/pp" )
+> export GNUPGHOME="$WORK/g1"; mkdir -m 700 "$GNUPGHOME"
+> gpg -q --batch --pinentry-mode loopback --passphrase-file "$WORK/pp" --quick-gen-key "$KEY_UID" ed25519 sign "$EXPIRY"
+> cp "$GNUPGHOME/openpgp-revocs.d/$FPR.rev" "$WORK/rev.asc"
+> ```
