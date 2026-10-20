@@ -986,3 +986,26 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
   box-by-box approval rule.
 - The management prefix length differs by flavour: rcp `bridge_500` is /19, rct is /24 (with a second 192.168.5.100/24). Anything sized per site should take the /19.
 - On rct the files of any such change must reach the lower layer (overlayroot), or they vanish on reboot.
+
+## What writes into /etc at run time, and the read-only /etc of the new image (2026-10-20)
+
+> **Learned 2026-10-20** · SMC run-time writes under /etc; systemd 255 confext · VERIFIED_PRIMARY · Source: smc-file-writing-analysis
+> `artifacts/20260827/write24/fatrace/*.counts` (nine x86 sites, 24 h, real disk); ansible-wifi 0979a596; smc-resiliency
+> `docs/pi/pi-spike-s2-r2-confext-options-20261020_1612.md` (G1 to G3, G16, G17, spike VM) · Falsifier: a 24 h fatrace on an x86 SMC with no
+> write under /etc, or a merged confext on systemd 255 that leaves /etc writable
+> Four writers put files in `/etc` while a box runs: `teleport-tags-exporter.py` (role smc_graylog, `STATE_DIR = Path("/etc")`:
+> `/etc/teleport-tags.env`, its `.tmp`, `/etc/teleport-cache.json`, 170 to 424 writes a day per site), fake-hwclock (smc_system, `/etc/fake-hwclock.data`,
+> hourly), the squid blocklist scripts (smc_squid, `/etc/squid/blocklists/`, twice a day) and multipathd (x86, `/etc/multipath/`). On Pi and WH
+> boxes the same writes go to overlayroot's tmpfs, which fatrace does not see. On the new read-only image (smc-resiliency) a merged site
+> confext makes all of `/etc` read-only and noexec on systemd 255, the OS's own scripts included; `--noexec=false` restores execution, not
+> writes, so these writers must move out of `/etc` (risk R18 there).
+>
+> ```python
+> # ansible-wifi roles/smc_graylog/files/teleport-tags-exporter/teleport-tags-exporter.py (0979a596)
+> TP_YAML = Path("/etc/teleport.yaml")
+> OUT_ENV = Path("/etc/teleport-tags.env")
+> STATE_DIR = Path("/etc")
+> CACHE_JSON = STATE_DIR / "teleport-cache.json"
+> ```
+>
+> Screenshot: not applicable (no visual surface).
