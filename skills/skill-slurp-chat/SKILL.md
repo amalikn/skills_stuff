@@ -229,3 +229,7 @@ companion rules, the Step 6b result, and the last memory-keeper and project-cont
 | "The skill was not invoked, so nothing is owed"   | Touching its domain engaged it; Step 5b applies                               |
 | "The skill file is written; committing is another repo" | Uncommitted is not written back; commit it in the skills repo (Step 5b)  |
 | "The changed file is recorded; its index can wait" | Companion rules are part of the slurp (Step 6)                               |
+| "No compaction, so I can walk it from context"    | Run `transcript_passes.py` on every slurp of a long session (2026-10-20: two slurps missed four items) |
+| "It is in memory and this project's change log"  | Each item also lands in the record of the repo that owns it: a skill's ROADMAP or SCRATCHPAD, `governance/change-log.md` |
+| "The question I asked was not answered"           | An unanswered question is an undecided proposal: SCRATCHPAD Open items                         |
+| "Other repos' trackers are not this slurp's job" | Work that makes another repo's ROADMAP item true is a status change there (Step 6)              |
