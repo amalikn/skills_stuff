@@ -46,6 +46,14 @@ write_patterns = []   # project-specific writes, e.g. a client library's create 
 [timeouts]
 roots = ["src", "scripts"]
 
+# Timed subprocess calls whose command (ssh, scp, rsync, a shell) starts children the timeout leaves running (scripts/group_timeouts.py).
+[group_timeouts]
+baseline = "scripts/group-timeout-baseline.json"
+
+# Inline linter suppressions (noqa, type: ignore, shellcheck disable, eslint-disable, nolint, allow) per file (scripts/suppressions.py).
+[suppressions]
+baseline = "scripts/suppressions-baseline.json"
+
 # Where each module stands for promotion to a shared skill: project_only (reason), candidate (needs), promoted (skill = the file it moved to).
 [modules."scripts/example.py"]
 status = "project_only"

@@ -15,6 +15,8 @@ Sections (all optional; template: the pack's templates/code-map.toml):
     [layers]          src = "src"; package = "app"; baseline = "..."; then [layers.rules.<subpackage>] layer, may_import
     [write_gates]     roots, suffixes, write_patterns, apply_pattern; [write_gates.exceptions] "<path>" = "<reason>"
     [timeouts]        roots; baseline
+    [group_timeouts]  roots; baseline   (timed ssh/shell subprocess calls that leave children running)
+    [suppressions]    roots; baseline   (inline linter suppressions)
     [naming]          recipe = "<convention>"; [naming.files] "<glob>" = "<convention>"  (overrides the pack's naming.toml)
     [modules."<path>"] status = "project_only" | "candidate" | "promoted"; reason; needs; skill
 
@@ -29,7 +31,7 @@ from pathlib import Path
 #: The oldest Python this script runs on: it runs with the target project's own interpreter (the pack's contract test parses it at this grammar).
 REQUIRES_PYTHON = (3, 11)
 #: Section names a code map may have; anything else is reported, so a typo does not silently switch a rule off.
-SECTIONS = ("scan", "limits", "layers", "write_gates", "timeouts", "modules", "naming", "meta")
+SECTIONS = ("scan", "limits", "layers", "write_gates", "timeouts", "group_timeouts", "suppressions", "modules", "naming", "meta")
 STATUSES = ("project_only", "candidate", "promoted")
 
 
