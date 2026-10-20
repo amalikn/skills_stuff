@@ -29,6 +29,22 @@ Summary: >-
   attribution the project's or user's rules require.
 - Avoid apostrophes in a heredoc commit body passed through a shell tool; write around contractions. Why: they break shell parsing (operator lesson).
 
+> **Learned 2026-10-20** · git, a repo shared by concurrent sessions · VERIFIED_PRIMARY · Source: apn commits b64a075 and 951a7dc
+> (smc-resiliency CHANGELOG 20261020 slurp entry) · Falsifier: two sessions where one's `git add` never ends up in the other's commit
+> The index is shared by every session working in one clone. `git add <paths> && git commit` lets another session's commit, made in the same
+> second, take what this session staged: here a unified-network-controller commit carried smc-resiliency's files under its own message, and this
+> session's commit then found nothing to commit. Commit by pathspec, which commits exactly the named paths whatever else is staged, and check
+> the result with `git show --stat HEAD` before pushing. A new file needs `git add -N` (intent to add) first so the pathspec can name it.
+> Never amend or split the other session's commit; record where the work landed.
+>
+> ```bash
+> # smc-resiliency, 2026-10-20 (after the race)
+> just check >/dev/null 2>&1; rc=$?
+> [ $rc -eq 0 ] && git add -N smc-resiliency/docs/history \
+>   && git commit -q -m "..." -- smc-resiliency/CHANGELOG.md smc-resiliency/docs/history \
+>   && git show --stat --format="%h %s" HEAD
+> ```
+
 ## Gate on the exit code
 
 Gate a commit, push or deploy on the validation command's own exit code, never through a pipe or a `;`:
