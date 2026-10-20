@@ -71,6 +71,10 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
     generic version under `templates/` for `--init` to emit; the UNC wording stays in the pilot.
 
 ## Audit and preflight
+
+- [ ] **check_code_map covers shell and every code folder** (found 2026-10-20, smc-resiliency): the template globs `*.py` under
+  `MODULE_ROOTS` only, so `.sh` scripts escape the map; smc-resiliency's split checker covers `.sh` and `spike/`. Take the roots from `code-map.toml`
+  `roots` and include shell.
 - [ ] **`budget_plan.py` audit reports SCRATCHPAD lines LOST when none were removed** (2026-10-15, ansible-wifi-root-governance): `just budget --apply` printed "LOST SCRATCHPAD.md: 85 line(s) lost, e.g. '**Newest thread (2026-10-07, 13:36) ...'" and exited 1, yet `git diff` on SCRATCHPAD.md shows additions only and the quoted line is still in the file. The CHANGELOG rotation in the same run was correct. Reproduce on that project and fix the audit comparison.
 
 - [ ] **`audit` mode refinement** — structured output format for audit findings (missing files, stale sections, routing gaps, drift) so agents can act on audit output without ambiguity.
