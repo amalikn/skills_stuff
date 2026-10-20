@@ -8,7 +8,7 @@ outlive the kill. In one project, Teleport proxies to an unreachable box were st
 load rose. The fix is a runner that starts the child in its own session and ends the whole process group on timeout.
 
 Counted, through `ast`: subprocess.run/call/check_call/check_output with `timeout=` whose command is a list or tuple starting with one of
-SPAWNERS, a call to a function named like one (`tsh(...)`, `ssh_argv(...)`), or `shell=True`. A call passing `**kwargs` is trusted.
+SPAWNERS, a call to a function named like one (`ssh_argv(...)`, `bash_cmd(...)`), or `shell=True`. A call passing `**kwargs` is trusted.
 
 Usage:
     group_timeouts.py --project-root . [--roots src,scripts] [--baseline scripts/group-timeout-baseline.json] [--list] [--write-baseline]
@@ -30,8 +30,9 @@ import ratchet
 #: The oldest Python this script runs on: it runs with the target project's own interpreter (the pack's contract test parses it at this grammar).
 REQUIRES_PYTHON = (3, 11)
 
-#: Commands that start children of their own: ssh and its relatives start a ProxyCommand; a shell starts what it runs.
-SPAWNERS = {"ssh", "tsh", "scp", "sftp", "rsync", "autossh", "sh", "bash", "zsh", "dash"}
+#: Commands that start children of their own: ssh and its relatives start a ProxyCommand; a shell starts what it runs. Not `tsh`:
+#: `tsh ssh` connects in-process and starts no child, so killing it ends the session (it is what ssh starts as the proxy).
+SPAWNERS = {"ssh", "scp", "sftp", "rsync", "autossh", "sh", "bash", "zsh", "dash"}
 #: The run family: these wait for the child and kill only it on timeout.
 RUN_FAMILY = {"subprocess.run", "subprocess.call", "subprocess.check_call", "subprocess.check_output"}
 
@@ -43,7 +44,7 @@ def _command_name(node: ast.AST) -> str:
         node: the call's first positional argument.
 
     Returns:
-        The program ("ssh"), the last part of a builder function's name ("tsh" for teleport.tsh(...)), or "".
+        The program ("ssh"), the last part of a builder function's name ("ssh_argv" for remote.ssh_argv(...)), or "".
     """
     if isinstance(node, (ast.List, ast.Tuple)) and node.elts:
         first = node.elts[0]

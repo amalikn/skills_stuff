@@ -64,12 +64,13 @@ class GroupTimeouts(unittest.TestCase):
     """A timed run() of a command that starts children (ssh, a shell) is found; other timed calls are not."""
 
     def test_spawners_found(self) -> None:
-        """ssh, bash -c, shell=True and a tsh(...) builder count; ls, an untimed ssh and **kwargs do not."""
+        """ssh, bash -c, shell=True and an ssh_argv(...) builder count; tsh (no children), ls, an untimed ssh and **kwargs do not."""
         src = textwrap.dedent('''
             import subprocess
             subprocess.run(["ssh", "-o", "x", "host", "true"], timeout=5)
             subprocess.check_output(["/bin/bash", "-c", "a | b"], timeout=5)
             subprocess.run("a | b", shell=True, timeout=5)
+            subprocess.run(remote.ssh_argv("root@n"), timeout=9)
             subprocess.run(teleport.tsh("ssh", proxy, "root@n"), timeout=9)
             subprocess.run(["ls"], timeout=5)
             subprocess.run(["ssh", "h"])
