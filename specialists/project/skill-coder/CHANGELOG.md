@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 (b) in `languages/python.md`: place an inserted import from the AST, never by matching lines (imports inside remote-agent strings matched; unified-network-controller).
 - 20261020 `group_timeouts.py` also counts a `Popen(...)` stopped with `.kill()`/`.terminate()` in the same function without `start_new_session=`/`process_group=` (a collector's per-site limit; flagged the old code, passes the fix, unified-network-controller 36fa18e).
 - 20261020 `group_timeouts.py`: `tsh` is not a spawner (`tsh ssh` connects in-process; it is what ssh starts as the proxy); seven false positives in its first project run.
 - 20261020 `code_map.py` accepts `[group_timeouts]` and `[suppressions]` (roots, baseline); `templates/code-map.toml` shows both; SETUP.md reviewed (still accurate).

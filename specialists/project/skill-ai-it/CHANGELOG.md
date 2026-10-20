@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_1632
+Last rotated: 20261020_1753
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261020_1753 — Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff](#20261020_1753--template-a-type-check-replaces-the-type-ignore-in-check_governancepy-split_checkers-mirror-diff)
 - [20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate](#20261020_1634--rotate_records-project-sync-outbox-and-inbox-lines-never-rotate)
 - [20261020_1632 — Template: govcheck/core.py header states it is read-only](#20261020_1632--template-govcheckcorepy-header-states-it-is-read-only)
 - [20261020_1322 — pitfalls: navigation dry run exits 2 when changes are pending](#20261020_1322--pitfalls-navigation-dry-run-exits-2-when-changes-are-pending)
@@ -33,9 +34,13 @@ Last rotated: 20261020_1632
 - [20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity](#20261014_1102--token-efficiency-from-the-unc-run-compact-agents-block-load-cost-header-validity)
 - [20261014_1058 — deterministic navigation-control upgrade](#20261014_1058--deterministic-navigation-control-upgrade)
 - [20261014_1051 — govern fixes from the UNC run: folded legacy headers stay fenced; audit failures named](#20261014_1051--govern-fixes-from-the-unc-run-folded-legacy-headers-stay-fenced-audit-failures-named)
-- [20261014_1039 — govern: one-step governance recipe and skill mode; refresh runs it first](#20261014_1039--govern-one-step-governance-recipe-and-skill-mode-refresh-runs-it-first)
-- [20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)](#20261014_1030--role_check-context-mapyaml-must-parse-nav_validate-stays-manual)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261020_1753 — Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff
+
+`templates/check_governance.py` `check_constant_sync`: `# type: ignore[union-attr]` replaced by an explicit list check (a string `surfaces`
+was read character by character); found by skill-coder's new `suppressions.py` (skills_stuff b6b05fb). `patterns/governance-checks.md`:
+splitting a checker in a project with a code map gives a mirror-pair difference (smc-resiliency 0f5f0f7).
 
 ## 20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate
 
@@ -168,23 +173,6 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
   the fence closed after the first line and the tail landed below the `@` import (UNC AGENTS.md, first `govern` run). Test added (14 pass).
 - **govern recipe** (justfile, templates/justfile): the NEEDS ATTENTION reason also names `audit: LOST|SPLIT`; it was blank when the rotation audit
   failed, because budget_plan.py returns before printing UNFINISHED. cambium-swap's adopted copy still has the old grep.
-
-## 20261014_1039 — govern: one-step governance recipe and skill mode; refresh runs it first
-
-- **`govern`: one step to the current standard** (operator, 2026-10-14: "wrap steps 1-3 into one recipe", a `govern` argument for the skill, and
-  `refresh` calls govern before fixing content). `just govern [project]` here and a project-local `just govern` (template; adoption adds it):
-  `adopt_governed_files.py --apply`, `budget_plan.py --apply` (rotation, ROADMAP trim, the project's `just check`), `role_check.py`, then one
-  summary line naming what still needs attention; exit 1 when a file stays over budget or the check fails. SKILL.md: new `govern` mode
-  (`/skill-ai-it govern`, no content edits); `refresh` runs `govern` first, then fixes content by the role findings. Measured: about 1 s on this
-  package and on cambium-swap (budget: under 60 s). Canary cambium-swap: recipe added, 4 done ROADMAP items moved to history, summary names its
-  over-budget AGENTS.md (220 lines). Adoption only adds a missing recipe; it does not refresh an existing `govern` copy.
-
-## 20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)
-
-- **`role_check.py` rule 8, `context-map-parse`** (operator, 2026-10-14: "keep nav_validate manual, and add one rule to role_check:
-  context-map.yaml must parse"). Fails when the map does not parse or repeats a key; PyYAML absent reports SKIPPED, never passed. All 26
-  context-map.yaml files under project_stuff and specialists parse today, so no project turns red. Test added; proven on this package (a repeated
-  `version` key failed `just check`, restored green). `nav_validate` stays out of `check` (it fails every project on a skill version bump).
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

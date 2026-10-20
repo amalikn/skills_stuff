@@ -86,3 +86,18 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 - Type-checker recommendation and settings: UNVERIFIED stub; add with a fetched source.
 - A docstring checker that enforces `Args:` completeness: ruff's pydocstyle rules check presence and sections; full parameter coverage may need the project's own ratchet check (UNVERIFIED which ruff
   rules cover it).
+
+> **Learned 2026-10-20 (b)** · python, scripted edits of Python source · VERIFIED_PRIMARY (two of nine rewritten files broke: tests failed with
+> NameError and a remote agent's CalledProcessError) · Source: unified-network-controller `wc-local/scripts/collector/dhcp_leases.py` and
+> `wc-local/scripts/collector/reachability.py` (fixed before commit 3efcb27) · Falsifier: a source file whose embedded code strings hold no import lines
+> A rewrite that places a new import "after the last import line" by matching lines also matches imports inside string literals: a remote-agent
+> program sent over ssh (`import datetime`) or a Django shell script (`from swapper import load_model`). The import landed in the string, so
+> the module failed to load and the remote program gained a line its host could not run. Find the insertion point from the AST, the last
+> top-level `Import`/`ImportFrom` node of the module body:
+>
+> ```python
+> tree = ast.parse(text)
+> last = max(n.end_lineno for n in tree.body if isinstance(n, (ast.Import, ast.ImportFrom)))   # never a line inside a string
+> lines.insert(last, "from unc.drivers.transports import process")
+> ```
+

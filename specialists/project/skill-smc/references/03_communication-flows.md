@@ -622,6 +622,40 @@ VERIFIED-OBSERVED 2026-10-08 on the boxes (20-mile and adjamarragu `rct`, areyon
 >
 > No visual surface.
 
+> **Learned 2026-10-20 (b)** · Pi SMC uplinks in an inventory (`rct`) · VERIFIED-OBSERVED on akwalirrumanja (Circuits dry run on apn-unc01,
+> 16:24) · Source: unified-network-controller `wc-local/scripts/smc/uplink_sites.py` `draft_text`, `wc-local/scripts/smc/smc_uplink_circuits.py`
+> `circuit_plan` (commits 5f02e18, 3f3d847) · Falsifier: a Pi site whose eth0 is not the switch trunk
+> A Pi's `eth0` is both the trunk to the site switch (tagged VLANs, so an inventory gives it a trunk role) and the internet (untagged). An uplink
+> Circuit therefore sits on `eth0` named by interface, not by label (the port keeps the operator's `Port 1`), with its NTD on the switch port
+> that carries the untagged VLAN (the Sky Muster NTD on ether2); the trunk counts as the uplink only on that path (named interface, NTD on
+> another device):
+>
+> ```python
+> # smc_uplink_circuits.circuit_plan (3f3d847)
+> through_switch = (role == TRUNK_ROLE and spec.get("interface") and (spec.get("ntd") or {}).get("device") not in (None, plan["smc"]))
+> if role != INTERNET_ROLE and not through_switch:
+>     errors.append(f"{lid}: {iface['name']} has role {role!r}, not {INTERNET_ROLE!r}; an uplink Circuit needs an uplink")
+> ```
+>
+> Screenshot pending: the akwalirrumanja Circuit page, after the operator approves its Circuits stage.
+
+> **Learned 2026-10-20 (c)** · OpenSSH through the Teleport ProxyCommand (`*.teleport.<domain>`), Linux and macOS · VERIFIED-OBSERVED on
+> apn-unc01 (`ps -eo pid,ppid,pgid,sid` during a collector cycle: forwards with parent 1 and a session of their own; `tsh proxy ssh` in the
+> caller's session) and reproduced with `ProxyCommand=sleep` · Source: unified-network-controller `src/unc/drivers/transports/process.py`,
+> `wc-local/scripts/collector/batch_push_devices.py` `_close_on_term` (commits 3efcb27, 36fa18e) · Falsifier: an ssh release whose `-f` keeps the session
+> `ssh` starts `tsh proxy ssh` as its own child. Killing `ssh` (a `subprocess.run` timeout) leaves that proxy running for minutes; end the
+> process group instead. `ssh -f -N -L` forwards detach into a session of their own once established, so no group kill reaches them: the
+> program that opened them must close each by name (`pkill -f -- "-L <port:ip:port> "`), also on SIGTERM:
+>
+> ```python
+> # batch_push_devices (36fa18e): forwards are closed by name, also when the caller's time limit sends SIGTERM
+> def _close_on_term(signum, _frame):
+>     close_tunnels(sorted(OPEN_FORWARDS))      # one pkill -f -- "-L <spec> " each
+>     os._exit(128 + signum)
+> ```
+>
+> No visual surface.
+
 ### Alert Flows
 
 ```

@@ -1346,3 +1346,13 @@ nbn_wh's `group_vars/smc_bases.yml` as in wh's, so a run of that play removes it
 
 So the play has not been run on darlngunaya since its build; the nbn_accelerate boxes were not checked. Next step (operator: "something to look at
 later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play with `--tags fqdn2ip` box by box under the usual approval.
+
+> **Learned 2026-10-20 (d)** · reading units through a Sky Muster Plus SMC (Pi sites) · VERIFIED-OBSERVED (read-only dry runs from apn-unc01,
+> bidyadanga, 20 units per family) and USER_STATED (operator: the cause is Sky Muster Plus latency) · Source: unified-network-controller
+> collector log `canary-collector.log` and `batch_push_devices.py --dry-run --per-family-limit 20` (2026-10-20) · Falsifier: a satellite site
+> whose per-unit read time falls to terrestrial levels at the same concurrency
+> Each unit read through the SMC (tunnel set-up, login, several requests) costs about 40 to 50 s over the satellite path: 20 R195P took 260 s
+> and 20 ePMP SMs 279 s with 4 reads in flight. A site of about 300 units cannot be read inside a 15-minute window at that concurrency
+> (bidyadanga: about 90 of 292 reachable units per cycle). The work waits on the link, not on bandwidth, so more reads in flight is the lever;
+> a terrestrial site of the same size finishes well inside the window. No visual surface.
+

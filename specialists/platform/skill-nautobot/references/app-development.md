@@ -560,3 +560,19 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 >
 > No visual surface.
 
+> **Learned 2026-10-20 (f)** · Nautobot 3.2.3 Job records · VERIFIED-OBSERVED (a test stack upgraded across the move; parity against the
+> production stack then clean of them) · Source: unified-network-controller CHANGELOG 20261020_1629 · Falsifier: a Nautobot release that
+> removes Job records whose module no longer exists
+> The old record of a moved Job stays as "not installed" until removed; nothing deletes it. Remove it only when the installed record at the new
+> path exists and the old one carries no results (its buttons and schedules would go with it), by primary key in `nbshell`:
+>
+> ```python
+> from nautobot.extras.models import Job
+> for pk in ["<old record pk>"]:                       # read first: module_name, installed, job_results.count()
+>     j = Job.objects.get(pk=pk)
+>     assert not j.installed and j.job_results.count() == 0
+>     j.delete()
+> ```
+>
+> No visual surface.
+

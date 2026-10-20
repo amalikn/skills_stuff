@@ -103,6 +103,11 @@ scripts/govcheck/checks/<family>.py   the checks, one module per family; CHECKS 
 Adding a check: pick its family (the seven below, or `structure`/`records` for the checker and governed records), add `check_<name>` to that
 module with its docstring, add it to `CHECKS`, put any list it needs in `config.py`, write its negative test, run `just check`.
 
+Splitting an old single-file checker (`scripts/split_checker.py`, 2026-10-20 in smc-resiliency, 724 lines): when the project's code map
+must list every module, the dry run's difference is a mirror pair, never zero. Without the six new modules registered, the "after" side says
+they have no entry; with them registered first, the "before" side says the entries name files that do not exist. Register them first and
+accept a difference made only of those lines; any other line is a real change.
+
 
 
 | Tier | What it is | When generated |

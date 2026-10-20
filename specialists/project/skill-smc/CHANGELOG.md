@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_1706
+Last rotated: 20261020_1752
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261020_1752 — Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky Muster read cost (v0.5.7 -> v0.5.8)](#20261020_1752--pi-uplink-on-the-eth0-trunk-ssh-forwards-detach-from-the-caller-sky-muster-read-cost-v057---v058)
 - [20261020_1706 — /etc census in overlay-usage-breakdown; fqdn2ip still on darlngunaya (v0.5.6 -> v0.5.7)](#20261020_1706--etc-census-in-overlay-usage-breakdown-fqdn2ip-still-on-darlngunaya-v056---v057)
 - [20261020_1647 — Run-time writers under /etc; read-only /etc on the new image (v0.5.5 -> v0.5.6)](#20261020_1647--run-time-writers-under-etc-read-only-etc-on-the-new-image-v055---v056)
 - [20261020_1335 — A Pi SMC's internet is eth0 untagged, read on five rct sites (v0.5.4 -> v0.5.5)](#20261020_1335--a-pi-smcs-internet-is-eth0-untagged-read-on-five-rct-sites-v054---v055)
@@ -37,7 +38,12 @@ Last rotated: 20261020_1706
 - [20261013_2225 — Teleport Machine ID facts, site topology, two 2026-10-13 entries recorded (v0.3.7 -> v0.3.8)](#20261013_2225--teleport-machine-id-facts-site-topology-two-2026-10-13-entries-recorded-v037---v038)
 - [20261010_1805 — Governed-file standard: recipes, records rotated (v0.3.6 -> v0.3.7)](#20261010_1805--governed-file-standard-recipes-records-rotated-v036---v037)
 - [20261009_1806 — Sidekick and the low-touch hook: confirmed and unplugged releases a unit (v0.3.5 -> v0.3.6)](#20261009_1806--sidekick-and-the-low-touch-hook-confirmed-and-unplugged-releases-a-unit-v035---v036)
-- [20261009_1714 — What else the low-touch hook logs record: state and secret, events, the SM by its own MAC, preferred_ssid names the AP (v0.3.4 -> v0.3.5)](#20261009_1714--what-else-the-low-touch-hook-logs-record-state-and-secret-events-the-sm-by-its-own-mac-preferred_ssid-names-the-ap-v034---v035)
+
+## 20261020_1752 — Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky Muster read cost (v0.5.7 -> v0.5.8)
+
+`references/03_communication-flows.md`: Learned (b) a Pi's uplink Circuit sits on `eth0` (named interface, NTD on the switch), (c) `ssh` leaves
+its `tsh proxy` child on a kill and `ssh -f` forwards leave the caller's session, so they are closed by name (confirms the 20261020_1141
+lingering-proxy note). `references/13_known-issues.md`: Learned (d) about 40 to 50 s per unit read over Sky Muster Plus (unified-network-controller).
 
 ## 20261020_1706 — /etc census in overlay-usage-breakdown; fqdn2ip still on darlngunaya (v0.5.6 -> v0.5.7)
 
@@ -188,8 +194,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 - `references/13_known-issues.md`: what Sidekick is and how it is deployed, its addresses per family, the hook's release condition (`confirmed`
   and no ping to 169.254.1.17), what the hook copies from the record, `lotno` versus `locid`, `tower` dropped, replacement records. Read from the
   sidekick repository (operator, 2026-10-09).
-
-## 20261009_1714 — What else the low-touch hook logs record: state and secret, events, the SM by its own MAC, preferred_ssid names the AP (v0.3.4 -> v0.3.5)
-
-- `references/13_known-issues.md`: beyond the 0.3.4 pairing section: the state dump, events, more description keys, and the cnMaestro client secret;
-  upstream-wait MAC = Remote ID - 1 (60 of 60); `preferred_ssid` `WifiBridge_N` = AP `3000L-ap-N` (59 of 59); measured on old-looma's logs.
