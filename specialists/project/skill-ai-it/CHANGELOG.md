@@ -16,6 +16,7 @@ Last rotated: 20261020_1632
 
 ## Contents
 
+- [20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate](#20261020_1634--rotate_records-project-sync-outbox-and-inbox-lines-never-rotate)
 - [20261020_1632 — Template: govcheck/core.py header states it is read-only](#20261020_1632--template-govcheckcorepy-header-states-it-is-read-only)
 - [20261020_1322 — pitfalls: navigation dry run exits 2 when changes are pending](#20261020_1322--pitfalls-navigation-dry-run-exits-2-when-changes-are-pending)
 - [20261020_1308 — Code map in bootstrap and refresh: adopt_code_map.py, check_code_map](#20261020_1308--code-map-in-bootstrap-and-refresh-adopt_code_mappy-check_code_map)
@@ -35,6 +36,14 @@ Last rotated: 20261020_1632
 - [20261014_1039 — govern: one-step governance recipe and skill mode; refresh runs it first](#20261014_1039--govern-one-step-governance-recipe-and-skill-mode-refresh-runs-it-first)
 - [20261014_1030 — role_check: context-map.yaml must parse (nav_validate stays manual)](#20261014_1030--role_check-context-mapyaml-must-parse-nav_validate-stays-manual)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate
+
+Bug found in smc-resiliency (2026-10-20): `rotate_records.py` treated bullets inside the `<!-- project-sync:outbox|inbox:start/end -->` blocks
+(apn `scripts/project_sync.py`, under `## Open items`) as open items and moved them to the open-items tracker: an unsent outbox line was never sent,
+and an unanswered inbox item left the inbox, so the sync reported "inbox: 0 open". Now `parse` marks units between the markers `sync block` and
+they never move nor take a "newest kept" slot. Test `test_project_sync_blocks_never_move` (red before the fix, green after; 107 tests OK).
+Projects whose tracker holds moved sync lines should move them back into their blocks.
 
 ## 20261020_1632 — Template: govcheck/core.py header states it is read-only
 

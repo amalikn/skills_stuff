@@ -158,6 +158,28 @@ class TrackerTest(RotateTest):
         self.assertNotIn("still open", live)
         self.assertIn("open-items.md", live)
 
+    def test_project_sync_blocks_never_move(self):
+        """Outbox and inbox lines between project-sync markers stay put however old (smc-resiliency, 2026-10-20: an unsent outbox line and an
+        unanswered inbox item were moved to the tracker, so the sync never sent the one and reported 0 open for the other)."""
+        text = scratchpad(20).replace("# Scratchpad\n", "---\nTitle: Scratchpad\nOpen items tracker: docs/trackers/open-items.md\n---\n# Scratchpad\n", 1)
+        sync = ("<!-- project-sync:outbox:start -->\n- [ ] to unc: unsent outbox line\n  second line\n<!-- project-sync:outbox:end -->\n"
+                "<!-- project-sync:inbox:start -->\n- [ ] **20260901_0700** from es: unanswered inbox item <!--sync-id:es-1-->\n"
+                "<!-- project-sync:inbox:end -->\n")
+        text = text.replace("- [ ] **20260901_0900** still open, never rotated", "- [ ] **20260901_0900** still open\n- [ ] **20260905_0900** a\n"
+                            "- [ ] **20260906_0900** b\n- [ ] **20260907_0900** c\n" + sync.rstrip("\n"))
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            (root / "SCRATCHPAD.md").write_text(text)
+            subprocess.run([sys.executable, str(SCRIPT), "--project-root", str(root), "--apply", "SCRATCHPAD.md"], check=True, capture_output=True)
+            live = (root / "SCRATCHPAD.md").read_text()
+            tracker = (root / "docs/trackers/open-items.md").read_text()
+        self.assertIn("still open", tracker)
+        for line in ("unsent outbox line", "second line", "unanswered inbox item"):
+            self.assertIn(line, live)
+            self.assertNotIn(line, tracker)
+        self.assertIn(sync, live)
+
 
 if __name__ == "__main__":
     unittest.main()

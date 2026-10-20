@@ -59,6 +59,8 @@ LONG_DATE = re.compile(r"\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|
 MONTHS = {m: i for i, m in enumerate("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(), 1)}
 TIME = re.compile(r"~?\b\d{1,2}[:.]\d{2}\s*(?:[ap]\.?m?\.?\b)?(?:\s*[–-]\s*\d{1,2}[:.]\d{2}\s*(?:[ap]\.?m?\.?\b)?)?", re.I)
 TRACKER_POINTER = "- Older open items are tracked in"
+#: Start and end markers of a block another tool owns (apn scripts/project_sync.py outbox and inbox): its lines never rotate.
+SYNC_MARK = re.compile(r"^<!-- project-sync:\w+:(start|end) -->")
 RESOLVED = re.compile(r"\b(done|closed|resolved|superseded|retired)\b|^- \[x\]|~~", re.I)
 ARCHIVE_DIR = "docs/history"
 #: Measured 2026-10-10 on UNC (about 30 log entries a day): age protects too much in an active project, so the newest units are kept by
@@ -179,6 +181,7 @@ def parse(text: str, kind: str) -> Record:
             items: list[Unit | str] = []
             pending: list[str] = []
             sub_stamp = ""
+            in_sync = False  # inside a project-sync block: its bullets are the sync tool's mailbox, never rotated
             k = 0
             while k < len(body):
                 line = body[k]
@@ -202,7 +205,8 @@ def parse(text: str, kind: str) -> Record:
                     while end < len(body) and (body[end].startswith("  ") or (body[end] == "" and end + 1 < len(body) and body[end + 1].startswith("  "))
                                                or (body[end - 1] != "" and lazy_continuation(body[end]))):
                         end += 1
-                    items.append(Unit(section=head, lines=pending + body[k:end], stamp=first_stamp(line) or sub_stamp))
+                    items.append(Unit(section=head, lines=pending + body[k:end], stamp=first_stamp(line) or sub_stamp,
+                                      keep_reason="sync block" if in_sync else ""))
                     pending = []
                     k = end
                 elif pending and line == "":
@@ -212,6 +216,9 @@ def parse(text: str, kind: str) -> Record:
                     items.extend(pending)
                     pending = []
                     items.append(line)
+                    m = SYNC_MARK.match(line)
+                    if m:
+                        in_sync = m.group(1) == "start"
                     k += 1
             items.extend(pending)
             rec.blocks.append((head, items))
@@ -362,7 +369,7 @@ def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: i
         keep = next((n for k, n in (section_keep or {}).items() if k.lower() in key.lower()), None)
         if keep is None:
             keep = 1 if kind == "state" and key != units[0].section else min_keep
-        dated = sorted((u for u in units if u.when), key=lambda u: u.when, reverse=True)
+        dated = sorted((u for u in units if u.when and not u.keep_reason), key=lambda u: u.when, reverse=True)
         tracked = open_days is not None and any(p in key for p in pinned)
         for u in dated[:keep]:
             # With a tracker, the newest open items stay in the working state and every other open item moves to the tracker.
