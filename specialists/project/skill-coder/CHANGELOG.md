@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 in `references/testing.md` (b: real captured sample at the production cut), `languages/shell.md` (`pkill -f` kills its own ssh session) and `languages/python.md` (SystemExit escapes `except Exception` in a pool) (unified-network-controller).
 - 20261020 Learned 2026-10-20 in `references/refactoring-and-promotion.md`: adopt `code-map.toml` by moving decisions and keeping the project's checks; assert equality before deleting the old files (unified-network-controller).
 - 20261020 Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20).
 - 20261020 Learned 2026-10-20 in `references/testing.md`: tie a mirror tool's inputs (preview scripts, image build context) to their source by a test that can fail (unified-network-controller).

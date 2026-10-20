@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261020 Learned 2026-10-20 (c) in `references/app-development.md`: rename a core field everywhere from `ready()` (verbose_name for the detail panel; form base_fields and table base_columns copied it at build). Screenshot pending after the UNC 0.8.48 deploy.
 - 20261020 Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20).
 - 20261020 Learned 2026-10-20 (n) and (o) in `data-model.md`: native wireless models, per-group assignment and site child groups; Relationship rows hidden per side.
 - 20261020 Learned 2026-10-20 (d) in `app-development.md`: high-volume observations in a plain model through one bulk endpoint, no change-log flood.

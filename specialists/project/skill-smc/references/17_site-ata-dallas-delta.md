@@ -89,6 +89,24 @@ if raw_get("/auth=,%d" % int(time.time() * 1000))[0] == "200":   # empty PIN
 
 Screenshot pending: the ATA's `DDC_VoIP Settings` page, taken from the SMC through a port forward with its SIP number and server redacted.
 
+> **Learned 2026-10-20 (b)** · Dallas Delta ATA web pages, both generations · VERIFIED-OBSERVED (seven rct SMCs, read-only `curl --http0.9` through
+> Teleport apn; six DDC_VoIP-m, one S11) · Source: unified-network-controller `wc-local/scripts/site_onboarding/discover_site.py` and its catalog
+> (commit 075d6b9), `scripts/checks/ata_chain_check.py` (commit 5b3d4e6), real S11 page kept as `tests/fixtures/ddc-voip/s11-home-page.txt` ·
+> Falsifier: an S11 page without "DDC_VoIP" near its start, or a DDC_VoIP-m page without it in its first 4 KB
+> Refines the "Dallas Delta Corp" marker above: true of both pages, but on S11 it first appears at byte 24,545 of 24,860 printable characters
+> (the footer), so a reader that keeps only the start of a page misses the unit (a 4 KB read classed the S11 unit "other"). "DDC_VoIP" is in both
+> generations' first 2 KB: the S11 title "DDC_VoIP Settings" at byte 92; the whole DDC_VoIP-m home page is 1,747 characters. On each of the six
+> DDC_VoIP-m sites the ATA was the only host answering on 192.168.5.0/24 besides the SMC (.100), at 192.168.5.253, firmware 042112, MACs in
+> 00:18:1F:01:xx:xx; the one S11 unit's MAC is 38:b1:9e:... (a different block, so the MAC prefix does not identify the generation alone).
+>
+> ```python
+> # discover_site.py (075d6b9): the probe keeps PAGE_BYTES of each page, printable characters only, run on the SMC
+> PAGE_BYTES = 32768
+> probe() { t=$(curl -s --http0.9 -m 6 "http://$1/" 2>/dev/null | head -c PAGE_BYTES | tr -cd '[:print:]') ...
+> # catalog vendors/dallas-delta/manufacturer.yaml: the title marker first, the comment marker for the old firmware
+> discovery: {http_marker: [DDC_VoIP, Dallas Delta Corp], family: ddc-voip}
+> ```
+
 ## Vendor sources
 
 Manuals, datasheets, web pages, the IANA and IEEE excerpts and a firmware note are in [vendor-sources-dallas-delta-20261008_1043/](vendor-sources-dallas-delta-20261008_1043/readme.md). No firmware

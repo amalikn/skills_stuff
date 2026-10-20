@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_0939
+Last rotated: 20261020_1141
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261020_1141 — ATA page markers by position; lingering tsh proxy after an ssh timeout (v0.5.2 -> v0.5.3)](#20261020_1141--ata-page-markers-by-position-lingering-tsh-proxy-after-an-ssh-timeout-v052---v053)
 - [20261020_0944 — Write-back evidence: code excerpts and screenshots (v0.5.1 -> v0.5.2)](#20261020_0944--write-back-evidence-code-excerpts-and-screenshots-v051---v052)
 - [20261020_0939 — Client MACs may be stored; S11 ATA reads; IPSSH as TP-Link; Teleport command labels (v0.5.0 -> v0.5.1)](#20261020_0939--client-macs-may-be-stored-s11-ata-reads-ipssh-as-tp-link-teleport-command-labels-v050---v051)
 - [20261020_0049 — Bot-host skill scripts, dhcpd shared networks, uplink gateway (v0.4.9 -> v0.5.0)](#20261020_0049--bot-host-skill-scripts-dhcpd-shared-networks-uplink-gateway-v049---v050)
@@ -36,7 +37,12 @@ Last rotated: 20261020_0939
 - [20261009_1705 — The provisioning hook's per-unit logs are a low-touch site's install-time pairing (v0.3.3 -> v0.3.4)](#20261009_1705--the-provisioning-hooks-per-unit-logs-are-a-low-touch-sites-install-time-pairing-v033---v034)
 - [20261009_1652 — Low-touch provisioning logs live only on the SMC; sizes per site, backup in UNC (v0.3.2 -> v0.3.3)](#20261009_1652--low-touch-provisioning-logs-live-only-on-the-smc-sizes-per-site-backup-in-unc-v032---v033)
 - [20261009_1552 — An SMC's DHCP history lives in a short journal and is not a unit's boot history (v0.3.1 -> v0.3.2)](#20261009_1552--an-smcs-dhcp-history-lives-in-a-short-journal-and-is-not-a-units-boot-history-v031---v032)
-- [20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)](#20261008_1206--pi-identity-probe-and-rct-site-ata-settings-reader-promoted-to-scripts-v022---v023)
+
+## 20261020_1141 — ATA page markers by position; lingering tsh proxy after an ssh timeout (v0.5.2 -> v0.5.3)
+
+`references/17_site-ata-dallas-delta.md` Learned 2026-10-20 (b): "Dallas Delta Corp" is past byte 24,545 on S11, "DDC_VoIP" is in both
+generations' first 2 KB; six DDC_VoIP-m sites read (unified-network-controller 075d6b9, 5b3d4e6). `references/13_known-issues.md`: `tsh proxy`
+children can outlive a timed-out ssh on a Machine ID host (cause unverified) and the process-group pattern that leaves nothing behind.
 
 ## 20261020_0944 — Write-back evidence: code excerpts and screenshots (v0.5.1 -> v0.5.2)
 
@@ -181,17 +187,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 
 - 13_known-issues.md: dhcpd logs to the journal only (about 13 hours at old-looma-smc01), Prometheus keeps no per-unit history, and low-touch
   units leave DHCP after provisioning; read-only probe 2026-10-09 for unified-network-controller pairing.
-
-## 20261008_1206 — Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)
-
-Promoted from a 2026-10-08 unified-network-controller session (scratchpad originals, generalised).
-
-- New `scripts/pi_identity_probe.sh`: read-only Raspberry Pi SMC identity probe over Teleport; `--proxy` required, node names only, exits 1 on an unreachable
-  node. Recipe `just pi_identity_probe <proxy> <node>...`. Smoke-tested 2026-10-08 on 20-mile-smc01 (teleport.apn.au) and a non-existent node (rc 1).
-- New `scripts/ata_settings_read.py`: reads the Dallas Delta DDC_VoIP-m settings, phonebook and digitmap pages through each SMC with the empty PIN,
-  drops secret-named fields on the SMC and again locally, tolerates the short body, reports `Registered`, and compares units. Recipe
-  `just ata_settings_read <proxy> <node>...`. Smoke-tested offline against a local fake unit (short body, secret fields absent from output) and live on
-  adjamarragu, akwalirrumanja and alamirra: all `Registered : Yes`, 86 of 92 settings fields identical, digitmap `m003` differs at akwalirrumanja.
-- `scripts/README.md`: both catalogued with safety labels. `justfile`: the two recipes.
-- `references/17_site-ata-dallas-delta.md` and `references/07_hardware-overlay.md` (Raspberry Pi SMC identity) link the scripts; 17 records the digitmap difference.
-- `manifest.json`: 0.2.2 -> 0.2.3.

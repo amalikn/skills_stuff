@@ -511,3 +511,28 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 > **Bootstrap spacing utilities are not stock in Nautobot 3's theme.** `.gap-2` computes to 2px (not 0.5rem) and `column-gap-*` / `row-gap-*` are
 > absent, and `.badge` renders near heading size. App markup that relies on them looks crowded; give the container its own small style
 > (`column-gap`, badge `font-size`) and check computed styles on a live page, not a Bootstrap preview.
+
+> **Learned 2026-10-20 (c)** · Nautobot 3.2.3 · VERIFIED_PRIMARY (installed `core/ui/object_detail.py`, `dcim/views.py`, `dcim/forms.py`,
+> `dcim/tables/locations.py` read in a running 3.2.3 container; before and after printed from a throwaway `nautobot-server shell --command`, no
+> save) · Source: unified-network-controller `wc-local/nautobot/apps/unc-ownership/unc_ownership/location_page.py` `label_site_id` (commit 5b3d4e6)
+> · Falsifier: a 3.2.x release whose detail panel caches labels at import, or whose LocationTable header follows verbose_name at render
+> An app can rename a core model field everywhere without a custom field, in its `ready()`: the detail page's ObjectFieldsPanel renders
+> `bettertitle(field.verbose_name)` per request (`render_key`), so setting `verbose_name` is enough there; the model form, bulk edit and filter
+> forms copied the label when their classes were built (set `base_fields[name].label` and `help_text`, which otherwise keeps the form's own
+> Meta help text, here "Data center provider and facility"), and the table's header was fixed when its class was built (set
+> `base_columns[name].verbose_name`). Measured: panel, form and table all read "Facility" before and "Site ID" after.
+>
+> ```python
+> # location_page.py (5b3d4e6), called from the app's ready()
+> field = Location._meta.get_field("facility")
+> field.verbose_name, field.help_text = "site ID", SITE_ID_HELP          # detail panel: bettertitle() -> "Site ID"
+> for name in ("LocationForm", "LocationBulkEditForm", "LocationFilterForm"):
+>     form_field = getattr(getattr(forms, name, None), "base_fields", {}).get("facility")
+>     if form_field is not None:
+>         form_field.label, form_field.help_text = "Site ID", SITE_ID_HELP
+> column = getattr(getattr(tables, "LocationTable", None), "base_columns", {}).get("facility")
+> if column is not None:
+>     column.verbose_name = "Site ID"                                     # list header, fixed at class build
+> ```
+>
+> Screenshot pending: a Location's detail panel and the Locations list, after unc_ownership 0.8.48 is deployed.

@@ -60,6 +60,19 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > `Counter.most_common()` orders equal counts by first insertion, so counts built by walking sets (an import graph's edge sets) list tied entries in
 > an order that changes between runs with string hash randomisation. A report or a top-N cut that must be stable sorts by `(-count, name)` instead.
 
+> **Learned 2026-10-20** · python 3.12+ · VERIFIED-OBSERVED · Source: unified-network-controller `scripts/checks/ata_chain_check.py` `check_site`
+> (commit 5b3d4e6) · Falsifier: a ThreadPoolExecutor.map that keeps the other results when one task raises SystemExit
+> `except Exception` does not catch `SystemExit`: a library helper that calls `sys.exit()` on failure (here a sweep on an unreachable host) ended a
+> whole `ThreadPoolExecutor.map` over six sites and the buffered output with it. Per-item isolation catches `(Exception, SystemExit)`, and a long
+> run prints with `-u` or flushes so a killed run still leaves its lines.
+>
+> ```python
+> try:
+>     alive, neigh, _leases, _path, tool = ds.sweep(node, domain, [net])
+> except (Exception, SystemExit) as exc:   # sweep() exits on an unreachable SMC; one site is a result, not the end of the whole check
+>     return {"site": site, "lines": [f"sweep failed: {type(exc).__name__}: {exc}"[:200]], "ok": False, "found": 0}
+> ```
+
 ## Size and limit tweaks
 
 | Item                | Value                                                                                                                  | Reason                                                |

@@ -1315,3 +1315,20 @@ Implemented by unified-network-controller `wc-local/scripts/collector/dhcp_lease
 With per-uplink policy routing (`ip rule` from the uplink's address), the main table may hold no default route for that uplink. Read its gateway
 with `ip -4 route show table all dev <iface>` and take the first `default via` (unified-network-controller `uplink_health.py`, 2026-10-19).
 
+## 2026-10-20 — `tsh proxy` children can outlive a timed-out ssh on a Machine ID host (INFO, cause UNVERIFIED)
+
+On apn-unc01, when a script's `ssh root@<smc>.teleport.apn.au` hit its `subprocess` timeout (20-mile, SMC unreachable over Teleport), several
+`tsh -i /opt/tbot-apn/identity proxy ... ssh` processes to that SMC were still running afterwards (oldest about 10 minutes, host load average 7.6)
+and ended on their own later; at 11:35 none was left. Python's `subprocess.run(timeout=)` kills `ssh`, not the ProxyCommand `tsh` it started, so
+a caller that must leave nothing behind starts the command in its own session and ends the process group on timeout. Not yet reproduced
+deliberately (unified-network-controller bug tracker, "Onboarding and host").
+
+```python
+# the pattern a caller needs (not yet in unified-network-controller; seed_smc_devices.py facts() uses subprocess.run(..., timeout=90))
+p = subprocess.Popen(cmd, start_new_session=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+try:
+    out, err = p.communicate(timeout=90)
+except subprocess.TimeoutExpired:
+    os.killpg(p.pid, signal.SIGTERM)          # ssh and its tsh proxy child together
+    raise
+```

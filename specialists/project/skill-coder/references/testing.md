@@ -65,6 +65,21 @@ milestone.
 > self.assertEqual(tuple(asset_to_file[key_to_asset[k]] for k in keys), SCRIPTS)   # the preview's own constant
 > ```
 
+> **Learned 2026-10-20 (b)** · any parser of captured device output · VERIFIED_PRIMARY · Source: unified-network-controller
+> `tests/test_mikrotik_ata_onboarding.py` `test_real_s11_page_classifies_within_the_probe_read` (commit 075d6b9) · Falsifier: a page whose marker
+> sits inside the made-up sample's length and also inside the production cut
+> Test a matcher on a real captured sample, cut where production cuts it, not on a short made-up string: a vendor-marker test passed on a
+> one-line sample while the real 24.9 KB page carried the marker at byte 24,545, past the 4 KB the probe kept, so the unit was missed in the field.
+> Keep the real sample as a fixture (with a readme saying it holds no secrets) and assert the old behaviour failed on it too.
+>
+> ```python
+> page = (ROOT / "tests" / "fixtures" / "ddc-voip" / "s11-home-page.txt").read_text(encoding="utf-8")
+> for cut in (PAGE_BYTES, 4096):                                   # the production cut, and the old one
+>     cands = {"192.168.5.253": {"vendor": "other"}}
+>     classify_by_page(cands, {"192.168.5.253": page[:cut]}, vendor_markers())
+>     self.assertEqual(cands["192.168.5.253"].get("family"), "ddc-voip", cut)
+> ```
+
 ## Proof against the real target
 
 - Before claiming a capability works, verify it against a real target (an isolated or spare one), not only a mock. Why: a stub only proves the code agrees with
