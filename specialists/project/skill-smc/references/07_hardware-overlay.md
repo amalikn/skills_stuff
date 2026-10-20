@@ -995,8 +995,10 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 > write under /etc, or a merged confext on systemd 255 that leaves /etc writable
 > Four writers put files in `/etc` while a box runs: `teleport-tags-exporter.py` (role smc_graylog, `STATE_DIR = Path("/etc")`:
 > `/etc/teleport-tags.env`, its `.tmp`, `/etc/teleport-cache.json`, 170 to 424 writes a day per site), fake-hwclock (smc_system, `/etc/fake-hwclock.data`,
-> hourly), the squid blocklist scripts (smc_squid, `/etc/squid/blocklists/`, twice a day) and multipathd (x86, `/etc/multipath/`). On Pi and WH
-> boxes the same writes go to overlayroot's tmpfs, which fatrace does not see. On the new read-only image (smc-resiliency) a merged site
+> hourly), the squid blocklist scripts (smc_squid, `/etc/squid/blocklists/`, twice a day) and multipathd (`/etc/multipath/`). On Pi and WH
+> boxes the same writes go to overlayroot's tmpfs, which fatrace does not see; reading `/media/root-rw/overlay/etc` (read-only, 2026-10-20 on
+> two rct and one wh box) adds `rise_logcap.py` (smc_rise_logcaps, wh: `/etc/logrotate.d/rise-logcaps`, on its timer) and snapd
+> (`/etc/systemd/system/snap-*` units at each snap refresh). The upper dir is the cheap census of a Pi's run-time `/etc` writes. On the new read-only image (smc-resiliency) a merged site
 > confext makes all of `/etc` read-only and noexec on systemd 255, the OS's own scripts included; `--noexec=false` restores execution, not
 > writes, so these writers must move out of `/etc` (risk R18 there).
 >
