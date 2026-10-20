@@ -52,6 +52,9 @@ Summary: >-
 > in a file the operator had asked to keep local. Before the rebase, branch the local head as a backup; after it, diff every file both sides
 > changed against that backup and restore any line the operator did not choose. `--autostash` re-applies uncommitted edits onto the new base,
 > so check the working copy too. On a real conflict, `git rebase --abort` and ask which side wins; never pick it.
+> Compare the **whole repo**, not the files you suspect: the autostash commit (`git rebase` prints its hash) is the exact pre-rebase working
+> tree, so `git diff --name-status <autostash> HEAD | awk '$1!="A"'` lists every existing file the remote changed. The first check here looked at
+> one file and missed four (a box image switched, guest-tool settings commented out); a side agent caught it (vagrant_stuff 7adb82c).
 >
 > ```bash
 > git branch backup/pre-rebase-$(date +%Y%m%d_%H%M) HEAD
