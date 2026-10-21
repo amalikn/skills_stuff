@@ -90,6 +90,9 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Ideas
 
+- [ ] **Plan tracker timeline as data** (2026-10-21, candidate in unified-network-controller `code-map.toml`): `scripts/render/plan_timeline.py`
+  renders a plan tracker's Timeline from YAML with the schedule worked out from the dates (late, due today, done), plus its govcheck and
+  `commit-gate`. Promote here once a second project (smc-resiliency) keeps its timeline as data.
 - [ ] **ADR template** — a starter `.archcore/adr/` template for common decision types (tool choice, data model, boundary design).
 - [ ] **Rules template** — a starter `.archcore/rules/` template structured around source-of-truth, update policy, and authorization gates.
 - [ ] **Multi-agent handoff pack** — a `repomix`-compatible config that bundles only the durable-truth layer (`.archcore/` + governance docs) for context-efficient agent handoffs.
