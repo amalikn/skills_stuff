@@ -198,5 +198,18 @@ class SkipArrowTests(unittest.TestCase):
         top = float(re.search(r'<mxGeometry x="[^"]+" y="([^"]+)"', two).group(1))
         self.assertLess(max(ys), top, "the run stays above step two")
 
+
+class PlanRunsTests(unittest.TestCase):
+    """How skip arrows are planned (operator review 2026-10-21)."""
+
+    def test_overlapping_same_lane_runs_split_and_lower_lane_enters_left(self) -> None:
+        """Two overlapping same-lane skips take top and bottom (the earlier source below); a skip into a lane with nothing between enters left."""
+        geo = importlib.import_module("flowmap.flow_geometry")
+        steps = [{"id": i, "actor": "u"} for i in ("reg", "probe", "rec", "ref")] + [{"id": "fetch", "actor": "box"}]
+        plan = geo.plan_runs(steps, [("reg", "rec"), ("probe", "ref"), ("rec", "fetch")])["route"]
+        self.assertEqual(plan[("probe", "ref")][0], "top")
+        self.assertEqual(plan[("reg", "rec")][0], "bottom")
+        self.assertEqual(plan[("rec", "fetch")][0], "left")
+
 if __name__ == "__main__":
     unittest.main()

@@ -285,3 +285,22 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 > y = lane_y[li] + r_top + (lane_h[li] - r_top - r_bot - h) / 2
 > ```
 
+> **Learned 2026-10-21** · flow pages: which side a skip arrow takes · VERIFIED_PRIMARY · Source: `scripts/flowmap/flow_geometry.py` (`plan_runs`, `skip_arrow`), `tests/test_shapes.py` (`PlanRunsTests`) · Falsifier: two same-lane runs side by side, or a lane-changing arrow entering a target's top with nothing in the way of its left side
+> The operator's second review of the commissioning page: two over-the-top runs still read as one ("route 5 under shapes 3 and 4 instead"), and the
+> arrow into the lower lane should come in from the left. Rule: plan the latest source first; a same-lane run that would lie beside another over-the-top
+> run goes under the bottom; into another lane, enter the target's left side through the gap after the source's column unless a step of the target's
+> lane lies between. Lanes reserve room only for the runs actually planned on each edge.
+>
+> ```python
+> # scripts/flowmap/flow_geometry.py (plan_runs), skill-drawio, 2026-10-21
+> if lane[a] != lane[b]:
+>     between = [s["id"] for s in steps if lane[s["id"]] == lane[b] and lo < order[s["id"]] < hi]
+>     if not between:
+>         route[(a, b)] = ("left", 0)
+>         continue
+>     side = "bottom" if lane[b] < lane[a] else "top"
+> else:
+>     beside = [sp for sp in spans.get((lane[a], "top"), []) if sp[0] < hi and lo < sp[1]]
+>     side = "bottom" if beside else "top"
+> ```
+

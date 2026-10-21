@@ -253,9 +253,9 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
         if "back to" in text:
             band = back_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), band, profile.look["back_arrows"])
             continue
-        track = plan["track"].get((src, dst))   # planned: a column or more in between, routed by the engine so it never crosses a step
-        drawn = track is not None and skip_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), (lane_box[src], lane_box[dst]),
-                                                 col_gap(profile.look), track, tg)
+        how = plan["route"].get((src, dst))   # planned: a column or more in between, routed by the engine so it never crosses a step
+        drawn = how is not None and skip_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), (lane_box[src], lane_box[dst]),
+                                               col_gap(profile.look), how, tg)
         if not drawn:
             page.edge(cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", label=text, style=style + pin)
     return page

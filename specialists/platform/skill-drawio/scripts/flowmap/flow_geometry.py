@@ -60,27 +60,42 @@ def column_lefts(widths: list[int], gap: float = COL_W - STEP_W) -> list[float]:
 
 
 def plan_runs(steps: list[dict], pairs: list[tuple[str, str]]) -> dict:
-    """Which lane edge each engine-routed forward arrow (one that skips a column) runs along, and its track there, before anything is drawn,
-    so each lane can reserve the room (operator review 2026-10-21: two runs overlapped and a run sat 6 px from the lane line).
+    """How each forward arrow that skips a column is routed, planned before anything is drawn so lanes reserve only the room they use.
+
+    Operator review 2026-10-21: runs overlapped, hugged the lane line, and an arrow into a lower lane came in from the top when it could come
+    from the left. Rules: into another lane, enter the target's left side when no step of the target's lane lies between (no room needed);
+    else run along the target lane's near edge. In one lane, run over the top; when that run would lie beside another over-the-top run (their
+    spans overlap), the arrow whose source is earlier runs under the bottom instead. Arrows are planned latest source first, so earlier sources
+    take the bottom.
 
     Args:
         steps: the flow's steps in order.
         pairs: (source step id, target step id) of the forward arrows.
 
     Returns:
-        {"track": {(src, dst): n}, "count": {(lane index, "top" or "bottom"): runs}}.
+        {"route": {(src, dst): (side, track)} with side "top", "bottom" or "left"; "count": {(lane index, side): runs}}.
     """
     order = {s["id"]: k for k, s in enumerate(steps)}
     actors = list(dict.fromkeys(s["actor"] for s in steps))
     lane = {s["id"]: actors.index(s["actor"]) for s in steps}
-    track, count = {}, {}
-    for a, b in pairs:
-        if order[b] <= order[a] + 1:
-            continue
-        key = (lane[b], "bottom" if lane[b] < lane[a] else "top")
-        track[(a, b)] = count.get(key, 0)
-        count[key] = track[(a, b)] + 1
-    return {"track": track, "count": count}
+    route, count, spans = {}, {}, {}
+    skips = sorted(((a, b) for a, b in pairs if order[b] > order[a] + 1), key=lambda p: -order[p[0]])
+    for a, b in skips:
+        lo, hi = order[a], order[b]
+        if lane[a] != lane[b]:
+            between = [s["id"] for s in steps if lane[s["id"]] == lane[b] and lo < order[s["id"]] < hi]
+            if not between:
+                route[(a, b)] = ("left", 0)
+                continue
+            side = "bottom" if lane[b] < lane[a] else "top"
+        else:
+            beside = [sp for sp in spans.get((lane[a], "top"), []) if sp[0] < hi and lo < sp[1]]
+            side = "bottom" if beside else "top"
+        key = (lane[b], side)
+        route[(a, b)] = (side, count.get(key, 0))
+        count[key] = route[(a, b)][1] + 1
+        spans.setdefault(key, []).append((lo, hi))
+    return {"route": route, "count": count}
 
 
 def reserve(runs: int, track_gap: float) -> float:
@@ -115,19 +130,18 @@ def _clear(page: Page, points: list, skip: set) -> bool:
     return True
 
 
-def skip_arrow(page: Page, edge: tuple, lanes: tuple, gap: float, track: int = 0, track_gap: float = 12) -> bool:
+def skip_arrow(page: Page, edge: tuple, lanes: tuple, gap: float, plan: tuple = ("top", 0), track_gap: float = 12) -> bool:
     """A forward arrow that skips a column, routed by the engine (operator review, 2026-10-21: draw.io's own route ran an arrow through the
-    step in between). In one lane it leaves the source's top, runs along the top of the lane and drops into the target's top (or, when that is
-    blocked, the same along the bottom). Into another lane it leaves the source's right side, turns down or up in the gap after the source's
-    column, runs along the edge of the target's lane and enters the target's top (lane below) or bottom (lane above). Every run is checked clear
-    of other steps first.
+    step in between). The side comes from `plan_runs`: in one lane over the top or under the bottom; into another lane through the gap after the
+    source's column into the target's left side, or along the target lane's near edge into its top or bottom. Every path is checked clear of
+    other steps first.
 
     Args:
         page: the page (the steps and lanes are drawn).
         edge: (cell id, source cell, target cell, label, style); the style's colours are kept, its ports replaced.
         lanes: ((source lane top, source lane height), (target lane top, target lane height)).
         gap: the horizontal gap between step columns.
-        track: this arrow's run on its lane edge (from `plan_runs`).
+        plan: (side, track) from `plan_runs`: "left" enters the target's left side, "top"/"bottom" run along that lane edge.
         track_gap: the spacing between runs (`drawing.look.track_gap`).
 
     Returns:
@@ -137,12 +151,16 @@ def skip_arrow(page: Page, edge: tuple, lanes: tuple, gap: float, track: int = 0
     sx, sy, sw, sh = page.rects[src]
     dx, dy, dw, dh = page.rects[dst]
     (s_top, s_h), (d_top, d_h) = lanes
+    side, track = plan
     off = 10 + track_gap * track
-    if s_top == d_top:   # same lane: over the top, else under the bottom
-        tries = [[(sx + sw / 2, sy), (sx + sw / 2, s_top + off), (dx + dw / 2, s_top + off), (dx + dw / 2, dy)],
-                 [(sx + sw / 2, sy + sh), (sx + sw / 2, s_top + s_h - off), (dx + dw / 2, s_top + s_h - off), (dx + dw / 2, dy + dh)]]
+    over = [(sx + sw / 2, sy), (sx + sw / 2, s_top + off), (dx + dw / 2, s_top + off), (dx + dw / 2, dy)]
+    under = [(sx + sw / 2, sy + sh), (sx + sw / 2, s_top + s_h - off), (dx + dw / 2, s_top + s_h - off), (dx + dw / 2, dy + dh)]
+    turn = sx + sw + gap / 2
+    if s_top == d_top:   # same lane: the planned side first
+        tries = [under, over] if side == "bottom" else [over, under]
+    elif side == "left":   # down or up in the gap after the source's column, then into the target's left side
+        tries = [[(sx + sw, sy + sh / 2), (turn, sy + sh / 2), (turn, dy + dh / 2), (dx, dy + dh / 2)]]
     else:
-        turn = sx + sw + gap / 2
         run_y, end_y = (d_top + off, dy) if d_top > s_top else (d_top + d_h - off, dy + dh)
         tries = [[(sx + sw, sy + sh / 2), (turn, sy + sh / 2), (turn, run_y), (dx + dw / 2, run_y), (dx + dw / 2, end_y)]]
     for pts in tries:
