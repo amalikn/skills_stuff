@@ -30,11 +30,24 @@ def step_width(shape: str, look: dict | None = None) -> int:
     return int(look.get("decision_width", DEC_STEP_W)) if shape == "decision" else int(look.get("step_width", STEP_W))
 
 
-def column_lefts(widths: list[int]) -> list[float]:
-    """Each step column's left edge, columns as wide as their step plus the usual margin.
+def col_gap(look: dict | None = None) -> float:
+    """The space between step columns (`drawing.look.column_gap`).
+
+    Args:
+        look: the profile's look; absent, the old fixed gap.
+
+    Returns:
+        The gap in pixels.
+    """
+    return float((look or {}).get("column_gap", COL_W - STEP_W))
+
+
+def column_lefts(widths: list[int], gap: float = COL_W - STEP_W) -> list[float]:
+    """Each step column's left edge, columns as wide as their step plus the gap.
 
     Args:
         widths: each step box's width, in step order.
+        gap: the space between columns (`col_gap`).
 
     Returns:
         The x of each column's left edge.
@@ -42,8 +55,45 @@ def column_lefts(widths: list[int]) -> list[float]:
     lefts, x = [], MARGIN + LANE_HEAD_W + GAP
     for w in widths:
         lefts.append(x)
-        x += w + (COL_W - STEP_W)
+        x += w + gap
     return lefts
+
+
+def plan_runs(steps: list[dict], pairs: list[tuple[str, str]]) -> dict:
+    """Which lane edge each engine-routed forward arrow (one that skips a column) runs along, and its track there, before anything is drawn,
+    so each lane can reserve the room (operator review 2026-10-21: two runs overlapped and a run sat 6 px from the lane line).
+
+    Args:
+        steps: the flow's steps in order.
+        pairs: (source step id, target step id) of the forward arrows.
+
+    Returns:
+        {"track": {(src, dst): n}, "count": {(lane index, "top" or "bottom"): runs}}.
+    """
+    order = {s["id"]: k for k, s in enumerate(steps)}
+    actors = list(dict.fromkeys(s["actor"] for s in steps))
+    lane = {s["id"]: actors.index(s["actor"]) for s in steps}
+    track, count = {}, {}
+    for a, b in pairs:
+        if order[b] <= order[a] + 1:
+            continue
+        key = (lane[b], "bottom" if lane[b] < lane[a] else "top")
+        track[(a, b)] = count.get(key, 0)
+        count[key] = track[(a, b)] + 1
+    return {"track": track, "count": count}
+
+
+def reserve(runs: int, track_gap: float) -> float:
+    """The room a lane keeps along one edge for its planned runs.
+
+    Args:
+        runs: the runs planned on that edge.
+        track_gap: the spacing between runs.
+
+    Returns:
+        Pixels; 0 when no run is planned.
+    """
+    return runs * track_gap + 10 if runs else 0.0
 
 
 def _clear(page: Page, points: list, skip: set) -> bool:
@@ -65,7 +115,7 @@ def _clear(page: Page, points: list, skip: set) -> bool:
     return True
 
 
-def skip_arrow(page: Page, edge: tuple, lanes: tuple, gap: float, track: int = 0) -> bool:
+def skip_arrow(page: Page, edge: tuple, lanes: tuple, gap: float, track: int = 0, track_gap: float = 12) -> bool:
     """A forward arrow that skips a column, routed by the engine (operator review, 2026-10-21: draw.io's own route ran an arrow through the
     step in between). In one lane it leaves the source's top, runs along the top of the lane and drops into the target's top (or, when that is
     blocked, the same along the bottom). Into another lane it leaves the source's right side, turns down or up in the gap after the source's
@@ -77,7 +127,8 @@ def skip_arrow(page: Page, edge: tuple, lanes: tuple, gap: float, track: int = 0
         edge: (cell id, source cell, target cell, label, style); the style's colours are kept, its ports replaced.
         lanes: ((source lane top, source lane height), (target lane top, target lane height)).
         gap: the horizontal gap between step columns.
-        track: how many engine-routed arrows already run along this lane edge (each takes its own run, 10 px apart).
+        track: this arrow's run on its lane edge (from `plan_runs`).
+        track_gap: the spacing between runs (`drawing.look.track_gap`).
 
     Returns:
         True when the arrow was drawn; False leaves it to draw.io (no clear engine route found).
@@ -86,7 +137,7 @@ def skip_arrow(page: Page, edge: tuple, lanes: tuple, gap: float, track: int = 0
     sx, sy, sw, sh = page.rects[src]
     dx, dy, dw, dh = page.rects[dst]
     (s_top, s_h), (d_top, d_h) = lanes
-    off = 6 + 10 * track
+    off = 10 + track_gap * track
     if s_top == d_top:   # same lane: over the top, else under the bottom
         tries = [[(sx + sw / 2, sy), (sx + sw / 2, s_top + off), (dx + dw / 2, s_top + off), (dx + dw / 2, dy)],
                  [(sx + sw / 2, sy + sh), (sx + sw / 2, s_top + s_h - off), (dx + dw / 2, s_top + s_h - off), (dx + dw / 2, dy + dh)]]

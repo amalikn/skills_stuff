@@ -265,3 +265,23 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 >     tries = [[(sx + sw, sy + sh / 2), (turn, sy + sh / 2), (turn, run_y), (dx + dw / 2, run_y), (dx + dw / 2, end_y)]]
 > ```
 
+> **Learned 2026-10-21** · flow pages: room for arrows, lane heads, notes · VERIFIED_PRIMARY · Source: `scripts/flowmap/flow_geometry.py` (`plan_runs`, `reserve`, `col_gap`), `scripts/flowmap/pages.py` (`_lanes`, `_head_symbol_h`, `_step`), `tests/test_layout_rules.py` · Falsifier: two engine-routed runs on one lane edge at the same y, or a lane-head symbol taller than its text needs
+> smc-resiliency's operator reviewed the commissioning page: runs 5 and 6 overlapped, runs sat tight on the lane line (above 3 and 7), arrows 4 and 5
+> were squeezed between columns, a cloud lane head overflowed while another stretched to the whole lane, and notes showed only their titles. Rule from
+> the review: every look fix is engine code with a `drawing.look` setting, never a hand edit. Now the runs are planned before anything is drawn and each
+> lane reserves `runs x track_gap + 10` px on that edge, steps centred below it; the column gap is `look.column_gap`; a shaped lane head is a plain
+> panel with the symbol inside, sized by `fit_height` and the lane grown to fit; an empty note is not drawn (`look.empty_notes`), so maps should say
+> what a step reads, writes, how it fails and where to look. Screenshot: `references/screenshots/20261021-flow-page-room/`.
+>
+> ```python
+> # scripts/flowmap/flow_geometry.py (plan_runs), skill-drawio, 2026-10-21
+> for a, b in pairs:
+>     if order[b] <= order[a] + 1:
+>         continue
+>     key = (lane[b], "bottom" if lane[b] < lane[a] else "top")
+>     track[(a, b)] = count.get(key, 0)
+>     count[key] = track[(a, b)] + 1
+> # scripts/flowmap/pages.py (_step): centred in the lane, below the room kept for arrow runs
+> y = lane_y[li] + r_top + (lane_h[li] - r_top - r_bot - h) / 2
+> ```
+

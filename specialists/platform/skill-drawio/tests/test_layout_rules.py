@@ -157,7 +157,8 @@ class Arrows(unittest.TestCase):
         root = ET.fromstring(text.split("\n", 2)[2])
         flow = root.findall("diagram")[2]   # after the Overview and the End-to-end page
         ids = {c.get("id") for c in flow.iter() if c.get("id")}
-        self.assertTrue({"f-lane-0", "f-lane-1", "f-s-one", "f-s-two", "f-n-one", "f-n-two", "f-e-one-two"} <= ids)
+        self.assertTrue({"f-lane-0", "f-lane-1", "f-s-one", "f-s-two", "f-n-one", "f-e-one-two"} <= ids)
+        self.assertNotIn("f-n-two", ids)   # step two has nothing under its title: its note is hidden (look.empty_notes, 2026-10-21)
         self.assertEqual(next(c for c in flow.iter("mxCell") if c.get("id") == "f-e-one-two").get("value"), "2")
         links = {u.get("link") for u in root.iter("UserObject") if u.get("link")}
         self.assertTrue({"data:page/id,flow-f", "data:page/id,overview"} <= links)
