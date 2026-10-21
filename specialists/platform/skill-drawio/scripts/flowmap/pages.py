@@ -18,9 +18,9 @@ from .e2e import end_to_end_page
 from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
 from .model import option_blocks
 from .options import options_page
-from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, plan_runs, reserve, step_width
+from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, label_gaps, plan_runs, reserve, run_ys, step_width
 from .lanes import draw_lanes
-from .routing import route_flow
+from .routing import branch_label, route_flow
 from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, fit_height, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
@@ -179,17 +179,22 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     tg = float(profile.look.get("track_gap", 12))
     room = {key: reserve(n, tg) for key, n in plan["count"].items()}
     lanes, lane_y, lane_h = draw_lanes(page, flow, comps, profile, top, box_h, box_w, room)
-    lefts = column_lefts([box_w[s["id"]] for s in steps], col_gap(profile.look))
+    order = {s["id"]: k for k, s in enumerate(steps)}
+    widths = {order[a]: 18 + 9 * len(branch_label(next(s for s in steps if s["id"] == a), b, order[b] + 1, profile.look)[0])
+              for _c, a, b, text, _st in edges if "back to" not in text and order[b] == order[a] + 1}
+    gaps = label_gaps(col_gap(profile.look), widths, len(steps))
+    lefts = column_lefts([box_w[s["id"]] for s in steps], gaps)
     notes_top = top + sum(lane_h) + GAP
     note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts, room)) for k in range(len(steps))]
     used = list(dict.fromkeys(list(shapes.values()) + [lane_shape(comps[c], profile.kind_shapes) for c in lanes]))
     shape_legend(page, used, MARGIN, notes_top + max(note_h + [0]) + GAP * 2, fid)
     band = notes_top - GAP / 2
-    at = {s["id"]: (lane_y[lanes.index(s["actor"])], lane_h[lanes.index(s["actor"])], lanes.index(s["actor"])) for s in steps}
-    route_flow(page, (fid, steps, edges, shapes), (at, plan["count"], tg, plan["route"]), col_gap(profile.look), profile.look)
-    for cid, src, dst, text, style in edges:
+    xs = [lefts[k] + box_w[steps[k]["id"]] + gaps[k] / 2 for k in range(len(steps) - 1)]
+    ys = sorted({y for li in range(len(lanes)) for y in run_ys(li, lane_y, lane_h, plan["count"], tg)})
+    for cid, src, dst, text, style in edges:   # back arrows first: forward routes and labels then avoid them
         if "back to" in text:
             band = back_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), band, profile.look["back_arrows"])
+    route_flow(page, (fid, steps, edges, shapes), {"xs": xs, "ys": ys}, profile.look)
     return page
 
 

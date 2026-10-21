@@ -39,13 +39,13 @@ class FlowRouterTests(unittest.TestCase):
     """The router's contract."""
 
     def test_branch_labels(self) -> None:
-        """A two-way gate's branches read Yes then No; `when` names other cases; a plain step and `branch_labels: off` keep the number."""
+        """A two-way gate's branches read Yes (green) then No (red); `when` names other cases; a plain step and `branch_labels: off` keep the number."""
         gate = {"gate": "g", "next": ["a", "b"]}
-        self.assertEqual(router.branch_label(gate, "a", 4, {}), "4 · Yes")
-        self.assertEqual(router.branch_label(gate, "b", 5, {}), "5 · No")
-        self.assertEqual(router.branch_label(dict(gate, when={"b": "stale"}), "b", 5, {}), "5 · stale")
-        self.assertEqual(router.branch_label({"next": ["a"]}, "a", 2, {}), "2")
-        self.assertEqual(router.branch_label(gate, "a", 4, {"branch_labels": "off"}), "4")
+        self.assertEqual(router.branch_label(gate, "a", 4, {}), ("4 · Yes", router.YES))   # yes/no branches green and red
+        self.assertEqual(router.branch_label(gate, "b", 5, {}), ("5 · No", router.NO))
+        self.assertEqual(router.branch_label(dict(gate, when={"b": "stale"}), "b", 5, {}), ("5 · stale", router.PLAIN))
+        self.assertEqual(router.branch_label({"next": ["a"]}, "a", 2, {}), ("2", router.PLAIN))
+        self.assertEqual(router.branch_label(gate, "a", 4, {"branch_labels": "off"}), ("4", router.PLAIN))
 
     def test_lane_head_symbol_sized_to_text(self) -> None:
         """lanes: an external (cloud) lane head needs room for its text; a plain head needs none."""

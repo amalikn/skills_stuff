@@ -340,3 +340,11 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 >         best, best_total = ways, total
 > ```
 
+> **Learned 2026-10-21** · flow pages: route on connection points, like the Overview · VERIFIED_PRIMARY · Source: `scripts/flowmap/routing.py` (`_ports`, `_joins`, `_valid`, `cost`, `route_flow`), `scripts/flowmap/flow_geometry.py` (`label_gaps`, `run_ys`), `tests/test_routing.py` · Falsifier: two branches of a decision leaving one point, or a target entered twice on one side when another side is free
+> The operator's next review: runs still shared, several arrows entered one side, and "the Overview uses different connection points; use top,
+> right, left, any". The router now pairs every exit with every entry through the corridors, rejects paths that leave or arrive against their port or
+> run inside their own boxes, and costs a reused side. An arrow into a decision prefers its left corner because a decision with branches keeps its
+> top and bottom for them (an arrow parked on the top corner had pushed both branches onto the right one). Yes/no branches are green and red. Column
+> gaps grow to fit their labels. Checked on every flow page of both consumers by a scan of faults, crossings and shared starts (all zero).
+> Screenshots: `references/screenshots/20261021-flow-router/`.
+

@@ -42,21 +42,37 @@ def col_gap(look: dict | None = None) -> float:
     return float((look or {}).get("column_gap", COL_W - STEP_W))
 
 
-def column_lefts(widths: list[int], gap: float = COL_W - STEP_W) -> list[float]:
-    """Each step column's left edge, columns as wide as their step plus the gap.
+def column_lefts(widths: list[int], gap: float | list[float] = COL_W - STEP_W) -> list[float]:
+    """Each step column's left edge, columns as wide as their step plus the gap after it.
 
     Args:
         widths: each step box's width, in step order.
-        gap: the space between columns (`col_gap`).
+        gap: the space after each column: one number for all, or one per column (`label_gaps`).
 
     Returns:
         The x of each column's left edge.
     """
+    gaps = gap if isinstance(gap, list) else [gap] * len(widths)
     lefts, x = [], MARGIN + LANE_HEAD_W + GAP
-    for w in widths:
+    for w, g in zip(widths, gaps):
         lefts.append(x)
-        x += w + gap
+        x += w + g
     return lefts
+
+
+def label_gaps(base: float, labels: dict, n: int) -> list[float]:
+    """The gap after each column: at least `base`, and wide enough for the widest label on an arrow from that column to the next, with room
+    to leave the box and for the arrowhead (operator review 2026-10-21: "4 · No" had no room between two diamonds).
+
+    Args:
+        base: `look.column_gap`.
+        labels: {column index: label width} for arrows from that column to the next.
+        n: the number of columns.
+
+    Returns:
+        One gap per column.
+    """
+    return [max(base, labels.get(k, 0) + 12 + 22 + 8) for k in range(n)]
 
 
 def plan_runs(steps: list[dict], pairs: list[tuple[str, str]]) -> dict:
@@ -96,6 +112,24 @@ def plan_runs(steps: list[dict], pairs: list[tuple[str, str]]) -> dict:
         count[key] = route[(a, b)][1] + 1
         spans.setdefault(key, []).append((lo, hi))
     return {"route": route, "count": count}
+
+
+def run_ys(lane: int, lane_y: list, lane_h: list, count: dict, track_gap: float) -> list[float]:
+    """The heights of the runs a lane reserved along its top and bottom (see `reserve`).
+
+    Args:
+        lane: the lane index.
+        lane_y: lane tops.
+        lane_h: lane heights.
+        count: {(lane index, "top" or "bottom"): runs} from `plan_runs`.
+        track_gap: the spacing between runs.
+
+    Returns:
+        The run heights.
+    """
+    top, height = lane_y[lane], lane_h[lane]
+    return ([top + 10 + track_gap * n for n in range(count.get((lane, "top"), 0))]
+            + [top + height - 10 - track_gap * n for n in range(count.get((lane, "bottom"), 0))])
 
 
 def reserve(runs: int, track_gap: float) -> float:
