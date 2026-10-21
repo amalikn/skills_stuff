@@ -114,6 +114,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/e2e.py` | End-to-end polylines, crossing-cutting local search, and the drawing | `safe` |
 | `scripts/flowmap/overview_index.py` | The Overview's right column: flow index (Options page linked), kind, status and arrow colour legends | `safe` |
 | `scripts/flowmap/options.py` | The Options page (optional `options` block): decision flow, option step chains, aligned pros and cons | `safe` |
+| `scripts/flowmap/shapes.py` | Flow page shapes (flowchart symbols): derivation per step and lane head, per-page shape legend | `safe` |
 | `scripts/flowmap/pages.py` | Flow pages, `render`, `evaluate`, `write_drawing`, `flow_list` | `safe` (`write_drawing` writes the drawing) |
 | `scripts/check_governance.py` | This pack's governance checker (from skill-ai-it's template) | `safe` |
 

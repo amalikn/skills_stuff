@@ -1,0 +1,110 @@
+"""Flow page shapes: the standard flowchart symbols (ISO 5807 / draw.io's Flowchart set) a step or a lane head is drawn with, how each is derived
+from the map, and the per-page shape legend. Stdlib only.
+
+Adopted 2026-10-21 (smc-resiliency's operator chose all twelve after the sample in references/screenshots/20261021-shape-vocabulary-sample/).
+A step's shape comes from, in order: its own `shape`; a gate (decision); a `flow` it runs (predefined process); an actor whose kind draws as a
+person (manual operation); the first step or a step nothing follows (terminator); a transport that crosses a network (data in or out); else a
+process. A lane head's shape comes from the component's own `shape`, else its kind (`drawing.kind_shapes`, else DEFAULT_KIND_SHAPES).
+
+Imported, not run: `from flowmap.shapes import step_shape, lane_shape` with the skill's scripts/ on sys.path.
+"""
+
+from __future__ import annotations
+
+from drawio.mxfile import Page, label
+
+#: Each shape: (style fragment, text-width factor, height factor, legend text). The style replaces the box's rectangle; the factors shrink the
+#: characters per line and grow the height where the outline eats into the text area (a diamond most).
+SHAPES = {
+    "terminator": ("rounded=1;arcSize=40;spacingLeft=22;spacingRight=18;spacingTop=12;", 0.85, 1.1, "Terminator: where a flow starts or ends"),
+    "process": ("rounded=0;", 1.0, 1.0, "Process: a step that does work"),
+    "decision": ("rhombus;align=center;verticalAlign=middle;spacingLeft=34;spacingRight=34;spacingTop=0;", 0.6, 1.5,
+                 "Decision: a gate that picks the next step"),
+    "manual-operation": ("shape=trapezoid;perimeter=trapezoidPerimeter;flipV=1;fixedSize=1;size=16;spacingLeft=22;spacingRight=22;", 0.85, 1.0,
+                         "Manual operation: a person acts"),
+    "preparation": ("shape=hexagon;perimeter=hexagonPerimeter2;fixedSize=1;size=16;spacingLeft=22;spacingRight=22;", 0.85, 1.0,
+                    "Preparation: set-up before the change"),
+    "predefined-process": ("shape=process;backgroundOutline=1;size=0.06;spacingLeft=20;spacingRight=20;", 0.88, 1.0,
+                           "Predefined process: runs another flow (click to open it)"),
+    "delay": ("shape=delay;spacingRight=24;", 0.9, 1.0, "Delay: waits for time (a timer, a deadline)"),
+    "stored-data": ("shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=10;", 1.0, 1.1, "Stored data: a store that persists"),
+    "document": ("shape=document;boundedLbl=1;size=0.15;", 1.0, 1.2, "Document: a file or record written"),
+    "data-io": ("shape=parallelogram;perimeter=parallelogramPerimeter;fixedSize=1;size=14;spacingLeft=20;spacingRight=20;", 0.85, 1.0,
+                "Data in or out: data crossing a link"),
+    "external": ("ellipse;shape=cloud;spacingLeft=16;spacingRight=16;spacingTop=10;", 0.8, 1.2, "External system: outside the box"),
+    "person": ("rounded=0;", 1.0, 1.0, "Person: who starts or approves (figure in the lane head)"),
+}
+#: Lane head shapes for common kinds when the map's `drawing.kind_shapes` does not name them.
+DEFAULT_KIND_SHAPES = {"person": "person", "operator": "person", "timer": "delay", "store": "stored-data", "database": "stored-data",
+                       "external": "external", "document": "document"}
+#: Transports that cross a network (case-insensitive) unless the map's `drawing.io_vias` lists its own.
+DEFAULT_IO_VIAS = ("http", "https", "api", "rest", "graphql", "mqtt", "dhcp", "snmp", "download", "upload")
+PERSON_ICON = "shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;"
+
+
+def lane_shape(comp: dict, kind_shapes: dict) -> str:
+    """The shape a component's lane head is drawn with.
+
+    Args:
+        comp: the component from the map.
+        kind_shapes: the map's `drawing.kind_shapes` ({kind: shape}).
+
+    Returns:
+        A SHAPES key ("process" when nothing names one).
+    """
+    return comp.get("shape") or kind_shapes.get(comp["kind"]) or DEFAULT_KIND_SHAPES.get(comp["kind"], "process")
+
+
+def step_shape(steps: list[dict], k: int, comps: dict, kind_shapes: dict, io_vias: tuple) -> str:
+    """The shape the k-th step is drawn with (the rule order is in the module docstring).
+
+    Args:
+        steps: the flow's steps.
+        k: the step's index.
+        comps: every component by id.
+        kind_shapes: the map's `drawing.kind_shapes`.
+        io_vias: transports that cross a network, lower case.
+
+    Returns:
+        A SHAPES key.
+    """
+    s = steps[k]
+    if s.get("shape"):
+        return s["shape"]
+    if s.get("gate"):
+        return "decision"
+    if s.get("flow"):
+        return "predefined-process"
+    if lane_shape(comps[s["actor"]], kind_shapes) == "person":
+        return "manual-operation"
+    last = s.get("next") == [] or (k == len(steps) - 1 and "next" not in s)
+    if k == 0 or last:
+        return "terminator"
+    if any(v.lower() in io_vias for v in s.get("via", [])):
+        return "data-io"
+    return "process"
+
+
+def shape_legend(page: Page, used: list[str], x: float, y: float, prefix: str) -> float:
+    """A row of the shapes this page uses, each a small sample beside its meaning.
+
+    Args:
+        page: the page.
+        used: SHAPES keys in first-use order.
+        x: the legend's left edge.
+        y: its top edge.
+        prefix: the cell id prefix (the flow id).
+
+    Returns:
+        The y just below the legend.
+    """
+    page.box(f"{prefix}-shp-title", label("**Shapes on this page**"), x, y, 300, 24, "text;html=1;align=left;fontSize=13;")
+    for i, key in enumerate(used):
+        cx, cy = x + (i % 3) * 330, y + 30 + (i // 3) * 46
+        style, _w, _h, text = SHAPES[key]
+        if key == "person":   # the figure keeps its proportions
+            page.box(f"{prefix}-shp-{key}", "", cx + 24, cy, 22, 36, PERSON_ICON)
+        else:
+            page.box(f"{prefix}-shp-{key}", "", cx, cy, 70, 36, f"whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;{style}")
+        page.box(f"{prefix}-shp-{key}-t", label(text), cx + 80, cy, 240, 36, "text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=11;")
+    return y + 30 + ((len(used) + 2) // 3) * 46

@@ -17,6 +17,7 @@ from drawio.mxfile import BLANK, Page, banner, label, mxfile, wrapped_lines
 from .e2e import end_to_end_page
 from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
 from .options import options_page
+from .shapes import PERSON_ICON, SHAPES, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
 
@@ -115,12 +116,16 @@ def _lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float, bo
         c = comps[cid]
         fill, stroke = profile.style(c["kind"])
         page.box(f"{fid}-lane-{li}", "", MARGIN, lane_y[li], width, lane_h[li], f"rounded=0;html=1;fillColor={fill};strokeColor={stroke};opacity=35;")
+        shape = lane_shape(c, profile.kind_shapes)
         page.box(f"{fid}-lanehead-{li}", label(f"**{c['name']}**", c["kind"], c["host"]), MARGIN, lane_y[li], LANE_HEAD_W, lane_h[li],
-                 comp_style(c["kind"], profile, "rounded=0;align=left;spacingLeft=6;" + status_style(c)), tooltip=f"health: {c['health']}")
+                 comp_style(c["kind"], profile, "rounded=0;align=left;spacingLeft=6;" + status_style(c) + SHAPES[shape][0]
+                            + ("spacingRight=40;" if shape == "person" else "")), tooltip=f"health: {c['health']}")
+        if shape == "person":   # a figure in the lane head's top right corner
+            page.box(f"{fid}-lanehead-{li}-icon", "", MARGIN + LANE_HEAD_W - 34, lane_y[li] + 8, 22, 40, PERSON_ICON)
     return lanes, lane_y, lane_h
 
 
-def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: tuple) -> None:
+def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: tuple) -> float:
     """Draw one step box, centred in its lane, and its note below the lanes.
 
     Args:
@@ -129,9 +134,12 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
         k: the step's index.
         comps: every component by id.
         profile: the kind colours.
-        where: (lanes, lane tops, lane heights, step box heights, step texts, notes top).
+        where: (lanes, lane tops, lane heights, step box heights, step texts, notes top, step shapes).
+
+    Returns:
+        The note's height.
     """
-    lanes, lane_y, lane_h, box_h, texts, notes_top = where
+    lanes, lane_y, lane_h, box_h, texts, notes_top, shapes = where
     fid, s = flow["id"], flow["steps"][k]
     x = MARGIN + LANE_HEAD_W + GAP + k * COL_W
     li = lanes.index(s["actor"])
@@ -144,15 +152,18 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
         "code: " + "; ".join(s.get("code", [])) if s.get("code") else "") if x)
     page.box(f"{fid}-s-{s['id']}", label(*texts[s["id"]]), x, y, STEP_W, h,
              comp_style(comps[s["actor"]]["kind"], profile, "fontSize=10;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=6;"
-                        + ("strokeWidth=2;dashed=1;" if gate else "")), tooltip=tip)
+                        + ("strokeWidth=2;" if gate else "") + SHAPES[shapes[s["id"]]][0]), tooltip=tip,
+             link=f"data:page/id,flow-{s['flow']}" if s.get("flow") else "")
     note = note_lines(s, k + 1)
     nh = 20 + sum(wrapped_lines(n.replace("`", ""), NOTE_CHARS) for n in note) * NOTE_LINE_H
     page.box(f"{fid}-n-{s['id']}", label(*note), x - (COL_W - STEP_W) / 2 + 2, notes_top, COL_W - 4, nh,
              "shape=note;whiteSpace=wrap;html=1;size=10;fillColor=#fffbe6;strokeColor=#bf9000;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;")
+    return nh
 
 
 def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile) -> Page:
-    """One flow: a header, a lane per component (in order of first use), the steps left to right with numbered arrows, and a note per step.
+    """One flow: a header, a lane per component (in order of first use), the steps left to right with numbered arrows, a note per step, and a
+    legend of the shapes the page uses (flowmap.shapes).
 
     Args:
         flow: the flow from the map.
@@ -176,11 +187,16 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     top = MARGIN + head_h + GAP
     # Each step box is as tall as its text needs, and each lane as tall as its tallest step.
     texts = {s["id"]: step_lines(s, k + 1) for k, s in enumerate(steps)}
-    box_h = {sid: max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), STEP_CHARS) for x in lines) * STEP_LINE_H) for sid, lines in texts.items()}
+    shapes = {s["id"]: step_shape(steps, k, comps, profile.kind_shapes, profile.io_vias) for k, s in enumerate(steps)}
+    box_h = {}
+    for sid, lines in texts.items():   # the outline eats into the text area: fewer characters a line, a taller box
+        _style, wf, hf = SHAPES[shapes[sid]][:3]
+        box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), int(STEP_CHARS * wf)) for x in lines) * STEP_LINE_H) * hf)
     lanes, lane_y, lane_h = _lanes(page, flow, comps, profile, top, box_h)
     notes_top = top + sum(lane_h) + GAP
-    for k in range(len(steps)):
-        _step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top))
+    note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes)) for k in range(len(steps))]
+    used = list(dict.fromkeys(list(shapes.values()) + [lane_shape(comps[c], profile.kind_shapes) for c in lanes]))
+    shape_legend(page, used, MARGIN, notes_top + max(note_h) + GAP * 2, fid)
     for cid, src, dst, text, style in step_edges(steps, fid):
         page.edge(cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", label=text, style=style)
     return page

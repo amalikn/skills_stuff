@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from .shapes import DEFAULT_IO_VIAS
+
 #: Thick arrow and family colours: distinct hues, each at least 4.5:1 on white (blue, green, red, purple, teal, olive, magenta, orange,
 #: navy-black, then brown, kept last because next to orange it reads as the same colour).
 DISTINCT = ("#1f4e9c", "#1b7a3a", "#b3261e", "#6a3fa0", "#00707a", "#4d6b00", "#a0306e", "#b45309", "#0f172a", "#8a5a00")
@@ -45,6 +47,8 @@ class Profile:
         families: flow families: (id, legend and layer name, colour, flow ids in it); one draw.io layer each.
         family_by_category: {flow category: family id} for a flow named in no family.
         band_title: the heading of the band below the columns.
+        kind_shapes: {component kind: flow page shape} from `drawing.kind_shapes` (flowmap.shapes.DEFAULT_KIND_SHAPES fills the rest).
+        io_vias: transports that cross a network, lower case, from `drawing.io_vias` (default flowmap.shapes.DEFAULT_IO_VIAS).
     """
 
     map: str
@@ -66,6 +70,8 @@ class Profile:
     families: tuple = ()
     family_by_category: dict = field(default_factory=dict)
     band_title: str = "Stores and secrets"
+    kind_shapes: dict = field(default_factory=dict)
+    io_vias: tuple = DEFAULT_IO_VIAS
 
     def style(self, kind: str) -> tuple[str, str]:
         """A kind's (fill, stroke).
@@ -116,7 +122,8 @@ class Profile:
                    group_columns=group_columns(d),
                    group_cells={k: (int(v[0]) - 1, int(v[1]) - 1) for k, v in (d.get("group_cell") or {}).items()}, tiers=tiers, below_groups=below_groups, below_kinds=below_kinds,
                    kind_tier=dict(d.get("kind_tier") or {}), default_tier=int(d.get("default_tier", 0)), families=families,
-                   family_by_category=by_cat, band_title=d.get("band_title", "Stores and secrets"))
+                   family_by_category=by_cat, band_title=d.get("band_title", "Stores and secrets"),
+                   kind_shapes=dict(d.get("kind_shapes") or {}), io_vias=tuple(v.lower() for v in d.get("io_vias", DEFAULT_IO_VIAS)))
 
 def layout_columns(spec: str) -> int:
     """Columns for a `group_layout` value.

@@ -131,6 +131,24 @@
         },
         "status": {
           "$ref": "#/$defs/status"
+        },
+        "shape": {
+          "type": "string",
+          "enum": [
+            "terminator",
+            "process",
+            "decision",
+            "manual-operation",
+            "preparation",
+            "predefined-process",
+            "delay",
+            "stored-data",
+            "document",
+            "data-io",
+            "external",
+            "person"
+          ],
+          "description": "Overrides the lane head shape its kind gives."
         }
       }
     },
@@ -294,6 +312,28 @@
         },
         "status": {
           "$ref": "#/$defs/status"
+        },
+        "shape": {
+          "type": "string",
+          "enum": [
+            "terminator",
+            "process",
+            "decision",
+            "manual-operation",
+            "preparation",
+            "predefined-process",
+            "delay",
+            "stored-data",
+            "document",
+            "data-io",
+            "external",
+            "person"
+          ],
+          "description": "Overrides the derived flow page shape (flowmap.shapes)."
+        },
+        "flow": {
+          "$ref": "#/$defs/id",
+          "description": "Another flow this step runs: drawn as a predefined process linked to that flow's page."
         }
       }
     },
@@ -449,6 +489,35 @@
           "additionalProperties": {
             "$ref": "#/$defs/id"
           }
+        },
+        "kind_shapes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "enum": [
+              "terminator",
+              "process",
+              "decision",
+              "manual-operation",
+              "preparation",
+              "predefined-process",
+              "delay",
+              "stored-data",
+              "document",
+              "data-io",
+              "external",
+              "person"
+            ]
+          },
+          "description": "{component kind: lane head shape}."
+        },
+        "io_vias": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Transports that cross a network: a step using one draws as data in or out."
         }
       }
     },
@@ -544,10 +613,12 @@
           "type": "array",
           "minItems": 1,
           "items": {
-            "type": "string",
-            "minLength": 1
+            "type": [
+              "string",
+              "object"
+            ]
           },
-          "description": "The option's flow, one box per step, top to bottom."
+          "description": "The option's flow, one box per step, top to bottom: a text, or {text, shape} to name a flowmap.shapes shape (first and last default to terminator)."
         },
         "pros": {
           "$ref": "#/$defs/text_list"

@@ -132,9 +132,36 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > A field shown on every flow (category in the header and the Overview index) must carry information in that project. A value copied from another
 > project (UNC's native/custom split) that is the same everywhere is noise: give the project its own categories (build, config-swap, measurement).
 
-> **Proposed 2026-10-21, not decided** · shape vocabulary · USER_STATED (asked for a sample) · Source: `references/screenshots/20261021-shape-vocabulary-sample/` · Falsifier: the operator declines it
+> **Proposed 2026-10-21, adopted the same day (see the next entry)** · shape vocabulary · USER_STATED (asked for a sample) · Source: `references/screenshots/20261021-shape-vocabulary-sample/` · Falsifier: the operator declines it
 > Standard flowchart shapes could carry meaning the map already has: terminator (first step, a step with no next), decision (a step with a gate),
 > manual operation (a person's step), preparation (set-up), predefined process (a step that runs another flow), delay (timer), stored data
 > (store), document (a file written), data in or out (a network transport), external system (cloud), person (actor). Sample drawn by hand-run code;
 > the engine does not draw them until the operator decides.
+
+> **Learned 2026-10-21** · shape vocabulary adopted · USER_STATED · Source: smc-resiliency operator, 2026-10-21 (chose all twelve; "the two green shapes are not easily distinguishable"); `scripts/flowmap/shapes.py`, `tests/test_shapes.py` · Falsifier: a page where two meanings share one outline
+> Flow pages draw each step as a flowchart symbol derived from the map (`flowmap.shapes.step_shape`: explicit `shape`, gate = decision, `flow`
+> = predefined process linked to that page, person actor = manual operation, first or last = terminator, network transport = data in or out,
+> else process) and each lane head by kind (`lane_shape`: store = stored data, timer = delay, external = cloud, person = a figure in the corner;
+> a component's `shape` wins). Every flow page ends with "Shapes on this page". An outline eats text area: shrink characters per line and grow the
+> box (diamond 0.6 and 1.5). On the Options page a decision taken is a **document** (a record), never a rounded box beside rectangles of the same
+> colour, which read as one shape; questions and decisions carry a small diamond; pros and cons are notes. Text centred in a box takes no top
+> padding meant for top-aligned boxes. Screenshots: `references/screenshots/20261021-shapes-adopted/`.
+>
+> ```python
+> # scripts/flowmap/shapes.py (step_shape), skill-drawio, 2026-10-21
+> if s.get("shape"):
+>     return s["shape"]
+> if s.get("gate"):
+>     return "decision"
+> if s.get("flow"):
+>     return "predefined-process"
+> if lane_shape(comps[s["actor"]], kind_shapes) == "person":
+>     return "manual-operation"
+> last = s.get("next") == [] or (k == len(steps) - 1 and "next" not in s)
+> if k == 0 or last:
+>     return "terminator"
+> if any(v.lower() in io_vias for v in s.get("via", [])):
+>     return "data-io"
+> return "process"
+> ```
 

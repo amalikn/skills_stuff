@@ -21,6 +21,7 @@ from code_refs import CodeRefs
 from schema_lite import schema_errors
 
 from .profile import Profile
+from .shapes import SHAPES
 
 #: Shared geometry: component box width, gap, group heading height and the page margin.
 COMP_W, GAP, GROUP_HEAD, MARGIN = 210, 20, 34, 20
@@ -132,6 +133,8 @@ def _flow_problems(f: dict, known_c: set, known_f: set, root: Path, refs: CodeRe
     problems += [f"flow {fid}: depends on unknown flow `{dep}`" for dep in deps.get("flows", []) if dep not in known_f]
     problems += [f"flow {fid}: depends on unknown component `{dep}`" for dep in deps.get("components", []) if dep not in known_c]
     problems += [f"flow {fid}: doc `{doc}` does not exist" for doc in f.get("docs", []) if not (root / doc.split("#", 1)[0]).exists()]
+    problems += [f"flow {fid}: step {s['id']} runs unknown flow `{s['flow']}`" for s in f["steps"] if s.get("flow") and s["flow"] not in known_f]
+    problems += [f"flow {fid}: step {s['id']} runs its own flow" for s in f["steps"] if s.get("flow") == fid]
     return problems + _step_problems(f, known_c, refs)
 
 
@@ -152,6 +155,9 @@ def reference_problems(data: dict, root: Path) -> list[str]:
     problems += _duplicates("option group", [g["id"] for g in groups])
     for g in groups:
         problems += _duplicates(f"option in group {g['id']}", [o["id"] for o in g["options"]])
+        for o in g["options"]:
+            problems += [f"option {g['id']}.{o['id']}: step {k + 1} needs text and a known shape" for k, st in enumerate(o["steps"])
+                         if isinstance(st, dict) and (not st.get("text") or st.get("shape") not in SHAPES)]
     refs = CodeRefs(root)
     problems += _component_problems(data, set(comps), refs)
     for f in data["flows"]:
