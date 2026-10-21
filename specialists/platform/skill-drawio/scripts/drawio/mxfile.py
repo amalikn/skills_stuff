@@ -137,6 +137,20 @@ def num(value: float) -> str:
     return f"{round(value, 4):g}"
 
 
+
+def _unflip(style: str, fx: float, fy: float) -> tuple[float, float]:
+    """A port's fraction as draw.io reads it on a shape that may be flipped (2026-10-21: an arrow into a flipV trapezoid's top drew to its bottom).
+
+    Args:
+        style: the shape's style.
+        fx: the x fraction of the point on the box.
+        fy: the y fraction.
+
+    Returns:
+        (x fraction, y fraction) mirrored for flipH=1 and flipV=1.
+    """
+    return (1 - fx if "flipH=1" in style else fx), (1 - fy if "flipV=1" in style else fy)
+
 @dataclass
 class Route:
     """One routed edge as drawn: the full polyline from the source's border to the target's, for the layout audits.
@@ -194,6 +208,7 @@ class Page:
             name: the tab name shown in draw.io.
         """
         self.page_id, self.name, self.cells = page_id, name, []
+        self.cell_style: dict[str, str] = {}   # each vertex's style, so a route can account for a flipped shape
         self.rects: dict[str, Rect] = {}
         self.solid: list[str] = []
         self.routes: list[Route] = []
@@ -224,6 +239,7 @@ class Page:
         else:
             self.cells.append(f'<mxCell id="{cid}" value={quoteattr(label)} style={quoteattr(style)} vertex="1" parent="{layer}">{geo}</mxCell>')
         self.rects[cid] = (x, y, w, h)
+        self.cell_style[cid] = style
         if solid:
             self.solid.append(cid)
 
@@ -271,8 +287,11 @@ class Page:
         sx, sy, sw, sh = self.rects[src]
         tx, ty, tw, th = self.rects[dst]
         (x0, y0), (x1, y1) = pts[0], pts[-1]
-        ends = (f"exitX={num((x0 - sx) / sw)};exitY={num((y0 - sy) / sh)};entryX={num((x1 - tx) / tw)};entryY={num((y1 - ty) / th)};"
-                "exitPerimeter=0;entryPerimeter=0;")
+        fx0, fy0, fx1, fy1 = (x0 - sx) / sw, (y0 - sy) / sh, (x1 - tx) / tw, (y1 - ty) / th
+        # draw.io mirrors connection points on a flipped shape (flipV=1 puts entryY=0 at the bottom): mirror the fraction back
+        fx0, fy0 = _unflip(self.cell_style.get(src, ""), fx0, fy0)
+        fx1, fy1 = _unflip(self.cell_style.get(dst, ""), fx1, fy1)
+        ends = f"exitX={num(fx0)};exitY={num(fy0)};entryX={num(fx1)};entryY={num(fy1)};exitPerimeter=0;entryPerimeter=0;"
         geo = "".join(f'<mxPoint x="{px:g}" y="{py:g}"/>' for px, py in pts[1:-1])
         self.cells.append(f'<mxCell id="{cid}" value="" style={quoteattr(style + ends)} edge="1" parent="{layer}" source="{src}" target="{dst}">'
                           f'<mxGeometry relative="1" as="geometry"><Array as="points">{geo}</Array></mxGeometry></mxCell>')

@@ -69,5 +69,14 @@ class FlowRouterTests(unittest.TestCase):
                 self.assertFalse(any(router._along(s, t) for s in segs[a] for t in segs[b]), f"{a} runs alongside {b}")
 
 
+    def test_flipped_target_port_mirrored(self) -> None:
+        """An arrow into the top of a flipV shape is written with entryY=1, because draw.io mirrors ports on a flipped shape."""
+        mx = importlib.import_module("drawio.mxfile")
+        page = mx.Page("p", "P")
+        page.box("a", "", 0, 0, 100, 50, "rounded=0;")
+        page.box("b", "", 200, 200, 100, 50, "shape=trapezoid;flipV=1;")
+        page.route("e", "a", "b", [(100, 25), (250, 25), (250, 200)], "edgeStyle=none;")
+        self.assertIn("entryY=1;", page.cells[-1])
+
 if __name__ == "__main__":
     unittest.main()

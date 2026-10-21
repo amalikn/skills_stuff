@@ -158,3 +158,9 @@ input (observed 2026-10-19).
 | Style strings end with `;`                                                           | Matches what draw.io writes; appending pinned ports stays valid    |
 | `compressed="false"`                                                                 | Diffs and drift checks                                             |
 | Fixed cell order and number formatting                                               | Deterministic output                                               |
+
+> **Learned 2026-10-21** · ports on flipped shapes · VERIFIED_PRIMARY · Source: `scripts/drawio/mxfile.py` (`_unflip`, `Page.route`), `tests/test_routing.py` · Falsifier: an edge into a flipV shape's top drawn to its bottom
+> draw.io applies a shape's flipH/flipV to its connection constraints: on the flowchart "manual operation" (a trapezoid with `flipV=1`), `entryY=0`
+> is the bottom. The engine computed the port from geometry (top = 0), so the arrow ran through the box to its bottom. `Page.route` now mirrors the
+> fraction for a flipped end. Seen in unified-network-controller's topology flow, 2026-10-21 (operator screenshot).
+
