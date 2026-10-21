@@ -28,7 +28,7 @@ COST_BOX, COST_ALONG, COST_PORT, COST_SIDE, COST_CROSS, COST_BEND, COST_ODD_EXIT
 STUB, HEAD = 12, 22
 #: Arc size where a flow arrow crosses another: an unavoidable crossing hops, as on the Overview.
 JUMP = 6
-STYLE = "edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;jumpStyle=arc;jumpSize=6;strokeColor={colour};"
+STYLE = "edgeStyle=none;rounded={rounded};html=1;endArrow=block;endFill=1;jumpStyle=arc;jumpSize=6;strokeColor={colour};"
 LABEL = "text;html=1;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;labelBackgroundColor=#ffffff;fontColor={colour};"
 #: A yes/no decision's branch colours (operator, 2026-10-21: show the boolean nature); other arrows are black.
 YES, NO, PLAIN = "#1b7a3a", "#b3261e", "#000000"
@@ -229,7 +229,7 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
         page: the page (steps drawn as solid boxes).
         edge: (cell id, source cell id, target cell id, label text, colour).
         diamonds: (source is a decision, target is a decision).
-        corridors: {"xs": column gap centres, "ys": reserved run heights}.
+        corridors: {"xs": column gap centres, "ys": reserved run heights, "rounded": 1 or 0 for the corner style}.
         used: points and sides already taken; this arrow's are added.
         ways: exit sides allowed; all when None.
         strict: with `ways`, draw nothing and return a very large cost when no path leaves that way (no fallback to another side).
@@ -248,7 +248,7 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
     best = min(cands, key=lambda c: cost(page, c, (src, dst), used))
     spent = cost(page, best, (src, dst), used)
     pts, out_side, in_side, _odd = best
-    page.route(cid, src, dst, pts, STYLE.format(colour=colour), klass="thin", jump=JUMP)
+    page.route(cid, src, dst, pts, STYLE.format(colour=colour, rounded=corridors.get("rounded", 1)), klass="thin", jump=JUMP)
     used["points"].update((round(p[0]), round(p[1])) for p in (pts[0], pts[-1]))
     used["sides"].update({(src, out_side), (dst, in_side)})
     width = 18 + 9 * len(text)
@@ -320,6 +320,7 @@ def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> None:
         look: the drawing look (branch labels).
     """
     fid, steps, edges, shapes = flow
+    corridors = dict(corridors, rounded=0 if look.get("arrow_corners", "rounded") == "square" else 1)   # rounded corners, as on the Overview
     by_id = {s["id"]: s for s in steps}
     order = {s["id"]: k for k, s in enumerate(steps)}
     forward = sorted((e for e in edges if "back to" not in e[3]), key=lambda e: order[e[2]] - order[e[1]])

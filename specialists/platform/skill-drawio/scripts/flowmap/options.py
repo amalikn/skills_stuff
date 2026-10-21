@@ -37,9 +37,9 @@ DECISION = "rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacin
 TRADEOFF = {"pros": ("Pros", "#d5e8d4;strokeColor=#82b366;shape=note;size=12;"), "cons": ("Cons", "#f8cecc;strokeColor=#b85450;shape=note;size=12;")}
 #: The diamond beside a question and on each decision box: both are decision points.
 DIAMOND = "rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;"
-ARROW = "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#666666;strokeWidth=1;"
-OPEN_ARROW = "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#6c8ebf;strokeWidth=2;dashed=1;"
-DEC_ARROW = "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#82b366;strokeWidth=2;"
+ARROW = "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#666666;strokeWidth=1;"
+OPEN_ARROW = "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#6c8ebf;strokeWidth=2;dashed=1;"
+DEC_ARROW = "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#82b366;strokeWidth=2;"
 
 
 #: The legend's rows: (swatch style, swatch height, text), in two columns.
