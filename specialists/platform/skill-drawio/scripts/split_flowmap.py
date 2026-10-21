@@ -132,8 +132,10 @@ def plan(text: str) -> tuple[list[str], dict[str, list[str]]]:
             master += lines[a:b]
             continue
         master.append(lines[a])
-        for name, ls in cut:
-            parts[name] = [x[2:] if x.startswith("  ") else x for x in ls]
+        for name, ls in cut:   # each part opens with a `#%` header (dropped when assembled), as a catalog part does
+            what = name.split("-", 1)[1].replace("-", " ") if "-" in name else name
+            header = [f"#% Part: {key}, {what}", f"#% Lands under: {key}"]
+            parts[name] = header + [x[2:] if x.startswith("  ") else x for x in ls]
             master.append(f"  #@include {name}.yaml")
         master += trail
     return master, parts
