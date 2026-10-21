@@ -130,48 +130,6 @@ def _clear(page: Page, points: list, skip: set) -> bool:
     return True
 
 
-def skip_arrow(page: Page, edge: tuple, lanes: tuple, gap: float, plan: tuple = ("top", 0), track_gap: float = 12) -> bool:
-    """A forward arrow that skips a column, routed by the engine (operator review, 2026-10-21: draw.io's own route ran an arrow through the
-    step in between). The side comes from `plan_runs`: in one lane over the top or under the bottom; into another lane through the gap after the
-    source's column into the target's left side, or along the target lane's near edge into its top or bottom. Every path is checked clear of
-    other steps first.
-
-    Args:
-        page: the page (the steps and lanes are drawn).
-        edge: (cell id, source cell, target cell, label, style); the style's colours are kept, its ports replaced.
-        lanes: ((source lane top, source lane height), (target lane top, target lane height)).
-        gap: the horizontal gap between step columns.
-        plan: (side, track) from `plan_runs`: "left" enters the target's left side, "top"/"bottom" run along that lane edge.
-        track_gap: the spacing between runs (`drawing.look.track_gap`).
-
-    Returns:
-        True when the arrow was drawn; False leaves it to draw.io (no clear engine route found).
-    """
-    cid, src, dst, text, _style = edge
-    sx, sy, sw, sh = page.rects[src]
-    dx, dy, dw, dh = page.rects[dst]
-    (s_top, s_h), (d_top, d_h) = lanes
-    side, track = plan
-    off = 10 + track_gap * track
-    over = [(sx + sw / 2, sy), (sx + sw / 2, s_top + off), (dx + dw / 2, s_top + off), (dx + dw / 2, dy)]
-    under = [(sx + sw / 2, sy + sh), (sx + sw / 2, s_top + s_h - off), (dx + dw / 2, s_top + s_h - off), (dx + dw / 2, dy + dh)]
-    turn = sx + sw + gap / 2
-    if s_top == d_top:   # same lane: the planned side first
-        tries = [under, over] if side == "bottom" else [over, under]
-    elif side == "left":   # down or up in the gap after the source's column, then into the target's left side
-        tries = [[(sx + sw, sy + sh / 2), (turn, sy + sh / 2), (turn, dy + dh / 2), (dx, dy + dh / 2)]]
-    else:
-        run_y, end_y = (d_top + off, dy) if d_top > s_top else (d_top + d_h - off, dy + dh)
-        tries = [[(sx + sw, sy + sh / 2), (turn, sy + sh / 2), (turn, run_y), (dx + dw / 2, run_y), (dx + dw / 2, end_y)]]
-    for pts in tries:
-        if _clear(page, pts, {src, dst}):
-            page.route(cid, src, dst, pts, "edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;", klass="thin")
-            mid = pts[len(pts) // 2 - 1], pts[len(pts) // 2]
-            page.mark(f"{cid}-lbl", label(f"**{text}**"), (mid[0][0] + mid[1][0]) / 2, (mid[0][1] + mid[1][1]) / 2, 24, 22,
-                      "text;html=1;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;labelBackgroundColor=#ffffff;", cid)
-            return True
-    return False
-
 def back_arrow(page: Page, edge: tuple, band: float, mode: str = "short-first") -> float:
     """An arrow back to an earlier step, routed by the engine rather than draw.io (operator review, 2026-10-21: draw.io's own route crossed
     many boxes). First choice, the short way: out of the source's left side, along its own lane, into the target's top right (or bottom right

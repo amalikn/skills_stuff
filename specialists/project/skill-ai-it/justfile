@@ -226,6 +226,19 @@ changelog-entry *ARGS: _require-venv
 move-sections *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"
 
+# A project's target map (references/target-map-and-timeline.md): validate and report drift; `--write` renders its tracker and embeds,
+# `--schema` prints the fields, `--init --source PLAN.md` prints a starter map. Plan by default: `just target-map ../some-project --write`
+target-map project *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/target_map.py" --project-root "{{project}}" {{ARGS}}
+
+# A project's plan timeline: validate its docs/trackers/plan-timeline.yaml and report drift for today; `--write` renders the block. Plan by default
+plan-timeline project *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/plan_timeline.py" --project-root "{{project}}" {{ARGS}}
+
+# Offline unit tests of this package's scripts (stdlib unittest; PyYAML from the venv). Read-only
+test: _require-venv
+    @{{py}} -m unittest discover -s tests -q
+
 # Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
 [positional-arguments]
 outline *ARGS: _require-venv

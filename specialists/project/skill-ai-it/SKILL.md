@@ -146,7 +146,7 @@ Every governed project runs `scripts/doc_freshness.py` from this skill (not a co
 ---
 
 - Read [references/script-task-inventory.md](references/script-task-inventory.md) before that work (moved verbatim from here): Script and task inventory.
-- Read [references/governance-checker.md](references/governance-checker.md) before that work (moved verbatim from here): Governance coherence checker.
+- Read [references/governance-checker.md](references/governance-checker.md) before that work (moved verbatim from here): Governance coherence checker. Generated trackers (`target_map.py`, `plan_timeline.py`): [references/target-map-and-timeline.md](references/target-map-and-timeline.md).
 
 ### Always-created files
 

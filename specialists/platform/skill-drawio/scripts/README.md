@@ -119,7 +119,9 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/overview_index.py` | The Overview's right column: flow index (Options page linked), kind, status and arrow colour legends | `safe` |
 | `scripts/flowmap/options.py` | The Options page (optional `options` block): decision flow, option step chains, aligned pros and cons | `safe` |
 | `scripts/flowmap/shapes.py` | Flow page shapes (flowchart symbols): derivation per step and lane head, per-page shape legend | `safe` |
-| `scripts/flowmap/flow_geometry.py` | Flow page geometry: step widths by shape (wider decisions), column positions, back-arrow routes below the lanes | `safe` |
+| `scripts/flowmap/flow_geometry.py` | Flow page geometry: step widths by shape (wider decisions), column gap and positions, run planning and lane room, back-arrow routes below the lanes | `safe` |
+| `scripts/flowmap/lanes.py` | Flow page lanes: lane heads (structured text; symbols sized to their text inside a plain panel), room kept for arrow runs, run positions | `safe` |
+| `scripts/flowmap/routing.py` | Flow page forward arrows: candidate orthogonal paths scored against what is drawn (boxes, adjacent runs, reused ports, crossings), the cheapest drawn; decision branch labels | `safe` |
 | `scripts/flowmap/pages.py` | Flow pages, `render`, `evaluate`, `write_drawing`, `flow_list` | `safe` (`write_drawing` writes the drawing) |
 | `scripts/check_governance.py` | This pack's governance checker (from skill-ai-it's template) | `safe` |
 

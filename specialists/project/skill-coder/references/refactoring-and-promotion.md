@@ -105,3 +105,21 @@ Engines a project imports run in the project's interpreter and the project pins 
 >
 > No visual surface.
 
+> **Learned 2026-10-21** · promoting a project script into a skill and switching the project to it · VERIFIED_PRIMARY · Source: skill-ai-it
+> `scripts/target_map.py`, `scripts/plan_timeline.py` and unified-network-controller `scripts/govcheck/skill_scripts.py` (commit pending) ·
+> Falsifier: a promoted script whose pilot output changes, or a project check that imports a skill module by bare name and gets its own file
+> Promote in three moves and prove each: (1) replace `ROOT = Path(__file__).parents[N]` with a `--project-root` argument and pass the root into
+> every entry point; (2) move every project-shaped string (headers, an explanatory sentence, a data path) into the project's data with the pilot's
+> value, and render new behaviour only when it is used, so the pilot renders byte for byte (compare old and new scripts on the same inputs, several
+> dates for anything clock-driven); (3) in the project's checks, load the skill script by path under a prefixed module name rather than inserting
+> the skill's folder on `sys.path`, where its module names can shadow the project's. Delete the project copy only after the recipes and checks run
+> the skill copy and the rendered files are unchanged.
+
+```python
+# unified-network-controller scripts/govcheck/skill_scripts.py (commit pending)
+key = f"ai_it_{name}"
+spec = importlib.util.spec_from_file_location(key, AI_IT_SCRIPTS / f"{name}.py")
+module = importlib.util.module_from_spec(spec)
+sys.modules[key] = module   # dataclasses resolve annotations through sys.modules
+spec.loader.exec_module(module)
+```

@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_1753
+Last rotated: 20261021_1817
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261021_1817 — target_map.py and plan_timeline.py promoted from unified-network-controller](#20261021_1817--target_mappy-and-plan_timelinepy-promoted-from-unified-network-controller)
 - [20261021_1320 — governance-checks: a supersession banner tied to a tracker](#20261021_1320--governance-checks-a-supersession-banner-tied-to-a-tracker)
 - [20261020_1753 — Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff](#20261020_1753--template-a-type-check-replaces-the-type-ignore-in-check_governancepy-split_checkers-mirror-diff)
 - [20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate](#20261020_1634--rotate_records-project-sync-outbox-and-inbox-lines-never-rotate)
@@ -33,9 +34,22 @@ Last rotated: 20261020_1753
 - [20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries](#20261014_1213--govern-stops-on-uncommitted-governed-files-drops-resolved-baseline-entries)
 - [20261014_1202 — adopt: a future deadline is not a review date](#20261014_1202--adopt-a-future-deadline-is-not-a-review-date)
 - [20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity](#20261014_1102--token-efficiency-from-the-unc-run-compact-agents-block-load-cost-header-validity)
-- [20261014_1058 — deterministic navigation-control upgrade](#20261014_1058--deterministic-navigation-control-upgrade)
-- [20261014_1051 — govern fixes from the UNC run: folded legacy headers stay fenced; audit failures named](#20261014_1051--govern-fixes-from-the-unc-run-folded-legacy-headers-stay-fenced-audit-failures-named)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261021_1817 — target_map.py and plan_timeline.py promoted from unified-network-controller
+
+- New `scripts/target_map.py` and `scripts/plan_timeline.py`, promoted from unified-network-controller (operator, 2026-10-21: "the target map is
+  promoted into skill-ai-it first, then adopted in smc-resiliency for the stages"; "we haven't adapted the timeline method of UNC"), with
+  `tests/test_target_map.py` (64 tests) and `tests/test_plan_timeline.py` (14). Both take `--project-root`; nothing names a project.
+- Target map additions: bullet-style sources (`exit_line`, `checklist_line`: a one-line `[x] a · [ ] b` checklist is the criteria, ticks warn when
+  the map disagrees), `criteria: []` for a source target whose plan writes none, `changelog.started_only`, and `embed` (the summary table rendered
+  into another page between target-map markers). Plan timeline additions: `columns`, `note`, `--data`, and `parked` rows.
+- Proof of no change for the pilot: UNC's tracker (70,689 bytes) and Timeline block for four dates render byte for byte as the old scripts did.
+- Recipes `just target-map <project>`, `just plan-timeline <project>` (plan by default) and `just test`; catalogued in `scripts/README.md`;
+  [reference](references/target-map-and-timeline.md) with a Learned entry; SKILL.md routes to it; ROADMAP: timeline idea done, target map left
+  with bootstrap, the checker template, the standard and a package split (1,702 lines).
+- `scripts/file_headers.py`: a tracked file deleted in the working tree is skipped (it reported "no summary in its header" for UNC's moved scripts).
+- Verified: `just test` 185 tests OK; `just check` OK.
 
 ## 20261021_1320 — governance-checks: a supersession banner tied to a tracker
 
@@ -160,25 +174,6 @@ templates/check_governance.py defined the `KEBAB_LEGACY` and `CODE_SUFFIXES` reg
 - **Outdated `govern` copies refreshed** by the adopter (project form only); interpreter detection ignores calls inside `$(...)`.
 - **Checker:** CHANGELOG.md exempt from the unregistered-restatement scan (history; it stated the new stamp). Also carried: the other session's
   adopter fix for folded continuation lines and the govern summary naming rotation-audit losses (entry 20261014_1051).
-
-## 20261014_1058 — deterministic navigation-control upgrade
-
-<!-- skill-ai-it-upgrade: 2026-10-14-compact-v2 -->
-
-- Applied `skill-ai-it` deterministic navigation-control upgrade.
-- Upgraded managed navigation/scripts blocks to version `2026-10-14-compact-v2`.
-- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
-- Preserved user-authored content outside managed blocks.
-- Generated outputs remain support-only; no `.archcore/` promotion was performed.
-
-Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md
-
-## 20261014_1051 — govern fixes from the UNC run: folded legacy headers stay fenced; audit failures named
-
-- **adopt_governed_files.py:** a legacy (unfenced) header's folded value now keeps its indented continuation lines inside the new fence; before,
-  the fence closed after the first line and the tail landed below the `@` import (UNC AGENTS.md, first `govern` run). Test added (14 pass).
-- **govern recipe** (justfile, templates/justfile): the NEEDS ATTENTION reason also names `audit: LOST|SPLIT`; it was blank when the rotation audit
-  failed, because budget_plan.py returns before printing UNFINISHED. cambium-swap's adopted copy still has the old grep.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

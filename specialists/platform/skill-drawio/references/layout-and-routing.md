@@ -304,3 +304,21 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 >     side = "bottom" if beside else "top"
 > ```
 
+> **Learned 2026-10-21** · flow pages: overlaps found and resolved by the engine · VERIFIED_PRIMARY · Source: `scripts/flowmap/routing.py` (`route_forward`, `cost`, `label_spot`, `branch_label`), `scripts/render_flowmap.py` (`audit`), `tests/test_routing.py` · Falsifier: a flow page whose `--audit` is clean while an arrow crosses a step, or two arrows run alongside within 8 px
+> The operator asked for "intelligence in skill-drawio that finds ways to take care of overlaps" after a series of hand-specific fixes. The audit had
+> been blind on flow pages (step boxes were not obstacles, forward arrows were draw.io-routed). Now every forward arrow is engine-routed: candidates
+> (column gaps, reserved tracks over or under the lane, left/top/bottom entries, a decision's right/top/bottom corner) are scored against what is
+> already drawn and the cheapest is drawn, short arrows first so long ones route around them; labels go to the first clear spot along the path. A
+> decision's branches carry "Yes"/"No" or the step's `when` cases (operator: decisions always show their cases). Flow pages are in `--audit`, so a new
+> overlap fails `just check` instead of reaching a reviewer. Lane heads: heading name, italic kind, blank line, host.
+>
+> ```python
+> # scripts/flowmap/routing.py (cost), skill-drawio, 2026-10-21
+> boxes = sum(1 for p, q in segs for cid in page.solid if cid not in ends and seg_hits_rect(p, q, page.rects[cid]))
+> along = sum(1 for s in segs for o in others if _along(s, o))
+> crosses = sum(1 for s in segs for o in others if crossing(s, o) is not None)
+> labels = sum(1 for p, q in segs for m in page.marks if seg_hits_rect(p, q, m.rect, 0))
+> ports = sum(1 for pt in (pts[0], pts[-1]) if (round(pt[0]), round(pt[1])) in used)
+> return boxes * COST_BOX + (along + labels) * COST_ALONG + ports * COST_PORT + crosses * COST_CROSS + length / 1000
+> ```
+

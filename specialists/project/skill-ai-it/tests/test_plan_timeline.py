@@ -1,0 +1,154 @@
+"""scripts/plan_timeline.py: schedule marks follow the dates, a stale page is drift, bad data is refused. Offline."""
+
+import datetime as dt
+import importlib.util
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parents[1]
+_spec = importlib.util.spec_from_file_location("plan_timeline", _ROOT / "scripts/plan_timeline.py")
+pt = importlib.util.module_from_spec(_spec)
+sys.modules["plan_timeline"] = pt  # dataclasses resolve annotations through the module
+_spec.loader.exec_module(pt)
+
+D = dt.date
+
+
+def row(**kw):
+    """A valid plan row with overrides.
+
+    Args:
+        **kw: fields to set or replace.
+
+    Returns:
+        The row as validate() would return it.
+    """
+    base = {"due": D(2026, 10, 23), "stage": "U1.3", "step": "proof", "done": None}
+    base.update(kw)
+    return base
+
+
+class Schedule(unittest.TestCase):
+    """schedule()."""
+
+    def test_late_counts_days_and_overrides_a_flag(self):
+        """A passed due date is LATE with its day count, whatever the flag says."""
+        self.assertEqual(pt.schedule(row(flag="at_risk"), D(2026, 10, 24)), ("🔴 **LATE: 1 day**", "late"))
+        self.assertEqual(pt.schedule(row(), D(2026, 10, 28))[0], "🔴 **LATE: 5 days**")
+
+    def test_due_today_then_flag_then_open(self):
+        """On the day it is DUE TODAY; before it, the flag or Not yet due."""
+        self.assertEqual(pt.schedule(row(), D(2026, 10, 23))[1], "today")
+        self.assertEqual(pt.schedule(row(flag="ahead"), D(2026, 10, 1))[0], "🔵 Ahead")
+        self.assertEqual(pt.schedule(row(), D(2026, 10, 1))[0], "⚪ Not yet due")
+
+    def test_week_row_is_late_after_its_friday(self):
+        """A "Wk of" row is due on that week's Friday."""
+        wk = row(due=D(2027, 1, 25), week=True)
+        self.assertEqual(pt.schedule(wk, D(2027, 1, 29))[1], "today")
+        self.assertEqual(pt.schedule(wk, D(2027, 1, 30))[1], "late")
+        self.assertEqual(pt.due_label(wk), "Wk of 25 Jan")
+        self.assertEqual(pt.due_label(row()), "Fri 23 Oct")
+
+    def test_done_shows_done_and_how_late(self):
+        """A done step is Done, with the days it was late."""
+        self.assertEqual(pt.schedule(row(done=D(2026, 10, 22)), D(2026, 12, 1))[0], "✅ Done 22 Oct")
+        self.assertEqual(pt.schedule(row(done=D(2026, 10, 26)), D(2026, 12, 1))[0], "✅ Done 26 Oct, 3 days late")
+
+    def test_fixed_and_extra_rows(self):
+        """An outside date and work outside the plan are never late."""
+        self.assertEqual(pt.schedule(row(kind="fixed"), D(2026, 10, 1))[0], "📌 Fixed date")
+        self.assertEqual(pt.schedule(row(kind="fixed"), D(2026, 11, 1))[0], "📌 Passed")
+        self.assertEqual(pt.schedule({"kind": "extra", "step": "x"}, D(2026, 11, 1))[0], "➖ Unscheduled")
+
+
+class Validate(unittest.TestCase):
+    """validate()."""
+
+    def test_refuses_bad_flag_kind_date_and_missing_due(self):
+        """Each kind of bad row is named."""
+        _, problems = pt.validate({"rows": [
+            {"due": "2026-10-16", "step": "a", "flag": "late"},
+            {"due": "16 Oct", "step": "b"},
+            {"step": "c"},
+            {"due": "2026-10-16", "step": "d", "kind": "maybe"},
+        ]})
+        text = "\n".join(problems)
+        for part in ("flag 'late'", "not a YYYY-MM-DD", "needs `due`", "kind 'maybe'"):
+            self.assertIn(part, text)
+
+
+class PageDrift(unittest.TestCase):
+    """evaluate() and splice() against a page on disk."""
+
+    def test_a_new_day_is_drift_and_text_outside_markers_survives(self):
+        """A page rendered yesterday differs from today's render; splice keeps the hand-written text."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs/trackers").mkdir(parents=True)
+            (root / pt.DATA).write_text(
+                "source: the plan\nrender_to: docs/trackers/page.md\nrows:\n  - {due: 2026-10-23, stage: U1.3, step: proof}\n", encoding="utf-8")
+            page = root / "docs/trackers/page.md"
+            page.write_text(f"before\n{pt.BEGIN}\n{pt.END}\nafter\n", encoding="utf-8")
+            first = pt.evaluate(root, D(2026, 10, 22))
+            page.write_text(pt.splice(page.read_text(encoding="utf-8"), first.block), encoding="utf-8")
+            self.assertFalse(pt.evaluate(root, D(2026, 10, 22)).drift)
+            later = pt.evaluate(root, D(2026, 10, 24))
+            self.assertTrue(later.drift)
+            self.assertIn("LATE: 1 day", later.block)
+            text = page.read_text(encoding="utf-8")
+            self.assertTrue(text.startswith("before\n") and text.endswith("after\n"))
+
+    def test_page_without_markers_is_a_problem(self):
+        """splice() refuses a page that lacks the markers."""
+        with self.assertRaises(ValueError):
+            pt.splice("no markers here", f"{pt.BEGIN}\n{pt.END}")
+
+
+class GenericColumns(unittest.TestCase):
+    """Promotion to skill-ai-it (2026-10-21): columns, the note and parked rows are data, so no project is named in the code."""
+
+    def test_default_columns(self):
+        """Without `columns`, the table is Due, Schedule, Stage, Step, Where it stands, Next with."""
+        block = pt.render([row(where="lab", next_with="Agent")], "the plan", D(2026, 10, 1))
+        self.assertIn("| Due | Schedule | Stage | Step | Where it stands | Next with |", block)
+        self.assertIn("| Fri 23 Oct | ⚪ Not yet due | U1.3 | proof | lab | Agent |", block)
+
+    def test_declared_columns_and_note(self):
+        """Declared columns set headers and order; the note follows the source sentence."""
+        cols = [{"key": "stage", "header": "Stage"}, {"key": "target_steps", "header": "Our steps"}]
+        block = pt.render([row(target_steps="2, 8")], "the plan", D(2026, 10, 1), cols, "Our reading.")
+        self.assertIn("Dates and steps are the plan. Our reading.", block)
+        self.assertIn("| Due | Schedule | Stage | Our steps |", block)
+        self.assertIn("| U1.3 | 2, 8 |", block)
+
+    def test_undeclared_field_is_a_problem(self):
+        """A row field that is neither core nor a declared column is refused, so a typo cannot vanish from the table."""
+        _, problems = pt.validate({"rows": [{"due": "2026-10-23", "step": "x", "wehre": "typo"}]})
+        self.assertTrue(any("`wehre`" in p for p in problems), problems)
+
+    def test_parked_row_needs_no_date_and_is_counted(self):
+        """A parked row shows Parked and No date, adds the legend line and a count; it is never LATE."""
+        rows, problems = pt.validate({"rows": [{"kind": "parked", "stage": "S1", "step": "A/B boot", "where": "VM first"}]})
+        self.assertEqual(problems, [])
+        self.assertEqual(pt.schedule(rows[0], D(2027, 1, 1)), ("⏸️ Parked", "parked"))
+        block = pt.render(rows, "the plan", D(2026, 10, 21))
+        self.assertIn("| No date | ⏸️ Parked | S1 |", block)
+        self.assertIn("⏸️ 1 parked (S1)", block)
+        self.assertIn("⏸️ Parked: waiting on a decision", block)
+
+    def test_no_parked_rows_no_parked_text(self):
+        """Without parked rows the legend and counts are as before promotion (a pilot's page renders byte for byte)."""
+        block = pt.render([row()], "the plan", D(2026, 10, 1))
+        self.assertNotIn("Parked", block)
+
+    def test_custom_data_path_in_marker(self):
+        """The BEGIN marker names the data file a reader must edit."""
+        block = pt.render([row()], "the plan", D(2026, 10, 1), data_path="plans/t.yaml")
+        self.assertTrue(block.startswith("<!-- BEGIN GENERATED: plan-timeline (edit plans/t.yaml, then `just plan-timeline`) -->"))
+
+
+if __name__ == "__main__":
+    unittest.main()

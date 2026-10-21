@@ -58,6 +58,10 @@
 - [What fills the WH overlay tmpfs, and the fixes (laramba, mimbi, canteen-creek, 2026-10-07)](#what-fills-the-wh-overlay-tmpfs-and-the-fixes-laramba-mimbi-canteen-creek-2026-10-07)
 - [RISE journald is sized against the SD card, not the overlay (honeymoon-bay-smc01, 2026-10-07)](#rise-journald-is-sized-against-the-sd-card-not-the-overlay-honeymoon-bay-smc01-2026-10-07)
 - [Raspberry Pi SMC identity, ports and bootloader (rct and wh, 2026-10-08)](#raspberry-pi-smc-identity-ports-and-bootloader-rct-and-wh-2026-10-08)
+- [Overlay building blocks already on the fleet (read 2026-10-15)](#overlay-building-blocks-already-on-the-fleet-read-2026-10-15)
+- [What writes into /etc at run time, and the read-only /etc of the new image (2026-10-20)](#what-writes-into-etc-at-run-time-and-the-read-only-etc-of-the-new-image-2026-10-20)
+- [Executables under /etc and other new-image constraints from the S2 spike (2026-10-20)](#executables-under-etc-and-other-new-image-constraints-from-the-s2-spike-2026-10-20)
+- [snapd, clock and NTP drift state on a rebuild of the writable area (2026-10-21)](#snapd-clock-and-ntp-drift-state-on-a-rebuild-of-the-writable-area-2026-10-21)
 
 - Hardware differences: x86 vs Raspberry Pi
 - NBN Accelerate / NBN WH hardware inventory (first live fleet sweep)
@@ -148,12 +152,19 @@ confinement](https://documentation.ubuntu.com/security/security-features/privile
 **Design recommendation — not implemented or canary-tested:** no other operating system is recommended over Ubuntu Server LTS for the current full SMC workload. Standardise new Raspberry Pi SMCs on
 the same Server release that has been ARM-canary-qualified for the fleet; OS release selection is separate from this operating-system choice.
 
-| Candidate | Fit for the current SMC | Decision |
-| --- | --- | --- |
-| Raspberry Pi OS Lite | The closest alternative: a 64-bit, Debian/APT-based Pi OS with vendor firmware packaging. It still needs a full port and qualification of the Ubuntu-specific Ansible assumptions (netplan, systemd units, package names, boot paths and update policy), with no demonstrated reliability or operations benefit over Ubuntu Server. | Do not adopt routinely. Reconsider only if a future Pi board/HAT requires a vendor driver or firmware unavailable on qualified Ubuntu Server. |
-| Debian Stable | Also requires a package/network/boot and fleet-operations port, while removing alignment with the existing Ubuntu SMC stack. | No benefit established; do not adopt. |
-| OpenWrt | A strong router/AP OS, but it is a different appliance ecosystem. Its image/package and network-management model would require reimplementing the SMC's host configuration, services, observability and application stack. | Consider only for a deliberately reduced router/AP product, not an SMC replacement. |
-| Fedora IoT/CoreOS, NixOS, similar declarative or immutable systems | Repeat the Core problem in different forms: a new image, package, service and operational model must be designed and supported. | No current case for adoption. |
+| Candidate                    | Fit for the current SMC                                                                                         | Decision                                            |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Raspberry Pi OS Lite         | The closest alternative: a 64-bit, Debian/APT-based Pi OS with vendor firmware packaging. It still needs a full | Do not adopt routinely. Reconsider only if a future |
+|                              |   port and qualification of the Ubuntu-specific Ansible assumptions (netplan, systemd units, package names,     |   Pi board/HAT requires a vendor driver or firmware |
+|                              |   boot paths and update policy), with no demonstrated reliability or operations benefit over Ubuntu Server.     |   unavailable on qualified Ubuntu Server.           |
+| Debian Stable                | Also requires a package/network/boot and fleet-operations port, while removing alignment with the existing      | No benefit established; do not adopt.               |
+|                              |   Ubuntu SMC stack.                                                                                             |                                                     |
+| OpenWrt                      | A strong router/AP OS, but it is a different appliance ecosystem. Its image/package and network-management      | Consider only for a deliberately reduced router/AP  |
+|                              |   model would require reimplementing the SMC's host configuration, services, observability and                  |   product, not an SMC replacement.                  |
+|                              |   application stack.                                                                                            |                                                     |
+| Fedora IoT/CoreOS, NixOS,    | Repeat the Core problem in different forms: a new image, package, service and operational model must be         | No current case for adoption.                       |
+|   similar declarative or     |   designed and supported.                                                                                       |                                                     |
+|   immutable systems          |                                                                                                                 |                                                     |
 
 **VERIFIED_PRIMARY (retrieved 2026-09-17):** Raspberry Pi OS is Debian-based and supports APT-managed packages, including Pi kernel and firmware updates; OpenWrt is a Linux distribution for embedded
 devices, typically wireless routers. The suitability decisions above are an inference from those models and the verified SMC workload, not claims of general-purpose superiority.
@@ -165,16 +176,17 @@ overview](https://openwrt.org/docs/start) (retrieved 2026-09-17).
 
 The table above says x86 storage is "monitored by SBDM/SMART" — this undersells how split the two mechanisms actually are. Confirmed live 2026-07-13:
 
-| Tool                   | Binary                         | Works on                         | Fails on                                                                                                |
-| ---------------------- | ------------------------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `smartmon.py`          | n/a (uses system `smartctl`)   | x86 rcp: Innodisk CFast,         | RPi/mmcblk SD cards — `smartctl --scan-open` finds zero devices; SD/eMMC doesn't expose classic ATA     |
-|   (wraps `smartctl`)   |                                |   Transcend SSD (both report via |   SMART attributes the way SATA/USB-SAT drives do                                                       |
-|                        |                                |   ATA SMART)                     |                                                                                                         |
-| `sbdm.py` (wraps       | `roles/smc_node_exporter/files/{x86-64,aarch64}/sbdm-cli`    | RPi/rct/wh: genuine              | x86 rcp: Innodisk/Transcend hardware isn't Swissbit-branded — `sbdm-cli` returns "No supported disks    |
-|   `sbdm-cli`,          |      |   Swissbit-branded industrial    |   found" (exit 3), and `sbdm.py` currently exits 0 with **zero stdout output**, producing a 0-byte      |
-|   "Swissbit            |     — deployed to             |   microSD cards (model "SD card  |   `sbdm.prom`. This is the root cause of the standing "sbdm.prom = 0 bytes" bug tracked as a known      |
-|   Device Manager")     |   **both** architectures       |   SB AFNI0", series S-58)        |   issue on tjuntjuntjara/burringurrah/warburton — expected behavior for non-Swissbit hardware, not a    |
-|                        |                                |                                  |   bug in those specific nodes.                                                                          |
+| Tool               | Binary                                                        | Works on                     | Fails on                                                                         |
+| ------------------ | ------------------------------------------------------------- | ---------------------------- | -------------------------------------------------------------------------------- |
+| `smartmon.py`      | n/a (uses system `smartctl`)                                  | x86 rcp: Innodisk CFast,     | RPi/mmcblk SD cards — `smartctl --scan-open` finds zero devices; SD/eMMC doesn't |
+|   (wraps           |                                                               |   Transcend SSD (both report |   expose classic ATA SMART attributes the way SATA/USB-SAT drives do             |
+|   `smartctl`)      |                                                               |   via ATA SMART)             |                                                                                  |
+| `sbdm.py` (wraps   | `roles/smc_node_exporter/files/{x86-64,aarch64}/sbdm-cli` —   | RPi/rct/wh: genuine          | x86 rcp: Innodisk/Transcend hardware isn't Swissbit-branded — `sbdm-cli` returns |
+|   `sbdm-cli`,      |   deployed to **both** architectures                          |   Swissbit-branded           |   "No supported disks found" (exit 3), and `sbdm.py` currently exits 0 with **zero** |
+|   "Swissbit        |                                                               |   industrial microSD cards   |   **stdout output**, producing a 0-byte `sbdm.prom`. This is the root cause of the |
+|   Device Manager") |                                                               |   (model "SD card SB AFNI0", |   standing "sbdm.prom = 0 bytes" bug tracked as a known issue on                 |
+|                    |                                                               |   series S-58)               |   tjuntjuntjara/burringurrah/warburton — expected behavior for non-Swissbit      |
+|                    |                                                               |                              |   hardware, not a bug in those specific nodes.                                   |
 
 So: x86 rcp nodes are monitored by `smartmon.py`/`smartctl` only (SBDM silently no-ops there). RPi rct/wh nodes are monitored by `sbdm.py`/`sbdm-cli` only (SMART silently no-ops there, confirmed
 `smartmon.prom` has metric headers but zero data lines on every RPi node checked). Never assume both tools produce meaningful data on both platforms.
@@ -287,14 +299,14 @@ No live hardware inventory existed for this cluster before this sweep — everyt
 total, `aurukun-smc03` unreachable at capture time), via `scripts/collect-fleet-health.sh`. **`nbn_wh` is the operator-confirmed `wh`-flavor equivalent on this cluster** — compare it against the
 `rct`/`wh` row in the platform table above, not against `nbn_accelerate`'s x86 baseline.
 
-| Chassis                             | Count | CPU                   | RAM   | Storage                                                        | Flavor           | Kernel                             |
-| ----------------------------------- | ----- | --------------------- | ----- | -------------------------------------------------------------- | ---------------- | ---------------------------------- |
-| AAEON BOXER-6641                    | 11    | Intel Core i5-8500T   | 15Gi  | Transcend TS128GSSD420K SSD                                    | `nbn_accelerate` | `5.15.0-119-generic`               |
-|                                     |       |   @ 2.10GHz           |       |                                                                |                  |   (fleet-uniform)                  |
-| AAEON BOXER-6404                    | 15    | Intel Celeron J1900   | 7.7Gi | Innodisk CFast 3ME3                                            | `nbn_accelerate` | `5.15.0-117-generic` (2 outliers — |
-|                                     |       |   @ 1.99GHz           |       |                                                                |                  |   see below)                       |
-| Raspberry Pi, Cortex-A72 (`-raspi`  | 2     | ARM64,                | 7.6Gi | Swissbit SB AFNI0 microSD (`sbdm.prom` populated,              | `nbn_wh`         | `5.15.0-1064-raspi`                |
-|   kernel, no dmidecode)             |       |   4-core Cortex-A72   |       |   `smartmon.prom` header-only — same split as `rct`/`wh`)      |                  |   / `5.15.0-1078-raspi`            |
+| Chassis                               | Count | CPU                    | RAM   | Storage                                                         | Flavor           | Kernel                         |
+| ------------------------------------- | ----- | ---------------------- | ----- | --------------------------------------------------------------- | ---------------- | ------------------------------ |
+| AAEON BOXER-6641                      | 11    | Intel Core i5-8500T    | 15Gi  | Transcend TS128GSSD420K SSD                                     | `nbn_accelerate` | `5.15.0-119-generic`           |
+|                                       |       |   @ 2.10GHz            |       |                                                                 |                  |   (fleet-uniform)              |
+| AAEON BOXER-6404                      | 15    | Intel Celeron J1900    | 7.7Gi | Innodisk CFast 3ME3                                             | `nbn_accelerate` | `5.15.0-117-generic` (2        |
+|                                       |       |   @ 1.99GHz            |       |                                                                 |                  |   outliers — see below)        |
+| Raspberry Pi, Cortex-A72 (`-raspi`    | 2     | ARM64,                 | 7.6Gi | Swissbit SB AFNI0 microSD (`sbdm.prom` populated,               | `nbn_wh`         | `5.15.0-1064-raspi`            |
+|   kernel, no dmidecode)               |       |   4-core Cortex-A72    |       |   `smartmon.prom` header-only — same split as `rct`/`wh`)       |                  |   / `5.15.0-1078-raspi`        |
 
 Same BOXER-6641/BOXER-6404 chassis family already documented for the `rcp` fleet (`amata-smc01` was independently confirmed BOXER-6641 during the earlier disk-fault incident) — this is not new
 hardware, just the first time it's been inventoried for this specific cluster.
@@ -466,11 +478,11 @@ The scan is `-xdev`, so it is forward-compatible with the structural fix: anythi
 Operator, 2026-09-22: only RPi and WH boxes run overlayroot. x86 SMCs have a plain LVM/ext4 root (`overlayroot=""` in `/etc/overlayroot.conf`), so an `apt install` survives a reboot there. Scratch
 data that must not touch disk goes on a tmpfs mount, and those mounts differ box to box:
 
-| Box (x86)          | `/`  | `/tmp` | `/run` | `/dev/shm` |
-| ------------------ | ---- | ------ | ------ | ---------- |
-| mowanjum-smc01     | ext4 | tmpfs  | tmpfs  | tmpfs      |
-| hope-vale-smc01    | ext4 | ext4   | tmpfs  | tmpfs      |
-| horn-island-smc01  | ext4 | —      | tmpfs  | —          |
+| Box (x86)         | `/`  | `/tmp` | `/run` | `/dev/shm` |
+| ----------------- | ---- | ------ | ------ | ---------- |
+| mowanjum-smc01    | ext4 | tmpfs  | tmpfs  | tmpfs      |
+| hope-vale-smc01   | ext4 | ext4   | tmpfs  | tmpfs      |
+| horn-island-smc01 | ext4 | —      | tmpfs  | —          |
 
 `—` = not checked.
 
@@ -478,8 +490,8 @@ Use `/run` (systemd's tmpfs) for throwaway files and check it with `stat -f -c %
 `/var/lib/node_exporter/textfile_collector`, `/var/lib/prometheus` and `/var/log/smc-groups` (the last from `/etc/tmpfiles.d/smc-log-groups.conf`).
 
 **fping** (2026-09-22): not in any ansible-wifi role. Installed by hand with apt (5.1-1, jammy) on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability
-pre-check (`wc-local/scripts/collector/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That script
-falls back to `ping`, and a fleet install belongs in an ansible-wifi role.
+pre-check (`wc-local/scripts/collector/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That
+script falls back to `ping`, and a fleet install belongs in an ansible-wifi role.
 
 **fping fleet install (2026-09-23, operator: "install fping where needed").** A survey of all 36 `<site>-smc01` nodes in Nautobot found fping on only those three; `apt-get install -y fping` (5.1-1,
 jammy) then ran on the other 32 reachable boxes plus aurukun-smc02 and aurukun-smc03, all x86 22.04 with an ext4 root except bungardi and darlngunaya (aarch64, no overlay mounted, so the install
@@ -489,15 +501,14 @@ with the command passed as separate ssh arguments is re-joined on the box, so `c
 ansible-wifi role, so a reimaged box loses it: the durable fix is a package entry in the base role.
 
 **fping approval per flavour, and the install guard (2026-09-27, operator: "I am fine with installing fping to rcp and nbn_accelerate flavors when needed").** fping may be installed wherever it is
-missing on any `rcp` or `nbn_accelerate` box; any other package, or any other flavour, needs the box chosen one by one. unified-network-controller's `wc-local/scripts/smc/smc_package_check.py` builds its
-node list from every Nautobot Location with a programme tenant, so seeding the nine `smc_ltp` Locations that day had silently widened `--install` to nine more production boxes; its `install_targets`
-guard now installs only on a node whose package is approved for its flavour (`APPROVED_INSTALLS`), whose SMC Device exists in Nautobot, or that was named with `--nodes`. Both approved flavours are x86
-with a plain ext4 root, so the approval never meets an overlayroot (those are the RPi and WH flavours: `rct`, `wh`, `nbn_wh`); `nbn_wh` stays skipped.
+missing on any `rcp` or `nbn_accelerate` box; any other package, or any other flavour, needs the box chosen one by one. unified-network-controller's `wc-local/scripts/smc/smc_package_check.py` builds
+its node list from every Nautobot Location with a programme tenant, so seeding the nine `smc_ltp` Locations that day had silently widened `--install` to nine more production boxes; its
+`install_targets` guard now installs only on a node whose package is approved for its flavour (`APPROVED_INSTALLS`), whose SMC Device exists in Nautobot, or that was named with `--nodes`. Both
+approved flavours are x86 with a plain ext4 root, so the approval never meets an overlayroot (those are the RPi and WH flavours: `rct`, `wh`, `nbn_wh`); `nbn_wh` stays skipped.
 
-**fping absent on yakanarra-smc01 (2026-10-15, read-only check from apn-unc01's tbot).** `command -v fping` (one quoted remote command) printed
-nothing on this `rcp` box, so the 2026-09-23 fleet install did not reach it (or a reimage removed it). iputils `ping -c 4 -W 1 -n <ip>` is present
-and answered in 12 s cold through Teleport (4/4 to yakanarra-sm-1, rtt 17.5/19.7/21.0 ms); unified-network-controller's Device Ping uses
-iputils `ping` for that reason and does not depend on fping.
+**fping absent on yakanarra-smc01 (2026-10-15, read-only check from apn-unc01's tbot).** `command -v fping` (one quoted remote command) printed nothing on this `rcp` box, so the 2026-09-23 fleet
+install did not reach it (or a reimage removed it). iputils `ping -c 4 -W 1 -n <ip>` is present and answered in 12 s cold through Teleport (4/4 to yakanarra-sm-1, rtt 17.5/19.7/21.0 ms);
+unified-network-controller's Device Ping uses iputils `ping` for that reason and does not depend on fping.
 
 ### Checking Overlayroot Status
 
@@ -554,13 +565,11 @@ that state — confirmed live on amata-smc01, see the storage incident in `06_fa
 read-only, do not assume `smc_disk_failover` will cut over automatically — verify EFI tooling is actually responsive (`efibootmgr -v`) before relying on it, and be ready to set the one-time boot entry
 manually or fall back to a BIOS/UEFI console boot to the alternate disk.
 
-**Mechanics read at source and live (2026-10-14, smc-resiliency x86 plan).** `smc_bases.yml` applies the role to every `rcp` and `nbn_accelerate` box. It installs
-os-prober, sets `GRUB_DISABLE_OS_PROBER=false`, copies `/disk_failover.sh` and runs it hourly (minute 13): 24 failed hours of pings to 8.8.8.8, 8.8.4.4 and
-1.1.1.1 (counter in `/var/log/internet_failure_count`) set `BootNext` to another `ubuntu` entry and reboot a minute later. On a one-disk BOXER-6404
-(jigalong-smc01: one 60 GB CFast, entries `ubuntu`, `UEFI OS`, `Hard Drive`) there is no other `ubuntu` entry, so the script exits 1 every hour and never
-reboots. BOXER-6641 (horn-island-smc01) has two 119 GB SSDs, each ESP + ext4 root, one `ubuntu` entry per disk. Neither box loads a hardware watchdog
-(no `/dev/watchdog`), though `iTCO_wdt`, `it87_wdt` and `f71808e_wdt` ship with the kernel; both run systemd 249. Operator, 2026-10-14: future x86 SMCs
-have one disk; no two-disk models.
+**Mechanics read at source and live (2026-10-14, smc-resiliency x86 plan).** `smc_bases.yml` applies the role to every `rcp` and `nbn_accelerate` box. It installs os-prober, sets
+`GRUB_DISABLE_OS_PROBER=false`, copies `/disk_failover.sh` and runs it hourly (minute 13): 24 failed hours of pings to 8.8.8.8, 8.8.4.4 and 1.1.1.1 (counter in `/var/log/internet_failure_count`) set
+`BootNext` to another `ubuntu` entry and reboot a minute later. On a one-disk BOXER-6404 (jigalong-smc01: one 60 GB CFast, entries `ubuntu`, `UEFI OS`, `Hard Drive`) there is no other `ubuntu` entry,
+so the script exits 1 every hour and never reboots. BOXER-6641 (horn-island-smc01) has two 119 GB SSDs, each ESP + ext4 root, one `ubuntu` entry per disk. Neither box loads a hardware watchdog (no
+`/dev/watchdog`), though `iTCO_wdt`, `it87_wdt` and `f71808e_wdt` ship with the kernel; both run systemd 249. Operator, 2026-10-14: future x86 SMCs have one disk; no two-disk models.
 
 ### rcp Disk Write Profile (confirmed jigalong-smc01, 2026-04-20; re-confirmed 3 more nodes 2026-07-20)
 
@@ -682,15 +691,15 @@ known-good nodes is a probe bug, not a fleet event. All three were wrong-path as
 
 | Wrong check                                | Correct check                          | Why                                                                                                            |
 | ------------------------------------------ | -------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `test -L /var/log/interfacecheck`          | `test -L /var/log/interfacecheck.log`  | `smc_rsyslog` symlinks the **log file**, not a directory:                                                      |
-|                                            |                                        |   `/var/log/interfacecheck.log -> /var/log/smc-groups/interfacecheck.log`. squid and mosquitto *are* directory |
-|                                            |                                        |   symlinks, so the three are not symmetrical.                                                                  |
-| `test -L /opt/apn-mqtt-client/status.json` | `find / -maxdepth 5 -name status.json -path '*mqtt*'`    | The app lives at `/run/apn-mqtt-client/` (a real file, already on tmpfs since `/run` is tmpfs) on most nodes,  |
-|                                            |                   |   or `/var/www/apn-mqtt-client/` (a symlink into `/run`) on others. Never `/opt/`. Both forms are the *fixed*  |
-|                                            |                                        |   state — a real file under `/run` is not a gap.                                                               |
-| `systemctl is-active fluent-bit`           | `pgrep -c fluent-bit`                  | fluent-bit has **no systemd unit**. `graylog-sidecar` spawns it directly as a child:                           |
-|                                            |                                        |   `/opt/fluent-bit/bin/fluent-bit -c /var/lib/graylog-sidecar/generated/<id>/apn-gelf-http.conf`. `is-active`  |
-|                                            |                                        |   returns `inactive` on a perfectly healthy node.                                                              |
+| `test -L /var/log/interfacecheck` | `test -L /var/log/interfacecheck.log` | `smc_rsyslog` symlinks the **log file**, not a directory: |
+|  |  |   `/var/log/interfacecheck.log -> /var/log/smc-groups/interfacecheck.log`. squid and mosquitto |
+|  |  |   *are* directory symlinks, so the three are not symmetrical. |
+| `test -L /opt/apn-mqtt-client/status.json` | `find / -maxdepth 5 -name status.json -path '*mqtt*'` | The app lives at `/run/apn-mqtt-client/` (a real file, already on tmpfs since `/run` is tmpfs) on |
+|  |  |   most nodes, or `/var/www/apn-mqtt-client/` (a symlink into `/run`) on others. Never `/opt/`. |
+|  |  |   Both forms are the *fixed* state — a real file under `/run` is not a gap. |
+| `systemctl is-active fluent-bit` | `pgrep -c fluent-bit` | fluent-bit has **no systemd unit**. `graylog-sidecar` spawns it directly as a child: |
+|  |  |   `/opt/fluent-bit/bin/fluent-bit -c /var/lib/graylog-sidecar/generated/<id>/apn-gelf-http.conf`. |
+|  |  |   `is-active` returns `inactive` on a perfectly healthy node. |
 
 **Rule:** before recording a negative status finding, check whether the *known-good* nodes also fail it. If they do, fix the probe, not the fleet. Recording these three unverified would have produced
 three false fleet-wide regressions in the canonical tracker.
@@ -733,16 +742,17 @@ for `fatrace`.
 Some of the largest writers on an SMC fire **once or twice a day for a few seconds** and move hundreds of MB. No sampling window of practical length catches them. Two independent windows (300 s and
 600 s) run on 2026-08-26 agreed closely on continuous writers and **missed every one of the following**:
 
-| Writer                         | Volume per event                                                      | Notes                                                                                       |
-| ------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `snapd` snap refresh           | **image written twice** — `/var/lib/snapd/cache/` then                | Refresh times scatter across the clock (observed 02:25/10:00/14:23/17:20/19:55) — snapd's   |
-|                                |   `/var/lib/snapd/snaps/`. `lxd_40575.snap` = 115.3 MB × 2 = **230.6 MB** |   own randomised timer. Same node looks clean one day, heavy the next.                      |
-| `squidguard` blacklist refresh | 24.3 MB `.tar.gz` + 24.3 MB `.bak`, then extraction into a 624–657    | Observed at **15:29 on 7 of 9 nodes simultaneously** — one fleet-wide cron                  |
-|                                |   MB tree                                                             |                                                                                             |
-| `apt` metadata churn           | `pkgcache.bin` ~67 MB + `srcpkgcache.bin` ~67 MB + ~117 MB lists ≈    | Only on nodes where apt timers are unmasked                                                 |
-|                                |   250 MB/day                                                          |                                                                                             |
-| `dhcpd` lease-DB rewrite       | full-file rewrite, up to 294 MB                                       | Episodic. `dhcpd` measured 1.30 MB in one 5-min window and 0.02 MB in the next 10-min       |
-|                                |                                                                       |   window on the same node.                                                                  |
+| Writer                         | Volume per event                                                | Notes                                                                                             |
+| ------------------------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `snapd` snap refresh           | **image written twice** — `/var/lib/snapd/cache/` then          | Refresh times scatter across the clock (observed 02:25/10:00/14:23/17:20/19:55) — snapd's own     |
+|                                |   `/var/lib/snapd/snaps/`. `lxd_40575.snap` = 115.3 MB × 2 =    |   randomised timer. Same node looks clean one day, heavy the next.                                |
+|                                |   **230.6 MB**                                                  |                                                                                                   |
+| `squidguard` blacklist refresh | 24.3 MB `.tar.gz` + 24.3 MB `.bak`, then extraction into a      | Observed at **15:29 on 7 of 9 nodes simultaneously** — one fleet-wide cron                        |
+|                                |   624–657 MB tree                                               |                                                                                                   |
+| `apt` metadata churn           | `pkgcache.bin` ~67 MB + `srcpkgcache.bin` ~67 MB + ~117 MB      | Only on nodes where apt timers are unmasked                                                       |
+|                                |   lists ≈ 250 MB/day                                            |                                                                                                   |
+| `dhcpd` lease-DB rewrite       | full-file rewrite, up to 294 MB                                 | Episodic. `dhcpd` measured 1.30 MB in one 5-min window and 0.02 MB in the next 10-min window on   |
+|                                |                                                                 |   the same node.                                                                                  |
 
 **Method rule going forward: pair every sampling window with a 24 h large-file scan.** Neither alone is sufficient.
 
@@ -849,20 +859,19 @@ the unremediated auth-filter.
 
 ## AAEON DMI serials follow the BIOS build, not the OS (fleet survey 2026-09-29)
 
-Read-only `dmidecode` over every reachable x86 SMC (unified-network-controller `captures/smc-dmi-serial-survey-20260929_1829.tsv`). The system serial is a
-placeholder on every box; the baseboard serial is real or a placeholder by BIOS build, which marks the factory batch:
+Read-only `dmidecode` over every reachable x86 SMC (unified-network-controller `captures/smc-dmi-serial-survey-20260929_1829.tsv`). The system serial is a placeholder on every box; the baseboard
+serial is real or a placeholder by BIOS build, which marks the factory batch:
 
-| Model | BIOS | Baseboard serial | Boxes |
-|---|---|---|---|
-| BOXER-6404 | B404BM16 (2022-05-18) | real (`2401…`, `2302…`, `2600…`) | 14 of 14 |
-| BOXER-6404 | B404BM14 (2019-02-19), B404BM10 (2015-07-16, kalumburu) | `To be filled by O.E.M.` | 10 of 10 |
-| BOXER-6641 | B641HM17 (2021-09-08) | real (`24A0…`, `2400…`, `2302…`) | 12 of 13 (doomadgee: `Default string`) |
-| BOXER-6641 | B641HM20 (2024-09-19) | `Default string` | 3 of 3 (beagle-bay, old-looma, warburton) |
+| Model      | BIOS                                                    | Baseboard serial                 | Boxes                                     |
+| ---------- | ------------------------------------------------------- | -------------------------------- | ----------------------------------------- |
+| BOXER-6404 | B404BM16 (2022-05-18)                                   | real (`2401…`, `2302…`, `2600…`) | 14 of 14                                  |
+| BOXER-6404 | B404BM14 (2019-02-19), B404BM10 (2015-07-16, kalumburu) | `To be filled by O.E.M.`         | 10 of 10                                  |
+| BOXER-6641 | B641HM17 (2021-09-08)                                   | real (`24A0…`, `2400…`, `2302…`) | 12 of 13 (doomadgee: `Default string`)    |
+| BOXER-6641 | B641HM20 (2024-09-19)                                   | `Default string`                 | 3 of 3 (beagle-bay, old-looma, warburton) |
 
-Ubuntu 22.04.1, .3 and .4 appear on both sides, so the OS does not decide it; `dmidecode` only reads the SMBIOS table the factory wrote. For the 14 boxes with
-no real serial, unified-network-controller's SMC seed records the identity anchor (lowest port MAC) as the serial: hex, upper case, no separators, leading
-zeros dropped (`00:07:32:92:3F:E7` -> `732923FE7`; operator, 2026-09-29). Two boxes answer to `mungkarta-smc01`: the nbn one is a BOXER-6404, the apn one a
-Raspberry Pi (kernel `5.15.0-1078-raspi`, no DMI), so a read by name must name the proxy.
+Ubuntu 22.04.1, .3 and .4 appear on both sides, so the OS does not decide it; `dmidecode` only reads the SMBIOS table the factory wrote. For the 14 boxes with no real serial,
+unified-network-controller's SMC seed records the identity anchor (lowest port MAC) as the serial: hex, upper case, no separators, leading zeros dropped (`00:07:32:92:3F:E7` -> `732923FE7`; operator,
+2026-09-29). Two boxes answer to `mungkarta-smc01`: the nbn one is a BOXER-6404, the apn one a Raspberry Pi (kernel `5.15.0-1078-raspi`, no DMI), so a read by name must name the proxy.
 
 ## Cambium radio and AP estate by flavour (operator-stated 2026-09-14)
 
@@ -901,30 +910,31 @@ Full analysis, evidence and tests live in the cambium-swap project; do not dupli
 The upper layer is a 3.9–4.1 GB tmpfs. Daily `rise_watchdog_disk_used_pct` climbs 3–5 points a day (~120–200 MB) until a reboot, or until the watchdog's 70% cleanup holds it at 65–74%.
 `scripts/overlay-usage-breakdown.sh` (read-only) measured:
 
-| Consumer | laramba | mimbi | canteen-creek | Cause |
-| --- | --- | --- | --- | --- |
-| `auth.log` + `.1` | 550 MB | ~300 MB | 65 MB | Portal `sudo iptables` / `sudo rmtrack`: three lines per call (command, PAM open, PAM close); 409,346 sessions in one weekly rotation at laramba |
-| `syslog` + `.1` | 242 MB | 230 MB | 163 MB | Weekly rotation, `.1` uncompressed (delaycompress), healthcheck restart chatter |
-| journal | 416 MB | 240 MB | 424 MB | See the journald section below |
-| squidGuard | 316 MB | 609 MB | 293 MB | `blocklists_download.sh && blocklists_update.sh` at 03:29 and 15:29; mimbi keeps `db` and `newdb` |
-| snapd | 315 MB | 546 MB | 315 MB | `lxd`, `core20`, `core22` refreshing; mimbi keeps two revisions |
-| apt | 351 MB | 351 MB | 351 MB | `apt-daily` / `apt-daily-upgrade` timers still active with overlay on |
-| `fluent-bit.log` | – | – | 250 MB | Error logging during the Graylog cert outage |
+| Consumer          | laramba | mimbi   | canteen-creek | Cause                                                                                                                                        |
+| ----------------- | ------- | ------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auth.log` + `.1` | 550 MB  | ~300 MB | 65 MB         | Portal `sudo iptables` / `sudo rmtrack`: three lines per call (command, PAM open, PAM close); 409,346 sessions in one weekly rotation        |
+|                   |         |         |               |   at laramba                                                                                                                                 |
+| `syslog` + `.1`   | 242 MB  | 230 MB  | 163 MB        | Weekly rotation, `.1` uncompressed (delaycompress), healthcheck restart chatter                                                              |
+| journal           | 416 MB  | 240 MB  | 424 MB        | See the journald section below                                                                                                               |
+| squidGuard        | 316 MB  | 609 MB  | 293 MB        | `blocklists_download.sh && blocklists_update.sh` at 03:29 and 15:29; mimbi keeps `db` and `newdb`                                            |
+| snapd             | 315 MB  | 546 MB  | 315 MB        | `lxd`, `core20`, `core22` refreshing; mimbi keeps two revisions                                                                              |
+| apt               | 351 MB  | 351 MB  | 351 MB        | `apt-daily` / `apt-daily-upgrade` timers still active with overlay on                                                                        |
+| `fluent-bit.log`  | –       | –       | 250 MB        | Error logging during the Graylog cert outage                                                                                                 |
 
-Fixes, largest first (none applied yet): command-scoped sudoers `Defaults!<alias> !syslog, !pam_session` for the portal commands (granted in `roles/smc_application`; check the option
-names against sudoers(5) for sudo 1.9.9 first); daily rotation with `maxsize` and immediate `compress` on overlay hosts; the journald cap; turn off the apt timers and empty the lists while
-overlay is on; hold or remove snaps; weekly squidGuard rebuild without keeping `newdb`; `Type=oneshot` healthcheck; watchdog cleanup from 60% without the Graylog gate. The gate never opens
-on WH: no `rise_watchdog_graylog_*` series exist for any WH site, so rotated logs are never purged.
+Fixes, largest first (none applied yet): command-scoped sudoers `Defaults!<alias> !syslog, !pam_session` for the portal commands (granted in `roles/smc_application`; check the option names against
+sudoers(5) for sudo 1.9.9 first); daily rotation with `maxsize` and immediate `compress` on overlay hosts; the journald cap; turn off the apt timers and empty the lists while overlay is on; hold or
+remove snaps; weekly squidGuard rebuild without keeping `newdb`; `Type=oneshot` healthcheck; watchdog cleanup from 60% without the Graylog gate. The gate never opens on WH: no
+`rise_watchdog_graylog_*` series exist for any WH site, so rotated logs are never purged.
 
 ## RISE journald is sized against the SD card, not the overlay (honeymoon-bay-smc01, 2026-10-07)
 
-The `smc_rise_logcaps` warning "Oversized files found that rise_logcap will never truncate" listing `system@...journal` files at exactly 67108864 bytes is a boundary false positive: the scan
-uses `>=` against `hard_cap_mb: 64`, journal files are binary (so "ineligible"), and journald grows files in 8 MiB steps, so 64 MiB is a natural size. Archived journals are sealed and never
-written, so they never copy_up; the real risk is journald's own limits.
+The `smc_rise_logcaps` warning "Oversized files found that rise_logcap will never truncate" listing `system@...journal` files at exactly 67108864 bytes is a boundary false positive: the scan uses `>=`
+against `hard_cap_mb: 64`, journal files are binary (so "ineligible"), and journald grows files in 8 MiB steps, so 64 MiB is a natural size. Archived journals are sealed and never written, so they
+never copy_up; the real risk is journald's own limits.
 
-Live on honeymoon-bay-smc01 (systemd 249, overlay not yet enabled, 57G ext4 root, no journald overrides): `System Journal ... is 328.0M, max 4.0G`. Defaults are 10% of the filesystem capped at
-4G, file size one eighth of that capped at 128M (journald.conf(5)). Once overlayroot is on, that 4G limit is meaningless against the tmpfs upper layer. Why the two files closed at 64 MiB (not 128M)
-is UNVERIFIED; no journal messages survive in either window.
+Live on honeymoon-bay-smc01 (systemd 249, overlay not yet enabled, 57G ext4 root, no journald overrides): `System Journal ... is 328.0M, max 4.0G`. Defaults are 10% of the filesystem capped at 4G,
+file size one eighth of that capped at 128M (journald.conf(5)). Once overlayroot is on, that 4G limit is meaningless against the tmpfs upper layer. Why the two files closed at 64 MiB (not 128M) is
+UNVERIFIED; no journal messages survive in either window.
 
 Fix drafted in ansible-wifi (branch `rise`, uncommitted at time of writing): `rise_logcaps.journald` (`max_use: 200M`, `max_file: 32M`, `max_file` must stay below `hard_cap_mb`) deployed by
 `smc_rise_logcaps` as `/etc/systemd/journald.conf.d/50-rise.conf`, with a `Restart journald` handler, and `/var/log/journal` added to `rise_logcaps.exclude_paths` in rct, wh and nbn_wh. Without the
@@ -935,9 +945,8 @@ Repo-search gotcha: `grep` on this Mac is aliased to ugrep, which ignores `--inc
 **Verified on pago-point-smc01 (stage1 canary, 2026-10-07 13:32):** stage1 passed the preflight that had failed on a 64 MiB archived journal. After the reboot: overlayroot active (tmpfs upper 3.9G,
 247M used), `50-rise.conf` present, journald reports `System Journal ... is 112.0M, max 200.0M`, and the logcaps report shows `ineligible 0`.
 
-**Correction (2026-10-07):** after overlayroot is on, journald does not keep the 4G ceiling: it sizes against the filesystem holding `/var/log/journal`,
-which is then the tmpfs upper layer (default about 10% of 3.9G, ~390M; see the 2026-09-03 jarlmadangah-burru measurement). The 200M pin is still the
-tighter, deterministic bound and is what clears the preflight.
+**Correction (2026-10-07):** after overlayroot is on, journald does not keep the 4G ceiling: it sizes against the filesystem holding `/var/log/journal`, which is then the tmpfs upper layer (default
+about 10% of 3.9G, ~390M; see the 2026-09-03 jarlmadangah-burru measurement). The 200M pin is still the tighter, deterministic bound and is what clears the preflight.
 
 ## Raspberry Pi SMC identity, ports and bootloader (rct and wh, 2026-10-08)
 
@@ -946,71 +955,79 @@ firmware manifest are in [vendor-sources-raspberry-pi-20261008_1043/](vendor-sou
 [firmware-files/raspberry-pi/](../firmware-files/raspberry-pi/).
 
 **Identity.** There is no DMI: `dmidecode` prints nothing. The model is in `/proc/device-tree/model` (`Raspberry Pi 4 Model B Rev 1.5`) and `/proc/cpuinfo` `Revision: d03115`, which the official
-revision-codes table decodes as Model 4B, Revision 1.5, 8 GB, Sony UK, BCM2711. The SoC serial is in `/proc/device-tree/serial-number` and equals the cpuinfo `Serial` (for example
-`10000000624bb9a3`); it is unique per box, so it is the identity anchor in place of the x86 baseboard serial. The eth0 MAC (OUI `D8:3A:DD`) is not derived from the serial on the Pi 4 (serial
-`...624bb9a3`, eth0 `d8:3a:dd:29:4f:7f`), contrary to the older Pi assumption that the MAC repeats the serial's low bytes. OS: Ubuntu 22.04.1 LTS, kernel `5.15.0-1078-raspi`, aarch64, about 7 GB RAM.
+revision-codes table decodes as Model 4B, Revision 1.5, 8 GB, Sony UK, BCM2711. The SoC serial is in `/proc/device-tree/serial-number` and equals the cpuinfo `Serial` (for example `10000000624bb9a3`);
+it is unique per box, so it is the identity anchor in place of the x86 baseboard serial. The eth0 MAC (OUI `D8:3A:DD`) is not derived from the serial on the Pi 4 (serial `...624bb9a3`, eth0
+`d8:3a:dd:29:4f:7f`), contrary to the older Pi assumption that the MAC repeats the serial's low bytes. OS: Ubuntu 22.04.1 LTS, kernel `5.15.0-1078-raspi`, aarch64, about 7 GB RAM.
 
 **Ports.** One wired port, `eth0` (`bcmgenet`, 1 Gb/s), plus `wlan0` (`brcmfmac`). `eth0` carries the untagged WAN `/30` address and the tagged `eth0.500` (in `bridge_500`), `eth0.501` (in
 `bridge_501`), `vlan521` (`192.168.100.50/24`, the nbn_modem link) and `vlan522` (internet02). The x86 cabling convention in `02_service-map.md` (ports 1-2 internet, 3-4 switch trunks) does not apply:
 everything rides the one port into the MikroTik switch (skill-mikrotik). On areyonga `wlan0` is up as a 5 GHz access point (channel 36, 20 MHz, SSID `A8_Management`, type AP; `hostapd` and
 `wpa_supplicant` both active).
 
-**Probe.** [`scripts/pi_identity_probe.sh`](../scripts/pi_identity_probe.sh) (`just pi_identity_probe <proxy> <node>...`) reads all of the above in one read-only
-pass: device-tree model and serial, cpuinfo, dmidecode, os-release, NICs with MAC, driver and speed, bridges, VLANs and memory. Name the proxy; it is never guessed.
+**SD card identity and size (2026-10-21, `VERIFIED_PRIMARY`).** Asked by smc-resiliency (the storage CID as UNC's lookup key). Read-only over `tsh ssh --proxy=teleport.apn.au` on random current Pis
+(djirrbiyuk, kusi-block, charlotte-waters, babungi, then five more for size), all `Raspberry Pi 4 Model B Rev 1.5`: the card sits on the direct MMC path, so `/sys/block/mmcblk0/device/` exposes `cid`,
+`csd`, `serial`, `manfid`, `oemid`, `name`, `date` and the rest. Every card read is the same unbranded part: `manfid` 0x000000, `oemid` 0x5342, `name` `AFNI0`, size 62,277,025,792 bytes (a 64 GB
+card), manufacture month and year differ per card (read truncated); `serial` differs per card. So a CID is readable fleet-wide, but the
+manufacturer field identifies nothing: use the full CID as the key, never `manfid`, and pair it with the SoC serial (above). Values were printed truncated to six characters; no full CID was
+recorded. Command (ad hoc: no catalogued script reads the MMC fields; `pi_identity_probe.sh`
+could gain them):
 
-**SNMP.** No `snmpd` on any of the four (20-mile has only the net-snmp client package, `snmp` 5.9.1). The root is overlayroot, so a plain `apt install snmpd` would vanish at the next
-reboot (section 8). Operator decision 2026-10-08: no SNMP agent on the Pis for now; the x86 canary in `02_service-map.md` (snmpd on the SMC) stays x86 only.
+```bash
+# read-only, per host, with a kill deadline around tsh
+tr -d '\0' </proc/device-tree/model; ls /sys/block/mmcblk0/device/
+for f in cid serial manfid oemid name date; do printf '%s=' $f; sed 's/^\(.\{6\}\).*/\1.../' /sys/block/mmcblk0/device/$f; done
+lsblk -bdno NAME,SIZE /dev/mmcblk0
+```
+
+Screenshot: not applicable (no visual surface).
+
+**Probe.** [`scripts/pi_identity_probe.sh`](../scripts/pi_identity_probe.sh) (`just pi_identity_probe <proxy> <node>...`) reads all of the above in one read-only pass: device-tree model and serial,
+cpuinfo, dmidecode, os-release, NICs with MAC, driver and speed, bridges, VLANs and memory. Name the proxy; it is never guessed.
+
+**SNMP.** No `snmpd` on any of the four (20-mile has only the net-snmp client package, `snmp` 5.9.1). The root is overlayroot, so a plain `apt install snmpd` would vanish at the next reboot (section
+8). Operator decision 2026-10-08: no SNMP agent on the Pis for now; the x86 canary in `02_service-map.md` (snmpd on the SMC) stays x86 only.
 
 **Bootloader.** All four run bootloader EEPROM 2023-01-11 (VL805 `000138c0`). Upstream's default channel is 2026-09-23. Ubuntu's `rpi-eeprom` package carries only the 2022-01-25 image, older than what
 the boxes run, so `rpi-eeprom-update` wrongly reports "up to date"; compare `vcgencmd bootloader_version` with the manifest instead. Read the 2026-09-23 release notes (MFG-version check) before any
 update.
 
-**A/B boot support (2026-10-14, `VERIFIED_PRIMARY`):** the 2023-01-11 bootloader already supports partition-level A/B through `autoboot.txt` with
-`tryboot_a_b=1` (Pi 4 EEPROM beta 2022-10-18, default 2022-12-01): a one-shot `reboot "0 tryboot"` boots the other slot once and any later reboot returns
-to the committed one. Whether it honours `autoboot.txt` on a GPT card is not yet tested. Source and design: the smc-resiliency project
-(`/Volumes/Data/_ai/_project/project_stuff/apn/smc-resiliency/docs/pi/`).
+**A/B boot support (2026-10-14, `VERIFIED_PRIMARY`):** the 2023-01-11 bootloader already supports partition-level A/B through `autoboot.txt` with `tryboot_a_b=1` (Pi 4 EEPROM beta 2022-10-18, default
+2022-12-01): a one-shot `reboot "0 tryboot"` boots the other slot once and any later reboot returns to the committed one. Whether it honours `autoboot.txt` on a GPT card is not yet tested. Source and
+design: the smc-resiliency project (`/Volumes/Data/_ai/_project/project_stuff/apn/smc-resiliency/docs/pi/`).
 
 ## Overlay building blocks already on the fleet (read 2026-10-15)
 
 Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for unified-network-controller's direct device reach proposal (UNC options register D1.2, proposed, not decided):
 
-| SMC | Flavour | Kernel | `wireguard.ko` | `xt_NETMAP.ko` | iptables | netplan.io | Root | bridge_500 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| umoona-smc01 | rcp | 5.15.0-43-generic | present | present | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1 | ext4 | 10.255.0.1/19 |
-| old-looma-smc01 | rcp | 5.15.0-101-generic | present | present | 1.8.7 (nf_tables) | 0.105-0ubuntu2~22.04.3 | ext4 | 10.255.0.1/19 |
-| adjamarragu-smc01 | rct | 5.15.0-1078-raspi | present | present | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1 | overlayroot | 10.255.0.1/24, 192.168.5.100/24 |
-| alamirra-smc01 | rct | 5.15.0-1078-raspi | present | present | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1 | overlayroot | 10.255.0.1/24, 192.168.5.100/24 |
+| SMC               | Flavour | Kernel             | `wireguard.ko` | `xt_NETMAP.ko` | iptables          | netplan.io             | Root        | bridge_500                      |
+| ----------------- | ------- | ------------------ | -------------- | -------------- | ----------------- | ---------------------- | ----------- | ------------------------------- |
+| umoona-smc01      | rcp     | 5.15.0-43-generic  | present        | present        | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1       | ext4        | 10.255.0.1/19                   |
+| old-looma-smc01   | rcp     | 5.15.0-101-generic | present        | present        | 1.8.7 (nf_tables) | 0.105-0ubuntu2~22.04.3 | ext4        | 10.255.0.1/19                   |
+| adjamarragu-smc01 | rct     | 5.15.0-1078-raspi  | present        | present        | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1       | overlayroot | 10.255.0.1/24, 192.168.5.100/24 |
+| alamirra-smc01    | rct     | 5.15.0-1078-raspi  | present        | present        | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1       | overlayroot | 10.255.0.1/24, 192.168.5.100/24 |
 
-- A kernel WireGuard tunnel and a NETMAP rule need **no package** on either platform: the modules ship in the stock Ubuntu 22.04 kernels, systemd-networkd 249 and netplan (jammy
-  manual lists `mode: wireguard`) configure the interface. `wireguard-tools` and `tailscale` are installed on none of the four; adding either is a package install under the
-  box-by-box approval rule.
+- A kernel WireGuard tunnel and a NETMAP rule need **no package** on either platform: the modules ship in the stock Ubuntu 22.04 kernels, systemd-networkd 249 and netplan (jammy manual lists `mode:
+  wireguard`) configure the interface. `wireguard-tools` and `tailscale` are installed on none of the four; adding either is a package install under the box-by-box approval rule.
 - The management prefix length differs by flavour: rcp `bridge_500` is /19, rct is /24 (with a second 192.168.5.100/24). Anything sized per site should take the /19.
 - On rct the files of any such change must reach the lower layer (overlayroot), or they vanish on reboot.
 
 ## What writes into /etc at run time, and the read-only /etc of the new image (2026-10-20)
 
 > **Learned 2026-10-20** · SMC run-time writes under /etc; systemd 255 confext · VERIFIED_PRIMARY · Source: smc-file-writing-analysis
-> `artifacts/20260827/write24/fatrace/*.counts` (nine x86 sites, 24 h, real disk); ansible-wifi 0979a596; smc-resiliency
-> `docs/pi/pi-spike-s2-r2-confext-options-20261020_1612.md` (G1 to G3, G16, G17, spike VM) · Falsifier: a 24 h fatrace on an x86 SMC with no
-> write under /etc, or a merged confext on systemd 255 that leaves /etc writable
-> Four writers put files in `/etc` while a box runs: `teleport-tags-exporter.py` (role smc_graylog, `STATE_DIR = Path("/etc")`:
-> `/etc/teleport-tags.env`, its `.tmp`, `/etc/teleport-cache.json`, 170 to 424 writes a day per site), fake-hwclock (smc_system, `/etc/fake-hwclock.data`,
-> hourly), the squid blocklist scripts (smc_squid, `/etc/squid/blocklists/`, twice a day) and multipathd (`/etc/multipath/`). On Pi and WH
-> boxes the same writes go to overlayroot's tmpfs, which fatrace does not see; reading `/media/root-rw/overlay/etc` (read-only, 2026-10-20 on
-> two rct and one wh box) adds `rise_logcap.py` (smc_rise_logcaps, wh: `/etc/logrotate.d/rise-logcaps`, on its timer) and snapd
-> (`/etc/systemd/system/snap-*` units at each snap refresh). The upper dir is the cheap census of a Pi's run-time `/etc` writes.
-> A census of four more Pis up over a year (`overlay-usage-breakdown.sh --etc`) showed only fake-hwclock and snapd in a year; machine-id,
-> `.pwd.lock` and multipath sit in the upper dir with 2022 times (opened for writing, not changed). On nbn_wh (no overlay yet) `fqdn2ip.py`
-> (`/etc/iptables/ipset.d/`) and `sslcertcopy.sh` (`/etc/ssl/<domain>/`) also write; fqdn2ip should be gone (13_known-issues, 2026-10-20). On the new read-only image (smc-resiliency) a merged site
-> confext makes all of `/etc` read-only and noexec on systemd 255, the OS's own scripts included; `--noexec=false` restores execution, not
-> writes, so these writers must move out of `/etc` (risk R18 there).
+> `artifacts/20260827/write24/fatrace/*.counts` (nine x86 sites, 24 h, real disk); ansible-wifi 0979a596; smc-resiliency `docs/pi/pi-spike-s2-r2-confext-options-20261020_1612.md` (G1 to G3, G16, G17,
+> spike VM) · Falsifier: a 24 h fatrace on an x86 SMC with no write under /etc, or a merged confext on systemd 255 that leaves /etc writable Four writers put files in `/etc` while a box runs:
+> `teleport-tags-exporter.py` (role smc_graylog, `STATE_DIR = Path("/etc")`: `/etc/teleport-tags.env`, its `.tmp`, `/etc/teleport-cache.json`, 170 to 424 writes a day per site), fake-hwclock
+> (smc_system, `/etc/fake-hwclock.data`, hourly), the squid blocklist scripts (smc_squid, `/etc/squid/blocklists/`, twice a day) and multipathd (`/etc/multipath/`). On Pi and WH boxes the same writes
+> go to overlayroot's tmpfs, which fatrace does not see; reading `/media/root-rw/overlay/etc` (read-only, 2026-10-20 on two rct and one wh box) adds `rise_logcap.py` (smc_rise_logcaps, wh:
+> `/etc/logrotate.d/rise-logcaps`, on its timer) and snapd (`/etc/systemd/system/snap-*` units at each snap refresh). The upper dir is the cheap census of a Pi's run-time `/etc` writes. A census of
+> four more Pis up over a year (`overlay-usage-breakdown.sh --etc`) showed only fake-hwclock and snapd in a year; machine-id, `.pwd.lock` and multipath sit in the upper dir with 2022 times (opened for
+> writing, not changed). On nbn_wh (no overlay yet) `fqdn2ip.py` (`/etc/iptables/ipset.d/`) and `sslcertcopy.sh` (`/etc/ssl/<domain>/`) also write; fqdn2ip should be gone (13_known-issues,
+> 2026-10-20). On the new read-only image (smc-resiliency) a merged site confext makes all of `/etc` read-only and noexec on systemd 255, the OS's own scripts included; `--noexec=false` restores
+> execution, not writes, so these writers must move out of `/etc` (risk R18 there).
 >
 > ```python
 > # ansible-wifi roles/smc_graylog/files/teleport-tags-exporter/teleport-tags-exporter.py (0979a596)
-> TP_YAML = Path("/etc/teleport.yaml")
-> OUT_ENV = Path("/etc/teleport-tags.env")
-> STATE_DIR = Path("/etc")
-> CACHE_JSON = STATE_DIR / "teleport-cache.json"
+> TP_YAML = Path("/etc/teleport.yaml") OUT_ENV = Path("/etc/teleport-tags.env") STATE_DIR = Path("/etc") CACHE_JSON = STATE_DIR / "teleport-cache.json"
 > ```
 >
 > Screenshot: not applicable (no visual surface).
@@ -1018,33 +1035,35 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 ## Executables under /etc and other new-image constraints from the S2 spike (2026-10-20)
 
 > **Learned 2026-10-20** · Ubuntu 22.04 rct and wh Pis; Ubuntu 24.04 spike VM · VERIFIED_PRIMARY · Source: read-only `find /etc -xdev -type f -perm
-> /111` on frasier-downs-station-smc01 and kunawarritji-smc01 (same set); smc-resiliency S2 reports · Falsifier: a Pi whose /etc holds no executables run at run time
-> Run at run time from `/etc`, so stopped by a noexec `/etc` (a merged confext on systemd 255 unless `--noexec=false`): `/etc/cron.daily` (8),
-> `/etc/networkd-dispatcher/routable.d` and `carrier.d` (4), `/etc/network/if-up.d` (2), `/etc/rc.local`, `/etc/update-motd.d` (13), the squid
-> blocklist scripts, `/etc/init.d` (43, for services without units). Also for the new image: Unbound needs systemd-resolved's stub off
-> (`DNSStubListener=no`, as `resolved.conf.j2` sets) and its remote-control keys from `unbound-control-setup` in `/etc/unbound/` (a per-box
-> secret written into `/etc`). `overlay-usage-breakdown.sh --etc` now prints the executables list too.
+> /111` on frasier-downs-station-smc01 and kunawarritji-smc01 (same set); smc-resiliency S2 reports · Falsifier: a Pi whose /etc holds no executables run at run time Run at run time from `/etc`, so
+> stopped by a noexec `/etc` (a merged confext on systemd 255 unless `--noexec=false`): `/etc/cron.daily` (8), `/etc/networkd-dispatcher/routable.d` and `carrier.d` (4), `/etc/network/if-up.d` (2),
+> `/etc/rc.local`, `/etc/update-motd.d` (13), the squid blocklist scripts, `/etc/init.d` (43, for services without units). Also for the new image: Unbound needs systemd-resolved's stub off
+> (`DNSStubListener=no`, as `resolved.conf.j2` sets) and its remote-control keys from `unbound-control-setup` in `/etc/unbound/` (a per-box secret written into `/etc`). `overlay-usage-breakdown.sh
+> --etc` now prints the executables list too.
 
 ## snapd, clock and NTP drift state on a rebuild of the writable area (2026-10-21)
 
 > **Learned 2026-10-21** · rct, wh and rcp on Ubuntu 22.04 · VERIFIED_PRIMARY · Source: read-only `tsh ssh` on wiligi-smc01 and turkey-bore-smc01
-> (rct), laramba-smc01 (wh), mowanjum-smc01 (rcp): `snap list`, `du`, `systemctl`, `timedatectl show`, the lower and upper copies under
-> `/media/root-ro` and `/media/root-rw/overlay`; ansible-wifi 0979a596 · Falsifier: an SMC whose time is synced by chrony or timesyncd, or one where an
-> lxd container exists
+> (rct), laramba-smc01 (wh), mowanjum-smc01 (rcp): `snap list`, `du`, `systemctl`, `timedatectl show`, the lower and upper copies under `/media/root-ro` and `/media/root-rw/overlay`; ansible-wifi
+> 0979a596 · Falsifier: an SMC whose time is synced by chrony or timesyncd, or one where an lxd container exists
 >
 > - **snapd still runs on Pis and on at least one rcp box.** All four boxes have snapd active and enabled, with `core20`, `core22`, `lxd` (5.0/stable)
->   and `snapd`. `/var/lib/snapd` is 625 to 923 MB: about 535 MB in the Pi image (lower layer) plus 315 to 546 MB of refreshed revisions in the tmpfs
->   upper layer. `lxd` is unused: `snap.lxd.daemon.service` is inactive and no containers exist; only `snap.lxd.daemon.unix.socket` is active. No
->   SMC unit or cron calls `/snap/`. mowanjum-smc01 (rcp) still has snapd, so the 2026-09-01 removal (14/17 rcp nodes, above) did not reach every rcp box.
+> and `snapd`. `/var/lib/snapd` is 625 to 923 MB: about 535 MB in the Pi image (lower layer) plus 315 to 546 MB of refreshed revisions in the tmpfs upper layer. `lxd` is unused:
+> `snap.lxd.daemon.service` is inactive and no containers exist; only `snap.lxd.daemon.unix.socket` is active. No SMC unit or cron calls `/snap/`. mowanjum-smc01 (rcp) still has snapd, so the
+> 2026-09-01 removal (14/17 rcp nodes, above) did not reach every rcp box.
 > - **Time is synced by ntpd** (`ntp` package, role `smc_ntpd`, `driftfile /var/lib/ntp/drift`), not chrony (chrony is installed only on
->   the Teleport, Jenkins and Graylog servers) and not timesyncd (masked). `timedatectl` shows `NTP=no` because it only tracks timesyncd. The
->   drift file is `/var/lib/ntp/drift` (-3.7 ppm on rcp, -10.7 and -11.1 ppm on the Pis), rewritten by ntpd while it runs.
+> the Teleport, Jenkins and Graylog servers) and not timesyncd (masked). `timedatectl` shows `NTP=no` because it only tracks timesyncd. The drift file is `/var/lib/ntp/drift` (-3.7 ppm on rcp, -10.7
+> and -11.1 ppm on the Pis), rewritten by ntpd while it runs.
 > - **fake-hwclock is installed and enabled on every flavour** (0.12; `load` at boot before sysinit, `save` at shutdown, plus `/etc/cron.hourly/fake-hwclock`).
->   Pis have no `/dev/rtc`; the x86 box has `/dev/rtc0`, so fake-hwclock does nothing useful there.
+> Pis have no `/dev/rtc`; the x86 box has `/dev/rtc0`, so fake-hwclock does nothing useful there.
 > - **On overlayroot the saved clock is a year old at boot.** The hourly save goes to the tmpfs upper layer, so after a reboot the Pi loads the
->   lower-layer copy: `2025-09-22 13:01:41` on laramba and `2025-09-21 04:51:03` on wiligi (the date the overlay was last switched off). Until ntpd
->   steps the clock, the box runs about 13 months in the past: TLS (Teleport, Graylog, the portal's Eclipse calls) can fail on certificate
->   dates. The drift file has the same split (lower copy from the same date).
+> lower-layer copy: `2025-09-22 13:01:41` on laramba and `2025-09-21 04:51:03` on wiligi (the date the overlay was last switched off). Until ntpd steps the clock, the box runs about 13 months in the
+> past: TLS (Teleport, Graylog, the portal's Eclipse calls) can fail on certificate dates. The drift file has the same split (lower copy from the same date).
+> - **ntpd steps a clock that is a year out** (read 2026-10-21 on wiligi (rct), laramba (wh), mowanjum (rcp)): `/etc/default/ntp` has
+> `NTPD_OPTS='-g'`, the unit runs `/usr/lib/ntp/ntp-systemd-wrapper`, and the running process is `/usr/sbin/ntpd -p /var/run/ntpd.pid -g -u ...`. `-g` lets the first correction exceed the 1000 s panic
+> limit. `ntp.conf` has no `tinker`; its servers are `0..3.au.pool.ntp.org`, so the box needs working DNS and internet before it can correct. x86 adds the local clock `127.127.1.0` (stratum 10), set
+> by `smc_ntpd/templates/ntp.conf.j2` only when `device_architecture == 'x86_64'`. The current-boot ntp journal has no step line on any of the three (Pi journals are empty for this boot; uptime on
+> wiligi is 47 weeks), so the boot-time step itself is not yet observed.
 >
 > Screenshot: not applicable (no visual surface).
 

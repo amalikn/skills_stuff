@@ -48,7 +48,11 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Target map
 
-- [ ] **Target map standard — promote after the pilot (pilot started 2026-09-27 in `unified-network-controller`).** A project-root `target-map.yaml`, beside `context-map.yaml`, is the source of truth for
+- [ ] **Target map standard: bootstrap and governance standard left (module promoted 2026-10-21).** Done 2026-10-21: `scripts/target_map.py` and
+  `scripts/plan_timeline.py` live here with their tests and [reference](references/target-map-and-timeline.md); unified-network-controller runs them
+  (renders byte-identical) and smc-resiliency adopted both. Left: `bootstrap` offers a starter map (`--init`), the checker template gains
+  `check_target_map`/`check_plan_timeline`, a governance standard whose field table is the `--schema` output, and `target_map.py` (1,702
+  lines, over skill-coder's module budget) split into a package: schema, readers, validator, renderer, starter, command line. History of the pilot: A project-root `target-map.yaml`, beside `context-map.yaml`, is the source of truth for
   a project's goals, targets and per-criterion status, and its tracker markdown is generated from it. The context map says where things are; the target map says where the project is going and how far
   it has got. Pilot files: [target-map.yaml](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/target-map.yaml),
   [scripts/render/target_map.py](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/scripts/render/target_map.py) (generic validator and renderer; `--schema` prints every field's level,
@@ -90,7 +94,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Ideas
 
-- [ ] **Plan tracker timeline as data** (2026-10-21, candidate in unified-network-controller `code-map.toml`): `scripts/render/plan_timeline.py`
+- [x] **Plan tracker timeline as data** (2026-10-21, candidate in unified-network-controller `code-map.toml`; promoted 2026-10-21 as `scripts/plan_timeline.py`): `scripts/render/plan_timeline.py`
   renders a plan tracker's Timeline from YAML with the schedule worked out from the dates (late, due today, done), plus its govcheck and
   `commit-gate`. Promote here once a second project (smc-resiliency) keeps its timeline as data.
 - [ ] **ADR template** — a starter `.archcore/adr/` template for common decision types (tool choice, data model, boundary design).

@@ -342,6 +342,14 @@
         "flow": {
           "$ref": "#/$defs/id",
           "description": "Another flow this step runs: drawn as a predefined process linked to that flow's page."
+        },
+        "when": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "A decision's case per branch: {target step id: label}; without it a two-way gate's branches read Yes and No (look.branch_labels)."
         }
       }
     },

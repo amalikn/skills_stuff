@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261021 Learned 2026-10-21 in `references/refactoring-and-promotion.md`: promote with `--project-root`, project strings as data (pilot byte-identical), and project checks loading the skill script by path.
 - 20261021 Learned 2026-10-21 in `references/testing.md`: prove a reformatter moved no content by comparing rebuilt structure cell by cell, with a negative test.
 - 20261021 Learned 2026-10-21 in `references/generated-artifacts.md`: a page rendered from the clock is rendered in the commit gate; its check notes, never fails, on date-only drift.
 - 20261021 Learned 2026-10-21 in `languages/python.md`: register a path-loaded module in `sys.modules` before `exec_module` when it defines a dataclass.

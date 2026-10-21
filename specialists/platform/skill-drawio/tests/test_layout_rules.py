@@ -159,7 +159,7 @@ class Arrows(unittest.TestCase):
         ids = {c.get("id") for c in flow.iter() if c.get("id")}
         self.assertTrue({"f-lane-0", "f-lane-1", "f-s-one", "f-s-two", "f-n-one", "f-e-one-two"} <= ids)
         self.assertNotIn("f-n-two", ids)   # step two has nothing under its title: its note is hidden (look.empty_notes, 2026-10-21)
-        self.assertEqual(next(c for c in flow.iter("mxCell") if c.get("id") == "f-e-one-two").get("value"), "2")
+        self.assertIn("2", next(c for c in flow.iter("mxCell") if c.get("id") == "f-e-one-two-lbl").get("value"))   # the router labels its arrow
         links = {u.get("link") for u in root.iter("UserObject") if u.get("link")}
         self.assertTrue({"data:page/id,flow-f", "data:page/id,overview"} <= links)
         self.assertIn("GENERATED", text.splitlines()[1])

@@ -156,7 +156,8 @@ def tracked(root: pathlib.Path, scopes: list[str]) -> list[pathlib.Path]:
         if any(rel.startswith(n) for n in nested):
             continue
         p = root / rel
-        if (rel and (p.suffix in HEADER_TYPES or p.name == "justfile") and not any(s in "/" + rel for s in SKIP_PARTS)
+        # p.is_file(): a tracked file deleted in the working tree (a move not yet committed, 2026-10-21) has no header to read.
+        if (rel and p.is_file() and (p.suffix in HEADER_TYPES or p.name == "justfile") and not any(s in "/" + rel for s in SKIP_PARTS)
                 and not p.name.endswith("-baseline.json")):  # machine-written ratchet data
             out.append(p)
     return sorted(out)

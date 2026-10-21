@@ -18,13 +18,15 @@ from .e2e import end_to_end_page
 from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
 from .model import option_blocks
 from .options import options_page
-from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, plan_runs, reserve, skip_arrow, step_width
+from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, plan_runs, reserve, step_width
+from .lanes import draw_lanes, run_tracks
+from .routing import branch_label, route_forward
 from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, fit_height, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
 
 #: Flow page geometry: lane heading width, least lane height, step column width, step box width and least height.
-LANE_H, STEP_H = 120, 92
+STEP_H = 92
 #: Note text budget (characters per line) and line height.
 NOTE_CHARS, NOTE_LINE_H = 44, 13   # font 10 draws about 12 px a line (measured 2026-10-21); 13 keeps a margin
 #: Step box text budget (200 px at font size 10) and line height.
@@ -96,70 +98,6 @@ def flow_header_lines(flow: dict, comps: dict[str, dict], number: int) -> list[s
             + [x for x in fields if x] + [BLANK, "[back to Overview]"])
 
 
-def _head_symbol_h(comp: dict, profile: Profile) -> float:
-    """The height a lane head's symbol needs for its text (0 for a plain head), so the lane is at least that tall plus a margin.
-
-    Args:
-        comp: the lane's component.
-        profile: the drawing profile.
-
-    Returns:
-        Pixels.
-    """
-    shape = lane_shape(comp, profile.kind_shapes)
-    if shape in ("process", "person"):
-        return 0.0
-    chars = int((LANE_HEAD_W - 12) / 6.5 * SHAPES[shape][1])
-    return fit_height(comp, profile, 16 + sum(wrapped_lines(x, chars) for x in (comp["name"], comp["kind"], comp["host"])) * 13)
-
-def _lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float, box_h: dict, box_w: dict, room: dict | None = None) -> tuple[list, list, list]:
-    """Draw one lane per component, in order of first use; each lane as tall as its tallest step.
-
-    Args:
-        page: the page.
-        flow: the flow.
-        comps: every component by id.
-        profile: the kind colours.
-        top: the first lane's top.
-        box_h: each step box's height.
-        box_w: each step box's width.
-        room: {(lane index, "top" or "bottom"): pixels} reserved for arrow runs along that edge.
-
-    Returns:
-        (lane component ids, lane tops, lane heights).
-    """
-    fid, steps = flow["id"], flow["steps"]
-    lanes: list[str] = []
-    for s in steps:
-        if s["actor"] not in lanes:
-            lanes.append(s["actor"])
-    width = LANE_HEAD_W + sum(box_w.values()) + len(steps) * col_gap(profile.look) + GAP
-    room = room or {}
-    lane_h = [max([LANE_H, _head_symbol_h(comps[cid], profile) + 16] + [box_h[s["id"]] + 28 for s in steps if s["actor"] == cid])
-              + room.get((li, "top"), 0) + room.get((li, "bottom"), 0) for li, cid in enumerate(lanes)]
-    lane_y = [top + sum(lane_h[:li]) for li in range(len(lanes))]
-    for li, cid in enumerate(lanes):
-        c = comps[cid]
-        fill, stroke = profile.style(c["kind"])
-        page.box(f"{fid}-lane-{li}", "", MARGIN, lane_y[li], width, lane_h[li], f"rounded=0;html=1;fillColor={fill};strokeColor={stroke};opacity=35;")
-        shape = lane_shape(c, profile.kind_shapes)
-        text = label(f"**{c['name']}**", c["kind"], c["host"])
-        if shape in ("process", "person"):
-            page.box(f"{fid}-lanehead-{li}", text, MARGIN, lane_y[li], LANE_HEAD_W, lane_h[li],
-                     comp_style(c["kind"], profile, "rounded=0;align=left;spacingLeft=6;" + status_style(c)
-                                + ("spacingRight=40;" if shape == "person" else "")), tooltip=f"health: {c['health']}")
-        else:   # a plain head panel, the symbol inside sized to its text (operator review 2026-10-21: a cloud stretched to the lane's height)
-            page.box(f"{fid}-lanehead-{li}", "", MARGIN, lane_y[li], LANE_HEAD_W, lane_h[li],
-                     comp_style(c["kind"], profile, "rounded=0;" + status_style(c)), tooltip=f"health: {c['health']}")
-            inner_w, inner_h = LANE_HEAD_W - 12, _head_symbol_h(c, profile)
-            page.box(f"{fid}-lanehead-{li}-shape", text, MARGIN + 6, lane_y[li] + (lane_h[li] - inner_h) / 2, inner_w, inner_h,
-                     comp_style(c["kind"], profile, "fontSize=10;" + status_style(c) + SHAPES[shape][0] + FIT.get(shape, ("",))[0]),
-                     tooltip=f"health: {c['health']}")
-        if shape == "person":   # a figure in the lane head's top right corner
-            page.box(f"{fid}-lanehead-{li}-icon", "", MARGIN + LANE_HEAD_W - 34, lane_y[li] + 8, 22, 40, PERSON_ICON)
-    return lanes, lane_y, lane_h
-
-
 def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: tuple) -> float:
     """Draw one step box, centred in its lane, and its note below the lanes.
 
@@ -190,7 +128,7 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
     page.box(f"{fid}-s-{s['id']}", label(*texts[s["id"]]), x, y, w, h,
              comp_style(comps[s["actor"]]["kind"], profile, "fontSize=10;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=6;"
                         + ("strokeWidth=2;" if gate else "") + SHAPES[shapes[s["id"]]][0]), tooltip=tip,
-             link=f"data:page/id,flow-{s['flow']}" if s.get("flow") else "")
+             link=f"data:page/id,flow-{s['flow']}" if s.get("flow") else "", solid=True)   # an obstacle for the router and the audit
     note = note_lines(s, k + 1)
     if len(note) == 1 and profile.look.get("empty_notes", "hide") == "hide":   # nothing under the title: no note (operator review, 2026-10-21)
         return 0
@@ -240,24 +178,27 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     plan = plan_runs(steps, [(a, b) for _cid, a, b, text, _st in edges if "back to" not in text])
     tg = float(profile.look.get("track_gap", 12))
     room = {key: reserve(n, tg) for key, n in plan["count"].items()}
-    lanes, lane_y, lane_h = _lanes(page, flow, comps, profile, top, box_h, box_w, room)
+    lanes, lane_y, lane_h = draw_lanes(page, flow, comps, profile, top, box_h, box_w, room)
     lefts = column_lefts([box_w[s["id"]] for s in steps], col_gap(profile.look))
     notes_top = top + sum(lane_h) + GAP
     note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts, room)) for k in range(len(steps))]
     used = list(dict.fromkeys(list(shapes.values()) + [lane_shape(comps[c], profile.kind_shapes) for c in lanes]))
     shape_legend(page, used, MARGIN, notes_top + max(note_h + [0]) + GAP * 2, fid)
     band = notes_top - GAP / 2
-    lane_box = {s["id"]: (lane_y[lanes.index(s["actor"])], lane_h[lanes.index(s["actor"])]) for s in steps}
+    by_id = {s["id"]: s for s in steps}
+    order = {s["id"]: k for k, s in enumerate(steps)}
+    lane_of = {s["id"]: lanes.index(s["actor"]) for s in steps}
+
+    used: set = set()
+    forward = [e for e in edges if "back to" not in e[3]]
+    forward.sort(key=lambda e: order[e[2]] - order[e[1]])   # short arrows first; the long ones then route around them
+    for cid, src, dst, _text, _style in forward:
+        text = branch_label(by_id[src], dst, order[dst] + 1, profile.look)
+        route_forward(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text), shapes[src] == "decision", col_gap(profile.look),
+                      run_tracks([lane_of[src], lane_of[dst]], (lane_y, lane_h), plan["count"], tg), used)
     for cid, src, dst, text, style in edges:
-        pin = ("exitPerimeter=0;" if shapes[src] in SLANTED else "") + ("entryPerimeter=0;" if shapes[dst] in SLANTED else "")
         if "back to" in text:
             band = back_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), band, profile.look["back_arrows"])
-            continue
-        how = plan["route"].get((src, dst))   # planned: a column or more in between, routed by the engine so it never crosses a step
-        drawn = how is not None and skip_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), (lane_box[src], lane_box[dst]),
-                                               col_gap(profile.look), how, tg)
-        if not drawn:
-            page.edge(cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", label=text, style=style + pin)
     return page
 
 
