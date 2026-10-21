@@ -95,7 +95,7 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 
 - One legend per encoding: a kind legend for box fills, a colour legend for arrow colours (one swatch per colour, plus the thin grey and the dot), a family legend listing each family's flows.
 - Place legends where they do not compete with the drawing (UNC: right of the group grid, the colour legend under the kind legend; the family legend at the bottom of the End-to-end page), and say what
-  a number on an arrow means.
+  a number on an arrow means. A count is written `×n` (operator, 2026-10-21), so it never reads as a flow step label such as `4.2`.
 - A flow index of clickable boxes (page links, see [file-format.md](file-format.md)) helps on a multi-page file.
 
 > **Learned 2026-10-21** · component symbols on the Overview and End-to-end pages · VERIFIED_PRIMARY · Source: `scripts/flowmap/shapes.py` (`component_shape`, `fit_height`, `person_badge`, `component_shapes_used`), `tests/test_shapes.py` (`ComponentShapeTests`) · Falsifier: a store drawn as a rectangle with `component_shapes` on, or a cylinder with it off

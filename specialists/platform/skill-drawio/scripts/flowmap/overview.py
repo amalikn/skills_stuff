@@ -283,8 +283,8 @@ class Overview:
         placed: list[Rect] = []
         for p in self.plans:
             lx, ly = route.count_spot(p["full"], [q["full"] for q in self.plans if q is not p], placed)
-            placed.append((lx - 20, ly - 15, 40, 30))
-            page.mark(f"ov-gl-{p['a']}-{p['b']}", label(f"**{p['n']}**"), lx, ly, 40, 30,
+            placed.append((lx - 24, ly - 15, 48, 30))   # "×n", a count, so it never reads as a flow step "4.2" (operator, 2026-10-21)
+            page.mark(f"ov-gl-{p['a']}-{p['b']}", label(f"**×{p['n']}**"), lx, ly, 48, 30,
                       f"text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor={self.tcol[p['b']]};labelBackgroundColor=#ffffff;",
                       owner=f"ov-gg-{p['a']}-{p['b']}", layer=f"ov-L-into-{p['b']}")
 
@@ -316,7 +316,7 @@ class Overview:
         fx = self.grid_right + 80
         head = [f"**{self.data['title']}**", BLANK,
                 f"Generated from {self.profile.map} by `{self.profile.command}`; do not edit. Updated {self.data['updated']}.", BLANK,
-                "**Thick arrows:** dependencies between groups; the number is how many box-to-box dependencies it stands for.",
+                "**Thick arrows:** dependencies between groups; ×n is how many box-to-box dependencies it stands for.",
                 "**Thin grey arrows:** inside a group; a box sits above what it needs.",
                 "**Boxes:** each lists what it needs from other groups; hover one for its health check.",
                 "**Flows:** each box in the flow list links to its page.",

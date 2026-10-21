@@ -30,7 +30,7 @@ def colour_legend(page: Page, x: float, y: float, thick: list) -> float:
     page.box("ov-leg-title", label("**Legend: arrow colours**"), x, y, w, 24, "text;html=1;align=left;fontSize=14;")
     y += 30
     page.box("ov-leg-h1", label("**Thick: dependencies into a group**",
-                                "Number on a thick arrow = how many box-to-box dependencies it stands for (one per box in the source group "
+                                "×n on a thick arrow = how many box-to-box dependencies it stands for (one per box in the source group "
                                 "needing a box in the target group, counted per need)"), x, y, w, 76,
              "text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=12;")
     y += 82

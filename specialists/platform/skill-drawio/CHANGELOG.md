@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261021 Overview thick-arrow counts read `×n` (operator, smc-resiliency: a bare number looked like a flow step `4.2`); header and legend say so; the arrows test asserts `×2`.
 - 20261021 Overview and End-to-end boxes take their lane head's symbol (`drawing.look.component_shapes`, default on; operator, smc-resiliency): clouds and cylinders sized for their outline (`shapes.FIT`), the person figure bottom right, "Shapes on this page" on both pages, an index-box legend on the Overview; two tests; Learned 2026-10-21 in `references/visual-style.md`. Every consumer's drawing changes at its next `just flows`.
 - 20261021 `option_pages`: several option pages by subject, each tab its title (no "Options:" prefix); `options` unchanged and byte-identical; ids unique across pages; two tests; Learned 2026-10-21 in `references/data-first-diagrams.md`.
 - 20261021 `profile.look_report`: `render_flowmap.py --write` names the map's pinned `look` keys and warns about a pin equal to the current default; projects list the look commented under `look: {}` so they follow future defaults; one test; Learned entry in `references/data-first-diagrams.md` updated.
