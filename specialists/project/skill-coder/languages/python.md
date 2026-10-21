@@ -101,3 +101,17 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > lines.insert(last, "from unc.drivers.transports import process")
 > ```
 
+> **Learned 2026-10-21** · python 3.14 (stdlib `dataclasses`, `importlib.util`) · VERIFIED_PRIMARY (the test module failed to import:
+> `AttributeError: 'NoneType' object has no attribute '__dict__'` in `dataclasses._is_type`) · Source: unified-network-controller
+> `tests/test_plan_timeline.py` loading `scripts/render/plan_timeline.py` (2026-10-21) · Falsifier: a module with a `@dataclass` and
+> `from __future__ import annotations` that loads by `spec_from_file_location` without a `sys.modules` entry
+> A test that loads a script by path must register the module in `sys.modules` before `exec_module` when the script defines a dataclass:
+> with postponed annotations, `dataclasses` looks the class's module up in `sys.modules` to resolve `ClassVar` and `InitVar` strings,
+> and an unregistered module is `None` there.
+>
+> ```python
+> spec = importlib.util.spec_from_file_location("plan_timeline", ROOT / "scripts/render/plan_timeline.py")
+> mod = importlib.util.module_from_spec(spec)
+> sys.modules["plan_timeline"] = mod   # before exec_module, or @dataclass fails at class creation
+> spec.loader.exec_module(mod)
+> ```

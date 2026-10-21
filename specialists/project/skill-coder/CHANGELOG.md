@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261021 Learned 2026-10-21 in `languages/python.md`: register a path-loaded module in `sys.modules` before `exec_module` when it defines a dataclass.
 - 20261021 Learned 2026-10-21 in `references/version-control-and-review.md`: per-project commit tool for a shared clone (shared lock, folder `git add -A --`, pathspec commit, rebase only on a clean tree; apn scripts/project_commit.py).
 - 20261021 Learned 2026-10-21 in `languages/shell.md`: macOS has no `timeout`; give a command a deadline with `perl -e 'alarm N; exec @ARGV'`.
 - 20261020 Learned 2026-10-20 (c) in `languages/shell.md`: a command reading stdin inside a script sent as `bash -s` swallows the rest of the script; `ssh -n`, `< /dev/null`. `references/errors-and-timeouts.md`: a stop handler ends its children in their own sessions first (registry, `end_all`; unified-network-controller 3f3bfcb).
