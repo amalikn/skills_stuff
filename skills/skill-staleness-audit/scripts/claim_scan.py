@@ -154,16 +154,39 @@ def count_actual(root: Path, unit: str, count_map: dict[str, str]) -> int | None
 PLACEHOLDER = re.compile(r"YYYY|MM-DD|hhmm|<|>|\*|\{|NN-|/NN\b|\.\.\.")
 
 
+#: Where a project declares its sibling roots and conditional paths: the single-file checker, or the split checker's config module
+#: (skill-ai-it's govcheck package; found 2026-10-21 when a split project's declared conditional paths were reported BROKEN).
+DECLARATION_FILES = ("scripts/check_governance.py", "scripts/govcheck/config.py")
+
+
 def project_declarations(root: Path) -> dict:
-    """SIBLING_ROOTS / SIBLING_BRANCHES / CONDITIONAL_PATHS from scripts/check_governance.py, by `ast` only."""
+    """SIBLING_ROOTS / SIBLING_BRANCHES / CONDITIONAL_PATHS from the project's checker, by `ast` only.
+
+    Args:
+        root: the project root.
+
+    Returns:
+        The three declarations, merged across DECLARATION_FILES (empty when none declares them).
+    """
     out: dict = {"SIBLING_ROOTS": {}, "SIBLING_BRANCHES": {}, "CONDITIONAL_PATHS": set()}
-    f = root / "scripts" / "check_governance.py"
+    for rel in DECLARATION_FILES:
+        _read_declarations(root / rel, out)
+    return out
+
+
+def _read_declarations(f: Path, out: dict) -> None:
+    """Merge one file's literal declarations into `out`.
+
+    Args:
+        f: the Python file to parse (never executed).
+        out: the declarations so far, updated in place.
+    """
     if not f.is_file():
-        return out
+        return
     try:
         tree = ast.parse(f.read_text(encoding="utf-8"))
     except (SyntaxError, UnicodeDecodeError, OSError):
-        return out
+        return
     for node in tree.body:
         target = (node.target if isinstance(node, ast.AnnAssign) else
                   node.targets[0] if isinstance(node, ast.Assign) and len(node.targets) == 1 else None)
@@ -178,8 +201,10 @@ def project_declarations(root: Path) -> dict:
             continue
         if lit is None:
             continue
-        out[target.id] = set(lit) if target.id == "CONDITIONAL_PATHS" else dict(lit)
-    return out
+        if target.id == "CONDITIONAL_PATHS":
+            out[target.id] |= set(lit)
+        else:
+            out[target.id].update(dict(lit))
 
 
 class Siblings:

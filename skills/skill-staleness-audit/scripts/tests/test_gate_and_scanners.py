@@ -220,6 +220,14 @@ class ClaimClasses(Fixture):
         self.assertEqual(self.states(d, "memory-bank/progress.md"), ["CONDITIONAL"])
         self.assertEqual(self.states(d, "docs/missing.md"), ["BROKEN"])
 
+    def test_split_checker_config_is_read(self) -> None:
+        """A project whose checker keeps its declarations in scripts/govcheck/config.py (skill-ai-it's split checker) has them honoured
+        too (2026-10-21: a split project's declared conditional paths came out BROKEN)."""
+        write(self.root, "scripts/govcheck/config.py", 'CONDITIONAL_PATHS: frozenset[str] = frozenset({\n    "package.json",  # no Node\n})\n')
+        d = self.scan("Use `package.json` and `Taskfile.yml`.\n")
+        self.assertEqual(self.states(d, "package.json"), ["CONDITIONAL"])
+        self.assertEqual(self.states(d, "Taskfile.yml"), ["CONDITIONAL"])
+
     def test_version_numbers_are_not_counts(self) -> None:
         d = self.scan("Read the 6.6.0.3 docs and v2 files.\nThere are 1,225 checks.\n")
         claims = [c["claim"] for c in d["claims"] if c["type"] == "count"]
