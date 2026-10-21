@@ -72,6 +72,12 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Audit and preflight
 
+- [ ] **`upgrade_navigation_control_layer.py` writes without `--apply`** (found 2026-10-21, unified-network-controller): it writes unless
+  `--dry-run` is given, against the write-gate rule (skill-coder `safety-and-writes`), and `budget_plan.py` tells the user to run it bare when AGENTS.md
+  is over budget. It failed early there only because PyYAML was missing. Give it `--apply` (plan by default) and print the plan command in the budget hint.
+- [ ] **Budget audit reported a line LOST that was not** (2026-10-21, unified-network-controller, `just budget --apply`): "SCRATCHPAD.md: 2 line(s)
+  lost" for a line held only in an unchanged `docs/trackers/open-items-*.md` (not in HEAD's SCRATCHPAD, not in any rotation); a plan re-run showed
+  no loss. Find which snapshot the audit compares with (likely one taken before an earlier move of open items) and make it compare with HEAD.
 - [ ] **check_code_map covers shell and every code folder** (found 2026-10-20, smc-resiliency): the template globs `*.py` under
   `MODULE_ROOTS` only, so `.sh` scripts escape the map; smc-resiliency's split checker covers `.sh` and `spike/`. Take the roots from `code-map.toml`
   `roots` and include shell.
