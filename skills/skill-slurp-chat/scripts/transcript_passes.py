@@ -66,13 +66,17 @@ def text_of(content) -> str:
 
 
 TAG_BLOCK = re.compile(r"^\s*<([a-z_-]+)>.*?</\1>\s*", re.S)
+#: Text the operator pasted (`<pasted_content id="...">` ... `</pasted_content id="...">`): kept as operator input, marked `[pasted]`.
+PASTED = re.compile(r"<pasted_content\b[^>]*>\s*(.*?)\s*</pasted_content\b[^>]*>", re.S)
 
 
 def typed_text(content) -> str:
     """The operator's own text of a message, without the IDE and harness blocks the client puts before it.
 
     A typed turn often arrives as two text blocks: an `<ide_opened_file>` or `<ide_selection>` note, then the message. Joining the blocks first and
-    then dropping text that starts with `<` lost every such message (found 2026-10-14: five of ten typed turns missing).
+    then dropping text that starts with `<` lost every such message (found 2026-10-14: five of ten typed turns missing). A pasted block carries
+    attributes (`<pasted_content id="...">`), so it is kept as `[pasted] <text>` rather than read as a harness tag; before 2026-10-21 the whole
+    turn, the operator's typed words after the paste included, was dropped.
 
     Args:
         content: a string or a list of content blocks.
@@ -83,7 +87,7 @@ def typed_text(content) -> str:
     if isinstance(content, list):
         parts = [typed_text(b.get("text") or "") for b in content if isinstance(b, dict) and b.get("type") == "text"]
         return "\n".join(x for x in parts if x)
-    t = content if isinstance(content, str) else ""
+    t = PASTED.sub(lambda m: "[pasted] " + m.group(1), content if isinstance(content, str) else "")
     while True:
         m = TAG_BLOCK.match(t)
         if not m:

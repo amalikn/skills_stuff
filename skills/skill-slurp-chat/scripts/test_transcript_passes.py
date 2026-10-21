@@ -43,6 +43,12 @@ class TypedTextTest(unittest.TestCase):
         """A single string with a leading tag block yields the text after it."""
         self.assertEqual(tp.typed_text("<ide_selection>sel</ide_selection>\nyes but slurp"), "yes but slurp")
 
+    def test_pasted_block_and_typed_words_are_kept(self) -> None:
+        """A pasted block (with attributes) after an IDE note is operator input: kept as [pasted], with the typed words after it (2026-10-21)."""
+        content = [{"type": "text", "text": "<ide_opened_file>f</ide_opened_file>"},
+                   {"type": "text", "text": '\n\n<pasted_content id="7419">\nA note\n</pasted_content id="7419">\n\nCatalog it.'}]
+        self.assertEqual(tp.typed_text(content), "[pasted] A note\n\nCatalog it.")
+
     def test_tag_only_turn_is_empty(self) -> None:
         """A turn that is only a harness block yields nothing."""
         self.assertEqual(tp.typed_text("<system-reminder>x</system-reminder>"), "")
