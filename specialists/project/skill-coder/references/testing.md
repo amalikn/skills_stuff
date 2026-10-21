@@ -103,3 +103,20 @@ milestone.
 > A helper's "OK" says nothing about code it never read: `script_headers`, `write_gates` and `call_timeouts` passed on a new `spike/` folder because
 > `code-map.toml` set `roots = ["scripts"]`, and the project's code-map check globbed `scripts/` only. Run the helper with `--list` and confirm the new
 > files appear; widen the roots (or the check) in the same change that adds a code folder; then the real gaps showed (a test header, two unmapped tests).
+
+> **Learned 2026-10-21** · core (proving a formatter changed layout only) · VERIFIED_PRIMARY · Source: scripts_stuff
+> `python/markdown_rewrap/table_cells_diff.py` and `test_table_cells_diff.py` (uncommitted, pending operator review) · Falsifier: a re-wrapped
+> table whose text really moved between columns while the canonical comparison still passes
+> To prove a reformatter moved no content, compare the structure it formats, not a flattened diff: rebuild each logical unit (a table row with its
+> continuation rows), join each column's fragments, undo the formatter's own artefacts, then compare cell by cell. Give the checker a negative test
+> (a word moved to the next column must be reported) or a pass proves nothing. Run it against the old tool's output, the new tool's output and the source.
+>
+> ```python
+> if current and len(current) > 1 and is_continuation(raw):        # fold a continuation row into its logical row
+>     for i, cell in enumerate(raw):
+>         if i < len(current[-1]) and cell.strip():
+>             current[-1][i].append(cell.strip())
+> ...
+> moved = "| Path | Role |\n| --- | --- |\n| `docs/a/b-long-name.md` first | second third |\n"
+> self.assertEqual(len(tcd.differences(ONE_LINE, moved)), 2)     # the negative test
+> ```
