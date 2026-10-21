@@ -113,5 +113,38 @@ class OpaqueDashedBoxTests(unittest.TestCase):
         self.assertTrue(any("fillColor=#ffffff" in st for st in styles))
 
 
+
+class ComponentShapeTests(unittest.TestCase):
+    """Overview and End-to-end boxes take their lane head's symbol (look.component_shapes, 2026-10-21)."""
+
+    def _map(self) -> dict:
+        """The minimal map with its second component a store.
+
+        Returns:
+            The map.
+        """
+        data = TestMap._minimal()
+        data["components"][1]["kind"] = "store"
+        return data
+
+    def test_store_is_a_cylinder_on_overview_and_end_to_end(self) -> None:
+        """By default a store draws as a cylinder on both pages, taller than its text alone, and a plain kind stays a rectangle."""
+        data = self._map()
+        prof = TestMap._profile(data)
+        text = pages.render(data, prof)
+        for cell in ('id="ov-c-b"', 'id="e2e-c-b"'):
+            style = text.split(cell, 1)[1].split('style="', 1)[1].split('"', 1)[0]
+            self.assertIn("shape=cylinder3", style)
+        self.assertNotIn("cylinder3", text.split('id="ov-c-a"', 1)[1].split('style="', 1)[1].split('"', 1)[0])
+        self.assertGreater(shapes.fit_height(data["components"][1], prof, 40), 40)
+
+    def test_look_off_draws_rounded_boxes(self) -> None:
+        """With `component_shapes: false` the Overview and End-to-end boxes are the plain rounded boxes again."""
+        data = self._map()
+        data["drawing"] = {"look": {"component_shapes": False}}
+        text = pages.render(data, TestMap._profile(data))
+        for cell in ('id="ov-c-b"', 'id="e2e-c-b"'):
+            self.assertNotIn("cylinder3", text.split(cell, 1)[1].split('style="', 1)[1].split('"', 1)[0])
+
 if __name__ == "__main__":
     unittest.main()

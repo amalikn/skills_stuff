@@ -151,7 +151,8 @@ def reference_problems(data: dict, root: Path) -> list[str]:
     comps = [c["id"] for c in data["components"]]
     flows = [f["id"] for f in data["flows"]]
     problems = _duplicates("component", comps) + _duplicates("flow", flows)
-    groups = data.get("options", {}).get("groups", [])
+    groups = option_groups(data)
+    problems += _duplicates("option page", [b["id"] for b in data.get("option_pages", [])])
     problems += _duplicates("option group", [g["id"] for g in groups])
     for g in groups:
         problems += _duplicates(f"option in group {g['id']}", [o["id"] for o in g["options"]])
@@ -163,6 +164,32 @@ def reference_problems(data: dict, root: Path) -> list[str]:
     for f in data["flows"]:
         problems += _flow_problems(f, set(comps), set(flows), root, refs)
     return problems
+
+
+def option_blocks(data: dict) -> list[tuple[str, str, dict]]:
+    """The map's option pages in drawing order: the single `options` block, then each of `option_pages` (2026-10-21, smc-resiliency).
+
+    Args:
+        data: the validated map.
+
+    Returns:
+        (page id, tab name, block) per page. The single block keeps its page id `options` and its "Options: " tab prefix, so maps written
+        before `option_pages` render byte-identical; a block in `option_pages` is page `options-<id>` and its tab is its title as written.
+    """
+    found = [("options", f"Options: {data['options']['title']}"[:60], data["options"])] if data.get("options") else []
+    return found + [(f"options-{b['id']}", b["title"][:60], b) for b in data.get("option_pages", [])]
+
+
+def option_groups(data: dict) -> list[dict]:
+    """Every option group on every option page, for validation.
+
+    Args:
+        data: the validated map.
+
+    Returns:
+        The groups, page by page.
+    """
+    return [g for _, _, block in option_blocks(data) for g in block["groups"]]
 
 
 #: A map may be split into parts (operator, smc-resiliency, 2026-10-21, after unified-network-controller's catalog): a line `#@include <path>`

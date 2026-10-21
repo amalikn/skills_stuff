@@ -244,7 +244,7 @@ pending vs. offline is distinguished by whether the watchdog series has ever exi
 
 | Service       | Role                       | Unit            | Config                  | Notes                                     |
 | ------------- | -------------------------- | --------------- | ----------------------- | ----------------------------------------- |
-| chrony        | NTP time sync              | `chrony`        | `/etc/chrony.conf`      |                                           |
+| ntpd          | NTP time sync              | `ntp`           | `/etc/ntp.conf`         | Role `smc_ntpd`; not chrony (2026-10-21, `07_hardware-overlay.md` last section) |
 | overlayroot   | tmpfs overlay filesystem   | (kernel)        | `/etc/overlayroot.conf` | Critical — see Section 8                  |
 | zram          | Compressed swap (RCT only) | (kernel)        | `/etc/default/zramswap` | `/dev/zram0` ~4.6 GB on 8 GB RAM box      |
 | postfix       | Mail relay (outbound)      | `postfix`       | `/etc/postfix/`         |                                           |

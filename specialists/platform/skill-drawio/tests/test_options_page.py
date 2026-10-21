@@ -96,5 +96,26 @@ class OptionsPageTests(unittest.TestCase):
         self.assertTrue(any("option in group g1" in p for p in found), found)
 
 
+    def test_option_pages_by_subject(self) -> None:
+        """`option_pages` draws one page per subject after the Overview, each tab its title with no "Options:" prefix, each linked and clean."""
+        first, second = _block(), _block()
+        second["groups"] = [dict(g, id=g["id"] + "b") for g in second["groups"]]
+        self.data["option_pages"] = [dict(first, id="updates", title="Updates and releases"), dict(second, id="layout", title="Boot and rescue")]
+        text = pages.render(self.data, self.profile)
+        ids = [m.split('"')[1] for m in text.split("<diagram id=")[1:]]
+        self.assertEqual(ids[:3], ["overview", "options-updates", "options-layout"])
+        self.assertIn('name="Updates and releases"', text)
+        self.assertNotIn('name="Options:', text)
+        self.assertIn('id="ov-f-options-layout"', text)
+        for pid, name, block in model.option_blocks(self.data):
+            self.assertEqual(audit.faults(audit.page_audit(options.options_page(self.data, self.profile, block, pid, name))), [])
+
+    def test_option_page_and_group_ids_unique_across_pages(self) -> None:
+        """A page id used twice, or a group id used on two pages, is refused."""
+        self.data["option_pages"] = [dict(_block(), id="same", title="One"), dict(_block(), id="same", title="Two")]
+        problems = model.reference_problems(self.data, ROOT)
+        self.assertTrue(any("option page" in p for p in problems))
+        self.assertTrue(any("option group" in p for p in problems))
+
 if __name__ == "__main__":
     unittest.main()

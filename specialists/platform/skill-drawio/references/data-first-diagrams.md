@@ -119,6 +119,20 @@ map does, and a byte-for-byte comparison is a valid drift check.
 > ```
 
 
+> **Learned 2026-10-21** · option pages by subject · VERIFIED_PRIMARY · Source: `scripts/flowmap/model.py` (`option_blocks`, `option_groups`), `scripts/flowmap/pages.py`, `tests/test_options_page.py` · Falsifier: a map with `options` whose drawing changes, or two option pages sharing an id passing validation
+> One Options page grew to nine questions; smc-resiliency's operator asked for it split by subject with no "Options" in the tab. A map may now carry
+> `option_pages` (schema `$defs/option_page`): a list of blocks shaped like `options` plus an `id`; each draws as page `options-<id>` named by its
+> title, linked from the Overview's index in map order. Group and page ids are unique across all pages. The single `options` block still draws as
+> "Options: <title>" byte-identical (smc-resiliency and unified-network-controller re-checked without `--write`). Screenshot:
+> `references/screenshots/20261021-option-pages/`.
+>
+> ```python
+> # scripts/flowmap/model.py, skill-drawio, 2026-10-21
+> def option_blocks(data: dict) -> list[tuple[str, str, dict]]:
+>     found = [("options", f"Options: {data['options']['title']}"[:60], data["options"])] if data.get("options") else []
+>     return found + [(f"options-{b['id']}", b["title"][:60], b) for b in data.get("option_pages", [])]
+> ```
+
 > **Learned 2026-10-21** · map parts and status · VERIFIED_PRIMARY · Source: `scripts/flowmap/model.py` (`expand_includes`, `stray_parts`, `status_text`, `status_style`), `tests/test_map_parts.py`, `tests/test_status.py` · Falsifier: a split map whose drawing differs from the unsplit one, or a stray part not reported
 > A long map splits into parts (asked by smc-resiliency's operator on 2026-10-21, after unified-network-controller split its catalog): the master
 > keeps the `drawing:` block and `#@include parts/<file>.yaml` lines, each part written without its parent's indentation. Proof that a split is

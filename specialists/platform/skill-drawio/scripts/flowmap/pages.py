@@ -16,6 +16,7 @@ from drawio.mxfile import BLANK, Page, banner, label, mxfile, wrapped_lines
 
 from .e2e import end_to_end_page
 from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
+from .model import option_blocks
 from .options import options_page
 from .flow_geometry import COL_W, LANE_HEAD_W, STEP_W, back_arrow, column_lefts, step_width
 from .shapes import PERSON_ICON, SHAPES, SLANTED, lane_shape, shape_legend, step_shape
@@ -281,13 +282,13 @@ def render(data: dict, profile: Profile) -> str:
         profile: the project's drawing profile.
 
     Returns:
-        The file text: banner, then an uncompressed `<mxfile>` with the Overview, the End-to-end page, one page per flow, and the Options page after the
-        Overview when the map has an `options` block.
+        The file text: banner, then an uncompressed `<mxfile>` with the Overview, the End-to-end page, one page per flow, and the option pages after the
+        Overview when the map has an `options` block or `option_pages`.
     """
     comps = {c["id"]: c for c in data["components"]}
     pages = [overview_page(data, profile), end_to_end_page(data, profile)] + [flow_page(f, comps, i + 1, profile) for i, f in enumerate(data["flows"])]
-    if data.get("options"):   # optional: the Options page goes right after the Overview; maps without one render as before
-        pages.insert(1, options_page(data, profile))
+    for k, (pid, name, block) in enumerate(option_blocks(data)):   # optional: option pages go right after the Overview, in map order
+        pages.insert(1 + k, options_page(data, profile, block, pid, name))
     return mxfile(pages, profile.host, banner(profile.generator, profile.map, profile.command, profile.check))
 
 

@@ -16,6 +16,7 @@ from drawio.route import count_crossings, oriented
 
 from .e2e_grid import E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_LABEL_H, E2E_LABEL_W, E2E_SP, E2EGrid, Link, e2e_box_lines, e2e_text_height
 from .model import MARGIN, comp_style, flow_family, status_style
+from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .profile import Profile
 
 
@@ -250,7 +251,7 @@ class EndToEnd(E2EGrid):
         r = self.cell[comp][1]
         mid = self.row_top[r] + self.row_h[r] / 2
         ys = [self._port_y(link.cid, end) for link in self.links for end, who in (("exit", link.src), ("entry", link.dst)) if who == comp]
-        least = e2e_text_height(self.comps[comp])
+        least = fit_height(self.comps[comp], self.profile, e2e_text_height(self.comps[comp]))
         top = min([mid - least / 2] + [y - E2E_BOX_PAD for y in ys])
         bottom = max([mid + least / 2] + [y + E2E_BOX_PAD for y in ys])
         return top, bottom - top
@@ -328,6 +329,9 @@ class EndToEnd(E2EGrid):
         page.box("e2e-leg-solid", label("**Solid arrow, label 4.2:** flow 4 moves to the component acting in its step 2. **Dashed line:** the flow "
                                         "runs on, is owned by or depends on that component. Arcs mark crossings."),
                  MARGIN, ly, right - MARGIN, 24, "text;html=1;align=left;verticalAlign=middle;fontSize=12;")
+        used = component_shapes_used(list(self.comps.values()), self.profile)
+        if used:   # the symbols the boxes use, as on a flow page
+            shape_legend(page, used, MARGIN, ly + 40, "e2e")
 
     def page(self) -> Page:
         """Draw the page: frame, boxes, arrows and labels per family, and the legend.
@@ -342,8 +346,10 @@ class EndToEnd(E2EGrid):
             c, _r = self.cell[cid]
             top, height = self._box_span(cid)
             page.box(f"e2e-c-{cid}", label(*e2e_box_lines(comp)), self.col_x[c], top, E2E_BW, height,
-                     comp_style(comp["kind"], self.profile, "fontSize=11;verticalAlign=middle;spacingLeft=6;spacingRight=6;" + status_style(comp)),
+                     comp_style(comp["kind"], self.profile, "fontSize=11;verticalAlign=middle;spacingLeft=6;spacingRight=6;" + status_style(comp)
+                                + component_shape(comp, self.profile)),
                      tooltip=f"health: {comp['health']}", solid=True)
+            person_badge(page, comp, self.profile, f"e2e-c-{cid}", self.col_x[c] + E2E_BW, top + height)
         self._arrows(page)
         self._legend(page, right)
         return page

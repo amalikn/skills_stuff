@@ -12,6 +12,7 @@
 - Kohana exception handler issues
 - End-to-end portal verification
 - `Directory APPPATH/cache must be writable` — portal dead at bootstrap
+- What the portal keeps on the box (state inventory for a disposable writable area)
 
 ## 11. Captive Portal — Architecture, Known Gaps, and Troubleshooting
 
@@ -271,3 +272,61 @@ Implications worth checking before assuming §11.1–11.8 troubleshooting steps 
 
 See `01_overview.md` "APN Cluster vs NBN Accelerate Cluster — Structural Comparison" for the source of these two var values, and `13_known-issues.md` "NBN Accelerate cluster coverage gap" for the
 broader live-validation gap this note is part of.
+
+### 11.10 What the portal keeps on the box (2026-10-21, repo and live)
+
+Asked by smc-resiliency: can a rebuild of the writable area lose `/var/www/html/wifi`? Read-only on two rct boxes, 2026-10-21 17:24 AEDT:
+`black-craggy-smc01` and `paradise-farm-smc01` (portal commit `c11c230`, overlayroot mounted on both). Repo: ansible-wifi `c0ea35ec`.
+
+**Answer: the portal holds no local data of its own. Everything is pulled again from Eclipse within 5 minutes, and on an overlayroot rct box it is
+already lost at every reboot.**
+
+| Store | Live (both boxes) | Source | Lost at a rebuild |
+| --- | --- | --- | --- |
+| Code tree | 7.1 MB, `git status`: only the four paths below differ | wifi.git `wifi_git.commit` | Nothing, if the image ships it |
+| `config/site.txt` | modified vs git | `eclipse_siteid` (Ansible) | Identity: must be rewritten, or portal and Teleport `id` label break |
+| `config/config.txt` | 1,849 and 2,650 bytes, rewritten 17:20 (untracked) | Eclipse reply to `status:update:status` | Rewritten within 5 min; until then `site_config()` falls back to defaults |
+| `config/sites/<id>/` | 244 files, all dated 2025-08-15 (clone date) | Tracked in wifi.git | Nothing |
+| `application/cache`, `application/logs` | empty (only `.gitignore`, mode 0777) | none | Nothing; must exist at 0777 (§11.8) |
+| SQLite / MySQL | none; no `/var/lib/mysql`, mariadb inactive | none | Nothing |
+| `ECLIPSE_MARK` (iptables, not disk) | 0 and 1 rules | Eclipse `fetch_clients_by_classes` | Re-added at the next 5-min status run |
+
+Commands: `ls`, `find`, `stat`, `du`, `git status` and `grep`/`sed` of the PHP, over `tsh ssh` with a TERM/KILL deadline watcher; from data files only the
+JSON key names of `config.txt` were printed.
+
+**How sessions come back** (on-box code, `application/command/status.php` and `classes/model/wifi/config.php`): `status:update:status` posts status to
+Eclipse, stores the reply as `config.txt`, then `enforce_config()` calls `confirm_clients()`, which fetches the site's active PINs from Eclipse and adds an
+`ECLIPSE_MARK` rule for each one missing locally. `status:clean:up` (daily) flushes the chain and rebuilds it from Eclipse the same way.
+
+```php
+// application/command/status.php (update_status), portal c11c230
+if (is_object($response) && !empty($response)) {
+    file_put_contents('application/config/config.txt',json_encode($response));
+} else { syslog(LOG_NOTICE,"WiFi: Invalid Config Download"); }   // keeps the last one
+$config = Model::factory('WiFi_Config');
+$config->enforce_config();                                          // -> confirm_clients()
+// classes/model/wifi/config.php confirm_clients()
+$current_clients = $iptables->authorised_clients_byclass();
+$clients = Model::factory('WIFI_API')->fetch_clients_by_classes($site);
+foreach ($clients as $client) foreach ($client as $mac => $class)
+    if (!isset($current_clients[$class])) { $iptables->deauthorise_client($mac,$class); $iptables->authorise_client($mac,$class); }
+```
+
+`status:update:usage` (every minute, `smc_bases_usage_cron` is 1 in all five flavours) reads the iptables byte counters and posts usage to
+Eclipse. It writes nothing to disk; usage counted since the last post (at most 1 min) is lost when the counters reset.
+
+**No local database is deployed for the portal.** The MariaDB import in `smc_application` is commented out. It was for `mobile_app`/`community_connect`
+(nbn_accelerate, see `14_pin-activation-diagnosis.md` §14.6), not Kohana:
+
+```yaml
+# roles/smc_application/tasks/ubuntu-apache-install-configure.yml:110
+# - name: Install and configure mariadb on Ubuntu
+#   import_tasks: ubuntu-mariadb-install-configure.yml
+```
+
+The disk-write audit's "DB + cache writes every 1min; operational" row (smc-file-writing-analysis `docs/smc-audit-data.csv` row 31) came from
+`malik-rct01`, the Vagrant lab VM, on 2026-04-20. Production boxes show no such database or cache.
+
+Effect of a rebuild: a guest who is online keeps their PIN (held in Eclipse) and is re-marked within 5 minutes. If Eclipse cannot be reached after the
+rebuild, there is no `config.txt`, so portal settings run on defaults and the chain stays empty until Eclipse answers. On overlayroot boxes the same is
+already true after every reboot, because `config.txt` lives in the tmpfs upper layer.

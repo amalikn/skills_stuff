@@ -47,6 +47,14 @@
     },
     "options": {
       "$ref": "#/$defs/options"
+    },
+    "option_pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/option_page"
+      },
+      "description": "Optional: several option pages by subject (2026-10-21), drawn after the Overview (and after `options` when both are given). Each tab is the page's title as written."
     }
   },
   "$defs": {
@@ -691,6 +699,40 @@
           "type": "string",
           "minLength": 1,
           "description": "Where it is shown: a report, a commit, a design section."
+        }
+      }
+    },
+    "option_page": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "groups"
+      ],
+      "additionalProperties": false,
+      "description": "One option page of `option_pages`: its id (page `options-<id>`), its title (the tab name), and its groups.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "groups": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/option_group"
+          }
+        },
+        "decisions": {
+          "$ref": "#/$defs/text_list",
+          "description": "Decisions taken that belong to no option group; listed with each group's decision in the page's Decisions taken box."
         }
       }
     }

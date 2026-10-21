@@ -98,6 +98,27 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   a number on an arrow means.
 - A flow index of clickable boxes (page links, see [file-format.md](file-format.md)) helps on a multi-page file.
 
+> **Learned 2026-10-21** · component symbols on the Overview and End-to-end pages · VERIFIED_PRIMARY · Source: `scripts/flowmap/shapes.py` (`component_shape`, `fit_height`, `person_badge`, `component_shapes_used`), `tests/test_shapes.py` (`ComponentShapeTests`) · Falsifier: a store drawn as a rectangle with `component_shapes` on, or a cylinder with it off
+> smc-resiliency's operator asked whether the Overview and End-to-end boxes should take the symbols the flow pages already gave lane heads, and chose
+> "yes, default for all". `drawing.look.component_shapes` (default true) draws each box as its lane head's symbol; services stay rectangles. The first
+> render failed review: cloud labels spilled out and store labels sat on the cylinder's rim, so outline-heavy symbols are sized for their outline
+> (`FIT`: cloud x1.6 + 24 px with centred text, cylinder + 30 px). The person figure went to the bottom right because the Overview's dependency dots
+> hold the top right (UNC's operator box). Both pages gained "Shapes on this page" (one column on the Overview's legend column, three on End-to-end), and
+> the Overview an index-box legend after the operator noticed the green option boxes had none. Screenshots: `references/screenshots/20261021-component-shapes/`.
+>
+> ```python
+> # scripts/flowmap/shapes.py, skill-drawio, 2026-10-21
+> FIT = {
+>     "external": ("align=center;verticalAlign=middle;spacingLeft=34;spacingRight=34;spacingTop=10;spacingBottom=10;", 1.6, 24),
+>     "stored-data": ("verticalAlign=middle;spacingTop=16;spacingBottom=2;", 1.0, 30),
+> }
+> def fit_height(comp: dict, profile, height: float) -> float:
+>     if not profile.look.get("component_shapes", True):
+>         return height
+>     _style, factor, extra = FIT.get(lane_shape(comp, profile.kind_shapes), ("", 1.0, 0))
+>     return round(height * factor + extra)
+> ```
+
 ## Labels and text
 
 - Box names and arrow labels are bold (operator, 2026-10-19). Labels mix bold field names with plain values; render `**...**` spans as `<b>` everywhere in a line, and test that no literal `**`

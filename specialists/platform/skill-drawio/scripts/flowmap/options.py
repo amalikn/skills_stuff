@@ -262,21 +262,24 @@ def _group_row(page: Page, g: dict, number: int, x0: float, width: float, y: flo
     return _tradeoff_row(page, g["id"], g["options"], "cons", x0, y) + GAP * 2, dec
 
 
-def options_page(data: dict, profile: Profile) -> Page:
-    """The Options page: a header, the Decisions taken box beside the colour legend, then the decision column beside one row per group.
+def options_page(data: dict, profile: Profile, block: dict | None = None, page_id: str = "options", name: str | None = None) -> Page:
+    """An options page: a header, the Decisions taken box beside the colour legend, then the decision column beside one row per group.
 
     Args:
-        data: the validated map, with an `options` block.
+        data: the validated map, with an `options` block or `option_pages`.
         profile: the drawing profile (unused today; kept so every page builder has the same signature).
+        block: the page's block; the map's single `options` block when left out.
+        page_id: the page id the Overview links to.
+        name: the tab name; "Options: <title>" when left out.
 
     Returns:
         The page.
     """
     del profile
-    block = data["options"]
+    block = block if block is not None else data["options"]
     widest = max(len(g["options"]) for g in block["groups"])
     x0, width = MARGIN + DEC_W + 2 * GAP, widest * COL_W + (widest - 1) * GAP
-    page = Page("options", f"Options: {block['title']}"[:60])
+    page = Page(page_id, name if name is not None else f"Options: {block['title']}"[:60])
     head = [f"**{block['title']}**"] + ([BLANK, block["purpose"]] if block.get("purpose") else []) + [
         BLANK,
         "**Left:** the decisions taken, as a flow; a green arrow leads to the chosen option, a blue dashed one to an option under evaluation.",

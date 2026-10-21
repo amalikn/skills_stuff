@@ -1024,3 +1024,27 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 > blocklist scripts, `/etc/init.d` (43, for services without units). Also for the new image: Unbound needs systemd-resolved's stub off
 > (`DNSStubListener=no`, as `resolved.conf.j2` sets) and its remote-control keys from `unbound-control-setup` in `/etc/unbound/` (a per-box
 > secret written into `/etc`). `overlay-usage-breakdown.sh --etc` now prints the executables list too.
+
+## snapd, clock and NTP drift state on a rebuild of the writable area (2026-10-21)
+
+> **Learned 2026-10-21** · rct, wh and rcp on Ubuntu 22.04 · VERIFIED_PRIMARY · Source: read-only `tsh ssh` on wiligi-smc01 and turkey-bore-smc01
+> (rct), laramba-smc01 (wh), mowanjum-smc01 (rcp): `snap list`, `du`, `systemctl`, `timedatectl show`, the lower and upper copies under
+> `/media/root-ro` and `/media/root-rw/overlay`; ansible-wifi 0979a596 · Falsifier: an SMC whose time is synced by chrony or timesyncd, or one where an
+> lxd container exists
+>
+> - **snapd still runs on Pis and on at least one rcp box.** All four boxes have snapd active and enabled, with `core20`, `core22`, `lxd` (5.0/stable)
+>   and `snapd`. `/var/lib/snapd` is 625 to 923 MB: about 535 MB in the Pi image (lower layer) plus 315 to 546 MB of refreshed revisions in the tmpfs
+>   upper layer. `lxd` is unused: `snap.lxd.daemon.service` is inactive and no containers exist; only `snap.lxd.daemon.unix.socket` is active. No
+>   SMC unit or cron calls `/snap/`. mowanjum-smc01 (rcp) still has snapd, so the 2026-09-01 removal (14/17 rcp nodes, above) did not reach every rcp box.
+> - **Time is synced by ntpd** (`ntp` package, role `smc_ntpd`, `driftfile /var/lib/ntp/drift`), not chrony (chrony is installed only on
+>   the Teleport, Jenkins and Graylog servers) and not timesyncd (masked). `timedatectl` shows `NTP=no` because it only tracks timesyncd. The
+>   drift file is `/var/lib/ntp/drift` (-3.7 ppm on rcp, -10.7 and -11.1 ppm on the Pis), rewritten by ntpd while it runs.
+> - **fake-hwclock is installed and enabled on every flavour** (0.12; `load` at boot before sysinit, `save` at shutdown, plus `/etc/cron.hourly/fake-hwclock`).
+>   Pis have no `/dev/rtc`; the x86 box has `/dev/rtc0`, so fake-hwclock does nothing useful there.
+> - **On overlayroot the saved clock is a year old at boot.** The hourly save goes to the tmpfs upper layer, so after a reboot the Pi loads the
+>   lower-layer copy: `2025-09-22 13:01:41` on laramba and `2025-09-21 04:51:03` on wiligi (the date the overlay was last switched off). Until ntpd
+>   steps the clock, the box runs about 13 months in the past: TLS (Teleport, Graylog, the portal's Eclipse calls) can fail on certificate
+>   dates. The drift file has the same split (lower copy from the same date).
+>
+> Screenshot: not applicable (no visual surface).
+

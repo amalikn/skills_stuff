@@ -18,6 +18,7 @@ from drawio.route import interval_tracks
 
 from .model import MARGIN, e2e_tier, flow_extras, flow_family
 from .profile import Profile
+from .shapes import fit_height
 
 #: Box width and least height; port spacing on a box side; distance of the first and last track from a channel's or corridor's border (the
 #: head room); track spacing; least channel width and corridor height; the arcs drawn at crossings.
@@ -252,7 +253,7 @@ class E2EGrid:
         self.n_rows = n_rows = max(r for _c, r in self.cell.values()) + 1
         # Ports sit E2E_PORT_SP apart around the row's middle; a row is as tall as its largest pool (each box then covers only its own ports).
         self.row_h = [max([E2E_MIN_H] + [(len(u) - 1) * E2E_PORT_SP + 2 * E2E_BOX_PAD for (c, r), u in self.pools.items() if r == row]
-                          + [e2e_text_height(self.comps[cid]) for cid, (c, r) in self.cell.items() if r == row]) for row in range(n_rows)]
+                          + [fit_height(self.comps[cid], self.profile, e2e_text_height(self.comps[cid])) for cid, (c, r) in self.cell.items() if r == row]) for row in range(n_rows)]
 
     def _corridors(self) -> dict:
         """Corridor tracks: a far link's horizontal run spans its two channels; links share a track when their spans leave a column between them.
