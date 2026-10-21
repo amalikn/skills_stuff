@@ -125,20 +125,33 @@ def deadline(row: dict) -> dt.date | None:
     return due + dt.timedelta(days=WEEK_DEADLINE_DAYS) if row.get("week") else due
 
 
-def due_label(row: dict) -> str:
+def due_label(row: dict, with_year: bool = False) -> str:
     """The Due cell as people read it.
 
     Args:
         row: a validated row.
+        with_year: add the year (the timeline spans more than one year, so "Wk of 25 Jan" alone is ambiguous; smc-resiliency, 2026-10-21).
 
     Returns:
-        "Fri 16 Oct", "Wk of 25 Jan", "Not in the plan" for an extra row, or "No date" for a parked row without one.
+        "Fri 16 Oct", "Wk of 25 Jan 2027", "Not in the plan" for an extra row, or "No date" for a parked row without one.
     """
     due = row.get("due")
     if due is None:
         return "No date" if row.get("kind") == "parked" else "Not in the plan"
-    day = f"{due.day} {due:%b}"
+    day = f"{due.day} {due:%b}" + (f" {due.year}" if with_year else "")
     return f"Wk of {day}" if row.get("week") else f"{due:%a} {day}"
+
+
+def in_order(rows: list[dict]) -> list[dict]:
+    """Rows in due-date order (a week row counts from its Monday), undated rows last in file order (operator, 2026-10-21: order by Due).
+
+    Args:
+        rows: validated rows, in file order.
+
+    Returns:
+        The rows sorted; the sort is stable, so rows with the same date keep their file order.
+    """
+    return sorted(rows, key=lambda r: (r.get("due") is None, r.get("due") or dt.date.max))
 
 
 def schedule(row: dict, today: dt.date) -> tuple[str, str]:
@@ -233,7 +246,7 @@ def render(rows: list[dict], source: str, today: dt.date, columns: list[dict] | 
     """Render the generated block: legend, counts and the table.
 
     Args:
-        rows: validated rows, in the order to show.
+        rows: validated rows; shown in due-date order (`in_order`).
         source: the sentence naming where the dates come from.
         today: the date the schedule is judged against.
         columns: the columns after Due and Schedule; default DEFAULT_COLUMNS.
@@ -244,11 +257,13 @@ def render(rows: list[dict], source: str, today: dt.date, columns: list[dict] | 
         The block, markers included, ending without a newline.
     """
     columns = list(columns or DEFAULT_COLUMNS)
+    rows = in_order(rows)
+    years = {r["due"].year for r in rows if r.get("due")}
     cells, states = [], {}
     for row in rows:
         text, state = schedule(row, today)
         states.setdefault(state, []).append(row.get("stage") or "")
-        cells.append((due_label(row), text, *(str(row.get(c["key"], "") or "") for c in columns)))
+        cells.append((due_label(row, len(years) > 1), text, *(str(row.get(c["key"], "") or "") for c in columns)))
     at_risk = [r.get("stage", "") for r in rows if r.get("flag") == "at_risk" and schedule(r, today)[1] == "flagged"]
 
     def count(icon: str, word: str, ids: list[str]) -> str:

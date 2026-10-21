@@ -156,5 +156,14 @@ class GenericColumns(unittest.TestCase):
         self.assertIn("LATE", pt.schedule({"kind": "extra", "due": pt.dt.date(2026, 10, 19)}, today)[0])
         self.assertEqual(pt.schedule({"kind": "extra", "due": None}, today)[1], "extra")
 
+    def test_rows_by_due_date_with_years_across_years(self) -> None:
+        """Rows render in due order, undated last; a timeline across two years names the year on every date."""
+        d = pt.dt.date
+        rows = [{"due": d(2027, 1, 25), "week": True, "stage": "B", "step": "b"}, {"kind": "parked", "due": None, "stage": "Z", "step": "z"},
+                {"due": d(2026, 10, 23), "stage": "A", "step": "a"}]
+        self.assertEqual([r["stage"] for r in pt.in_order(rows)], ["A", "B", "Z"])
+        self.assertEqual(pt.due_label(rows[0], True), "Wk of 25 Jan 2027")
+        self.assertEqual(pt.due_label(rows[2]), "Fri 23 Oct")
+
 if __name__ == "__main__":
     unittest.main()
