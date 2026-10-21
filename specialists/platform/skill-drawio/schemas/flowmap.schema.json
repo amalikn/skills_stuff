@@ -316,7 +316,7 @@
           "items": {
             "$ref": "#/$defs/id"
           },
-          "description": "Step ids that follow; default is the next step in the list."
+          "description": "The steps this one leads to. For a two-way gate the order is the meaning: the first target is the gate passing (drawn Yes, green), the second the gate failing (No, red); name other cases with `when`."
         },
         "status": {
           "$ref": "#/$defs/status"

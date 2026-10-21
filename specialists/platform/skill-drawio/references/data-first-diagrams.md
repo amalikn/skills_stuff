@@ -211,3 +211,9 @@ When the signs disagree (a banner on a file the operator says they edited), stop
 - [ ] Every edge routed with waypoints; layout audits run in tests on the real map.
 - [ ] Drift check in `just check`; a test that writes then evaluates and sees no drift.
 - [ ] The project's AGENTS.md (or equivalent) says the drawing is generated and names the command.
+
+> **Learned 2026-10-21** · a gate's `next` order carries its meaning · VERIFIED_PRIMARY · Source: `scripts/flowmap/routing.py` (`branch_label`), `schemas/flowmap.schema.json` (`next`) · Falsifier: a two-way gate whose first `next` target is its failure path, drawn as a green Yes
+> Since branch labels arrived, a two-way gate's first `next` is drawn as Yes (green) and its second as No (red); a map written before then may list
+> them the other way. On adoption every two-way gate was checked against its gate text: smc-resiliency's six are right, unified-network-controller has
+> none. Write the passing branch first, or name each case with `when`.
+
