@@ -21,6 +21,8 @@ from .shapes import SHAPES
 
 #: Option column width, the step box width inside it, the vertical gap an arrow runs through, and line heights (font 11 and 12).
 COL_W, STEP_W, ARROW_GAP, LINE_H, HEAD_LINE_H = 300, 260, 30, 14, 15
+#: How far above a document box's bottom its wavy edge runs at the centre (a fraction of the height, draw.io document size 0.15).
+WAVE = 0.075
 #: Decision column width, and the gap between a group's question and its option heads (a decision arrow runs along its middle).
 DEC_W, HEAD_GAP = 280, 56
 #: Characters per line: step boxes (260 px, font 11), pros/cons, option heads and decision boxes (280 px, font 11).
@@ -221,7 +223,8 @@ def _chain_arrow(page: Page, src: str, dst: str) -> None:
     """
     sx, sy, sw, sh = page.rects[src]
     cx = sx + sw / 2
-    page.route(f"{dst}-in", src, dst, [(cx, sy + sh), (cx, page.rects[dst][1])], DEC_ARROW, klass="thick")
+    start = sy + sh * (1 - WAVE)   # the document's wavy edge rises above the box bottom at its centre: start on the line
+    page.route(f"{dst}-in", src, dst, [(cx, start), (cx, page.rects[dst][1])], DEC_ARROW, klass="thick")
 
 
 def _group_row(page: Page, g: dict, number: int, x0: float, width: float, y: float, prev: str) -> tuple[float, str]:
@@ -287,8 +290,8 @@ def options_page(data: dict, profile: Profile) -> Page:
              link="data:page/id,overview")
     y = MARGIN + h + GAP
     start = ["**Decisions taken**"] + [f"• {d}" for d in block.get("decisions", [])]
-    page.box("opt-dec-start", label(*start), MARGIN, y, DEC_W, _height(start, DEC_CHARS) + 16,
-             DECISION + "fillColor=#d5e8d4;strokeColor=#82b366;arcSize=30;spacingLeft=14;spacingRight=10;spacingTop=8;", solid=True)
+    page.box("opt-dec-start", label(*start), MARGIN, y, DEC_W, round(_height(start, DEC_CHARS) * 1.08),   # a record too: a document
+             DECISION + SHAPES["document"][0] + "fillColor=#d5e8d4;strokeColor=#82b366;", solid=True)
     prev = "opt-dec-start"
     y = max(y + page.rects[prev][3], _legend(page, x0, y, width)) + GAP * 2
     for n, g in enumerate(block["groups"], 1):

@@ -145,7 +145,9 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > a component's `shape` wins). Every flow page ends with "Shapes on this page". An outline eats text area: shrink characters per line and grow the
 > box (diamond 0.6 and 1.5). On the Options page a decision taken is a **document** (a record), never a rounded box beside rectangles of the same
 > colour, which read as one shape; questions and decisions carry a small diamond; pros and cons are notes. Text centred in a box takes no top
-> padding meant for top-aligned boxes. Screenshots: `references/screenshots/20261021-shapes-adopted/`.
+> padding meant for top-aligned boxes. The Decisions taken box at the head of the chain is a document too (operator, 2026-10-21), and an arrow leaving
+> a document's bottom starts on its wavy edge (`WAVE`, 0.075 of the height above the box bottom at the centre), not at the box's bounding line.
+> Screenshots: `references/screenshots/20261021-shapes-adopted/`.
 >
 > ```python
 > # scripts/flowmap/shapes.py (step_shape), skill-drawio, 2026-10-21
