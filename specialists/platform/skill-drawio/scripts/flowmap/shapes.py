@@ -18,22 +18,25 @@ from drawio.mxfile import Page, label
 SHAPES = {
     "terminator": ("rounded=1;arcSize=40;spacingLeft=22;spacingRight=18;spacingTop=12;", 0.85, 1.1, "Terminator: where a flow starts or ends"),
     "process": ("rounded=0;", 1.0, 1.0, "Process: a step that does work"),
-    "decision": ("rhombus;align=center;verticalAlign=middle;spacingLeft=34;spacingRight=34;spacingTop=0;", 0.6, 1.5,
+    "decision": ("rhombus;align=center;verticalAlign=middle;spacingLeft=72;spacingRight=72;spacingTop=0;", 0.5, 1.45,
                  "Decision: a gate that picks the next step"),
-    "manual-operation": ("shape=trapezoid;perimeter=trapezoidPerimeter;flipV=1;fixedSize=1;size=16;spacingLeft=22;spacingRight=22;", 0.85, 1.0,
+    "manual-operation": ("shape=trapezoid;perimeter=trapezoidPerimeter;flipV=1;fixedSize=1;size=12;spacingLeft=18;spacingRight=18;", 0.95, 1.0,
                          "Manual operation: a person acts"),
-    "preparation": ("shape=hexagon;perimeter=hexagonPerimeter2;fixedSize=1;size=16;spacingLeft=22;spacingRight=22;", 0.85, 1.0,
+    "preparation": ("shape=hexagon;perimeter=hexagonPerimeter2;fixedSize=1;size=12;spacingLeft=18;spacingRight=18;", 0.95, 1.0,
                     "Preparation: set-up before the change"),
     "predefined-process": ("shape=process;backgroundOutline=1;size=0.06;spacingLeft=20;spacingRight=20;", 0.88, 1.0,
                            "Predefined process: runs another flow (click to open it)"),
     "delay": ("shape=delay;spacingRight=24;", 0.9, 1.0, "Delay: waits for time (a timer, a deadline)"),
     "stored-data": ("shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=10;", 1.0, 1.1, "Stored data: a store that persists"),
     "document": ("shape=document;boundedLbl=1;size=0.15;", 1.0, 1.2, "Document: a file or record written"),
-    "data-io": ("shape=parallelogram;perimeter=parallelogramPerimeter;fixedSize=1;size=14;spacingLeft=20;spacingRight=20;", 0.85, 1.0,
+    "data-io": ("shape=parallelogram;perimeter=parallelogramPerimeter;fixedSize=1;size=10;spacingLeft=16;spacingRight=16;", 0.95, 1.0,
                 "Data in or out: data crossing a link"),
     "external": ("ellipse;shape=cloud;spacingLeft=16;spacingRight=16;spacingTop=10;", 0.8, 1.2, "External system: outside the box"),
     "person": ("rounded=0;", 1.0, 1.0, "Person: who starts or approves (figure in the lane head)"),
 }
+#: Shapes with slanted sides: an arrow end is pinned to the box edge, not projected onto the outline (projection slid arrow ends along the
+#: slant to a corner; operator review, 2026-10-21).
+SLANTED = frozenset({"data-io", "manual-operation", "preparation"})
 #: Lane head shapes for common kinds when the map's `drawing.kind_shapes` does not name them.
 DEFAULT_KIND_SHAPES = {"person": "person", "operator": "person", "timer": "delay", "store": "stored-data", "database": "stored-data",
                        "external": "external", "document": "document"}

@@ -82,6 +82,8 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `just drawio-export`   | `scripts/drawio_export.py`: pages and layers to images                       | A .drawio file                 | Images in `--out-dir`       | `modifies-files`  | Yes        | Self-review before showing a drawing     |
 | `just drawio-read`     | `scripts/drawio_read.py`: an existing drawing as text or JSON                | .drawio files                  | Console, JSON with `--json` | `safe`            | Yes        | Comparing a drawing with other data      |
 | `just count-crossings` | `scripts/count_crossings.py`: crossings between arrows on one page (full paths from `drawio.read`), optionally an id prefix | a .drawio file, page, prefix | Console | `safe` | Yes | Before and after an engine change that alters a consumer's drawing |
+| `just assemble-flowmap` | `scripts/assemble_flowmap.py`: build flows.yaml from its parts | parts/master.yaml | flows.yaml with `--write` | `safe` (`modifies-files` with `--write`) | Yes | After editing a part |
+| `just split-flowmap`  | `scripts/split_flowmap.py`: split a map into parts, proved identical | A map | Parts and master with `--apply` | `safe` (`modifies-files` with `--apply`) | Yes | A map grown past a few hundred lines |
 | `just yaml-list-patch` | `scripts/yaml_list_patch.py`: add to lists in a map, comments kept           | A YAML map, a JSON spec        | Diff, or the file with `--apply` | `safe` (`modifies-files` with `--apply`) | Yes | Adding reviewed dependencies to a map |
 | `just bootstrap`       | Builds the pack's working-cache venv from the mise pin                       | `.mise.toml`, requirements     | venv outside the repo       | `modifies-files`  | Yes        | First use, or after a pin change         |
 | `just inventory` / `just audit-scripts` | Tasks and this inventory; script and catalog drift          | `justfile`, this file          | Console                     | `safe`            | Yes        | Orientation, audits                      |
@@ -96,6 +98,8 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/drawio_export.py` | Front end: export pages (from 1) and layers with the desktop CLI, each under a timeout | `modifies-files` (images only) |
 | `scripts/drawio_read.py` | Front end: print an existing drawing's boxes and connections; JSON with geometry | `safe` |
 | `scripts/count_crossings.py` | Front end: count crossings between routed arrows on one page (full paths from `drawio.read`), optionally an id prefix | `safe` |
+| `scripts/assemble_flowmap.py` | Front end: build the complete flows.yaml from parts/master.yaml and its parts (banner, no pointers); drift check, `--write` to build; refuses a stray part | `safe` (`modifies-files` with `--write`) |
+| `scripts/split_flowmap.py` | Front end: split a long map into `#@include` parts (component groups, flow sections, options), proved to load the same; plan, then `--apply` | `safe` (`modifies-files` with `--apply`) |
 | `scripts/yaml_list_patch.py` | Add values to flow-style lists in a YAML map's items, comments kept; plan, then `--apply` | `safe` (`modifies-files` with `--apply`) |
 | `scripts/schema_lite.py` | A stdlib JSON Schema subset for maps (imported) | `safe` |
 | `scripts/code_refs.py` | Check `path[:symbol]` code references in a map against the repository (imported) | `safe` |
@@ -115,6 +119,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/overview_index.py` | The Overview's right column: flow index (Options page linked), kind, status and arrow colour legends | `safe` |
 | `scripts/flowmap/options.py` | The Options page (optional `options` block): decision flow, option step chains, aligned pros and cons | `safe` |
 | `scripts/flowmap/shapes.py` | Flow page shapes (flowchart symbols): derivation per step and lane head, per-page shape legend | `safe` |
+| `scripts/flowmap/flow_geometry.py` | Flow page geometry: step widths by shape (wider decisions), column positions, back-arrow routes below the lanes | `safe` |
 | `scripts/flowmap/pages.py` | Flow pages, `render`, `evaluate`, `write_drawing`, `flow_list` | `safe` (`write_drawing` writes the drawing) |
 | `scripts/check_governance.py` | This pack's governance checker (from skill-ai-it's template) | `safe` |
 

@@ -167,3 +167,18 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > return "process"
 > ```
 
+> **Learned 2026-10-21** · opaque dashed boxes · USER_STATED · Source: smc-resiliency operator, 2026-10-21 ("white background so that I don't see the draw.io grid ... as a standard"); `scripts/flowmap/overview.py` group style; `tests/test_shapes.py` (`OpaqueDashedBoxTests`) · Falsifier: a dashed vertex rendered with `fillColor=none`
+> A box drawn with a dashed border (Overview groups, proposed or designed components) always has a fill: white for a container, its kind colour
+> for a component. A see-through box shows the editor's grid and reads as unfinished. The test fails on any dashed vertex without a fill.
+
+> **Learned 2026-10-21** · flow page proportions and routing · USER_STATED · Source: smc-resiliency operator review of unified-network-controller's pages, 2026-10-21 ("arrows strangely connected", "unusually tall", "crossing over so many shapes", "cluttered", "nothing stopping it to be wider"); `scripts/flowmap/flow_geometry.py`, `scripts/flowmap/pages.py`, `scripts/flowmap/shapes.py` · Falsifier: an export with an arrow end off a slanted side, a step box with more than two empty lines, a back arrow crossing a step, or a diamond whose text touches its edge
+> - **Slanted shapes** (data in or out, manual operation, preparation): pin arrow ends to the box edge (`exitPerimeter=0`, `entryPerimeter=0`);
+>   draw.io's projection slides them along the slant to a corner. Diamonds keep the projection.
+> - **Proportion over height:** a decision gets a wider column (`DEC_STEP_W` 380) and generous side padding (72), so its text sits inside the
+>   diamond; every step box is sized from 38 characters a line at 220 px and font 10 (33 left boxes half empty).
+> - **Return arrows** are routed by the engine, not draw.io. The short way first: out of the source's left side a fifth of the way down (clear
+>   of the forward arrows' entries), along the source's lane, into the target's top right (bottom right when the target's lane is higher).
+>   When a step blocks that path, the long way: down in the source's column, along a band below every lane, up into the target. Either way
+>   the route crosses no other step (`flow_geometry._clear`); the label is a text mark on the route.
+> - **Long actions** written as clauses joined by "; " are set one clause a line as bullets.
+

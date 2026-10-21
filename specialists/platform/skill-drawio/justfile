@@ -274,3 +274,11 @@ nav-check-context-map REF="HEAD": _require-venv
 # package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
 nav-selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"
+
+# Split a long flow map into #@include parts (component groups, flow sections, options), proved to load the same: plan by default, `--apply` to write
+split-flowmap *ARGS: _require-venv
+    @{{py}} scripts/split_flowmap.py {{ARGS}}
+
+# Build a flow map's flows.yaml from parts/master.yaml and its parts (complete, no pointers): drift check by default, `--write` to build
+assemble-flowmap *ARGS: _require-venv
+    @{{py}} scripts/assemble_flowmap.py {{ARGS}}

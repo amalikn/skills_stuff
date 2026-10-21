@@ -140,6 +140,13 @@ map does, and a byte-for-byte comparison is a valid drift check.
 >     out += [pad + x if x.strip() else x for x in expand_includes(part, used).splitlines()]
 > ```
 
+> **Learned 2026-10-21** · assembled maps and the look block · USER_STATED · Source: smc-resiliency operator, 2026-10-21 ("for catalog.yaml it was being built by the individual files, it was not using pointers"; "have the capability on the YAML file to define these things"); `scripts/assemble_flowmap.py`, `scripts/flowmap/profile.py` (`DEFAULT_LOOK`) · Falsifier: a project reading parts through pointers, or a look choice that cannot be set in the map
+> A split map keeps its source in `parts/` (`master.yaml` with the `drawing:` block and `#@include` lines, one file per component group and
+> flow section; part headers are `#%` lines) and `flows.yaml` is **generated** from them, complete, with a banner and no pointers
+> (`assemble_flowmap.py`; `just flows` assembles, then renders; the project check fails on a hand edit or a stray part). Every aesthetic
+> choice is a `drawing.look` key with the reviewed choice as its default: `group_fill`, `shapes`, `step_width`, `decision_width`,
+> `step_chars`, `back_arrows`, `action_bullets`. A project writes them out in its master so they are seen and changed in the YAML.
+
 ## The banner and the drift check
 
 `drawio.mxfile.banner()` writes an XML comment between the declaration and `<mxfile>` naming the generator, the source map, the command that regenerates the file and the check that fails when it is out

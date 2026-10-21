@@ -17,33 +17,37 @@ from drawio.mxfile import BLANK, Page, banner, label, mxfile, wrapped_lines
 from .e2e import end_to_end_page
 from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
 from .options import options_page
-from .shapes import PERSON_ICON, SHAPES, lane_shape, shape_legend, step_shape
+from .flow_geometry import COL_W, LANE_HEAD_W, STEP_W, back_arrow, column_lefts, step_width
+from .shapes import PERSON_ICON, SHAPES, SLANTED, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
 
 #: Flow page geometry: lane heading width, least lane height, step column width, step box width and least height.
-LANE_HEAD_W, LANE_H, COL_W, STEP_W, STEP_H = 190, 120, 270, 220, 92
+LANE_H, STEP_H = 120, 92
 #: Note text budget (characters per line) and line height.
 NOTE_CHARS, NOTE_LINE_H = 44, 15
 #: Step box text budget (200 px at font size 10) and line height.
-STEP_CHARS, STEP_LINE_H = 33, 13
+STEP_LINE_H = 13   # the characters a line a step box is sized for are drawing.look.step_chars
 #: A flow page header's line height (font 12).
 HEAD_LINE_H = 15
 #: A step note's sections, in reading order: (step key, heading, whether its items are code).
 NOTE_SECTIONS = (("reads", "Reads", False), ("writes", "Writes", False), ("code", "Code", True), ("failures", "Fails", False), ("look", "Look", False))
 
 
-def step_lines(step: dict, number: int) -> list[str]:
+def step_lines(step: dict, number: int, bullets: bool = True) -> list[str]:
     """A step box's text: the bold title, a blank line, the action, a blank line, the transport in italics, the gate in bold and the status.
 
     Args:
         step: the step from the map.
         number: its position in the flow.
+        bullets: set an action of clauses joined by "; " one clause a line (`drawing.look.action_bullets`).
 
     Returns:
         Label lines for drawio.mxfile.label().
     """
-    return ([f"**{number}. {step['id']}**", BLANK, step["action"], BLANK, f"*via {' + '.join(step['via'])}*"]
+    clauses = [c.strip() for c in step["action"].split("; ") if c.strip()]
+    action = [step["action"]] if not bullets else clauses if len(clauses) == 1 else [f"• {c}" for c in clauses]   # one clause a line: long actions read as a list
+    return ([f"**{number}. {step['id']}**", BLANK] + action + [BLANK, f"*via {' + '.join(step['via'])}*"]
             + ([f"**GATE: {step['gate']}**"] if step.get("gate") else [])
             + ([f"*{step['status']['state']} since {step['status']['since']}*"] if step.get("status") else []))
 
@@ -90,7 +94,7 @@ def flow_header_lines(flow: dict, comps: dict[str, dict], number: int) -> list[s
             + [x for x in fields if x] + [BLANK, "[back to Overview]"])
 
 
-def _lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float, box_h: dict) -> tuple[list, list, list]:
+def _lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float, box_h: dict, box_w: dict) -> tuple[list, list, list]:
     """Draw one lane per component, in order of first use; each lane as tall as its tallest step.
 
     Args:
@@ -100,6 +104,7 @@ def _lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float, bo
         profile: the kind colours.
         top: the first lane's top.
         box_h: each step box's height.
+        box_w: each step box's width.
 
     Returns:
         (lane component ids, lane tops, lane heights).
@@ -109,7 +114,7 @@ def _lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float, bo
     for s in steps:
         if s["actor"] not in lanes:
             lanes.append(s["actor"])
-    width = LANE_HEAD_W + len(steps) * COL_W + GAP
+    width = LANE_HEAD_W + sum(box_w.values()) + len(steps) * (COL_W - STEP_W) + GAP
     lane_h = [max([LANE_H] + [box_h[s["id"]] + 28 for s in steps if s["actor"] == cid]) for cid in lanes]
     lane_y = [top + sum(lane_h[:li]) for li in range(len(lanes))]
     for li, cid in enumerate(lanes):
@@ -134,14 +139,15 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
         k: the step's index.
         comps: every component by id.
         profile: the kind colours.
-        where: (lanes, lane tops, lane heights, step box heights, step texts, notes top, step shapes).
+        where: (lanes, lane tops, lane heights, step box heights, step texts, notes top, step shapes, column left edges).
 
     Returns:
         The note's height.
     """
-    lanes, lane_y, lane_h, box_h, texts, notes_top, shapes = where
+    lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts = where
+    w = step_width(shapes[flow["steps"][k]["id"]], profile.look)
     fid, s = flow["id"], flow["steps"][k]
-    x = MARGIN + LANE_HEAD_W + GAP + k * COL_W
+    x = lefts[k]
     li = lanes.index(s["actor"])
     h = box_h[s["id"]]
     y = lane_y[li] + (lane_h[li] - h) / 2
@@ -150,13 +156,13 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
         "reads: " + "; ".join(s.get("reads", [])) if s.get("reads") else "",
         "writes: " + "; ".join(s.get("writes", [])) if s.get("writes") else "",
         "code: " + "; ".join(s.get("code", [])) if s.get("code") else "") if x)
-    page.box(f"{fid}-s-{s['id']}", label(*texts[s["id"]]), x, y, STEP_W, h,
+    page.box(f"{fid}-s-{s['id']}", label(*texts[s["id"]]), x, y, w, h,
              comp_style(comps[s["actor"]]["kind"], profile, "fontSize=10;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=6;"
                         + ("strokeWidth=2;" if gate else "") + SHAPES[shapes[s["id"]]][0]), tooltip=tip,
              link=f"data:page/id,flow-{s['flow']}" if s.get("flow") else "")
     note = note_lines(s, k + 1)
     nh = 20 + sum(wrapped_lines(n.replace("`", ""), NOTE_CHARS) for n in note) * NOTE_LINE_H
-    page.box(f"{fid}-n-{s['id']}", label(*note), x - (COL_W - STEP_W) / 2 + 2, notes_top, COL_W - 4, nh,
+    page.box(f"{fid}-n-{s['id']}", label(*note), x - (COL_W - STEP_W) / 2 + 2, notes_top, w + (COL_W - STEP_W) - 4, nh,
              "shape=note;whiteSpace=wrap;html=1;size=10;fillColor=#fffbe6;strokeColor=#bf9000;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;")
     return nh
 
@@ -176,7 +182,10 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     """
     fid, steps = flow["id"], flow["steps"]
     page = Page(f"flow-{fid}", f"{number}. {flow['title']}"[:60])
-    width = LANE_HEAD_W + len(steps) * COL_W + GAP
+    shapes = {s["id"]: (step_shape(steps, k, comps, profile.kind_shapes, profile.io_vias) if profile.look["shapes"] else "process")
+              for k, s in enumerate(steps)}
+    box_w = {sid: step_width(sh, profile.look) for sid, sh in shapes.items()}
+    width = LANE_HEAD_W + sum(box_w.values()) + len(steps) * (COL_W - STEP_W) + GAP
     header = flow_header_lines(flow, comps, number)
     head_w = max(width, 900)
     head_chars = int((head_w - 16) / 7)   # font 12: about 6.5 px a character, so 7 px is conservative
@@ -186,19 +195,25 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
              link="data:page/id,overview")
     top = MARGIN + head_h + GAP
     # Each step box is as tall as its text needs, and each lane as tall as its tallest step.
-    texts = {s["id"]: step_lines(s, k + 1) for k, s in enumerate(steps)}
-    shapes = {s["id"]: step_shape(steps, k, comps, profile.kind_shapes, profile.io_vias) for k, s in enumerate(steps)}
+    texts = {s["id"]: step_lines(s, k + 1, profile.look["action_bullets"]) for k, s in enumerate(steps)}
     box_h = {}
     for sid, lines in texts.items():   # the outline eats into the text area: fewer characters a line, a taller box
         _style, wf, hf = SHAPES[shapes[sid]][:3]
-        box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), int(STEP_CHARS * wf)) for x in lines) * STEP_LINE_H) * hf)
-    lanes, lane_y, lane_h = _lanes(page, flow, comps, profile, top, box_h)
+        chars = int(profile.look["step_chars"] * box_w[sid] / profile.look["step_width"] * wf)
+        box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), chars) for x in lines) * STEP_LINE_H) * hf)
+    lanes, lane_y, lane_h = _lanes(page, flow, comps, profile, top, box_h, box_w)
+    lefts = column_lefts([box_w[s["id"]] for s in steps])
     notes_top = top + sum(lane_h) + GAP
-    note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes)) for k in range(len(steps))]
+    note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts)) for k in range(len(steps))]
     used = list(dict.fromkeys(list(shapes.values()) + [lane_shape(comps[c], profile.kind_shapes) for c in lanes]))
     shape_legend(page, used, MARGIN, notes_top + max(note_h) + GAP * 2, fid)
+    band = notes_top - GAP / 2
     for cid, src, dst, text, style in step_edges(steps, fid):
-        page.edge(cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", label=text, style=style)
+        pin = ("exitPerimeter=0;" if shapes[src] in SLANTED else "") + ("entryPerimeter=0;" if shapes[dst] in SLANTED else "")
+        if "back to" in text:
+            band = back_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), band, profile.look["back_arrows"])
+        else:
+            page.edge(cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", label=text, style=style + pin)
     return page
 
 

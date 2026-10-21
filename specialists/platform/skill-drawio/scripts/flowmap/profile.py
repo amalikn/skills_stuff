@@ -14,6 +14,18 @@ from dataclasses import dataclass, field
 
 from .shapes import DEFAULT_IO_VIAS
 
+#: The drawing's look, settable per map under `drawing.look` (operator, 2026-10-21: aesthetics belong in the engine and in the YAML, never by
+#: hand). Defaults are the choices of the 2026-10-21 reviews; a map that sets nothing draws as they decided.
+DEFAULT_LOOK = {
+    "group_fill": "#ffffff",       # Overview group boxes: opaque, so the editor grid never shows through a dashed box
+    "shapes": True,                # flowchart symbols on flow pages (flowmap.shapes); False draws every step as a rectangle
+    "step_width": 220,             # a step box's width on a flow page
+    "decision_width": 380,         # a decision's width, in its wider column, so a diamond grows sideways
+    "step_chars": 38,              # characters a line a step box is sized for, at step_width and font 10
+    "back_arrows": "short-first",  # return arrows: "short-first" (along the source's lane when clear) or "below-lanes" (always the band)
+    "action_bullets": True,        # an action written as clauses joined by "; " is set one clause a line
+}
+
 #: Thick arrow and family colours: distinct hues, each at least 4.5:1 on white (blue, green, red, purple, teal, olive, magenta, orange,
 #: navy-black, then brown, kept last because next to orange it reads as the same colour).
 DISTINCT = ("#1f4e9c", "#1b7a3a", "#b3261e", "#6a3fa0", "#00707a", "#4d6b00", "#a0306e", "#b45309", "#0f172a", "#8a5a00")
@@ -49,6 +61,7 @@ class Profile:
         band_title: the heading of the band below the columns.
         kind_shapes: {component kind: flow page shape} from `drawing.kind_shapes` (flowmap.shapes.DEFAULT_KIND_SHAPES fills the rest).
         io_vias: transports that cross a network, lower case, from `drawing.io_vias` (default flowmap.shapes.DEFAULT_IO_VIAS).
+        look: the drawing's look, DEFAULT_LOOK overlaid with `drawing.look`.
     """
 
     map: str
@@ -72,6 +85,7 @@ class Profile:
     band_title: str = "Stores and secrets"
     kind_shapes: dict = field(default_factory=dict)
     io_vias: tuple = DEFAULT_IO_VIAS
+    look: dict = field(default_factory=lambda: dict(DEFAULT_LOOK))
 
     def style(self, kind: str) -> tuple[str, str]:
         """A kind's (fill, stroke).
@@ -123,7 +137,8 @@ class Profile:
                    group_cells={k: (int(v[0]) - 1, int(v[1]) - 1) for k, v in (d.get("group_cell") or {}).items()}, tiers=tiers, below_groups=below_groups, below_kinds=below_kinds,
                    kind_tier=dict(d.get("kind_tier") or {}), default_tier=int(d.get("default_tier", 0)), families=families,
                    family_by_category=by_cat, band_title=d.get("band_title", "Stores and secrets"),
-                   kind_shapes=dict(d.get("kind_shapes") or {}), io_vias=tuple(v.lower() for v in d.get("io_vias", DEFAULT_IO_VIAS)))
+                   kind_shapes=dict(d.get("kind_shapes") or {}), io_vias=tuple(v.lower() for v in d.get("io_vias", DEFAULT_IO_VIAS)),
+                   look={**DEFAULT_LOOK, **(d.get("look") or {})})
 
 def layout_columns(spec: str) -> int:
     """Columns for a `group_layout` value.

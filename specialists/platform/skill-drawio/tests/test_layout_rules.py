@@ -164,7 +164,8 @@ class Arrows(unittest.TestCase):
         self.assertIn("GENERATED", text.splitlines()[1])
 
     def test_forward_and_back_arrows_use_separate_ports(self) -> None:
-        """Two arrows into one step get different entry points; a back arrow exits and enters at the bottom, dashed, labelled."""
+        """Two arrows into one step get different entry points; a back arrow is dashed, labelled and crosses no other step: the short way
+        along the source's lane when clear, else below every lane."""
         data = _minimal()
         steps = data["flows"][0]["steps"]
         steps.append({"id": "three", "actor": "a", "action": "z", "via": ["SSH"], "next": ["two"]})
@@ -174,10 +175,21 @@ class Arrows(unittest.TestCase):
         styles = dict(re.findall(r'id="(f-e-[^"]+)"[^>]*style="([^"]+)"', text))
         ports = lambda s: re.search(r"entryX=([0-9.]+);entryY=([0-9.]+)", s).groups()
         self.assertNotEqual(ports(styles["f-e-one-three"]), ports(styles["f-e-two-three"]))
-        back = styles["f-e-three-two"]
-        for part in ("dashed=1", "exitY=1", "entryY=1"):
-            self.assertIn(part, back)
-        self.assertRegex(text, r'id="f-e-three-two" value="back to 2"')
+        self.assertIn("dashed=1", styles["f-e-three-two"])
+        self.assertRegex(text, r'id="f-e-three-two-lbl" value="[^"]*back to 2')   # the label is a text mark beside the routed arrow (2026-10-21)
+        flow_geometry = importlib.import_module("flowmap.flow_geometry")
+        comps = {c["id"]: c for c in data["components"]}
+        page = pages.flow_page(data["flows"][0], comps, 1, _profile(data))
+        route = next(r for r in page.routes if r.cid == "f-e-three-two")
+        self.assertTrue(flow_geometry._clear(page, route.points, {route.src, route.dst}))   # crosses no other step
+        # A step in the source's lane between the two columns blocks the short way, so the arrow runs below every lane.
+        steps.insert(2, {"id": "mid", "actor": "a", "action": "m", "via": ["SSH"]})
+        steps[1]["next"] = ["mid"]
+        page = pages.flow_page(data["flows"][0], comps, 1, _profile(data))
+        route = next(r for r in page.routes if r.cid == "f-e-three-two")
+        lanes_bottom = max(y + h for cid, (x, y, w, h) in page.rects.items() if "-lane-" in cid)
+        self.assertGreater(route.points[1][1], lanes_bottom)
+        self.assertTrue(flow_geometry._clear(page, route.points, {route.src, route.dst}))
 
     def test_thin_arrows_are_grey_and_thick_arrows_take_their_target_colour(self) -> None:
         """Same-group arrows are solid thin grey with hops; a cross-group dependency is one thick arrow with a count, a dot and a layer."""

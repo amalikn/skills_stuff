@@ -124,7 +124,7 @@ class Overview:
             gx = self.col_left[self.gcol[gi]] + (self.col_w[self.gcol[gi]] - gl.width) / 2
             gy = self.row_top[self.grow[gi]]
             page.box(f"ov-g-{gi}", label(f"**{self.gnames[gi]}**"), gx, gy, gl.width, self.gh_of[gi],
-                     "rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#777777;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=12;",
+                     f"rounded=0;whiteSpace=wrap;html=1;fillColor={self.profile.look['group_fill']};strokeColor=#777777;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontSize=12;",
                      solid=True)
             self.gpos[gi] = (gx, gy, gl.width, self.gh_of[gi])   # only as tall as its content; rows stay top-aligned
             ry = gy + GROUP_HEAD

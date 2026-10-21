@@ -518,6 +518,42 @@
             "minLength": 1
           },
           "description": "Transports that cross a network: a step using one draws as data in or out."
+        },
+        "look": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "The drawing's look; every key optional, defaults in flowmap.profile.DEFAULT_LOOK.",
+          "properties": {
+            "group_fill": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "shapes": {
+              "type": "boolean"
+            },
+            "step_width": {
+              "type": "integer",
+              "minimum": 120
+            },
+            "decision_width": {
+              "type": "integer",
+              "minimum": 120
+            },
+            "step_chars": {
+              "type": "integer",
+              "minimum": 10
+            },
+            "back_arrows": {
+              "type": "string",
+              "enum": [
+                "short-first",
+                "below-lanes"
+              ]
+            },
+            "action_bullets": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },

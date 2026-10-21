@@ -80,7 +80,8 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
   loading the pack through its one seam to the skills.
 - Optional map features (2026-10-21): `#@include` parts for a long map, `status` on components, flows and steps, and an `options` block drawn
   as an Options page after the Overview ([references/data-first-diagrams.md](references/data-first-diagrams.md)); flow pages draw
-  steps and lane heads as flowchart symbols derived from the map ([references/visual-style.md](references/visual-style.md)).
+  steps and lane heads as flowchart symbols derived from the map ([references/visual-style.md](references/visual-style.md)); every look choice is a
+  `drawing.look` key; a long map's source lives in `parts/` and `flows.yaml` is assembled from it (`assemble_flowmap.py`).
 - A refactor of the engine must leave every consumer's drawing byte-identical; prove it with the before and after files.
 
 ## Standing rules
