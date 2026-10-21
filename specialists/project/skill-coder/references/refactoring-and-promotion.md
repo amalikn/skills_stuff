@@ -123,3 +123,12 @@ module = importlib.util.module_from_spec(spec)
 sys.modules[key] = module   # dataclasses resolve annotations through sys.modules
 spec.loader.exec_module(module)
 ```
+
+> **Learned 2026-10-21 (b)** · moving definitions out of a file · VERIFIED_PRIMARY (unified-network-controller code architecture stage 2: the T6
+> measure read `adapters/protocol.py` by path and would have gone on passing while checking none of the moved records) · Source:
+> unified-network-controller `adapters/t6/measure.py` and `src/unc/core/records/observation.py` (2026-10-21, uncommitted at writing) ·
+> Falsifier: a move after which every by-path reader was found by the import graph alone
+> Before moving definitions out of a file, find its readers by path as well as its importers: AST scanners, line counters, docstring
+> baselines and checks that open the file. An import graph shows only importers; a by-path reader keeps passing on the shim and silently
+> checks less. Grep for the file's path and name, point each reader at both files (or the new one), and compare its output before and after.
+

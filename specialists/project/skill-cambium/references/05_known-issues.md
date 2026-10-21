@@ -310,6 +310,25 @@ Until 2026-10-07 this pack held nothing about `wh` sites; `site-addressing.yaml`
   communities (VERIFIED-OBSERVED 2026-10-07, value not read). Needs an operator decision before any change.
 - Login probe: `scripts/device-login-probe.sh` (one attempt per entry, client on the Mac; an empty session is reported as UNCONFIRMED, not accepted).
 - Gaps: the ePMP 1000 Hotspot login (canteen-creek `.21`); the rest of the `wh` fleet; a `wh` block in `site-addressing.yaml`.
+- **ePMP 1000 Hotspots lost from cnMaestro (2026-10-21, VERIFIED-OBSERVED; unified-network-controller U1.2,
+  `docs/reports/u1/u1-scope-and-affected-devices-20261021_1804.md`).** cnMaestro Cloud's rcp/rct export (about 2026-09-18) lists 30 ePMP 1000
+  Hotspots on firmware 3.3.1.2-r1 at 16 `wh`/`rct` sites, all Offline 558 to 1,211 days; 15 answered from their SMC on 2026-10-21 and were identified (MAC
+  equal to the export's, or the Hotspot web certificate). They present a self-signed web certificate on 443 (`CN = Cambium WLAN AP`): ten valid 2015-09-01 to **2025-08-29**, five valid
+  2020-11-02 to **2030-10-31**. All dropped out of cnMaestro before 2025-08-29 and the 2030 ones too, so the web certificate is not what breaks
+  cnMaestro (cause UNVERIFIED; the firmware's cnMaestro trust or client certificate needs a login to read). ePMP 1000 omni and Force 180 on
+  4.7.0.1 serve HTTP only. A Force 180 SM's ARP MAC is its cnMaestro MAC +1 (the other interface): match on +/-1, not equality.
+  Read-only probe run on the SMC (no device login), from the report's sources folder `smc-probe-script.txt` (uncommitted at writing):
+
+  ```bash
+  for ip in "$@"; do
+    echo "== $ip"; ip neigh show "$ip"
+    ping -c1 -W2 "$ip" >/dev/null 2>&1 && echo "ping: ok" || echo "ping: no reply"
+    c=$(echo | timeout 8 openssl s_client -connect "$ip:443" 2>/dev/null | openssl x509 -noout -subject -issuer -startdate -enddate -serial 2>/dev/null)
+    [ -n "$c" ] && echo "$c" || echo "tls443: no certificate presented"
+  done
+  ```
+
+  No visual surface was read, so no screenshot applies.
 
 ## Central SMC logs missing in Graylog 2026-09-12 to 2026-10-07 (cross-reference, 2026-10-07)
 
