@@ -86,6 +86,18 @@ class LookTests(unittest.TestCase):
         self.assertEqual(TestMap._profile(TestMap._minimal()).look, importlib.import_module("flowmap.profile").DEFAULT_LOOK)
 
 
+class LookReportTests(unittest.TestCase):
+    """profile.look_report: pins are named, and a pin equal to the current default is warned about (operator, 2026-10-21)."""
+
+    def test_report(self) -> None:
+        """No look: defaults. A pin: named. A pin equal to the default: warned (negative: a differing pin is not)."""
+        prof = importlib.import_module("flowmap.profile")
+        self.assertEqual(prof.look_report({}), ["look: skill-drawio defaults (nothing pinned)"])
+        lines = prof.look_report({"drawing": {"look": {"step_width": 240, "shapes": True}}})
+        self.assertIn("step_width=240", lines[0])
+        self.assertEqual([x for x in lines if x.startswith("warning")], ["warning: look.shapes is pinned to the current default (True); remove it to follow future defaults"])
+
+
 class OpaqueDashedBoxTests(unittest.TestCase):
     """A dashed box is never see-through (operator, 2026-10-21: "white background so that I don't see the draw.io grid", as a standard)."""
 

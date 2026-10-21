@@ -20,7 +20,7 @@ from pathlib import Path
 
 from drawio.audit import faults, page_audit
 from flowmap import e2e, model, options, overview, pages
-from flowmap.profile import Profile
+from flowmap.profile import Profile, look_report
 
 #: The oldest Python this script runs on (stdlib; PyYAML to read the map).
 REQUIRES_PYTHON = (3, 11)
@@ -106,6 +106,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.write:
         try:
             print(f"wrote {pages.write_drawing(root, profile, outcome).relative_to(root)}")
+            print("\n".join(look_report(model.read_map(root, profile.map) or {})))
         except FileExistsError as exc:
             print(f"render_flowmap: {exc}", file=sys.stderr)
             return 1

@@ -180,3 +180,23 @@ def group_columns(drawing: dict) -> dict:
             raise ValueError(f"group {group!r} is in both group_columns and group_layout: keep one")
         cols[group] = layout_columns(spec)
     return cols
+
+
+def look_report(data: dict) -> list[str]:
+    """What a map's `drawing.look` pins, so a pin is never invisible (operator, 2026-10-21: a pinned value stops following the skill's
+    defaults).
+
+    Args:
+        data: the loaded map.
+
+    Returns:
+        One line naming every pinned key and its value, or that the defaults apply; plus a warning line per pin equal to today's default
+        (it does nothing now and would block the next change to that default).
+    """
+    look = (data.get("drawing") or {}).get("look") or {}
+    if not look:
+        return ["look: skill-drawio defaults (nothing pinned)"]
+    lines = ["look: pinned " + ", ".join(f"{k}={v}" for k, v in sorted(look.items()))]
+    lines += [f"warning: look.{k} is pinned to the current default ({v}); remove it to follow future defaults"
+              for k, v in sorted(look.items()) if DEFAULT_LOOK.get(k) == v]
+    return lines

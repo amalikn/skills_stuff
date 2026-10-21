@@ -145,7 +145,9 @@ map does, and a byte-for-byte comparison is a valid drift check.
 > flow section; part headers are `#%` lines) and `flows.yaml` is **generated** from them, complete, with a banner and no pointers
 > (`assemble_flowmap.py`; `just flows` assembles, then renders; the project check fails on a hand edit or a stray part). Every aesthetic
 > choice is a `drawing.look` key with the reviewed choice as its default: `group_fill`, `shapes`, `step_width`, `decision_width`,
-> `step_chars`, `back_arrows`, `action_bullets`. A project writes them out in its master so they are seen and changed in the YAML.
+> `step_chars`, `back_arrows`, `action_bullets`. A project lists them **commented** under `look: {}` in its master, so they are seen in the
+> YAML yet keep following the skill's defaults; an uncommented line is a deliberate pin (a side agent, accepted by the operator, 2026-10-21).
+> `render_flowmap.py --write` prints what is pinned and warns about a pin equal to today's default.
 
 ## The banner and the drift check
 
