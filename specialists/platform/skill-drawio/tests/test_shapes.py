@@ -179,5 +179,24 @@ class HeadingTests(unittest.TestCase):
         data["drawing"] = {"look": {"heading_scale": 140}}
         self.assertIn("font-size:140%", pages.render(data, TestMap._profile(data)))
 
+
+class SkipArrowTests(unittest.TestCase):
+    """A forward arrow that skips a column is routed by the engine, clear of the step between (2026-10-21, smc-resiliency review)."""
+
+    def test_same_lane_skip_runs_over_the_top(self) -> None:
+        """Step one gates to two or three, all in one lane: the arrow one to three carries waypoints and stays above step two."""
+        data = TestMap._minimal()
+        data["flows"][0]["steps"] = [
+            {"id": "one", "actor": "a", "action": "x", "via": ["API"], "gate": "g", "next": ["two", "three"]},
+            {"id": "two", "actor": "a", "action": "y", "via": ["API"]},
+            {"id": "three", "actor": "a", "action": "z", "via": ["API"]}]
+        text = pages.render(data, TestMap._profile(data))
+        seg = text.split('id="f-e-one-three"', 1)[1].split("</mxCell>", 1)[0]
+        ys = [float(v) for v in re.findall(r'<mxPoint x="[^"]+" y="([^"]+)"', seg)]
+        self.assertTrue(ys, "the skip arrow has engine waypoints")
+        two = text.split('id="f-s-two"', 1)[1]
+        top = float(re.search(r'<mxGeometry x="[^"]+" y="([^"]+)"', two).group(1))
+        self.assertLess(max(ys), top, "the run stays above step two")
+
 if __name__ == "__main__":
     unittest.main()

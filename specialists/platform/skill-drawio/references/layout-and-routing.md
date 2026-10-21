@@ -245,3 +245,23 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 > if (a, b) in climb:
 >     style = f"exitX=1;exitY={out_r[a][(a, b)]};entryX={in_v[b][(a, b)]};entryY={1 if lane[b] < lane[a] else 0};"
 > ```
+
+> **Learned 2026-10-21** · flow pages: arrows that skip a column · VERIFIED_PRIMARY · Source: `scripts/flowmap/flow_geometry.py` (`skip_arrow`), `scripts/flowmap/pages.py`, `tests/test_shapes.py` (`SkipArrowTests`) · Falsifier: a forward arrow drawn through a step between its ends
+> draw.io's own orthogonal route took a gate's arrow straight through the next step in the same lane (smc-resiliency, commissioning flow, register to
+> refuse past record), and a lane-changing arrow ran along its source lane through a later step. `render_flowmap.py --audit` did not notice: it audits the
+> Overview, End-to-end and option pages only, so flow pages are reviewed by export. The engine now routes every forward arrow that skips a column: in one
+> lane over the lane top (under the bottom when blocked), into another lane down or up in the gap after the source column then along the target lane's
+> edge; each such arrow takes its own run 10 px from the last, and a path is used only when `_clear` finds no step on it.
+>
+> ```python
+> # scripts/flowmap/flow_geometry.py (skip_arrow), skill-drawio, 2026-10-21
+> off = 6 + 10 * track
+> if s_top == d_top:   # same lane: over the top, else under the bottom
+>     tries = [[(sx + sw / 2, sy), (sx + sw / 2, s_top + off), (dx + dw / 2, s_top + off), (dx + dw / 2, dy)],
+>              [(sx + sw / 2, sy + sh), (sx + sw / 2, s_top + s_h - off), (dx + dw / 2, s_top + s_h - off), (dx + dw / 2, dy + dh)]]
+> else:
+>     turn = sx + sw + gap / 2
+>     run_y, end_y = (d_top + off, dy) if d_top > s_top else (d_top + d_h - off, dy + dh)
+>     tries = [[(sx + sw, sy + sh / 2), (turn, sy + sh / 2), (turn, run_y), (dx + dw / 2, run_y), (dx + dw / 2, end_y)]]
+> ```
+

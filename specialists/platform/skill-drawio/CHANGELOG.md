@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261021 Flow pages: a forward arrow that skips a column is routed by the engine (`flow_geometry.skip_arrow`): over the lane top (else under its bottom) in one lane, along the target lane's edge into another lane, each on its own run, checked clear of steps; lane-head clouds use `shapes.FIT`; test `SkipArrowTests`. Found reviewing smc-resiliency's commissioning page (an arrow ran through the step between; the audit does not cover flow pages).
 - 20261021 Box headings larger (operator, smc-resiliency): component names on the Overview and End-to-end pages, step titles, option heads and decision titles at `look.heading_scale` (default 125%) of the box font; `drawio.mxfile.heading()` marks a whole-line heading, `label()` draws it in a font-size span and `wrapped_lines()` counts it taller, so boxes grow to fit; two tests.
 - 20261021 Overview thick-arrow counts read `×n` (operator, smc-resiliency: a bare number looked like a flow step `4.2`); header and legend say so; the arrows test asserts `×2`.
 - 20261021 Overview and End-to-end boxes take their lane head's symbol (`drawing.look.component_shapes`, default on; operator, smc-resiliency): clouds and cylinders sized for their outline (`shapes.FIT`), the person figure bottom right, "Shapes on this page" on both pages, an index-box legend on the Overview; two tests; Learned 2026-10-21 in `references/visual-style.md`. Every consumer's drawing changes at its next `just flows`.

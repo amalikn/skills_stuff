@@ -18,8 +18,8 @@ from .e2e import end_to_end_page
 from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
 from .model import option_blocks
 from .options import options_page
-from .flow_geometry import COL_W, LANE_HEAD_W, STEP_W, back_arrow, column_lefts, step_width
-from .shapes import PERSON_ICON, SHAPES, SLANTED, lane_shape, shape_legend, step_shape
+from .flow_geometry import COL_W, LANE_HEAD_W, STEP_W, back_arrow, column_lefts, skip_arrow, step_width
+from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
 
@@ -125,7 +125,7 @@ def _lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float, bo
         page.box(f"{fid}-lane-{li}", "", MARGIN, lane_y[li], width, lane_h[li], f"rounded=0;html=1;fillColor={fill};strokeColor={stroke};opacity=35;")
         shape = lane_shape(c, profile.kind_shapes)
         page.box(f"{fid}-lanehead-{li}", label(f"**{c['name']}**", c["kind"], c["host"]), MARGIN, lane_y[li], LANE_HEAD_W, lane_h[li],
-                 comp_style(c["kind"], profile, "rounded=0;align=left;spacingLeft=6;" + status_style(c) + SHAPES[shape][0]
+                 comp_style(c["kind"], profile, "rounded=0;align=left;spacingLeft=6;" + status_style(c) + SHAPES[shape][0] + FIT.get(shape, ("",))[0]
                             + ("spacingRight=40;" if shape == "person" else "")), tooltip=f"health: {c['health']}")
         if shape == "person":   # a figure in the lane head's top right corner
             page.box(f"{fid}-lanehead-{li}-icon", "", MARGIN + LANE_HEAD_W - 34, lane_y[li] + 8, 22, 40, PERSON_ICON)
@@ -210,11 +210,20 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     used = list(dict.fromkeys(list(shapes.values()) + [lane_shape(comps[c], profile.kind_shapes) for c in lanes]))
     shape_legend(page, used, MARGIN, notes_top + max(note_h) + GAP * 2, fid)
     band = notes_top - GAP / 2
+    order = {s["id"]: k for k, s in enumerate(steps)}
+    runs: dict = {}   # engine-routed arrows per lane edge, so each takes its own run
+    lane_box = {s["id"]: (lane_y[lanes.index(s["actor"])], lane_h[lanes.index(s["actor"])]) for s in steps}
     for cid, src, dst, text, style in step_edges(steps, fid):
         pin = ("exitPerimeter=0;" if shapes[src] in SLANTED else "") + ("entryPerimeter=0;" if shapes[dst] in SLANTED else "")
         if "back to" in text:
             band = back_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), band, profile.look["back_arrows"])
-        else:
+            continue
+        skips = order[dst] > order[src] + 1   # a column or more in between: routed by the engine so it never crosses a step
+        track = runs.get(lane_box[dst], 0)
+        drawn = skips and skip_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), (lane_box[src], lane_box[dst]),
+                                     COL_W - STEP_W, track)
+        runs[lane_box[dst]] = track + (1 if drawn else 0)
+        if not drawn:
             page.edge(cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", label=text, style=style + pin)
     return page
 
