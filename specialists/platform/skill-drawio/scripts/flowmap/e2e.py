@@ -251,7 +251,7 @@ class EndToEnd(E2EGrid):
         r = self.cell[comp][1]
         mid = self.row_top[r] + self.row_h[r] / 2
         ys = [self._port_y(link.cid, end) for link in self.links for end, who in (("exit", link.src), ("entry", link.dst)) if who == comp]
-        least = fit_height(self.comps[comp], self.profile, e2e_text_height(self.comps[comp]))
+        least = fit_height(self.comps[comp], self.profile, e2e_text_height(self.comps[comp], self.profile.look['heading_scale']))
         top = min([mid - least / 2] + [y - E2E_BOX_PAD for y in ys])
         bottom = max([mid + least / 2] + [y + E2E_BOX_PAD for y in ys])
         return top, bottom - top
@@ -345,7 +345,7 @@ class EndToEnd(E2EGrid):
         for cid, comp in self.comps.items():
             c, _r = self.cell[cid]
             top, height = self._box_span(cid)
-            page.box(f"e2e-c-{cid}", label(*e2e_box_lines(comp)), self.col_x[c], top, E2E_BW, height,
+            page.box(f"e2e-c-{cid}", label(*e2e_box_lines(comp, self.profile.look['heading_scale'])), self.col_x[c], top, E2E_BW, height,
                      comp_style(comp["kind"], self.profile, "fontSize=11;verticalAlign=middle;spacingLeft=6;spacingRight=6;" + status_style(comp)
                                 + component_shape(comp, self.profile)),
                      tooltip=f"health: {comp['health']}", solid=True)

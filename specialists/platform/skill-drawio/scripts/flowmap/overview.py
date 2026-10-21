@@ -54,7 +54,7 @@ class Overview:
         Each box is as tall as its own text; a group row as tall as its tallest box; a row gap gives each arrow crossing it a track OV_THIN_SP
         apart (so thin hops never double up) and OV_MIN_THIN of straight run before the box below; a group as tall as its own content.
         """
-        self.box_h = {k: fit_height(self.by_id[k], self.profile, text_height(box_lines(self.by_id[k], self.far[k]))) for k in self.by_id}
+        self.box_h = {k: fit_height(self.by_id[k], self.profile, text_height(box_lines(self.by_id[k], self.far[k], self.profile.look['heading_scale']))) for k in self.by_id}
         self.row_bh, self.row_gap, self.gh_of = {}, {}, {}
         for gi, gl in self.lay.items():
             self.row_bh[gi] = [max([OV_BH] + [self.box_h[k] for k in row if not k.startswith("slot:")]) for row in gl.rows]
@@ -151,7 +151,7 @@ class Overview:
         ports = ", ".join(str(p) for p in c.get("ports", []))
         tip = "\n".join(x for x in (f"kind: {c['kind']}", f"host: {c['host']}", f"ports: {ports}" if ports else "",
                                     f"health: {c['health']}", c.get("notes", ""), f"status: {status_text(c)}" if c.get("status") else "") if x)
-        page.box(f"ov-c-{k}", label(*box_lines(c, self.far[k])), x, y, OV_BW, self.box_h[k],
+        page.box(f"ov-c-{k}", label(*box_lines(c, self.far[k], self.profile.look['heading_scale'])), x, y, OV_BW, self.box_h[k],
                  comp_style(c["kind"], self.profile, f"fontSize=10;align=left;verticalAlign=top;spacingTop=4;spacingLeft={OV_LEFT};spacingRight={OV_SIDE};"
                             + status_style(c) + component_shape(c, self.profile)),
                  tooltip=tip, solid=True)

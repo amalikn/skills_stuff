@@ -24,7 +24,8 @@ DEFAULT_LOOK = {
     "step_chars": 38,              # characters a line a step box is sized for, at step_width and font 10
     "back_arrows": "short-first",  # return arrows: "short-first" (along the source's lane when clear) or "below-lanes" (always the band)
     "action_bullets": True,        # an action written as clauses joined by "; " is set one clause a line
-    "component_shapes": True,      # Overview and End-to-end boxes take their lane head's symbol (operator, 2026-10-21); False draws rounded boxes
+    "component_shapes": True,
+    "heading_scale": 125,          # a box's heading line (component name, step title, option head, decision) at this % of the box's font      # Overview and End-to-end boxes take their lane head's symbol (operator, 2026-10-21); False draws rounded boxes
 }
 
 #: Thick arrow and family colours: distinct hues, each at least 4.5:1 on white (blue, green, red, purple, teal, olive, magenta, orange,

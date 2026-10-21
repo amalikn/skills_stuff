@@ -13,7 +13,7 @@ Imported, not run: `from flowmap.options import options_page` with the skill's s
 
 from __future__ import annotations
 
-from drawio.mxfile import BLANK, Page, label, wrapped_lines
+from drawio.mxfile import BLANK, Page, heading, label, wrapped_lines
 
 from .model import GAP, MARGIN
 from .profile import Profile
@@ -105,16 +105,17 @@ def _list_lines(heading: str, items: list[str]) -> list[str]:
     return [f"**{heading}**"] + ([f"• {x}" for x in items] or ["none listed"])
 
 
-def _head_lines(opt: dict) -> list[str]:
+def _head_lines(opt: dict, scale: int = 100) -> list[str]:
     """An option head's text: its title in bold and its status in italics.
 
     Args:
         opt: the option from the map.
+        scale: the title's size, percent of the box font (`drawing.look.heading_scale`).
 
     Returns:
         Label lines.
     """
-    return [f"**{opt['title']}**", f"*{STATUS_WORD[opt['status']]}*"]
+    return [heading(f"**{opt['title']}**", scale), f"*{STATUS_WORD[opt['status']]}*"]
 
 
 def _step_text_shape(steps: list, k: int) -> tuple[str, str]:
@@ -133,7 +134,7 @@ def _step_text_shape(steps: list, k: int) -> tuple[str, str]:
     return st, "terminator" if k in (0, len(steps) - 1) else "process"
 
 
-def _option_chain(page: Page, gid: str, opt: dict, x: float, top: float, head_h: float) -> float:
+def _option_chain(page: Page, gid: str, opt: dict, x: float, top: float, head_h: float, scale: int = 100) -> float:
     """Draw one option's status head and its step chain, joined by routed arrows.
 
     Args:
@@ -150,7 +151,7 @@ def _option_chain(page: Page, gid: str, opt: dict, x: float, top: float, head_h:
     cid = f"opt-{gid}-{opt['id']}"
     fill, stroke = STATUS_STYLE[opt["status"]]
     h = head_h
-    page.box(f"{cid}-head", label(*_head_lines(opt)), x, top, COL_W, h, BOX + f"fillColor={fill};strokeColor={stroke};strokeWidth=2;", solid=True)
+    page.box(f"{cid}-head", label(*_head_lines(opt, scale)), x, top, COL_W, h, BOX + f"fillColor={fill};strokeColor={stroke};strokeWidth=2;", solid=True)
     y = top + h + GAP
     sx, prev = x + (COL_W - STEP_W) / 2, None
     for k, step in enumerate(opt["steps"], 1):
@@ -188,7 +189,7 @@ def _tradeoff_row(page: Page, gid: str, opts: list[dict], key: str, x0: float, t
     return top + h
 
 
-def _decision_box(page: Page, g: dict, number: int, top: float, least_h: float) -> str:
+def _decision_box(page: Page, g: dict, number: int, top: float, least_h: float, scale: int = 100) -> str:
     """Draw a group's decision in the decision column as a document (a decision is a record): green when an option is chosen, blue while open.
 
     Args:
@@ -202,7 +203,7 @@ def _decision_box(page: Page, g: dict, number: int, top: float, least_h: float) 
         The box's cell id.
     """
     chosen = [o["title"] for o in g["options"] if o["status"] == "chosen"]
-    title = f"**Decision {number}**" if chosen else f"**Decision {number}: open**"
+    title = heading(f"**Decision {number}**" if chosen else f"**Decision {number}: open**", scale)
     lines = [title, g.get("decision", "No option chosen yet.")] + [f"**→ {t}**" for t in chosen]
     fill, stroke = STATUS_STYLE["chosen" if chosen else "open"]
     cid = f"opt-dec-{g['id']}"
@@ -227,7 +228,7 @@ def _chain_arrow(page: Page, src: str, dst: str) -> None:
     page.route(f"{dst}-in", src, dst, [(cx, start), (cx, page.rects[dst][1])], DEC_ARROW, klass="thick")
 
 
-def _group_row(page: Page, g: dict, number: int, x0: float, width: float, y: float, prev: str) -> tuple[float, str]:
+def _group_row(page: Page, g: dict, number: int, x0: float, width: float, y: float, prev: str, scale: int = 100) -> tuple[float, str]:
     """Draw one group: its question, its decision box (chained from the previous one), its options and the arrows to the chosen ones.
 
     Args:
@@ -247,10 +248,10 @@ def _group_row(page: Page, g: dict, number: int, x0: float, width: float, y: flo
     page.box(f"opt-{g['id']}", label(*lines), x0, y, width, gh, BOX + "fontSize=12;fillColor=#eeeeee;strokeColor=#333333;spacingLeft=34;")
     page.box(f"opt-{g['id']}-icon", "", x0 + 8, y + (gh - 18) / 2, 18, 18, DIAMOND)
     heads_top, band = y + gh + HEAD_GAP, y + gh + HEAD_GAP / 2
-    dec = _decision_box(page, g, number, y, gh + HEAD_GAP)
+    dec = _decision_box(page, g, number, y, gh + HEAD_GAP, scale)
     _chain_arrow(page, prev, dec)
-    head_h = max(_height(_head_lines(o), BOX_CHARS) for o in g["options"])
-    bottom = max(_option_chain(page, g["id"], o, x0 + i * (COL_W + GAP), heads_top, head_h) for i, o in enumerate(g["options"]))
+    head_h = max(_height(_head_lines(o, scale), BOX_CHARS) for o in g["options"])
+    bottom = max(_option_chain(page, g["id"], o, x0 + i * (COL_W + GAP), heads_top, head_h, scale) for i, o in enumerate(g["options"]))
     decided = any(o["status"] == "chosen" for o in g["options"])
     for i, o in enumerate(g["options"]):   # solid to a chosen option; while open, dashed to an option under evaluation
         if o["status"] == "chosen" or (not decided and o["status"] == "evaluate"):
@@ -267,7 +268,7 @@ def options_page(data: dict, profile: Profile, block: dict | None = None, page_i
 
     Args:
         data: the validated map, with an `options` block or `option_pages`.
-        profile: the drawing profile (unused today; kept so every page builder has the same signature).
+        profile: the drawing profile (its `look.heading_scale` sizes the option heads and decision titles).
         block: the page's block; the map's single `options` block when left out.
         page_id: the page id the Overview links to.
         name: the tab name; "Options: <title>" when left out.
@@ -275,7 +276,7 @@ def options_page(data: dict, profile: Profile, block: dict | None = None, page_i
     Returns:
         The page.
     """
-    del profile
+    scale = profile.look["heading_scale"]
     block = block if block is not None else data["options"]
     widest = max(len(g["options"]) for g in block["groups"])
     x0, width = MARGIN + DEC_W + 2 * GAP, widest * COL_W + (widest - 1) * GAP
@@ -298,5 +299,5 @@ def options_page(data: dict, profile: Profile, block: dict | None = None, page_i
     prev = "opt-dec-start"
     y = max(y + page.rects[prev][3], _legend(page, x0, y, width)) + GAP * 2
     for n, g in enumerate(block["groups"], 1):
-        y, prev = _group_row(page, g, n, x0, width, y, prev)
+        y, prev = _group_row(page, g, n, x0, width, y, prev, scale)
     return page

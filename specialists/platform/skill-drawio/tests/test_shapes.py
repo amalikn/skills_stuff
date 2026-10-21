@@ -7,6 +7,7 @@ Run: `just test` (unittest, the pack's venv). The scripts folder is put on sys.p
 from __future__ import annotations
 
 import importlib
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -114,6 +115,21 @@ class OpaqueDashedBoxTests(unittest.TestCase):
 
 
 
+def _cell_style(text: str, cell: str) -> str:
+    """A cell's own style (not a style inside its HTML label).
+
+    Args:
+        text: the drawing.
+        cell: the cell id.
+
+    Returns:
+        The style attribute of the cell's mxCell.
+    """
+    seg = text.split(f'id="{cell}"', 1)[1]
+    found = re.search(r'<mxCell style="([^"]*)"', seg) or re.search(r'\sstyle="([^"]*)" (?:vertex|edge)=', seg)
+    return found.group(1)
+
+
 class ComponentShapeTests(unittest.TestCase):
     """Overview and End-to-end boxes take their lane head's symbol (look.component_shapes, 2026-10-21)."""
 
@@ -132,10 +148,9 @@ class ComponentShapeTests(unittest.TestCase):
         data = self._map()
         prof = TestMap._profile(data)
         text = pages.render(data, prof)
-        for cell in ('id="ov-c-b"', 'id="e2e-c-b"'):
-            style = text.split(cell, 1)[1].split('style="', 1)[1].split('"', 1)[0]
-            self.assertIn("shape=cylinder3", style)
-        self.assertNotIn("cylinder3", text.split('id="ov-c-a"', 1)[1].split('style="', 1)[1].split('"', 1)[0])
+        for cell in ("ov-c-b", "e2e-c-b"):
+            self.assertIn("shape=cylinder3", _cell_style(text, cell))
+        self.assertNotIn("cylinder3", _cell_style(text, "ov-c-a"))
         self.assertGreater(shapes.fit_height(data["components"][1], prof, 40), 40)
 
     def test_look_off_draws_rounded_boxes(self) -> None:
@@ -143,8 +158,26 @@ class ComponentShapeTests(unittest.TestCase):
         data = self._map()
         data["drawing"] = {"look": {"component_shapes": False}}
         text = pages.render(data, TestMap._profile(data))
-        for cell in ('id="ov-c-b"', 'id="e2e-c-b"'):
-            self.assertNotIn("cylinder3", text.split(cell, 1)[1].split('style="', 1)[1].split('"', 1)[0])
+        for cell in ("ov-c-b", "e2e-c-b"):
+            self.assertNotIn("cylinder3", _cell_style(text, cell))
+
+
+class HeadingTests(unittest.TestCase):
+    """A box's heading line is drawn larger (look.heading_scale, 2026-10-21) and the box grows to fit it."""
+
+    def test_heading_renders_its_size_and_counts_taller(self) -> None:
+        """label() wraps a heading in a font-size span; wrapped_lines counts it as more than one plain line; 100 leaves the line plain."""
+        mx = importlib.import_module("drawio.mxfile")
+        line = mx.heading("**Name**", 125)
+        self.assertIn('<span style="font-size:125%"><b>Name</b></span>', mx.label(line))
+        self.assertGreater(mx.wrapped_lines(line, 40), mx.wrapped_lines("Name", 40))
+        self.assertEqual(mx.heading("**Name**", 100), "**Name**")
+
+    def test_overview_names_use_the_scale(self) -> None:
+        """The Overview's component names carry the scale from `look.heading_scale`."""
+        data = TestMap._minimal()
+        data["drawing"] = {"look": {"heading_scale": 140}}
+        self.assertIn("font-size:140%", pages.render(data, TestMap._profile(data)))
 
 if __name__ == "__main__":
     unittest.main()

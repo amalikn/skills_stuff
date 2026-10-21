@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from drawio.mxfile import wrapped_lines
+from drawio.mxfile import heading, wrapped_lines
 from drawio.route import interval_tracks
 
 from .model import MARGIN, e2e_tier, flow_extras, flow_family
@@ -31,28 +31,30 @@ E2E_BOX_PAD, E2E_CHARS, E2E_LINE_H = 18, 27, 14
 E2E_LABEL_W, E2E_LABEL_H = 38, 16
 
 
-def e2e_box_lines(comp: dict) -> list[str]:
+def e2e_box_lines(comp: dict, scale: int = 100) -> list[str]:
     """An End-to-end box's text: the bold name and, on its own line, the kind.
 
     Args:
         comp: the component.
+        scale: the name's size, percent of the box font (`look.heading_scale`).
 
     Returns:
         Label lines for drawio.mxfile.label().
     """
-    return [f"**{comp['name']}**", comp["kind"]]
+    return [heading(f"**{comp['name']}**", scale), comp["kind"]]
 
 
-def e2e_text_height(comp: dict) -> float:
+def e2e_text_height(comp: dict, scale: int = 100) -> float:
     """How tall an End-to-end box must be for its text (wrapped at E2E_CHARS, plus padding), at least E2E_MIN_H.
 
     Args:
         comp: the component.
+        scale: the name's size, percent of the box font.
 
     Returns:
         The height.
     """
-    return max(E2E_MIN_H, 12 + sum(wrapped_lines(x.replace("*", ""), E2E_CHARS) for x in e2e_box_lines(comp)) * E2E_LINE_H)
+    return max(E2E_MIN_H, 12 + sum(wrapped_lines(x.replace("*", ""), E2E_CHARS) for x in e2e_box_lines(comp, scale)) * E2E_LINE_H)
 
 
 @dataclass
@@ -253,7 +255,7 @@ class E2EGrid:
         self.n_rows = n_rows = max(r for _c, r in self.cell.values()) + 1
         # Ports sit E2E_PORT_SP apart around the row's middle; a row is as tall as its largest pool (each box then covers only its own ports).
         self.row_h = [max([E2E_MIN_H] + [(len(u) - 1) * E2E_PORT_SP + 2 * E2E_BOX_PAD for (c, r), u in self.pools.items() if r == row]
-                          + [fit_height(self.comps[cid], self.profile, e2e_text_height(self.comps[cid])) for cid, (c, r) in self.cell.items() if r == row]) for row in range(n_rows)]
+                          + [fit_height(self.comps[cid], self.profile, e2e_text_height(self.comps[cid], self.profile.look['heading_scale'])) for cid, (c, r) in self.cell.items() if r == row]) for row in range(n_rows)]
 
     def _corridors(self) -> dict:
         """Corridor tracks: a far link's horizontal run spans its two channels; links share a track when their spans leave a column between them.

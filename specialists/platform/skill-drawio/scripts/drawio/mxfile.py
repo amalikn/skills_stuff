@@ -26,6 +26,9 @@ BOLD_SPAN = re.compile(r"\*\*(.+?)\*\*")
 ITALIC_SPAN = re.compile(r"(?<![*\w])\*([^*]+)\*(?![*\w])")
 #: A label line that renders as an empty line (an en space: kept by label(), invisible), to separate a box's sections.
 BLANK = "\u2002"
+#: A whole-line heading, `^^<percent>|text` (made by `heading()`): drawn at that percentage of the cell's font size (2026-10-21, operator: headings in
+#: boxes bigger). `wrapped_lines` counts it with fewer characters a line and as a taller line, so boxes sized by it grow to fit.
+HEADING_LINE = re.compile(r"^\^\^(\d+)\|(.*)$")
 #: A token this long or longer gets invisible break points (soft_breaks), so draw.io can wrap a code path inside its shape.
 LONG_TOKEN = 24
 #: The orthogonal style draw.io's own router uses for Page.edge().
@@ -58,12 +61,39 @@ def label(*lines: str) -> str:
     Returns:
         The label HTML (Page escapes it again as an XML attribute).
     """
-    return "<br>".join(CODE_SPAN.sub(r'<font face="Courier New">\1</font>',
-                                     ITALIC_SPAN.sub(r"<i>\1</i>", BOLD_SPAN.sub(r"<b>\1</b>", soft_breaks(html.escape(line)))))
-                       for line in lines if line)
+    return "<br>".join(_line_html(line) for line in lines if line)
 
 
-def wrapped_lines(text: str, width: int) -> int:
+def _line_html(line: str) -> str:
+    """One label line as HTML: spans formatted, and a heading line (see HEADING_LINE) wrapped in a font-size span.
+
+    Args:
+        line: a plain-text line.
+
+    Returns:
+        The line's HTML.
+    """
+    head = HEADING_LINE.match(line)
+    text = head.group(2) if head else line
+    out = CODE_SPAN.sub(r'<font face="Courier New">\1</font>',
+                        ITALIC_SPAN.sub(r"<i>\1</i>", BOLD_SPAN.sub(r"<b>\1</b>", soft_breaks(html.escape(text)))))
+    return f'<span style="font-size:{head.group(1)}%">{out}</span>' if head else out
+
+
+def heading(text: str, percent: int) -> str:
+    """A label line drawn as a heading at `percent` of the cell's font size; 100 or less leaves the line as it is.
+
+    Args:
+        text: the line (spans such as `**bold**` allowed).
+        percent: the size relative to the cell's font.
+
+    Returns:
+        The line, marked for label() and wrapped_lines().
+    """
+    return f"^^{percent}|{text}" if percent > 100 else text
+
+
+def wrapped_lines(text: str, width: int) -> float:
     """How many lines a text takes when wrapped at a fixed width: the estimate that sizes a box to its text.
 
     draw.io wraps on its own at render time; a generator sizes boxes before that, so it estimates with a conservative characters-per-line
@@ -74,8 +104,12 @@ def wrapped_lines(text: str, width: int) -> int:
         width: characters per line.
 
     Returns:
-        The line count, at least 1.
+        The line count, at least 1; a heading line counts its lines times its scale (a fraction), so a box sized from it grows with the font.
     """
+    head = HEADING_LINE.match(text)
+    if head:   # a heading: fewer characters a line, and each of its lines as tall as the font grew
+        scale = int(head.group(1)) / 100
+        return wrapped_lines(head.group(2), max(1, int(width / scale))) * scale
     lines, used = 1, 0
     for word in text.split():
         size = len(word)

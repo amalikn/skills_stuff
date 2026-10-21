@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from drawio.mxfile import BLANK, Page, banner, label, mxfile, wrapped_lines
+from drawio.mxfile import BLANK, Page, banner, heading, label, mxfile, wrapped_lines
 
 from .e2e import end_to_end_page
 from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
@@ -35,20 +35,21 @@ HEAD_LINE_H = 15
 NOTE_SECTIONS = (("reads", "Reads", False), ("writes", "Writes", False), ("code", "Code", True), ("failures", "Fails", False), ("look", "Look", False))
 
 
-def step_lines(step: dict, number: int, bullets: bool = True) -> list[str]:
+def step_lines(step: dict, number: int, bullets: bool = True, scale: int = 100) -> list[str]:
     """A step box's text: the bold title, a blank line, the action, a blank line, the transport in italics, the gate in bold and the status.
 
     Args:
         step: the step from the map.
         number: its position in the flow.
         bullets: set an action of clauses joined by "; " one clause a line (`drawing.look.action_bullets`).
+        scale: the title's size, percent of the box font (`drawing.look.heading_scale`).
 
     Returns:
         Label lines for drawio.mxfile.label().
     """
     clauses = [c.strip() for c in step["action"].split("; ") if c.strip()]
     action = [step["action"]] if not bullets else clauses if len(clauses) == 1 else [f"• {c}" for c in clauses]   # one clause a line: long actions read as a list
-    return ([f"**{number}. {step['id']}**", BLANK] + action + [BLANK, f"*via {' + '.join(step['via'])}*"]
+    return ([heading(f"**{number}. {step['id']}**", scale), BLANK] + action + [BLANK, f"*via {' + '.join(step['via'])}*"]
             + ([f"**GATE: {step['gate']}**"] if step.get("gate") else [])
             + ([f"*{step['status']['state']} since {step['status']['since']}*"] if step.get("status") else []))
 
@@ -196,7 +197,7 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
              link="data:page/id,overview")
     top = MARGIN + head_h + GAP
     # Each step box is as tall as its text needs, and each lane as tall as its tallest step.
-    texts = {s["id"]: step_lines(s, k + 1, profile.look["action_bullets"]) for k, s in enumerate(steps)}
+    texts = {s["id"]: step_lines(s, k + 1, profile.look["action_bullets"], profile.look["heading_scale"]) for k, s in enumerate(steps)}
     box_h = {}
     for sid, lines in texts.items():   # the outline eats into the text area: fewer characters a line, a taller box
         _style, wf, hf = SHAPES[shapes[sid]][:3]

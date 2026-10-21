@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from drawio.mxfile import BLANK, wrapped_lines
+from drawio.mxfile import BLANK, heading, wrapped_lines
 
 from .model import COMP_W
 
@@ -162,17 +162,18 @@ def layout_group(ids: list, same: dict, cols: int = OV_GRID_COLS) -> GroupLayout
     return GroupLayout(rows, x, gaps, chains, gw)
 
 
-def box_lines(comp: dict, far: list) -> list[str]:
+def box_lines(comp: dict, far: list, scale: int = 100) -> list[str]:
     """An overview box's text, set out like a flow note: bold name, kind, then a blank line, a bold Needs heading and one bullet per need.
 
     Args:
         comp: the component.
         far: the names of what it needs outside its group (only these are listed; arrows show the rest).
+        scale: the name's size, percent of the box font (`look.heading_scale`).
 
     Returns:
         Label lines for drawio.mxfile.label().
     """
-    return [f"**{comp['name']}**", comp["kind"]] + ([BLANK, "**Needs**"] + [f"• {name}" for name in far] if far else [])
+    return [heading(f"**{comp['name']}**", scale), comp["kind"]] + ([BLANK, "**Needs**"] + [f"• {name}" for name in far] if far else [])
 
 
 def text_height(lines: list) -> float:
