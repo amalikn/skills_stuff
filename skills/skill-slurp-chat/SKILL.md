@@ -186,9 +186,12 @@ normalises dated paragraphs, rotates to `docs/history/`, moves non-working-state
 2026-10-10): list it, with the section it names, in the closeout as open work; never report it as within budget. Write CHANGELOG entries short: what changed and where, with `just changelog-entry --title ... --body-file ... --apply` (skill-ai-it
 `scripts/add_changelog_entry.py`: the project's own heading style and order, Contents line included).
 
-Then the cross-project sync (operator, 2026-10-19): when the project's `justfile` has a `sync-projects` recipe (the apn continuity projects:
-enterprise-strategy, unified-network-controller, smc-resiliency), run `just sync-projects --apply` after the SCRATCHPAD update, so this session's outbox
-lines reach the partners and their inbox lines show in the report. Exit 1 means an item needs a person: list it as open work, never work around it.
+Then the cross-project sync (operator, 2026-10-19; hub and spoke, 2026-10-21): when the project's `justfile` has a `sync-projects` recipe (the apn
+continuity projects: enterprise-strategy the hub, unified-network-controller and smc-resiliency the spokes), run `just sync-projects --apply` after the
+SCRATCHPAD update, so this session's outbox lines reach their inbox (a spoke's reach the hub only) and, in the hub, the hub register is brought up to date.
+Exit 1 means an item needs a person (a spoke-to-spoke line among them): list it as open work, never work around it. When the request includes "commit and
+push" and the justfile has `commit-project`, commit with `just commit-project -m "..." --apply`: it commits only this project's folder in the shared repo,
+gated on `just check`, so a partner session's files are never swept in.
 
 Then regenerate the project's wiki page from those files (operator, 2026-10-10; the page is generated, never hand-written):
 `just -f /Volumes/Data/_ai/_wiki/wiki_stuff/justfile project_page <project-path>`. It rewrites only its generated block in

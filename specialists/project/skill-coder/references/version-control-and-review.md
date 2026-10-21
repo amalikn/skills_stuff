@@ -45,6 +45,23 @@ Summary: >-
 >   && git show --stat --format="%h %s" HEAD
 > ```
 
+> **Learned 2026-10-21** · git, one repo shared by several projects and sessions · VERIFIED_PRIMARY · Source: apn `scripts/project_commit.py` and
+> `scripts/project_sync_selftest.sh` (uncommitted at writing; apn CHANGELOGs 20261021_1338) · Falsifier: a self-test run where the commit carries a
+> second project's changed file, or a failed check still moves HEAD
+> Make the pathspec rule a tool when several projects share one clone: one recipe per project that runs the project's check, takes an exclusive
+> lock shared by all of them (flock on a file outside the repo), stages only its folder (`git add -A -- <folder>`, so new and deleted files are
+> covered without `-N`), commits with the folder as pathspec (git's `--only` mode leaves anything another session staged elsewhere staged and out
+> of the commit), then pushes. On a rejected push, rebase onto the upstream only when the whole tree is clean; another session's dirty files mean
+> stop and report, never `--autostash` over them. The self-test proves isolation against a throwaway bare remote.
+>
+> ```python
+> # apn scripts/project_commit.py (2026-10-21)
+> with git_locked(args.wait):
+>     if git("add", "-A", "--", project).returncode: ...
+>     r = git("commit", "--quiet", "-m", args.message, "--", project, timeout=CHECK_TIMEOUT)  # pre-commit hooks run here
+>     ok, note = push(shlex.split(args.push_cmd), project)   # retry after rebase only when `git status --porcelain` is empty
+> ```
+
 > **Learned 2026-10-20** · git rebase onto a diverged remote · VERIFIED_PRIMARY · Source: vagrant_stuff commits 08c81b3 and 62f03f1 (smc-resiliency
 > CHANGELOG 20261020 push entry) · Falsifier: a `rebase -X theirs` whose result equals the local branch file for file when the remote changed other hunks
 > In a rebase, `-X theirs` means the commits being replayed (the local side) win **conflicting** hunks only; a remote hunk the local side never
