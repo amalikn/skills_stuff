@@ -16,6 +16,7 @@ Last rotated: 20261020_1753
 
 ## Contents
 
+- [20261021_1320 — governance-checks: a supersession banner tied to a tracker](#20261021_1320--governance-checks-a-supersession-banner-tied-to-a-tracker)
 - [20261020_1753 — Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff](#20261020_1753--template-a-type-check-replaces-the-type-ignore-in-check_governancepy-split_checkers-mirror-diff)
 - [20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate](#20261020_1634--rotate_records-project-sync-outbox-and-inbox-lines-never-rotate)
 - [20261020_1632 — Template: govcheck/core.py header states it is read-only](#20261020_1632--template-govcheckcorepy-header-states-it-is-read-only)
@@ -35,6 +36,11 @@ Last rotated: 20261020_1753
 - [20261014_1058 — deterministic navigation-control upgrade](#20261014_1058--deterministic-navigation-control-upgrade)
 - [20261014_1051 — govern fixes from the UNC run: folded legacy headers stay fenced; audit failures named](#20261014_1051--govern-fixes-from-the-unc-run-folded-legacy-headers-stay-fenced-audit-failures-named)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261021_1320 — governance-checks: a supersession banner tied to a tracker
+
+Learned 2026-10-21 in `patterns/governance-checks.md`: make a tracker's "not yet folded in" state executable by requiring a banner link
+in each overtaken design; join hook-wrapped table rows before matching. From smc-resiliency's first staleness audit.
 
 ## 20261020_1753 — Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff
 

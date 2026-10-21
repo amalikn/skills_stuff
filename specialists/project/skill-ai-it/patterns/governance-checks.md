@@ -305,3 +305,24 @@ accepting it.
 - **Silent skip on missing input.** A check whose input file is absent must fail or report explicitly — never return quietly. Absence is usually the defect.
 - **A checker not wired into the task runner.** If `just check` does not run it, it does not run.
 - **Enforcing history.** Past-tense records of counts and states are evidence, not claims. Exempt them by marker, and never edit history to satisfy a linter.
+
+> **Learned 2026-10-21** · a supersession banner tied to a tracker · VERIFIED_PRIMARY (negative-tested red on three unbannered designs, green
+> after) · Source: smc-resiliency `scripts/govcheck/checks/docs.py` (`check_superseded_banners`, `_wrapped_rows`), staleness audit 2026-10-21 ·
+> Falsifier: a design marked "not yet folded in" whose missing banner the check does not name
+> Decisions recorded in a log or a tracker do not reach the reader who opens the design they overtake. Where a tracker lists governing
+> documents with a state, make the state executable: every document the tracker marks overtaken must link the tracker's list of those
+> decisions, so removing the banner before the triage, or forgetting it, fails. A markdown table the wrap hook has split across lines must be
+> joined first: a continuation line's first cell is indented or empty.
+>
+> ```python
+> # smc-resiliency scripts/govcheck/checks/docs.py, 2026-10-21
+> for state, follow in _wrapped_rows(text):
+>     if NOT_FOLDED not in state:
+>         continue
+>     for link in re.findall(r"\]\((\.\./[^)#]+\.md)\)", follow):
+>         target = (ROOT / "docs/trackers" / link).resolve().relative_to(ROOT.resolve()).as_posix()
+>         body = read(target)
+>         if body is None or DECIDED_ANCHOR not in body:
+>             fail("superseded", f"{target} is marked '{NOT_FOLDED}' in {PLAN_TRACKER} but carries no note linking {DECIDED_ANCHOR}")
+> ```
+

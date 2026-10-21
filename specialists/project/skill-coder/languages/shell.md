@@ -105,3 +105,14 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > timeout 900 "$PY" batch_push_devices.py ... --dry-run < /dev/null > "$out" 2>&1
 > ```
 
+> **Learned 2026-10-21** · a deadline on a command run from a macOS shell · VERIFIED_PRIMARY (`timeout` and `gtimeout` both "command not found"
+> on the operator's Mac, 2026-10-21; the perl form ran and returned) · Source: smc-resiliency session, a read of unc-collector.service on apn-unc01
+> through `just unc01::run` · Falsifier: a macOS host where `timeout` is on PATH without GNU coreutils installed
+> macOS ships no `timeout`, and `gtimeout` exists only with GNU coreutils. Every remote or long call still needs a deadline: wrap it in perl's
+> alarm, which every macOS has. The process is killed with SIGALRM (exit 142) when the deadline passes.
+>
+> ```bash
+> # deadline 150 s on a remote read (smc-resiliency session, 2026-10-21)
+> perl -e 'alarm 150; exec @ARGV' just unc01::run -c 'journalctl -u unc-collector.service --since "2026-10-20 21:00" --no-pager'
+> ```
+

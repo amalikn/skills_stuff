@@ -1,5 +1,12 @@
 # Changelog — skill-project-coherence
 
+## 2026-10-21 — a banner not worded "Superseded" leaves its file active
+
+- `stale_refs.py` classes a file `history-superseded` only when its top carries `> **Superseded <date>** by ...`. smc-resiliency's banners read
+  "Decisions of 2026-10-21 not yet in this design", so the old R23 and "sysupdate first" lines in the bannered Pi design counted `active`
+  and had to be judged by hand. Word a partial supersession banner `> **Superseded in part <date>** ...`, or teach the script the project's
+  banner wording. Found in the 2026-10-21 sweep.
+
 ## 2026-10-14 — Tier 5 no longer regenerates Graphify
 
 - Tier 5's Graphify row said to run `graphify update .` whenever the CLI exists; Graphify was disabled on 2026-10-10 (skill-ai-it CHANGELOG

@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261021 `scripts/split_flowmap.py` writes a `#%` header (Part, Lands under) on every part, as catalog parts carry; projects with a YAML header standard (unified-network-controller) refused parts without one.
 - 20261021 `scripts/assemble_flowmap.py` (`just assemble-flowmap`): flows.yaml generated from parts/master.yaml and its parts (banner, no pointers, `#%` part headers dropped, stray part refused); split_flowmap.py now writes the master into parts/ and assembles; `drawing.look` (schema, `profile.DEFAULT_LOOK`): group_fill, shapes, step_width, decision_width, step_chars, back_arrows, action_bullets; tests for assembly, stray parts, drift and look; smc-resiliency and unified-network-controller converted, drawings byte-identical.
 - 20261021 Return arrows take the short way (source's left side, along its lane, into the target's top right) when no step blocks it, else the band below the lanes; the test now asserts the route crosses no other step, in both cases.
 - 20261021 Flow pages after review: arrow ends pinned on slanted shapes; decisions in a wider column (`scripts/flowmap/flow_geometry.py`, new: step widths, column positions, back-arrow route); back arrows routed below the lanes with a label mark; action clauses as bullets; step text estimate 38 characters; one test updated (back arrow), one added (geometry). Learned 2026-10-21 in `references/visual-style.md`.
