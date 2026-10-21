@@ -2,10 +2,6 @@
 
 <!-- claim-scan:examples reason="names filenames as examples of a class, not as references" -->
 
-## Unreleased
-
-- 2026-10-21 `scripts/claim_scan.py` reads `SIBLING_ROOTS`, `SIBLING_BRANCHES` and `CONDITIONAL_PATHS` from `scripts/govcheck/config.py` too (skill-ai-it's split checker), not only `scripts/check_governance.py`: on smc-resiliency the declared conditional paths came out BROKEN and buried the real findings. One test (`test_split_checker_config_is_read`). Also seen: sibling resolution can falsely verify a generic name present in a sibling (ARCHITECTURE.md); declare such names conditional.
-
 ## Contents
 
 - [20260812_1400 — v1.0, initial release](#20260812_1400--v10-initial-release)
@@ -18,6 +14,10 @@
 - [2026-09-29 — a report's verbatim sources folder counted as live documentation](#2026-09-29--a-reports-verbatim-sources-folder-counted-as-live-documentation)
 
 ---
+
+## Unreleased
+
+- 2026-10-21 `scripts/claim_scan.py` reads `SIBLING_ROOTS`, `SIBLING_BRANCHES` and `CONDITIONAL_PATHS` from `scripts/govcheck/config.py` too (skill-ai-it's split checker), not only `scripts/check_governance.py`: on smc-resiliency the declared conditional paths came out BROKEN and buried the real findings. One test (`test_split_checker_config_is_read`). Also seen: sibling resolution can falsely verify a generic name present in a sibling (ARCHITECTURE.md); declare such names conditional.
 
 ## 20260812_1400 — v1.0, initial release
 
