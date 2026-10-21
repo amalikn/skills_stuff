@@ -98,6 +98,34 @@ def flow_header_lines(flow: dict, comps: dict[str, dict], number: int) -> list[s
             + [x for x in fields if x] + [BLANK, "[back to Overview]"])
 
 
+def size_steps(steps: list[dict], shapes: dict, profile: Profile) -> tuple[dict, dict, dict]:
+    """Each step's text, width and height. A box is as tall as its text needs; when that would make it taller than `look.max_aspect` times its
+    width, it is widened (in 20 px steps, up to `look.decision_width`) so long text makes a wider box, not a tall narrow one (operator review
+    2026-10-21: a tall terminator squeezed its text against its curved ends).
+
+    Args:
+        steps: the flow's steps.
+        shapes: each step's shape.
+        profile: the drawing profile.
+
+    Returns:
+        (texts, widths, heights), each by step id.
+    """
+    look = profile.look
+    texts = {s["id"]: step_lines(s, k + 1, look["action_bullets"], look["heading_scale"]) for k, s in enumerate(steps)}
+    box_w = {sid: step_width(sh, look) for sid, sh in shapes.items()}
+    box_h = {}
+    widest = max(int(look.get("decision_width", 380)), max(box_w.values(), default=0))
+    for sid, lines in texts.items():   # the outline eats into the text area: fewer characters a line, a taller box
+        _style, wf, hf = SHAPES[shapes[sid]][:3]
+        while True:
+            chars = int(look["step_chars"] * box_w[sid] / look["step_width"] * wf)
+            box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), chars) for x in lines) * STEP_LINE_H) * hf)
+            if shapes[sid] == "decision" or box_h[sid] <= float(look.get("max_aspect", 0.8)) * box_w[sid] or box_w[sid] >= widest:
+                break
+            box_w[sid] += 20
+    return texts, box_w, box_h
+
 def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: tuple) -> float:
     """Draw one step box, centred in its lane, and its note below the lanes.
 
@@ -107,13 +135,14 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
         k: the step's index.
         comps: every component by id.
         profile: the kind colours.
-        where: (lanes, lane tops, lane heights, step box heights, step texts, notes top, step shapes, column left edges).
+        where: (lanes, lane tops, lane heights, step box heights, step texts, notes top, step shapes, column left edges, room for runs,
+            step box widths).
 
     Returns:
         The note's height.
     """
-    lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts, room = where
-    w = step_width(shapes[flow["steps"][k]["id"]], profile.look)
+    lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts, room, box_w = where
+    w = box_w[flow["steps"][k]["id"]]
     fid, s = flow["id"], flow["steps"][k]
     x = lefts[k]
     li = lanes.index(s["actor"])
@@ -157,7 +186,7 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     page = Page(f"flow-{fid}", f"{number}. {flow['title']}"[:60])
     shapes = {s["id"]: (step_shape(steps, k, comps, profile.kind_shapes, profile.io_vias) if profile.look["shapes"] else "process")
               for k, s in enumerate(steps)}
-    box_w = {sid: step_width(sh, profile.look) for sid, sh in shapes.items()}
+    texts, box_w, box_h = size_steps(steps, shapes, profile)
     width = LANE_HEAD_W + sum(box_w.values()) + len(steps) * col_gap(profile.look) + GAP
     header = flow_header_lines(flow, comps, number)
     head_w = max(width, 900)
@@ -167,13 +196,6 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
              "rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=12;",
              link="data:page/id,overview")
     top = MARGIN + head_h + GAP
-    # Each step box is as tall as its text needs, and each lane as tall as its tallest step.
-    texts = {s["id"]: step_lines(s, k + 1, profile.look["action_bullets"], profile.look["heading_scale"]) for k, s in enumerate(steps)}
-    box_h = {}
-    for sid, lines in texts.items():   # the outline eats into the text area: fewer characters a line, a taller box
-        _style, wf, hf = SHAPES[shapes[sid]][:3]
-        chars = int(profile.look["step_chars"] * box_w[sid] / profile.look["step_width"] * wf)
-        box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), chars) for x in lines) * STEP_LINE_H) * hf)
     edges = step_edges(steps, fid)
     plan = plan_runs(steps, [(a, b) for _cid, a, b, text, _st in edges if "back to" not in text])
     tg = float(profile.look.get("track_gap", 12))
@@ -185,7 +207,7 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     gaps = label_gaps(col_gap(profile.look), widths, len(steps))
     lefts = column_lefts([box_w[s["id"]] for s in steps], gaps)
     notes_top = top + sum(lane_h) + GAP
-    note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts, room)) for k in range(len(steps))]
+    note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts, room, box_w)) for k in range(len(steps))]
     used = list(dict.fromkeys(list(shapes.values()) + [lane_shape(comps[c], profile.kind_shapes) for c in lanes]))
     shape_legend(page, used, MARGIN, notes_top + max(note_h + [0]) + GAP * 2, fid)
     band = notes_top - GAP / 2

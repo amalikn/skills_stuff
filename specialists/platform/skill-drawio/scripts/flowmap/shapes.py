@@ -16,7 +16,8 @@ from drawio.mxfile import Page, label
 #: Each shape: (style fragment, text-width factor, height factor, legend text). The style replaces the box's rectangle; the factors shrink the
 #: characters per line and grow the height where the outline eats into the text area (a diamond most).
 SHAPES = {
-    "terminator": ("rounded=1;arcSize=40;spacingLeft=22;spacingRight=18;spacingTop=12;", 0.85, 1.1, "Terminator: where a flow starts or ends"),
+    "terminator": ("rounded=1;absoluteArcSize=1;arcSize=36;spacingLeft=14;spacingRight=12;spacingTop=8;", 0.92, 1.05,
+                   "Terminator: where a flow starts or ends"),   # a fixed corner radius, so a tall box keeps straight sides (2026-10-21)
     "process": ("rounded=0;", 1.0, 1.0, "Process: a step that does work"),
     "decision": ("rhombus;align=center;verticalAlign=middle;spacingLeft=72;spacingRight=72;spacingTop=0;", 0.5, 1.45,
                  "Decision: a gate that picks the next step"),
