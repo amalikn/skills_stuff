@@ -19,8 +19,8 @@ from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_
 from .model import option_blocks
 from .options import options_page
 from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, plan_runs, reserve, step_width
-from .lanes import draw_lanes, run_tracks
-from .routing import branch_label, route_forward
+from .lanes import draw_lanes
+from .routing import route_flow
 from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, fit_height, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
@@ -185,17 +185,8 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     used = list(dict.fromkeys(list(shapes.values()) + [lane_shape(comps[c], profile.kind_shapes) for c in lanes]))
     shape_legend(page, used, MARGIN, notes_top + max(note_h + [0]) + GAP * 2, fid)
     band = notes_top - GAP / 2
-    by_id = {s["id"]: s for s in steps}
-    order = {s["id"]: k for k, s in enumerate(steps)}
-    lane_of = {s["id"]: lanes.index(s["actor"]) for s in steps}
-
-    used: set = set()
-    forward = [e for e in edges if "back to" not in e[3]]
-    forward.sort(key=lambda e: order[e[2]] - order[e[1]])   # short arrows first; the long ones then route around them
-    for cid, src, dst, _text, _style in forward:
-        text = branch_label(by_id[src], dst, order[dst] + 1, profile.look)
-        route_forward(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text), shapes[src] == "decision", col_gap(profile.look),
-                      run_tracks([lane_of[src], lane_of[dst]], (lane_y, lane_h), plan["count"], tg), used)
+    at = {s["id"]: (lane_y[lanes.index(s["actor"])], lane_h[lanes.index(s["actor"])], lanes.index(s["actor"])) for s in steps}
+    route_flow(page, (fid, steps, edges, shapes), (at, plan["count"], tg, plan["route"]), col_gap(profile.look), profile.look)
     for cid, src, dst, text, style in edges:
         if "back to" in text:
             band = back_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), band, profile.look["back_arrows"])

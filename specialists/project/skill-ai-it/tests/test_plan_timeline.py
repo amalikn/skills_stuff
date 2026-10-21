@@ -150,5 +150,11 @@ class GenericColumns(unittest.TestCase):
         self.assertTrue(block.startswith("<!-- BEGIN GENERATED: plan-timeline (edit plans/t.yaml, then `just plan-timeline`) -->"))
 
 
+    def test_dated_extra_row_is_tracked(self) -> None:
+        """An extra row with a due date goes LATE like a plan row; without one it stays Unscheduled."""
+        today = pt.dt.date(2026, 10, 21)
+        self.assertIn("LATE", pt.schedule({"kind": "extra", "due": pt.dt.date(2026, 10, 19)}, today)[0])
+        self.assertEqual(pt.schedule({"kind": "extra", "due": None}, today)[1], "extra")
+
 if __name__ == "__main__":
     unittest.main()

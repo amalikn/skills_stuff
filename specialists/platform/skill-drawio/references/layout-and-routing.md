@@ -322,3 +322,21 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 > return boxes * COST_BOX + (along + labels) * COST_ALONG + ports * COST_PORT + crosses * COST_CROSS + length / 1000
 > ```
 
+> **Learned 2026-10-21** · flow pages: a decision's branches chosen together · VERIFIED_PRIMARY · Source: `scripts/flowmap/routing.py` (`route_branches`, `route_flow`, `_candidates`), `tests/test_routing.py` · Falsifier: two branches of one decision crossing when another corner assignment would not
+> Routing branch by branch let the shorter branch take the right corner and forced the longer one over it. The operator's fix ("move eight to the
+> right and seven to the top") is now the rule: try every assignment of the diamond's corners to its branches and keep the lowest total cost. A
+> crossing that no assignment avoids is drawn with arc hops, as on the Overview. Also from this review: a diamond is entered only at its left corner,
+> a box's left side offers entries at a third, half and two thirds, a path never runs inside its own target, and a skip arrow keeps to the run its
+> lane reserved for it.
+>
+> ```python
+> # scripts/flowmap/routing.py (route_branches), skill-drawio, 2026-10-21
+> for ways in permutations(("right", "up", "down"), len(branches)):
+>     mark = (len(page.routes), len(page.cells), len(page.marks), set(used))
+>     total = sum(route_forward(page, edge, True, gap, tracks, used, (way,), diamond) for (edge, tracks, diamond), way in zip(branches, ways))
+>     del page.routes[mark[0]:], page.cells[mark[1]:], page.marks[mark[2]:]
+>     ...
+>     if best_total is None or total < best_total:
+>         best, best_total = ways, total
+> ```
+

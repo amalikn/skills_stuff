@@ -3,7 +3,7 @@ lane keeps for arrow runs, and where those runs lie. Stdlib only.
 
 Split from flowmap.pages on 2026-10-21 (module size) when lane heads gained structure and sized symbols (operator review, smc-resiliency).
 
-Imported, not run: `from flowmap.lanes import draw_lanes, run_tracks` with the skill's scripts/ on sys.path.
+Imported, not run: `from flowmap.lanes import draw_lanes, head_symbol_h` with the skill's scripts/ on sys.path.
 """
 
 from __future__ import annotations
@@ -34,25 +34,6 @@ def head_symbol_h(comp: dict, profile: Profile) -> float:
     chars = int((LANE_HEAD_W - 12) / 6.5 * SHAPES[shape][1])
     lines = (heading(comp["name"], profile.look["heading_scale"]), comp["kind"], BLANK, comp["host"])
     return fit_height(comp, profile, 16 + sum(wrapped_lines(x, chars) for x in lines) * 13)
-
-def run_tracks(lane_ids: list[int], lanes: tuple, count: dict, track_gap: float) -> dict:
-    """The arrow runs reserved along the top and bottom of the given lanes (from `plan_runs`), nearest the edge first.
-
-    Args:
-        lane_ids: lane indexes (the source's and the target's).
-        lanes: (lane tops, lane heights).
-        count: {(lane index, "top" or "bottom"): runs} from `plan_runs`.
-        track_gap: the spacing between runs.
-
-    Returns:
-        {"top": [y, ...], "bottom": [y, ...]}.
-    """
-    lane_y, lane_h = lanes
-    out: dict = {"top": [], "bottom": []}
-    for li in dict.fromkeys(lane_ids):
-        out["top"] += [lane_y[li] + 10 + track_gap * n for n in range(count.get((li, "top"), 0))]
-        out["bottom"] += [lane_y[li] + lane_h[li] - 10 - track_gap * n for n in range(count.get((li, "bottom"), 0))]
-    return out
 
 def draw_lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float, box_h: dict, box_w: dict, room: dict | None = None) -> tuple[list, list, list]:
     """Draw one lane per component, in order of first use; each lane as tall as its tallest step.

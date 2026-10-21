@@ -11,6 +11,8 @@ Imported, not run: `from flowmap.routing import route_forward, branch_label` wit
 
 from __future__ import annotations
 
+from itertools import permutations
+
 from drawio.audit import crossing, rects_overlap, seg_hits_rect, segments
 from drawio.mxfile import Page, label
 
@@ -19,7 +21,9 @@ NEAR = 8
 #: Penalties: a crossed box makes a path unusable in practice; a shared or adjacent run, a reused port and a crossing make it worse.
 COST_BOX, COST_ALONG, COST_PORT, COST_CROSS = 1000, 200, 60, 8
 #: Edge style for engine-routed forward arrows (matching draw.io's forward arrows before 2026-10-21) and its label style.
-STYLE = "edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;"
+STYLE = "edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;jumpStyle=arc;jumpSize=6;"
+#: Arc size where a flow arrow crosses another: a crossing that cannot be avoided hops, as on the Overview (operator review 2026-10-21).
+JUMP = 6
 LABEL = "text;html=1;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;labelBackgroundColor=#ffffff;"
 
 
@@ -100,7 +104,7 @@ def _exits(rect: tuple, decision: bool) -> list:
     return out
 
 
-def _candidates(src: tuple, dst: tuple, src_decision: bool, gap: float, tracks: dict) -> list:
+def _candidates(src: tuple, dst: tuple, src_decision: bool, gap: float, tracks: dict, ways: tuple | None = None, dst_decision: bool = False) -> list:
     """Orthogonal paths from one box to another, each a polyline from the source's border to the target's.
 
     Args:
@@ -109,31 +113,40 @@ def _candidates(src: tuple, dst: tuple, src_decision: bool, gap: float, tracks: 
         src_decision: whether the source is a decision.
         gap: the space between step columns.
         tracks: {"top": [y, ...], "bottom": [y, ...]} runs reserved in the source and target lanes, nearest the edge first.
+        ways: exits allowed ("right", "up", "down"); all when None.
+        dst_decision: the target is a diamond, entered only at its left corner (a side entry off the middle misses the outline).
 
     Returns:
         Candidate polylines.
     """
     sx, sy, sw, sh = src
     dx, dy, dw, dh = dst
-    left, top_in, bottom_in = (dx, dy + dh / 2), (dx + dw / 2, dy), (dx + dw / 2, dy + dh)
+    lefts = [(dx, dy + dh * f) for f in ((0.5,) if dst_decision else (0.5, 0.33, 0.67))]   # spread entries so two arrows never share a point
+    top_in, bottom_in = (dx + dw / 2, dy), (dx + dw / 2, dy + dh)
     before, after = dx - gap / 2, sx + sw + gap / 2
     out = []
     for (ex, ey), way in _exits(src, src_decision):
+        if ways is not None and way not in ways:
+            continue
         if way == "right":
             for turn in dict.fromkeys((after, before)):   # down or up in a column gap, then into the left side
-                out.append([(ex, ey), (turn, ey), (turn, left[1]), left])
-            out.append([(ex, ey), (top_in[0], ey), top_in] if ey < dy else [(ex, ey), (bottom_in[0], ey), bottom_in])
+                out += [[(ex, ey), (turn, ey), (turn, left[1]), left] for left in lefts]
+            if ey < dy:   # straight across above the target, then down into its top (never through the target itself)
+                out.append([(ex, ey), (top_in[0], ey), top_in])
+            elif ey > dy + dh:
+                out.append([(ex, ey), (bottom_in[0], ey), bottom_in])
         for edge in ("top", "bottom"):
             for ty in tracks.get(edge, []):
                 rise = (ex, ty) if way != "right" else None
                 head = [(ex, ey), rise] if rise else [(ex, ey), (after, ey), (after, ty)]
                 end_in = top_in if edge == "top" else bottom_in
                 out.append(head + [(end_in[0], ty), end_in])
-                out.append(head + [(before, ty), (before, left[1]), left])
+                out += [head + [(before, ty), (before, left[1]), left] for left in lefts]
     return [[p for k, p in enumerate(c) if k == 0 or p != c[k - 1]] for c in out]
 
 
-def route_forward(page: Page, edge: tuple, src_decision: bool, gap: float, tracks: dict, used: set) -> None:
+def route_forward(page: Page, edge: tuple, src_decision: bool, gap: float, tracks: dict, used: set, ways: tuple | None = None,
+                  dst_decision: bool = False) -> float:
     """Draw one forward arrow along its cheapest candidate and label it on its longest clear run.
 
     Args:
@@ -143,16 +156,48 @@ def route_forward(page: Page, edge: tuple, src_decision: bool, gap: float, track
         gap: the space between step columns.
         tracks: reserved runs, as for `_candidates`.
         used: ports already taken; this arrow's ends are added.
+        ways: exits allowed; all when None.
+        dst_decision: the target is a diamond.
+
+    Returns:
+        The drawn path's cost.
     """
     cid, src, dst, text = edge
     ends = {src, dst}
-    cands = _candidates(page.rects[src], page.rects[dst], src_decision, gap, tracks)
+    cands = (_candidates(page.rects[src], page.rects[dst], src_decision, gap, tracks, ways, dst_decision)
+             or _candidates(page.rects[src], page.rects[dst], src_decision, gap, tracks, None, dst_decision))
     best = min(cands, key=lambda c: cost(page, c, ends, used))
-    page.route(cid, src, dst, best, STYLE, klass="thin")
+    spent = cost(page, best, ends, used)
+    page.route(cid, src, dst, best, STYLE, klass="thin", jump=JUMP)
     used.update((round(p[0]), round(p[1])) for p in (best[0], best[-1]))
     width = 18 + 9 * len(text)
     cx, cy = label_spot(page, cid, best, width, 22)
     page.mark(f"{cid}-lbl", label(f"**{text}**"), cx, cy, width, 22, LABEL, cid)
+    return spent
+
+
+def route_branches(page: Page, branches: list, gap: float, used: set) -> None:
+    """Route a decision's branches together: try every assignment of the diamond's corners (right, top, bottom) to the branches, keep the one
+    with the lowest total cost, then draw it (operator review 2026-10-21: "move arrow eight to the right and seven to the top" removed a
+    crossing a branch-by-branch choice had made).
+
+    Args:
+        page: the page.
+        branches: (edge, tracks, target is a diamond) per branch, edge as for `route_forward`; all from one decision.
+        gap: the space between step columns.
+        used: ports already taken.
+    """
+    best, best_total = None, None
+    for ways in permutations(("right", "up", "down"), len(branches)):
+        mark = (len(page.routes), len(page.cells), len(page.marks), set(used))
+        total = sum(route_forward(page, edge, True, gap, tracks, used, (way,), diamond) for (edge, tracks, diamond), way in zip(branches, ways))
+        del page.routes[mark[0]:], page.cells[mark[1]:], page.marks[mark[2]:]
+        page.rects = {k: v for k, v in page.rects.items() if not k.endswith("-lbl") or k.rsplit("-lbl", 1)[0] not in {e[0] for e, _t, _d in branches}}
+        used.clear(), used.update(mark[3])
+        if best_total is None or total < best_total:
+            best, best_total = ways, total
+    for (edge, tracks, diamond), way in zip(branches, best):
+        route_forward(page, edge, True, gap, tracks, used, (way,), diamond)
 
 
 def label_spot(page: Page, cid: str, pts: list, w: float, h: float) -> tuple[float, float]:
@@ -182,3 +227,69 @@ def label_spot(page: Page, cid: str, pts: list, w: float, h: float) -> tuple[flo
                 return cx, cy
     p, q = segs[0]
     return (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
+
+
+def _tracks_for(lanes: tuple, src: str, dst: str) -> dict:
+    """The one run `plan_runs` reserved for this arrow (on the target lane's planned edge), so routes keep to the room the lanes were sized for.
+
+    Args:
+        lanes: ({step id: (lane top, lane height, lane index)}, run counts, track gap, planned routes {(src, dst): (side, track)}).
+        src: the source step id.
+        dst: the target step id.
+
+    Returns:
+        {"top": [y]} or {"bottom": [y]}; empty for an arrow with no planned run (adjacent, or entering from the left).
+    """
+    at, _count, gap, route = lanes
+    side, n = route.get((src, dst), ("", 0))
+    if side not in ("top", "bottom"):
+        return {}
+    top, height, _li = at[dst]
+    return {side: [top + 10 + gap * n if side == "top" else top + height - 10 - gap * n]}
+
+
+def route_flow(page: Page, flow: tuple, lanes: tuple, gap: float, look: dict) -> None:
+    """Route every forward arrow of a flow page: short arrows first so the long ones route around them, a decision's branches together.
+
+    Args:
+        page: the page (steps drawn as solid boxes).
+        flow: (flow id, steps, edges from `step_edges`, shapes by step id).
+        lanes: ({step id: (lane top, lane height, lane index)}, run counts and planned routes from `plan_runs`, track gap).
+        gap: the space between step columns.
+        look: the drawing look (branch labels).
+    """
+    fid, steps, edges, shapes = flow
+    by_id = {s["id"]: s for s in steps}
+    order = {s["id"]: k for k, s in enumerate(steps)}
+    forward = sorted((e for e in edges if "back to" not in e[3]), key=lambda e: order[e[2]] - order[e[1]])
+    used: set = set()
+    done: set = set()
+    ctx = (fid, by_id, order, lanes, look)
+    for cid, src, dst, _text, _style in forward:
+        if cid in done:
+            continue
+        group = [e for e in forward if e[1] == src] if shapes[src] == "decision" else []
+        if 1 < len(group) <= 3:   # a decision's branches are routed together (best corner per branch)
+            route_branches(page, [(*_edge_of(ctx, c, s, d), shapes[d] == "decision") for c, s, d, _t, _st in group], gap, used)
+            done.update(e[0] for e in group)
+            continue
+        edge, tracks = _edge_of(ctx, cid, src, dst)
+        route_forward(page, edge, shapes[src] == "decision", gap, tracks, used, None, shapes[dst] == "decision")
+
+
+def _edge_of(ctx: tuple, cid: str, src: str, dst: str) -> tuple:
+    """One arrow as the router takes it: its cell ids and label, and the runs it may use.
+
+    Args:
+        ctx: (flow id, steps by id, step order, lanes as for `route_flow`, look).
+        cid: the edge cell id.
+        src: the source step id.
+        dst: the target step id.
+
+    Returns:
+        ((cell id, source cell, target cell, label), tracks).
+    """
+    fid, by_id, order, lanes, look = ctx
+    text = branch_label(by_id[src], dst, order[dst] + 1, look)
+    return (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text), _tracks_for(lanes, src, dst)
+

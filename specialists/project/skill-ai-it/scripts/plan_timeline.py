@@ -149,10 +149,11 @@ def schedule(row: dict, today: dt.date) -> tuple[str, str]:
         today: the date to judge against.
 
     Returns:
-        (cell text, state) where state is one of done, late, today, flagged, open, fixed, extra, parked.
+        (cell text, state) where state is one of done, late, today, flagged, open, fixed, extra, parked. An extra row (work the plan does not
+        list) with a `due` is scheduled like a plan row, so needed work outside the plan can still show LATE.
     """
     kind = row.get("kind", "plan")
-    if kind == "extra":
+    if kind == "extra" and row.get("due") is None:   # an extra row with a target date is tracked like a plan row (smc-resiliency, 2026-10-21)
         return "➖ Unscheduled", "extra"
     if kind == "parked":
         return "⏸️ Parked", "parked"

@@ -184,19 +184,19 @@ class SkipArrowTests(unittest.TestCase):
     """A forward arrow that skips a column is routed by the engine, clear of the step between (2026-10-21, smc-resiliency review)."""
 
     def test_same_lane_skip_runs_over_the_top(self) -> None:
-        """Step one gates to two or three, all in one lane: the arrow one to three carries waypoints and stays above step two."""
+        """Step one gates to two or three, all in one lane: the arrow one to three carries waypoints and passes over or under step two."""
         data = TestMap._minimal()
         data["flows"][0]["steps"] = [
             {"id": "one", "actor": "a", "action": "x", "via": ["API"], "gate": "g", "next": ["two", "three"]},
             {"id": "two", "actor": "a", "action": "y", "via": ["API"]},
             {"id": "three", "actor": "a", "action": "z", "via": ["API"]}]
         text = pages.render(data, TestMap._profile(data))
-        seg = text.split('id="f-e-one-three"', 1)[1].split("</mxCell>", 1)[0]
-        ys = [float(v) for v in re.findall(r'<mxPoint x="[^"]+" y="([^"]+)"', seg)]
-        self.assertTrue(ys, "the skip arrow has engine waypoints")
-        two = text.split('id="f-s-two"', 1)[1]
-        top = float(re.search(r'<mxGeometry x="[^"]+" y="([^"]+)"', two).group(1))
-        self.assertLess(max(ys), top, "the run stays above step two")
+        page = pages.flow_page(data["flows"][0], {c["id"]: c for c in data["components"]}, 1, TestMap._profile(data))
+        route = next(r for r in page.routes if r.cid == "f-e-one-three")
+        self.assertGreater(len(route.points), 2, "the skip arrow has engine waypoints")
+        audit = importlib.import_module("drawio.audit")
+        self.assertFalse(any(audit.seg_hits_rect(p, q, page.rects["f-s-two"]) for p, q in audit.segments(route.points)),
+                         "the run passes over or under step two, never through it")
 
 
 class PlanRunsTests(unittest.TestCase):
