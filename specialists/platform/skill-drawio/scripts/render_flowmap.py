@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 from drawio.audit import faults, page_audit
-from flowmap import e2e, model, overview, pages
+from flowmap import e2e, model, options, overview, pages
 from flowmap.profile import Profile
 
 #: The oldest Python this script runs on (stdlib; PyYAML to read the map).
@@ -61,7 +61,8 @@ def audit(root: Path, profile: Profile) -> list[str]:
     if problems or data is None:
         return [f"map: {p}" for p in problems]
     return ([f"Overview: {f}" for f in faults(page_audit(overview.overview_page(data, profile)))]
-            + [f"End-to-end: {f}" for f in faults(page_audit(e2e.end_to_end_page(data, profile)))])
+            + [f"End-to-end: {f}" for f in faults(page_audit(e2e.end_to_end_page(data, profile)))]
+            + ([f"Options: {f}" for f in faults(page_audit(options.options_page(data, profile)))] if data.get("options") else []))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -81,7 +82,7 @@ def main(argv: list[str] | None = None) -> int:
     mode = ap.add_mutually_exclusive_group()
     mode.add_argument("--write", action="store_true", help="write the drawing")
     mode.add_argument("--list", action="store_true", help="one line per flow (read only)")
-    mode.add_argument("--audit", action="store_true", help="layout audit of the Overview and End-to-end pages (read only)")
+    mode.add_argument("--audit", action="store_true", help="layout audit of the Overview, End-to-end and Options pages (read only)")
     args = ap.parse_args(argv)
     root = args.root.resolve()
     try:
@@ -95,7 +96,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1 if problems else 0
     if args.audit:
         found = audit(root, profile)
-        print("\n".join(found) or "audit: clean (no layout fault on the Overview or End-to-end page)")
+        print("\n".join(found) or "audit: clean (no layout fault on the Overview, End-to-end or Options page)")
         return 1 if found else 0
     outcome = pages.evaluate(root, profile)
     for p in outcome.problems:

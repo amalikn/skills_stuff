@@ -11,11 +11,11 @@ Imported, not run: `from flowmap.e2e import end_to_end_page` with the skill's sc
 from __future__ import annotations
 
 from drawio.audit import rects_overlap, seg_hits_rect, segments
-from drawio.mxfile import Page, Point, label
+from drawio.mxfile import BLANK, HEADER_STYLE, Page, Point, header_height, label
 from drawio.route import count_crossings, oriented
 
 from .e2e_grid import E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_LABEL_H, E2E_LABEL_W, E2E_SP, E2EGrid, Link, e2e_box_lines, e2e_text_height
-from .model import MARGIN, comp_style, flow_family
+from .model import MARGIN, comp_style, flow_family, status_style
 from .profile import Profile
 
 
@@ -262,12 +262,15 @@ class EndToEnd(E2EGrid):
             page: the page.
             right: the right edge of the last column.
         """
-        page.box("e2e-title", label("**End-to-end flow: every component, every flow**",
-                                    f"Generated from {self.profile.map} by `{self.profile.command}`; do not edit. Each flow is a path through the components that "
-                                    "act in its steps, coloured by family; an arrow's label is flow.step (the step the arrow leads into, numbered as on the "
-                                    "flow's page). Dashed: a component the flow runs on, is owned by or depends on, joined to the flow's nearest actor. "
-                                    "Layers panel: hide or show each family. [back to Overview]"),
-                 MARGIN, MARGIN, right - MARGIN, 60, "text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=13;", link="data:page/id,overview")
+        head = ["**End-to-end flow: every component, every flow**", BLANK,
+                f"Generated from {self.profile.map} by `{self.profile.command}`; do not edit.", BLANK,
+                "**Paths:** each flow is a path through the components that act in its steps, coloured by family.",
+                "**Arrow labels:** flow.step, the step the arrow leads into, numbered as on the flow's page.",
+                "**Dashed lines:** a component the flow runs on, is owned by or depends on, joined to the flow's nearest actor.",
+                "**Layers panel:** hide or show each family.", BLANK, "[back to Overview]"]
+        head_h = header_height(head, right - MARGIN, 60)   # grows upward from its old bottom, so the layout below stays put
+        page.box("e2e-title", label(*head), MARGIN, MARGIN + 60 - head_h, right - MARGIN, head_h,
+                 HEADER_STYLE, link="data:page/id,overview")
         last_tier_bottom = self.row_top[self.band - 1] + self.row_h[self.band - 1]
         for c, (name, _groups) in enumerate(self.profile.tiers):
             page.box(f"e2e-stripe-{c}", "", self.col_x[c] - 8, self.gap_top[-1], E2E_BW + 16, last_tier_bottom + 8 - self.gap_top[-1],
@@ -339,7 +342,7 @@ class EndToEnd(E2EGrid):
             c, _r = self.cell[cid]
             top, height = self._box_span(cid)
             page.box(f"e2e-c-{cid}", label(*e2e_box_lines(comp)), self.col_x[c], top, E2E_BW, height,
-                     comp_style(comp["kind"], self.profile, "fontSize=11;verticalAlign=middle;spacingLeft=6;spacingRight=6;"),
+                     comp_style(comp["kind"], self.profile, "fontSize=11;verticalAlign=middle;spacingLeft=6;spacingRight=6;" + status_style(comp)),
                      tooltip=f"health: {comp['health']}", solid=True)
         self._arrows(page)
         self._legend(page, right)

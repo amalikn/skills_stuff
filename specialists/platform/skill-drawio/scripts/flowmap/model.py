@@ -13,6 +13,7 @@ Imported, not run: `from flowmap import model` with the skill's scripts/ on sys.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -142,11 +143,15 @@ def reference_problems(data: dict, root: Path) -> list[str]:
         root: the repository root, for code paths and related docs.
 
     Returns:
-        One message per problem: duplicate ids, unknown component or flow ids, missing files or symbols, unreached steps.
+        One message per problem: duplicate ids (option groups and options too), unknown component or flow ids, missing files or symbols, unreached steps.
     """
     comps = [c["id"] for c in data["components"]]
     flows = [f["id"] for f in data["flows"]]
     problems = _duplicates("component", comps) + _duplicates("flow", flows)
+    groups = data.get("options", {}).get("groups", [])
+    problems += _duplicates("option group", [g["id"] for g in groups])
+    for g in groups:
+        problems += _duplicates(f"option in group {g['id']}", [o["id"] for o in g["options"]])
     refs = CodeRefs(root)
     problems += _component_problems(data, set(comps), refs)
     for f in data["flows"]:
@@ -154,8 +159,61 @@ def reference_problems(data: dict, root: Path) -> list[str]:
     return problems
 
 
+#: A map may be split into parts (operator, smc-resiliency, 2026-10-21, after unified-network-controller's catalog): a line `#@include <path>`
+#: (relative to the including file) is replaced by that part's text, each non-empty line indented to where the include line sits.
+INCLUDE = re.compile(r"^( *)#@include (\S+)\s*$")
+
+
+def expand_includes(path: Path, used: list[Path] | None = None) -> str:
+    """A map file's text with its `#@include` lines replaced by the parts they name, recursively, each part at most once.
+
+    Args:
+        path: the file to read.
+        used: the parts included so far (filled in; a part named twice is an error).
+
+    Returns:
+        The expanded text.
+
+    Raises:
+        OSError: a file cannot be read.
+        ValueError: a part is included twice.
+    """
+    used = [] if used is None else used
+    out = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        m = INCLUDE.match(line)
+        if not m:
+            out.append(line)
+            continue
+        part = (path.parent / m.group(2)).resolve()
+        if part in used:
+            raise ValueError(f"{path.name}: {m.group(2)} is included twice")
+        used.append(part)
+        pad = m.group(1)
+        out += [pad + x if x.strip() else x for x in expand_includes(part, used).splitlines()]
+    return "\n".join(out) + "\n"
+
+
+def stray_parts(root: Path, map_path: str) -> list[str]:
+    """Part files beside the included ones that no `#@include` names (a part left out would silently vanish from the drawing).
+
+    Args:
+        root: the project root.
+        map_path: the map, relative to the root.
+
+    Returns:
+        One message per `.yaml` file in an included part's folder that is not included; empty for a map without parts.
+    """
+    used: list[Path] = []
+    expand_includes(root / map_path, used)
+    folders = {p.parent for p in used}
+    base, master = root.resolve(), (root / map_path).resolve()
+    return [f"part {p.relative_to(base)} is not included by any #@include" for d in sorted(folders) for p in sorted(d.glob("*.yaml"))
+            if p.resolve() not in used and p.resolve() != master]
+
+
 def read_map(root: Path, map_path: str) -> dict | None:
-    """Read a map file (PyYAML, imported here so the rest of the package stays stdlib).
+    """Read a map file, its `#@include` parts expanded (PyYAML, imported here so the rest of the package stays stdlib).
 
     Args:
         root: the project root.
@@ -166,12 +224,12 @@ def read_map(root: Path, map_path: str) -> dict | None:
 
     Raises:
         OSError: the file cannot be read.
-        ValueError: it is not valid YAML (PyYAML's error, re-raised with the file named).
+        ValueError: it is not valid YAML (PyYAML's error, re-raised with the file named), or a part is included twice.
     """
     import yaml
 
     try:
-        return yaml.safe_load((root / map_path).read_text(encoding="utf-8"))
+        return yaml.safe_load(expand_includes(root / map_path))
     except yaml.YAMLError as exc:
         raise ValueError(f"{map_path}: {exc}") from exc
 
@@ -194,7 +252,7 @@ def load(root: Path, profile: Profile) -> tuple[dict | None, list[str]]:
     problems = schema_errors(data, schema)
     if problems:
         return data, problems
-    return data, reference_problems(data, root)
+    return data, stray_parts(root, profile.map) + reference_problems(data, root)
 
 
 def flow_family(flow: dict, profile: Profile) -> str:
@@ -242,6 +300,37 @@ def flow_extras(flow: dict) -> list[str]:
     """
     actors = {s["actor"] for s in flow["steps"]}
     return sorted(({flow["runs_on"], flow["owner"]} | set(flow.get("dependencies", {}).get("components", []))) - actors)
+
+
+#: Status states drawn with a dashed border: not yet run anywhere.
+UNPROVEN = ("proposed", "designed")
+
+
+def status_text(item: dict) -> str:
+    """An item's status as one short phrase, for labels and tooltips.
+
+    Args:
+        item: a component, flow or step from the map.
+
+    Returns:
+        "<state> since <date>" (with " (<evidence>)" when given), or "" when the item has no status.
+    """
+    st = item.get("status")
+    if not st:
+        return ""
+    return f"{st['state']} since {st['since']}" + (f" ({st['evidence']})" if st.get("evidence") else "")
+
+
+def status_style(item: dict) -> str:
+    """Extra style for an item that is only proposed or designed: a dashed border.
+
+    Args:
+        item: a component, flow or step from the map.
+
+    Returns:
+        A style fragment, or "" (so maps without status render unchanged).
+    """
+    return "dashed=1;dashPattern=6 4;" if item.get("status", {}).get("state") in UNPROVEN else ""
 
 
 def comp_style(kind: str, profile: Profile, extra: str = "") -> str:

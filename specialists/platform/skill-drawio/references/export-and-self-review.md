@@ -98,6 +98,11 @@ sips --cropOffset 400 1200 -c 600 900 <review dir>/crop.png      # offset y x, t
 `sips` edits the file in place, so crop a copy. The order is y before x and height before width; `sips --help` labels the second offset "offsetH", but it is the x offset. Export at `-s 2` first when
 lines are thin.
 
+> **Learned 2026-10-21** · sips crop offsets · VERIFIED_PRIMARY · Source: `sips` on macOS 27.0.1, crops compared with `cmp` · Falsifier: a `--cropOffset 0 0` crop that differs from the same crop with no offset
+> An offset of `0 0` is read as no offset: `sips --cropOffset 0 0 -c 1000 944` returned the centred crop, byte-identical to one without
+> `--cropOffset`, while `--cropOffset 1 1` returned the top of the page. To crop from the top or left edge, use 1, not 0.
+
+
 ## The self-review loop
 
 Never present a first render. Before any drawing (or screenshot, chart or page) goes to the operator [C-D22]:

@@ -11,9 +11,10 @@ Imported, not run: `from flowmap.overview import overview_page` with the skill's
 from __future__ import annotations
 
 from drawio import route
-from drawio.mxfile import Page, Point, Rect, label
+from drawio.mxfile import BLANK, HEADER_STYLE, Page, Point, Rect, header_height, label
 
-from .model import GROUP_HEAD, MARGIN, comp_style
+from .model import GROUP_HEAD, MARGIN, comp_style, status_style, status_text
+from .overview_index import colour_legend, flow_index
 from .overview_layout import (OV_BH, OV_BW, OV_CHANNEL, OV_GRID_COLS, OV_HGAP, OV_JUMP, OV_LEFT, OV_MIN_HEAD, OV_MIN_THIN, OV_PAD, OV_SIDE, OV_SLOT, OV_SP,
                               OV_THIN_JUMP, OV_THIN_SP, OV_TOP, THIN_GREY, box_lines, far_channels, grid_cells, key_width, layout_group, side,
                               text_height)
@@ -148,9 +149,10 @@ class Overview:
         c = self.by_id[k]
         ports = ", ".join(str(p) for p in c.get("ports", []))
         tip = "\n".join(x for x in (f"kind: {c['kind']}", f"host: {c['host']}", f"ports: {ports}" if ports else "",
-                                    f"health: {c['health']}", c.get("notes", "")) if x)
+                                    f"health: {c['health']}", c.get("notes", ""), f"status: {status_text(c)}" if c.get("status") else "") if x)
         page.box(f"ov-c-{k}", label(*box_lines(c, self.far[k])), x, y, OV_BW, self.box_h[k],
-                 comp_style(c["kind"], self.profile, f"fontSize=10;align=left;verticalAlign=top;spacingTop=4;spacingLeft={OV_LEFT};spacingRight={OV_SIDE};"),
+                 comp_style(c["kind"], self.profile, f"fontSize=10;align=left;verticalAlign=top;spacingTop=4;spacingLeft={OV_LEFT};spacingRight={OV_SIDE};"
+                            + status_style(c)),
                  tooltip=tip, solid=True)
 
     def _thin_routes(self, gi: int) -> dict:
@@ -310,12 +312,16 @@ class Overview:
             page.add_layer(f"ov-L-into-{b}", f"Thick: into {self.gnames[b]}")
         page.add_layer("ov-L-inside", "Thin: inside groups")
         fx = self.grid_right + 80
-        page.box("ov-title", label(f"**{self.data['title']}**",
-                                   f"Generated from {self.profile.map} by `{self.profile.command}`; do not edit. Updated {self.data['updated']}.",
-                                   "Thick arrows: dependencies between groups (number = how many box-to-box dependencies it stands for). Thin grey arrows: "
-                                   "inside a group; a box sits above what it needs. Each box lists what it needs from other groups. Each flow box links to "
-                                   "its page; hover a component for its health check. Layers panel: hide any arrow colour."),
-                 MARGIN, MARGIN, fx + 340 - MARGIN, 66, "text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=13;")
+        head = [f"**{self.data['title']}**", BLANK,
+                f"Generated from {self.profile.map} by `{self.profile.command}`; do not edit. Updated {self.data['updated']}.", BLANK,
+                "**Thick arrows:** dependencies between groups; the number is how many box-to-box dependencies it stands for.",
+                "**Thin grey arrows:** inside a group; a box sits above what it needs.",
+                "**Boxes:** each lists what it needs from other groups; hover one for its health check.",
+                "**Flows:** each box in the flow list links to its page.",
+                "**Layers panel:** hide any arrow colour."]
+        head_h = header_height(head, fx + 340 - MARGIN, 66)   # grows upward from its old bottom, so the layout below stays put
+        page.box("ov-title", label(*head), MARGIN, MARGIN + 66 - head_h, fx + 340 - MARGIN, head_h,
+                 HEADER_STYLE)
         self._groups(page)
         self._thin(page)
         self._thick(page)
@@ -336,61 +342,3 @@ def overview_page(data: dict, profile: Profile) -> Page:
         The page.
     """
     return Overview(data, profile).page()
-
-
-def colour_legend(page: Page, x: float, y: float, thick: list) -> None:
-    """The arrow colour legend, below the component kind legend on the right: one swatch per thick colour, the thin grey, and the dots.
-
-    Args:
-        page: the page.
-        x: left edge.
-        y: top edge.
-        thick: (colour, text) per thick arrow colour.
-    """
-    w = 340
-    page.box("ov-leg-title", label("**Legend: arrow colours**"), x, y, w, 24, "text;html=1;align=left;fontSize=14;")
-    y += 30
-    page.box("ov-leg-h1", label("**Thick: dependencies into a group**",
-                                "Number on a thick arrow = how many box-to-box dependencies it stands for (one per box in the source group "
-                                "needing a box in the target group, counted per need)"), x, y, w, 76,
-             "text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=12;")
-    y += 82
-    for i, (colour, text) in enumerate(thick):
-        page.box(f"ov-leg-into-{i}-s", "", x, y + i * 26 + 10, 40, 5, f"rounded=0;html=1;fillColor={colour};strokeColor=none;")
-        page.box(f"ov-leg-into-{i}-t", label(text), x + 50, y + i * 26, w - 50, 24, "text;html=1;align=left;verticalAlign=middle;fontSize=12;")
-    y += len(thick) * 26 + 10
-    page.box("ov-leg-thin-s", "", x, y + 10, 40, 2, f"rounded=0;html=1;fillColor={THIN_GREY};strokeColor=none;")
-    page.box("ov-leg-thin-t", label("**Thin grey:** a dependency inside a group (a box sits above what it needs)"), x + 50, y, w - 50, 36,
-             "text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=12;")
-    y += 46
-    page.box("ov-leg-dot", "", x + 14, y + 3, 12, 12, f"ellipse;html=1;fillColor={DISTINCT[0]};strokeColor=#ffffff;")
-    page.box("ov-leg-dot-t", label("A dot on a box: it feeds the thick arrow of that colour (its Needs list names what)"), x + 50, y, w - 50, 36,
-             "text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=12;")
-
-
-def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> float:
-    """The flow index (one clickable box per flow page, plus the End-to-end page) and the component kind legend, right of the group grid.
-
-    Args:
-        page: the page.
-        data: the validated map.
-        profile: the kind colours.
-        x: left edge.
-        y: top edge.
-
-    Returns:
-        The bottom of the kind legend (the colour legend goes below it).
-    """
-    page.box("ov-flows", label("**Flows** (click to open the page)"), x, y, 340, 30, "text;html=1;align=left;verticalAlign=middle;fontSize=13;")
-    page.box("ov-f-end-to-end", label("**End-to-end flow**", "every component and every flow on one page"), x, y + 40, 340, 52,
-             "rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f4fa;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
-             link="data:page/id,end-to-end", tooltip="All flows as coloured paths through their components, one layer per family")
-    for fi, f in enumerate(data["flows"]):
-        page.box(f"ov-f-{f['id']}", label(f"**{fi + 1}. {f['title']}**", f"{f['trigger']['kind']} · runs on {f['runs_on']} · {f['category']}"),
-                 x, y + 102 + fi * 62, 340, 52, "rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
-                 link=f"data:page/id,flow-{f['id']}", tooltip=f["purpose"])
-    ly = y + 122 + len(data["flows"]) * 62
-    page.box("ov-legend", label("**Legend: component kinds**"), x, ly - 18, 340, 30, "text;html=1;align=left;fontSize=12;whiteSpace=wrap;")
-    for ki, kind in enumerate(profile.kind_style):
-        page.box(f"ov-k-{kind}", label(kind), x + (ki % 2) * 175, ly + 20 + (ki // 2) * 34, 165, 28, comp_style(kind, profile))
-    return ly + 20 + ((len(profile.kind_style) + 1) // 2) * 34

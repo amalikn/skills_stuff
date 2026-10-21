@@ -44,6 +44,9 @@
     },
     "drawing": {
       "$ref": "#/$defs/drawing"
+    },
+    "options": {
+      "$ref": "#/$defs/options"
     }
   },
   "$defs": {
@@ -125,6 +128,9 @@
         },
         "notes": {
           "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
         }
       }
     },
@@ -221,6 +227,9 @@
           "items": {
             "$ref": "#/$defs/step"
           }
+        },
+        "status": {
+          "$ref": "#/$defs/status"
         }
       }
     },
@@ -282,6 +291,9 @@
             "$ref": "#/$defs/id"
           },
           "description": "Step ids that follow; default is the next step in the list."
+        },
+        "status": {
+          "$ref": "#/$defs/status"
         }
       }
     },
@@ -313,17 +325,31 @@
         "group_columns": {
           "type": "object",
           "description": "Overview: {group name: columns} for the grid of boxes with no arrow inside the group (default 3); 1 stacks them vertically.",
-          "additionalProperties": {"type": "integer", "minimum": 1}
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1
+          }
         },
         "group_layout": {
           "type": "object",
           "description": "Overview: {group name: vertical | horizontal | grid N} for the boxes with no arrow inside the group; the readable form of group_columns (one column, one row, N columns).",
-          "additionalProperties": {"type": "string", "pattern": "^(vertical|horizontal|grid [1-9][0-9]*)$"}
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^(vertical|horizontal|grid [1-9][0-9]*)$"
+          }
         },
         "group_cell": {
           "type": "object",
           "description": "Overview: {group name: [row, column]}, counted from 1, to place a group in the group grid; other groups fill the free cells in map order.",
-          "additionalProperties": {"type": "array", "items": {"type": "integer", "minimum": 1}, "minItems": 2, "maxItems": 2}
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "minItems": 2,
+            "maxItems": 2
+          }
         },
         "default_tier": {
           "type": "integer"
@@ -423,6 +449,141 @@
           "additionalProperties": {
             "$ref": "#/$defs/id"
           }
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "required": [
+        "title",
+        "groups"
+      ],
+      "additionalProperties": false,
+      "description": "Optional: one Options page comparing design choices. Each group is a question; each option shows its flow as a chain of steps, then its pros and cons.",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "groups": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/option_group"
+          }
+        },
+        "decisions": {
+          "$ref": "#/$defs/text_list",
+          "description": "Decisions taken that belong to no option group; listed with each group's decision in the page's Decisions taken box."
+        }
+      }
+    },
+    "option_group": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "options"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What was decided, by whom and when; left out while open."
+        },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/option"
+          }
+        }
+      }
+    },
+    "option": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "status",
+        "steps",
+        "pros",
+        "cons"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "chosen",
+            "evaluate",
+            "open",
+            "rejected"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "The option's flow, one box per step, top to bottom."
+        },
+        "pros": {
+          "$ref": "#/$defs/text_list"
+        },
+        "cons": {
+          "$ref": "#/$defs/text_list"
+        }
+      }
+    },
+    "status": {
+      "type": "object",
+      "required": [
+        "state",
+        "since"
+      ],
+      "additionalProperties": false,
+      "description": "How real this item is: proposed (an idea), designed (in a governing design), spike-proved (ran in a lab or spike), built (in the product), live (in service). Proposed and designed draw with a dashed border.",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "proposed",
+            "designed",
+            "spike-proved",
+            "built",
+            "live"
+          ]
+        },
+        "since": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Where it is shown: a report, a commit, a design section."
         }
       }
     }

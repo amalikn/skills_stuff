@@ -97,6 +97,49 @@ map does, and a byte-for-byte comparison is a valid drift check.
 - Run the layout audits on every routed page in the renderer's tests and assert every list is empty ([layout-audits.md](layout-audits.md)).
 - Give the command line three modes, as UNC does: no flag validates and reports drift (exit 1 on a problem or stale file); `--write` renders; `--list` prints one line per flow and writes nothing.
 
+> **Learned 2026-10-21** · Options page · VERIFIED_PRIMARY · Source: `scripts/flowmap/options.py`, `tests/test_options_page.py` · Falsifier: a map without `options` whose drawing changes, or an Options page audit fault
+> A map may carry an optional `options` block (schema `$defs/options`): groups (one question each, an optional `decision`) of options (status
+> `chosen`, `evaluate`, `open` or `rejected`; `steps`, `pros`, `cons`) plus free `decisions`. It renders as the page after the Overview: a colour legend, a decision column chained
+> top to bottom beside one row per group, a green arrow from each decision to its chosen option, each option's steps as a routed chain, pros and
+> cons aligned across the row. Maps without the block render byte-identical. Asked for by smc-resiliency's operator (update and recovery choices,
+> trade-offs and decisions on one page). Screenshot: `references/screenshots/20261021-options-page/`.
+>
+> ```python
+> # scripts/flowmap/options.py (_group_row), skill-drawio, 2026-10-21
+> heads_top, band = y + gh + HEAD_GAP, y + gh + HEAD_GAP / 2
+> dec = _decision_box(page, g, number, y, gh + HEAD_GAP)
+> _chain_arrow(page, prev, dec)
+> head_h = max(_height(_head_lines(o), BOX_CHARS) for o in g["options"])
+> bottom = max(_option_chain(page, g["id"], o, x0 + i * (COL_W + GAP), heads_top, head_h) for i, o in enumerate(g["options"]))
+> for i, o in enumerate(g["options"]):
+>     if g.get("decision") and o["status"] == "chosen":   # through the gap between the question and the option heads, then down
+>         cx = x0 + i * (COL_W + GAP) + COL_W / 2
+>         page.route(f"{dec}-to-{o['id']}", dec, f"opt-{g['id']}-{o['id']}-head", [(MARGIN + DEC_W, band), (cx, band), (cx, heads_top)],
+>                    DEC_ARROW, klass="thick", ignore=(f"opt-{g['id']}",))
+> ```
+
+
+> **Learned 2026-10-21** · map parts and status · VERIFIED_PRIMARY · Source: `scripts/flowmap/model.py` (`expand_includes`, `stray_parts`, `status_text`, `status_style`), `tests/test_map_parts.py`, `tests/test_status.py` · Falsifier: a split map whose drawing differs from the unsplit one, or a stray part not reported
+> A long map splits into parts (asked by smc-resiliency's operator on 2026-10-21, after unified-network-controller split its catalog): the master
+> keeps the `drawing:` block and `#@include parts/<file>.yaml` lines, each part written without its parent's indentation. Proof that a split is
+> safe: run the drift check without `--write` after splitting; smc-resiliency's drawing stayed byte-identical. Every component, flow and step may
+> carry `status: {state, since, evidence}` so a reader tells an idea from a proven or built thing: proposed and designed draw dashed.
+>
+> ```python
+> # scripts/flowmap/model.py (expand_includes), skill-drawio, 2026-10-21
+> for line in path.read_text(encoding="utf-8").splitlines():
+>     m = INCLUDE.match(line)
+>     if not m:
+>         out.append(line)
+>         continue
+>     part = (path.parent / m.group(2)).resolve()
+>     if part in used:
+>         raise ValueError(f"{path.name}: {m.group(2)} is included twice")
+>     used.append(part)
+>     pad = m.group(1)
+>     out += [pad + x if x.strip() else x for x in expand_includes(part, used).splitlines()]
+> ```
+
 ## The banner and the drift check
 
 `drawio.mxfile.banner()` writes an XML comment between the declaration and `<mxfile>` naming the generator, the source map, the command that regenerates the file and the check that fails when it is out

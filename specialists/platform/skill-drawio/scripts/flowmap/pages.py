@@ -15,7 +15,8 @@ from pathlib import Path
 from drawio.mxfile import BLANK, Page, banner, label, mxfile, wrapped_lines
 
 from .e2e import end_to_end_page
-from .model import GAP, MARGIN, Outcome, comp_style, load, step_targets
+from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
+from .options import options_page
 from .overview import overview_page
 from .profile import Profile
 
@@ -32,7 +33,7 @@ NOTE_SECTIONS = (("reads", "Reads", False), ("writes", "Writes", False), ("code"
 
 
 def step_lines(step: dict, number: int) -> list[str]:
-    """A step box's text: the bold title, a blank line, the action, a blank line, the transport in italics and the gate in bold.
+    """A step box's text: the bold title, a blank line, the action, a blank line, the transport in italics, the gate in bold and the status.
 
     Args:
         step: the step from the map.
@@ -42,7 +43,8 @@ def step_lines(step: dict, number: int) -> list[str]:
         Label lines for drawio.mxfile.label().
     """
     return ([f"**{number}. {step['id']}**", BLANK, step["action"], BLANK, f"*via {' + '.join(step['via'])}*"]
-            + ([f"**GATE: {step['gate']}**"] if step.get("gate") else []))
+            + ([f"**GATE: {step['gate']}**"] if step.get("gate") else [])
+            + ([f"*{step['status']['state']} since {step['status']['since']}*"] if step.get("status") else []))
 
 
 def note_lines(step: dict, number: int) -> list[str]:
@@ -75,7 +77,8 @@ def flow_header_lines(flow: dict, comps: dict[str, dict], number: int) -> list[s
         Label lines for drawio.mxfile.label() (fields the flow does not have are left out).
     """
     deps = flow.get("dependencies", {})
-    fields = [f"**Trigger:** {flow['trigger']['kind']}: {flow['trigger']['detail']}",
+    fields = [f"**Status:** {status_text(flow)}" if flow.get("status") else "",
+              f"**Trigger:** {flow['trigger']['kind']}: {flow['trigger']['detail']}",
               f"**Runs on:** {comps[flow['runs_on']]['name']} · **Owner:** {comps[flow['owner']]['name']}",
               f"**Budget:** {flow['budget']}" if flow.get("budget") else "",
               ("**Depends on flows:** " + ", ".join(deps["flows"])) if deps.get("flows") else "",
@@ -113,7 +116,7 @@ def _lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float, bo
         fill, stroke = profile.style(c["kind"])
         page.box(f"{fid}-lane-{li}", "", MARGIN, lane_y[li], width, lane_h[li], f"rounded=0;html=1;fillColor={fill};strokeColor={stroke};opacity=35;")
         page.box(f"{fid}-lanehead-{li}", label(f"**{c['name']}**", c["kind"], c["host"]), MARGIN, lane_y[li], LANE_HEAD_W, lane_h[li],
-                 comp_style(c["kind"], profile, "rounded=0;align=left;spacingLeft=6;"), tooltip=f"health: {c['health']}")
+                 comp_style(c["kind"], profile, "rounded=0;align=left;spacingLeft=6;" + status_style(c)), tooltip=f"health: {c['health']}")
     return lanes, lane_y, lane_h
 
 
@@ -199,7 +202,7 @@ def step_edges(steps: list[dict], fid: str) -> list[tuple[str, str, str, str, st
     """The flow's arrows with ports that never coincide.
 
     A forward arrow leaves its step's right side and enters the target's left side; a step with several on one side spreads them over that
-    side. An arrow back to an earlier step leaves and enters at the bottom, dashed and purple, labelled "back to N", so it never shares a
+    side. A forward arrow that skips a column into another lane enters the target's bottom (lane above) or top (lane below) instead. An arrow back to an earlier step leaves and enters at the bottom, dashed and purple, labelled "back to N", so it never shares a
     path with a forward arrow.
 
     Args:
@@ -210,16 +213,26 @@ def step_edges(steps: list[dict], fid: str) -> list[tuple[str, str, str, str, st
         (edge id, source step id, target step id, label, style) per arrow.
     """
     index = {s["id"]: k for k, s in enumerate(steps)}
+    actors = list(dict.fromkeys(s.get("actor") for s in steps))   # lane order, as _lanes draws them
+    lane = {s["id"]: actors.index(s.get("actor")) for s in steps}
     pairs = [(s["id"], tg) for k, s in enumerate(steps) for tg in step_targets(steps, k)]
-    fwd = [(a, b) for a, b in pairs if index[b] > index[a]]
+    # A forward arrow that skips a column into another lane enters from below (lane above) or above (lane below), so it climbs in the target's
+    # own column instead of crossing the steps in between (operator, 2026-10-21: an arrow 6 to 8 ran over step 7 in 8's lane).
+    climb = [(a, b) for a, b in pairs if index[b] > index[a] + 1 and lane[b] != lane[a]]
+    fwd = [(a, b) for a, b in pairs if index[b] > index[a] and (a, b) not in climb]
     back = [(a, b) for a, b in pairs if index[b] <= index[a]]
     out_r = {a: _slots([p for p in fwd if p[0] == a]) for a, _ in fwd}
     in_l = {b: _slots([p for p in fwd if p[1] == b]) for _, b in fwd}
     out_b = {a: _slots([p for p in back if p[0] == a]) for a, _ in back}
     in_b = {b: _slots([p for p in back if p[1] == b]) for _, b in back}
+    out_r.update({a: _slots([p for p in fwd + climb if p[0] == a]) for a, _ in climb})
+    in_v = {b: _slots([p for p in climb if p[1] == b]) for _, b in climb}
     edges = []
     for a, b in pairs:
-        if (a, b) in fwd:
+        if (a, b) in climb:
+            style = f"exitX=1;exitY={out_r[a][(a, b)]};entryX={in_v[b][(a, b)]};entryY={1 if lane[b] < lane[a] else 0};"
+            text = str(index[b] + 1)
+        elif (a, b) in fwd:
             style = f"exitX=1;exitY={out_r[a][(a, b)]};entryX=0;entryY={in_l[b][(a, b)]};"
             text = str(index[b] + 1)
         else:
@@ -237,10 +250,13 @@ def render(data: dict, profile: Profile) -> str:
         profile: the project's drawing profile.
 
     Returns:
-        The file text: banner, then an uncompressed `<mxfile>` with the Overview, the End-to-end page and one page per flow.
+        The file text: banner, then an uncompressed `<mxfile>` with the Overview, the End-to-end page, one page per flow, and the Options page after the
+        Overview when the map has an `options` block.
     """
     comps = {c["id"]: c for c in data["components"]}
     pages = [overview_page(data, profile), end_to_end_page(data, profile)] + [flow_page(f, comps, i + 1, profile) for i, f in enumerate(data["flows"])]
+    if data.get("options"):   # optional: the Options page goes right after the Overview; maps without one render as before
+        pages.insert(1, options_page(data, profile))
     return mxfile(pages, profile.host, banner(profile.generator, profile.map, profile.command, profile.check))
 
 

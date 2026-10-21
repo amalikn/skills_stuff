@@ -78,6 +78,8 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
   commands) and call `render_flowmap.py --map <map> --schema <its schema>` directly; unified-network-controller retired its wrapper this way on
   2026-10-19. Only a project that needs code of its own builds a `flowmap.profile.Profile` and calls `flowmap.pages.render` / `evaluate`,
   loading the pack through its one seam to the skills.
+- Optional map features (2026-10-21): `#@include` parts for a long map, `status` on components, flows and steps, and an `options` block drawn
+  as an Options page after the Overview ([references/data-first-diagrams.md](references/data-first-diagrams.md)).
 - A refactor of the engine must leave every consumer's drawing byte-identical; prove it with the before and after files.
 
 ## Standing rules

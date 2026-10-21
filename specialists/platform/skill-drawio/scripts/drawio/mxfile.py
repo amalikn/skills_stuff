@@ -305,3 +305,25 @@ def mxfile(pages: list[Page], host: str, head: str = "") -> str:
     """
     body = "\n".join(p.xml() for p in pages)
     return f'<?xml version="1.0" encoding="UTF-8"?>\n{head}<mxfile host="{host}" type="device" compressed="false">\n{body}\n</mxfile>\n'
+
+
+#: A page header's box (flow pages, Overview, End-to-end): light grey, left-aligned, font 13.
+HEADER_STYLE = "rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=13;"
+
+
+def header_height(lines: list[str], width: float, least: float, px_per_char: float = 7.6, line_h: float = 17.0) -> float:
+    """A boxed page header's height for its text: at least `least`, taller when the wrapped lines need it.
+
+    Args:
+        lines: the header's label lines (markers `*` and backticks are ignored when counting).
+        width: the box width in pixels.
+        least: the height the page layout was built around.
+        px_per_char: the conservative width of one character at the header's font size (13 px: 7.6).
+        line_h: one line's height.
+
+    Returns:
+        The height in pixels.
+    """
+    chars = max(20, int((width - 20) / px_per_char))
+    need = 12 + sum(wrapped_lines(x.replace("*", "").replace("`", ""), chars) for x in lines if x) * line_h
+    return max(least, need)

@@ -231,3 +231,17 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 > for i in range(0, len(alone), cols):
 >     rows.append(alone[i:i + cols])
 > ```
+
+> **Learned 2026-10-21** · flow page arrows · VERIFIED_PRIMARY · Source: `scripts/flowmap/pages.py` (`step_edges`), `tests/test_options_page.py` (`test_skipping_arrow_climbs_in_target_column`) · Falsifier: an export where a skipping arrow still crosses the step between
+> Flow pages leave routing to draw.io with pinned ports. A forward arrow that skips a column (check 6 to revert 8) entered its target from the
+> left, so when step 7 sat in step 8's lane the router ran the arrow through step 7. Entering from below (target lane above) or above (target lane
+> below) makes the router run along the source's lane and climb in the target's own column. Screenshot:
+> `references/screenshots/20261021-flow-page-climb-arrow/`.
+>
+> ```python
+> # scripts/flowmap/pages.py (step_edges), skill-drawio, 2026-10-21
+> climb = [(a, b) for a, b in pairs if index[b] > index[a] + 1 and lane[b] != lane[a]]
+> ...
+> if (a, b) in climb:
+>     style = f"exitX=1;exitY={out_r[a][(a, b)]};entryX={in_v[b][(a, b)]};entryY={1 if lane[b] < lane[a] else 0};"
+> ```

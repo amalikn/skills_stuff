@@ -113,3 +113,28 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 - [ ] Each colour or family has its own layer; base-layer-only export shows boxes with no arrows.
 - [ ] A legend for every encoding, including what an arrow's number means.
 - [ ] Names and arrow labels bold; no literal Markdown markers in the drawing.
+
+> **Learned 2026-10-21** · page headers and legends · USER_STATED · Source: smc-resiliency operator review, 2026-10-21; `scripts/drawio/mxfile.py` (`HEADER_STYLE`, `header_height`) · Falsifier: an exported page whose header text spills out of its box
+> Every page opens with the same boxed header (light grey fill, grey border, font 13, left aligned), never plain floating text: a bold title, a
+> blank line, the generation note, a blank line, then one line per item with its name in bold ("**Thick arrows:** ...", "**Layers panel:** ..."),
+> and the back link last. The box is sized to its wrapped text (`header_height`) and grows upward from its planned bottom so the layout below does
+> not move. Boxing a header exposes overflow plain text hid: export and look after any header change. Every page that colours boxes carries a
+> legend for those colours, placed in free space beside the first block (the Options page puts it right of the Decisions taken box).
+>
+> ```python
+> # scripts/flowmap/e2e.py, skill-drawio, 2026-10-21
+> head_h = header_height(head, right - MARGIN, 60)   # grows upward from its old bottom, so the layout below stays put
+> page.box("e2e-title", label(*head), MARGIN, MARGIN + 60 - head_h, right - MARGIN, head_h,
+>          HEADER_STYLE, link="data:page/id,overview")
+> ```
+
+> **Learned 2026-10-21** · categories and labels · USER_STATED · Source: smc-resiliency operator review, 2026-10-21 ("why custom is written everywhere") · Falsifier: a project where one value in every flow's category helps a reader
+> A field shown on every flow (category in the header and the Overview index) must carry information in that project. A value copied from another
+> project (UNC's native/custom split) that is the same everywhere is noise: give the project its own categories (build, config-swap, measurement).
+
+> **Proposed 2026-10-21, not decided** · shape vocabulary · USER_STATED (asked for a sample) · Source: `references/screenshots/20261021-shape-vocabulary-sample/` · Falsifier: the operator declines it
+> Standard flowchart shapes could carry meaning the map already has: terminator (first step, a step with no next), decision (a step with a gate),
+> manual operation (a person's step), preparation (set-up), predefined process (a step that runs another flow), delay (timer), stored data
+> (store), document (a file written), data in or out (a network transport), external system (cloud), person (actor). Sample drawn by hand-run code;
+> the engine does not draw them until the operator decides.
+
