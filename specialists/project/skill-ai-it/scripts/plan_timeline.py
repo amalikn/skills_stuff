@@ -38,7 +38,7 @@ END = "<!-- END GENERATED: plan-timeline -->"
 FLAGS = {"at_risk": "🟡 **At risk**", "on_track": "🟢 On track", "ahead": "🔵 Ahead"}
 KINDS = ("plan", "fixed", "extra", "parked")
 #: Row fields the renderer itself reads; every other field must be a declared column.
-CORE_FIELDS = frozenset({"due", "week", "done", "flag", "kind", "stage", "step"})
+CORE_FIELDS = frozenset({"due", "week", "done", "flag", "kind", "stage", "step", "after"})
 DEFAULT_COLUMNS = ({"key": "stage", "header": "Stage"}, {"key": "step", "header": "Step"},
                    {"key": "where", "header": "Where it stands"}, {"key": "next_with", "header": "Next with"})
 #: A "Wk of" step is late after the Friday of that week.
@@ -143,15 +143,25 @@ def due_label(row: dict, with_year: bool = False) -> str:
 
 
 def in_order(rows: list[dict]) -> list[dict]:
-    """Rows in due-date order (a week row counts from its Monday), undated rows last in file order (operator, 2026-10-21: order by Due).
+    """Rows in due-date order (a week row counts from its Monday); an undated row with `after: <stage>` follows that stage's row, the other
+    undated rows come last in file order (operator, 2026-10-21: order by Due; unplanned work "in the logical order, not everything at the bottom").
 
     Args:
         rows: validated rows, in file order.
 
     Returns:
-        The rows sorted; the sort is stable, so rows with the same date keep their file order.
+        The rows ordered; the sort is stable, so rows with the same date, or placed after the same stage, keep their file order.
     """
-    return sorted(rows, key=lambda r: (r.get("due") is None, r.get("due") or dt.date.max))
+    dated = sorted((r for r in rows if r.get("due") is not None), key=lambda r: r["due"])
+    placed = {}
+    for r in rows:
+        if r.get("due") is None and r.get("after"):
+            placed.setdefault(r["after"], []).append(r)
+    out: list[dict] = []
+    for r in dated:
+        out.append(r)
+        out.extend(placed.pop(r.get("stage") or "", []) if r.get("stage") else [])
+    return out + [r for r in rows if r.get("due") is None and not r.get("after")]
 
 
 def schedule(row: dict, today: dt.date) -> tuple[str, str]:
@@ -238,7 +248,13 @@ def validate(data: object, data_path: str = DATA) -> tuple[list[dict], list[str]
             problems.append(f"{where}: flag {row['flag']!r} is not one of {', '.join(FLAGS)}")
         if not row.get("step"):
             problems.append(f"{where}: `step` is empty")
+        if row.get("after") and row["due"] is not None:
+            problems.append(f"{where}: `after` places an undated row; a row with `due` is placed by its date")
         rows.append(row)
+    stages = {r.get("stage") for r in rows if r.get("due") is not None and r.get("stage")}
+    for n, row in enumerate(rows, 1):
+        if row.get("after") and row["after"] not in stages:
+            problems.append(f"{data_path} row {n}: `after: {row['after']}` names no dated row's stage")
     return rows, problems
 
 

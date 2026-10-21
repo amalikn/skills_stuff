@@ -165,5 +165,32 @@ class GenericColumns(unittest.TestCase):
         self.assertEqual(pt.due_label(rows[0], True), "Wk of 25 Jan 2027")
         self.assertEqual(pt.due_label(rows[2]), "Fri 23 Oct")
 
+class AfterPlacement(unittest.TestCase):
+    """`after:` places an undated row beside the plan step it belongs to."""
+
+    def test_undated_row_follows_its_stage_and_others_stay_last(self):
+        """X goes after U1, Y after U2 and Z (no `after`) last, each in file order."""
+        rows, problems = pt.validate({"rows": [
+            {"due": "2026-11-20", "stage": "U2", "step": "b"},
+            {"kind": "extra", "step": "z"},
+            {"due": "2026-10-16", "stage": "U1", "step": "a"},
+            {"kind": "extra", "step": "y", "after": "U2"},
+            {"kind": "extra", "step": "x", "after": "U1"},
+        ]})
+        self.assertEqual(problems, [])
+        self.assertEqual([r["step"] for r in pt.in_order(rows)], ["a", "x", "b", "y", "z"])
+
+    def test_unknown_stage_and_dated_row_are_refused(self):
+        """`after` must name a dated row's stage, and only an undated row may carry it."""
+        _, problems = pt.validate({"rows": [
+            {"due": "2026-10-16", "stage": "U1", "step": "a"},
+            {"kind": "extra", "step": "x", "after": "U9"},
+            {"due": "2026-10-20", "stage": "U2", "step": "b", "after": "U1"},
+        ]})
+        text = "\n".join(problems)
+        self.assertIn("`after: U9` names no dated row's stage", text)
+        self.assertIn("a row with `due` is placed by its date", text)
+
+
 if __name__ == "__main__":
     unittest.main()
