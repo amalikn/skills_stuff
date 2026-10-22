@@ -21,6 +21,10 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Fleet adoption
 
+- [ ] **Rotation keeps decision-cited log entries** (smc-resiliency, 2026-10-22 21:11) — `rotate_records.py` protects a stamp cited by a live file only
+  in working-state files (`cited_stamps`, LIVE_SURFACES). Rotating smc-resiliency's CHANGELOG moved entry 20261022_1442, the only CHANGELOG citation of
+  SCRATCHPAD decision 20261021_1723, and the project's `check_decision_records` failed; the rotation was undone by hand. Fix: also keep a log entry
+  holding the only citation of a live `KEEP` decision stamp, or let decision checks read the archives; add a test.
 - [ ] **Governance checker rollout** — adopt `scripts/check_governance.py` across existing projects via `refresh`. Each adoption is a Tier 3 authoring exercise, not a copy: the universal checks come from
   the template, but the invariants worth enforcing are project-specific and must be read out of that project's own stated rules.
 - [ ] **Re-upgrade projects on the previous version stamp** — `me/llm-m2max`, `apn/vocus-profitability`, `apn/opticomm-profitability`.

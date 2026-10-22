@@ -229,3 +229,18 @@ When the signs disagree (a banner on a file the operator says they edited), stop
 > draws, its tab now "Decisions: <title>", and `option_pages` is still read (page `options-<id>`) so existing maps keep their links. The
 > Overview's index line and legend say "decision page". Inside a group the choices are still listed under `options` (the YAML key), which no
 > reader of the drawing sees.
+
+> **Learned 2026-10-22** · a reject branch in the middle of a flow · VERIFIED_PRIMARY · Source: smc-resiliency `docs/flows/parts/flows-release.yaml` (commit ffa84a0), page 12; screenshot `references/screenshots/20261022-midflow-reject/` · Falsifier: a mid-flow gate whose terminal step, listed after it, is drawn after the continuing steps or crosses the Yes branch
+> A gate that stops the flow on failure but continues on success needs no special layout: list the terminal step straight after the gate with
+> `next: []`, and name both targets in the gate's `next` (pass first). The renderer puts the terminal beside the gate in its lane and routes the
+> Yes branch below it to the continuing step; the audit stays clean.
+>
+> ```yaml
+> - id: package-gate
+>   gate: observed package delta equals the approved delta
+>   next: [evidence, rejected]
+> - id: rejected
+>   action: "An unexpected or missing package change: nothing is signed; ..."
+>   next: []
+> - id: evidence
+> ```
