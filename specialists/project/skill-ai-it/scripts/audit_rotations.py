@@ -12,6 +12,7 @@ counts it as baselined, and a baseline row no longer lost is reported as stale s
 Usage:
     python scripts/audit_rotations.py ROOT [ROOT ...]        # every project with docs/history/readme.md under the roots
 Exit: 0 when nothing is missing or split, 1 when a record lost lines or split an entry, 2 on bad arguments.
+Safety: read-only; reads files and git history, writes nothing.
 """
 
 from __future__ import annotations
@@ -38,8 +39,11 @@ def git(root: pathlib.Path, *args: str) -> str:
 
     Returns:
         Its standard output.
+
+    Raises:
+        subprocess.TimeoutExpired: git did not answer within GIT_TIMEOUT_S.
     """
-    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True).stdout
+    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, timeout=GIT_TIMEOUT_S).stdout
 
 
 def text_only(line: str) -> str:
@@ -56,6 +60,8 @@ def text_only(line: str) -> str:
 
 BASELINE = "rotation-audit-baseline.txt"
 
+# A local git read; a minute only trips on a hung repository (a lock or a network filesystem), never on a normal one.
+GIT_TIMEOUT_S = 60
 
 def baseline(project: pathlib.Path) -> dict[str, set[str]]:
     """The lines a project has accepted as edited on purpose, per record.
@@ -99,7 +105,7 @@ def audit(project: pathlib.Path, name: str) -> list[str] | None:
         return None
     added = git(project, "log", "--diff-filter=A", "--format=%H", "--reverse", "--", str(archives[0].relative_to(project))).split()
     ref = f"{added[0]}~1" if added else "HEAD"
-    before = subprocess.run(["git", "-C", str(project), "show", f"{ref}:./{name}"], capture_output=True, text=True).stdout
+    before = git(project, "show", f"{ref}:./{name}")
     if not before:
         return None
     have = Counter(l for l in rotate_records.content_lines((project / name).read_text()) if l.strip())

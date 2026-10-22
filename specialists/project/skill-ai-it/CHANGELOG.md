@@ -16,6 +16,7 @@ Last rotated: 20261022_1209
 
 ## Contents
 
+- [20261022_1439 — audit_rotations: safety header and git timeouts; rewrap tolerance reverted](#20261022_1439--audit_rotations-safety-header-and-git-timeouts-rewrap-tolerance-reverted)
 - [20261022_1209 — plan_timeline: after places unplanned rows beside their plan step](#20261022_1209--plan_timeline-after-places-unplanned-rows-beside-their-plan-step)
 - [20261022_1209 — Plan timeline: extra rows before the plan rows they feed on one date](#20261022_1209--plan-timeline-extra-rows-before-the-plan-rows-they-feed-on-one-date)
 - [20261021_1817 — target_map.py and plan_timeline.py promoted from unified-network-controller](#20261021_1817--target_mappy-and-plan_timelinepy-promoted-from-unified-network-controller)
@@ -36,6 +37,13 @@ Last rotated: 20261022_1209
 - [20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries](#20261014_1213--govern-stops-on-uncommitted-governed-files-drops-resolved-baseline-entries)
 - [20261014_1202 — adopt: a future deadline is not a review date](#20261014_1202--adopt-a-future-deadline-is-not-a-review-date)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261022_1439 — audit_rotations: safety header and git timeouts; rewrap tolerance reverted
+
+`scripts/audit_rotations.py` (smc-resiliency session, skill-coder helpers on a touched script): the header states it is read-only, and both git
+calls go through `git()` with a 60 s timeout (`GIT_TIMEOUT_S`, `Raises:` documented). No behaviour change: the audit's output on smc-resiliency,
+unified-network-controller and enterprise-strategy is identical before and after; `just test` 190 OK. A rewrap-tolerant match was written and
+reverted the same session (operator: keep the audit strict); ROADMAP "Audit and preflight" holds the open item.
 
 ## 20261022_1209 — plan_timeline: after places unplanned rows beside their plan step
 
