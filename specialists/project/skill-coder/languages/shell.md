@@ -93,6 +93,25 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 >
 > Prove it with a short limit (3 s stopped the host in 8 s, the 5 s KILL grace included).
 
+> **Learned 2026-10-22 (c)** · bash 5.3, a stdin-fed command under the watcher above · VERIFIED_PRIMARY (local runs: a script, and a shell with
+> job control) · Source: skill-smc scripts/collect-smc-evidence-full.sh `with_deadline` and scripts/test_with_deadline.sh (skills_stuff 567b342) ·
+> Falsifier: `printf 'x\n' | f cat` printing nothing in a non-interactive script where `f(){ "$@" & wait $!; }`
+> A background job reads `/dev/null` as stdin only when job control is on (an interactive shell); in a script it inherits the pipe. Write `"$@" <&0 &`
+> so a piped command (`printf '%s' "$script" | with_deadline 300 tsh ssh host 'bash -s'`) keeps its stdin wherever the helper runs, and test the
+> deadline by disabling the kill (the test must go red), not the stdin path, which a script cannot make fail:
+>
+> ```bash
+> # skill-smc scripts/collect-smc-evidence-full.sh (567b342)
+> with_deadline() {
+>   local deadline="$1"; shift
+>   "$@" <&0 & local pid=$!
+>   ( sleep "$deadline"; kill -TERM "$pid" 2>/dev/null; sleep 5; kill -KILL "$pid" 2>/dev/null ) & local watcher=$!
+>   wait "$pid"; local rc=$?
+>   kill "$watcher" 2>/dev/null; wait "$watcher" 2>/dev/null
+>   return $rc
+> }
+> ```
+
 > **Learned 2026-10-20 (c)** · bash, a script sent over ssh on stdin (`ssh host bash -s < script`) · VERIFIED_PRIMARY (three trial runs did
 > nothing past their first line; with `ssh -n` they ran) · Source: unified-network-controller `infra/apn-unc01/ops/collector-trial.sh` (its
 > predecessor in a session scratchpad, 2026-10-20) · Falsifier: an ssh release that does not read stdin when given a remote command
