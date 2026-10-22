@@ -217,3 +217,8 @@ When the signs disagree (a banner on a file the operator says they edited), stop
 > them the other way. On adoption every two-way gate was checked against its gate text: smc-resiliency's six are right, unified-network-controller has
 > none. Write the passing branch first, or name each case with `when`.
 
+> **Learned 2026-10-22** · status dates · VERIFIED_PRIMARY · Source: unified-network-controller flow map (a side agent's note accepted by the operator, 2026-10-22); `schemas/flowmap.schema.json` (`$defs.status.since`) · Falsifier: a reader who takes a `since` date for a verification date, or a map whose live items all share the audit day
+> `status.since` is the day the item reached its state: for `live`, when it went into service (its first deploy, unit or commit date from the
+> project's records), never the day an agent checked it. Stamping every live item with the audit day made month-old services read as new on a
+> drawing meant for the team and management. Keep the check in `evidence` ("... ; verified live <date>"); an item that predates the project says
+> so and uses the project's start date. Proposed and designed items keep the day they were recorded.
