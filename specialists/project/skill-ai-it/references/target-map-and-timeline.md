@@ -59,7 +59,7 @@ pilots (smc-resiliency, unified-network-controller) settled on one shape, now [t
 | --- | --- | --- |
 | Where we are | `As of` date, one line on the live state, one numbered item per workstream led by its stage links, then what waits on the operator, a horizon line | Rewritten by hand whenever the state changes |
 | Timeline (under Where we are) | The dated plan | `plan_timeline.py` from `plan-timeline.yaml` |
-| What next | Ordered actions: owner, done-when, each row linked to where its work starts, one line | Hand, every pass that moves a stage |
+| What next | Ordered actions in a one-line table (owner, by, done when), each row linked to its detail block below | Hand, every pass that moves a stage |
 | Which document to follow | Governing document per topic; inputs and history apart | Hand, when a document starts or stops governing |
 | Decided but not yet in the designs | Decisions waiting to be folded into a design | Hand; a row clears when the design carries it |
 | Stages | State, where it stands, blocker, next action per target | `target_map.py` (`embed:`) from `target-map.yaml` |
@@ -76,8 +76,26 @@ Setting it up: `just plan-tracker <project> --init` prints the starter page and 
 
 Keeping it: update the page in the same pass as a stage moving, a document starting or stopping to govern, or a decision made or folded in; every slurp checks it against SCRATCHPAD, ROADMAP and the
 stage tables and fixes the page, not those. Where we are is rewritten, not appended (operator, 2026-10-22: "Adapt Where we are from UNC": item per workstream, its stage links first). `plan_tracker.py
---check` fails on a missing section, a missing `As of`, or a What next row that has no link or is split: the markdown hook splits a table row rendered wider than 200 columns, so shorten the row (move
-detail into Where we are). Split rows in the other tables, and an `As of` older than the newest CHANGELOG entry, are notes.
+--check` fails on a missing section, a missing `As of`, or a What next row that has no link or is split: the markdown hook splits a table row rendered wider than 200 columns, so shorten the row and put the detail in its block. A detail block without "Done when" fails; a row with no block is a note. Split rows in the
+other tables, and an `As of` older than the newest CHANGELOG entry, are notes.
+
+**What next: a summary table plus a detail block per item** (operator, 2026-10-22, smc-resiliency: "I'm still not able to understand what is
+really required next and what would the done when really make sense"; "It doesn't have to be one row per item"). The table stays one line per
+item (#, Next, Owner, By, Done when), and its Next cell links to a `### <n>. <action>` block under the table. Each block has four bullets:
+
+- **What is needed:** the concrete work or choice, with the options or steps and links to the exact sections.
+- **Why now:** what waits on it (a stage, a plan date).
+- **In hand:** what already exists (results, proposals, evidence).
+- **Done when:** a checklist a reader can verify (`[ ] ...`), naming the record that changes: the decision entry, the report, the ticked
+  criterion, the re-rendered page.
+
+A row's "Done when" cell is the one-line summary of that checklist. smc-resiliency's page is the worked example.
+
+> **Learned 2026-10-22** · What next needs detail, not wider rows · USER_STATED · Source: smc-resiliency plan tracker (operator, 2026-10-22);
+> `scripts/plan_tracker.py` (`detail_blocks`, `slug`), `tests/test_plan_tracker.py` (`test_detail_blocks`) · Falsifier: a reader who still cannot tell
+> from a block what to do next or how to know it is done
+> One-line rows kept the table readable but left "Done when" too terse to act on ("Review held; outcomes recorded"). Wider rows are split by
+> the markdown hook, so the detail goes into a block per item; the table stays the index.
 
 ## Linking a tracker
 

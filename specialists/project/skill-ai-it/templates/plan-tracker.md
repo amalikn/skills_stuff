@@ -6,7 +6,7 @@ Authority: >-
   index of which document governs each topic and where each stage stands; it points, it does not decide: decisions live in SCRATCHPAD Recent
   decisions (and any decision register the project keeps), designs in the governing documents named here
 Owner: agents keep it current at every slurp and whenever a stage or a governing document changes
-Last reviewed: {today}
+Last reviewed: 2026-10-22
 Summary: >-
   One page to answer "which file has the current plan, which stage are we at, what comes next": where the project stands, the dated plan, what
   is next with links to where each item starts, the governing document per topic, decisions not yet folded in, and every stage.
@@ -40,11 +40,19 @@ Generated from [plan-timeline.yaml](plan-timeline.yaml) by skill-ai-it's `plan_t
 
 ## What next
 
-In order. Owner is who acts; "done when" is how the next reader knows it happened. Every row links to where its work starts.
+In order. The table is the summary; each row links to a block below that says what is needed, why now, what is already in hand and how to
+tell it is done. Owner is who acts.
 
-| #   | Next                                            | Owner | Done when |
-| --- | ----------------------------------------------- | ----- | --------- |
-| 1   | TODO: the action, with [the section it starts in](TODO.md#TODO) | TODO  | TODO      |
+| #   | Next | Owner | By | Done when |
+| --- | --- | --- | --- | --- |
+| 1   | [TODO: the action](#1-todo-the-action) | TODO | TODO | TODO: one-line summary of the checklist below |
+
+### 1. TODO: the action
+
+- **What is needed:** TODO: the work or choice, with options or steps and links to [the exact section](TODO.md#TODO).
+- **Why now:** TODO: the stage or plan date that waits on it.
+- **In hand:** TODO: results, proposals or evidence that already exist.
+- **Done when:** [ ] TODO: a check a reader can verify, naming the record that changes · [ ] TODO.
 
 ## Which document to follow
 

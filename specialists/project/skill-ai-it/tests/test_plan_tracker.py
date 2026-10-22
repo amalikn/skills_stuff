@@ -14,10 +14,14 @@ sys.modules["plan_tracker"] = pt
 _spec.loader.exec_module(pt)
 
 
-def page(where="As of 2026-10-22. Live.", next_rows="| 1 | Do [x](a.md#b) | Agent | Done |", other_rows="| A | B | C | D |"):
+DETAIL = "### 1. Do x\n\n- **What is needed:** x.\n- **Done when:** [ ] x done.\n"
+
+
+def page(where="As of 2026-10-22. Live.", next_rows="| 1 | [Do x](#1-do-x) in [a](a.md#b) | Agent | Done |", other_rows="| A | B | C | D |",
+         detail=DETAIL):
     """A minimal tracker with every required section."""
     return (f"# Plan tracker\n\n## Where we are\n\n{where}\n\n### Timeline\n\n<!-- BEGIN GENERATED: plan-timeline -->\n<!-- END GENERATED: plan-timeline -->\n\n"
-            f"## What next\n\n| # | Next | Owner | Done when |\n| --- | --- | --- | --- |\n{next_rows}\n\n"
+            f"## What next\n\n| # | Next | Owner | Done when |\n| --- | --- | --- | --- |\n{next_rows}\n\n{detail}\n"
             f"## Which document to follow\n\n| Topic | Follow | State | Inputs |\n| --- | --- | --- | --- |\n{other_rows}\n\n"
             "## Decided but not yet in the designs\n\n| Decision | Goes into | Done |\n| --- | --- | --- |\n\n"
             "## Stages\n\n<!-- BEGIN GENERATED: target-map -->\n<!-- END GENERATED: target-map -->\n\n## How this page is kept\n\n- Kept.\n")
@@ -54,6 +58,16 @@ class PlanTrackerCheck(unittest.TestCase):
         self.assertEqual(problems, [])
         self.assertTrue(any("Which document" in n for n in notes))
         self.assertTrue(any("older than the newest CHANGELOG" in n for n in notes))
+
+    def test_detail_blocks(self):
+        problems, _ = self.run_check(page(detail=DETAIL.replace("Done when", "Finished")))
+        self.assertTrue(any("#1-do-x" in p and "Done when" in p for p in problems))
+        problems, notes = self.run_check(page(next_rows="| 1 | Do [x](a.md#b) | Agent | Done |"))
+        self.assertEqual(problems, [])
+        self.assertTrue(any("no detail block" in n for n in notes))
+
+    def test_slug_matches_vs_code(self):
+        self.assertEqual(pt.slug("4. Run S3 on the VM: delivery, rollback"), "4-run-s3-on-the-vm-delivery-rollback")
 
     def test_template_has_every_section(self):
         text = pt.TEMPLATE.read_text(encoding="utf-8")

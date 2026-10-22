@@ -21,10 +21,10 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Fleet adoption
 
-- [ ] **`just check` fails on the plan tracker template** (found 2026-10-22 21:24, before and after this slurp's edit): doc freshness reads
+- [x] **`just check` fails on the plan tracker template** (fixed 2026-10-22 21:35: real date in the template; `--init` stamps today) (found 2026-10-22 21:24, before and after this slurp's edit): doc freshness reads
   `templates/plan-tracker.md` as a living document whose `Last reviewed: {today}` is no date (from 28dfe0b). Exempt templates with placeholders from
   freshness, or give the template a real date the init step rewrites.
-- [ ] **Rotation keeps decision-cited log entries** (smc-resiliency, 2026-10-22 21:11) — `rotate_records.py` protects a stamp cited by a live file only
+- [x] **Rotation keeps decision-cited log entries** (answered 2026-10-22 21:30: the consumer reads the archives, as the rotation contract says; smc-resiliency's `check_decision_records` fixed and proved failing on an uncited stamp) (smc-resiliency, 2026-10-22 21:11) — `rotate_records.py` protects a stamp cited by a live file only
   in working-state files (`cited_stamps`, LIVE_SURFACES). Rotating smc-resiliency's CHANGELOG moved entry 20261022_1442, the only CHANGELOG citation of
   SCRATCHPAD decision 20261021_1723, and the project's `check_decision_records` failed; the rotation was undone by hand. Fix: also keep a log entry
   holding the only citation of a live `KEEP` decision stamp, or let decision checks read the archives; add a test.

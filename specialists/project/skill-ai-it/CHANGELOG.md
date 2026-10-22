@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1819
+Last rotated: 20261022_2132
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261022_2132 — plan_tracker: What next gets a detail block per item](#20261022_2132--plan_tracker-what-next-gets-a-detail-block-per-item)
 - [20261022_1819 — plan_tracker: plan tracker page setup and upkeep promoted from smc-resiliency and unified-network-controller](#20261022_1819--plan_tracker-plan-tracker-page-setup-and-upkeep-promoted-from-smc-resiliency-and-unified-network-controller)
 - [20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check](#20261022_1749--slurp-tracker-linking-documented-incident-a-commit-made-on-a-failed-check)
 - [20261022_1744 — anchor_links: --outside warn for links into other projects](#20261022_1744--anchor_links---outside-warn-for-links-into-other-projects)
@@ -34,9 +35,19 @@ Last rotated: 20261022_1819
 - [20261020_1322 — pitfalls: navigation dry run exits 2 when changes are pending](#20261020_1322--pitfalls-navigation-dry-run-exits-2-when-changes-are-pending)
 - [20261020_1308 — Code map in bootstrap and refresh: adopt_code_map.py, check_code_map](#20261020_1308--code-map-in-bootstrap-and-refresh-adopt_code_mappy-check_code_map)
 - [20261019_1829 — pitfalls: promote leaves routing to the deleted candidates file](#20261019_1829--pitfalls-promote-leaves-routing-to-the-deleted-candidates-file)
-- [20261019_1813 — Checker template: duplicated KEBAB_LEGACY block removed](#20261019_1813--checker-template-duplicated-kebab_legacy-block-removed)
-- [20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions](#20261019_1734--pitfalls-hand-bootstrapped-packs-write-accepted-archcore-decisions)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261022_2132 — plan_tracker: What next gets a detail block per item
+
+- Operator, 2026-10-22 (smc-resiliency): "I'm still not able to understand what is really required next and what would the done when really make sense";
+  "update the skill about this approach for what next". What next is now a one-line table (#, Next, Owner, By, Done when) whose Next cell links to a
+  `### <n>. <action>` block with What is needed, Why now, In hand and a Done when checklist.
+- `scripts/plan_tracker.py`: `slug`, `detail_blocks`; a block without "Done when" fails, a row with no block on the page is a note (UNC's
+  tracker passes with notes until it adopts). Tests `test_detail_blocks`, `test_slug_matches_vs_code` (8 pass). Template `templates/plan-tracker.md`
+  and reference `target-map-and-timeline.md` (The plan tracker page; Learned 2026-10-22) updated.
+- ROADMAP: the rotation item is answered on the consumer side; smc-resiliency's decision check now reads `docs/history/changelog-*.md`, as the
+  rotation contract asks.
+- The template's `Last reviewed: {today}` failed the skill's own freshness check: it now carries a real date and `--init` stamps today.
 
 ## 20261022_1819 — plan_tracker: plan tracker page setup and upkeep promoted from smc-resiliency and unified-network-controller
 
@@ -170,15 +181,6 @@ script here, operator 2026-10-20). Reference: `references/files-support.md` (cod
 
 promote deletes the candidates file but left context-map.yaml routing and repomix include naming it (skill-drawio, skill-coder);
 references/pitfalls.md now lists the companion updates to make in the same pass.
-
-## 20261019_1813 — Checker template: duplicated KEBAB_LEGACY block removed
-
-templates/check_governance.py defined the `KEBAB_LEGACY` and `CODE_SUFFIXES` registries (and their comment) twice, so every generated checker carried the duplicate (found building skill-drawio,
-2026-10-19). The second copy is removed; skill-coder's generated checker is fixed the same way, skill-drawio's was generated without it.
-
-## 20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions
-
-- `references/pitfalls.md` gains the 2026-10-19 skill-coder case: archcore content written outside `promote` and marked `accepted`; in bootstrap, list decisions as promotion candidates and ask.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

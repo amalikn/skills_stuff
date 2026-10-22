@@ -11,8 +11,12 @@ The default run checks the page and lists problems; `--check` exits 1 on any. Pr
   - Where we are has no "As of YYYY-MM-DD" line;
   - a What next row has no link (every row links to where its work starts);
   - a What next row is split over continuation rows (blank first cell): the markdown hook splits a row whose rendered width passes 200
-    columns, and a split row reads as two items in the table a reader starts from.
-Notes (never fail): a split row in any other hand-written table; the "As of" date is older than the newest CHANGELOG entry's date; a
+    columns, and a split row reads as two items in the table a reader starts from;
+  - a detail block under What next (a `### ` heading) has no "Done when".
+What next is a one-line table plus one detail block per row (operator, 2026-10-22, smc-resiliency: "I'm still not able to understand what is
+really required next and what would the done when really make sense"): the row links to its block (`#<heading slug>`), and the block says what
+is needed, why now, what is in hand and a Done when checklist.
+Notes (never fail): a What next row with no link to a detail block on the page; a split row in any other hand-written table; the "As of" date is older than the newest CHANGELOG entry's date; a
 generated block marker is absent.
 
 Read-only unless `--init --apply`. Runtime: well under a second (one page and the CHANGELOG headings; no network, no subprocess).
@@ -40,6 +44,33 @@ _AS_OF = re.compile(r"^As of (\d{4}-\d{2}-\d{2})", re.M)
 _CHANGELOG_STAMP = re.compile(r"^## (\d{4})(\d{2})(\d{2})_\d{4}", re.M)
 _GENERATED = re.compile(r"<!-- BEGIN GENERATED:.*?<!-- END GENERATED:[^>]*-->", re.S)
 _LINK = re.compile(r"\]\([^)\s]+\)")
+_IN_PAGE = re.compile(r"\]\(#([^)\s]+)\)")
+_DETAIL = re.compile(r"^### (.+)$", re.M)
+
+
+def slug(heading: str) -> str:
+    """The anchor GitHub and VS Code give a heading.
+
+    Args:
+        heading: the heading text, without the hashes.
+
+    Returns:
+        Lower case, punctuation other than hyphens and underscores dropped, spaces as hyphens.
+    """
+    return re.sub(r"[^\w\- ]", "", heading.strip().lower()).replace(" ", "-")
+
+
+def detail_blocks(body: str) -> dict[str, str]:
+    """The `### ` blocks inside a section body, by anchor.
+
+    Args:
+        body: section text.
+
+    Returns:
+        {heading slug: block text up to the next `### ` heading}.
+    """
+    parts = _DETAIL.split(body)
+    return {slug(parts[i]): parts[i + 1] for i in range(1, len(parts) - 1, 2)}
 
 
 def sections(text: str) -> dict[str, str]:
@@ -113,9 +144,17 @@ def check(root: Path, page: str = PAGE) -> tuple[list[str], list[str]]:
     as_of = _AS_OF.search(where)
     if not as_of:
         problems.append(f"{page}: Where we are has no `As of YYYY-MM-DD` line")
-    for cells in table_rows(find(secs, "What next") or ""):
-        if cells and cells[0] and not _LINK.search(" ".join(cells)):
+    nxt = find(secs, "What next") or ""
+    blocks = detail_blocks(nxt)
+    for anchor, block in blocks.items():
+        if "Done when" not in block:
+            problems.append(f"{page}: What next block #{anchor} has no `Done when`")
+    for cells in table_rows(nxt):
+        row = " ".join(cells)
+        if cells and cells[0] and not _LINK.search(row):
             problems.append(f"{page}: What next row {cells[0]} has no link to where its work starts")
+        elif cells and cells[0] and not any(a in blocks for a in _IN_PAGE.findall(row)):
+            notes.append(f"{page}: What next row {cells[0]} links to no detail block on this page (what is needed, why now, in hand, Done when)")
     for head, body in secs.items():
         if any(not c[0] and any(c[1:]) for c in table_rows(body) if c):
             # The markdown hook splits a row whose rendered width passes 200 columns; What next is where a reader starts, so there it fails.
@@ -143,7 +182,10 @@ def init(root: Path, page: str, apply: bool) -> int:
     Returns:
         0 on success, 1 when the page exists and --apply was given.
     """
-    body = TEMPLATE.read_text(encoding="utf-8").replace("{today}", dt.date.today().isoformat())
+    today = dt.date.today().isoformat()
+    # The template carries a real date so the skill's own freshness check passes; a new page is stamped with today.
+    body = re.sub(r"^Last reviewed: .*$", f"Last reviewed: {today}", TEMPLATE.read_text(encoding="utf-8"), count=1, flags=re.M)
+    body = body.replace("{today}", today)
     path = root / page
     if not apply:
         print(f"plan: would write {path} ({len(body.splitlines())} lines); rerun with --apply\n")
@@ -182,7 +224,7 @@ def main(argv: list[str] | None = None) -> int:
     for line in notes:
         print(f"note: {line}")
     if not problems:
-        print(f"OK — plan tracker: {len(SECTIONS)} sections; What next rows linked and on one line")
+        print(f"OK — plan tracker: {len(SECTIONS)} sections; What next rows linked and on one line, detail blocks with Done when")
     return 1 if problems and args.check else 0
 
 
