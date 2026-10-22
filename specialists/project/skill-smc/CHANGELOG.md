@@ -6,13 +6,15 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1200
+Last rotated: 20261022_1510
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261022_1506 — Firmware access from the OS: UEFI and EEPROM lines in the x86 and Pi probes, deadlines (v0.6.3 -> v0.6.4)](#20261022_1506--firmware-access-from-the-os-uefi-and-eeprom-lines-in-the-x86-and-pi-probes-deadlines-v063---v064)
+- [20261022_1426 — What WAN-side equipment tells an SMC about its site: Starlink position, Sky Muster NTD nothing (v0.6.2 -> v0.6.3)](#20261022_1426--what-wan-side-equipment-tells-an-smc-about-its-site-starlink-position-sky-muster-ntd-nothing-v062---v063)
 - [20261022_1226 — backdoor_exec.sh passes a stdin script through (v0.6.1 -> v0.6.2)](#20261022_1226--backdoor_execsh-passes-a-stdin-script-through-v061---v062)
 - [20261022_1200 — PHP CVE fleet status, extra PHP processes, backdoor hostname check, nbn_wh read rule (v0.6.0 -> v0.6.1)](#20261022_1200--php-cve-fleet-status-extra-php-processes-backdoor-hostname-check-nbn_wh-read-rule-v060---v061)
 - [20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.6.0)](#20261020_2028--sky-muster-reads-session-set-up-and-the-concurrency-curve-v059---v060)
@@ -37,8 +39,20 @@ Last rotated: 20261022_1200
 - [20261014_2230 — Central chassis port plans from as-built sets; old-looma SWP 24 corrected (v0.4.2 -> v0.4.3)](#20261014_2230--central-chassis-port-plans-from-as-built-sets-old-looma-swp-24-corrected-v042---v043)
 - [20261014_1956 — BIND check-names on the smc_ltp RPZ zone (v0.4.1 -> v0.4.2)](#20261014_1956--bind-check-names-on-the-smc_ltp-rpz-zone-v041---v042)
 - [20261014_1513 — x86 SMC facts, Teleport static-token join, x86 resiliency probe (v0.4.0 -> v0.4.1)](#20261014_1513--x86-smc-facts-teleport-static-token-join-x86-resiliency-probe-v040---v041)
-- [20261014_0900 — Pi bootloader already supports tryboot A/B (v0.3.9 -> v0.4.0)](#20261014_0900--pi-bootloader-already-supports-tryboot-ab-v039---v040)
-- [20261013_2352 — umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)](#20261013_2352--umoona-vlan621-dark-again-uplink-check-cost-v038---v039)
+
+## 20261022_1506 — Firmware access from the OS: UEFI and EEPROM lines in the x86 and Pi probes, deadlines (v0.6.3 -> v0.6.4)
+
+`scripts/x86_resiliency_probe.sh` and `scripts/pi_identity_probe.sh`: UEFI and EEPROM lines; a deadline on every `tsh` call (`--deadline`, default
+90 s; they had none) and stdin closed. `references/07_hardware-overlay.md` "Firmware access from the OS": all 47 x86 SMCs (two models, five BIOS
+builds, ESRT on the BOXER-6404 only, Secure Boot off with no keys) and six Pi canaries (EEPROM 2023-01-11, minimal config, bundled image older).
+Run for smc-resiliency's warehouse and retrofit flows.
+
+## 20261022_1426 — What WAN-side equipment tells an SMC about its site: Starlink position, Sky Muster NTD nothing (v0.6.2 -> v0.6.3)
+
+`references/03_communication-flows.md`: a Starlink dish gives latitude, longitude and altitude on its local gRPC interface (192.168.100.1:9200,
+`get_location`) only when "allow access on local network" is on in the Starlink app (community tools, `VERIFIED_SECONDARY`, unofficial, untested on
+the fleet); the Enterprise Telemetry API is behind account-manager access; the Sky Muster NTD has no documented local status page or API (negative
+finding). Researched for smc-resiliency's site fingerprint (decision 20261022_1426).
 
 ## 20261022_1226 — backdoor_exec.sh passes a stdin script through (v0.6.1 -> v0.6.2)
 
@@ -181,16 +195,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
   deleting the data dir and restarting re-joins the node (operator).
 - New `scripts/x86_resiliency_probe.sh` and recipe `x86_resiliency_probe` (read-only), smoke-run on horn-island-smc01 and jigalong-smc01; catalogued.
 - Source: smc-resiliency x86 plan and identity-partition design, 2026-10-14.
-
-## 20261014_0900 — Pi bootloader already supports tryboot A/B (v0.3.9 -> v0.4.0)
-
-- **Pi 4 bootloader A/B** (`references/07_hardware-overlay.md`, `VERIFIED_PRIMARY` from Raspberry Pi's release notes and docs): the fleet's 2023-01-11
-  EEPROM supports `autoboot.txt` with `tryboot_a_b=1` (default since 2022-12-01); GPT untested. From unified-network-controller's read-only Pi image research.
-- **Incident:** first committed as 0.3.10 with the pack's check failing (a patch number must stay single-digit); recommitted as 0.4.0 with the check passing.
-- **Moved paths:** the SMC resiliency plans and the hang-recovery note now live in `apn/smc-resiliency` (`references/06_failure-modes.md`, `07_hardware-overlay.md`).
-
-## 20261013_2352 — umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)
-
-- **umoona `starlink01` (`vlan621`) reached nothing** on consecutive 15-minute UNC uplink checks from 2026-10-13 23:28 AEDT while its four internet uplinks
-  reached everything (`references/03_communication-flows.md`, WAN-path diagnostics): the 2026-07-30 switch-side fix has not held; cause not yet read.
-- **Uplink check cost:** one SSH session per SMC, 15 to 19 s for four or five uplinks.

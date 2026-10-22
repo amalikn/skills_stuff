@@ -578,7 +578,8 @@ Promoted 2026-10-14 from the smc-resiliency x86 plan session. `x86_resiliency_pr
 BIOS, memory, each disk, the root source and use, LVM volume groups with free space, the EFI boot entries, the hardware watchdog (device, identity, timeouts,
 which watchdog drivers ship with the kernel, `RuntimeWatchdogSec`), the soft-lockup detector, systemd and kernel versions, and the size of the state
 directories that must survive a reboot. The remote command set is fixed; node names only; proxy required. Exits 1 when any node is unreachable or does not
-finish. Interpretation: `../references/07_hardware-overlay.md` (`smc_disk_failover` mechanics) and smc-resiliency's x86 plan, sections 3 and 6.7 (stage XQ).
+finish. Interpretation: `../references/07_hardware-overlay.md` (`smc_disk_failover` mechanics) and smc-resiliency's x86 plan, sections 3 and 6.7 (stage XQ). Since 2026-10-22 it also prints the UEFI surface the OS sees (UEFI or legacy, efivars mount mode, Secure Boot and Setup Mode, ESRT entries,
+the capsule loader, fwupd, DMI BIOS characteristics), puts a deadline on every `tsh` call (`--deadline`, default 90 s) and closes stdin.
 
 ```bash
 just x86_resiliency_probe teleport.apn.au horn-island-smc01 jigalong-smc01
@@ -600,7 +601,9 @@ identity anchor, the single-port layout, `Revision` decoding) is in `../referenc
 
 Since 2026-10-09 it also prints swap-check lines: `hostname` and `boot_hostname` (from this boot's journal), `root_fs` and the `overlayroot=`
 setting, `boot_now`, `journal_boots` and `prev_boot_end`. A `boot_hostname` of `generic-wh01-*`, or ext4 root on a RISE box, means a spare went in
-during a site visit (kupungarri, `../references/06_failure-modes.md`). Recipe unchanged: `just pi_identity_probe teleport.apn.au <node>`.
+during a site visit (kupungarri, `../references/06_failure-modes.md`). Recipe unchanged: `just pi_identity_probe teleport.apn.au <node>`. Since 2026-10-22 it also prints the EEPROM lines (`vcgencmd bootloader_version` and `bootloader_config`, the bare `rpi-eeprom-update`
+report, autoboot.txt presence, the watchdog identity), a deadline on every `tsh` call (`--deadline`, default 90 s), and closes stdin (a
+background run hung with it open, 2026-10-22).
 
 `ata_settings_read.py --proxy <proxy> <node>...` sends a small stdlib agent (Python 3.10, embedded in the script) to each SMC through `tsh ssh`. The agent
 logs in to the Dallas Delta DDC_VoIP-m web UI at `--ip` (default `192.168.5.253`) with the **empty PIN**, which is what the units in service have

@@ -1079,3 +1079,33 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 > - **`systemd-confext.service` is disabled** on a stock 24.04 install; with `/etc` read-only the units that enable it must ship in `/usr/lib`.
 > Measured on the VM: render and checks 0.3 s; merged 5.4 s after kernel start. Screenshot: not applicable (no visual surface).
 
+## Firmware access from the OS: x86 UEFI and Pi EEPROM (read 2026-10-22)
+
+Read-only over Teleport with `scripts/x86_resiliency_probe.sh` (UEFI lines added 2026-10-22) on all 47 x86 SMCs (19 rcp, 28 nbn_accelerate) and
+`scripts/pi_identity_probe.sh` (EEPROM lines added 2026-10-22) on six Pi canaries (rct, wh, nbn_wh, both clusters). `VERIFIED_PRIMARY` for that day;
+raw output in smc-resiliency `docs/os-lifecycle/firmware-access-probe-sources-20261022_1506/`.
+
+| Model | BIOS builds in service (boxes) | ESRT capsule entry | ROM |
+| --- | --- | --- | --- |
+| AAEON BOXER-6404 | B404BM10 2015-07-16 (2), B404BM14 2019-02-19 (10), B404BM16 2022-05-18 (16) | 1, system firmware, version field `1`, flags 0 | AMI, 1 MB, socketed |
+| AAEON BOXER-6641 | B641HM17 2021-09-08 (15), B641HM20 2024-09-19 (4) | none | AMI, 16 MB, socketed |
+
+- Every x86 box boots UEFI with `/sys/firmware/efi/efivars` mounted read-write, so `BootNext` and `BootOrder` are settable from Linux (what
+  `smc_disk_failover` relies on). `SecureBoot`=0 and `SetupMode`=1 everywhere: no platform key enrolled. No `/dev/efi_capsule_loader`, no
+  `/dev/watchdog` (the watchdog drivers ship but none is loaded). fwupd is installed on 46 of 47 (not burringurrah-smc01).
+- Only the BOXER-6404 advertises a UEFI capsule update path (ESRT); whether AAEON publishes capsules for it is `UNVERIFIED`. The BOXER-6641 has no
+  OS-visible update path: vendor tool or bench. BIOS setup items (power on after AC loss and the like) are not visible from Linux without AMI's tool.
+- Pi canaries: Pi 4B rev 1.5 (`d03115`), EEPROM 2023-01-11 17:40:52, config only `BOOT_UART=0`, `WAKE_ON_GPIO=1`, `POWER_OFF_ON_HALT=0` (no
+  `BOOT_ORDER`, no `BOOT_WATCHDOG_TIMEOUT`), `autoboot.txt` absent, BCM2835 watchdog present. `rpi-eeprom-update` reports the bundled image as
+  2022-01-25, older than the running EEPROM, so a box cannot update its EEPROM from its own package: a newer EEPROM has to come with the card.
+
+The probes' remote lines (excerpt; source `scripts/x86_resiliency_probe.sh`, `scripts/pi_identity_probe.sh`, as of commit of 2026-10-22; version in `manifest.json`):
+
+```bash
+echo uefi_mode=$([ -d /sys/firmware/efi ] && echo uefi || echo legacy) efivars=$(findmnt -n -o OPTIONS /sys/firmware/efi/efivars 2>/dev/null | cut -d, -f1)
+sb=/sys/firmware/efi/efivars/SecureBoot-8be4df61-93ca-11d2-aa0d-00e098032b8c; echo secure_boot=$([ -r $sb ] && od -An -t u1 $sb | awk "{print \$NF}" || echo unreadable)
+echo esrt_entries=$(ls -d /sys/firmware/efi/esrt/entries/entry* 2>/dev/null | wc -l) capsule_loader=$([ -e /dev/efi_capsule_loader ] && echo yes || echo no)
+echo eeprom_version=$(vcgencmd bootloader_version 2>/dev/null | tr "\n" " ")
+echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" | tr "\n" ";")
+```
+

@@ -448,6 +448,14 @@ Consequences worth knowing before diagnosing any WAN routing question:
 - **`interfacecheckv2.sh` does not delete routes.** It pings `8.8.8.8` (`-c 4 -W 3`) per interface and on failure runs `systemctl restart dhclient@<iface>.service`, writing
   `my_node_interfacecheck_success{device="…"} 0`. Route disappearance is second-order. That series is a usable per-interface failure-onset history without box access (`mcp-grafana-apn` for
   rcp/rct/wh).
+- **What the WAN-side equipment can tell the SMC about its site (researched 2026-10-22 for smc-resiliency's site fingerprint, decision 20261022_1426).** A Starlink dish answers a
+  local gRPC interface at `192.168.100.1:9200` (`SpaceX.API.Device.Device/Handle`, request `get_location`) with latitude, longitude and altitude, **only when "allow access on local network" is
+  on** in the Starlink app (Settings, Advanced, Debug Data); otherwise the location comes back empty. Unofficial and undocumented by SpaceX (community tools and a Teltonika forum report,
+  `VERIFIED_SECONDARY`; untested on the fleet; the SMC images carry no `grpcurl`). Starlink's Enterprise Telemetry API is behind account-manager access; a third-party integration lists the
+  terminal location as an H3 cell (`UNVERIFIED`). The nbn Sky Muster (Plus) NTD has no documented local status page or API (nbn and provider user guides searched 2026-10-22, negative finding),
+  and the gateway beyond it is the provider's, so it does not tell sites apart. Sources: community.teltonika.lt/t/grpcurl-stralink-location/16381;
+  starlink.com/au/support/article/2a140927-d1e3-de25-9a73-71e1410a76e9; docs.opsramp.com/integrations/saas-applications/starlink/;
+  nbnco.com.au/content/dam/nbn/documents/support/satellite/sky-muster-user-guide.pdf.
 - **`192.168.100.0/24` is the modem's own DHCP scope**, not an SMC address range. Both `roles/smc_network/files/dhclient.conf` and `dhclient-starlink.conf` carry `reject 192.168.100.0/24;` with the
   comments "nbn modem dhcp scope" / "starlink modem dhcp scope". On a primary uplink this is the **Starlink dish management address** (Starlink's standard `192.168.100.1`). Seeing ARP from it on a WAN
   VLAN means the dish's LAN side shares that broadcast domain — the dish is not in a clean bypass state, a real finding worth chasing — but **live-verified 2026-07-29 not to be the cause of "lease
