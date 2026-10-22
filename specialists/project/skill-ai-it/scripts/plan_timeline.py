@@ -14,7 +14,11 @@ Due and Schedule (`columns`: [{key, header}], default Stage, Step, Where it stan
 Reads the YAML and the target page. Without `--write` it writes nothing: it validates, compares the page with a render for today and exits
 1 on a problem or a difference. A project's governance check calls evaluate(), fails on a problem and only notes a page that trails today;
 a commit gate that renders first keeps every commit current for its day. `--write` replaces the generated block in the page; it touches
-nothing outside the markers. Runtime: well under a second (one YAML file, one page; no network).
+nothing outside the markers. Runtime: well under a second (one YAML file, one page, one table-reflow call; no network).
+
+The table is wrapped to `wrap_width` columns (default 200; 0 for one line per row) by the same table-reflow tool and flags the markdown hook
+uses (`--width N --measure-rendered`), so a wrapped Timeline reads like the page's other tables and the hook leaves it unchanged (operator,
+2026-10-22: "why cant the timeline table be wrapped"). Without Node or the tool (`TABLE_REFLOW_CLI`) the table stays one line per row.
 
 Usage (run with the project's venv; paths are relative to --project-root, default the current folder):
     python3 plan_timeline.py --project-root .                     # validate and report drift; exit 1 on a problem
@@ -27,6 +31,9 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import os
+import shutil
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -41,6 +48,12 @@ KINDS = ("plan", "fixed", "extra", "parked")
 CORE_FIELDS = frozenset({"due", "week", "done", "flag", "kind", "stage", "step", "after"})
 DEFAULT_COLUMNS = ({"key": "stage", "header": "Stage"}, {"key": "step", "header": "Step"},
                    {"key": "where", "header": "Where it stands"}, {"key": "next_with", "header": "Next with"})
+#: The table formatter the markdown hook runs; overridable for another machine.
+TABLE_REFLOW = os.environ.get("TABLE_REFLOW_CLI", "/Volumes/Data/_ai/_scripts/scripts_stuff/vscode_extensions/shared/table-reflow/cli.mjs")
+#: Default wrap width, the global markdown table budget; a data file's `wrap_width` overrides it (0 = do not wrap).
+WRAP_WIDTH = 200
+#: Seconds the table formatter may take.
+REFLOW_TIMEOUT_S = 30
 #: A "Wk of" step is late after the Friday of that week.
 WEEK_DEADLINE_DAYS = 4
 
@@ -260,7 +273,30 @@ def validate(data: object, data_path: str = DATA) -> tuple[list[dict], list[str]
     return rows, problems
 
 
-def render(rows: list[dict], source: str, today: dt.date, columns: list[dict] | None = None, note: str = "", data_path: str = DATA) -> str:
+def wrap_table(table: str, width: int, runner=subprocess.run) -> str:
+    """Wrap a markdown table the way the markdown hook does: table-reflow over stdin, `--width N --measure-rendered`.
+
+    Args:
+        table: the table's lines, header and separator first, joined by newlines.
+        width: the column budget; 0 or less returns the table as it is.
+        runner: subprocess.run, or a fake in tests.
+
+    Returns:
+        The wrapped table, or the table unchanged when wrapping is off, Node or the tool is missing, or the tool fails or times out.
+    """
+    if width <= 0 or not Path(TABLE_REFLOW).is_file() or not shutil.which("node"):
+        return table
+    try:
+        done = runner(["node", TABLE_REFLOW, "-", "--width", str(width), "--measure-rendered"], input=table + "\n", capture_output=True,
+                      text=True, timeout=REFLOW_TIMEOUT_S, check=False)
+    except (OSError, subprocess.TimeoutExpired):
+        return table
+    out = done.stdout.rstrip("\n")
+    return out if done.returncode == 0 and out.startswith("|") else table
+
+
+def render(rows: list[dict], source: str, today: dt.date, columns: list[dict] | None = None, note: str = "", data_path: str = DATA,
+           wrap: int = 0) -> str:
     """Render the generated block: legend, counts and the table.
 
     Args:
@@ -270,6 +306,7 @@ def render(rows: list[dict], source: str, today: dt.date, columns: list[dict] | 
         columns: the columns after Due and Schedule; default DEFAULT_COLUMNS.
         note: a sentence printed after the source one (how to read a project-specific column).
         data_path: the data file's path, named in the BEGIN marker.
+        wrap: the table's column budget (`wrap_table`); 0 keeps one line per row.
 
     Returns:
         The block, markers included, ending without a newline.
@@ -310,14 +347,11 @@ def render(rows: list[dict], source: str, today: dt.date, columns: list[dict] | 
     ]
     if states.get("parked"):
         lines.append("⏸️ Parked: waiting on a decision or on other stages, without a date; the row says why.")
-    lines += [
-        "",
-        "Now: **" + ", ".join(parts) + "**.",
-        "",
-        "| Due | Schedule | " + " | ".join(c["header"] for c in columns) + " |",
-        "| --- | --- | " + " | ".join("---" for _ in columns) + " |",
-    ]
-    lines += ["| " + " | ".join(c) + " |" for c in cells]
+    lines += ["", "Now: **" + ", ".join(parts) + "**.", ""]
+    table = ["| Due | Schedule | " + " | ".join(c["header"] for c in columns) + " |",
+             "| --- | --- | " + " | ".join("---" for _ in columns) + " |"]
+    table += ["| " + " | ".join(c) + " |" for c in cells]
+    lines += wrap_table("\n".join(table), wrap).split("\n")
     lines.append(END)
     return "\n".join(lines)
 
@@ -362,7 +396,8 @@ def evaluate(root: Path, today: dt.date, data_path: str = DATA) -> Outcome:
     if problems:
         return Outcome(problems)
     columns, _ = columns_of(data, data_path)
-    block = render(rows, str(data.get("source", "")).strip(), today, columns, " ".join(str(data.get("note", "")).split()), data_path)
+    wrap = int(data.get("wrap_width", WRAP_WIDTH) or 0)
+    block = render(rows, str(data.get("source", "")).strip(), today, columns, " ".join(str(data.get("note", "")).split()), data_path, wrap)
     page_path = root / str(data.get("render_to", ""))
     try:
         page = page_path.read_text(encoding="utf-8")

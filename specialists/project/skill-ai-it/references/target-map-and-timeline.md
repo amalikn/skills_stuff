@@ -80,3 +80,17 @@ f"Dates and steps are {source}." + (f" {note}" if note else ""),
 if states.get("parked"):
     lines.append("⏸️ Parked: waiting on a decision or on other stages, without a date; the row says why.")
 ```
+
+> **Learned 2026-10-22** · a generated table that the markdown hook also formats · VERIFIED_PRIMARY · Source: unified-network-controller operator, 2026-10-22; `scripts/plan_timeline.py` (`wrap_table`), `tests/test_plan_timeline.py` (`WrapTable`) · Falsifier: the markdown hook changing a freshly rendered Timeline block, or the page check failing right after a render
+> A generated block is compared byte for byte with a fresh render, so a table the hook would wrap differently can never stay wrapped: the
+> hook wraps it on the next edit and the next render unwraps it. Render through the hook's own formatter with the hook's flags (table-reflow
+> `--width 200 --measure-rendered`) and both agree: the Timeline now wraps, and the hook leaves it as rendered. Set `wrap_width: 0` in the
+> data file for one line per row.
+>
+> ```python
+> # scripts/plan_timeline.py (skills_stuff, 2026-10-22)
+> done = runner(["node", TABLE_REFLOW, "-", "--width", str(width), "--measure-rendered"], input=table + "\n", capture_output=True,
+>               text=True, timeout=REFLOW_TIMEOUT_S, check=False)
+> out = done.stdout.rstrip("\n")
+> return out if done.returncode == 0 and out.startswith("|") else table
+> ```

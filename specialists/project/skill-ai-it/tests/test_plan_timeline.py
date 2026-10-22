@@ -198,5 +198,48 @@ class AfterPlacement(unittest.TestCase):
         same = [{"due": d(2026, 11, 6), "stage": "R2.1", "step": "p"}, {"kind": "extra", "due": d(2026, 11, 6), "stage": "", "step": "feeds"}]
         self.assertEqual([r["step"] for r in pt.in_order(same)], ["feeds", "p"])
 
+class WrapTable(unittest.TestCase):
+    """wrap_table: the Timeline table goes through the markdown hook's table formatter, or stays as it is (operator, 2026-10-22)."""
+
+    TABLE = "| Due | Step |\n| --- | --- |\n| Fri 23 Oct 2026 | a long step |"
+
+    def test_zero_width_keeps_one_line_per_row(self):
+        """wrap 0 never calls the formatter."""
+        calls = []
+        self.assertEqual(pt.wrap_table(self.TABLE, 0, lambda *a, **k: calls.append(a)), self.TABLE)
+        self.assertEqual(calls, [])
+
+    def test_formatter_output_is_used_and_flags_match_the_hook(self):
+        """The formatter runs over stdin with --width and --measure-rendered; its table replaces the input."""
+        seen = {}
+
+        class Done:
+            returncode, stdout = 0, "| Due | Step |\n| --- | --- |\n| Fri 23 Oct | a long |\n|  | step |\n"
+
+        def fake(argv, **kw):
+            seen["argv"], seen["input"] = argv, kw["input"]
+            return Done()
+        orig_file, orig_which = pt.Path.is_file, pt.shutil.which
+        pt.Path.is_file, pt.shutil.which = lambda self: True, lambda name: "/usr/bin/node"
+        try:
+            out = pt.wrap_table(self.TABLE, 120, fake)
+        finally:
+            pt.Path.is_file, pt.shutil.which = orig_file, orig_which
+        self.assertEqual(seen["argv"][-4:], ["-", "--width", "120", "--measure-rendered"])
+        self.assertTrue(seen["input"].startswith("| Due |"))
+        self.assertEqual(out.splitlines()[-1], "|  | step |")
+
+    def test_a_failing_formatter_leaves_the_table(self):
+        """A non-zero exit or empty output leaves the table unwrapped."""
+        class Bad:
+            returncode, stdout = 1, ""
+        orig_file, orig_which = pt.Path.is_file, pt.shutil.which
+        pt.Path.is_file, pt.shutil.which = lambda self: True, lambda name: "/usr/bin/node"
+        try:
+            self.assertEqual(pt.wrap_table(self.TABLE, 120, lambda *a, **k: Bad()), self.TABLE)
+        finally:
+            pt.Path.is_file, pt.shutil.which = orig_file, orig_which
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1209
+Last rotated: 20261022_1623
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables](#20261022_1623--plan_timeline-the-timeline-table-wraps-like-the-pages-other-tables)
 - [20261022_1439 — audit_rotations: safety header and git timeouts; rewrap tolerance reverted](#20261022_1439--audit_rotations-safety-header-and-git-timeouts-rewrap-tolerance-reverted)
 - [20261022_1209 — plan_timeline: after places unplanned rows beside their plan step](#20261022_1209--plan_timeline-after-places-unplanned-rows-beside-their-plan-step)
 - [20261022_1209 — Plan timeline: extra rows before the plan rows they feed on one date](#20261022_1209--plan-timeline-extra-rows-before-the-plan-rows-they-feed-on-one-date)
@@ -35,8 +36,15 @@ Last rotated: 20261022_1209
 - [20261014_1234 — pitfalls: the navigation upgrade drops context-map.yaml comments](#20261014_1234--pitfalls-the-navigation-upgrade-drops-context-mapyaml-comments)
 - [20261014_1233 — validator: accepts the compact template's generated-output wording](#20261014_1233--validator-accepts-the-compact-templates-generated-output-wording)
 - [20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries](#20261014_1213--govern-stops-on-uncommitted-governed-files-drops-resolved-baseline-entries)
-- [20261014_1202 — adopt: a future deadline is not a review date](#20261014_1202--adopt-a-future-deadline-is-not-a-review-date)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables
+
+Operator, 2026-10-22 (unified-network-controller): "why cant the timeline table be wrapped.. update the code to do it". `scripts/plan_timeline.py`
+now passes the Timeline table through the markdown hook's own table formatter (table-reflow over stdin, `--width N --measure-rendered`) via
+`wrap_table`; a data file's `wrap_width` sets N (default 200, 0 keeps one line per row); without Node or the tool (`TABLE_REFLOW_CLI`) the
+table stays unwrapped. Measured on unified-network-controller: render 0.34 s, the hook's formatter leaves the rendered block unchanged, the page
+check reads current. Tests `WrapTable` (193 pass). Learned 2026-10-22 in `references/target-map-and-timeline.md`.
 
 ## 20261022_1439 — audit_rotations: safety header and git timeouts; rewrap tolerance reverted
 
@@ -173,13 +181,6 @@ templates/check_governance.py defined the `KEBAB_LEGACY` and `CODE_SUFFIXES` reg
 - Project copies of `govern` pick the guard up on their next run (adopt refreshes them mid-run), so the first run after this
   release is still unguarded.
 - Tests: `tests/test_govern_guard.py` (6). Live: cambium-swap refused (dirty `justfile`), enterprise-strategy passed.
-
-## 20261014_1202 — adopt: a future deadline is not a review date
-
-- `adopt_governed_files.py` `fix_record`: `Last reviewed` derived from content now ignores dates after today. On enterprise-strategy (govern run, 2026-10-14)
-  it took a 25 Oct deadline in SCRATCHPAD as the review date and wrote 2026-10-25 on CHANGELOG and SCRATCHPAD; both corrected by hand.
-- Test: `test_future_deadline_is_not_the_review_date`, shown failing without the fix (17 tests, OK with it).
-- Other projects adopted earlier may carry a future `Last reviewed`; checked across governed projects in the same session.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 
