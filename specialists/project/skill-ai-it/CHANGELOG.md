@@ -16,6 +16,8 @@ Last rotated: 20261021_1817
 
 ## Contents
 
+- [20261022_1209 — plan_timeline: after places unplanned rows beside their plan step](#20261022_1209--plan_timeline-after-places-unplanned-rows-beside-their-plan-step)
+- [20261022_1209 — Plan timeline: extra rows before the plan rows they feed on one date](#20261022_1209--plan-timeline-extra-rows-before-the-plan-rows-they-feed-on-one-date)
 - [20261021_1817 — target_map.py and plan_timeline.py promoted from unified-network-controller](#20261021_1817--target_mappy-and-plan_timelinepy-promoted-from-unified-network-controller)
 - [20261021_1320 — governance-checks: a supersession banner tied to a tracker](#20261021_1320--governance-checks-a-supersession-banner-tied-to-a-tracker)
 - [20261020_1753 — Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff](#20261020_1753--template-a-type-check-replaces-the-type-ignore-in-check_governancepy-split_checkers-mirror-diff)
@@ -35,6 +37,17 @@ Last rotated: 20261021_1817
 - [20261014_1202 — adopt: a future deadline is not a review date](#20261014_1202--adopt-a-future-deadline-is-not-a-review-date)
 - [20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity](#20261014_1102--token-efficiency-from-the-unc-run-compact-agents-block-load-cost-header-validity)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261022_1209 — plan_timeline: after places unplanned rows beside their plan step
+
+Optional `after: <stage>` in plan-timeline data (scripts/plan_timeline.py): an undated row (work not in the plan) is placed right after that
+stage's row instead of last (operator, 2026-10-21, unified-network-controller: "in the logical order, not everything at the bottom"). Validated:
+`after` must name a dated row's stage and only an undated row may carry it. Tests: AfterPlacement (2). Landed in 535d13f, whose message names
+a different change (a same-date rule that is not in it).
+
+## 20261022_1209 — Plan timeline: extra rows before the plan rows they feed on one date
+
+`scripts/plan_timeline.py`: on one date an extra row (work outside the plan) comes before the plan rows it feeds, on top of the `after:` placement for undated rows (operator, smc-resiliency, 2026-10-21: unplanned work "in the logical order, not everything at the bottom"). Test `test_extra_before_plan_row_on_one_date`. Note: commit 535d13f carried only the `after:` change from the unified-network-controller session, under a message naming this rule.
 
 ## 20261021_1817 — target_map.py and plan_timeline.py promoted from unified-network-controller
 
