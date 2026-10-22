@@ -46,17 +46,17 @@ DEC_ARROW = "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFi
 
 #: The legend's rows: (swatch style, swatch height, text), in two columns.
 LEGEND = (
-    [(BOX + f"fillColor={STATUS_STYLE[k][0]};strokeColor={STATUS_STYLE[k][1]};strokeWidth=2;", 20, f"Option head: {STATUS_WORD[k].lower()}")
+    [(BOX + f"fillColor={STATUS_STYLE[k][0]};strokeColor={STATUS_STYLE[k][1]};strokeWidth=2;", 20, f"Choice: {STATUS_WORD[k].lower()}")
      for k in ("chosen", "evaluate", "open", "rejected")]
     + [(DECISION + SHAPES["document"][0] + "fillColor=#d5e8d4;strokeColor=#82b366;", 20, "Decision taken: a record (blue while open)"),
-       (STEP + SHAPES["terminator"][0], 20, "Terminator: where an option's flow starts or ends"),
-       (STEP + SHAPES["process"][0], 20, "Process: a step in an option's flow"),
+       (STEP + SHAPES["terminator"][0], 20, "Terminator: where a choice's flow starts or ends"),
+       (STEP + SHAPES["process"][0], 20, "Process: a step in a choice's flow"),
        (DIAMOND, 20, "Diamond: a question, and the decision taken on it"),
        (BOX + "fillColor=" + TRADEOFF["pros"][1] + ";", 20, "Pros (a note)"),
        (BOX + "fillColor=" + TRADEOFF["cons"][1] + ";", 20, "Cons (a note)"),
-       ("rounded=0;html=1;fillColor=#82b366;strokeColor=none;", 3, "Green arrow: the next decision, or a decision to its chosen option"),
-       ("rounded=0;html=1;fillColor=#666666;strokeColor=none;", 1, "Grey arrow: the next step in an option's flow"),
-       ("rounded=0;html=1;fillColor=none;strokeColor=#6c8ebf;strokeWidth=2;dashed=1;", 1, "Blue dashed: an open question to the option under evaluation")])
+       ("rounded=0;html=1;fillColor=#82b366;strokeColor=none;", 3, "Green arrow: the next decision, or a decision to what it chose"),
+       ("rounded=0;html=1;fillColor=#666666;strokeColor=none;", 1, "Grey arrow: the next step in a choice's flow"),
+       ("rounded=0;html=1;fillColor=none;strokeColor=#6c8ebf;strokeWidth=2;dashed=1;", 1, "Blue dashed: an open question to the choice under evaluation")])
 
 
 def _legend(page: Page, x: float, y: float, width: float) -> float:
@@ -289,9 +289,9 @@ def options_page(data: dict, profile: Profile, block: dict | None = None, page_i
     page = Page(page_id, name if name is not None else f"Decisions: {block['title']}"[:60])
     head = [f"**{block['title']}**"] + ([BLANK, block["purpose"]] if block.get("purpose") else []) + [
         BLANK,
-        "**Left:** the decisions taken, as a flow; a green arrow leads to the chosen option, a blue dashed one to an option under evaluation.",
+        "**Left:** the decisions taken, as a flow; a green arrow leads to what was chosen, a blue dashed one to a choice under evaluation.",
         "**Rows:** one question each.",
-        "**Columns:** one option each: its flow top to bottom, then its pros and cons.",
+        "**Columns:** one choice each: its flow top to bottom, then its pros and cons.",
         "**Colours:** see the legend.",
         BLANK, "[back to Overview]"]
     total = x0 - MARGIN + width

@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261022 Decision page legend and header say choice, not option (Choice: chosen, a choice's flow, a choice under evaluation), one vocabulary with question and decision (operator, 2026-10-22).
 - 20261022 Decision pages, never options (operator, unified-network-controller): `decision_pages` (page `decisions-<id>`), the single block's tab "Decisions: <title>", index line and legend "decision page", audit text; `option_pages` still read; test `test_decision_pages_never_called_options`; Learned 2026-10-22 in `references/data-first-diagrams.md`, rule in `references/visual-style.md`.
 - 20261022 Action bullets split on "; " outside brackets only (`pages.action_clauses`); test `ActionClauseTests`; Learned 2026-10-22 in `references/visual-style.md` (unified-network-controller review).
 - 20261022 Schema: `status.since` described as the date the item reached its state (go-live for live), never a check date; Learned 2026-10-22 in `references/data-first-diagrams.md` (side agent's note on unified-network-controller's map).
