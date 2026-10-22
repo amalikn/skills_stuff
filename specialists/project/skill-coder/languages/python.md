@@ -115,3 +115,16 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > sys.modules["plan_timeline"] = mod   # before exec_module, or @dataclass fails at class creation
 > spec.loader.exec_module(mod)
 > ```
+
+> **Learned 2026-10-22 (e)** · python, pathlib containment checks · VERIFIED_PRIMARY (a unit test failed on macOS: a target under a temporary
+> folder read as outside the root) · Source: skill-ai-it `scripts/anchor_links.py` `broken_links`, commit fdf90d0 · Falsifier: `Path.is_relative_to`
+> returns True for a resolved child of an unresolved root that sits behind a symlink.
+> Resolve both sides before `is_relative_to` (or `relative_to`): a target built with `.resolve()` follows symlinks, so an unresolved root such as
+> macOS's `/var/folders/...` (really `/private/var/...`) never contains it and every file reads as outside.
+>
+> ```python
+> root = root.resolve()  # targets are resolved, so the root must be too (macOS /var is /private/var)
+> ...
+> dest = (doc.parent / target).resolve() if target else doc.resolve()
+> if dest.is_relative_to(root):
+> ```
