@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1741
+Last rotated: 20261022_1744
 ---
 
 # Changelog — skill-ai-it
@@ -36,7 +36,6 @@ Last rotated: 20261022_1741
 - [20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions](#20261019_1734--pitfalls-hand-bootstrapped-packs-write-accepted-archcore-decisions)
 - [20261019_1707 — Recipe names back to kebab-case; upgrader renames the template's snake_case recipes](#20261019_1707--recipe-names-back-to-kebab-case-upgrader-renames-the-templates-snake_case-recipes)
 - [20261015_0129 — doc_freshness: a Budget header counts only with a size](#20261015_0129--doc_freshness-a-budget-header-counts-only-with-a-size)
-- [20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade](#20261014_1247--yaml_key_diff-context-map-key-changes-and-lost-comments-after-an-upgrade)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## 20261022_1744 — anchor_links: --outside warn for links into other projects
@@ -181,14 +180,6 @@ templates/check_governance.py defined the `KEBAB_LEGACY` and `CODE_SUFFIXES` reg
 ## 20261015_0129 — doc_freshness: a Budget header counts only with a size
 
 - `scripts/doc_freshness.py`: a `Budget` header counts as a file budget only when it states a size (`N lines` or `N KB`); a Python docstring line such as "Budget: 60 seconds" (a runtime budget) made two unified-network-controller modules fail as over a 200-line file budget (2026-10-15).
-
-## 20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade
-
-- New `scripts/yaml_key_diff.py` (recipe `nav_check_context_map`, skill and project template justfiles; catalogued; `tests/test_yaml_key_diff.py`):
-  compares `context-map.yaml` with a git ref by key and lists lost comments, exit 1 while one is lost. Smoke on smc-resiliency vs b1483af: two
-  added keys, one expected lost comment (the old version stamp). Promoted from the smc-resiliency refresh's ad hoc check. 102 tests.
-- `references/navigation-automation.md`: run the scripts with the venv python or `just nav_*`; a bare `python3` stops the upgrader on PyYAML.
-  Step 5 names the new check. `references/pitfalls.md` points to it.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 
