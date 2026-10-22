@@ -150,9 +150,11 @@ def in_order(rows: list[dict]) -> list[dict]:
         rows: validated rows, in file order.
 
     Returns:
-        The rows ordered; the sort is stable, so rows with the same date, or placed after the same stage, keep their file order.
+        The rows ordered: on one date extra rows before plan rows; otherwise the sort is stable, so rows with the same date and kind, or
+        placed after the same stage, keep their file order.
     """
-    dated = sorted((r for r in rows if r.get("due") is not None), key=lambda r: r["due"])
+    # on one date an extra row (work outside the plan) comes before the plan rows it feeds
+    dated = sorted((r for r in rows if r.get("due") is not None), key=lambda r: (r["due"], r.get("kind", "plan") != "extra"))
     placed = {}
     for r in rows:
         if r.get("due") is None and r.get("after"):

@@ -24,8 +24,6 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 - [ ] **Governance checker rollout** — adopt `scripts/check_governance.py` across existing projects via `refresh`. Each adoption is a Tier 3 authoring exercise, not a copy: the universal checks come from
   the template, but the invariants worth enforcing are project-specific and must be read out of that project's own stated rules.
 - [ ] **Re-upgrade projects on the previous version stamp** — `me/llm-m2max`, `apn/vocus-profitability`, `apn/opticomm-profitability`.
-- [x] **README budget across projects** (2026-10-14): `adopt_governed_files.py` adds `Budget: 200 lines, 25 KB` to every README it heads and
-  grandfathers an over-budget one in the freshness baseline; README.md stays off the default list so no project fails at once.
 - [ ] **Role check rollout** — `role_check.py` and the header adoption canaried on cambium-swap 2026-10-14 (check green, idempotent). The other
   governed projects adopt at their next slurp; the per-project commands are in CHANGELOG `20261014_1002`. Then shrink each baseline by fixing
   README quick starts, dated ROADMAP phases and README status sections.
@@ -105,7 +103,6 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 ## Completed
 
 Done items move to `docs/history/roadmap-*.md` (`just rotate`; find one with `just history <term>`).
-
 
 ## Out of scope
 

@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261021_1817
+Last rotated: 20261022_1209
 ---
 
 # Changelog — skill-ai-it
@@ -35,7 +35,6 @@ Last rotated: 20261021_1817
 - [20261014_1233 — validator: accepts the compact template's generated-output wording](#20261014_1233--validator-accepts-the-compact-templates-generated-output-wording)
 - [20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries](#20261014_1213--govern-stops-on-uncommitted-governed-files-drops-resolved-baseline-entries)
 - [20261014_1202 — adopt: a future deadline is not a review date](#20261014_1202--adopt-a-future-deadline-is-not-a-review-date)
-- [20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity](#20261014_1102--token-efficiency-from-the-unc-run-compact-agents-block-load-cost-header-validity)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## 20261022_1209 — plan_timeline: after places unplanned rows beside their plan step
@@ -173,20 +172,6 @@ templates/check_governance.py defined the `KEBAB_LEGACY` and `CODE_SUFFIXES` reg
   it took a 25 Oct deadline in SCRATCHPAD as the review date and wrote 2026-10-25 on CHANGELOG and SCRATCHPAD; both corrected by hand.
 - Test: `test_future_deadline_is_not_the_review_date`, shown failing without the fix (17 tests, OK with it).
 - Other projects adopted earlier may carry a future `Last reviewed`; checked across governed projects in the same session.
-
-## 20261014_1102 — Token efficiency from the UNC run: compact AGENTS block, load cost, header validity
-
-- **Token efficiency, from the UNC run** (operator, 2026-10-14: confirm UNC follows efficient token use; fix gaps in the skill). UNC loaded 50 KB
-  (~12,800 tokens) before work, and its preflight forced a full read of context-map.yaml (10.8 KB). Skill gaps fixed: the AGENTS navigation block
-  (26 lines restating AI_NAVIGATION, still naming Graphify output) is now 9 lines of hard rules plus a pointer, and context-map.yaml is read only
-  when routing or companions change (version `2026-10-14-compact-v2`); `role_check.py` prints `always loaded: N files, X KB (~T tokens)`
-  following `@` imports; `govern` applies the navigation-block upgrade when its dry run is clean. UNC after: 48 KB (~12,500 tokens), AGENTS.md
-  203 to 191 lines (within budget), and no forced context-map read.
-- **Header validity:** `role_check.py` front-matter rule parses the header as YAML (UNC AGENTS.md had text after `>-`; smc-resiliency README an
-  unquoted `: `); the adopter quotes values that need it (`fm_value`) and no longer mistakes a sentence with a colon for a `Key: value` line.
-- **Outdated `govern` copies refreshed** by the adopter (project form only); interpreter detection ignores calls inside `$(...)`.
-- **Checker:** CHANGELOG.md exempt from the unregistered-restatement scan (history; it stated the new stamp). Also carried: the other session's
-  adopter fix for folded continuation lines and the govern summary naming rotation-audit losses (entry 20261014_1051).
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

@@ -192,5 +192,11 @@ class AfterPlacement(unittest.TestCase):
         self.assertIn("a row with `due` is placed by its date", text)
 
 
+    def test_extra_before_plan_row_on_one_date(self) -> None:
+        """On one date the extra row that feeds a plan row comes first."""
+        d = pt.dt.date
+        same = [{"due": d(2026, 11, 6), "stage": "R2.1", "step": "p"}, {"kind": "extra", "due": d(2026, 11, 6), "stage": "", "step": "feeds"}]
+        self.assertEqual([r["step"] for r in pt.in_order(same)], ["feeds", "p"])
+
 if __name__ == "__main__":
     unittest.main()
