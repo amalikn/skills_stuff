@@ -112,6 +112,13 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > }
 > ```
 
+> **Learned 2026-10-22 (d)** · a deadline watcher around tsh ssh · VERIFIED_PRIMARY (live: a 3 s deadline on `tsh ssh ... 'bash -s'` returned 1,
+> stderr "context canceled") · Source: skill-smc scripts/collect-smc-evidence-full.sh `with_deadline` (skills_stuff ab3bb74) · Falsifier: tsh exiting
+> 143 after SIGTERM
+> A command that traps TERM exits with its own status, so the caller cannot tell a timeout from a failure by the status. Judge it on the helper's own
+> clock and return 124 (GNU `timeout`'s code): `local started=$SECONDS` before the run, `(( SECONDS - started >= deadline )) && rc=124` after `wait`.
+> Report what a cut run never reached as "not run", never as failed.
+
 > **Learned 2026-10-20 (c)** · bash, a script sent over ssh on stdin (`ssh host bash -s < script`) · VERIFIED_PRIMARY (three trial runs did
 > nothing past their first line; with `ssh -n` they ran) · Source: unified-network-controller `infra/apn-unc01/ops/collector-trial.sh` (its
 > predecessor in a session scratchpad, 2026-10-20) · Falsifier: an ssh release that does not read stdin when given a remote command

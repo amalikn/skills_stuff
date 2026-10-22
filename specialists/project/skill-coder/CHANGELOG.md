@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261022 Learned 2026-10-22 (d) in `languages/shell.md`: tsh exits 1 on TERM; a deadline helper returns 124 on its own clock.
 - 20261022 Learned 2026-10-22 (c) in `languages/shell.md`: a background job reads /dev/null only with job control on; `"$@" <&0 &` keeps a piped stdin under a deadline watcher.
 - 20261022 Learned 2026-10-22 (b) in `languages/shell.md`: `dpkg-query -W '<glob>'` lists packages that are not installed; filter on `${db:Status-Abbrev}` = `ii`.
 - 20261022 Learned 2026-10-22 in `languages/shell.md`: a later `</dev/null` replaces a here-string as stdin, so `bash -s` reads nothing; one stdin redirection per command.
