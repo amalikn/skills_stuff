@@ -311,6 +311,23 @@ total, `aurukun-smc03` unreachable at capture time), via `scripts/collect-fleet-
 Same BOXER-6641/BOXER-6404 chassis family already documented for the `rcp` fleet (`amata-smc01` was independently confirmed BOXER-6641 during the earlier disk-fault incident) — this is not new
 hardware, just the first time it's been inventoried for this specific cluster.
 
+#### Whole x86 fleet by model, and its load (2026-10-22)
+
+Read 2026-10-22 for enterprise-strategy's RouterOS future study, from smc-resiliency's firmware-access probe (live, 20261022_1506; sources in
+`smc-resiliency/docs/os-lifecycle/firmware-access-probe-sources-20261022_1506/`) and Prometheus (7-day window, both clusters). `VERIFIED-OBSERVED`.
+
+| Model        | Cores | rcp boxes | nbn_accelerate boxes | Total | 7-day CPU average / peak (rcp, with Asterisk) | Peak RAM used |
+| ------------ | ----- | --------- | -------------------- | ----- | --------------------------------------------- | ------------- |
+| BOXER-6404   | 4     | 11        | 17                   | 28    | 5–13% / 13–40%                                | 17–29%        |
+| BOXER-6641   | 6     | 8         | 11                   | 19    | 7–13% / 15–23%                                | 11–14%        |
+
+- Counts include non-site boxes (rcp: warehouse-smc01, nocprov-smc01; nbn_accelerate: a test box, and aurukun has three). ansible-wifi has no small or
+  large x86 concept; both models are in both flavours. The "small box / big box" wording in `01_overview.md` (x86 as "small") is not a model class.
+- Prometheus has no process metrics (no process-exporter), so Asterisk's or Squid's own CPU and RAM are not measurable from it; per-process cost needs
+  a `ps` on the box.
+- Anomalies seen 2026-10-22: koonibba-smc01 (nbn_accelerate, 6404) root 98% full, warakurna-smc01 65%; warehouse-smc01 has 3 GB RAM; nocprov,
+  wangkatjungka and warehouse have no node_exporter series.
+
 **Kernel/OS version drift, live-confirmed — corroborates the already-documented "no automated kernel-update pipeline for cw-cluster" structural finding** (`01_overview.md` "APN Cluster vs NBN
 Accelerate Cluster"): most BOXER-6404 hosts run `5.15.0-117-generic`, but `koonibba-smc01` is on `5.15.0-79-generic` (significantly older) and `warakurna-smc01` is on `5.15.0-133-generic`
 (significantly newer) — a wide, organic spread consistent with hosts being patched independently by hand rather than through a fleet-wide pipeline, exactly as predicted by the earlier structural

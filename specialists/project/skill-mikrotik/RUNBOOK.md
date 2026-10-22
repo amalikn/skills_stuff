@@ -17,6 +17,7 @@ This file is the navigation index for `skill-mikrotik`. Load only the reference 
 | Model specs, SNMP state and MIBs, firmware status, cpu-frequency warning, vendor sources | `references/07_equipment-and-snmp.md` |
 | SNMP OIDs per model (candidates from the 7.8 MIB until verified), equipment facts, the list tools read | `references/snmp-oid-registry.yaml` |
 | Firmware files kept (RouterOS 7.8, 7.12.2, 7.23.7, 7.24.5; arm, mipsbe): sizes, sha256, source URLs; binaries in `firmware-files/` | `references/firmware-manifest.yaml` |
+| RouterOS as a site box: containers, device-mode, Netinstall, remote access (WireGuard, BTH, others), container-capable models, Asterisk in a container | `references/08_routeros-platform-features.md` |
 | Gaps, unverified assumptions, things not yet surveyed                                                 | `references/05_known-issues.md`           |
 | Scripts and their safety class                                                                        | `scripts/README.md`                       |
 

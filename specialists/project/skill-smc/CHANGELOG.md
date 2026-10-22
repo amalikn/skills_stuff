@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1510
+Last rotated: 20261022_1621
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261022_1621 — rcp Asterisk dialplan summarised; x86 fleet by model with its 7-day load (v0.6.4 -> v0.6.5)](#20261022_1621--rcp-asterisk-dialplan-summarised-x86-fleet-by-model-with-its-7-day-load-v064---v065)
 - [20261022_1506 — Firmware access from the OS: UEFI and EEPROM lines in the x86 and Pi probes, deadlines (v0.6.3 -> v0.6.4)](#20261022_1506--firmware-access-from-the-os-uefi-and-eeprom-lines-in-the-x86-and-pi-probes-deadlines-v063---v064)
 - [20261022_1426 — What WAN-side equipment tells an SMC about its site: Starlink position, Sky Muster NTD nothing (v0.6.2 -> v0.6.3)](#20261022_1426--what-wan-side-equipment-tells-an-smc-about-its-site-starlink-position-sky-muster-ntd-nothing-v062---v063)
 - [20261022_1226 — backdoor_exec.sh passes a stdin script through (v0.6.1 -> v0.6.2)](#20261022_1226--backdoor_execsh-passes-a-stdin-script-through-v061---v062)
@@ -38,7 +39,13 @@ Last rotated: 20261022_1510
 - [20261014_2345 — Topology_vars differ by branch; read them at the listing ref (v0.4.3 -> v0.4.4)](#20261014_2345--topology_vars-differ-by-branch-read-them-at-the-listing-ref-v043---v044)
 - [20261014_2230 — Central chassis port plans from as-built sets; old-looma SWP 24 corrected (v0.4.2 -> v0.4.3)](#20261014_2230--central-chassis-port-plans-from-as-built-sets-old-looma-swp-24-corrected-v042---v043)
 - [20261014_1956 — BIND check-names on the smc_ltp RPZ zone (v0.4.1 -> v0.4.2)](#20261014_1956--bind-check-names-on-the-smc_ltp-rpz-zone-v041---v042)
-- [20261014_1513 — x86 SMC facts, Teleport static-token join, x86 resiliency probe (v0.4.0 -> v0.4.1)](#20261014_1513--x86-smc-facts-teleport-static-token-join-x86-resiliency-probe-v040---v041)
+
+## 20261022_1621 — rcp Asterisk dialplan summarised; x86 fleet by model with its 7-day load (v0.6.4 -> v0.6.5)
+
+From enterprise-strategy's RouterOS future study (operator answers 20261022_1535). `references/02_service-map.md` VoIP: what the rcp dialplan does
+(trunk to PBX0008, 4-digit extensions, DID or prompt inbound, barring, caller ID, 8888), with a code excerpt (ansible-wifi 35b32c36); the section is rcp
+only, not "non-RCT". `references/07_hardware-overlay.md`: whole x86 fleet by model (28 BOXER-6404, 19 BOXER-6641, cores 4 and 6) with 7-day CPU and RAM
+from Prometheus; no process metrics exist; anomalies (koonibba 98% root, warehouse 3 GB RAM, three boxes missing from Prometheus). manifest 0.6.4 -> 0.6.5.
 
 ## 20261022_1506 — Firmware access from the OS: UEFI and EEPROM lines in the x86 and Pi probes, deadlines (v0.6.3 -> v0.6.4)
 
@@ -185,13 +192,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 
 - `references/02_service-map.md`: BIND refuses an underscore in an A or AAAA name of a primary zone (`check-names` fail), so names written for
   `db.cambium-rpz` are lowercase with hyphens. Source: unified-network-controller's Nautobot-only RPZ records, 2026-10-14.
-
-## 20261014_1513 — x86 SMC facts, Teleport static-token join, x86 resiliency probe (v0.4.0 -> v0.4.1)
-
-- `references/07_hardware-overlay.md`: `smc_disk_failover` mechanics read at source (hourly cron, 24 failed hours of pings, `BootNext` to another `ubuntu`
-  entry, reboot; a no-op on one-disk BOXER-6404 boxes); BOXER-6641 two SSDs vs BOXER-6404 one CFast with a full LVM group; no hardware watchdog loaded,
-  drivers shipped; systemd 249. Operator, 2026-10-14: future x86 SMCs have one disk, no two-disk models.
-- `references/03_communication-flows.md`: the SMC Teleport node joins with a static `auth_token`, default `/var/lib/teleport`, site-level static labels;
-  deleting the data dir and restarting re-joins the node (operator).
-- New `scripts/x86_resiliency_probe.sh` and recipe `x86_resiliency_probe` (read-only), smoke-run on horn-island-smc01 and jigalong-smc01; catalogued.
-- Source: smc-resiliency x86 plan and identity-partition design, 2026-10-14.

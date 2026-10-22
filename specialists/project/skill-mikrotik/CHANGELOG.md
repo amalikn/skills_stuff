@@ -6,10 +6,18 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_1336
+Last rotated: 20261022_1620
 ---
 
 # Changelog
+
+## 20261022_1620 — RouterOS platform features for a router-as-site-box evaluation (v0.1.29 -> v0.1.30)
+
+New `references/08_routeros-platform-features.md`, written back from enterprise-strategy's RouterOS future study (operator answers 20261022_1535):
+containers and device-mode (physical confirmation; Netinstall 7.22+ can set it), Netinstall and the RouterOS Netinstall package, native remote access
+(WireGuard, BTH and cloud services not on x86, no official Tailscale, RoMON unencrypted), container-capable models with specs and list prices, and
+Asterisk in a container. VERIFIED-DOC from manual.mikrotik.com and mikrotik.com, read 2026-10-22; copies kept in the study's sources folder. RUNBOOK
+routing row and SKILL.md reference added. manifest 0.1.29 -> 0.1.30.
 
 ## 20261020_1335 — The rct switch learns the Metal AP's radio MAC on its port (v0.1.28 -> v0.1.29)
 
@@ -186,14 +194,3 @@ VERIFIED-OBSERVED 2026-10-08 from unified-network-controller work over Teleport 
   ether4 the Dallas Delta ATA UI on `rct`; ether5 the PoE AP, Metal on `rct` and Cambium on `wh`); new Site design section (untagged-internet reason for
   ether1 in `bridge-vlan521`, ATA and Thuraya backup, AP addressing, SMC Wi-Fi SSID).
 - skill-smc 0.1.98: SMC-side addressing from ansible-wifi compared with the diagram (diagram stale on management DNS and a `192.168.100.2` note).
-
-## 20261007_1620 — Cloned MACs come from the provisioning script, not a backup (v0.1.8 -> v0.1.9)
-
-- **Correction:** v0.1.4 put the cloned MACs down to one binary backup restored onto every switch. The operator described the real process (a Raspberry Pi
-  pushes `routeros-7.8-arm.npk` over TFTP and two SSH command batches) and pasted the commands: part 1 pins `mac-address=` on ether1–ether5. The backup
-  explanation and its vendor-doc quote are removed from `references/01_overview.md`; the new-switch fix is now deleting those five commands from the script.
-- `references/06_provisioning.md` (new): the process, what the script sets, the issues it leaves on every unit, and the commands one per line, password redacted.
-- `references/01_overview.md`: port layout and ether5 PoE confirmed by the script.
-- `references/05_known-issues.md`: items 3 (time zone and NTP) and 4 (logging to disk) updated from the script; new 12 (script location, owner, APs) and 13
-  (shared clear-text admin password, MAC access on all ports, HTTP on, protected RouterBOOT off).
-- `RUNBOOK.md`, `SKILL.md`: routing for `references/06_provisioning.md`. `SCRATCHPAD.md`: cause corrected.
