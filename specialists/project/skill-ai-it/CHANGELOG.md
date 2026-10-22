@@ -16,6 +16,7 @@ Last rotated: 20261022_1741
 
 ## Contents
 
+- [20261022_1744 — anchor_links: --outside warn for links into other projects](#20261022_1744--anchor_links---outside-warn-for-links-into-other-projects)
 - [20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings](#20261022_1741--anchor_links-promoted-plan_timeline-links-ids-to-their-headings)
 - [20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too](#20261022_1632--table_wrap-shared-hook-compatible-wrapper-target-map-embeds-wrap-too)
 - [20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables](#20261022_1623--plan_timeline-the-timeline-table-wraps-like-the-pages-other-tables)
@@ -37,6 +38,13 @@ Last rotated: 20261022_1741
 - [20261015_0129 — doc_freshness: a Budget header counts only with a size](#20261015_0129--doc_freshness-a-budget-header-counts-only-with-a-size)
 - [20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade](#20261014_1247--yaml_key_diff-context-map-key-changes-and-lost-comments-after-an-upgrade)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261022_1744 — anchor_links: --outside warn for links into other projects
+
+A side agent's note on unified-network-controller (2026-10-22): its commit gate now follows links into smc-resiliency and enterprise-strategy files,
+so a heading renamed by another project's session would block UNC's commits. `--outside warn` reports a broken link into a file outside the project
+root as a warning that names the likely cause (the linked project's recent edits) without failing `--check`; `--outside fail` stays the default.
+The root is resolved before comparing (macOS temp folders live under /private). Test: test_outside_links_warn_only_when_asked; 202 pass.
 
 ## 20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings
 

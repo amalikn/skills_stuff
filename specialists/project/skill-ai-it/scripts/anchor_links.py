@@ -12,12 +12,18 @@ sides. Only links whose target is a markdown file (or the same page) are checked
 Skipped: any path part starting with `.`, any folder or file whose name contains `-sources-` (verbatim captures, kept as fetched), plus each
 `--skip` path prefix and `--skip-name` glob the project names (rotated history, operator prompt files).
 
+Links into a file outside the project root (another project's design, a sibling tracker) are checked the same way. With `--outside warn`
+they are reported but do not fail `--check` (operator's side agent, 2026-10-22: a heading renamed by another project's session must not block
+this project's commits); the message says to look at the linked project's recent edits first. The default, `--outside fail`, treats them like
+any other link.
+
 Read-only: it writes nothing. Runtime: about a second for a few hundred files (each target page parsed once; no network, no subprocess).
 
 Usage (run with the project's venv; paths relative to --project-root, default the current folder):
     python3 anchor_links.py --project-root .                                   # list broken anchors; exit 0
     python3 anchor_links.py --project-root . --check                           # exit 1 on a broken anchor
     python3 anchor_links.py --project-root . --check --skip docs/history/ --skip-name 'prompt-*.md'
+    python3 anchor_links.py --project-root . --check --outside warn            # links into other projects warn only
 """
 
 from __future__ import annotations
@@ -98,7 +104,7 @@ def _skipped(rel: Path, skip: tuple[str, ...], skip_names: tuple[str, ...]) -> b
     return any(posix.startswith(p) for p in skip) or any(fnmatch.fnmatch(rel.name, g) for g in skip_names)
 
 
-def broken_links(root: Path, skip: tuple[str, ...] = (), skip_names: tuple[str, ...] = ()) -> tuple[int, list[str]]:
+def broken_links(root: Path, skip: tuple[str, ...] = (), skip_names: tuple[str, ...] = ()) -> tuple[int, list[str], list[str]]:
     """Find links to a `#heading` that does not exist.
 
     Args:
@@ -107,10 +113,11 @@ def broken_links(root: Path, skip: tuple[str, ...] = (), skip_names: tuple[str, 
         skip_names: file-name globs to skip.
 
     Returns:
-        (links checked, one message per broken link).
+        (links checked, broken links into this project, broken links into files outside the root), one message per broken link.
     """
+    root = root.resolve()  # targets are resolved, so the root must be too (macOS /var is /private/var)
     cache: dict[Path, set[str]] = {}
-    checked, broken = 0, []
+    checked, broken, outside = 0, [], []
     for doc in sorted(root.rglob("*.md")):
         rel = doc.relative_to(root)
         if _skipped(rel, skip, skip_names):
@@ -122,9 +129,14 @@ def broken_links(root: Path, skip: tuple[str, ...] = (), skip_names: tuple[str, 
             checked += 1
             if dest not in cache:
                 cache[dest] = heading_anchors(dest)
-            if frag not in cache[dest]:
+            if frag in cache[dest]:
+                continue
+            if dest.is_relative_to(root):
                 broken.append(f"{rel.as_posix()} links `{target}#{frag}`: no such heading; fix the link to the heading's current title")
-    return checked, broken
+            else:
+                outside.append(f"{rel.as_posix()} links `{target}#{frag}`: no such heading in another project's file; check that "
+                               "project's recent edits (a retitled heading), then fix the link here")
+    return checked, broken, outside
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -141,14 +153,19 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--check", action="store_true", help="exit 1 when a link's heading does not exist")
     ap.add_argument("--skip", action="append", default=[], help="a path prefix to skip, relative to the root (repeatable)")
     ap.add_argument("--skip-name", action="append", default=[], help="a file-name glob to skip (repeatable)")
+    ap.add_argument("--outside", choices=("fail", "warn"), default="fail", help="links into files outside the root: fail like others, or warn only")
     args = ap.parse_args(argv)
-    checked, broken = broken_links(args.project_root.resolve(), tuple(args.skip), tuple(args.skip_name))
+    checked, broken, outside = broken_links(args.project_root.resolve(), tuple(args.skip), tuple(args.skip_name))
+    if args.outside == "fail":
+        broken, outside = broken + outside, []
+    for msg in outside:
+        print(f"anchor (warning, not failing): {msg}", file=sys.stderr)
     for msg in broken:
         print(f"anchor: {msg}", file=sys.stderr)
     if broken:
         print(f"anchor links: {len(broken)} broken of {checked}", file=sys.stderr)
         return 1 if args.check else 0
-    print(f"OK — anchor links: {checked} checked")
+    print(f"OK — anchor links: {checked} checked" + (f", {len(outside)} into other projects warned" if outside else ""))
     return 0
 
 

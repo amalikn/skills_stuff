@@ -43,7 +43,8 @@ class BrokenLinks(unittest.TestCase):
             (root / "a.md").write_text("# Top\n[ok](b.md#real) [self](#top) [bad](b.md#gone) [yaml](c.yaml#k) [none](n.md#x)\n", encoding="utf-8")
             for rel in ("docs/history/old.md", "docs/x-sources-1/cap.md", "prompt-ask.md"):
                 (root / rel).write_text("[bad](../b.md#gone)\n", encoding="utf-8")
-            checked, broken = al.broken_links(root, ("docs/history/",), ("prompt-*.md",))
+            checked, broken, outside = al.broken_links(root, ("docs/history/",), ("prompt-*.md",))
+            self.assertEqual(outside, [])
             self.assertEqual(checked, 3)
             self.assertEqual(len(broken), 1)
             self.assertIn("a.md links `b.md#gone`", broken[0])
@@ -54,6 +55,18 @@ class BrokenLinks(unittest.TestCase):
             (Path(tmp) / "a.md").write_text("[bad](#gone)\n", encoding="utf-8")
             self.assertEqual(al.main(["--project-root", tmp]), 0)
             self.assertEqual(al.main(["--project-root", tmp, "--check"]), 1)
+
+    def test_outside_links_warn_only_when_asked(self):
+        """A broken link into a file outside the root fails by default and only warns with --outside warn."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "proj"
+            root.mkdir()
+            (Path(tmp) / "other.md").write_text("# Renamed\n", encoding="utf-8")
+            (root / "a.md").write_text("[x](../other.md#old)\n", encoding="utf-8")
+            _, broken, outside = al.broken_links(root)
+            self.assertEqual((broken, len(outside)), ([], 1))
+            self.assertEqual(al.main(["--project-root", str(root), "--check"]), 1)
+            self.assertEqual(al.main(["--project-root", str(root), "--check", "--outside", "warn"]), 0)
 
 
 if __name__ == "__main__":
