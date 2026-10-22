@@ -307,12 +307,12 @@ def render(data: dict, profile: Profile) -> str:
         profile: the project's drawing profile.
 
     Returns:
-        The file text: banner, then an uncompressed `<mxfile>` with the Overview, the End-to-end page, one page per flow, and the option pages after the
-        Overview when the map has an `options` block or `option_pages`.
+        The file text: banner, then an uncompressed `<mxfile>` with the Overview, the End-to-end page, one page per flow, and the decision pages after the
+        Overview when the map has an `options` block, `decision_pages` or `option_pages`.
     """
     comps = {c["id"]: c for c in data["components"]}
     pages = [overview_page(data, profile), end_to_end_page(data, profile)] + [flow_page(f, comps, i + 1, profile) for i, f in enumerate(data["flows"])]
-    for k, (pid, name, block) in enumerate(option_blocks(data)):   # optional: option pages go right after the Overview, in map order
+    for k, (pid, name, block) in enumerate(option_blocks(data)):   # optional: decision pages go right after the Overview, in map order
         pages.insert(1 + k, options_page(data, profile, block, pid, name))
     return mxfile(pages, profile.host, banner(profile.generator, profile.map, profile.command, profile.check))
 

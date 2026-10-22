@@ -85,7 +85,7 @@ def main(argv: list[str] | None = None) -> int:
     mode = ap.add_mutually_exclusive_group()
     mode.add_argument("--write", action="store_true", help="write the drawing")
     mode.add_argument("--list", action="store_true", help="one line per flow (read only)")
-    mode.add_argument("--audit", action="store_true", help="layout audit of the Overview, End-to-end, option and flow pages (read only)")
+    mode.add_argument("--audit", action="store_true", help="layout audit of the Overview, End-to-end, decision and flow pages (read only)")
     args = ap.parse_args(argv)
     root = args.root.resolve()
     try:
@@ -99,7 +99,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1 if problems else 0
     if args.audit:
         found = audit(root, profile)
-        print("\n".join(found) or "audit: clean (no layout fault on the Overview, End-to-end, option or flow pages)")
+        print("\n".join(found) or "audit: clean (no layout fault on the Overview, End-to-end, decision or flow pages)")
         return 1 if found else 0
     outcome = pages.evaluate(root, profile)
     for p in outcome.problems:

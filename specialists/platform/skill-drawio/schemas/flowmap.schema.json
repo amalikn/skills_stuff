@@ -54,7 +54,15 @@
       "items": {
         "$ref": "#/$defs/option_page"
       },
-      "description": "Optional: several option pages by subject (2026-10-21), drawn after the Overview (and after `options` when both are given). Each tab is the page's title as written."
+      "description": "Older name for decision_pages, still read (page id options-<id>); new maps use decision_pages."
+    },
+    "decision_pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/option_page"
+      },
+      "description": "Optional, preferred over option_pages (operator, 2026-10-22: decisions, never options): pages of decisions by subject, drawn after the Overview (after `options` when both are given). Each tab is the page's title as written; page id decisions-<id>."
     }
   },
   "$defs": {

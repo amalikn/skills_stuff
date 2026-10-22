@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261022 Decision pages, never options (operator, unified-network-controller): `decision_pages` (page `decisions-<id>`), the single block's tab "Decisions: <title>", index line and legend "decision page", audit text; `option_pages` still read; test `test_decision_pages_never_called_options`; Learned 2026-10-22 in `references/data-first-diagrams.md`, rule in `references/visual-style.md`.
 - 20261022 Action bullets split on "; " outside brackets only (`pages.action_clauses`); test `ActionClauseTests`; Learned 2026-10-22 in `references/visual-style.md` (unified-network-controller review).
 - 20261022 Schema: `status.since` described as the date the item reached its state (go-live for live), never a check date; Learned 2026-10-22 in `references/data-first-diagrams.md` (side agent's note on unified-network-controller's map).
 - 20261022 Option pages: each arrow from a decision box to its options gets its own track (`options.TRACK`; nearest option on the band, farther ones higher), so two options under evaluation no longer share a run; test `test_two_evaluated_options_get_their_own_tracks` (fails on the old code); single-target pages byte-identical; Learned 2026-10-22 in `references/layout-and-routing.md` with a screenshot (operator review, unified-network-controller Options page).

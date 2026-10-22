@@ -152,7 +152,7 @@ def reference_problems(data: dict, root: Path) -> list[str]:
     flows = [f["id"] for f in data["flows"]]
     problems = _duplicates("component", comps) + _duplicates("flow", flows)
     groups = option_groups(data)
-    problems += _duplicates("option page", [b["id"] for b in data.get("option_pages", [])])
+    problems += _duplicates("decision page", [b["id"] for b in data.get("decision_pages", []) + data.get("option_pages", [])])
     problems += _duplicates("option group", [g["id"] for g in groups])
     for g in groups:
         problems += _duplicates(f"option in group {g['id']}", [o["id"] for o in g["options"]])
@@ -167,21 +167,24 @@ def reference_problems(data: dict, root: Path) -> list[str]:
 
 
 def option_blocks(data: dict) -> list[tuple[str, str, dict]]:
-    """The map's option pages in drawing order: the single `options` block, then each of `option_pages` (2026-10-21, smc-resiliency).
+    """The map's decision pages in drawing order: the single `options` block, then each of `decision_pages`, then each of the older
+    `option_pages` (2026-10-21, smc-resiliency). Operator, 2026-10-22: these pages are never called options; a drawn tab reads
+    "Decisions: <title>" for the single block and its own title for a page by subject.
 
     Args:
         data: the validated map.
 
     Returns:
-        (page id, tab name, block) per page. The single block keeps its page id `options` and its "Options: " tab prefix, so maps written
-        before `option_pages` render byte-identical; a block in `option_pages` is page `options-<id>` and its tab is its title as written.
+        (page id, tab name, block) per page: the single block is page `options`, a block of `decision_pages` page `decisions-<id>`, a block of
+        `option_pages` page `options-<id>` (ids kept so links into existing drawings still resolve).
     """
-    found = [("options", f"Options: {data['options']['title']}"[:60], data["options"])] if data.get("options") else []
+    found = [("options", f"Decisions: {data['options']['title']}"[:60], data["options"])] if data.get("options") else []
+    found += [(f"decisions-{b['id']}", b["title"][:60], b) for b in data.get("decision_pages", [])]
     return found + [(f"options-{b['id']}", b["title"][:60], b) for b in data.get("option_pages", [])]
 
 
 def option_groups(data: dict) -> list[dict]:
-    """Every option group on every option page, for validation.
+    """Every decision group on every decision page, for validation.
 
     Args:
         data: the validated map.

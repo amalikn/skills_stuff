@@ -1,4 +1,4 @@
-"""The flow map's Options page: design choices side by side, and the decisions taken as a flow beside them.
+"""The flow map's decision pages (never called options; operator, 2026-10-22): design choices side by side, and the decisions taken as a flow beside them.
 
 One row per question (group), one column per option; each option shows its status, its flow as a chain of step boxes joined by routed arrows,
 then its pros and cons, aligned across the row. A decision column on the left chains the decisions top to bottom: the block's own decisions
@@ -277,7 +277,7 @@ def options_page(data: dict, profile: Profile, block: dict | None = None, page_i
         profile: the drawing profile (its `look.heading_scale` sizes the option heads and decision titles).
         block: the page's block; the map's single `options` block when left out.
         page_id: the page id the Overview links to.
-        name: the tab name; "Options: <title>" when left out.
+        name: the tab name; "Decisions: <title>" when left out.
 
     Returns:
         The page.
@@ -286,7 +286,7 @@ def options_page(data: dict, profile: Profile, block: dict | None = None, page_i
     block = block if block is not None else data["options"]
     widest = max(len(g["options"]) for g in block["groups"])
     x0, width = MARGIN + DEC_W + 2 * GAP, widest * COL_W + (widest - 1) * GAP
-    page = Page(page_id, name if name is not None else f"Options: {block['title']}"[:60])
+    page = Page(page_id, name if name is not None else f"Decisions: {block['title']}"[:60])
     head = [f"**{block['title']}**"] + ([BLANK, block["purpose"]] if block.get("purpose") else []) + [
         BLANK,
         "**Left:** the decisions taken, as a flow; a green arrow leads to the chosen option, a blue dashed one to an option under evaluation.",

@@ -118,8 +118,8 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/overview.py` | The Overview page: groups, thick and thin arrows, counts, dots, layers, index, legends | `safe` |
 | `scripts/flowmap/e2e_grid.py` | End-to-end grid: placement, link plans, row heights, ports, channel and corridor tracks | `safe` |
 | `scripts/flowmap/e2e.py` | End-to-end polylines, crossing-cutting local search, and the drawing | `safe` |
-| `scripts/flowmap/overview_index.py` | The Overview's right column: flow index (Options page linked), kind, status and arrow colour legends | `safe` |
-| `scripts/flowmap/options.py` | The Options page (optional `options` block): decision flow, option step chains, aligned pros and cons | `safe` |
+| `scripts/flowmap/overview_index.py` | The Overview's right column: flow index (decision pages linked), kind, status and arrow colour legends | `safe` |
+| `scripts/flowmap/options.py` | Decision pages (never called options; optional `options` block or `decision_pages` by subject): decision flow, option step chains, aligned pros and cons | `safe` |
 | `scripts/flowmap/shapes.py` | Flow page shapes (flowchart symbols): derivation per step and lane head, per-page shape legend | `safe` |
 | `scripts/flowmap/flow_geometry.py` | Flow page geometry: step widths by shape (wider decisions), column gap and positions, run planning and lane room, back-arrow routes below the lanes | `safe` |
 | `scripts/flowmap/lanes.py` | Flow page lanes: lane heads (structured text; symbols sized to their text inside a plain panel), room kept for arrow runs, run positions | `safe` |

@@ -121,6 +121,8 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 
 ## Labels and text
 
+- Pages of open questions and their choices are **decision pages**, never "options", split by subject where a page would mix unrelated
+  questions (operator, 2026-10-22; data-first-diagrams.md, Learned 2026-10-22).
 - Two arrows never cross where drawing them in the other order would avoid it (operator, 2026-10-22: "unnecessary overlap for the arrows";
   `look.uncross`, on by default; layout-and-routing.md, Learned 2026-10-22).
 - Arrows turn with rounded corners on every page (operator, 2026-10-21: "make the arrows with curves like the overview"; `look.arrow_corners`).

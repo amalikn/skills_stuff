@@ -127,8 +127,22 @@ class OptionsPageTests(unittest.TestCase):
         """A page id used twice, or a group id used on two pages, is refused."""
         self.data["option_pages"] = [dict(_block(), id="same", title="One"), dict(_block(), id="same", title="Two")]
         problems = model.reference_problems(self.data, ROOT)
-        self.assertTrue(any("option page" in p for p in problems))
+        self.assertTrue(any("decision page" in p for p in problems))
         self.assertTrue(any("option group" in p for p in problems))
+
+    def test_decision_pages_never_called_options(self) -> None:
+        """Operator, 2026-10-22: the single block's tab reads "Decisions: <title>"; `decision_pages` draw one page per subject as
+        `decisions-<id>` with the title as the tab; no tab or index line says "Options"."""
+        self.data["options"] = _block()
+        self.data["decision_pages"] = [dict(_block(), id="ops", title="Operations decisions")]
+        for g in self.data["decision_pages"][0]["groups"]:
+            g["id"] = "d-" + g["id"]
+        blocks = model.option_blocks(self.data)
+        self.assertEqual([(pid, name) for pid, name, _ in blocks], [("options", "Decisions: Choices"), ("decisions-ops", "Operations decisions")])
+        text = pages.render(self.data, self.profile)
+        self.assertNotIn("Options:", text)
+        self.assertIn("decision page: questions, choices and what was decided", text)
+
 
 if __name__ == "__main__":
     unittest.main()

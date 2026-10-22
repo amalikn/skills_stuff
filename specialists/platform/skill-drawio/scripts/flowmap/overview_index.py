@@ -65,7 +65,7 @@ def colour_legend(page: Page, x: float, y: float, thick: list) -> float:
 
 
 def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> float:
-    """The flow index (one clickable box per flow page, plus the End-to-end page and, when the map has one, the Options page) and the component
+    """The flow index (one clickable box per flow page, plus the End-to-end page and, when the map has them, the decision pages) and the component
     kind legend, right of the group grid.
 
     Args:
@@ -82,8 +82,8 @@ def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> 
     page.box("ov-f-end-to-end", label("**End-to-end flow**", "every component and every flow on one page"), x, y + 40, 340, 52,
              "rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f4fa;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
              link="data:page/id,end-to-end", tooltip="All flows as coloured paths through their components, one layer per family")
-    for pid, name, block in option_blocks(data):   # option pages (flowmap.options) sit after the End-to-end entry; without them the index is unchanged
-        page.box(f"ov-f-{pid}", label(f"**{name}**", "the choices, each option's flow, pros, cons and the decisions"),
+    for pid, name, block in option_blocks(data):   # decision pages (flowmap.options) sit after the End-to-end entry; without them the index is unchanged
+        page.box(f"ov-f-{pid}", label(f"**{name}**", "the questions, each choice's flow, pros and cons, and what was decided"),
                  x, y + 102, 340, 52, "rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=6;",
                  link=f"data:page/id,{pid}", tooltip=block.get("purpose", block["title"]))
         y += 62
@@ -110,7 +110,7 @@ def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> 
     blocks = option_blocks(data)
     if blocks:   # the index's box colours (operator, 2026-10-21: the green option boxes had no legend)
         page.box("ov-idx-leg", label("**Legend: index boxes**"), x, bottom + 8, 340, 24, "text;html=1;align=left;fontSize=12;whiteSpace=wrap;")
-        for n, (key, text, fill, stroke) in enumerate((("opt", "option page: choices and decisions", "#d5e8d4", "#82b366"),
+        for n, (key, text, fill, stroke) in enumerate((("opt", "decision page: questions, choices and what was decided", "#d5e8d4", "#82b366"),
                                                        ("e2e", "End-to-end flow", "#f0f4fa", "#3d5a80"),
                                                        ("flow", "one flow's page", "#ffffff", "#3d5a80"))):
             page.box(f"ov-idx-{key}", label(text), x, bottom + 38 + n * 32, 340, 26,

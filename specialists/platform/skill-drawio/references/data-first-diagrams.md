@@ -222,3 +222,10 @@ When the signs disagree (a banner on a file the operator says they edited), stop
 > project's records), never the day an agent checked it. Stamping every live item with the audit day made month-old services read as new on a
 > drawing meant for the team and management. Keep the check in `evidence` ("... ; verified live <date>"); an item that predates the project says
 > so and uses the project's start date. Proposed and designed items keep the day they were recorded.
+
+> **Learned 2026-10-22** · decision pages, never options · USER_STATED · Source: unified-network-controller operator, 2026-10-22 ("Don't call it options ... it should be called decisions. And you can split decisions into multiple pages where it makes sense"); `scripts/flowmap/model.py` (`option_blocks`), `schemas/flowmap.schema.json` (`decision_pages`), `tests/test_options_page.py` (`test_decision_pages_never_called_options`) · Falsifier: a rendered tab, index line or legend that says "Options"
+> The pages that set a project's open questions beside their choices are **decision pages**. A map writes them as `decision_pages`, one page
+> per subject (page `decisions-<id>`, tab = its title), split where a page would hold unrelated questions; the single `options` block still
+> draws, its tab now "Decisions: <title>", and `option_pages` is still read (page `options-<id>`) so existing maps keep their links. The
+> Overview's index line and legend say "decision page". Inside a group the choices are still listed under `options` (the YAML key), which no
+> reader of the drawing sees.
