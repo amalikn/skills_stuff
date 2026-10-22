@@ -213,3 +213,17 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 >   the route crosses no other step (`flow_geometry._clear`); the label is a text mark on the route.
 > - **Long actions** written as clauses joined by "; " are set one clause a line as bullets.
 
+> **Learned 2026-10-22** · action bullets keep bracketed asides whole · VERIFIED_PRIMARY · Source: unified-network-controller flow page review, 2026-10-22; `scripts/flowmap/pages.py` (`action_clauses`), `tests/test_shapes.py` (`ActionClauseTests`) · Falsifier: a step box whose bullet starts or ends inside a bracket
+> `look.action_bullets` sets an action of clauses joined by "; " one clause a line. The split ran on every "; ", so "(the operator's click;
+> agents never approve)" became two bullets with a broken bracket. It now splits only outside brackets; an unbalanced closing bracket resets
+> to depth zero. Four unified-network-controller pages changed (each had a bracketed "; "), smc-resiliency's pages audit clean.
+>
+> ```python
+> # scripts/flowmap/pages.py (skills_stuff, 2026-10-22)
+> while i < len(text):
+>     if depth == 0 and text.startswith("; ", i):
+>         out, cur, i = out + [cur], "", i + 2
+>         continue
+>     depth = max(0, depth + (text[i] in "([{") - (text[i] in ")]}"))
+>     cur, i = cur + text[i], i + 1
+> ```

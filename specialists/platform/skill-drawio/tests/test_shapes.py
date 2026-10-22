@@ -211,5 +211,18 @@ class PlanRunsTests(unittest.TestCase):
         self.assertEqual(plan[("reg", "rec")][0], "bottom")
         self.assertEqual(plan[("rec", "fetch")][0], "left")
 
+
+class ActionClauseTests(unittest.TestCase):
+    """flowmap.pages.action_clauses: bullets split on "; " outside brackets only (operator review 2026-10-22)."""
+
+    def test_bracketed_aside_stays_whole(self) -> None:
+        """A "; " inside brackets does not start a bullet; one outside does."""
+        mod = importlib.import_module("flowmap.pages")
+        self.assertEqual(mod.action_clauses("Approve the wave (the operator's click; never an agent); log it"),
+                         ["Approve the wave (the operator's click; never an agent)", "log it"])
+        self.assertEqual(mod.action_clauses("one; two"), ["one", "two"])
+        self.assertEqual(mod.action_clauses("unbalanced) a; b"), ["unbalanced) a", "b"])
+
+
 if __name__ == "__main__":
     unittest.main()

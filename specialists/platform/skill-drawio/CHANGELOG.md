@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261022 Action bullets split on "; " outside brackets only (`pages.action_clauses`); test `ActionClauseTests`; Learned 2026-10-22 in `references/visual-style.md` (unified-network-controller review).
 - 20261022 Schema: `status.since` described as the date the item reached its state (go-live for live), never a check date; Learned 2026-10-22 in `references/data-first-diagrams.md` (side agent's note on unified-network-controller's map).
 - 20261022 Option pages: each arrow from a decision box to its options gets its own track (`options.TRACK`; nearest option on the band, farther ones higher), so two options under evaluation no longer share a run; test `test_two_evaluated_options_get_their_own_tracks` (fails on the old code); single-target pages byte-identical; Learned 2026-10-22 in `references/layout-and-routing.md` with a screenshot (operator review, unified-network-controller Options page).
 - 20261022 `scripts/flowmap/overview_index.py`: the Overview's flow index boxes are sized to their wrapped title and status line (`index_height`, at least the old 52 px) and stacked by their real height; two-line titles overflowed (operator, smc-resiliency: "box ten and eleven is getting a bit tight"). Tests `IndexHeightTests` (2).
