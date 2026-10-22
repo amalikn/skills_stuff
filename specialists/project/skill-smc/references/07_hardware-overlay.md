@@ -1069,3 +1069,13 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 >
 > Screenshot: not applicable (no visual surface).
 
+> **Learned 2026-10-22** · Ubuntu 24.04 site config rendered into a confext · VERIFIED_PRIMARY · Source: smc-resiliency S2 report section 6 (S2-8 to S2-15), spike VM `smc-pi-spike01` (Ubuntu 24.04 arm64, systemd 255), code `spike/onbox/smcbox/site.py` (uncommitted at writing; smc-resiliency commit pending) · Falsifier: `dhcpd -t -cf /run/...` passing under the stock AppArmor profile, or systemd-confext.service enabled on a stock 24.04 install
+> Rendering an SMC's site config into `/run` and merging it as a confext on 24.04 needs four things the stock image does not give:
+> - **dhcpd's AppArmor profile** only lets `dhcpd` read under `/etc/dhcp`, so `dhcpd -t -cf <rendered file>` fails; run the syntax check in a
+>   private mount namespace with the rendered file bind-mounted at `/etc/dhcp/dhcpd.conf`.
+> - **`unbound-checkconf`** fails unless `/run/unbound` exists (the pidfile directory); create it first.
+> - **netplan's systemd generator runs before the confext merge**, so at boot it sees the base `/etc/netplan`; a `netplan apply` after the merge
+>   is needed for the rendered netplan to take effect.
+> - **`systemd-confext.service` is disabled** on a stock 24.04 install; with `/etc` read-only the units that enable it must ship in `/usr/lib`.
+> Measured on the VM: render and checks 0.3 s; merged 5.4 s after kernel start. Screenshot: not applicable (no visual surface).
+

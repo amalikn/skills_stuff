@@ -78,5 +78,12 @@ class FlowRouterTests(unittest.TestCase):
         page.route("e", "a", "b", [(100, 25), (250, 25), (250, 200)], "edgeStyle=none;")
         self.assertIn("entryY=1;", page.cells[-1])
 
+    def test_flow_quality_counts_a_clean_page(self) -> None:
+        """flow_quality: the crowded page has no faults, crossings or shared starts."""
+        fq = importlib.import_module("flow_quality")
+        data = _crowded()
+        q = fq.page_quality(pages.flow_page(data["flows"][0], {c["id"]: c for c in data["components"]}, 1, TestMap._profile(data)))
+        self.assertEqual((q["faults"], q["crossings"], q["shared_starts"]), ([], 0, 0))
+
 if __name__ == "__main__":
     unittest.main()

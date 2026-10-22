@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261022 `scripts/flow_quality.py` (`just flow-quality`): per flow page, audit faults, crossings and shared starts; exit 1 on any. Promoted from smc-resiliency's session scan (29 pages clean); test.
 - 20261021 Schema `next` states the branch-order rule (first = gate passes, Yes; second = fails, No; `when` for other cases); Learned 2026-10-21 in `references/data-first-diagrams.md` (all existing gates checked: smc-resiliency six correct, unified-network-controller none).
 - 20261021 `drawio.mxfile.Page.route` mirrors a port's fraction on a flipped shape (`flipH`, `flipV`): draw.io reads entryY=0 on a flipV trapezoid (manual operation) as its bottom, so an arrow into its top was drawn through it (unified-network-controller topology flow); `Page.cell_style` keeps each vertex's style; test added; Learned 2026-10-21 in `references/file-format.md`.
 - 20261021 Step box proportions (`pages.size_steps`): a box that would be taller than `look.max_aspect` (0.8) times its width is widened in 20 px steps up to the decision width; terminators use a fixed corner radius (`absoluteArcSize`, 36 px) so a tall one keeps straight sides; the page header takes the widened width. Operator review of unified-network-controller's Deploy flow (step 11 squeezed against its curved ends).

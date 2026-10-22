@@ -200,6 +200,10 @@ render-flowmap *args: _require-venv
 count-crossings *args: _require-venv
     @{{py}} scripts/count_crossings.py "$@"
 
+# Quality of every flow page a map renders (faults, crossings, shared starts); read-only. Run from a project root: --map docs/flows/flows.yaml
+flow-quality *args: _require-venv
+    @{{py}} scripts/flow_quality.py "$@"
+
 # Render the example map (examples/shop/flows.yaml) into examples/shop/drawio/flows.drawio (modifies that file only)
 example: _require-venv
     @{{py}} scripts/render_flowmap.py --root examples/shop --map flows.yaml --write
