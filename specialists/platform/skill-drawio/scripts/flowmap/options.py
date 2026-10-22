@@ -25,6 +25,8 @@ COL_W, STEP_W, ARROW_GAP, LINE_H, HEAD_LINE_H = 300, 260, 30, 14, 15
 WAVE = 0.075
 #: Decision column width, and the gap between a group's question and its option heads (a decision arrow runs along its middle).
 DEC_W, HEAD_GAP = 280, 56
+#: Spacing of the tracks when a decision points at more than one option (each arrow its own run, stacked above the band).
+TRACK = 18
 #: Characters per line: step boxes (260 px, font 11), pros/cons, option heads and decision boxes (280 px, font 11).
 STEP_CHARS, BOX_CHARS, DEC_CHARS = 42, 50, 50
 #: Fill and stroke per option status; the head of a chosen option is bold green, a rejected one grey.
@@ -253,12 +255,16 @@ def _group_row(page: Page, g: dict, number: int, x0: float, width: float, y: flo
     head_h = max(_height(_head_lines(o, scale), BOX_CHARS) for o in g["options"])
     bottom = max(_option_chain(page, g["id"], o, x0 + i * (COL_W + GAP), heads_top, head_h, scale) for i, o in enumerate(g["options"]))
     decided = any(o["status"] == "chosen" for o in g["options"])
-    for i, o in enumerate(g["options"]):   # solid to a chosen option; while open, dashed to an option under evaluation
-        if o["status"] == "chosen" or (not decided and o["status"] == "evaluate"):
-            cx = x0 + i * (COL_W + GAP) + COL_W / 2
-            style = DEC_ARROW if decided else OPEN_ARROW
-            page.route(f"{dec}-to-{o['id']}", dec, f"opt-{g['id']}-{o['id']}-head", [(MARGIN + DEC_W, band), (cx, band), (cx, heads_top)],
-                       style, klass="thick", ignore=(f"opt-{g['id']}",))
+    targets = [(i, o) for i, o in enumerate(g["options"])   # solid to a chosen option; while open, dashed to an option under evaluation
+               if o["status"] == "chosen" or (not decided and o["status"] == "evaluate")]
+    for k, (i, o) in enumerate(targets):
+        # one track each (operator review 2026-10-22: two arrows to two options under evaluation shared one run): the nearest option keeps the
+        # band, so its arrowhead keeps its room, and each farther one runs a track higher, so no drop crosses an arrow still running right
+        ty = band - k * min(TRACK, (HEAD_GAP / 2 - 6) / max(len(targets) - 1, 1))
+        cx = x0 + i * (COL_W + GAP) + COL_W / 2
+        style = DEC_ARROW if decided else OPEN_ARROW
+        page.route(f"{dec}-to-{o['id']}", dec, f"opt-{g['id']}-{o['id']}-head", [(MARGIN + DEC_W, ty), (cx, ty), (cx, heads_top)],
+                   style, klass="thick", ignore=(f"opt-{g['id']}",))
     y = _tradeoff_row(page, g["id"], g["options"], "pros", x0, bottom + GAP) + GAP / 2
     return _tradeoff_row(page, g["id"], g["options"], "cons", x0, y) + GAP * 2, dec
 

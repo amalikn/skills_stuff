@@ -371,3 +371,19 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 >     else:
 >         _restore(page, snap)
 > ```
+
+> **Learned 2026-10-22** · option pages: one track per decision arrow · VERIFIED_PRIMARY · Source: unified-network-controller Options page, operator review 2026-10-22; `scripts/flowmap/options.py` (`_group_row`, `TRACK`), `tests/test_options_page.py` (`test_two_evaluated_options_get_their_own_tracks`); screenshot `references/screenshots/20261022-option-tracks/` · Falsifier: two arrows from one decision box sharing a run, or a drop crossing an arrow still running right
+> Every arrow from a decision box to its options started at one point and ran at one height, so a question with two options under evaluation
+> (or two chosen) drew two arrows on one run (audit `shared_runs`). Each arrow now has its own track: the one to the nearest option keeps the band
+> (its arrowhead keeps the head room the audit asks for), each farther one runs a track higher, spaced 18 px or less so all fit between the
+> question box and the band. Nearest lowest means no arrow's drop crosses one still running right. One target draws exactly as before, so
+> existing pages are byte-identical (smc-resiliency's option pages audited clean). The test fails with the old code.
+>
+> ```python
+> # scripts/flowmap/options.py (skills_stuff, 2026-10-22)
+> for k, (i, o) in enumerate(targets):
+>     ty = band - k * min(TRACK, (HEAD_GAP / 2 - 6) / max(len(targets) - 1, 1))
+>     cx = x0 + i * (COL_W + GAP) + COL_W / 2
+>     page.route(f"{dec}-to-{o['id']}", dec, f"opt-{g['id']}-{o['id']}-head", [(MARGIN + DEC_W, ty), (cx, ty), (cx, heads_top)],
+>                style, klass="thick", ignore=(f"opt-{g['id']}",))
+> ```

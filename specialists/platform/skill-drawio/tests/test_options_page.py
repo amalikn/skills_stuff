@@ -78,6 +78,19 @@ class OptionsPageTests(unittest.TestCase):
         chain = [(r.src, r.dst) for r in page.routes if r.dst.startswith("opt-dec-")]
         self.assertEqual(chain, [("opt-dec-start", "opt-dec-g1"), ("opt-dec-g1", "opt-dec-g2")])
 
+    def test_two_evaluated_options_get_their_own_tracks(self) -> None:
+        """Two options under evaluation in one open group (unified-network-controller asset custody, operator review 2026-10-22): two dashed
+        arrows, each on its own run (no shared run), the nearer one lower, and the page audit clean."""
+        block = _block()
+        block["groups"][0]["options"][0]["status"] = "evaluate"
+        block["groups"][0]["options"][2]["status"] = "rejected"
+        self.data["options"] = block
+        page = options.options_page(self.data, self.profile)
+        arrows = sorted((r for r in page.routes if r.src == "opt-dec-g1" and not r.dst.startswith("opt-dec-")), key=lambda r: r.points[-1][0])
+        self.assertEqual([r.dst for r in arrows], ["opt-g1-a-head", "opt-g1-b-head"])
+        self.assertGreater(arrows[0].points[0][1], arrows[1].points[0][1])
+        self.assertEqual(audit.faults(audit.page_audit(page)), [])
+
     def test_skipping_arrow_climbs_in_target_column(self) -> None:
         """An arrow from step 1 to step 3 in another lane, with step 2 in step 3's lane, enters step 3 from below (2026-10-21: 6 to 8 crossed 7)."""
         steps = [{"id": "pre", "actor": "a"}, {"id": "check", "actor": "h", "next": ["keep", "revert"]}, {"id": "keep", "actor": "a", "next": []},
