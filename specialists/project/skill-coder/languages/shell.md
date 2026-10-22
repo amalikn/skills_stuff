@@ -116,3 +116,23 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > perl -e 'alarm 150; exec @ARGV' just unc01::run -c 'journalctl -u unc-collector.service --since "2026-10-20 21:00" --no-pager'
 > ```
 
+
+> **Learned 2026-10-22** · bash, stdin redirections on one command · VERIFIED_PRIMARY (a probe run as `tsh ssh host "bash -s" <<<"$PROBE" </dev/null`
+> printed nothing on every host; without the trailing `</dev/null` it ran) · Source: skill-smc `scripts/php_package_probe.sh` (skills_stuff
+> cecfe50, its draft in a session scratchpad) · Falsifier: a shell where the first of two stdin redirections wins
+> Redirections apply left to right, so a later `</dev/null` replaces an earlier here-string or `< script` as stdin: `bash -s` then reads
+> nothing and exits 0 with no output. When a command takes its script on stdin, give it exactly one stdin redirection:
+>
+> ```bash
+> line="$(tsh ssh --proxy="$proxy" "root@$node" "DEEP=${DEEP:-0} bash -s" <<<"$PROBE" 2>&1 | tr -d '\r' | grep '^PHPPROBE|' | head -1)"
+> ```
+
+> **Learned 2026-10-22 (b)** · Debian/Ubuntu, `dpkg-query -W '<glob>'` · VERIFIED_PRIMARY (on every SMC surveyed, `'php8.1-*'` matched about 20
+> packages that were not installed) · Source: skill-smc `scripts/php_package_probe.sh` (skills_stuff cecfe50) · Falsifier: a dpkg release whose
+> `-W` with a glob lists installed packages only
+> A glob matches every package dpkg knows, including removed ones and ones never installed but listed by a dependency, so feeding the list to
+> `apt-get install` installs packages the box did not have. Filter on the status first:
+>
+> ```bash
+> pkgs=$(dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' 'php8.1-*' libapache2-mod-php8.1 2>/dev/null | awk '$1=="ii"{print $2}')
+> ```

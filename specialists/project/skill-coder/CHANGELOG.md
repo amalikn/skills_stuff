@@ -15,6 +15,8 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261022 Learned 2026-10-22 (b) in `languages/shell.md`: `dpkg-query -W '<glob>'` lists packages that are not installed; filter on `${db:Status-Abbrev}` = `ii`.
+- 20261022 Learned 2026-10-22 in `languages/shell.md`: a later `</dev/null` replaces a here-string as stdin, so `bash -s` reads nothing; one stdin redirection per command.
 - 20261021 Learned 2026-10-21 (b) in `references/refactoring-and-promotion.md`: find a moved file's readers by path, not only its importers.
 - 20261021 Learned 2026-10-21 in `references/refactoring-and-promotion.md`: promote with `--project-root`, project strings as data (pilot byte-identical), and project checks loading the skill script by path.
 - 20261021 Learned 2026-10-21 in `references/testing.md`: prove a reformatter moved no content by comparing rebuilt structure cell by cell, with a negative test.
