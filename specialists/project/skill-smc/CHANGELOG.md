@@ -45,6 +45,7 @@ Last rotated: 20261022_1653
 Operator approved the read-only voip capture on all 17 rcp boxes (enterprise-strategy RouterOS study, 58 s): Asterisk 77–153 MB resident, about 100 MB
 typical (`references/07_hardware-overlay.md`). `references/13_known-issues.md`: umoona-smc01 still has no Asterisk process (as on 2026-08-25), nocprov none;
 `collect-smc-evidence-full.sh` has no per-call `tsh` deadline (run wrapped in a perl alarm). manifest 0.6.6 -> 0.6.7.
+Corrected the same day (operator): umoona has no active SIP clients, so its missing Asterisk is known and not an outage.
 
 ## 20261022_1623 — collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)
 

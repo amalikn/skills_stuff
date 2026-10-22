@@ -1378,7 +1378,7 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 
 ## 2026-10-22 — umoona still has no Asterisk process; collect-smc-evidence-full.sh has no tsh deadline (OPEN)
 
-- umoona-smc01: the 2026-10-22 voip capture found no Asterisk process, as on 2026-08-25 (unit `active (exited)`, see `scripts/README.md`), so its
-  phones have likely had no local PBX for about two months. nocprov-smc01 (provisioning box) has none either. `VERIFIED-OBSERVED` 2026-10-22.
+- umoona-smc01: the 2026-10-22 voip capture found no Asterisk process, as on 2026-08-25 (unit `active (exited)`, see `scripts/README.md`), and the operator confirms
+  umoona has no active SIP clients (known, 2026-10-22), so this is not an outage. nocprov-smc01 (provisioning box) has none either. `VERIFIED-OBSERVED` 2026-10-22.
 - `scripts/collect-smc-evidence-full.sh` calls `tsh ssh` without a deadline (lines with `tsh ssh "${SSH_USER}@${host}"`), against this pack's access
   rule. The 2026-10-22 run wrapped each host in `perl -e 'alarm 150; exec @ARGV'` (no `timeout` on macOS). Fix: a per-call deadline inside the script.
