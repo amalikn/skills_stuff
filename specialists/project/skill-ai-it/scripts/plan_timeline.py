@@ -10,6 +10,10 @@ promoted into skill-ai-it on 2026-10-21 when smc-resiliency kept its timeline as
 
 The data file names the page (`render_to`), the sentence saying where the dates come from (`source`, optional `note`) and the columns after
 Due and Schedule (`columns`: [{key, header}], default Stage, Step, Where it stands, Next with), so nothing here knows a project.
+A column may add `link_ids: {page, heading}` (operator, 2026-10-22: "hyperlink where possible"): each comma-separated id in a cell that
+holds no link yet becomes a link to the first heading of `page` (relative to the project root) whose text is `heading` with `{id}` filled
+in, followed by a space or nothing (`heading: "Step {id}"` finds "Step 2 — Monitoring", not "Step 21"). An id with no such heading stays
+plain text. The data keeps plain ids and the links follow a retitled heading on the next render.
 
 Reads the YAML and the target page. Without `--write` it writes nothing: it validates, compares the page with a render for today and exits
 1 on a problem or a difference. A project's governance check calls evaluate(), fails on a problem and only notes a page that trails today;
@@ -31,6 +35,8 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import os
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -39,6 +45,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from table_wrap import WRAP_WIDTH, wrap_table  # the shared hook-compatible table wrapper (2026-10-22)
+from anchor_links import headings  # GitHub/VS Code heading anchors, shared with the anchor-link check (2026-10-22)
 
 DATA = "docs/trackers/plan-timeline.yaml"
 END = "<!-- END GENERATED: plan-timeline -->"
@@ -219,7 +226,63 @@ def columns_of(data: dict, data_path: str = DATA) -> tuple[list[dict], list[str]
         return [dict(c) for c in DEFAULT_COLUMNS], []
     if not isinstance(raw, list) or not all(isinstance(c, dict) and c.get("key") and c.get("header") for c in raw):
         return [], [f"{data_path}: `columns` must be a list of {{key, header}}"]
-    return [{"key": str(c["key"]), "header": str(c["header"])} for c in raw], []
+    out, problems = [], []
+    for c in raw:
+        col = {"key": str(c["key"]), "header": str(c["header"])}
+        spec = c.get("link_ids")
+        if spec is not None:
+            if not isinstance(spec, dict) or not spec.get("page"):
+                problems.append(f"{data_path}: column `{col['key']}` link_ids must be {{page, heading}}")
+            else:
+                col["link_ids"] = {"page": str(spec["page"]), "heading": str(spec.get("heading", "{id}"))}
+        out.append(col)
+    return out, problems
+
+
+def link_ids(rows: list[dict], columns: list[dict], root: Path, render_to: str) -> list[str]:
+    """Turn the plain ids in each `link_ids` column into links to their headings, in place.
+
+    Args:
+        rows: validated rows; their cells are rewritten.
+        columns: the columns, as columns_of() returns them.
+        root: the project root.
+        render_to: the page the table lands in, relative to root (links are relative to its folder).
+
+    Returns:
+        Problems: a `link_ids` page that does not exist.
+    """
+    problems = []
+    for col in columns:
+        spec = col.get("link_ids")
+        if not spec:
+            continue
+        page = root / spec["page"]
+        if not page.is_file():
+            problems.append(f"column `{col['key']}` link_ids page {spec['page']} does not exist")
+            continue
+        index = headings(page)
+        rel = Path(os.path.relpath(page, (root / render_to).parent)).as_posix()
+
+        def one(tok: str) -> str:
+            """One cell token, linked when it is a plain id with a heading.
+
+            Args:
+                tok: the token, stripped.
+
+            Returns:
+                The token or its link.
+            """
+            want = spec["heading"].format(id=tok)
+            for text, anchor in index:
+                if text == want or text.startswith(want + " "):
+                    return f"[{tok}]({rel}#{anchor})"
+            return tok
+
+        for row in rows:
+            value = str(row.get(col["key"], "") or "")
+            if value and "[" not in value:  # a cell with a hand-written link is left as written
+                row[col["key"]] = "".join(p if i % 2 else one(p) for i, p in enumerate(re.split(r"(,\s*)", value)))
+    return problems
 
 
 def validate(data: object, data_path: str = DATA) -> tuple[list[dict], list[str]]:
@@ -368,6 +431,9 @@ def evaluate(root: Path, today: dt.date, data_path: str = DATA) -> Outcome:
     if problems:
         return Outcome(problems)
     columns, _ = columns_of(data, data_path)
+    problems = link_ids(rows, columns, root, str(data.get("render_to", "")))
+    if problems:
+        return Outcome(problems)
     wrap = int(data.get("wrap_width", WRAP_WIDTH) or 0)
     block = render(rows, str(data.get("source", "")).strip(), today, columns, " ".join(str(data.get("note", "")).split()), data_path, wrap)
     page_path = root / str(data.get("render_to", ""))

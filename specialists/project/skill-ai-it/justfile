@@ -231,6 +231,10 @@ move-sections *ARGS: _require-venv
 target-map project *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/target_map.py" --project-root "{{project}}" {{ARGS}}
 
+# A project's anchor links: every link to a `#heading` lands on a heading that exists. Read-only: `just anchor-links ../some-project --check`
+anchor-links project *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/anchor_links.py" --project-root "{{project}}" {{ARGS}}
+
 # A project's plan timeline: validate its docs/trackers/plan-timeline.yaml and report drift for today; `--write` renders the block. Plan by default
 plan-timeline project *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/plan_timeline.py" --project-root "{{project}}" {{ARGS}}

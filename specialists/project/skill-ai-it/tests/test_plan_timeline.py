@@ -244,3 +244,51 @@ class WrapTable(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LinkIds(unittest.TestCase):
+    """link_ids: plain ids in a declared column link to their headings (2026-10-22)."""
+
+    def _project(self, tmp, column, cell):
+        """A project with a step tracker, a page and one row.
+
+        Args:
+            tmp: the temporary folder.
+            column: the column's YAML mapping text.
+            cell: the row's value for that column (YAML scalar text).
+
+        Returns:
+            The project root.
+        """
+        root = Path(tmp)
+        (root / "docs/trackers").mkdir(parents=True)
+        (root / "docs/trackers/steps.md").write_text(
+            "# Steps\n\n### Step 1 — Unattended transport\n\n### Step 10 — Remaining families\n\n### Step CA — Code: stages\n", encoding="utf-8")
+        (root / pt.DATA).write_text(
+            "source: the plan\nrender_to: docs/trackers/page.md\n"
+            f"columns:\n  - {{key: step, header: Step}}\n  - {column}\nrows:\n  - {{due: 2026-10-23, step: proof, ours: {cell}}}\n",
+            encoding="utf-8")
+        (root / "docs/trackers/page.md").write_text(f"{pt.BEGIN}\n{pt.END}\n", encoding="utf-8")
+        return root
+
+    def test_ids_link_to_their_heading_and_unknown_ids_stay_plain(self):
+        """1 and CA link (not to Step 10); 7 has no heading and stays text; separators are kept."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._project(tmp, '{key: ours, header: Ours, link_ids: {page: docs/trackers/steps.md, heading: "Step {id}"}}', '"1, CA,7"')
+            out = pt.evaluate(root, D(2026, 10, 22))
+            self.assertEqual(out.problems, [])
+            self.assertIn("[1](steps.md#step-1--unattended-transport), [CA](steps.md#step-ca--code-stages),7", out.block)
+
+    def test_a_cell_with_a_hand_link_is_left_alone(self):
+        """A hand-written link keeps the whole cell as written."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._project(tmp, '{key: ours, header: Ours, link_ids: {page: docs/trackers/steps.md, heading: "Step {id}"}}', '"[x](y.md), 1"')
+            self.assertIn("[x](y.md), 1 ", pt.evaluate(root, D(2026, 10, 22)).block)
+
+    def test_missing_page_and_bad_spec_are_problems(self):
+        """A link_ids page that does not exist, or a spec without a page, is refused."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._project(tmp, "{key: ours, header: Ours, link_ids: {page: docs/none.md}}", '"1"')
+            self.assertIn("does not exist", pt.evaluate(root, D(2026, 10, 22)).problems[0])
+        cols, problems = pt.columns_of({"columns": [{"key": "a", "header": "A", "link_ids": "x"}]})
+        self.assertTrue(problems)

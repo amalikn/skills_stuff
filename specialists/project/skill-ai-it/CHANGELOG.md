@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1632
+Last rotated: 20261022_1741
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings](#20261022_1741--anchor_links-promoted-plan_timeline-links-ids-to-their-headings)
 - [20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too](#20261022_1632--table_wrap-shared-hook-compatible-wrapper-target-map-embeds-wrap-too)
 - [20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables](#20261022_1623--plan_timeline-the-timeline-table-wraps-like-the-pages-other-tables)
 - [20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above](#20261022_1646--target-map-reference-summary-is-one-short-line-a-missed-stage-heading-folds-its-checklist-into-the-stage-above)
@@ -35,9 +36,19 @@ Last rotated: 20261022_1632
 - [20261019_1707 — Recipe names back to kebab-case; upgrader renames the template's snake_case recipes](#20261019_1707--recipe-names-back-to-kebab-case-upgrader-renames-the-templates-snake_case-recipes)
 - [20261015_0129 — doc_freshness: a Budget header counts only with a size](#20261015_0129--doc_freshness-a-budget-header-counts-only-with-a-size)
 - [20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade](#20261014_1247--yaml_key_diff-context-map-key-changes-and-lost-comments-after-an-upgrade)
-- [20261014_1234 — pitfalls: the navigation upgrade drops context-map.yaml comments](#20261014_1234--pitfalls-the-navigation-upgrade-drops-context-mapyaml-comments)
-- [20261014_1233 — validator: accepts the compact template's generated-output wording](#20261014_1233--validator-accepts-the-compact-templates-generated-output-wording)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings
+
+Operator, 2026-10-22, on unified-network-controller's plan tracker: "there should be hyperlink where possible, so that there is easy
+navigation", with smc-resiliency's tracker as the pattern, then "yes" to promoting what both projects now share.
+
+- `scripts/anchor_links.py` (new, read-only): every markdown link to a `#heading` must land on a heading that exists. Same rule as the
+  copies piloted that day in smc-resiliency's and unified-network-controller's govchecks, which now call this one. Recipe `just anchor-links`.
+- `scripts/plan_timeline.py`: a column may declare `link_ids: {page, heading}`; plain ids in its cells link to the first heading of
+  `page` matching `heading` with the id filled in (`Step {id}` finds "Step 2 — ...", not "Step 21"). Unknown ids stay text; a cell that already
+  holds a link is left as written, so hand-linked data keeps rendering byte for byte.
+- Tests: `tests/test_anchor_links.py` (slugs, repeats, HTML anchors, skips, exit code) and three `LinkIds` cases; 201 pass.
 
 ## 20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too
 
@@ -170,19 +181,6 @@ templates/check_governance.py defined the `KEBAB_LEGACY` and `CODE_SUFFIXES` reg
   added keys, one expected lost comment (the old version stamp). Promoted from the smc-resiliency refresh's ad hoc check. 102 tests.
 - `references/navigation-automation.md`: run the scripts with the venv python or `just nav_*`; a bare `python3` stops the upgrader on PyYAML.
   Step 5 names the new check. `references/pitfalls.md` points to it.
-
-## 20261014_1234 — pitfalls: the navigation upgrade drops context-map.yaml comments
-
-- `references/pitfalls.md`: the update_rules merge re-serialises `context-map.yaml` and loses its comments, including the purpose
-  header; compare old and new by key, then restore the comments (smc-resiliency refresh, 2026-10-14).
-
-## 20261014_1233 — validator: accepts the compact template's generated-output wording
-
-- `validate_navigation_control_layer.py`: the generated-output policy check matched only "support-only", but the compact template
-  (2026-10-10-compact-v1 on) says "never a source of truth", so every compact-block project failed it (found on smc-resiliency
-  refresh, 2026-10-14). It now accepts both wordings.
-- New `tests/test_validate_navigation.py` runs the validator against `templates/AI_NAVIGATION.md`, so template wording that the
-  validator rejects fails a test; red without the fix, green with it. 99 tests.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 
