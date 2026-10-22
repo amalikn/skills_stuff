@@ -36,7 +36,8 @@ KP_ENTRY="${KP_ENTRY:-Network/SMC}"
 
 # backdoor-watch.sh prints "Resolved '<t>' -> <host> (<flavour>) -> <bastion> via <cluster>, backdoor port <port>" on
 # stderr and "<port> UP|DOWN" on stdout.
-check="$(bash "$HERE/backdoor-watch.sh" "$TARGET" check 2>&1)" || { echo "$check" >&2; exit 2; }
+# </dev/null on every helper: its tsh or kp would otherwise eat a script given on stdin (2026-10-22).
+check="$(bash "$HERE/backdoor-watch.sh" "$TARGET" check 2>&1 </dev/null)" || { echo "$check" >&2; exit 2; }
 resolved="$(echo "$check" | grep '^Resolved ')"
 host="$(echo "$resolved" | sed -E "s/^Resolved '[^']*' -> ([^ ]+) .*/\1/")"
 bastion="$(echo "$resolved" | sed -E 's/.* -> ([^ ]+) via .*/\1/')"
@@ -48,7 +49,7 @@ if ! echo "$check" | grep -q "^$port UP"; then
   exit 3
 fi
 
-SSHPASS="$(kp show -s -a Password "$KP_ENTRY" 2>/dev/null)"
+SSHPASS="$(kp show -s -a Password "$KP_ENTRY" 2>/dev/null </dev/null)"
 if [ -z "$SSHPASS" ]; then
   echo "no credential from kp entry '$KP_ENTRY'" >&2
   exit 5

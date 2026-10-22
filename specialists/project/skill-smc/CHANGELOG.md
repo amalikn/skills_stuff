@@ -13,6 +13,7 @@ Last rotated: 20261022_1200
 
 ## Contents
 
+- [20261022_1226 — backdoor_exec.sh passes a stdin script through (v0.6.1 -> v0.6.2)](#20261022_1226--backdoor_execsh-passes-a-stdin-script-through-v061---v062)
 - [20261022_1200 — PHP CVE fleet status, extra PHP processes, backdoor hostname check, nbn_wh read rule (v0.6.0 -> v0.6.1)](#20261022_1200--php-cve-fleet-status-extra-php-processes-backdoor-hostname-check-nbn_wh-read-rule-v060---v061)
 - [20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.6.0)](#20261020_2028--sky-muster-reads-session-set-up-and-the-concurrency-curve-v059---v060)
 - [20261020_1905 — networkd keeps changed netdevs; render with the task's options; /etc executables; fleet-health TSH_PROXY and fqdn2ip bundle (v0.5.8 -> v0.5.9)](#20261020_1905--networkd-keeps-changed-netdevs-render-with-the-tasks-options-etc-executables-fleet-health-tsh_proxy-and-fqdn2ip-bundle-v058---v059)
@@ -38,6 +39,11 @@ Last rotated: 20261022_1200
 - [20261014_1513 — x86 SMC facts, Teleport static-token join, x86 resiliency probe (v0.4.0 -> v0.4.1)](#20261014_1513--x86-smc-facts-teleport-static-token-join-x86-resiliency-probe-v040---v041)
 - [20261014_0900 — Pi bootloader already supports tryboot A/B (v0.3.9 -> v0.4.0)](#20261014_0900--pi-bootloader-already-supports-tryboot-ab-v039---v040)
 - [20261013_2352 — umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)](#20261013_2352--umoona-vlan621-dark-again-uplink-check-cost-v038---v039)
+
+## 20261022_1226 — backdoor_exec.sh passes a stdin script through (v0.6.1 -> v0.6.2)
+
+`scripts/backdoor_exec.sh`: the `tsh` inside `backdoor-watch.sh` and `kp` read stdin, so a script given with `-` was eaten before it reached the box (rc 0,
+no output). Every helper now runs with `</dev/null`. Retested 2026-10-22: goojarr-goonyool and mount-peachy (rct, Teleport down) probed through the backdoor.
 
 ## 20261022_1200 — PHP CVE fleet status, extra PHP processes, backdoor hostname check, nbn_wh read rule (v0.6.0 -> v0.6.1)
 
