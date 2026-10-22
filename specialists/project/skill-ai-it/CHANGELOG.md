@@ -18,6 +18,7 @@ Last rotated: 20261022_1632
 
 - [20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too](#20261022_1632--table_wrap-shared-hook-compatible-wrapper-target-map-embeds-wrap-too)
 - [20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables](#20261022_1623--plan_timeline-the-timeline-table-wraps-like-the-pages-other-tables)
+- [20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above](#20261022_1646--target-map-reference-summary-is-one-short-line-a-missed-stage-heading-folds-its-checklist-into-the-stage-above)
 - [20261022_1439 — audit_rotations: safety header and git timeouts; rewrap tolerance reverted](#20261022_1439--audit_rotations-safety-header-and-git-timeouts-rewrap-tolerance-reverted)
 - [20261022_1209 — plan_timeline: after places unplanned rows beside their plan step](#20261022_1209--plan_timeline-after-places-unplanned-rows-beside-their-plan-step)
 - [20261022_1209 — Plan timeline: extra rows before the plan rows they feed on one date](#20261022_1209--plan-timeline-extra-rows-before-the-plan-rows-they-feed-on-one-date)
@@ -53,6 +54,11 @@ now passes the Timeline table through the markdown hook's own table formatter (t
 `wrap_table`; a data file's `wrap_width` sets N (default 200, 0 keeps one line per row); without Node or the tool (`TABLE_REFLOW_CLI`) the
 table stays unwrapped. Measured on unified-network-controller: render 0.34 s, the hook's formatter leaves the rendered block unchanged, the page
 check reads current. Tests `WrapTable` (193 pass). Learned 2026-10-22 in `references/target-map-and-timeline.md`.
+
+## 20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above
+
+`references/target-map-and-timeline.md`: `summary` is one short line of where a target stands (operator, smc-resiliency 2026-10-22); Learned
+2026-10-22: a `target_heading` pattern that misses a stage heading silently gives its checklist to the target above (smc-resiliency SM and S6).
 
 ## 20261022_1439 — audit_rotations: safety header and git timeouts; rewrap tolerance reverted
 

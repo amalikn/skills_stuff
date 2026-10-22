@@ -33,6 +33,9 @@ is the cheap read. Since the promotion:
   from 1, cut at its first full stop; `[x]` items are recorded as ticked and the validator warns when the map's verdict disagrees. A source target whose plan writes no checklist carries `criteria:
   []`.
 - **`changelog.started_only: true`** exempts `not started` targets from the change-log rule (operator, 2026-10-21: stale rule applies only to started stages).
+- **`summary` is one short line of where the target stands** (operator, smc-resiliency 2026-10-22: "a summary in where it stands", not everything
+  verbatim): its state and what it waits on, in about fifteen words; the account of what was done goes in the change log and the plan, never in
+  `summary`, which the embedded table shows on every render.
 - **`embed: [{path, heading}]`** renders the summary table (state, where it stands, blocker, next action, each id linking to its tracker section) into another page between `<!-- BEGIN GENERATED:
   target-map ... -->` and `<!-- END GENERATED: target-map -->`; text outside the markers is never touched.
 
@@ -64,6 +67,12 @@ neither core nor a column fails. `--data` points at another file; the BEGIN mark
    `TODO`, then `just target-map`.
 
 ## Learned
+
+> **Learned 2026-10-22** · smc-resiliency target map · VERIFIED_PRIMARY · Source: smc-resiliency CHANGELOG 20261022_1643 (commit 449bceb) ·
+> Falsifier: a plan whose stage heading misses `target_heading` and whose checklist is not read into the target above it
+> A source's `target_heading` pattern that misses a stage heading (here `^### (?P<id>S\d) — ` against `### SM — Measuring root writes`) does not
+> fail: that stage is absent from the map and its `Completion checklist` line is read into the target above it (S6 showed SM's four criteria). When a
+> plan adds a stage whose id is not the usual shape, widen the pattern (`S\d|SM`) and check `--show` lists every heading the plan has.
 
 > **Learned 2026-10-21** · promotion of a project script into this skill · VERIFIED_PRIMARY · Source: unified-network-controller CHANGELOG 20261021_1809;
 > this file's scripts (commit pending) · Falsifier: a pilot page that renders differently from the skill copy on the same inputs A script promoted from a project keeps its output byte for byte only if
