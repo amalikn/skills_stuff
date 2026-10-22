@@ -1376,9 +1376,11 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 >   package is held. The rcp apt lists were stale (php8.1-common candidate `.26` when jammy-security had `.28`). Security fixes reach the fleet
 >   only by a deliberate run, and builds drift box to box (seven php8.1 builds seen, `.13` to `.24`, including on the Pis). No visual surface.
 
-## 2026-10-22 — umoona still has no Asterisk process; collect-smc-evidence-full.sh has no tsh deadline (OPEN)
+## 2026-10-22 — umoona still has no Asterisk process (known: no active SIP clients); evidence scripts lacked a tsh deadline (RESOLVED 2026-10-22)
 
 - umoona-smc01: the 2026-10-22 voip capture found no Asterisk process, as on 2026-08-25 (unit `active (exited)`, see `scripts/README.md`), and the operator confirms
   umoona has no active SIP clients (known, 2026-10-22), so this is not an outage. nocprov-smc01 (provisioning box) has none either. `VERIFIED-OBSERVED` 2026-10-22.
 - `scripts/collect-smc-evidence-full.sh` calls `tsh ssh` without a deadline (lines with `tsh ssh "${SSH_USER}@${host}"`), against this pack's access
   rule. The 2026-10-22 run wrapped each host in `perl -e 'alarm 150; exec @ARGV'` (no `timeout` on macOS). Fix: a per-call deadline inside the script.
+- Resolved 2026-10-22: both evidence scripts call `tsh ssh` through `with_deadline` (watcher, TERM then KILL); offline test `just test-deadline`;
+  smoke run on kalumburu-smc01 (73 s, 11 of 11 captures).

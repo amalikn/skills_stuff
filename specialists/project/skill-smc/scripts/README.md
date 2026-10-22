@@ -40,6 +40,7 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 | [collect-smc-evidence.sh](collect-smc-evidence.sh) | Live SMC appliances     | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as** |
 |                                     |   over Teleport         |           |   **arguments — no default site list** (genericized from the original, which defaulted to one investigation's            |
 |                                     |                         |           |   specific sites)                                                                                                        |
+| [test_with_deadline.sh](test_with_deadline.sh) | Local only (no network)  | **read-only** | Offline test of `with_deadline` in both evidence scripts: stdin passes through, exit status kept, killed at the deadline (`just test-deadline`). |
 | [collect-smc-evidence-full.sh](collect-smc-evidence-full.sh) | Live SMC appliances     | **read-only** | The wide companion to `collect-smc-evidence.sh`: 144 captures across 17 subsystem groups, for triage and pre/post-deploy |
 |                                     |   over Teleport         |           |   baselines rather than the routing question. Same hardcoded-command, host-names-only contract. **One SSH session per host** |
 |                                     |                         |           |   (delimited stream split locally) instead of one per capture — 144 captures in ~25s. `--only`/`--skip` select groups;   |
@@ -173,6 +174,10 @@ module docstring.
 ## What each script is for
 
 ### `collect-smc-evidence-full.sh`
+
+**Deadlines (2026-10-22):** every `tsh ssh` call runs under `with_deadline` (a watcher: TERM, then KILL 5 s later; macOS has no `timeout`). Platform probe
+`SMC_TSH_PROBE_DEADLINE` (default 60 s), the one capture session per host `SMC_TSH_DEADLINE` (default 300 s); the narrow `collect-smc-evidence.sh` uses
+`SMC_TSH_DEADLINE` per command (default 60 s). Smoke run 2026-10-22 on kalumburu-smc01, `--only voip`: 73 s, 11 of 11 captures.
 
 The broad one. Use it when the question is "what is going on with this box" rather than a specific routing fault, and when you want a **baseline before a deploy and a matching capture after it**.
 

@@ -48,6 +48,22 @@ REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 STAMP="$(date '+%Y%m%d_%H%M')"
 OUTDIR="${REPO_ROOT}/evidence-full/${STAMP}"
 SSH_USER="${SMC_SSH_USER:-root}"
+PROBE_DEADLINE="${SMC_TSH_PROBE_DEADLINE:-60}"   # seconds for the platform probe
+SESSION_DEADLINE="${SMC_TSH_DEADLINE:-300}"      # seconds for the one capture session per host
+
+# Deadlines on every tsh call (skill-smc access rule). macOS has no timeout(1) and a perl alarm before exec did not stop tsh (2026-10-20), so a
+# watcher sends TERM, then KILL 5 s later. Override with SMC_TSH_DEADLINE (seconds) per run.
+#   with_deadline SECONDS CMD [ARGS...]
+#   Args: SECONDS, the deadline; CMD and ARGS, the command. Its stdin is passed through (`<&0` keeps it when job control is on, where a background job would read /dev/null).
+#   Returns: the command's exit status (143 or 137 when the deadline killed it).
+with_deadline() {
+  local deadline="$1"; shift
+  "$@" <&0 & local pid=$!
+  ( sleep "$deadline"; kill -TERM "$pid" 2>/dev/null; sleep 5; kill -KILL "$pid" 2>/dev/null ) & local watcher=$!
+  wait "$pid"; local rc=$?
+  kill "$watcher" 2>/dev/null; wait "$watcher" 2>/dev/null
+  return $rc
+}
 REDACT=1
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -346,7 +362,7 @@ build_remote_script() {
 # Detect platform before capturing so we never run x86-only probes against a Pi and report the failures as findings.
 detect_platform() {
   local host="$1" model
-  model="$(tsh ssh "${SSH_USER}@${host}" \
+  model="$(with_deadline "$PROBE_DEADLINE" tsh ssh "${SSH_USER}@${host}" \
     'if [ -r /proc/device-tree/model ]; then tr -d "\000" < /proc/device-tree/model; echo; else dmidecode -s system-product-name 2>/dev/null || echo unknown; fi' \
     2>/dev/null | grep -v '^$' | tail -1)"
   case "$model" in
@@ -469,7 +485,7 @@ for host in "${hosts[@]}"; do
   remote_script="$(build_remote_script "${host_selected[@]}")"
 
   raw="${hostdir}/_raw-stream.txt"
-  if ! printf '%s\n' "$remote_script" | tsh ssh "${SSH_USER}@${host}" 'bash -s' > "$raw" 2>"${raw}.err"; then
+  if ! printf '%s\n' "$remote_script" | with_deadline "$SESSION_DEADLINE" tsh ssh "${SSH_USER}@${host}" 'bash -s' > "$raw" 2>"${raw}.err"; then
     # A non-zero overall rc is expected — individual captures fail routinely (a service that is not installed on this flavour). Only treat a
     # completely empty stream as a real failure, since that means the session itself did not run.
     if [[ ! -s "$raw" ]]; then

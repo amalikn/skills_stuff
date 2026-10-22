@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1653
+Last rotated: 20261022_1704
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261022_1703 — Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8)](#20261022_1703--evidence-scripts-a-deadline-on-every-tsh-call-with-an-offline-test-v067---v068)
 - [20261022_1653 — Asterisk memory measured on the rcp fleet; umoona still without Asterisk; evidence script lacks a tsh deadline (v0.6.6 -> v0.6.7)](#20261022_1653--asterisk-memory-measured-on-the-rcp-fleet-umoona-still-without-asterisk-evidence-script-lacks-a-tsh-deadline-v066---v067)
 - [20261022_1623 — collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)](#20261022_1623--collect-smc-evidence-fullsh-voip-group-records-asterisk-resident-memory-v065---v066)
 - [20261022_1621 — rcp Asterisk dialplan summarised; x86 fleet by model with its 7-day load (v0.6.4 -> v0.6.5)](#20261022_1621--rcp-asterisk-dialplan-summarised-x86-fleet-by-model-with-its-7-day-load-v064---v065)
@@ -37,8 +38,13 @@ Last rotated: 20261022_1653
 - [20261015_1558 — Why the 2025 portal misconfiguration stayed latent; 1 Sep trigger checks (v0.4.6 -> v0.4.7)](#20261015_1558--why-the-2025-portal-misconfiguration-stayed-latent-1-sep-trigger-checks-v046---v047)
 - [20261015_1553 — The SMC runs four parallel SNMP walks cleanly; fping absent on old-looma-smc01 too (v0.4.5 -> v0.4.6)](#20261015_1553--the-smc-runs-four-parallel-snmp-walks-cleanly-fping-absent-on-old-looma-smc01-too-v045---v046)
 - [20261015_1515 — Three-site PIN outage dated by conntrack; koonibba bot restarts stopped 2026-10-01, 9 Oct Xbox spike (v0.4.5 -> v0.4.6)](#20261015_1515--three-site-pin-outage-dated-by-conntrack-koonibba-bot-restarts-stopped-2026-10-01-9-oct-xbox-spike-v045---v046)
-- [20261015_1441 — fping absent on yakanarra-smc01; iputils ping used for device ping (v0.4.4 -> v0.4.5)](#20261015_1441--fping-absent-on-yakanarra-smc01-iputils-ping-used-for-device-ping-v044---v045)
-- [20261014_2345 — Topology_vars differ by branch; read them at the listing ref (v0.4.3 -> v0.4.4)](#20261014_2345--topology_vars-differ-by-branch-read-them-at-the-listing-ref-v043---v044)
+
+## 20261022_1703 — Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8)
+
+`scripts/collect-smc-evidence-full.sh` and `scripts/collect-smc-evidence.sh` call `tsh ssh` through `with_deadline` (the watcher from
+`overlay-usage-breakdown.sh`, plus `<&0` so piped stdin survives when job control is on): probe 60 s, session 300 s, narrow per command 60 s, all
+overridable. New `scripts/test_with_deadline.sh` (`just test-deadline`, offline): passes, and fails when the kill is disabled. Smoke run on kalumburu-smc01:
+73 s, 11 of 11 voip captures. Known issue 2026-10-22 resolved. manifest 0.6.7 -> 0.6.8.
 
 ## 20261022_1653 — Asterisk memory measured on the rcp fleet; umoona still without Asterisk; evidence script lacks a tsh deadline (v0.6.6 -> v0.6.7)
 
@@ -187,13 +193,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 
 - `references/13_known-issues.md` (2026-09-11 portal-FQDN entry): onset 2026-09-01 at hope-vale, kowanyama, galiwinku only; recovery times; galiwinku nightly pattern; operator-stated monthly PIN expiry; 1 Aug question open.
 - `references/13_known-issues.md` (2026-09-30 bot entry): restarts stopped 2026-10-01 13:06, bot still connects; 9-10 Oct spike traced to an Xbox One PIN activation and Xbox/Netflix downloads (DNS-inferred).
-
-## 20261015_1441 — fping absent on yakanarra-smc01; iputils ping used for device ping (v0.4.4 -> v0.4.5)
-
-- `references/07_hardware-overlay.md`: `fping` is not on yakanarra-smc01 (rcp) despite the 2026-09-23 install; iputils `ping` answers in
-  12 s cold through Teleport. unified-network-controller's Device Ping uses `ping` (2026-10-15).
-
-## 20261014_2345 — Topology_vars differ by branch; read them at the listing ref (v0.4.3 -> v0.4.4)
-
-- `references/08_ansible-authoring.md` (Cache Coherence Rules): yakanarra's and wangkatjungka's topology_vars are on `big_push`, not `rise`; a
-  tool listing sites from one ref reads their files from it (unified-network-controller yakanarra uplink labels, 2026-10-14).

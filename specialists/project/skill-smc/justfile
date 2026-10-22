@@ -76,6 +76,10 @@ lint_md:
 fleet *args:
     @just -f scripts/fleet-health.justfile {{args}}
 
+# Offline test of the evidence scripts' tsh deadline helper (no network): stdin passthrough, exit status, kill at the deadline.
+test-deadline:
+    bash scripts/test_with_deadline.sh
+
 # WAN-routing diagnostics template (read-only). Copy into an investigation folder before real use.
 routing *args:
     @just -f scripts/routing-diagnostics.justfile {{args}}

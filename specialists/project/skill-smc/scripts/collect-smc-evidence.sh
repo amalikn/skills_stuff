@@ -30,6 +30,21 @@ REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 STAMP="$(date '+%Y%m%d_%H%M')"
 OUTDIR="${REPO_ROOT}/evidence/${STAMP}"
 SSH_USER="${SMC_SSH_USER:-root}"
+CMD_DEADLINE="${SMC_TSH_DEADLINE:-60}"   # seconds for each capture command
+
+# Deadlines on every tsh call (skill-smc access rule). macOS has no timeout(1) and a perl alarm before exec did not stop tsh (2026-10-20), so a
+# watcher sends TERM, then KILL 5 s later. Override with SMC_TSH_DEADLINE (seconds) per run.
+#   with_deadline SECONDS CMD [ARGS...]
+#   Args: SECONDS, the deadline; CMD and ARGS, the command. Its stdin is passed through (`<&0` keeps it when job control is on, where a background job would read /dev/null).
+#   Returns: the command's exit status (143 or 137 when the deadline killed it).
+with_deadline() {
+  local deadline="$1"; shift
+  "$@" <&0 & local pid=$!
+  ( sleep "$deadline"; kill -TERM "$pid" 2>/dev/null; sleep 5; kill -KILL "$pid" 2>/dev/null ) & local watcher=$!
+  wait "$pid"; local rc=$?
+  kill "$watcher" 2>/dev/null; wait "$watcher" 2>/dev/null
+  return $rc
+}
 
 # capture-name : remote command (read-only)
 CAPTURES=(
@@ -117,7 +132,7 @@ for host in "${hosts[@]}"; do
     cmd="${entry#*:}"
     out="${hostdir}/${name}.txt"
 
-    if tsh ssh "${SSH_USER}@${host}" "$cmd" > "$out" 2>"${out}.err"; then
+    if with_deadline "$CMD_DEADLINE" tsh ssh "${SSH_USER}@${host}" "$cmd" > "$out" 2>"${out}.err"; then
       lines=$(wc -l < "$out" | tr -d ' ')
       rm -f "${out}.err"
       printf '  %-24s %s\n' "$name" "ok (${lines} lines)"
