@@ -129,6 +129,8 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 - Code paths in a monospace font (`<font face="Courier New">`), with soft breaks so they wrap ([layout-and-routing.md](layout-and-routing.md)).
 - Arrow labels sit on a white label background (`labelBackgroundColor=#ffffff`) so a crossing line does not run through the digits.
 - Size boxes to their text; a box that is too small for its text is a fault, and so is a group much taller than its content.
+  The Overview's flow index boxes follow it too: each is as tall as its wrapped title and status line (operator, 2026-10-22: "box ten and eleven is
+  getting a bit tight"; `overview_index.index_height`).
 - Keep step boxes wider than tall: long text widens a box (`look.max_aspect`, 0.8) rather than stretching it; rounded shapes use a fixed corner
   radius so a tall box never becomes a pill (operator, 2026-10-21: "some shapes' dimensions need care").
 - A box's heading line (a component name, a step title, an option head, a decision title) is drawn at `look.heading_scale` (default 125%) of the box's

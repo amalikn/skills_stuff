@@ -62,5 +62,20 @@ class StatusTests(unittest.TestCase):
         self.assertIn("dashed=1", model.status_style({"status": {"state": "proposed", "since": "2026-01-02"}}))
 
 
+class IndexHeightTests(unittest.TestCase):
+    """Flow index boxes grow with their text (operator, 2026-10-22: two-line titles overflowed the fixed 52 px box)."""
+
+    def test_short_title_keeps_the_old_height(self) -> None:
+        """One-line title and subtitle: the box stays INDEX_MIN_H."""
+        self.assertEqual(overview_index.index_height("**1. VM: swap**", "*proposed since 2026-10-22* · manual"), overview_index.INDEX_MIN_H)
+
+    def test_two_line_title_grows(self) -> None:
+        """A title that wraps makes the box taller than the minimum, by whole lines."""
+        h = overview_index.index_height("**10. Pi: first power-on of a new card applies the EEPROM, checks it, calls home**",
+                                        "*proposed since 2026-10-22* · manual · runs on bootloader · commissioning")
+        self.assertGreater(h, overview_index.INDEX_MIN_H)
+        self.assertEqual((h - 10) % overview_index.INDEX_LINE_H, 0)
+
+
 if __name__ == "__main__":
     unittest.main()

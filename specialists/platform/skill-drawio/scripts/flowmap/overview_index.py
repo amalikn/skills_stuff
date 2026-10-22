@@ -6,12 +6,28 @@ Imported, not run: `from flowmap.overview_index import flow_index, colour_legend
 
 from __future__ import annotations
 
-from drawio.mxfile import Page, label
+from drawio.mxfile import Page, label, wrapped_lines
 
 from .model import comp_style, option_blocks
 from .shapes import component_shape, fit_height, person_badge
 from .overview_layout import THIN_GREY
 from .profile import DISTINCT, Profile
+
+# An index box is 340 px wide at font 11 with a bold first line: about 50 characters a line, 14 px a line (operator, 2026-10-22: two-line
+# titles overflowed the fixed 52 px box). A box is never shorter than INDEX_MIN_H; boxes stack INDEX_GAP apart.
+INDEX_CHARS, INDEX_LINE_H, INDEX_MIN_H, INDEX_GAP = 50, 14, 52, 10
+
+
+def index_height(*lines: str) -> int:
+    """How tall a flow index box must be for its text.
+
+    Args:
+        lines: the label lines, formatting markers included (ignored when counting).
+
+    Returns:
+        The height in pixels, padding included, at least INDEX_MIN_H.
+    """
+    return max(INDEX_MIN_H, 10 + round(sum(wrapped_lines(x.replace("*", ""), INDEX_CHARS) for x in lines)) * INDEX_LINE_H)
 
 
 def colour_legend(page: Page, x: float, y: float, thick: list) -> float:
@@ -71,12 +87,16 @@ def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> 
                  x, y + 102, 340, 52, "rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=6;",
                  link=f"data:page/id,{pid}", tooltip=block.get("purpose", block["title"]))
         y += 62
+    top = y + 102
     for fi, f in enumerate(data["flows"]):
         sub = f"{f['trigger']['kind']} · runs on {f['runs_on']} · {f['category']}"
-        page.box(f"ov-f-{f['id']}", label(f"**{fi + 1}. {f['title']}**", f"*{f['status']['state']} since {f['status']['since']}* · {sub}" if f.get("status") else sub),
-                 x, y + 102 + fi * 62, 340, 52, "rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
+        title, line2 = f"**{fi + 1}. {f['title']}**", (f"*{f['status']['state']} since {f['status']['since']}* · {sub}" if f.get("status") else sub)
+        h = index_height(title, line2)
+        page.box(f"ov-f-{f['id']}", label(title, line2),
+                 x, top, 340, h, "rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
                  link=f"data:page/id,flow-{f['id']}", tooltip=f["purpose"])
-    ly = y + 122 + len(data["flows"]) * 62
+        top += h + INDEX_GAP
+    ly = top + 20
     page.box("ov-legend", label("**Legend: component kinds**"), x, ly - 18, 340, 30, "text;html=1;align=left;fontSize=12;whiteSpace=wrap;")
     kinds = list(profile.kind_style)   # each kind drawn as it appears in the drawing: its colour and, when on, its symbol
     sample_h = [fit_height({"kind": k}, profile, 28) for k in kinds]
