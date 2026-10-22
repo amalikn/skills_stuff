@@ -13,6 +13,7 @@ Summary: Templates for generated project files; SKILL.md names each and how it i
 ## Index
 
 - [AI_NAVIGATION.md](AI_NAVIGATION.md), [AGENTS-navigation-block.md](AGENTS-navigation-block.md), [AGENTS-governance-checks-block.md](AGENTS-governance-checks-block.md): navigation file and the two managed AGENTS.md blocks.
+- [plan-tracker.md](plan-tracker.md), [AGENTS-plan-tracker-block.md](AGENTS-plan-tracker-block.md): a project's plan tracker page (start it with `plan_tracker.py --init`) and the AGENTS.md rules that keep it current.
 - [context-map.yaml](context-map.yaml), [update_rules.yaml](update_rules.yaml): machine-readable routing and companion-file rules.
 - [justfile](justfile), [scripts-README.md](scripts-README.md): task catalog and script inventory.
 - [check_governance.py](check_governance.py), [govcheck/](govcheck/): the project's governance checker (single file, or package layout).

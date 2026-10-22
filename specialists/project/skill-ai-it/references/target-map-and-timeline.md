@@ -3,8 +3,8 @@ Title: skill-ai-it reference: target map and plan timeline
 Category: reference
 Status: current
 Authority: canonical
-Scope: The two tracker generators this skill ships (target_map.py, plan_timeline.py) and how a project adopts them
-Last reviewed: 2026-10-21
+Scope: The two tracker generators this skill ships (target_map.py, plan_timeline.py), the plan tracker page they feed (plan_tracker.py) and how a project adopts them
+Last reviewed: 2026-10-22
 Summary: >-
   How a project keeps its goals, targets and per-criterion status in target-map.yaml and its dated plan in plan-timeline.yaml, renders both
   into trackers with drift checks, and wires them into its justfile, govcheck and commit gate. Promoted from unified-network-controller 2026-10-21.
@@ -20,6 +20,7 @@ timeline method of UNC"). The skill's `just check` does not run them; each adopt
 
 - [Target map](#target-map)
 - [Plan timeline](#plan-timeline)
+- [The plan tracker page](#the-plan-tracker-page)
 - [Linking a tracker](#linking-a-tracker)
 - [Adopting both in a project](#adopting-both-in-a-project)
 - [Learned](#learned)
@@ -49,11 +50,40 @@ neither core nor a column fails. `--data` points at another file; the BEGIN mark
 A column may add `link_ids: {page, heading}`: each comma-separated id in a cell with no link yet becomes a link to the first heading of `page` whose text is `heading` with `{id}` filled in, followed
 by a space or nothing (`heading: "Step {id}"` finds "Step 2 — Monitoring", never "Step 21"). The data keeps plain ids, unknown ids stay text, and a cell holding a hand-written link is left as written.
 
+## The plan tracker page
+
+`docs/trackers/plan-tracker.md` is the page a reader opens first (operator, smc-resiliency 2026-10-21: "difficult to know what is being followed and which of the file has the up to date plan"). Both
+pilots (smc-resiliency, unified-network-controller) settled on one shape, now [templates/plan-tracker.md](../templates/plan-tracker.md):
+
+| Section | What it holds | Kept by |
+| --- | --- | --- |
+| Where we are | `As of` date, one line on the live state, one numbered item per workstream led by its stage links, then what waits on the operator, a horizon line | Rewritten by hand whenever the state changes |
+| Timeline (under Where we are) | The dated plan | `plan_timeline.py` from `plan-timeline.yaml` |
+| What next | Ordered actions: owner, done-when, each row linked to where its work starts, one line | Hand, every pass that moves a stage |
+| Which document to follow | Governing document per topic; inputs and history apart | Hand, when a document starts or stops governing |
+| Decided but not yet in the designs | Decisions waiting to be folded into a design | Hand; a row clears when the design carries it |
+| Stages | State, where it stands, blocker, next action per target | `target_map.py` (`embed:`) from `target-map.yaml` |
+| How this page is kept | The page's own upkeep rules | Hand |
+
+Setting it up: `just plan-tracker <project> --init` prints the starter page and `--init --apply` writes it when absent (never over an existing page); replace every `TODO`, add the two embeds
+(`plan-timeline.yaml` `render_to`, `target-map.yaml` `embed:` under `## Stages`), paste [templates/AGENTS-plan-tracker-block.md](../templates/AGENTS-plan-tracker-block.md) into the project's AGENTS.md working rules, and call both checks from
+`just check`:
+
+```text
+@{{py}} "{{ai_it}}/scripts/anchor_links.py" --project-root . --check --outside warn --skip docs/history/
+@{{py}} "{{ai_it}}/scripts/plan_tracker.py" --project-root . --check
+```
+
+Keeping it: update the page in the same pass as a stage moving, a document starting or stopping to govern, or a decision made or folded in; every slurp checks it against SCRATCHPAD, ROADMAP and the
+stage tables and fixes the page, not those. Where we are is rewritten, not appended (operator, 2026-10-22: "Adapt Where we are from UNC": item per workstream, its stage links first). `plan_tracker.py
+--check` fails on a missing section, a missing `As of`, or a What next row that has no link or is split: the markdown hook splits a table row rendered wider than 200 columns, so shorten the row (move
+detail into Where we are). Split rows in the other tables, and an `As of` older than the newest CHANGELOG entry, are notes.
+
 ## Linking a tracker
 
-A tracker is read to find where to start, so its hand-written sections link the nouns themselves ("the [rescue layout](...)", "[Step 2](...)") into the section that holds them, and keep each table row
-on one line (operator, 2026-10-22, on unified-network-controller's plan tracker, preferring smc-resiliency's pattern to a separate "Start here" column or reference-style links). Generated blocks get
-their links from the data (`link_ids`, `record`, links in `where`), never by editing the page.
+A tracker is read to find where to start, so its hand-written sections link the nouns themselves ("the [rescue layout](...)", "[Step 2](...)") into the section that holds them, and keep each table row on one line
+(operator, 2026-10-22, on unified-network-controller's plan tracker, preferring smc-resiliency's pattern to a separate "Start here" column or reference-style links). Generated blocks get their links
+from the data (`link_ids`, `record`, links in `where`), never by editing the page.
 
 `scripts/anchor_links.py` keeps those links true: every link to a `#heading` in a markdown file must land on a heading that exists. Call it from the project's `just check`:
 
@@ -63,6 +93,9 @@ their links from the data (`link_ids`, `record`, links in `where`), never by edi
 
 `--outside warn` reports a broken link into another project's file without failing, so a heading renamed by another project's session cannot block this project's commits; dot folders and `*-sources-*`
 captures are always skipped.
+
+Prose that holds links wraps by its visible width: markdown_rewrap counts a link by its label, not its target (2026-10-22, the rule tables already followed since 2026-08-28 with `--measure-rendered`),
+so linked items read evenly in an editor that hides link targets.
 
 ## Adopting both in a project
 
@@ -85,6 +118,18 @@ captures are always skipped.
    `TODO`, then `just target-map`.
 
 ## Learned
+
+> **Learned 2026-10-22** · plan trackers, any project · VERIFIED_PRIMARY · Source: scripts/plan_tracker.py (commit pending); smc-resiliency and
+> unified-network-controller plan trackers, both failing the split-row rule on first run · Falsifier: a What next row the hook leaves on one line while it renders wider than 200 columns "Keep table
+> rows on one line" cannot be met by formatting alone: the markdown hook splits any row whose rendered width passes 200 columns into continuation rows, which render as extra rows. Both pilot trackers
+> had split rows in What next after the rule was written. The fix is content: shorten the row and move detail into Where we are. The check fails only on What next (the table a reader starts from) and
+> notes the rest:
+>
+> ```python
+> # scripts/plan_tracker.py (commit pending), check()
+> for head, body in secs.items(): if any(not c[0] and any(c[1:]) for c in table_rows(body) if c): (problems if head.startswith("What next") else notes).append( f"{page}: a row in `{head}` is split
+> over continuation rows (rendered wider than 200 columns); shorten it to one line")
+> ```
 
 > **Learned 2026-10-22** · smc-resiliency target map · VERIFIED_PRIMARY · Source: smc-resiliency CHANGELOG 20261022_1643 (commit 449bceb) ·
 > Falsifier: a plan whose stage heading misses `target_heading` and whose checklist is not read into the target above it A source's `target_heading` pattern that misses a stage heading (here `^###
@@ -126,6 +171,6 @@ if states.get("parked"):
 >
 > ```python
 > # scripts/plan_timeline.py link_ids (skills_stuff fb3d4a0)
-> want = spec["heading"].format(id=tok) for text, anchor in index: if text == want or text.startswith(want + " "): return f"[{tok}]({rel}#{anchor})" return tok ... if value and "[" not in value: # a
-> cell with a hand-written link is left as written row[col["key"]] = "".join(p if i % 2 else one(p) for i, p in enumerate(re.split(r"(,\s*)", value)))
+> want = spec["heading"].format(id=tok) for text, anchor in index: if text == want or text.startswith(want + " "): return f"[{tok}]({rel}#{anchor})" return tok ... if value and "[" not in value: # a cell with a
+> hand-written link is left as written row[col["key"]] = "".join(p if i % 2 else one(p) for i, p in enumerate(re.split(r"(,\s*)", value)))
 > ```

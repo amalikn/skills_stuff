@@ -239,6 +239,10 @@ anchor-links project *ARGS: _require-venv
 plan-timeline project *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/plan_timeline.py" --project-root "{{project}}" {{ARGS}}
 
+# A project's plan tracker: check its shape (`--check` exits 1), or `--init` to print the starter page (`--init --apply` writes it when absent)
+plan-tracker project *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/plan_tracker.py" --project-root "{{project}}" {{ARGS}}
+
 # Offline unit tests of this package's scripts (stdlib unittest; PyYAML from the venv). Read-only
 test: _require-venv
     @{{py}} -m unittest discover -s tests -q

@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1749
+Last rotated: 20261022_1819
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261022_1819 — plan_tracker: plan tracker page setup and upkeep promoted from smc-resiliency and unified-network-controller](#20261022_1819--plan_tracker-plan-tracker-page-setup-and-upkeep-promoted-from-smc-resiliency-and-unified-network-controller)
 - [20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check](#20261022_1749--slurp-tracker-linking-documented-incident-a-commit-made-on-a-failed-check)
 - [20261022_1744 — anchor_links: --outside warn for links into other projects](#20261022_1744--anchor_links---outside-warn-for-links-into-other-projects)
 - [20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings](#20261022_1741--anchor_links-promoted-plan_timeline-links-ids-to-their-headings)
@@ -35,8 +36,17 @@ Last rotated: 20261022_1749
 - [20261019_1829 — pitfalls: promote leaves routing to the deleted candidates file](#20261019_1829--pitfalls-promote-leaves-routing-to-the-deleted-candidates-file)
 - [20261019_1813 — Checker template: duplicated KEBAB_LEGACY block removed](#20261019_1813--checker-template-duplicated-kebab_legacy-block-removed)
 - [20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions](#20261019_1734--pitfalls-hand-bootstrapped-packs-write-accepted-archcore-decisions)
-- [20261019_1707 — Recipe names back to kebab-case; upgrader renames the template's snake_case recipes](#20261019_1707--recipe-names-back-to-kebab-case-upgrader-renames-the-templates-snake_case-recipes)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261022_1819 — plan_tracker: plan tracker page setup and upkeep promoted from smc-resiliency and unified-network-controller
+
+- Operator, 2026-10-22 (smc-resiliency session): "Ensure that plan tracker setup and maintenance is written back to skill-ai-it ... so that all
+  the projects can follow it." New `scripts/plan_tracker.py` (`--init` prints, `--init --apply` writes the starter page when absent; `--check`
+  fails on a missing section, a missing `As of`, or a What next row unlinked or split; split rows elsewhere and a stale `As of` are notes),
+  `templates/plan-tracker.md` (the page both pilots share), `templates/AGENTS-plan-tracker-block.md` (upkeep rules to paste), recipe
+  `just plan-tracker <project>`, tests `tests/test_plan_tracker.py` (6), and the reference section "The plan tracker page" with a Learned entry.
+- First runs: smc-resiliency and unified-network-controller both failed on a split What next row (the markdown hook splits a row rendered wider
+  than 200 columns); smc-resiliency's rows were shortened and now pass; unified-network-controller is told through the hub.
 
 ## 20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check
 
@@ -169,20 +179,6 @@ templates/check_governance.py defined the `KEBAB_LEGACY` and `CODE_SUFFIXES` reg
 ## 20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions
 
 - `references/pitfalls.md` gains the 2026-10-19 skill-coder case: archcore content written outside `promote` and marked `accepted`; in bootstrap, list decisions as promotion candidates and ask.
-
-## 20261019_1707 — Recipe names back to kebab-case; upgrader renames the template's snake_case recipes
-
-- Recipe names are kebab-case again (operator, 2026-10-19, revising governance `coding-guide.md`: code files follow their language; names people type at
-  a command line, including task-runner recipes, are kebab-case; verified mapping in skill-coder `references/naming-conventions.md`).
-- `templates/justfile` and this package's `justfile`: `nav-upgrade-dry-run`, `nav-upgrade`, `nav-validate`, `nav-check-diff`, `nav-check-context-map`,
-  `nav-selftest`, `audit-scripts`, `lint-md`; the package's own `nav-check-blocks`, `nav-migrate-legacy`, `roles-fleet`, `skills-registry`, `agent-usage`.
-  Live references renamed (templates, scripts README, references, patterns, ARCHITECTURE, script docstrings); records (CHANGELOG, docs/history,
-  reviews, dated ROADMAP and requirements notes) keep the names they had.
-- `scripts/upgrade_navigation_control_layer.py` `TEMPLATE_RECIPE_RENAMES` inverted (snake_case to kebab-case) and gains `nav_check_context_map`, so a
-  project bootstrapped between 2026-10-07 and 2026-10-19 converges at its next upgrade; a project's own recipes stay its own to rename when touched.
-- `check_file_naming` docstring (template and this package's checker): it checks code files only; command names are kebab-case.
-- Verified: 102 tests, 29 managed-block self-tests. `just check` still reports one finding that predates this change: `patterns/archcore-routing.md`
-  passed its review date (2026-10-18).
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

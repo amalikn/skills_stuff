@@ -20,11 +20,10 @@ metadata:
 
 Detail lives in one file per topic under [references/](references/readme.md), linked at the step that needs it; open only the one the task needs.
 
-Shipped templates: `templates/AI_NAVIGATION.md`, `templates/AGENTS-navigation-block.md`, `templates/AGENTS-governance-checks-block.md`,
-`templates/check_governance.py`, `templates/govcheck/`, `templates/justfile`, `templates/scripts-README.md`, `templates/context-map.yaml`,
-`templates/update_rules.yaml`, `templates/repomix.config.json`, `templates/context_preflight.sh`. Patterns: `patterns/archcore-routing.md`,
-`patterns/drift-audit.md`, `patterns/memory-bank-structure.md`, `patterns/navigation-control-automation.md`, `patterns/script-task-audit-checklist.md`,
-`patterns/governance-checks.md`, `patterns/navigation/`.
+Shipped templates: `templates/AI_NAVIGATION.md`, `templates/AGENTS-navigation-block.md`, `templates/AGENTS-governance-checks-block.md`, `templates/check_governance.py`, `templates/govcheck/`,
+`templates/justfile`, `templates/scripts-README.md`, `templates/context-map.yaml`, `templates/update_rules.yaml`, `templates/repomix.config.json`, `templates/context_preflight.sh`,
+`templates/plan-tracker.md`, `templates/AGENTS-plan-tracker-block.md`. Patterns: `patterns/archcore-routing.md`, `patterns/drift-audit.md`, `patterns/memory-bank-structure.md`,
+`patterns/navigation-control-automation.md`, `patterns/script-task-audit-checklist.md`, `patterns/governance-checks.md`, `patterns/navigation/`.
 
 ## Use When
 
@@ -101,8 +100,8 @@ This skill must be safe to run many times on the same project.
    structured durable truth.
 
 8. Propose Archcore content changes rather than directly editing Archcore files unless the user explicitly authorizes the content change. `archcore init` itself is allowed when the CLI is available.
-9. Run Repomix when its CLI is available. **Graphify is disabled (operator, 2026-10-10)**: do not run it in any mode (see [Graphify initialization and refresh](references/generation-policy.md#graphify-initialization-and-refresh)).
-   Treat their outputs (`graphify-out/`, `.ai-context/`, `repomix-output.md`) as disposable support, not canonical truth.
+9. Run Repomix when its CLI is available. **Graphify is disabled (operator, 2026-10-10)**: do not run it in any mode (see [Graphify initialization and refresh](references/generation-policy.md#graphify-initialization-and-refresh)). Treat their outputs (`graphify-out/`,
+   `.ai-context/`, `repomix-output.md`) as disposable support, not canonical truth.
 10. On conflict, stop and report the conflict instead of merging assumptions silently.
 11. Always report created, updated, skipped, and proposed files separately.
 
@@ -113,8 +112,8 @@ This skill must be safe to run many times on the same project.
 
 ## Phase 4 — Generate Files
 
-- Read [references/generation-policy.md](references/generation-policy.md) before that work (moved verbatim from here): File creation/update policy; Markdown quality rules; Archcore initialization and
-  promotion candidate reporting; Graphify initialization and refresh; Repomix initialization and refresh.
+- Read [references/generation-policy.md](references/generation-policy.md) before that work (moved verbatim from here): File creation/update policy; Markdown quality rules; Archcore initialization and promotion candidate reporting;
+  Graphify initialization and refresh; Repomix initialization and refresh.
 
 ### Governed files: headers, budgets, rotation and the checker's shape (operator, 2026-10-10)
 
@@ -122,9 +121,9 @@ This skill must be safe to run many times on the same project.
   docs <folder>` is the triage view agents use before opening files.
 - **Budget.** A file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, ROADMAP.md, SKILL.md, MEMORY.md) stays within 200 lines and 25 KB for every agent;
   `doc_freshness.py` holds older ones as a shrink-only ratchet. Area rules go in a file read before that work.
-- **Rotation.** `just rotate --apply` also moves ROADMAP's done items out (`scripts/roadmap_trim.py`; contract in
-  [references/files-architecture-conventions-roadmap.md](references/files-architecture-conventions-roadmap.md)). `just budget --apply` (`scripts/budget_plan.py`): normalise, rotate to `docs/history/`, move non-working-state sections out, audit, `just check`; it names what still holds a file over
-  (unfinished, never reported done). Recall `just history <term>`. Pin with `` `PIN` `` or `<!-- PIN -->`.
+- **Rotation.** `just rotate --apply` also moves ROADMAP's done items out (`scripts/roadmap_trim.py`; contract in [references/files-architecture-conventions-roadmap.md](references/files-architecture-conventions-roadmap.md)). `just budget --apply`
+  (`scripts/budget_plan.py`): normalise, rotate to `docs/history/`, move non-working-state sections out, audit, `just check`; it names what still holds a file over (unfinished, never reported done).
+  Recall `just history <term>`. Pin with `` `PIN` `` or `<!-- PIN -->`.
 - **Checker shape.** A project's checker follows `patterns/governance-checks.md` "Structure and growth": entry point, `govcheck/core.py` (this skill's `templates/govcheck/core.py`, identical
   everywhere), `config.py`, `helpers.py`, `checks/<family>.py`, and the `structure` family (`templates/govcheck/checks/structure.py`) policing it. A single-file checker over 800 lines is split with
   `scripts/split_checker.py` at its next change; new projects start in the package layout.
@@ -136,9 +135,8 @@ Every governed project runs `scripts/doc_freshness.py` from this skill (not a co
 `superseded` file outside `archive/`, a `Depends on` file committed after `Last reviewed`.
 
 - `bootstrap`, `navigation-add`, `refresh`: `scripts/adopt_governed_files.py --project-root . --apply` (recipes incl. `check`, record keys, baseline), then `just stale`; add `just stale` to the
-  `AGENTS.md` preflight (outside the managed block). Then `scripts/adopt_code_map.py --project-root . --apply` (operator, 2026-10-20): a project with
-  code gets skill-coder's `code-map.toml`, and every new Python script an `unreviewed:` `[modules]` entry; the project's `check_code_map` fails until
-  each status is decided ([files-support](references/files-support.md#code-maptoml--create-when-the-project-has-code)).
+  `AGENTS.md` preflight (outside the managed block). Then `scripts/adopt_code_map.py --project-root . --apply` (operator, 2026-10-20): a project with code gets skill-coder's `code-map.toml`, and every
+  new Python script an `unreviewed:` `[modules]` entry; the project's `check_code_map` fails until each status is decided ([files-support](references/files-support.md#code-maptoml--create-when-the-project-has-code)).
 - `audit`: run `just stale` and report the counts per rule; also report whether the project's LLM wiki page (`/Volumes/Data/_ai/_wiki/wiki_stuff/projects/<folder>.md`) exists and is older than the
   project's newest CHANGELOG entry.
 - Prefer fixing over baselining: date an undated living document from its content, move a superseded file to `archive/` (update links and the folder index in the same pass).
@@ -146,11 +144,13 @@ Every governed project runs `scripts/doc_freshness.py` from this skill (not a co
 ---
 
 - Read [references/script-task-inventory.md](references/script-task-inventory.md) before that work (moved verbatim from here): Script and task inventory.
-- Read [references/governance-checker.md](references/governance-checker.md) before that work (moved verbatim from here): Governance coherence checker. Generated trackers (`target_map.py`, `plan_timeline.py`): [references/target-map-and-timeline.md](references/target-map-and-timeline.md).
+- Read [references/governance-checker.md](references/governance-checker.md) before that work (moved verbatim from here): Governance coherence checker. Generated trackers (`target_map.py`, `plan_timeline.py`) and the plan tracker page
+  they feed (`plan_tracker.py`, `templates/plan-tracker.md`): [references/target-map-and-timeline.md](references/target-map-and-timeline.md).
 
 ### Always-created files
 
-- Roles and loading tiers (always-read files small, detail on need, history on demand): [references/governed-file-roles.md](references/governed-file-roles.md); `just roles` (`scripts/role_check.py`, in `check`, baseline ratchet) enforces the mechanical part.
+- Roles and loading tiers (always-read files small, detail on need, history on demand): [references/governed-file-roles.md](references/governed-file-roles.md); `just roles` (`scripts/role_check.py`, in `check`, baseline ratchet) enforces
+  the mechanical part.
 - Read [references/files-readme-agents-claude.md](references/files-readme-agents-claude.md) before that work (moved verbatim from here): README.md; AGENTS.md; CLAUDE.md.
 - Read [references/files-records.md](references/files-records.md) before that work (moved verbatim from here): SCRATCHPAD.md; CHANGELOG.md; .markdownlint-cli2.jsonc.
 
@@ -158,21 +158,20 @@ Every governed project runs `scripts/doc_freshness.py` from this skill (not a co
 
 The files in this section are created only when their specific detection condition is met. State the reason for each conditional file in the audit output.
 
-- Read [references/files-architecture-conventions-roadmap.md](references/files-architecture-conventions-roadmap.md) before that work (moved verbatim from here): ARCHITECTURE.md — create when: code,
-  infrastructure, or design decisions are present, or user requests architecture documentation; CONVENTIONS.md — create when: code files present, naming patterns exist, or style/linting rules are
-  discoverable; ROADMAP.md — create when: active development, TODOs present, migration/phase structure, or incomplete features detected; SETUP.md — create when: setup outgrows README's quick start.
-- Read [references/files-ai-navigation.md](references/files-ai-navigation.md) before that work (moved verbatim from here): AI_NAVIGATION.md — create when: missing during `navigation-add`, requested
-  explicitly, or project has more than one governance/context source.
+- Read [references/files-architecture-conventions-roadmap.md](references/files-architecture-conventions-roadmap.md) before that work (moved verbatim from here): ARCHITECTURE.md — create when: code, infrastructure, or design decisions are present, or user
+  requests architecture documentation; CONVENTIONS.md — create when: code files present, naming patterns exist, or style/linting rules are discoverable; ROADMAP.md — create when: active development,
+  TODOs present, migration/phase structure, or incomplete features detected; SETUP.md — create when: setup outgrows README's quick start.
+- Read [references/files-ai-navigation.md](references/files-ai-navigation.md) before that work (moved verbatim from here): AI_NAVIGATION.md — create when: missing during `navigation-add`, requested explicitly, or project has more than
+  one governance/context source.
 
-- Read [references/files-context-map.md](references/files-context-map.md) before that work (moved verbatim from here): context-map.yaml — create when: `AI_NAVIGATION.md` is created or already exists
-  but no machine-readable routing map exists.
-- Read [references/files-support.md](references/files-support.md) before that work (moved verbatim from here): repomix.config.json — create when: project has multiple governance/docs/code files and
-  Repomix is part of the navigation stack; scripts/context_preflight.sh — optional local artifact, explicit request only; .graphifyignore or .graphifyignore.sample — create when: Graphify is part of
-  the navigation stack and no ignore file exists; memory-bank/ structure — create when: project is long-running, conceptual, planning-heavy, or user asks for persistent working context;
-  scripts/README.md — create when: scripts, tasks, or automation are present, or when script inventory is explicitly requested; Optional/generated support files.
+- Read [references/files-context-map.md](references/files-context-map.md) before that work (moved verbatim from here): context-map.yaml — create when: `AI_NAVIGATION.md` is created or already exists but no machine-readable routing map
+  exists.
+- Read [references/files-support.md](references/files-support.md) before that work (moved verbatim from here): repomix.config.json — create when: project has multiple governance/docs/code files and Repomix is part of the navigation
+  stack; scripts/context_preflight.sh — optional local artifact, explicit request only; .graphifyignore or .graphifyignore.sample — create when: Graphify is part of the navigation stack and no ignore
+  file exists; memory-bank/ structure — create when: project is long-running, conceptual, planning-heavy, or user asks for persistent working context; scripts/README.md — create when: scripts, tasks,
+  or automation are present, or when script inventory is explicitly requested; Optional/generated support files.
 
-- Read [references/finishing.md](references/finishing.md) before that work (moved verbatim from here): Phase 5 — Update Parent; Conventions Baked In; Quality Check Before Completing; Audit Output
-  Format.
+- Read [references/finishing.md](references/finishing.md) before that work (moved verbatim from here): Phase 5 — Update Parent; Conventions Baked In; Quality Check Before Completing; Audit Output Format.
 - Read [references/compaction-recovery.md](references/compaction-recovery.md) before that work (moved verbatim from here): Context Compaction Recovery.
 
 ## Workflow: Applying This Skill to a Project
