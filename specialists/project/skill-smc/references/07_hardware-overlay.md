@@ -325,6 +325,9 @@ Read 2026-10-22 for enterprise-strategy's RouterOS future study, from smc-resili
   large x86 concept; both models are in both flavours. The "small box / big box" wording in `01_overview.md` (x86 as "small") is not a model class.
 - Prometheus has no process metrics (no process-exporter), so Asterisk's or Squid's own CPU and RAM are not measurable from it; per-process cost needs
   a `ps` on the box.
+- Asterisk resident memory, measured 2026-10-22 on all 17 rcp boxes (`collect-smc-evidence-full.sh --only voip`, `asterisk-rss`; operator approved):
+  77–153 MB per box, about 100 MB typical (warburton 153, mornington 130, tjuntjuntjara 127, bidyadanga 119); full source build with
+  `autoload=yes`. umoona-smc01 and nocprov-smc01 had no Asterisk process. `VERIFIED-OBSERVED`
 - Anomalies seen 2026-10-22: koonibba-smc01 (nbn_accelerate, 6404) root 98% full, warakurna-smc01 65%; warehouse-smc01 has 3 GB RAM; nocprov,
   wangkatjungka and warehouse have no node_exporter series.
 
