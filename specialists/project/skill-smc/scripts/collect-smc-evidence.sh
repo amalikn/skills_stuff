@@ -36,13 +36,16 @@ CMD_DEADLINE="${SMC_TSH_DEADLINE:-60}"   # seconds for each capture command
 # watcher sends TERM, then KILL 5 s later. Override with SMC_TSH_DEADLINE (seconds) per run.
 #   with_deadline SECONDS CMD [ARGS...]
 #   Args: SECONDS, the deadline; CMD and ARGS, the command. Its stdin is passed through (`<&0` keeps it when job control is on, where a background job would read /dev/null).
-#   Returns: the command's exit status (143 or 137 when the deadline killed it).
+#   Returns: the command's exit status, or 124 (GNU timeout's code) when the deadline was reached: tsh traps TERM and exits 1 ("context
+#   canceled"), so its own status cannot show a timeout (2026-10-22).
 with_deadline() {
   local deadline="$1"; shift
+  local started=$SECONDS
   "$@" <&0 & local pid=$!
   ( sleep "$deadline"; kill -TERM "$pid" 2>/dev/null; sleep 5; kill -KILL "$pid" 2>/dev/null ) & local watcher=$!
   wait "$pid"; local rc=$?
   kill "$watcher" 2>/dev/null; wait "$watcher" 2>/dev/null
+  (( SECONDS - started >= deadline )) && rc=124
   return $rc
 }
 

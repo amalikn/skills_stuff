@@ -55,13 +55,16 @@ SESSION_DEADLINE="${SMC_TSH_DEADLINE:-300}"      # seconds for the one capture s
 # watcher sends TERM, then KILL 5 s later. Override with SMC_TSH_DEADLINE (seconds) per run.
 #   with_deadline SECONDS CMD [ARGS...]
 #   Args: SECONDS, the deadline; CMD and ARGS, the command. Its stdin is passed through (`<&0` keeps it when job control is on, where a background job would read /dev/null).
-#   Returns: the command's exit status (143 or 137 when the deadline killed it).
+#   Returns: the command's exit status, or 124 (GNU timeout's code) when the deadline was reached: tsh traps TERM and exits 1 ("context
+#   canceled"), so its own status cannot show a timeout (2026-10-22).
 with_deadline() {
   local deadline="$1"; shift
+  local started=$SECONDS
   "$@" <&0 & local pid=$!
   ( sleep "$deadline"; kill -TERM "$pid" 2>/dev/null; sleep 5; kill -KILL "$pid" 2>/dev/null ) & local watcher=$!
   wait "$pid"; local rc=$?
   kill "$watcher" 2>/dev/null; wait "$watcher" 2>/dev/null
+  (( SECONDS - started >= deadline )) && rc=124
   return $rc
 }
 REDACT=1
@@ -354,7 +357,9 @@ build_remote_script() {
     local cmd="${rest#*|}"
     printf 'printf "\\n===SMC-CAPTURE %s %s===\\n"\n' "$group" "$name"
     printf '{ %s ; } 2>&1\n' "$cmd"
-    printf 'printf "===SMC-RC %%s===\\n" "$?"\n'
+    # A newline before the RC marker: output without a trailing newline (interfacecheckv2.sh) glued the marker to its last line, so that capture
+    # was never closed or counted (found 2026-10-22). The parser strips the one trailing blank line this adds.
+    printf 'rc=$?; printf "\\n===SMC-RC %%s===\\n" "$rc"\n'
   done
   printf 'printf "\\n===SMC-CAPTURE-END===\\n"\n'
 }
@@ -485,10 +490,19 @@ for host in "${hosts[@]}"; do
   remote_script="$(build_remote_script "${host_selected[@]}")"
 
   raw="${hostdir}/_raw-stream.txt"
-  if ! printf '%s\n' "$remote_script" | with_deadline "$SESSION_DEADLINE" tsh ssh "${SSH_USER}@${host}" 'bash -s' > "$raw" 2>"${raw}.err"; then
+  printf '%s\n' "$remote_script" | with_deadline "$SESSION_DEADLINE" tsh ssh "${SSH_USER}@${host}" 'bash -s' > "$raw" 2>"${raw}.err"
+  session_rc=$?
+  # 124: the deadline was reached. Captures the session never reached are reported as not run, never as absent or failed (2026-10-22).
+  timed_out=0; [[ $session_rc -eq 124 ]] && timed_out=1
+  if [[ $timed_out -eq 1 ]]; then
+    echo "  SESSION TIMED OUT after ${SESSION_DEADLINE}s (SMC_TSH_DEADLINE): later captures not run"
+    echo "  ${host}: SESSION TIMED OUT after ${SESSION_DEADLINE}s" >> "$MANIFEST"
+  fi
+  if [[ $session_rc -ne 0 ]]; then
     # A non-zero overall rc is expected — individual captures fail routinely (a service that is not installed on this flavour). Only treat a
     # completely empty stream as a real failure, since that means the session itself did not run.
     if [[ ! -s "$raw" ]]; then
+      [[ $timed_out -eq 1 ]] && { echo "  ${host}: no output before the deadline" >> "$MANIFEST"; continue; }
       echo "  SESSION FAILED — see $(basename "$raw").err"
       echo "  ${host}: SESSION FAILED — see ${host}/_raw-stream.txt.err" >> "$MANIFEST"
       continue
@@ -544,8 +558,9 @@ for host in "${hosts[@]}"; do
   done < "$raw"
 
   rm -f "$raw"
-  printf '  captured: %d ok, %d empty, %d absent-or-failed\n' "$ok" "$empty" "$failed"
-  echo "  ${host}: TOTAL ${ok} ok, ${empty} empty, ${failed} absent-or-failed" >> "$MANIFEST"
+  not_run=$(( ${#host_selected[@]} - ok - empty - failed )); (( not_run < 0 )) && not_run=0
+  printf '  captured: %d ok, %d empty, %d absent-or-failed, %d not run%s\n' "$ok" "$empty" "$failed" "$not_run" "$([[ $timed_out -eq 1 ]] && echo ' (timed out)')"
+  echo "  ${host}: TOTAL ${ok} ok, ${empty} empty, ${failed} absent-or-failed, ${not_run} not run$([[ $timed_out -eq 1 ]] && echo ' (timed out)')" >> "$MANIFEST"
 done
 
 echo ""

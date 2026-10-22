@@ -177,7 +177,10 @@ module docstring.
 
 **Deadlines (2026-10-22):** every `tsh ssh` call runs under `with_deadline` (a watcher: TERM, then KILL 5 s later; macOS has no `timeout`). Platform probe
 `SMC_TSH_PROBE_DEADLINE` (default 60 s), the one capture session per host `SMC_TSH_DEADLINE` (default 300 s); the narrow `collect-smc-evidence.sh` uses
-`SMC_TSH_DEADLINE` per command (default 60 s). Smoke run 2026-10-22 on kalumburu-smc01, `--only voip`: 73 s, 11 of 11 captures.
+`SMC_TSH_DEADLINE` per command (default 60 s). Smoke run 2026-10-22 on kalumburu-smc01, `--only voip`: 73 s, 11 of 11 captures. Full captures measured 2026-10-22: bidyadanga-smc01 (Sky Muster)
+86 s, kalumburu-smc01 93–97 s, 145 captures each, so the 300 s default leaves about 3x headroom; raise `SMC_TSH_DEADLINE` for a slower link. A session the
+deadline cuts prints `SESSION TIMED OUT` and counts the captures it never reached as **not run**, never as absent or failed (`with_deadline` returns 124,
+since tsh traps TERM and exits 1).
 
 The broad one. Use it when the question is "what is going on with this box" rather than a specific routing fault, and when you want a **baseline before a deploy and a matching capture after it**.
 

@@ -1384,3 +1384,6 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
   rule. The 2026-10-22 run wrapped each host in `perl -e 'alarm 150; exec @ARGV'` (no `timeout` on macOS). Fix: a per-call deadline inside the script.
 - Resolved 2026-10-22: both evidence scripts call `tsh ssh` through `with_deadline` (watcher, TERM then KILL); offline test `just test-deadline`;
   smoke run on kalumburu-smc01 (73 s, 11 of 11 captures).
+- Follow-up 2026-10-22: a cut session now reports `SESSION TIMED OUT` and "not run" captures (tsh exits 1 on TERM, so the helper returns 124 on its
+  own clock). Counting not-run captures exposed an older defect: a capture whose output lacks a trailing newline (`interfacecheckv2.sh`) had the
+  end marker glued to its last line and was never closed or counted; the marker now starts on its own line (kalumburu: 145 of 145 captures).

@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1704
+Last rotated: 20261022_1718
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261022_1718 — Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)](#20261022_1718--evidence-capture-timeouts-reported-as-such-full-capture-timing-end-marker-fix-v068---v069)
 - [20261022_1703 — Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8)](#20261022_1703--evidence-scripts-a-deadline-on-every-tsh-call-with-an-offline-test-v067---v068)
 - [20261022_1653 — Asterisk memory measured on the rcp fleet; umoona still without Asterisk; evidence script lacks a tsh deadline (v0.6.6 -> v0.6.7)](#20261022_1653--asterisk-memory-measured-on-the-rcp-fleet-umoona-still-without-asterisk-evidence-script-lacks-a-tsh-deadline-v066---v067)
 - [20261022_1623 — collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)](#20261022_1623--collect-smc-evidence-fullsh-voip-group-records-asterisk-resident-memory-v065---v066)
@@ -37,7 +38,14 @@ Last rotated: 20261022_1704
 - [20261015_1632 — Operator's account of the 1 Sep trigger, monthly PIN expiry, two incident-evidence scripts (v0.4.7 -> v0.4.8)](#20261015_1632--operators-account-of-the-1-sep-trigger-monthly-pin-expiry-two-incident-evidence-scripts-v047---v048)
 - [20261015_1558 — Why the 2025 portal misconfiguration stayed latent; 1 Sep trigger checks (v0.4.6 -> v0.4.7)](#20261015_1558--why-the-2025-portal-misconfiguration-stayed-latent-1-sep-trigger-checks-v046---v047)
 - [20261015_1553 — The SMC runs four parallel SNMP walks cleanly; fping absent on old-looma-smc01 too (v0.4.5 -> v0.4.6)](#20261015_1553--the-smc-runs-four-parallel-snmp-walks-cleanly-fping-absent-on-old-looma-smc01-too-v045---v046)
-- [20261015_1515 — Three-site PIN outage dated by conntrack; koonibba bot restarts stopped 2026-10-01, 9 Oct Xbox spike (v0.4.5 -> v0.4.6)](#20261015_1515--three-site-pin-outage-dated-by-conntrack-koonibba-bot-restarts-stopped-2026-10-01-9-oct-xbox-spike-v045---v046)
+
+## 20261022_1718 — Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)
+
+Side note (the 300 s default was timed only on a voip run): full captures measured 86 s (bidyadanga, Sky Muster) and 93–97 s (kalumburu); default kept
+with about 3x headroom. `with_deadline` returns 124 when its deadline is reached (tsh traps TERM and exits 1); `collect-smc-evidence-full.sh` prints
+`SESSION TIMED OUT` and counts unreached captures as "not run" (live check with a 5 s limit). That count exposed a defect: output without a trailing
+newline glued the RC marker to its last line, so `network/interfacecheck-script` was never closed or counted; the marker now starts on its own line
+(kalumburu 145 of 145, other captures unchanged). `just test-deadline` gains a TERM-trapping case (12 checks). manifest 0.6.8 -> 0.6.9.
 
 ## 20261022_1703 — Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8)
 
@@ -188,8 +196,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 
 - `references/02_service-map.md`: old-looma-smc01 (rcp) ran 4 concurrent snmpwalks plus 2 shared SSH sessions without errors (2026-10-15);
   fping is not installed there either. Found by unified-network-controller's onboarding speedups.
-
-## 20261015_1515 — Three-site PIN outage dated by conntrack; koonibba bot restarts stopped 2026-10-01, 9 Oct Xbox spike (v0.4.5 -> v0.4.6)
-
-- `references/13_known-issues.md` (2026-09-11 portal-FQDN entry): onset 2026-09-01 at hope-vale, kowanyama, galiwinku only; recovery times; galiwinku nightly pattern; operator-stated monthly PIN expiry; 1 Aug question open.
-- `references/13_known-issues.md` (2026-09-30 bot entry): restarts stopped 2026-10-01 13:06, bot still connects; 9-10 Oct spike traced to an Xbox One PIN activation and Xbox/Netflix downloads (DNS-inferred).
