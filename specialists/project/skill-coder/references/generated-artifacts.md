@@ -59,3 +59,20 @@ diff. Why: a hand-edited lock file can claim a version the resolver never chose.
 >              just check                 (bad data fails; "trails today" is a note)
 > ```
 
+> **Learned 2026-10-22** · formatters run by a hook, any project · VERIFIED_PRIMARY · Source: scripts_stuff 2a0b52e
+> (`python/markdown_rewrap/wrap_diff_survey.py`) · Falsifier: a hook-run formatter whose rule change re-formats no file it did not already
+> re-format
+> A formatter that an edit hook runs from its working copy ships the moment it is edited, to every project, and each file changes on its next
+> edit: a width rule changed in one session would have re-wrapped about 570 files in five repos, burying real changes in whitespace diffs. Before
+> committing a formatter rule change, run old against new on every file and count only files whose output differs; then plan one whitespace-only
+> commit per repo, or make the rule opt-in.
+>
+> ```python
+> # python/markdown_rewrap/wrap_diff_survey.py (scripts_stuff 2a0b52e), survey()
+> for path in markdown_files(root):
+>     text = path.read_text(encoding="utf-8")
+>     seen += 1
+>     if new.reflow(text, width) != old.reflow(text, width):
+>         differ.append(path)
+> ```
+
