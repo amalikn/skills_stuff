@@ -12,6 +12,7 @@ _spec = importlib.util.spec_from_file_location("plan_timeline", _ROOT / "scripts
 pt = importlib.util.module_from_spec(_spec)
 sys.modules["plan_timeline"] = pt  # dataclasses resolve annotations through the module
 _spec.loader.exec_module(pt)
+tw = sys.modules["table_wrap"]
 
 D = dt.date
 
@@ -206,26 +207,26 @@ class WrapTable(unittest.TestCase):
     def test_zero_width_keeps_one_line_per_row(self):
         """wrap 0 never calls the formatter."""
         calls = []
-        self.assertEqual(pt.wrap_table(self.TABLE, 0, lambda *a, **k: calls.append(a)), self.TABLE)
+        self.assertEqual(tw.wrap_table(self.TABLE, 0, lambda *a, **k: calls.append(a)), self.TABLE)
         self.assertEqual(calls, [])
 
     def test_formatter_output_is_used_and_flags_match_the_hook(self):
-        """The formatter runs over stdin with --width and --measure-rendered; its table replaces the input."""
+        """The formatter runs on a temporary file with --width and --measure-rendered; its table replaces the input."""
         seen = {}
 
         class Done:
             returncode, stdout = 0, "| Due | Step |\n| --- | --- |\n| Fri 23 Oct | a long |\n|  | step |\n"
 
         def fake(argv, **kw):
-            seen["argv"], seen["input"] = argv, kw["input"]
+            seen["argv"], seen["input"] = argv, Path(argv[2]).read_text(encoding="utf-8")
             return Done()
-        orig_file, orig_which = pt.Path.is_file, pt.shutil.which
-        pt.Path.is_file, pt.shutil.which = lambda self: True, lambda name: "/usr/bin/node"
+        orig_file, orig_which = tw.Path.is_file, tw.shutil.which
+        tw.Path.is_file, tw.shutil.which = lambda self: True, lambda name: "/usr/bin/node"
         try:
-            out = pt.wrap_table(self.TABLE, 120, fake)
+            out = tw.wrap_table(self.TABLE, 120, fake)
         finally:
-            pt.Path.is_file, pt.shutil.which = orig_file, orig_which
-        self.assertEqual(seen["argv"][-4:], ["-", "--width", "120", "--measure-rendered"])
+            tw.Path.is_file, tw.shutil.which = orig_file, orig_which
+        self.assertEqual(seen["argv"][-3:], ["--width", "120", "--measure-rendered"])
         self.assertTrue(seen["input"].startswith("| Due |"))
         self.assertEqual(out.splitlines()[-1], "|  | step |")
 
@@ -233,12 +234,12 @@ class WrapTable(unittest.TestCase):
         """A non-zero exit or empty output leaves the table unwrapped."""
         class Bad:
             returncode, stdout = 1, ""
-        orig_file, orig_which = pt.Path.is_file, pt.shutil.which
-        pt.Path.is_file, pt.shutil.which = lambda self: True, lambda name: "/usr/bin/node"
+        orig_file, orig_which = tw.Path.is_file, tw.shutil.which
+        tw.Path.is_file, tw.shutil.which = lambda self: True, lambda name: "/usr/bin/node"
         try:
-            self.assertEqual(pt.wrap_table(self.TABLE, 120, lambda *a, **k: Bad()), self.TABLE)
+            self.assertEqual(tw.wrap_table(self.TABLE, 120, lambda *a, **k: Bad()), self.TABLE)
         finally:
-            pt.Path.is_file, pt.shutil.which = orig_file, orig_which
+            tw.Path.is_file, tw.shutil.which = orig_file, orig_which
 
 
 if __name__ == "__main__":

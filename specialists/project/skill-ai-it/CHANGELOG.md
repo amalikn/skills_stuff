@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1623
+Last rotated: 20261022_1632
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too](#20261022_1632--table_wrap-shared-hook-compatible-wrapper-target-map-embeds-wrap-too)
 - [20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables](#20261022_1623--plan_timeline-the-timeline-table-wraps-like-the-pages-other-tables)
 - [20261022_1439 — audit_rotations: safety header and git timeouts; rewrap tolerance reverted](#20261022_1439--audit_rotations-safety-header-and-git-timeouts-rewrap-tolerance-reverted)
 - [20261022_1209 — plan_timeline: after places unplanned rows beside their plan step](#20261022_1209--plan_timeline-after-places-unplanned-rows-beside-their-plan-step)
@@ -35,13 +36,20 @@ Last rotated: 20261022_1623
 - [20261014_1247 — yaml_key_diff: context-map key changes and lost comments after an upgrade](#20261014_1247--yaml_key_diff-context-map-key-changes-and-lost-comments-after-an-upgrade)
 - [20261014_1234 — pitfalls: the navigation upgrade drops context-map.yaml comments](#20261014_1234--pitfalls-the-navigation-upgrade-drops-context-mapyaml-comments)
 - [20261014_1233 — validator: accepts the compact template's generated-output wording](#20261014_1233--validator-accepts-the-compact-templates-generated-output-wording)
-- [20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries](#20261014_1213--govern-stops-on-uncommitted-governed-files-drops-resolved-baseline-entries)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too
+
+Operator, 2026-10-22 (unified-network-controller): "add stages to plan-tracker from target-map like smc resiliency". The table wrapper moved to
+`scripts/table_wrap.py` and is shared: `target_map.py` now wraps an embedded summary table too (`embed[].wrap_width`, default 200, 0 for one line
+per row; schema field added). The wrapper writes the table to a temporary file: table-reflow reads stdin with readFileSync, which failed with
+EAGAIN on a pipe for unified-network-controller's 14-row summary. Tests: an embed test pins `wrap_width: 0`, a new one checks the default wraps
+and reads current (194 pass). unified-network-controller: render 0.44 s; the markdown hook leaves the page unchanged.
 
 ## 20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables
 
 Operator, 2026-10-22 (unified-network-controller): "why cant the timeline table be wrapped.. update the code to do it". `scripts/plan_timeline.py`
-now passes the Timeline table through the markdown hook's own table formatter (table-reflow over stdin, `--width N --measure-rendered`) via
+now passes the Timeline table through the markdown hook's own table formatter (table-reflow on a temporary file, `--width N --measure-rendered`) via
 `wrap_table`; a data file's `wrap_width` sets N (default 200, 0 keeps one line per row); without Node or the tool (`TABLE_REFLOW_CLI`) the
 table stays unwrapped. Measured on unified-network-controller: render 0.34 s, the hook's formatter leaves the rendered block unchanged, the page
 check reads current. Tests `WrapTable` (193 pass). Learned 2026-10-22 in `references/target-map-and-timeline.md`.
@@ -169,18 +177,6 @@ templates/check_governance.py defined the `KEBAB_LEGACY` and `CODE_SUFFIXES` reg
   refresh, 2026-10-14). It now accepts both wordings.
 - New `tests/test_validate_navigation.py` runs the validator against `templates/AI_NAVIGATION.md`, so template wording that the
   validator rejects fails a test; red without the fix, green with it. 99 tests.
-
-## 20261014_1213 — govern: stops on uncommitted governed files; drops resolved baseline entries
-
-- New `scripts/govern_guard.py`, first step of both `govern` recipes (template and skill): exits 1 listing governed paths
-  with uncommitted work; `GOVERN_ALLOW_DIRTY=1` overrides. On enterprise-strategy (2026-10-14) govern rotated an uncommitted
-  CHANGELOG and its edits could not be split from the operator's.
-- `doc_freshness.py` and `role_check.py`: `--prune-baseline` drops resolved entries and never adds one; kept entries keep their
-  recorded value, so an over-budget size stays the ratchet. govern runs it on both baselines. `--write-baseline` was unsafe for
-  this: it also absorbs new findings.
-- Project copies of `govern` pick the guard up on their next run (adopt refreshes them mid-run), so the first run after this
-  release is still unguarded.
-- Tests: `tests/test_govern_guard.py` (6). Live: cambium-swap refused (dirty `justfile`), enterprise-strategy passed.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

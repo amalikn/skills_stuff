@@ -678,17 +678,18 @@ class EmbedTest(TargetMapCase):
 
     PAGE = f"# Plan tracker\n\nHand text.\n\n## Stages\n\n{tm.EMBED_BEGIN}\nold\n{tm.EMBED_END}\n\nMore hand text.\n"
 
-    def ws(self, page: str | None = None) -> Workspace:
+    def ws(self, page: str | None = None, wrap: int = 0) -> Workspace:
         """A workspace with the checklist map embedding into docs/plan.md.
 
         Args:
             page: the page text; default PAGE.
+            wrap: the embed's wrap_width; 0 (default) keeps one line per row.
 
         Returns:
             The workspace.
         """
         raw = checklist_map()
-        raw["embed"] = [{"path": "docs/plan.md", "heading": "Generated from the target map."}]
+        raw["embed"] = [{"path": "docs/plan.md", "heading": "Generated from the target map.", "wrap_width": wrap}]
         ws = Workspace(raw, plan=CHECKLIST_PLAN, extra={"docs/plan.md": self.PAGE if page is None else page})
         self.addCleanup(ws.close)
         return ws
@@ -716,6 +717,18 @@ class EmbedTest(TargetMapCase):
         """A target without criteria renders a sentence instead of an empty table."""
         out = self.ws().evaluate()
         self.assertIn("The source writes no acceptance criteria for this stage yet.", out.rendered)
+
+    def test_embed_wraps_as_the_hook_does(self):
+        """The default wrap_width (200) pads and wraps the table through table-reflow; the page then reads current."""
+        tw = sys.modules["table_wrap"]
+        if not (tw.Path(tw.TABLE_REFLOW).is_file() and tw.shutil.which("node")):
+            self.skipTest("table-reflow or node not on this machine")
+        ws = self.ws(wrap=200)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(tm.main(["--project-root", str(ws.root), "--write", "--today", TODAY.isoformat()]), 0)
+        page = (ws.root / "docs/plan.md").read_text(encoding="utf-8")
+        self.assertIn("| Stage | Name    |", page)
+        self.assertFalse(ws.evaluate().drift)
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ a commit gate that renders first keeps every commit current for its day. `--writ
 nothing outside the markers. Runtime: well under a second (one YAML file, one page, one table-reflow call; no network).
 
 The table is wrapped to `wrap_width` columns (default 200; 0 for one line per row) by the same table-reflow tool and flags the markdown hook
-uses (`--width N --measure-rendered`), so a wrapped Timeline reads like the page's other tables and the hook leaves it unchanged (operator,
+uses (`--width N --measure-rendered`, table_wrap.py), so a wrapped Timeline reads like the page's other tables and the hook leaves it unchanged (operator,
 2026-10-22: "why cant the timeline table be wrapped"). Without Node or the tool (`TABLE_REFLOW_CLI`) the table stays one line per row.
 
 Usage (run with the project's venv; paths are relative to --project-root, default the current folder):
@@ -31,14 +31,14 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import os
-import shutil
-import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 import yaml
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from table_wrap import WRAP_WIDTH, wrap_table  # the shared hook-compatible table wrapper (2026-10-22)
 
 DATA = "docs/trackers/plan-timeline.yaml"
 END = "<!-- END GENERATED: plan-timeline -->"
@@ -48,12 +48,6 @@ KINDS = ("plan", "fixed", "extra", "parked")
 CORE_FIELDS = frozenset({"due", "week", "done", "flag", "kind", "stage", "step", "after"})
 DEFAULT_COLUMNS = ({"key": "stage", "header": "Stage"}, {"key": "step", "header": "Step"},
                    {"key": "where", "header": "Where it stands"}, {"key": "next_with", "header": "Next with"})
-#: The table formatter the markdown hook runs; overridable for another machine.
-TABLE_REFLOW = os.environ.get("TABLE_REFLOW_CLI", "/Volumes/Data/_ai/_scripts/scripts_stuff/vscode_extensions/shared/table-reflow/cli.mjs")
-#: Default wrap width, the global markdown table budget; a data file's `wrap_width` overrides it (0 = do not wrap).
-WRAP_WIDTH = 200
-#: Seconds the table formatter may take.
-REFLOW_TIMEOUT_S = 30
 #: A "Wk of" step is late after the Friday of that week.
 WEEK_DEADLINE_DAYS = 4
 
@@ -271,28 +265,6 @@ def validate(data: object, data_path: str = DATA) -> tuple[list[dict], list[str]
         if row.get("after") and row["after"] not in stages:
             problems.append(f"{data_path} row {n}: `after: {row['after']}` names no dated row's stage")
     return rows, problems
-
-
-def wrap_table(table: str, width: int, runner=subprocess.run) -> str:
-    """Wrap a markdown table the way the markdown hook does: table-reflow over stdin, `--width N --measure-rendered`.
-
-    Args:
-        table: the table's lines, header and separator first, joined by newlines.
-        width: the column budget; 0 or less returns the table as it is.
-        runner: subprocess.run, or a fake in tests.
-
-    Returns:
-        The wrapped table, or the table unchanged when wrapping is off, Node or the tool is missing, or the tool fails or times out.
-    """
-    if width <= 0 or not Path(TABLE_REFLOW).is_file() or not shutil.which("node"):
-        return table
-    try:
-        done = runner(["node", TABLE_REFLOW, "-", "--width", str(width), "--measure-rendered"], input=table + "\n", capture_output=True,
-                      text=True, timeout=REFLOW_TIMEOUT_S, check=False)
-    except (OSError, subprocess.TimeoutExpired):
-        return table
-    out = done.stdout.rstrip("\n")
-    return out if done.returncode == 0 and out.startswith("|") else table
 
 
 def render(rows: list[dict], source: str, today: dt.date, columns: list[dict] | None = None, note: str = "", data_path: str = DATA,

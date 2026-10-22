@@ -47,6 +47,9 @@ from pathlib import Path
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from table_wrap import WRAP_WIDTH, wrap_table  # the shared hook-compatible table wrapper (2026-10-22)
+
 MAP_FILE = "target-map.yaml"
 
 TARGET_STATES = ("not started", "groundwork", "in progress", "exit met", "done")
@@ -276,6 +279,7 @@ class Embed:
 
     path: str
     heading: str = ""
+    wrap_width: int = WRAP_WIDTH
 
     @classmethod
     def from_dict(cls, d: dict) -> Embed:
@@ -287,7 +291,7 @@ class Embed:
         Returns:
             The Embed record.
         """
-        return cls(path=str(d["path"]), heading=str(d.get("heading", "")))
+        return cls(path=str(d["path"]), heading=str(d.get("heading", "")), wrap_width=int(d.get("wrap_width", WRAP_WIDTH) or 0))
 
 
 @dataclass
@@ -617,6 +621,8 @@ SCHEMA: dict[str, dict[str, Field]] = {
     "embed": {
         "path": Field(MANDATORY, "repo-relative page holding the target-map markers once", "nothing can be written without it"),
         "heading": Field(OPTIONAL, "a sentence printed above the table inside the block", "a page may want to say where the table comes from"),
+        "wrap_width": Field(OPTIONAL, "the table's column budget, wrapped as the markdown hook does; default 200, 0 for one line per row",
+                            "a generated table must match the hook's wrapping or the hook and the render keep undoing each other (2026-10-22)"),
     },
     "labels": {
         "target": Field(OPTIONAL, "singular name of a target, e.g. Step, Milestone, Phase", "the default reads correctly everywhere"),
@@ -1113,13 +1119,14 @@ class TrackerRenderer:
         out = [EMBED_BEGIN]
         if embed.heading:
             out += self._para(embed.heading)
-        out += [f"| {w} | Name | State | Exit met | Where it stands | Blocker | Next action |", "| --- | --- | --- | --- | --- | --- | --- |"]
+        table = [f"| {w} | Name | State | Exit met | Where it stands | Blocker | Next action |", "| --- | --- | --- | --- | --- | --- | --- |"]
         for t in self.m.targets:
             name = self._def(t).name
             anchor = self._slug(f"{w} {t.id} — {name}")
             nxt = self._action(t.next) if t.next.text else ""
-            out.append(f"| [{t.id}]({tracker}#{anchor}) | {self._cell(name)} | {t.state} | {'yes' if t.exit_met else 'no'} | {self._cell(t.summary)} | "
-                       f"{self._action(t.blocker)} | {nxt} |")
+            table.append(f"| [{t.id}]({tracker}#{anchor}) | {self._cell(name)} | {t.state} | {'yes' if t.exit_met else 'no'} | {self._cell(t.summary)} | "
+                         f"{self._action(t.blocker)} | {nxt} |")
+        out += wrap_table("\n".join(table), embed.wrap_width).split("\n")   # wrapped as the markdown hook wraps it (2026-10-22)
         out.append(EMBED_END)
         return "\n".join(out)
 
