@@ -445,6 +445,19 @@ fixed `local_port` so tunnels never collide and a stale leftover on a shared por
 | `teleport-tunnel.sh` | `tsh` (Teleport session), ansible-wifi                  | `external-network`,             | Opens a real tunnel to a live device; never writes anything, never                |
 |                      |   inventories (read-only)                               |   `requires-credentials`        |   touches ansible-wifi                                                            |
 
+### `site_device_probe.sh`
+
+Read-only probe of a site's device addresses from its SMC over Teleport (2026-10-21, from unified-network-controller U1.2): for each IP the ARP
+entry, one ping and the TLS certificate the unit presents on 443 (handshake only, never a login). Answers "is a unit cnMaestro lost still
+working on site" and "when does its web certificate expire". Safety: `safe`, `external-network`, `requires-credentials` (a `tsh login`).
+Inputs: `--proxy` (required, never guessed), optional `--deadline` seconds (default 90, applied to the tsh call), the SMC node, dotted IPv4
+addresses (validated; nothing else reaches the box). Output: one `== <ip>` block per address. Exit 0 answered, 1 unreachable or cut off
+(check `backdoor-watch.sh` before calling it down), 2 bad usage. Measured: 3 addresses in 12.6 s at kakalpurannha-homeland (2026-10-22).
+
+```bash
+./site_device_probe.sh --proxy teleport.apn.au kakalpurannha-homeland-smc01 10.255.0.20 10.255.0.21 10.255.0.11
+```
+
 ### `backdoor-watch.sh`
 
 Checks, and optionally watches, a box's autossh backdoor: the reverse tunnel `autossh-teleport-openssh` holds open to the project bastion on port `50000 + site_eclipse_siteid`. Written

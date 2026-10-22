@@ -80,6 +80,10 @@ fleet *args:
 routing *args:
     @just -f scripts/routing-diagnostics.justfile {{args}}
 
+# Site device probe from the SMC over Teleport (read-only): ARP, ping, TLS certificate on 443. Example: just site_device_probe teleport.apn.au kakalpurannha-homeland-smc01 10.255.0.20
+site_device_probe proxy node +ips:
+    @bash scripts/site_device_probe.sh --proxy "{{proxy}}" "{{node}}" {{ips}}
+
 # Raspberry Pi SMC identity probe over Teleport (read-only). Example: just pi_identity_probe teleport.apn.au 20-mile-smc01
 pi_identity_probe proxy +nodes:
     @bash scripts/pi_identity_probe.sh --proxy "{{proxy}}" {{nodes}}
