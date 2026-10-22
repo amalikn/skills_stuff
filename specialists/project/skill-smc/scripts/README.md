@@ -211,6 +211,8 @@ here" stays visible while the secret does not. Redaction is pattern-based — a 
 - **`systemctl status asterisk` reporting `active (exited)` is not proof Asterisk is running.** The unit is an LSB init wrapper, so systemd reports success once the script returns 0 whether or not a
   daemon survives. On umoona-smc01 the unit was `active (exited)` with **zero** asterisk processes, no control socket, and every `asterisk -rx` query failing. The `voip|asterisk-procs` and
   `voip|asterisk-ctl-socket` captures exist so this reads as a diagnosis instead of five confusing failures.
+- **`voip|asterisk-rss`** (2026-10-22) records each Asterisk process's resident memory, VSZ and age with `ps`; Prometheus has no process metrics, so this is
+  the only per-process sizing source (`./collect-smc-evidence-full.sh <host> --only voip`, read-only).
 - **A textfile collector that stopped writing does not alert as broken** — it alerts as no-data, or not at all. `monitoring|textfile-mtimes` is therefore captured alongside the contents; the staleness
   windows are in `../references/02_service-map.md`.
 

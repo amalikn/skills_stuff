@@ -13,6 +13,7 @@ Last rotated: 20261022_1621
 
 ## Contents
 
+- [20261022_1623 — collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)](#20261022_1623--collect-smc-evidence-fullsh-voip-group-records-asterisk-resident-memory-v065---v066)
 - [20261022_1621 — rcp Asterisk dialplan summarised; x86 fleet by model with its 7-day load (v0.6.4 -> v0.6.5)](#20261022_1621--rcp-asterisk-dialplan-summarised-x86-fleet-by-model-with-its-7-day-load-v064---v065)
 - [20261022_1506 — Firmware access from the OS: UEFI and EEPROM lines in the x86 and Pi probes, deadlines (v0.6.3 -> v0.6.4)](#20261022_1506--firmware-access-from-the-os-uefi-and-eeprom-lines-in-the-x86-and-pi-probes-deadlines-v063---v064)
 - [20261022_1426 — What WAN-side equipment tells an SMC about its site: Starlink position, Sky Muster NTD nothing (v0.6.2 -> v0.6.3)](#20261022_1426--what-wan-side-equipment-tells-an-smc-about-its-site-starlink-position-sky-muster-ntd-nothing-v062---v063)
@@ -39,6 +40,12 @@ Last rotated: 20261022_1621
 - [20261014_2345 — Topology_vars differ by branch; read them at the listing ref (v0.4.3 -> v0.4.4)](#20261014_2345--topology_vars-differ-by-branch-read-them-at-the-listing-ref-v043---v044)
 - [20261014_2230 — Central chassis port plans from as-built sets; old-looma SWP 24 corrected (v0.4.2 -> v0.4.3)](#20261014_2230--central-chassis-port-plans-from-as-built-sets-old-looma-swp-24-corrected-v042---v043)
 - [20261014_1956 — BIND check-names on the smc_ltp RPZ zone (v0.4.1 -> v0.4.2)](#20261014_1956--bind-check-names-on-the-smc_ltp-rpz-zone-v041---v042)
+
+## 20261022_1623 — collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)
+
+New capture `voip|asterisk-rss` (`ps -C asterisk -o pid=,rss=,vsz=,etime=,args=`): Prometheus has no process metrics, so this is the only per-process
+sizing source; enterprise-strategy's RouterOS study needs it to size a containerised Asterisk. `bash -n` passes; not yet run on a box (the session's
+fleet probe was denied by auto mode). Catalogued in `scripts/README.md`. manifest 0.6.5 -> 0.6.6.
 
 ## 20261022_1621 — rcp Asterisk dialplan summarised; x86 fleet by model with its 7-day load (v0.6.4 -> v0.6.5)
 

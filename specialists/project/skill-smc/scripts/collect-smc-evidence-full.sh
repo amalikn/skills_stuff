@@ -195,6 +195,9 @@ CAPTURES=(
   # daemon is left running. Confirmed on umoona-smc01 2026-08-25: unit active (exited), zero asterisk processes, no control socket, and every
   # `asterisk -rx` query below failing with "Unable to connect to remote asterisk". Never read the unit state alone as "Asterisk is up".
   "voip|asterisk-procs|pgrep -a asterisk || echo 'NO ASTERISK PROCESS RUNNING (unit state alone is not proof — LSB wrapper reports active/exited)'"
+  # Resident memory (KB) and age of the Asterisk processes: Prometheus has no process metrics, so this is the only per-process sizing source
+  # (added 2026-10-22 for the RouterOS future study, which sizes a containerised Asterisk against it).
+  "voip|asterisk-rss|ps -C asterisk -o pid=,rss=,vsz=,etime=,args= 2>/dev/null || echo 'NO ASTERISK PROCESS'"
   "voip|asterisk-ctl-socket|ls -la /var/run/asterisk/ 2>&1 | head -20"
   "voip|asterisk-version|asterisk -rx 'core show version' 2>/dev/null"
   "voip|asterisk-uptime|asterisk -rx 'core show uptime' 2>/dev/null"
