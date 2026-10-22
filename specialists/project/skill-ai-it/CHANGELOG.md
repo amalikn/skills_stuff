@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1744
+Last rotated: 20261022_1749
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check](#20261022_1749--slurp-tracker-linking-documented-incident-a-commit-made-on-a-failed-check)
 - [20261022_1744 — anchor_links: --outside warn for links into other projects](#20261022_1744--anchor_links---outside-warn-for-links-into-other-projects)
 - [20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings](#20261022_1741--anchor_links-promoted-plan_timeline-links-ids-to-their-headings)
 - [20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too](#20261022_1632--table_wrap-shared-hook-compatible-wrapper-target-map-embeds-wrap-too)
@@ -35,8 +36,14 @@ Last rotated: 20261022_1744
 - [20261019_1813 — Checker template: duplicated KEBAB_LEGACY block removed](#20261019_1813--checker-template-duplicated-kebab_legacy-block-removed)
 - [20261019_1734 — pitfalls: hand-bootstrapped packs write accepted archcore decisions](#20261019_1734--pitfalls-hand-bootstrapped-packs-write-accepted-archcore-decisions)
 - [20261019_1707 — Recipe names back to kebab-case; upgrader renames the template's snake_case recipes](#20261019_1707--recipe-names-back-to-kebab-case-upgrader-renames-the-templates-snake_case-recipes)
-- [20261015_0129 — doc_freshness: a Budget header counts only with a size](#20261015_0129--doc_freshness-a-budget-header-counts-only-with-a-size)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check
+
+Slurp of unified-network-controller session 76e313d5. `references/target-map-and-timeline.md` gains `link_ids`, a "Linking a tracker" section
+(linked nouns, one-line rows, `anchor_links.py` with `--outside warn`) and a Learned entry with its code excerpt. ROADMAP: plan_timeline.py over the
+module budget (486 lines), smc-resiliency adoption of anchor_links.py. Incident: fdf90d0 was committed while `just check` failed (CHANGELOG at 206
+of 200 lines); found on the check's exit code right after, fixed by rotation in 2d3665c. The commit was chained with `;`, not gated on the check.
 
 ## 20261022_1744 — anchor_links: --outside warn for links into other projects
 
@@ -176,10 +183,6 @@ templates/check_governance.py defined the `KEBAB_LEGACY` and `CODE_SUFFIXES` reg
 - `check_file_naming` docstring (template and this package's checker): it checks code files only; command names are kebab-case.
 - Verified: 102 tests, 29 managed-block self-tests. `just check` still reports one finding that predates this change: `patterns/archcore-routing.md`
   passed its review date (2026-10-18).
-
-## 20261015_0129 — doc_freshness: a Budget header counts only with a size
-
-- `scripts/doc_freshness.py`: a `Budget` header counts as a file budget only when it states a size (`N lines` or `N KB`); a Python docstring line such as "Budget: 60 seconds" (a runtime budget) made two unified-network-controller modules fail as over a 200-line file budget (2026-10-15).
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

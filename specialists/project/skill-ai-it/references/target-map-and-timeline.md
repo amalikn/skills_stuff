@@ -20,6 +20,7 @@ timeline method of UNC"). The skill's `just check` does not run them; each adopt
 
 - [Target map](#target-map)
 - [Plan timeline](#plan-timeline)
+- [Linking a tracker](#linking-a-tracker)
 - [Adopting both in a project](#adopting-both-in-a-project)
 - [Learned](#learned)
 
@@ -33,9 +34,8 @@ is the cheap read. Since the promotion:
   from 1, cut at its first full stop; `[x]` items are recorded as ticked and the validator warns when the map's verdict disagrees. A source target whose plan writes no checklist carries `criteria:
   []`.
 - **`changelog.started_only: true`** exempts `not started` targets from the change-log rule (operator, 2026-10-21: stale rule applies only to started stages).
-- **`summary` is one short line of where the target stands** (operator, smc-resiliency 2026-10-22: "a summary in where it stands", not everything
-  verbatim): its state and what it waits on, in about fifteen words; the account of what was done goes in the change log and the plan, never in
-  `summary`, which the embedded table shows on every render.
+- **`summary` is one short line of where the target stands** (operator, smc-resiliency 2026-10-22: "a summary in where it stands", not everything verbatim): its state and what it waits on, in about
+  fifteen words; the account of what was done goes in the change log and the plan, never in `summary`, which the embedded table shows on every render.
 - **`embed: [{path, heading}]`** renders the summary table (state, where it stands, blocker, next action, each id linking to its tracker section) into another page between `<!-- BEGIN GENERATED:
   target-map ... -->` and `<!-- END GENERATED: target-map -->`; text outside the markers is never touched.
 
@@ -45,6 +45,24 @@ is the cheap read. Since the promotion:
 `fixed`, `extra`, `parked`). The Schedule column is computed for today (LATE with days, DUE TODAY, Done, Not yet due; a passed date beats a flag); a `parked` row needs no date and shows Parked. The
 data names `render_to`, a `source` sentence, an optional `note` and the `columns` after Due and Schedule (`[{key, header}]`, default Stage, Step, Where it stands, Next with); a row field that is
 neither core nor a column fails. `--data` points at another file; the BEGIN marker names it.
+
+A column may add `link_ids: {page, heading}`: each comma-separated id in a cell with no link yet becomes a link to the first heading of `page` whose text is `heading` with `{id}` filled in, followed
+by a space or nothing (`heading: "Step {id}"` finds "Step 2 — Monitoring", never "Step 21"). The data keeps plain ids, unknown ids stay text, and a cell holding a hand-written link is left as written.
+
+## Linking a tracker
+
+A tracker is read to find where to start, so its hand-written sections link the nouns themselves ("the [rescue layout](...)", "[Step 2](...)") into the section that holds them, and keep each table row
+on one line (operator, 2026-10-22, on unified-network-controller's plan tracker, preferring smc-resiliency's pattern to a separate "Start here" column or reference-style links). Generated blocks get
+their links from the data (`link_ids`, `record`, links in `where`), never by editing the page.
+
+`scripts/anchor_links.py` keeps those links true: every link to a `#heading` in a markdown file must land on a heading that exists. Call it from the project's `just check`:
+
+```text
+@{{py}} "{{ai_it}}/scripts/anchor_links.py" --project-root . --check --outside warn --skip docs/history/ --skip-name "prompt-*.md"
+```
+
+`--outside warn` reports a broken link into another project's file without failing, so a heading renamed by another project's session cannot block this project's commits; dot folders and `*-sources-*`
+captures are always skipped.
 
 ## Adopting both in a project
 
@@ -69,10 +87,9 @@ neither core nor a column fails. `--data` points at another file; the BEGIN mark
 ## Learned
 
 > **Learned 2026-10-22** · smc-resiliency target map · VERIFIED_PRIMARY · Source: smc-resiliency CHANGELOG 20261022_1643 (commit 449bceb) ·
-> Falsifier: a plan whose stage heading misses `target_heading` and whose checklist is not read into the target above it
-> A source's `target_heading` pattern that misses a stage heading (here `^### (?P<id>S\d) — ` against `### SM — Measuring root writes`) does not
-> fail: that stage is absent from the map and its `Completion checklist` line is read into the target above it (S6 showed SM's four criteria). When a
-> plan adds a stage whose id is not the usual shape, widen the pattern (`S\d|SM`) and check `--show` lists every heading the plan has.
+> Falsifier: a plan whose stage heading misses `target_heading` and whose checklist is not read into the target above it A source's `target_heading` pattern that misses a stage heading (here `^###
+> (?P<id>S\d) — ` against `### SM — Measuring root writes`) does not fail: that stage is absent from the map and its `Completion checklist` line is read into the target above it (S6 showed SM's four
+> criteria). When a plan adds a stage whose id is not the usual shape, widen the pattern (`S\d|SM`) and check `--show` lists every heading the plan has.
 
 > **Learned 2026-10-21** · promotion of a project script into this skill · VERIFIED_PRIMARY · Source: unified-network-controller CHANGELOG 20261021_1809;
 > this file's scripts (commit pending) · Falsifier: a pilot page that renders differently from the skill copy on the same inputs A script promoted from a project keeps its output byte for byte only if
@@ -91,15 +108,24 @@ if states.get("parked"):
 ```
 
 > **Learned 2026-10-22** · a generated table that the markdown hook also formats · VERIFIED_PRIMARY · Source: unified-network-controller operator, 2026-10-22; `scripts/plan_timeline.py` (`wrap_table`), `tests/test_plan_timeline.py` (`WrapTable`) · Falsifier: the markdown hook changing a freshly rendered Timeline block, or the page check failing right after a render
-> A generated block is compared byte for byte with a fresh render, so a table the hook would wrap differently can never stay wrapped: the
-> hook wraps it on the next edit and the next render unwraps it. Render through the hook's own formatter with the hook's flags (table-reflow
-> `--width 200 --measure-rendered`) and both agree: the Timeline now wraps, and the hook leaves it as rendered. Set `wrap_width: 0` in the
-> data file for one line per row.
+> A generated block is compared byte for byte with a fresh render, so a table the hook would wrap differently can never stay wrapped: the hook wraps it on the next edit and the next render unwraps it.
+> Render through the hook's own formatter with the hook's flags (table-reflow `--width 200 --measure-rendered`) and both agree: the Timeline now wraps, and the hook leaves it as rendered. Set
+> `wrap_width: 0` in the data file for one line per row.
 >
 > ```python
 > # scripts/plan_timeline.py (skills_stuff, 2026-10-22)
-> done = runner(["node", TABLE_REFLOW, "-", "--width", str(width), "--measure-rendered"], input=table + "\n", capture_output=True,
->               text=True, timeout=REFLOW_TIMEOUT_S, check=False)
-> out = done.stdout.rstrip("\n")
-> return out if done.returncode == 0 and out.startswith("|") else table
+> done = runner(["node", TABLE_REFLOW, "-", "--width", str(width), "--measure-rendered"], input=table + "\n", capture_output=True, text=True, timeout=REFLOW_TIMEOUT_S, check=False) out =
+> done.stdout.rstrip("\n") return out if done.returncode == 0 and out.startswith("|") else table
+> ```
+
+> **Learned 2026-10-22** · plan trackers, any project · VERIFIED_PRIMARY (unified-network-controller: the page rendered from plain ids with `link_ids`
+> was byte-identical to the hand-linked one, commit 6c8984f; a planted broken anchor failed `just check`) · Source: `scripts/plan_timeline.py` `link_ids`, `scripts/anchor_links.py`, skills_stuff
+> fb3d4a0 and fdf90d0 · Falsifier: a retitled step heading leaves a rendered Timeline link pointing at the old anchor after `just plan-timeline`. Link ids from data, not by hand: a hand-typed link in
+> the YAML breaks silently on a retitled heading, while `link_ids` looks the heading up on every render. Inline links widen a wrapped table's cells, so authored tables stay one line per row
+> (table-reflow narrowed unified-network-controller's "Next" column to 25 characters when the links were inline).
+>
+> ```python
+> # scripts/plan_timeline.py link_ids (skills_stuff fb3d4a0)
+> want = spec["heading"].format(id=tok) for text, anchor in index: if text == want or text.startswith(want + " "): return f"[{tok}]({rel}#{anchor})" return tok ... if value and "[" not in value: # a
+> cell with a hand-written link is left as written row[col["key"]] = "".join(p if i % 2 else one(p) for i, p in enumerate(re.split(r"(,\s*)", value)))
 > ```

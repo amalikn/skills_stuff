@@ -46,6 +46,11 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Target map
 
+- [ ] **plan_timeline.py over the module budget** (2026-10-22): 420 lines before `link_ids`, 486 after (skill-coder budget 400). Split it the way
+  `target_map.py` is planned: schema and validation, schedule, renderer, `link_ids` (or move the heading lookup into `anchor_links.py`), command line.
+  Gate: the existing 202 tests and a byte-identical render in unified-network-controller and smc-resiliency.
+- [ ] **Adopt `anchor_links.py` in smc-resiliency** (2026-10-22): its session has an uncommitted govcheck copy of the same rule; told directly and
+  through the hub (es inbox 20261022_1745). Done when its `just check` calls the skill copy.
 - [ ] **Target map standard: bootstrap and governance standard left (module promoted 2026-10-21).** Done 2026-10-21: `scripts/target_map.py` and
   `scripts/plan_timeline.py` live here with their tests and [reference](references/target-map-and-timeline.md); unified-network-controller runs them
   (renders byte-identical) and smc-resiliency adopted both. Left: `bootstrap` offers a starter map (`--init`), the checker template gains
