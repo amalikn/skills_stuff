@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1621
+Last rotated: 20261022_1623
 ---
 
 # skill-smc Changelog
@@ -39,13 +39,15 @@ Last rotated: 20261022_1621
 - [20261015_1441 — fping absent on yakanarra-smc01; iputils ping used for device ping (v0.4.4 -> v0.4.5)](#20261015_1441--fping-absent-on-yakanarra-smc01-iputils-ping-used-for-device-ping-v044---v045)
 - [20261014_2345 — Topology_vars differ by branch; read them at the listing ref (v0.4.3 -> v0.4.4)](#20261014_2345--topology_vars-differ-by-branch-read-them-at-the-listing-ref-v043---v044)
 - [20261014_2230 — Central chassis port plans from as-built sets; old-looma SWP 24 corrected (v0.4.2 -> v0.4.3)](#20261014_2230--central-chassis-port-plans-from-as-built-sets-old-looma-swp-24-corrected-v042---v043)
-- [20261014_1956 — BIND check-names on the smc_ltp RPZ zone (v0.4.1 -> v0.4.2)](#20261014_1956--bind-check-names-on-the-smc_ltp-rpz-zone-v041---v042)
 
 ## 20261022_1623 — collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)
 
 New capture `voip|asterisk-rss` (`ps -C asterisk -o pid=,rss=,vsz=,etime=,args=`): Prometheus has no process metrics, so this is the only per-process
 sizing source; enterprise-strategy's RouterOS study needs it to size a containerised Asterisk. `bash -n` passes; not yet run on a box (the session's
 fleet probe was denied by auto mode). Catalogued in `scripts/README.md`. manifest 0.6.5 -> 0.6.6.
+
+Incident: commit df32f48 was made while `just check` failed (CHANGELOG 201 lines, over budget): the command piped the check into `tail`, so its exit
+code did not gate the commit. Fixed in the next commit by rotating the CHANGELOG; the check passes.
 
 ## 20261022_1621 — rcp Asterisk dialplan summarised; x86 fleet by model with its 7-day load (v0.6.4 -> v0.6.5)
 
@@ -194,8 +196,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 - `references/16_tplink-site-switches.md`: wangkatjungka's and yakanarra's central chassis port plans read from their as-built drawings (checked
   against the rendered PDFs), and a correction: old-looma's SWP 24 line enters Switch2, not Switch1 (draw.io XML and PDF). Source:
   unified-network-controller as-built generator, 2026-10-14.
-
-## 20261014_1956 — BIND check-names on the smc_ltp RPZ zone (v0.4.1 -> v0.4.2)
-
-- `references/02_service-map.md`: BIND refuses an underscore in an A or AAAA name of a primary zone (`check-names` fail), so names written for
-  `db.cambium-rpz` are lowercase with hyphens. Source: unified-network-controller's Nautobot-only RPZ records, 2026-10-14.
