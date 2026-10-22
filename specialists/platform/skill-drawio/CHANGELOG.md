@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261022 `scripts/flowmap/uncross.py`: after routing, two flow arrows that cross are redrawn in the other order and kept only when the page has fewer crossings (`look.uncross`, on; schema key added); `route_flow` returns what the pass needs; `DEFAULT_LOOK` comments restored one per key; test `test_uncross_redraws_a_crossing_pair`; smc-resiliency fw-x86 1 -> 0 crossings, unified-network-controller unchanged; Learned 2026-10-22 in `references/layout-and-routing.md`, rule in `references/visual-style.md` (operator review, smc-resiliency).
 - 20261022 `scripts/flow_quality.py` (`just flow-quality`): per flow page, audit faults, crossings and shared starts; exit 1 on any. Promoted from smc-resiliency's session scan (29 pages clean); test.
 - 20261021 Schema `next` states the branch-order rule (first = gate passes, Yes; second = fails, No; `when` for other cases); Learned 2026-10-21 in `references/data-first-diagrams.md` (all existing gates checked: smc-resiliency six correct, unified-network-controller none).
 - 20261021 `drawio.mxfile.Page.route` mirrors a port's fraction on a flipped shape (`flipH`, `flipV`): draw.io reads entryY=0 on a flipV trapezoid (manual operation) as its bottom, so an arrow into its top was drawn through it (unified-network-controller topology flow); `Page.cell_style` keeps each vertex's style; test added; Learned 2026-10-21 in `references/file-format.md`.

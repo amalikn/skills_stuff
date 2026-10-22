@@ -24,14 +24,15 @@ DEFAULT_LOOK = {
     "step_chars": 38,              # characters a line a step box is sized for, at step_width and font 10
     "back_arrows": "short-first",  # return arrows: "short-first" (along the source's lane when clear) or "below-lanes" (always the band)
     "action_bullets": True,        # an action written as clauses joined by "; " is set one clause a line
-    "component_shapes": True,
-    "heading_scale": 125,
+    "component_shapes": True,      # Overview and End-to-end boxes take their lane head's symbol (operator, 2026-10-21); False draws rounded boxes
+    "heading_scale": 125,          # a box's heading line (component name, step title, option head, decision) at this % of the box's font
     "column_gap": 80,              # space between step columns on a flow page, room for a labelled arrow (was 50 px; operator review 2026-10-21)
     "track_gap": 12,               # spacing of engine-routed arrow runs along a lane edge; each lane reserves room for the runs planned on it
-    "empty_notes": "hide",
-    "branch_labels": "yes-no",
-    "arrow_corners": "rounded",
-    "max_aspect": 0.8,             # a step box taller than this times its width is widened instead (long text: wider, not tall and narrow)    # flow-page arrows turn with rounded corners as on the Overview; "square" for sharp corners     # a decision's two branches labelled Yes and No (a step's `when` names other cases); "off" for numbers only         # a step note with nothing under its title: "hide" (not drawn) or "show"          # a box's heading line (component name, step title, option head, decision) at this % of the box's font      # Overview and End-to-end boxes take their lane head's symbol (operator, 2026-10-21); False draws rounded boxes
+    "empty_notes": "hide",         # a step note with nothing under its title: "hide" (not drawn) or "show"
+    "branch_labels": "yes-no",     # a decision's two branches labelled Yes and No (a step's `when` names other cases); "off" for numbers only
+    "arrow_corners": "rounded",    # flow-page arrows turn with rounded corners as on the Overview; "square" for sharp corners
+    "max_aspect": 0.8,             # a step box taller than this times its width is widened instead (long text: wider, not tall and narrow)
+    "uncross": "on",               # redraw two flow arrows that cross in the other order, kept when crossings drop (operator review 2026-10-22); "off"
 }
 
 #: Thick arrow and family colours: distinct hues, each at least 4.5:1 on white (blue, green, red, purple, teal, olive, magenta, orange,

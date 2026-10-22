@@ -7,7 +7,8 @@ decision's right, top and bottom corners; a plain box's top and bottom too, at a
 thirds; top; bottom; a diamond only at its corners), joined through the column gaps and the runs the lanes reserved. A candidate must leave and
 arrive the way its ports face and never run inside its own source or target. Each is scored against what is drawn: a box crossed, a run alongside
 another or over a label, a point or a side already used, crossings (drawn as arc hops), bends, length. A decision's branches are routed together
-(`route_branches`); a yes/no decision's branches are green (Yes) and red (No).
+(`route_branches`); a yes/no decision's branches are green (Yes) and red (No). Greedy order can still leave two arrows crossing that need
+not: `flowmap.uncross` then redraws each crossing pair in the other order and keeps it only when the page has fewer crossings (2026-10-22).
 
 Imported, not run: `from flowmap.routing import route_flow, branch_label` with the skill's scripts/ on sys.path.
 """
@@ -310,7 +311,7 @@ def label_spot(page: Page, cid: str, pts: list, w: float, h: float) -> tuple[flo
     return (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
 
 
-def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> None:
+def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> tuple:
     """Route every forward arrow of a flow page: short arrows first so the long ones route around them, a decision's branches together.
 
     Args:
@@ -318,6 +319,10 @@ def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> None:
         flow: (flow id, steps, edges from `step_edges`, shapes by step id).
         corridors: {"xs": column gap centres, "ys": reserved run heights}.
         look: the drawing look (branch labels).
+
+    Returns:
+        (drawn, corridors, reserved) for `flowmap.uncross.uncross`: cell id -> (edge, diamonds) per arrow drawn, the corridors with the corner
+        style, and the sides held back for a decision's branches.
     """
     fid, steps, edges, shapes = flow
     corridors = dict(corridors, rounded=0 if look.get("arrow_corners", "rounded") == "square" else 1)   # rounded corners, as on the Overview
@@ -328,18 +333,24 @@ def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> None:
     for s in steps:   # a decision with branches keeps its top and bottom corners for them: arrows in prefer its left corner
         if shapes[s["id"]] == "decision" and len(s.get("next") or []) > 1:
             used["sides"].update({(f"{fid}-s-{s['id']}", "top"), (f"{fid}-s-{s['id']}", "bottom")})
+    reserved = set(used["sides"])
     done: set = set()
+    drawn: dict = {}   # cell id -> (edge, diamonds), for the uncrossing pass
     for cid, src, dst, _text, _style in forward:
         if cid in done:
             continue
         group = [e for e in forward if e[1] == src] if shapes[src] == "decision" else []
         if 1 < len(group) <= 3:   # a decision's branches are routed together (best corner per branch)
-            route_branches(page, [(_edge_of((fid, by_id, order, look), c, s, d), shapes[d] == "decision") for c, s, d, _t, _st in group],
-                           corridors, used)
+            branch = [(_edge_of((fid, by_id, order, look), c, s, d), shapes[d] == "decision") for c, s, d, _t, _st in group]
+            route_branches(page, branch, corridors, used)
+            drawn.update({edge[0]: (edge, (True, diamond)) for edge, diamond in branch})
             done.update(e[0] for e in group)
             continue
-        route_forward(page, _edge_of((fid, by_id, order, look), cid, src, dst), (shapes[src] == "decision", shapes[dst] == "decision"),
-                      corridors, used)
+        edge = _edge_of((fid, by_id, order, look), cid, src, dst)
+        diamonds = (shapes[src] == "decision", shapes[dst] == "decision")
+        route_forward(page, edge, diamonds, corridors, used)
+        drawn[cid] = (edge, diamonds)
+    return drawn, corridors, reserved
 
 
 def _edge_of(ctx: tuple, cid: str, src: str, dst: str) -> tuple:

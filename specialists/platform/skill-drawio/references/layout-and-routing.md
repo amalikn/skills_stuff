@@ -348,3 +348,26 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 > gaps grow to fit their labels. Checked on every flow page of both consumers by a scan of faults, crossings and shared starts (all zero).
 > Screenshots: `references/screenshots/20261021-flow-router/`.
 
+> **Learned 2026-10-22** · flow pages: arrows that cross needlessly are redrawn · VERIFIED_PRIMARY · Source: smc-resiliency operator review, 2026-10-22 ("again unnecessary overlap for the arrows fix it in the skill-drawio"); `scripts/flowmap/uncross.py` (`uncross`), `scripts/flowmap/pages.py` (`flow_page`), `tests/test_routing.py` (`test_uncross_redraws_a_crossing_pair`); screenshots `references/screenshots/20261022-uncross/` · Falsifier: a flow page where two arrows cross and drawing them in the other order (each leaving its source the same way) would not
+> The router is greedy: shortest arrows first, each choosing the cheapest path against what is already drawn, never revisited. Three arrows
+> into one box, one coming down from a lane above, left the early arrow on the middle entry and the later Yes branch on the upper entry, so
+> the descent crossed it (a crossing costs 30, two extra bends to the free lower entry 8 plus length). The repair is a pass after routing:
+> for each pair of forward arrows that cross, take both up and draw them again in the other order, each keeping its exit side, and keep the
+> result only when the page's crossing count falls; at most three rounds, each only ever lowering the count. `drawing.look.uncross: "off"`
+> keeps the greedy order. Measured: smc-resiliency 11 flow pages 1 -> 0 crossings, unified-network-controller 24 pages 0 -> 0 (unchanged),
+> example map current; the pass takes under 0.5 s for a whole map's flow pages. A test renders the fixture with the pass off to prove it
+> still finds the crossing.
+>
+> ```python
+> # scripts/flowmap/uncross.py (skills_stuff, 2026-10-22)
+> for a, b in pairs:
+>     snap, count = _snapshot(page), _crossings(page)
+>     sides = {a: _take_up(page, a), b: _take_up(page, b)}
+>     for cid in (b, a):   # the other order: the arrow drawn second last time now chooses first
+>         edge, diamonds = drawn[cid]
+>         route_forward(page, edge, diamonds, corridors, _used(page, reserved), (sides[cid],))
+>     if _crossings(page) < count:
+>         improved = True
+>     else:
+>         _restore(page, snap)
+> ```

@@ -124,6 +124,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/flow_geometry.py` | Flow page geometry: step widths by shape (wider decisions), column gap and positions, run planning and lane room, back-arrow routes below the lanes | `safe` |
 | `scripts/flowmap/lanes.py` | Flow page lanes: lane heads (structured text; symbols sized to their text inside a plain panel), room kept for arrow runs, run positions | `safe` |
 | `scripts/flowmap/routing.py` | Flow page forward arrows: candidate orthogonal paths scored against what is drawn (boxes, adjacent runs, reused ports, crossings), the cheapest drawn; decision branch labels | `safe` |
+| `scripts/flowmap/uncross.py` | Flow page uncrossing pass: two forward arrows that cross are redrawn in the other order, kept only when the page has fewer crossings (`drawing.look.uncross`) | `safe` |
 | `scripts/flowmap/pages.py` | Flow pages, `render`, `evaluate`, `write_drawing`, `flow_list` | `safe` (`write_drawing` writes the drawing) |
 | `scripts/check_governance.py` | This pack's governance checker (from skill-ai-it's template) | `safe` |
 

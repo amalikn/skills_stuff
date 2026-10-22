@@ -4,7 +4,7 @@ Category: setup
 Status: current
 Authority: canonical
 Scope: Installing and running skill-drawio, both as a pack under development and from a calling project
-Last reviewed: 2026-10-21
+Last reviewed: 2026-10-22
 Summary: >-
   A working setup needs mise, just, Python 3.11 or later with PyYAML for flow maps, and draw.io desktop only for exporting pages to images; the pack's
   own venv lives in the skills working cache.

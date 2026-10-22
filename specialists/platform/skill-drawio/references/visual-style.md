@@ -121,6 +121,8 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 
 ## Labels and text
 
+- Two arrows never cross where drawing them in the other order would avoid it (operator, 2026-10-22: "unnecessary overlap for the arrows";
+  `look.uncross`, on by default; layout-and-routing.md, Learned 2026-10-22).
 - Arrows turn with rounded corners on every page (operator, 2026-10-21: "make the arrows with curves like the overview"; `look.arrow_corners`).
 - Box names and arrow labels are bold (operator, 2026-10-19). Labels mix bold field names with plain values; render `**...**` spans as `<b>` everywhere in a line, and test that no literal `**`
   survives into the drawing [C-D30].

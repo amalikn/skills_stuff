@@ -568,6 +568,13 @@
             },
             "action_bullets": {
               "type": "boolean"
+            },
+            "uncross": {
+              "type": "string",
+              "enum": [
+                "on",
+                "off"
+              ]
             }
           }
         }

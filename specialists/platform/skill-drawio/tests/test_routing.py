@@ -85,5 +85,37 @@ class FlowRouterTests(unittest.TestCase):
         q = fq.page_quality(pages.flow_page(data["flows"][0], {c["id"]: c for c in data["components"]}, 1, TestMap._profile(data)))
         self.assertEqual((q["faults"], q["crossings"], q["shared_starts"]), ([], 0, 0))
 
+    def test_uncross_redraws_a_crossing_pair(self) -> None:
+        """Three arrows into one box, one coming down from a lane above (smc-resiliency fw-x86, operator review 2026-10-22): with `uncross` the
+        page has no crossing; with it switched off the greedy order leaves one, so the test can fail."""
+        data = _firmware()
+        comps = {c["id"]: c for c in data["components"]}
+        fq = importlib.import_module("flow_quality")
+        page = pages.flow_page(data["flows"][0], comps, 1, TestMap._profile(data))
+        self.assertEqual(audit.faults(audit.page_audit(page)), [])
+        self.assertEqual(fq.page_quality(page)["crossings"], 0)
+        greedy = pages.flow_page(data["flows"][0], comps, 1, TestMap._profile(dict(data, drawing={"look": {"uncross": "off"}})))
+        self.assertGreater(fq.page_quality(greedy)["crossings"], 0)
+
+
+def _firmware() -> dict:
+    """A map shaped like smc-resiliency's fw-x86 flow: two gates, a step in the top lane and one below both feeding the same box.
+
+    Returns:
+        The map.
+    """
+    data = TestMap._minimal()
+    data["components"] += [{"id": c, "name": c.upper(), "kind": "container", "group": "G", "host": "h", "health": "ok"} for c in ("c", "d", "e")]
+    data["flows"][0]["steps"] = [
+        {"id": "on", "actor": "a", "action": "x", "via": ["SSH"]},
+        {"id": "read", "actor": "b", "action": "x", "via": ["API"], "gate": "g1", "next": ["enrol", "qual"]},
+        {"id": "qual", "actor": "b", "action": "x", "via": ["API"], "gate": "g2", "next": ["apply", "list"]},
+        {"id": "apply", "actor": "c", "action": "x", "via": ["API"], "next": ["enrol"]},
+        {"id": "list", "actor": "a", "action": "x", "via": ["API"], "next": ["enrol"]},
+        {"id": "enrol", "actor": "d", "action": "x", "via": ["API"]},
+        {"id": "record", "actor": "e", "action": "x", "via": ["API"], "next": []}]
+    return data
+
+
 if __name__ == "__main__":
     unittest.main()

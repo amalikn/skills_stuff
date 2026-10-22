@@ -21,6 +21,7 @@ from .options import options_page
 from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, label_gaps, plan_runs, reserve, run_ys, step_width
 from .lanes import draw_lanes
 from .routing import branch_label, route_flow
+from .uncross import uncross
 from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, fit_height, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
@@ -216,7 +217,9 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     for cid, src, dst, text, style in edges:   # back arrows first: forward routes and labels then avoid them
         if "back to" in text:
             band = back_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), band, profile.look["back_arrows"])
-    route_flow(page, (fid, steps, edges, shapes), {"xs": xs, "ys": ys}, profile.look)
+    drawn, corridors, reserved = route_flow(page, (fid, steps, edges, shapes), {"xs": xs, "ys": ys}, profile.look)
+    if profile.look.get("uncross", "on") != "off":   # redraw arrows that cross needlessly (operator review 2026-10-22)
+        uncross(page, drawn, corridors, reserved)
     return page
 
 
