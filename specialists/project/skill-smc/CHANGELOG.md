@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261020_2028
+Last rotated: 20261022_1200
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261022_1200 — PHP CVE fleet status, extra PHP processes, backdoor hostname check, nbn_wh read rule (v0.6.0 -> v0.6.1)](#20261022_1200--php-cve-fleet-status-extra-php-processes-backdoor-hostname-check-nbn_wh-read-rule-v060---v061)
 - [20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.6.0)](#20261020_2028--sky-muster-reads-session-set-up-and-the-concurrency-curve-v059---v060)
 - [20261020_1905 — networkd keeps changed netdevs; render with the task's options; /etc executables; fleet-health TSH_PROXY and fqdn2ip bundle (v0.5.8 -> v0.5.9)](#20261020_1905--networkd-keeps-changed-netdevs-render-with-the-tasks-options-etc-executables-fleet-health-tsh_proxy-and-fqdn2ip-bundle-v058---v059)
 - [20261020_1752 — Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky Muster read cost (v0.5.7 -> v0.5.8)](#20261020_1752--pi-uplink-on-the-eth0-trunk-ssh-forwards-detach-from-the-caller-sky-muster-read-cost-v057---v058)
@@ -37,7 +38,16 @@ Last rotated: 20261020_2028
 - [20261014_1513 — x86 SMC facts, Teleport static-token join, x86 resiliency probe (v0.4.0 -> v0.4.1)](#20261014_1513--x86-smc-facts-teleport-static-token-join-x86-resiliency-probe-v040---v041)
 - [20261014_0900 — Pi bootloader already supports tryboot A/B (v0.3.9 -> v0.4.0)](#20261014_0900--pi-bootloader-already-supports-tryboot-ab-v039---v040)
 - [20261013_2352 — umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)](#20261013_2352--umoona-vlan621-dark-again-uplink-check-cost-v038---v039)
-- [20261013_2225 — Teleport Machine ID facts, site topology, two 2026-10-13 entries recorded (v0.3.7 -> v0.3.8)](#20261013_2225--teleport-machine-id-facts-site-topology-two-2026-10-13-entries-recorded-v037---v038)
+
+## 20261022_1200 — PHP CVE fleet status, extra PHP processes, backdoor hostname check, nbn_wh read rule (v0.6.0 -> v0.6.1)
+
+From the ansible-wifi PHP CVE-2026-109618/109619 assessment. `references/10_captive-portal.md`: PHP security status (Ubuntu fixed build
+`8.1.2-1ubuntu2.28`, USN-8948-1; mod_php fleet-wide; builds drift, Pis included) and the other PHP processes to restart (rct-tstik
+`php -S 10.254.0.1:8080` as root from cron; `apn-mqtt-client`). `references/07_hardware-overlay.md`: what "don't touch nbn_wh" means (no
+changes; reads always allowed; operator, 2026-10-22). `references/03_communication-flows.md` Learned 2026-10-22: a backdoor port can answer
+as another box (50501 = nocprov-smc01); nbn_wh Teleport running but no tunnel. `references/13_known-issues.md` Learned (f): dual-inventory
+hosts, CRLF host_vars, no self-patching. New scripts `php_package_probe.sh` and `backdoor_exec.sh` (recipes, catalogue, smoke-tested);
+`backdoor-watch.sh` strips `\r` from a CRLF siteid.
 
 ## 20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.6.0)
 
@@ -178,16 +188,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 - **umoona `starlink01` (`vlan621`) reached nothing** on consecutive 15-minute UNC uplink checks from 2026-10-13 23:28 AEDT while its four internet uplinks
   reached everything (`references/03_communication-flows.md`, WAN-path diagnostics): the 2026-07-30 switch-side fix has not held; cause not yet read.
 - **Uplink check cost:** one SSH session per SMC, 15 to 19 s for four or five uplinks.
-
-## 20261013_2225 — Teleport Machine ID facts, site topology, two 2026-10-13 entries recorded (v0.3.7 -> v0.3.8)
-
-- **Teleport Machine ID (tbot)** (`references/03_communication-flows.md`, new section under inbound access; from unified-network-controller apn-unc01,
-  2026-10-12/13): use the bot output as the ACL reader, never root (OpenSSH refuses the 0660-looking key for its owner); an IAM-joined bot re-joins at every
-  renewal, so its token needs a far-future `expires` (Teleport 12.4.34 `lib/auth/bot.go:183` reads expiry unconditionally); tctl 12.4.34 has no `bots update`
-  (rm, add, clear state); an IAM token's `aws_arn` wildcard is a trust boundary.
-- **Site topology** (`references/01_overview.md`, operator 2026-10-13, USER_STATED): no loop or ring except Kalumburu; a few routers cabled at towers.
-- **Recorded late** (written 2026-10-13, no entry then): `references/13_known-issues.md` uplink ids are role labels whose meaning inverted, and how UNC records
-  the drift (commit 2e12b87); `scripts/tplink-switch.sh` takes an optional `TSH_IDENTITY` (Machine ID bot identity) for hosts without a tsh login (791d787).
-- **Central chassis port plan from an as-built** (`references/16_tplink-site-switches.md`, new section; old-looma rcp low-touch, v1.0 drawing): SWP n =
-  gigabitEthernet 1/0/n; SMC, sectors via injectors, AP1, V5000, Starlink Direct NTDs on SMC VLANs enp2s0.521-526, nbn NTD enp2s0.621, tower router on
-  Switch2; two uplinks straight on SMC ports; each row checked against Nautobot cables and LLDP.

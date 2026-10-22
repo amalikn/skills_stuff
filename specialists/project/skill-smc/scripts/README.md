@@ -467,6 +467,31 @@ against `apn-teleport01`: DOWN on kupungarri (50468), UP on windjana-gorge (5047
 | `backdoor-watch.sh`  | bastion via `tsh` (`ss`, auth logs), ansible-wifi        | **read-only**, `external-network` | Never touches the SMC box or ansible-wifi; history writes one temp file on the     |
 |                      |   inventories (read-only)                               |                                 |   bastion and removes it                                                          |
 
+### `php_package_probe.sh` and `backdoor_exec.sh`
+
+`php_package_probe.sh --proxy <proxy> <node>...` prints one `PHPPROBE|<node>|host=...|key=value|...` line per box: installed (`ii`) PHP and
+`libapache2-mod-php` package versions, loaded Apache PHP modules, the apt candidate, overlay and lower-dir state, holds, unattended-upgrades,
+long-running PHP processes (`php -S` built-in servers, cron-run CLI jobs) and PHP listening sockets. `php -v` alone never shows Ubuntu patch
+state: compare the package version with the USN's fixed build. `DEEP=1` also searches the disk for PHP binaries. Written 2026-10-22 for the
+CVE-2026-109618/109619 assessment; tested on beagle-bay-smc01 (x86) and fish-river-smc01 (Pi), and an unknown node gives `FAIL` and exit 1.
+
+`backdoor_exec.sh <site> [cmd | -]` runs a command (or a script on stdin with `-`) through the autossh backdoor, using `backdoor-watch.sh` to
+resolve the port and the KeePassXC entry named by KP_ENTRY (default Network/SMC) via `sshpass -e` (the password never reaches an argument or the output). It reads
+the box's hostname first and stops with exit 4 when the port belongs to another box. Tested 2026-10-22: darlngunaya ran (exit 0),
+family-friendly stopped because 50501 answers as nocprov-smc01 (exit 4), new-looma down (exit 3).
+
+```bash
+./php_package_probe.sh --proxy teleport.apn.au beagle-bay-smc01 fish-river-smc01
+./backdoor_exec.sh darlngunaya 'hostname; uptime'
+./backdoor_exec.sh bungardi - < some_read_only_probe.sh
+```
+
+| Script                 | Touches                                                    | Safety                                | Notes                                                                   |
+| ---------------------- | ---------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------- |
+| `php_package_probe.sh` | `tsh` sessions to each node                                | **read-only**, `external-network`     | Reads packages, processes and mounts; writes nothing                    |
+| `backdoor_exec.sh`     | bastion via `tsh`, the box's sshd via the backdoor, `kp`   | `external-network`,                   | Runs what it is given as root with no Teleport recording: reads only    |
+|                        |                                                            |   `requires-credentials`              |   unless a change is approved (nbn_wh: reads only)                      |
+
 ### Fleet stability: `fleet-reboot-timeline.py`, `predark-snapshot.py`, `fleet-resource-profile.py`, `undervoltage-profile.py`, `overlay-usage-breakdown.sh`
 
 Written 2026-10-07 for the WH "sites get stuck until a technician reboots them" investigation (report:

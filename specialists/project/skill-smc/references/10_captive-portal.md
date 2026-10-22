@@ -330,3 +330,33 @@ The disk-write audit's "DB + cache writes every 1min; operational" row (smc-file
 Effect of a rebuild: a guest who is online keeps their PIN (held in Eclipse) and is re-marked within 5 minutes. If Eclipse cannot be reached after the
 rebuild, there is no `config.txt`, so portal settings run on defaults and the chain stays empty until Eclipse answers. On overlayroot boxes the same is
 already true after every reboot, because `config.txt` lives in the tmpfs upper layer.
+
+## PHP security status: CVE-2026-109618 / CVE-2026-109619 (2026-10-22)
+
+php.net's 2026-10-21 advisory covers two unauthenticated RCEs and rates Apache mod_php the highest-risk setup, which is what every SMC runs. Ubuntu 22.04's fix is `php8.1 8.1.2-1ubuntu2.28` (USN-8948-1). `php -v` prints `8.1.2` on every box, patched or not, so compare the package version (`dpkg-query -W libapache2-mod-php8.1`). On 2026-10-22 no reachable SMC had the fix, and builds differ even on the Pis: `.13`, `.14`, `.18`, `.19`, `.20`, `.21` and `.24` were all seen. No SMC has `php*-fpm` or `php*-cgi`. The rcp boxes held stale apt lists (newest candidate `.26`), so they need `apt-get update` first. On rct/wh the upgrade must reach the lower root, or a reboot drops it (`07_hardware-overlay.md`). The non-SMC servers (cnMaestro, Graylog, Jenkins, Prometheus, Teleport) have no PHP. Fleet CSV, report and probe scripts: `local-knowledge-ansible/ansible-wifi/evidence/php-cve-2026-109618-20261022_1128/`. Re-run it with `scripts/php_package_probe.sh` (`just php_package_probe`). Probe logic (`raw/php_probe.sh`):
+
+```bash
+v=$(php -r 'echo PHP_VERSION;' 2>/dev/null || echo none)
+m=$(dpkg-query -W -f='${Package}=${Version}\n' 'libapache2-mod-php*' 2>/dev/null | grep -v '=$' | tr '\n' ' ')
+c=$(apt-cache policy php8.1-common 2>/dev/null | awk '/Candidate/{print $2}')
+```
+
+Backdoor pitfall found the same day: port 50501 (`family-friendly-smc01`'s backdoor) answered as `nocprov-smc01`, a box in no inventory. Check `hostname` before attributing a backdoor session to a site.
+
+**Other PHP processes to restart after a PHP upgrade (survey 2026-10-22).** Restarting apache2 is not enough on every flavor:
+
+- **rct:** `php -S 10.254.0.1:8080`, PHP's built-in web server for rct-tstik (`/var/www/html/rct-tstik/public`), runs as root, started by a cron entry every 5 minutes. It is a second PHP web server beside Apache; INPUT accepts 8080 on `bridge_500` and the policy is ACCEPT. Source, `roles/smc_application/tasks/main.yml` (branch `rise`, 0979a596):
+
+```yaml
+        - name: Tstik PHP Built-In Web Server
+          minute: "*/5"
+          job: "cd /var/www/html/rct-tstik/public && nohup php -S 10.254.0.1:8080 &>/dev/null"
+          state: present
+      ...
+      when: hotspot_flavor == 'rct'
+```
+
+- **rcp, nbn_accelerate, nbn_wh:** `apn-mqtt-client` (`cd /var/www/apn-mqtt-client && php Start.php`, root, cron `*/5`, crontab tag `#Ansible: apn-mqtt-client`, not defined in ansible-wifi roles). No listening port.
+- `pkill` either one after the upgrade; cron starts it again within 5 minutes on the new build. `kohana` / `php artisan` cron jobs are short-lived.
+- `dpkg-query -W 'php8.1-*'` lists about 20 known-but-not-installed packages; filter on `${db:Status-Abbrev}` = `ii` before passing the list to `apt-get install`.
+- No SMC holds any PHP or Apache package, and unattended-upgrades is disabled (masked on rcp), so no box patches itself.

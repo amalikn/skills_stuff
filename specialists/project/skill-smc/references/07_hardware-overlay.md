@@ -500,6 +500,8 @@ the instruction and was removed the same evening (`apt-get remove --purge fping`
 with the command passed as separate ssh arguments is re-joined on the box, so `command -v` tested nothing and reported yes everywhere; pass the whole remote command as one string. Still not in any
 ansible-wifi role, so a reimaged box loses it: the durable fix is a package entry in the base role.
 
+**What "don't touch nbn_wh" means (operator, 2026-10-22).** No changes on `bungardi-smc01` or `darlngunaya-smc01`: no installs, upgrades, config edits or restarts without an explicit operator decision. Exploratory, read-only commands are always allowed on both. On 2026-10-22 both were reached that way through the autossh backdoor (`cw-teleport01`, ports 60016 / 60018): Teleport's service was active on each box, but the cluster held no reverse tunnel for either.
+
 **fping approval per flavour, and the install guard (2026-09-27, operator: "I am fine with installing fping to rcp and nbn_accelerate flavors when needed").** fping may be installed wherever it is
 missing on any `rcp` or `nbn_accelerate` box; any other package, or any other flavour, needs the box chosen one by one. unified-network-controller's `wc-local/scripts/smc/smc_package_check.py` builds
 its node list from every Nautobot Location with a programme tenant, so seeding the nine `smc_ltp` Locations that day had silently widened `--install` to nine more production boxes; its

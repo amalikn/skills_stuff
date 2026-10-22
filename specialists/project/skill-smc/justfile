@@ -84,6 +84,14 @@ routing *args:
 pi_identity_probe proxy +nodes:
     @bash scripts/pi_identity_probe.sh --proxy "{{proxy}}" {{nodes}}
 
+# PHP exposure probe over Teleport (read-only): installed php/mod_php versions, PHP processes, overlay. Example: just php_package_probe teleport.apn.au beagle-bay-smc01
+php_package_probe proxy +nodes:
+    @bash scripts/php_package_probe.sh --proxy "{{proxy}}" {{nodes}}
+
+# Run a command on a box through its autossh backdoor when Teleport cannot reach it; checks hostname first. Example: just backdoor_exec darlngunaya "hostname; uptime"
+backdoor_exec target cmd="hostname":
+    @bash scripts/backdoor_exec.sh "{{target}}" "{{cmd}}"
+
 # x86 SMC resiliency probe over Teleport (read-only): disks, boot entries, watchdog, state sizes. Example: just x86_resiliency_probe teleport.apn.au horn-island-smc01
 x86_resiliency_probe proxy +nodes:
     @bash scripts/x86_resiliency_probe.sh --proxy "{{proxy}}" {{nodes}}

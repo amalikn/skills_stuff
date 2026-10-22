@@ -656,6 +656,24 @@ VERIFIED-OBSERVED 2026-10-08 on the boxes (20-mile and adjamarragu `rct`, areyon
 >
 > No visual surface.
 
+> **Learned 2026-10-22** · autossh backdoor (`50000 + site_eclipse_siteid` on `apn-teleport01` / `cw-teleport01`) · VERIFIED-OBSERVED
+> (read-only sessions from the operator's Mac, ansible-wifi PHP CVE assessment) · Source: skill-smc `scripts/backdoor_exec.sh` (this commit) ·
+> Falsifier: a listening backdoor port that always reaches the box its siteid names
+> A listening backdoor port does not prove the box is up: `family-friendly-smc01`'s 50501 answered as `nocprov-smc01`, a box in no inventory,
+> so `backdoor-watch.sh` reported UP for a box that was not reached. Read `hostname` before attributing anything to the site. Separately, both
+> nbn_wh boxes ran `teleport` (`systemctl is-active` = active) while the cluster held no reverse tunnel for them (`no node reverse tunnel ...
+> found`); the backdoor reached both. Key login from the bastion is refused (`publickey,password`), so the fleet root password is needed:
+>
+> ```bash
+> # backdoor_exec.sh: the credential goes from KeePassXC to sshpass by environment only; hostname is checked before any command runs
+> SSHPASS="$(kp show -s -a Password "$KP_ENTRY" 2>/dev/null)"; export SSHPASS
+> sshpass -e ssh ... -o ProxyCommand="tsh ssh --proxy=$cluster root@$bastion nc 127.0.0.1 $port" "root@backdoor-$port" "$@"
+> actual="$(bd_ssh hostname </dev/null | tr -d '\r')"
+> [ "$actual" != "$host" ] && [ "${FORCE:-0}" != 1 ] && exit 4
+> ```
+>
+> No visual surface.
+
 ### Alert Flows
 
 ```

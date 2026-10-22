@@ -1365,3 +1365,14 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 > slows as more share the link (33, 46, 52 s), so returns fall with concurrency, and the SMC's load rose to about 2. The fresh-session time,
 > not a Circuit's type, tells which link a site is on now (a site with a GEO Circuit may run over Starlink). No visual surface.
 
+> **Learned 2026-10-22 (f)** · ansible-wifi inventories and fleet patching · VERIFIED-OBSERVED (`ansible-inventory --list` per
+> `inventories/<flavor>/prod`, read-only probes of 85 boxes) · Source: ansible-wifi `rise` branch at 0979a596; evidence in
+> local-knowledge-ansible `ansible-wifi/evidence/php-cve-2026-109618-20261022_1128/` · Falsifier: an inventory run where each host is in one flavor
+> - `mungkarta-smc01` is in both `nbn_accelerate` and `wh`, and `bungardi-smc01` in both `nbn_wh` and `rct`: a per-flavor count or playbook run
+>   counts or touches them twice. `nocprov-smc01` (x86, live, PHP installed) is in no inventory, so no playbook reaches it.
+> - Some `host_vars` files are CRLF (`aurukun-test-smc01.yml`): a value read with `grep | awk` carries a trailing `\r` (`backdoor-watch.sh` crashed
+>   on `9002\r` until it stripped it).
+> - Nothing patches itself: unattended-upgrades is `masked` on rcp and `disabled` on nbn_accelerate, rct, wh and nbn_wh, and no PHP or Apache
+>   package is held. The rcp apt lists were stale (php8.1-common candidate `.26` when jammy-security had `.28`). Security fixes reach the fleet
+>   only by a deliberate run, and builds drift box to box (seven php8.1 builds seen, `.13` to `.24`, including on the Pis). No visual surface.
+

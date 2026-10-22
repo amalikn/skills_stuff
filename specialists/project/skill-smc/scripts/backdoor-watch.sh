@@ -78,7 +78,7 @@ fi
 
 if [ -z "${PORT:-}" ]; then
   SITEID="$(grep -h -E '^site_eclipse_siteid:' "$INV_ROOT/$FLAVOUR/host_vars/$SMC_HOST.yml" 2>/dev/null \
-    | head -1 | awk '{print $2}' | tr -d "'\"" || true)"
+    | head -1 | awk '{print $2}' | tr -d "'\"\r" || true)"   # \r: some host_vars are CRLF (aurukun-test-smc01, 2026-10-22)
   if [ -z "$SITEID" ]; then
     echo "No site_eclipse_siteid in $INV_ROOT/$FLAVOUR/host_vars/$SMC_HOST.yml. Pass PORT=<50000+siteid>." >&2
     exit 1
