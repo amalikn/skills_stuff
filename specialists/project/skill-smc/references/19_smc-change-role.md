@@ -180,3 +180,32 @@ As of 2026-10-23:
 - A `-l` limit also filters a `hosts: localhost` play; the run stamp and summary run on the managed group, delegated to localhost.
 - ruff honours `.git/info/exclude` through the checkout's symlink and then finds no files; `check.sh` works from the physical path.
 - A `command` action on an overlay box must set `chroot`, or the role's own reboot undoes it unseen (side-agent review).
+
+> **Learned 2026-10-23** · overlay lower dir close and reboot policy · VERIFIED-OBSERVED (php-rct-smc01, first real overlay apply and rollback) ·
+> Source: roles/smc_change/tasks/main.yml, tasks/persist_overlay.yml, tasks/reboot.yml (local-knowledge, uncommitted local-only role) · Falsifier: an
+> overlay apply that replaces a file a running process maps and still remounts the lower dir ro before that process restarts
+> The first overlay apply failed at stage 6: `mount -o remount,ro /media/root-ro` gave "mount point is busy". dpkg in the chroot had replaced
+> `libphp8.1.so`, the PHP extensions and `/usr/bin/php8.1` in the lower dir while apache2 and cron's `php -S` still mapped the old inodes
+> (`/proc/<pid>/maps` "(deleted)"); a filesystem with unlinked-but-open inodes refuses a read-only remount. Restarting apache2 and killing `php -S`
+> (cron relaunches it) emptied the list and the remount worked. Fix: the lower dir now closes after stage 7 (restart), and only a failed backup or
+> action closes it at once; a close that still fails names the holders. New spec policy `reboot: overlay_fallback` (operator, 2026-10-23: reboot only
+> as the last resort): an overlay box reboots only when the lower dir stays read-write after the restarts, then the role checks it came back ro;
+> otherwise the apt_pin chroot check of the lower dir's dpkg database is the persistence proof. The PHP spec uses it. Rollback then passed with no
+> reboot (lower dir ro, `.18` live and lower). The kernel calls changes to a mounted overlay's lower layer undefined behaviour (VERIFIED_PRIMARY,
+> docs.kernel.org/filesystems/overlayfs.html, "Changes to underlying filesystems"); the upper tmpfs copy masks it until the next reboot.
+>
+> ```yaml
+> - name: Restart
+>   ansible.builtin.include_tasks: restart.yml
+> # The restarts above released the replaced files, so the lower dir can go read-only again.
+> - name: Close the lower dir
+>   ansible.builtin.include_tasks: persist_overlay.yml
+>   vars:
+>     smc_change_overlay_step: close
+>     smc_change_overlay_tolerate: "{{ smc_change_spec.reboot | default('never') == 'overlay_fallback' and smc_change_reboot | bool }}"
+>   when: smc_change_before.overlay
+> ```
+>
+> Flow map: `roles/smc_change/flows.yaml` renders `drawio/flows.drawio` (Overview, End-to-end, Check, Apply, Verify, Rollback) with
+> `just smc_change_flows`; `just smc_change_flows_check` reports drift.
+
