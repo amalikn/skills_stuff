@@ -105,7 +105,8 @@ class TextAndBoxes(unittest.TestCase):
         """A step whose action needs more lines than the minimum box gets a taller box, and its lane grows to hold it."""
         data = _minimal()
         data["flows"][0]["steps"][0]["action"] = " ".join(["word"] * 120)
-        cells = {c.get("id"): c for c in ET.fromstring(_render(data).split("-->", 1)[1]).iter("mxCell")}
+        root = ET.fromstring(_render(data).split("-->", 1)[1])
+        cells = {c.get("id"): c for c in root.iter("mxCell")} | {u.get("id"): u.find("mxCell") for u in root.iter("UserObject")}
         box_h, lane_h = (float(cells[cid].find("mxGeometry").get("height")) for cid in ("f-s-one", "f-lane-0"))
         self.assertGreater(box_h, pages.STEP_H)
         self.assertGreaterEqual(lane_h, box_h)
@@ -159,7 +160,8 @@ class Arrows(unittest.TestCase):
         ids = {c.get("id") for c in flow.iter() if c.get("id")}
         self.assertTrue({"f-lane-0", "f-lane-1", "f-s-one", "f-s-two", "f-n-one", "f-e-one-two"} <= ids)
         self.assertNotIn("f-n-two", ids)   # step two has nothing under its title: its note is hidden (look.empty_notes, 2026-10-21)
-        self.assertIn("2", next(c for c in flow.iter("mxCell") if c.get("id") == "f-e-one-two-lbl").get("value"))   # the router labels its arrow
+        lbl = next(c for c in flow.iter() if c.get("id") == "f-e-one-two-lbl")   # a mark with its arrow's tooltip is a UserObject
+        self.assertIn("2", lbl.get("value") or lbl.get("label"))   # the router labels its arrow
         links = {u.get("link") for u in root.iter("UserObject") if u.get("link")}
         self.assertTrue({"data:page/id,flow-f", "data:page/id,overview"} <= links)
         self.assertIn("GENERATED", text.splitlines()[1])
@@ -173,11 +175,11 @@ class Arrows(unittest.TestCase):
         steps[0]["next"] = ["two", "three"]
         steps[1]["next"] = ["three"]
         text = _render(data)
-        styles = dict(re.findall(r'id="(f-e-[^"]+)"[^>]*style="([^"]+)"', text))
+        styles = dict(re.findall(r'id="(f-e-[^"]+)"[^>]*?(?:><mxCell)?[^>]*?style="([^"]+)"', text))   # an arrow with a tooltip is a UserObject
         ports = lambda s: re.search(r"entryX=([0-9.]+);entryY=([0-9.]+)", s).groups()
         self.assertNotEqual(ports(styles["f-e-one-three"]), ports(styles["f-e-two-three"]))
         self.assertIn("dashed=1", styles["f-e-three-two"])
-        self.assertRegex(text, r'id="f-e-three-two-lbl" value="[^"]*back to 2')   # the label is a text mark beside the routed arrow (2026-10-21)
+        self.assertRegex(text, r'id="f-e-three-two-lbl" (?:value|label)="[^"]*back to 2')   # the label is a text mark beside the routed arrow (2026-10-21)
         flow_geometry = importlib.import_module("flowmap.flow_geometry")
         comps = {c["id"]: c for c in data["components"]}
         page = pages.flow_page(data["flows"][0], comps, 1, _profile(data))

@@ -15,6 +15,8 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261023 Learned 2026-10-23 in references/file-format.md: tags and tooltips on the UserObject wrapper, `movable=0` instead of a locked layer; screenshot `references/screenshots/20261023-tips-tags/` (smc_change review)
+- 20261023 Tooltips on every arrow, label, step and component box; draw.io tags (`scripts/drawio/cell.py`, `scripts/flowmap/tips.py`); every cell `movable=0`; End-to-end x.1 start arrows, `look.e2e_layers` (per-flow colour and layer) and `look.connector_width`; tests/test_tips_and_tags.py (operator review of smc_change flows)
 - 20261023 Fix: flow-page lanes and header span the label-widened column gaps, so a long branch label no longer pushes the last step past the lanes (operator review, 2026-10-23); tests/test_lane_width.py.
 - 20261023 Fix: branches of a `shape: decision` step (no gate) are labelled with their `when` case or Yes/No; test in tests/test_routing.py; Learned 2026-10-23 in references/visual-style.md (operator).
 - 20261023 Fix: a banner command or check containing `--` is a map problem (XML comment; draw.io refused the file); `banner()` raises; tests/test_banner.py; Learned 2026-10-23 in references/data-first-diagrams.md.

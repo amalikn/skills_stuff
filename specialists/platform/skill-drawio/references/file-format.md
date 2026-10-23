@@ -80,6 +80,10 @@ attributes; the inner `mxCell` carries style, parent and geometry and has no id 
 - A reader that looks cells up by id must read both element kinds: `mxCell` elements with an `id`, and `UserObject`/`object` elements (taking the inner `mxCell` for style, parent and geometry)
   [C-D06].
 - `placeholders="1"` on a UserObject substitutes `%attribute%` in its label; leave it off unless used.
+- Tags live on the wrapper too: `tags="flow-apply step-arrow"`, space-separated, each tag without spaces; a plain `mxCell` cannot carry them
+  (draw.io XML reference, @drawio/mcp 1.5.0 `xml-reference.md`, "Tags"). An edge with a tooltip or tags is wrapped the same way as a vertex.
+- `movable=0;` in a cell's style turns draw.io's Movable property off: the cell stays selectable and hoverable but cannot be dragged. Use it
+  rather than locking a layer, which blocks every click on that layer.
 
 ## HTML labels
 
@@ -164,3 +168,16 @@ input (observed 2026-10-19).
 > is the bottom. The engine computed the port from geometry (top = 0), so the arrow ran through the box to its bottom. `Page.route` now mirrors the
 > fraction for a flipped end. Seen in unified-network-controller's topology flow, 2026-10-21 (operator screenshot).
 
+> **Learned 2026-10-23** · tooltips, tags and frozen cells on generated drawings · VERIFIED_SECONDARY · Source: draw.io XML reference (@drawio/mcp 1.5.0 `src/xml-reference.md`, Tags), draw.io manual "Tags in diagrams"; `scripts/drawio/cell.py` (`cell_xml`, `tag`), `scripts/drawio/mxfile.py` (`FROZEN`), `tests/test_tips_and_tags.py`; screenshot `references/screenshots/20261023-tips-tags/` · Falsifier: draw.io 32.5.5 opening a generated file without the Tags dialog listing `flow-*` tags, or letting a generated box be dragged
+> The operator reviewed the smc_change flow map and asked for hover text on arrows and shapes, tags where they help, and nothing movable by
+> mistake. Every cell now goes through one writer that wraps it in a `UserObject` only when it has a link, tooltip or tags, and every style ends
+> `movable=0;`. A reader of the drawing must look up ids on both element kinds (cells and wrappers), which the tests now do.
+>
+> ```python
+> # scripts/drawio/cell.py (skills_stuff, 2026-10-23)
+> tags = tuple(dict.fromkeys(t for t in tags if t))
+> if not (link or tooltip or tags):
+>   return f'<mxCell id="{cid}" value={quoteattr(label)} {attrs}>{body}</mxCell>'
+> extra = "".join(f" {k}={quoteattr(v)}" for k, v in (("link", link), ("tooltip", tooltip), ("tags", " ".join(tags))) if v)
+> return f'<UserObject id="{cid}" label={quoteattr(label)}{extra}><mxCell {attrs}>{body}</mxCell></UserObject>'
+> ```

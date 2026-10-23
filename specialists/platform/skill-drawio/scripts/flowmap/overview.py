@@ -13,13 +13,14 @@ from __future__ import annotations
 from drawio import route
 from drawio.mxfile import BLANK, HEADER_STYLE, Page, Point, Rect, header_height, label
 
-from .model import GROUP_HEAD, MARGIN, comp_style, status_style, status_text
+from .model import GROUP_HEAD, MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .overview_index import colour_legend, flow_index
 from .overview_layout import (OV_BH, OV_BW, OV_CHANNEL, OV_GRID_COLS, OV_HGAP, OV_JUMP, OV_LEFT, OV_MIN_HEAD, OV_MIN_THIN, OV_PAD, OV_SIDE, OV_SLOT, OV_SP,
                               OV_THIN_JUMP, OV_THIN_SP, OV_TOP, THIN_GREY, box_lines, far_channels, grid_cells, key_width, layout_group, side,
                               text_height)
 from .profile import DISTINCT, Profile
+from .tips import comp_tags, comp_tip
 
 
 class Overview:
@@ -148,13 +149,11 @@ class Overview:
             y: top edge.
         """
         c = self.by_id[k]
-        ports = ", ".join(str(p) for p in c.get("ports", []))
-        tip = "\n".join(x for x in (f"kind: {c['kind']}", f"host: {c['host']}", f"ports: {ports}" if ports else "",
-                                    f"health: {c['health']}", c.get("notes", ""), f"status: {status_text(c)}" if c.get("status") else "") if x)
+        tip = comp_tip(c)
         page.box(f"ov-c-{k}", label(*box_lines(c, self.far[k], self.profile.look['heading_scale'])), x, y, OV_BW, self.box_h[k],
                  comp_style(c["kind"], self.profile, f"fontSize=10;align=left;verticalAlign=top;spacingTop=4;spacingLeft={OV_LEFT};spacingRight={OV_SIDE};"
                             + status_style(c) + component_shape(c, self.profile)),
-                 tooltip=tip, solid=True)
+                 tooltip=tip, solid=True, tags=comp_tags(c, self.data["flows"]))
         person_badge(page, c, self.profile, f"ov-c-{k}", x + OV_BW, y + self.box_h[k])
 
     def _thin_routes(self, gi: int) -> dict:

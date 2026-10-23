@@ -14,6 +14,7 @@ from .flow_geometry import LANE_HEAD_W, col_gap
 from .model import MARGIN, GAP, comp_style, status_style
 from .profile import Profile
 from .shapes import FIT, PERSON_ICON, SHAPES, fit_height, lane_shape
+from .tips import comp_tip
 
 LANE_H = 120
 
@@ -73,14 +74,14 @@ def draw_lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float
         if shape in ("process", "person"):
             page.box(f"{fid}-lanehead-{li}", text, MARGIN, lane_y[li], LANE_HEAD_W, lane_h[li],
                      comp_style(c["kind"], profile, "rounded=0;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=8;fontSize=10;" + status_style(c)
-                                + ("spacingRight=40;" if shape == "person" else "")), tooltip=f"health: {c['health']}")
+                                + ("spacingRight=40;" if shape == "person" else "")), tooltip=comp_tip(c))
         else:   # a plain head panel, the symbol inside sized to its text (operator review 2026-10-21: a cloud stretched to the lane's height)
             page.box(f"{fid}-lanehead-{li}", "", MARGIN, lane_y[li], LANE_HEAD_W, lane_h[li],
-                     comp_style(c["kind"], profile, "rounded=0;" + status_style(c)), tooltip=f"health: {c['health']}")
+                     comp_style(c["kind"], profile, "rounded=0;" + status_style(c)), tooltip=comp_tip(c))
             inner_w, inner_h = LANE_HEAD_W - 12, head_symbol_h(c, profile)
             page.box(f"{fid}-lanehead-{li}-shape", text, MARGIN + 6, lane_y[li] + (lane_h[li] - inner_h) / 2, inner_w, inner_h,
                      comp_style(c["kind"], profile, "fontSize=10;" + status_style(c) + SHAPES[shape][0] + FIT.get(shape, ("",))[0]),
-                     tooltip=f"health: {c['health']}")
+                     tooltip=comp_tip(c))
         if shape == "person":   # a figure in the lane head's top right corner
             page.box(f"{fid}-lanehead-{li}-icon", "", MARGIN + LANE_HEAD_W - 34, lane_y[li] + 8, 22, 40, PERSON_ICON)
     return lanes, lane_y, lane_h

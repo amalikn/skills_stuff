@@ -15,9 +15,10 @@ from drawio.mxfile import BLANK, HEADER_STYLE, Page, Point, header_height, label
 from drawio.route import count_crossings, oriented
 
 from .e2e_grid import E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_LABEL_H, E2E_LABEL_W, E2E_SP, E2EGrid, Link, e2e_box_lines, e2e_text_height
-from .model import MARGIN, comp_style, flow_family, status_style
+from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .profile import Profile
+from .tips import comp_tags, comp_tip
 
 
 def _swapper(order: list, i: int, j: int) -> object:
@@ -265,10 +266,11 @@ class EndToEnd(E2EGrid):
         """
         head = ["**End-to-end flow: every component, every flow**", BLANK,
                 f"Generated from {self.profile.map} by `{self.profile.command}`; do not edit.", BLANK,
-                "**Paths:** each flow is a path through the components that act in its steps, coloured by family.",
-                "**Arrow labels:** flow.step, the step the arrow leads into, numbered as on the flow's page.",
-                "**Dashed lines:** a component the flow runs on, is owned by or depends on, joined to the flow's nearest actor.",
-                "**Layers panel:** hide or show each family.", BLANK, "[back to Overview]"]
+                "**Paths:** each flow is a path through the components that act in its steps, coloured by "
+                + ("flow." if self.profile.look.get("e2e_layers", "family") == "flow" else "family."),
+                "**Arrow labels:** x.y = flow x, step y (the step the arrow leads into, numbered as on the flow's page). Hover an arrow for the step.",
+                "**Dashed lines:** not steps; a component the flow runs on, is owned by or depends on, joined to the flow's nearest actor.",
+                "**Layers panel:** hide or show each " + ("flow." if self.profile.look.get("e2e_layers", "family") == "flow" else "family."), BLANK, "[back to Overview]"]
         head_h = header_height(head, right - MARGIN, 60)   # grows upward from its old bottom, so the layout below stays put
         page.box("e2e-title", label(*head), MARGIN, MARGIN + 60 - head_h, right - MARGIN, head_h,
                  HEADER_STYLE, link="data:page/id,overview")
@@ -291,13 +293,17 @@ class EndToEnd(E2EGrid):
         Args:
             page: the page.
         """
-        colour = {fam: col for fam, _n, col, _ids in self.profile.families}
-        for fam, name, _col, _ids in self.profile.families:
-            page.add_layer(f"e2e-L-{fam}", f"Family: {name}")
-        for fam, _name, _col, _ids in self.profile.families:
+        colour = {fam: col for fam, _n, col, _ids in self.groups}
+        per_flow = self.profile.look.get("e2e_layers", "family") == "flow"
+        for fam, name, _col, _ids in self.groups:
+            page.add_layer(f"e2e-L-{fam}", f"Flow {name}" if per_flow else f"Family: {name}")
+        for link in self.links:   # hover text and tags on every arrow and connector, and on each arrow's x.y label
+            page.tips[link.cid], page.tags[link.cid] = link.tip, link.tags
+        width = self.profile.look.get("connector_width", 1.25)
+        for fam, _name, _col, _ids in self.groups:
             for link in (x for x in self.links if x.family == fam and x.klass == "thin"):
                 page.route(link.cid, f"e2e-c-{link.src}", f"e2e-c-{link.dst}", self.pts[link.cid],
-                           f"edgeStyle=none;rounded=1;html=1;strokeColor={colour[fam]};strokeWidth=1.25;dashed=1;dashPattern=8 4;endArrow=oval;endFill=1;endSize=5;",
+                           f"edgeStyle=none;rounded=1;html=1;strokeColor={colour[fam]};strokeWidth={width:g};dashed=1;dashPattern=8 4;endArrow=oval;endFill=1;endSize=5;",
                            klass="thin", layer=f"e2e-L-{fam}")
             for link in (x for x in self.links if x.family == fam and x.klass == "thick"):
                 page.route(link.cid, f"e2e-c-{link.src}", f"e2e-c-{link.dst}", self.pts[link.cid],
@@ -318,16 +324,19 @@ class EndToEnd(E2EGrid):
             right: the right edge of the last column.
         """
         y = self.bottom + 10
-        page.box("e2e-leg-title", label("**Legend: flow families** (one layer each)"), MARGIN, y, 600, 24, "text;html=1;align=left;fontSize=14;")
-        for i, (fam, name, col, _ids) in enumerate(self.profile.families):
+        per_flow = self.profile.look.get("e2e_layers", "family") == "flow"
+        page.box("e2e-leg-title", label("**Legend: flows** (one colour and layer each)" if per_flow else "**Legend: flow families** (one layer each)"),
+                 MARGIN, y, 600, 24, "text;html=1;align=left;fontSize=14;")
+        for i, (fam, name, col, titles) in enumerate(self.groups):
             ly = y + 34 + i * 28
             page.box(f"e2e-leg-{fam}-s", "", MARGIN, ly + 10, 40, 3, f"rounded=0;html=1;fillColor={col};strokeColor=none;")
-            flows = [f["title"] for f in self.data["flows"] if flow_family(f, self.profile) == fam]
-            page.box(f"e2e-leg-{fam}-t", label(f"**{name}:** " + "; ".join(flows)), MARGIN + 50, ly, right - MARGIN - 50, 24,
+            page.box(f"e2e-leg-{fam}-t", label(f"**{name}**" if per_flow else f"**{name}:** " + "; ".join(titles)), MARGIN + 50, ly, right - MARGIN - 50, 24,
                      "text;html=1;align=left;verticalAlign=middle;fontSize=12;")
-        ly = y + 34 + len(self.profile.families) * 28 + 6
-        page.box("e2e-leg-solid", label("**Solid arrow, label 4.2:** flow 4 moves to the component acting in its step 2. **Dashed line:** the flow "
-                                        "runs on, is owned by or depends on that component. Arcs mark crossings."),
+        ly = y + 34 + len(self.groups) * 28 + 6
+        page.box("e2e-leg-solid", label("**Solid arrow, label x.y:** flow x (its number on the Overview) moves to the component acting in its step y; "
+                                        "x.1 starts at the component the flow runs on, and a step done by the same component as the step before has no "
+                                        "arrow. **Dashed line, dot end:** not a step; the flow runs on, is owned by or depends on that component. "
+                                        "Hover an arrow for what happens. Arcs mark crossings."),
                  MARGIN, ly, right - MARGIN, 24, "text;html=1;align=left;verticalAlign=middle;fontSize=12;")
         used = component_shapes_used(list(self.comps.values()), self.profile)
         if used:   # the symbols the boxes use, as on a flow page
@@ -348,7 +357,7 @@ class EndToEnd(E2EGrid):
             page.box(f"e2e-c-{cid}", label(*e2e_box_lines(comp, self.profile.look['heading_scale'])), self.col_x[c], top, E2E_BW, height,
                      comp_style(comp["kind"], self.profile, "fontSize=11;verticalAlign=middle;spacingLeft=6;spacingRight=6;" + status_style(comp)
                                 + component_shape(comp, self.profile)),
-                     tooltip=f"health: {comp['health']}", solid=True)
+                     tooltip=comp_tip(comp), solid=True, tags=comp_tags(comp, self.data["flows"]))
             person_badge(page, comp, self.profile, f"e2e-c-{cid}", self.col_x[c] + E2E_BW, top + height)
         self._arrows(page)
         self._legend(page, right)

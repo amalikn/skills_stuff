@@ -13,12 +13,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from drawio.cell import tag
 from drawio.mxfile import heading, wrapped_lines
 from drawio.route import interval_tracks
 
 from .model import MARGIN, e2e_tier, flow_extras, flow_family
 from .profile import Profile
 from .shapes import fit_height
+from .tips import connector_tip, e2e_groups, step_arrow_tip
 
 #: Box width and least height; port spacing on a box side; distance of the first and last track from a channel's or corridor's border (the
 #: head room); track spacing; least channel width and corridor height; the arcs drawn at crossings.
@@ -72,6 +74,8 @@ class Link:
         exit: (channel, row, side) of the source port.
         entry: (channel, row, side) of the target port.
         gap: the corridor (the row gap below that row; -1 is above the first row) a far link runs along.
+        tip: the hover text: what the step does, or why the flow needs the component.
+        tags: its draw.io tags (flow, family, step-arrow or connector).
     """
 
     cid: str
@@ -84,6 +88,8 @@ class Link:
     exit: tuple = ()
     entry: tuple = ()
     gap: int = 0
+    tip: str = ""
+    tags: tuple = ()
 
 
 class E2EGrid:
@@ -102,6 +108,7 @@ class E2EGrid:
         # Channels sit between columns; a one-column page keeps one on its right, so links inside the column still have a track (2026-10-19).
         self.nch = max(self.ncol - 1, 1)
         self.cell, self.band = self._place()
+        self.groups, self.group_of = e2e_groups(data, profile)
         self.links = self._links()
         for link in self.links:
             self._plan(link)
@@ -185,19 +192,30 @@ class E2EGrid:
         Returns:
             The links, in map order.
         """
-        links, seen = [], set()
+        links, seen, name = [], set(), {c: self.comps[c]["name"] for c in self.comps}
         for fi, f in enumerate(self.data["flows"], 1):
-            fam = flow_family(f, self.profile)
-            acts = [s["actor"] for s in f["steps"]]
-            for k in range(1, len(acts)):
-                if acts[k] != acts[k - 1]:
-                    links.append(Link(f"e2e-a-{f['id']}-{k + 1}", acts[k - 1], acts[k], "thick", fam, f"{fi}.{k + 1}"))
-            for o in flow_extras(f):
+            fam = self.group_of[f["id"]]
+            steps = f["steps"]
+            acts = [s["actor"] for s in steps]
+            # x.1: the flow starts where it runs, so step 1 gets an arrow from that component (operator, 2026-10-23)
+            path = ([f["runs_on"]] if f["runs_on"] != acts[0] else [acts[0]]) + acts
+            stayed: list[str] = []
+            for k in range(len(steps)):
+                a, b, s = path[k], path[k + 1], steps[k]
+                if a == b:   # same actor as the step before: no arrow (nothing moves); the next arrow's hover text names the step
+                    stayed.append(f"{fi}.{k + 1} {s['id']} (no arrow, stays in {name[a]}): {s['action']}")
+                    continue
+                tip, stayed = step_arrow_tip(f, fi, k, (name[a], name[b]), stayed), []
+                links.append(Link(f"e2e-a-{f['id']}-{k + 1}", a, b, "thick", fam, f"{fi}.{k + 1}", tip=tip,
+                                  tags=(tag("flow", f["id"]), tag("family", flow_family(f, self.profile)), "step-arrow")))
+            for o in (x for x in flow_extras(f) if not (x == f["runs_on"] and f["runs_on"] != acts[0])):
                 oc, orow = self.cell[o]
                 near = min(dict.fromkeys(acts), key=lambda a, oc=oc, orow=orow: 4 * abs(self.cell[a][0] - oc) + abs(self.cell[a][1] - orow))
                 if (fam, near, o) not in seen:
                     seen.add((fam, near, o))
-                    links.append(Link(f"e2e-c-{fam}-{near}-{o}", near, o, "thin", fam))
+                    users = [g for g in self.data["flows"] if self.group_of[g["id"]] == fam and o in flow_extras(g)]
+                    links.append(Link(f"e2e-c-{fam}-{near}-{o}", near, o, "thin", fam, tip=connector_tip(users, name[near], name[o], o),
+                                      tags=(*(tag("flow", g["id"]) for g in users), tag("family", flow_family(f, self.profile)), "connector")))
         return links
 
     def _plan(self, link: Link) -> None:

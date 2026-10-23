@@ -107,6 +107,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/code_refs.py` | Check `path[:symbol]` code references in a map against the repository (imported) | `safe` |
 | `scripts/drawio/__init__.py` | Package `drawio`: generic draw.io building blocks | `safe` |
 | `scripts/drawio/mxfile.py` | Build pages, boxes, routed edges, labels, layers and whole uncompressed files | `safe` |
+| `scripts/drawio/cell.py` | One cell's XML: a plain `mxCell`, or a `UserObject` carrying its link, tooltip and draw.io tags; `tag()` makes a tag | `safe` |
 | `scripts/drawio/audit.py` | The layout audits (box crossings, diagonals, shared runs, short heads, labels, arc clashes, layers) | `safe` |
 | `scripts/drawio/route.py` | Tracks, port spreading, interval tracks, crossing counts, label spots, untwist | `safe` |
 | `scripts/drawio/read.py` | Read drawings: page codec, cells, group offsets, line paths, nearest-line label matching | `safe` |
@@ -125,6 +126,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/lanes.py` | Flow page lanes: lane heads (structured text; symbols sized to their text inside a plain panel), room kept for arrow runs, run positions | `safe` |
 | `scripts/flowmap/routing.py` | Flow page forward arrows: candidate orthogonal paths scored against what is drawn (boxes, adjacent runs, reused ports, crossings), the cheapest drawn; decision branch labels | `safe` |
 | `scripts/flowmap/uncross.py` | Flow page uncrossing pass: two forward arrows that cross are redrawn in the other order, kept only when the page has fewer crossings (`drawing.look.uncross`) | `safe` |
+| `scripts/flowmap/tips.py` | Hover texts (components, steps, End-to-end arrows and connectors), draw.io tags, End-to-end colour and layer groups (`look.e2e_layers`) | `safe` |
 | `scripts/flowmap/pages.py` | Flow pages, `render`, `evaluate`, `write_drawing`, `flow_list` | `safe` (`write_drawing` writes the drawing) |
 | `scripts/check_governance.py` | This pack's governance checker (from skill-ai-it's template) | `safe` |
 

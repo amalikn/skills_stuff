@@ -33,6 +33,8 @@ DEFAULT_LOOK = {
     "arrow_corners": "rounded",    # flow-page arrows turn with rounded corners as on the Overview; "square" for sharp corners
     "max_aspect": 0.8,             # a step box taller than this times its width is widened instead (long text: wider, not tall and narrow)
     "uncross": "on",               # redraw two flow arrows that cross in the other order, kept when crossings drop (operator review 2026-10-22); "off"
+    "e2e_layers": "family",        # End-to-end colours and layers per "family", or per "flow" (each x of x.y its own; operator, 2026-10-23)
+    "connector_width": 1.25,       # End-to-end dashed connector stroke width; 2 matches the step arrows (operator asked for bold, 2026-10-23)
 }
 
 #: Thick arrow and family colours: distinct hues, each at least 4.5:1 on white (blue, green, red, purple, teal, olive, magenta, orange,

@@ -583,6 +583,19 @@
                 "on",
                 "off"
               ]
+            },
+            "e2e_layers": {
+              "type": "string",
+              "enum": [
+                "family",
+                "flow"
+              ],
+              "description": "End-to-end colours and layers: one per family (default) or one per flow, so each x of an x.y label has its own colour and layer."
+            },
+            "connector_width": {
+              "type": "number",
+              "minimum": 0.5,
+              "description": "Stroke width of the End-to-end dashed connectors (a component a flow runs on, is owned by or depends on); default 1.25."
             }
           }
         }

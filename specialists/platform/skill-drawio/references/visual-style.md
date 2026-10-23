@@ -126,6 +126,16 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 - Two arrows never cross where drawing them in the other order would avoid it (operator, 2026-10-22: "unnecessary overlap for the arrows";
   `look.uncross`, on by default; layout-and-routing.md, Learned 2026-10-22).
 - Arrows turn with rounded corners on every page (operator, 2026-10-21: "make the arrows with curves like the overview"; `look.arrow_corners`).
+- Every arrow and its label carry a tooltip saying what happens (End-to-end: the step, the steps that stayed in the source, `via`; a dashed
+  connector: why the flow needs the component); step boxes and component boxes carry the whole map entry (`flowmap.tips`). A tooltip only adds:
+  exported PNG and PDF have none, so must-read facts stay in boxes and notes (operator, 2026-10-23).
+- draw.io tags on generated cells, for the Tags dialog (select, hide or show across layers): `flow-<id>`, `family-<id>`, `step-arrow`,
+  `connector`, `back-arrow`, `kind-<kind>`, `group-<group>`, `gate`, `decision`, `fails`, `runs-flow-<id>` (`drawio.cell`; operator, 2026-10-23).
+- Every generated cell has Movable off (`movable=0`, `drawio.mxfile.FROZEN`): nothing drags out of shape by mistake, yet every box and arrow
+  stays clickable; layers are never locked, which would block clicks (operator, 2026-10-23).
+- End-to-end labels read x.y: flow x, step y. x.1 runs from the component the flow `runs_on`; a step done by the same component as the step
+  before draws no arrow and is named in the next arrow's tooltip. `look.e2e_layers: flow` gives each flow its own colour and layer (default
+  `family`); `look.connector_width` sets the dashed connectors' stroke (default 1.25, 2 for bold) (operator, 2026-10-23).
 - Box names and arrow labels are bold (operator, 2026-10-19). Labels mix bold field names with plain values; render `**...**` spans as `<b>` everywhere in a line, and test that no literal `**`
   survives into the drawing [C-D30].
 - Code paths in a monospace font (`<font face="Courier New">`), with soft breaks so they wrap ([layout-and-routing.md](layout-and-routing.md)).

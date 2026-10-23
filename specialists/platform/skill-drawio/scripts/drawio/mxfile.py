@@ -18,6 +18,8 @@ import re
 from dataclasses import dataclass
 from xml.sax.saxutils import quoteattr
 
+from .cell import cell_xml
+
 #: A `code` span in a label line, drawn in a monospace font.
 CODE_SPAN = re.compile(r"`([^`]+)`")
 #: A `**...**` span in a label line, matched after HTML escaping (asterisks survive it).
@@ -32,6 +34,9 @@ HEADING_LINE = re.compile(r"^\^\^(\d+)\|(.*)$")
 #: A token this long or longer gets invisible break points (soft_breaks), so draw.io can wrap a code path inside its shape.
 LONG_TOKEN = 24
 #: The orthogonal style draw.io's own router uses for Page.edge().
+#: Appended to every generated cell's style: draw.io's Movable property off, so a drawing cannot be dragged out of shape by mistake while every
+#: box and arrow stays selectable, hoverable and taggable (a locked layer would block clicks; operator, 2026-10-23). Change the map, not the drawing.
+FROZEN = "movable=0;"
 EDGE_BASE = "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;fontSize=16;fontStyle=1;labelBackgroundColor=#ffffff;"
 
 Rect = tuple[float, float, float, float]
@@ -214,10 +219,12 @@ class Page:
         self.routes: list[Route] = []
         self.marks: list[TextMark] = []
         self.layers: list[tuple[str, str]] = []
+        self.tips: dict[str, str] = {}   # hover text per edge id, set before the edge is drawn; its label mark shows the same text
+        self.tags: dict[str, tuple] = {}   # draw.io tags per cell id (edges, and boxes drawn without a `tags` argument); a mark takes its edge's
 
     def box(self, cid: str, label: str, x: float, y: float, w: float, h: float, style: str, link: str = "", tooltip: str = "",
-            layer: str = "1", solid: bool = False) -> None:
-        """Add a vertex; one with a link or tooltip is written as a `UserObject` wrapping its `mxCell`, as draw.io itself does.
+            layer: str = "1", solid: bool = False, tags: tuple = ()) -> None:
+        """Add a vertex; one with a link, tooltip or tags is written as a `UserObject` wrapping its `mxCell`, as draw.io itself does.
 
         Args:
             cid: the cell id, unique in the file.
@@ -231,13 +238,10 @@ class Page:
             tooltip: an optional hover text.
             layer: the layer cell id (default the base layer "1").
             solid: True when no edge may cross it (a component or group box).
+            tags: optional draw.io tags (Tags dialog: select, hide or show every cell carrying one); else any set in `tags` for this id.
         """
         geo = f'<mxGeometry x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" as="geometry"/>'
-        if link or tooltip:
-            attrs = f"label={quoteattr(label)}" + (f" link={quoteattr(link)}" if link else "") + (f" tooltip={quoteattr(tooltip)}" if tooltip else "")
-            self.cells.append(f'<UserObject id="{cid}" {attrs}><mxCell style={quoteattr(style)} vertex="1" parent="{layer}">{geo}</mxCell></UserObject>')
-        else:
-            self.cells.append(f'<mxCell id="{cid}" value={quoteattr(label)} style={quoteattr(style)} vertex="1" parent="{layer}">{geo}</mxCell>')
+        self.cells.append(cell_xml(cid, label, f'style={quoteattr(style + FROZEN)} vertex="1" parent="{layer}"', geo, link, tooltip, tags or self.tags.get(cid, ())))
         self.rects[cid] = (x, y, w, h)
         self.cell_style[cid] = style
         if solid:
@@ -253,8 +257,8 @@ class Page:
             label: an optional edge label.
             style: extra style, appended to EDGE_BASE (exitX/exitY/entryX/entryY pin the ports).
         """
-        self.cells.append(f'<mxCell id="{cid}" value={quoteattr(label)} style={quoteattr(EDGE_BASE + style)} edge="1" parent="1" source="{source}" '
-                          f'target="{target}"><mxGeometry relative="1" as="geometry"/></mxCell>')
+        self.cells.append(cell_xml(cid, label, f'style={quoteattr(EDGE_BASE + style + FROZEN)} edge="1" parent="1" source="{source}" target="{target}"',
+                                   '<mxGeometry relative="1" as="geometry"/>', tooltip=self.tips.get(cid, ""), tags=self.tags.get(cid, ())))
 
     def add_layer(self, lid: str, name: str) -> None:
         """Declare a draw.io layer (shown in the Layers panel, where it can be hidden); serialised right after the root cells.
@@ -293,8 +297,9 @@ class Page:
         fx1, fy1 = _unflip(self.cell_style.get(dst, ""), fx1, fy1)
         ends = f"exitX={num(fx0)};exitY={num(fy0)};entryX={num(fx1)};entryY={num(fy1)};exitPerimeter=0;entryPerimeter=0;"
         geo = "".join(f'<mxPoint x="{px:g}" y="{py:g}"/>' for px, py in pts[1:-1])
-        self.cells.append(f'<mxCell id="{cid}" value="" style={quoteattr(style + ends)} edge="1" parent="{layer}" source="{src}" target="{dst}">'
-                          f'<mxGeometry relative="1" as="geometry"><Array as="points">{geo}</Array></mxGeometry></mxCell>')
+        self.cells.append(cell_xml(cid, "", f'style={quoteattr(style + ends + FROZEN)} edge="1" parent="{layer}" source="{src}" target="{dst}"',
+                                   f'<mxGeometry relative="1" as="geometry"><Array as="points">{geo}</Array></mxGeometry>',
+                                   tooltip=self.tips.get(cid, ""), tags=self.tags.get(cid, ())))   # hover text and tags set before drawing
         self.routes.append(Route(cid, src, dst, pts, klass, frozenset({src, dst, *ignore}), jump, layer))
 
     def mark(self, cid: str, label: str, cx: float, cy: float, w: float, h: float, style: str, owner: str, layer: str = "1") -> None:
@@ -308,11 +313,11 @@ class Page:
             w: width.
             h: height.
             style: the text style.
-            owner: the edge it labels.
+            owner: the edge it labels; its hover text and tags, if any, are the mark's too.
             layer: the layer cell id.
         """
         x, y = round(cx - w / 2, 1), round(cy - h / 2, 1)
-        self.box(cid, label, x, y, w, h, style, layer=layer)
+        self.box(cid, label, x, y, w, h, style, tooltip=self.tips.get(owner, ""), layer=layer, tags=self.tags.get(owner, ()))
         self.marks.append(TextMark(cid, (x, y, w, h), owner, layer))
 
     def xml(self) -> str:

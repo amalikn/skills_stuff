@@ -25,6 +25,7 @@ from .uncross import uncross
 from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, fit_height, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
+from .tips import step_tags, step_tip
 
 #: Flow page geometry: lane heading width, least lane height, step column width, step box width and least height.
 STEP_H = 92
@@ -147,7 +148,7 @@ def size_steps(steps: list[dict], shapes: dict, profile: Profile) -> tuple[dict,
             box_w[sid] += 20
     return texts, box_w, box_h
 
-def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: tuple) -> float:
+def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: tuple, number: int = 1) -> float:
     """Draw one step box, centred in its lane, and its note below the lanes.
 
     Args:
@@ -158,6 +159,7 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
         profile: the kind colours.
         where: (lanes, lane tops, lane heights, step box heights, step texts, notes top, step shapes, column left edges, room for runs,
             step box widths).
+        number: the flow's number, for the x.y in the step's hover text.
 
     Returns:
         The note's height.
@@ -171,13 +173,10 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
     r_top, r_bot = room.get((li, "top"), 0), room.get((li, "bottom"), 0)
     y = lane_y[li] + r_top + (lane_h[li] - r_top - r_bot - h) / 2   # centred in the lane, below the room kept for arrow runs
     gate = f"GATE: {s['gate']}" if s.get("gate") else ""
-    tip = "\n".join(x for x in (
-        "reads: " + "; ".join(s.get("reads", [])) if s.get("reads") else "",
-        "writes: " + "; ".join(s.get("writes", [])) if s.get("writes") else "",
-        "code: " + "; ".join(s.get("code", [])) if s.get("code") else "") if x)
+    tip = step_tip(s, f"{number}.{k + 1}", comps[s["actor"]]["name"])
     page.box(f"{fid}-s-{s['id']}", label(*texts[s["id"]]), x, y, w, h,
              comp_style(comps[s["actor"]]["kind"], profile, "fontSize=10;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=6;"
-                        + ("strokeWidth=2;" if gate else "") + SHAPES[shapes[s["id"]]][0]), tooltip=tip,
+                        + ("strokeWidth=2;" if gate else "") + SHAPES[shapes[s["id"]]][0]), tooltip=tip, tags=step_tags(s, shapes[s["id"]]),
              link=f"data:page/id,flow-{s['flow']}" if s.get("flow") else "", solid=True)   # an obstacle for the router and the audit
     note = note_lines(s, k + 1)
     if len(note) == 1 and profile.look.get("empty_notes", "hide") == "hide":   # nothing under the title: no note (operator review, 2026-10-21)
@@ -210,6 +209,14 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     texts, box_w, box_h = size_steps(steps, shapes, profile)
     edges = step_edges(steps, fid)
     order = {s["id"]: k for k, s in enumerate(steps)}
+    by_id = {s["id"]: s for s in steps}
+    for cid, a, b, text, _st in edges:   # hover text on each arrow and its number: where it goes and what the step there does
+        t = by_id[b]
+        page.tags[cid] = ("back-arrow",) if "back to" in text else ("step-arrow",)
+        page.tips[cid] = "\n".join([f"{number}.{order[b] + 1} {t['id']}" + (" (back)" if "back to" in text else "")
+                                     + f": after {order[a] + 1} {a}, {comps[t['actor']]['name']}", t["action"]]
+                                    + ([f"when {t_when}" for t_when in [by_id[a].get("when", {}).get(b)] if t_when])
+                                    + ([f"via {', '.join(t['via'])}"] if t.get("via") else []))
     widths = {order[a]: 18 + 9 * len(branch_label(next(s for s in steps if s["id"] == a), b, order[b] + 1, profile.look)[0])
               for _c, a, b, text, _st in edges if "back to" not in text and order[b] == order[a] + 1}
     gaps = label_gaps(col_gap(profile.look), widths, len(steps))
@@ -229,7 +236,7 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     lanes, lane_y, lane_h = draw_lanes(page, flow, comps, profile, top, box_h, box_w, room, width)
     lefts = column_lefts([box_w[s["id"]] for s in steps], gaps)
     notes_top = top + sum(lane_h) + GAP
-    note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts, room, box_w)) for k in range(len(steps))]
+    note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts, room, box_w), number) for k in range(len(steps))]
     used = list(dict.fromkeys(list(shapes.values()) + [lane_shape(comps[c], profile.kind_shapes) for c in lanes]))
     shape_legend(page, used, MARGIN, notes_top + max(note_h + [0]) + GAP * 2, fid)
     band = notes_top - GAP / 2
