@@ -76,3 +76,19 @@ diff. Why: a hand-edited lock file can claim a version the resolver never chose.
 >         differ.append(path)
 > ```
 
+
+> **Learned 2026-10-23** · generated spreadsheets, macOS review · VERIFIED_PRIMARY (observed) · Source: enterprise-strategy `scripts/weekly_update_xlsx.py` (uncommitted at the time; first commit after apn HEAD aec1db9) · Falsifier: a `qlmanage -t` thumbnail of a multi-sheet workbook that shows a later sheet, or an empty row without a set height
+> Reviewing a generated .xlsx with Quick Look (`qlmanage -t -s <px> -o <dir> file.xlsx`) shows only the **first sheet** and **collapses empty rows**,
+> so a spacer row looks missing although it is in the file. Review each sheet from a scratch copy with that sheet moved first (and rows above the
+> area hidden), never by reordering the real output; and give spacer rows an explicit height so every viewer keeps them. Assert the layout in an
+> offline test as well (cell values, fills, borders), because the thumbnail is evidence of the look, not of the content.
+>
+> ```python
+> # scripts/weekly_update_xlsx.py: spacer rows get a fixed height so viewers that collapse empty rows still show them
+> for note in notes:
+>     plan.append([])
+>     plan.row_dimensions[plan.max_row + 1].height = 15
+>     plan.append(list(note))
+> # review copy, not the output: move the sheet first, then `qlmanage -t` the copy
+> wb.move_sheet("Plan and status", -1); wb.active = 0; wb.save(scratch / "preview.xlsx")
+> ```
