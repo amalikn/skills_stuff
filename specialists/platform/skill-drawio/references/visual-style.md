@@ -136,7 +136,9 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   nothing is dragged, resized, re-bent, retyped or deleted by mistake, yet every box and arrow stays clickable and hoverable; layers are never
   locked, which would block clicks (operator, 2026-10-23).
 - Tooltips are HTML (draw.io sanitises and renders them): a bold title, bold field names, bullets for several items, and commands, paths,
-  file names and snake_case names in code font (`flowmap.tips.tip_html`, `code_spans`; operator, 2026-10-23).
+  file names and snake_case names in code font (`flowmap.tips.tip_html`, `code_spans`; operator, 2026-10-23). Paths, file names, flags and
+  snake_case are found automatically; a command such as `tsh ssh` or `apt-get update` is not, so the map marks it with backticks (quote
+  a YAML value that starts with one); boxes and notes honour the same backticks (operator, 2026-10-23: "apt get or tsh ssh" had no format).
 - End-to-end labels read x.y: flow x, step y. x.1 runs from the component the flow `runs_on`; a step done by the same component as the step
   before draws no arrow and is named in the next arrow's tooltip. `look.e2e_layers: flow` gives each flow its own colour and layer (default
   `family`); `look.connector_width` sets the dashed connectors' stroke (default 1.25, 2 for bold) (operator, 2026-10-23).

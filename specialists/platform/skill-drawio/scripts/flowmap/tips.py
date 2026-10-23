@@ -91,7 +91,7 @@ def comp_tip(comp: dict) -> str:
     Returns:
         The tooltip HTML.
     """
-    return tip_html(f"{comp['name']} ({comp['kind']})", ("Host", comp["host"]), ("Ports", [str(p) for p in comp.get("ports", [])]),
+    return tip_html(f"{comp['name']} ({comp['kind']})", ("Host", comp["host"]), ("Ports", ", ".join(str(p) for p in comp.get("ports", []))),
                     ("Health", comp["health"]), ("Notes", comp.get("notes", "")), ("Status", status_text(comp) if comp.get("status") else ""))
 
 
