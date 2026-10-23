@@ -104,3 +104,40 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > `src`: the task's options (`lstrip_blocks: yes` here: without it the netplan file came out unparseable), the role vars the playbook sets (the role
 > defaults were null placeholders), and the defaults at role precedence (a throwaway role linking the real `defaults/main.yml`; `include_vars` would
 > outrank the inventory). Prove it against a file the real role wrote on a live host.
+
+> **Learned 2026-10-23** · ansible-core 2.21.5 · VERIFIED-OBSERVED (three Ubuntu 22.04 hosts over Teleport; `ps -eo args` against the probe's counts) ·
+> Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/probe.py` and `tasks/probe.yml` (uncommitted at writing) · Falsifier: an
+> `environment:` value that does not appear in the remote shell's `/proc/<pid>/cmdline`
+> A task's `environment:` values are put on the remote shell's command line, so they are visible to `ps` and to `pgrep -f` for as long as the task runs.
+> A probe that received its patterns through `environment:` counted its own parent shell as a match (a process that did not exist). Leave the
+> process's own ancestor chain out of any `pgrep -f` count, pass patterns on stdin instead, and never pass a secret through `environment:`.
+>
+> ```python
+> # roles/smc_change/files/probe.py (2026-10-23)
+> pids, pid = set(), str(os.getpid())
+> while pid not in ("0", "") and pid not in pids:
+>     pids.add(pid)
+>     pid = open(f"/proc/{pid}/stat").read().rsplit(")", 1)[1].split()[1]   # ppid
+> count = len([p for p in run(["pgrep", "-f", pattern])[1].split() if p not in pids])
+> ```
+
+> **Learned 2026-10-23 (b)** · ansible-core 2.21.5 · VERIFIED_PRIMARY · Source: docs.ansible.com playbook_guide/playbooks_variables.html, "Registering variables"
+> ("If a task fails or is skipped, Ansible still registers a variable with a failure or skipped status", read 2026-10-23); local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/chroot.yml` · Falsifier: a skipped task that
+> leaves an earlier registered value in place
+> A task file included twice with a step switch (`open` / `close`) cannot hand a registered result from one pass to the other: on the second pass
+> the skipped task re-registers the name with a skipped result. Keep the decision in a fact the second pass does not touch:
+>
+> ```yaml
+> - name: Remember whether this role adds policy-rc.d
+>   ansible.builtin.set_fact:
+>     smc_change_policyrcd_added: "{{ not smc_change_policyrcd.stat.exists }}"
+>   when: smc_change_chroot_step == 'open'
+> ```
+
+> **Learned 2026-10-23 (c)** · ansible-core 2.21.5, ansible-lint production profile · VERIFIED-OBSERVED (role runs on stage hosts; ansible-lint pass) ·
+> Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/main.yml`, `record.yml`, `actions/command.yml` · Falsifier: a failed run that
+> leaves no record
+> To record every run of a role, failed ones included: wrap the role body in `block`/`rescue`; the rescue keeps `ansible_failed_task.name` and
+> `ansible_failed_result.msg` in a fact, writes the record (`delegate_to: localhost`, `check_mode: false`, so check runs are recorded too) and fails
+> again. A command that really needs a shell (an operator-supplied string with pipes) runs as `ansible.builtin.command: argv: [/bin/sh, -c, ...]`,
+> which states the shell and passes ansible-lint `command-instead-of-shell` without a suppression.
