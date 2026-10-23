@@ -582,3 +582,14 @@ physical SMC: the count of links that flap under a real reload there.
 >     sh(["systemctl", "restart", "systemd-networkd"])
 > sh(["netplan", "apply"])
 > ```
+
+> **Learned 2026-10-23** · tstik "Unable to read the data from AVR" · VERIFIED_PRIMARY · Source: php-rct-smc01 `storage/logs/laravel.log`,
+> journal; 20-mile-smc01 comparison; operator confirmed no AVR on the unit · Falsifier: a box with an AVR fitted that logs only empty reads with this
+> serial setup
+> `Total Read Data[]` then `Unable to read the data from AVR` on every `update:stats` run means nothing answers on `/dev/ttyS0` (19200 baud, mini
+> UART, `enable_uart=1`). On the bench Pi php-rct-smc01 no AVR is fitted (operator, 2026-10-23), so it is expected there; a working box logs bytes,
+> e.g. `Total Read Data[126,2,129,3,1,122]` (20-mile-smc01: 0 failures, 346,826 good reads), with the identical UART config and the same harmless
+> `bcm2835-aux-uart ... not valid maps for state default` boot line. Check by hand: `cd /var/www/html/rct-tstik && php artisan update:stats`
+> then `tail storage/logs/laravel.log`; `php artisan self:tests` also rebuilds the self-tests page; never `avr:update` (flashes the AVR).
+> A Pi has no RTC: a box powered on after months off shows one boot spanning the gap until "Clock change detected" in the journal, so a
+> "792-day uptime" there is the saved clock, not a running box.

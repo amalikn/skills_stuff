@@ -209,3 +209,22 @@ As of 2026-10-23:
 > Flow map: `roles/smc_change/flows.yaml` renders `drawio/flows.drawio` (Overview, End-to-end, Check, Apply, Verify, Rollback) with
 > `just smc_change_flows`; `just smc_change_flows_check` reports drift.
 
+> **Learned 2026-10-23** · spec fields proves and soak_minutes, undo backup path · VERIFIED_PRIMARY · Source: php-rct-smc01 runs of
+> etc-hosts-hostname (apply refused, then rollback, apply); roles/smc_change files/probe/30_commands.py, tasks/load_spec.yml,
+> tasks/actions/command_rollback.yml, tasks/verify.yml · Falsifier: an apply refused as unhealthy only because a `proves` check is false before the change
+> `verify.commands` doubles as baseline health, so a spec whose checks describe the fixed state was refused as "already unhealthy" (needed
+> `-e smc_change_allow_unhealthy_baseline=true`). New `verify.proves` (same form as commands): run in both probes, never counted as health,
+> judged as the `proves` gate after an apply and ignored by a rollback (which is judged on health plus `restored`). New spec `soak_minutes`
+> (operator, 2026-10-23): `-e smc_change_soak_minutes` wins, then the spec, then 5; 0 for a change that restarts nothing (hosts change: 45 s, not
+> 6 min). A `command` action's `undo` gets `SMC_CHANGE_BACKUP`, the folder of the backup being restored as seen live or inside the chroot:
+> after a passed apply the cleanup stage leaves no backup on the box, and rollback stages the controller copy in `/var/cache/smc_change/rollback`
+> (lower dir on overlay boxes); the spec itself is templated at load and cannot name role variables. Spec `etc-hosts-hostname` writes the
+> smc_network form (`127.0.0.1 localhost <host>`, `127.0.1.1 <host>`) live and in the lower dir; proven apply, rollback, apply.
+>
+> ```yaml
+> - name: Run the undo live
+>   ansible.builtin.command:
+>     argv: [/bin/sh, -c, "{{ smc_change_action.undo }}"]
+>   environment:
+>     SMC_CHANGE_BACKUP: "{{ smc_change_rb_dir }}"
+> ```

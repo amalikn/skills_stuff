@@ -69,7 +69,7 @@ Every site, prod or stage, is the same six pieces (VERIFIED_PRIMARY, `inventorie
 - Site ID: `site_eclipse_siteid` sets the backdoor port (50000 + id). Read it from the box when nobody has it: `--siteid-from-box` takes the
   `autossh -R <port>:127.0.0.1:22` port. A box built from a generic image can still carry that image's ID: on 2026-10-23 php-rct-smc01 held 181, the
   ID in the `generic-rct01*` host vars, so two boxes on one image would fight for one bastion port. The script refuses a shared ID until
-  `--allow-shared-siteid`.
+  `--allow-shared-siteid`. The operator kept 181 for the bench unit php-rct-smc01 (2026-10-23).
 - Check the live box before trusting the standard topology: `ip -br addr` should show lo `10.254.0.1/32`, bridge_500 `10.255.0.1/24` +
   `192.168.5.100/24`, bridge_501 `10.0.0.1/23`, vlan521 `192.168.100.50/24`, vlan522 (rct standard; matched on php-rct-smc01, 2026-10-23).
 - Then `./lint_new.sh` in the repo and a read-only run (`smc_change.yml -l <host>` defaults to check mode). The hidden topology cache
