@@ -102,7 +102,7 @@ verify:
 | `template` | `src`, `dest`, `owner`, `group`, `mode`                 | rendered to the live path and the lower-dir path                 |
 | `copy`     | `src`, `dest`, `owner`, `group`, `mode`                 | same                                                             |
 | `ini`      | `path`, `section`, `option`, `value`                    | same (community.general.ini_file)                                |
-| `command`  | `cmd`, `check` (exit 0 = already done), `chroot`        | with `chroot: true` also run in the lower-dir chroot             |
+| `command`  | `cmd`, `check` (exit 0 = already done), `chroot`          | `chroot` required on overlay boxes: `true` also runs it in the lower-dir chroot, `false` accepts the reboot undoes it |
 
 Other specs in place: `php-ini-upload-progress-off` (the interim php.ini mitigation, an `ini` action).
 
@@ -172,4 +172,7 @@ As of 2026-10-23:
 - Ansible `environment:` values sit on the remote shell's command line, so `pgrep -f` matched the probe's own shell; the probe leaves its ancestor chain out of every count (13_known-issues, Learned
   2026-10-23 (b)).
 - A skipped task re-registers its variable; decisions shared between the chroot open and close passes are kept in a fact (skill-coder `languages/ansible.md`, Learned 2026-10-23 (b)).
+- A `command` action on an overlay box must set `chroot` (guard refuses the run before any write otherwise): a live-only command is undone by the
+  role's own reboot and no gate sees it. With `chroot: true`, add a `verify.commands` entry that proves the result after the reboot (side-agent
+  review, 2026-10-23).
 - Cron-started PHP processes (apn-mqtt-client, rct-tstik) are killed and waited on up to 7 minutes; a process with `respawn: none` is never killed.

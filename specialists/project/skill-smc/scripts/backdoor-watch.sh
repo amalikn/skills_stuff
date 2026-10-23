@@ -48,24 +48,24 @@ cluster_for_flavour() {
   esac
 }
 
-# Accept either a site name (kupungarri) or an SMC host (kupungarri-smc01).
-case "$TARGET" in
-  *-smc0[0-9]) SMC_HOST="$TARGET"; INV_FILE="$(grep -lx "$TARGET" "$INV_ROOT"/*/prod 2>/dev/null | head -1 || true)" ;;
-  *)
-    INV_FILE="$(grep -l "^\[${TARGET}_smc_bases\]" "$INV_ROOT"/*/prod 2>/dev/null | head -1 || true)"
-    SMC_HOST=""
-    if [ -n "$INV_FILE" ]; then
-      SMC_HOST="$(awk -v grp="[${TARGET}_smc_bases]" '
-        $0 == grp { found=1; next }
-        found && /^\[/ { exit }
-        found && NF { print $1; exit }
-      ' "$INV_FILE")"
-    fi
-    ;;
-esac
+# Accept either an inventory host in prod or stage (kupungarri-smc01, warehouse-rct01) or a site name (kupungarri, prod then stage).
+INV_FILE="$(grep -lx "$TARGET" "$INV_ROOT"/*/prod "$INV_ROOT"/*/stage 2>/dev/null | head -1 || true)"
+if [ -n "$INV_FILE" ]; then
+  SMC_HOST="$TARGET"
+else
+  INV_FILE="$(grep -l "^\[${TARGET}_smc_bases\]" "$INV_ROOT"/*/prod "$INV_ROOT"/*/stage 2>/dev/null | head -1 || true)"
+  SMC_HOST=""
+  if [ -n "$INV_FILE" ]; then
+    SMC_HOST="$(awk -v grp="[${TARGET}_smc_bases]" '
+      $0 == grp { found=1; next }
+      found && /^\[/ { exit }
+      found && NF { print $1; exit }
+    ' "$INV_FILE")"
+  fi
+fi
 
 if [ -z "${INV_FILE:-}" ] || [ -z "$SMC_HOST" ]; then
-  echo "Cannot resolve '$TARGET' in $INV_ROOT/*/prod. Use the site name or the exact SMC host." >&2
+  echo "Cannot resolve '$TARGET' in $INV_ROOT/*/prod or */stage. Use the site name or the exact inventory host." >&2
   exit 1
 fi
 

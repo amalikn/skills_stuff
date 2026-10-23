@@ -474,6 +474,7 @@ addresses (validated; nothing else reaches the box). Output: one `== <ip>` block
 Checks, and optionally watches, a box's autossh backdoor: the reverse tunnel `autossh-teleport-openssh` holds open to the project bastion on port `50000 + site_eclipse_siteid`. Written
 2026-10-07 for kupungarri-smc01. Run it before calling any box unreachable; a box missing from `tsh ls` can still be up behind this tunnel. Site, host, siteid, port and bastion are resolved from
 ansible-wifi's inventory, the same way `teleport-tunnel.sh` does it.
+Since 2026-10-23 it also resolves stage hosts (any exact inventory host in `*/prod` or `*/stage`, e.g. `warehouse-rct01`), then a site name in prod then stage.
 
 ```bash
 ./backdoor-watch.sh kupungarri                 # check: is 50468 listening on apn-teleport01 now
