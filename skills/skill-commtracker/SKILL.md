@@ -382,8 +382,10 @@ python ~/.agents/scripts/commtracker/toc.py <tracker-file>          # preview
 python ~/.agents/scripts/commtracker/toc.py <tracker-file> --update  # apply
 ```
 
-Regenerates the `## Contents` block from `## Email N` / `## Teams N` headings using
-correct GFM anchors. Run after adding a new entry instead of computing anchors manually.
+Regenerates the `## Contents` block from every entry heading (`## Email N`, `## Teams N`, `## Call N`,
+`## Meeting N`) in file order, using correct GFM anchors and keeping a blank line before `---`. Run after
+adding a new entry instead of computing anchors manually. `--update` refuses (exit 2) if the new Contents
+would have fewer entries than the old one; pass `--allow-shrink` only when that is intended.
 
 ---
 

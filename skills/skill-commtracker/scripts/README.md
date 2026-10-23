@@ -67,10 +67,21 @@ python ~/.agents/scripts/commtracker/toc.py <tracker-file>
 python ~/.agents/scripts/commtracker/toc.py <tracker-file> --update
 ```
 
-Without `--update`: prints the generated TOC and reports whether it differs from current.
-With `--update`: rewrites only the `## Contents` block in-place.
+Without `--update`: prints the generated TOC, the old and new entry counts, and whether it differs from current.
+With `--update`: rewrites only the `## Contents` block in-place, keeping a blank line before the `---` that follows.
 
-Anchor generation matches GitHub-Flavored Markdown exactly.
+Lists every entry heading (`## Email N`, `## Teams N`, `## Call N`, `## Meeting N`) in file order; headings inside fenced
+code blocks are ignored. Anchors follow GitHub-Flavored Markdown: punctuation and `/` removed, each space a hyphen (so
+` + ` and ` — ` give `--`), repeated slugs suffixed `-1`, `-2`.
+
+**Shrink guard:** `--update` refuses (exit 2, file untouched, dropped lines listed) when the new Contents would hold fewer
+entries than the current one, or when there is no `## Contents` heading. Add `--allow-shrink` only when the removal is
+intended. Exit codes: 0 done, 1 file missing or no entry headings, 2 refused. Runtime: about 0.04 s on a 16-entry tracker.
+Tests: `tests/test_toc.py`.
+
+Fixed 2026-10-23: earlier versions read only Email and Teams headings (Meeting and Call entries silently vanished from the
+Contents), wrote the last TOC line straight against `---`, collapsed ` + ` / ` — ` to a single hyphen, and would have
+swallowed the rest of the file if no `---` followed the Contents.
 
 ### Example
 

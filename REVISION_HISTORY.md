@@ -7,6 +7,12 @@ Change log for the `skills_stuff` parent repository.
 - Submodules must contain their own `REVISION_HISTORY.md`.
 - Pushes should use controlled workflows so rollback points are explicit.
 
+## 2026-10-23
+- Fix skill-commtracker `toc.py`: the Contents now lists all four entry types (Email, Teams, Call, Meeting) in file order, where Meeting and Call entries were silently dropped; a blank
+  line is kept before `---`; anchors keep double hyphens for ` + ` and ` — ` and suffix repeated slugs; the block also ends at the next heading so a missing `---` cannot swallow the file.
+  `--update` now refuses (exit 2) a Contents with fewer entries unless `--allow-shrink`. Five offline tests in `tests/test_toc.py` fail on the old code and pass (11 of 11 in the pack);
+  a 16-entry tracker copy regenerates byte-identical to its hand-fixed Contents with every anchor resolving, in 0.04 s.
+
 ## 2026-10-16
 - Extend skill-slurp-chat's existing helper for explicit Codex rollout JSONL: preserve repeated user turns, ignore mirrored messages, inventory tool names without arguments, and retain
   compaction/time filters. Five offline tests pass; the real UNC rollout smoke matches 36 messages, 388 tool envelopes and three compactions in 0.103 s against a ten-second budget.
