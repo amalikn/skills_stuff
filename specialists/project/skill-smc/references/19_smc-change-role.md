@@ -8,8 +8,8 @@ Scope: >-
   project that changes SMC boxes
 Last reviewed: 2026-10-23
 Summary: >-
-  How to run smc_change, write a change spec, read its gates and run records, how it persists a change on overlayroot Pis, and what is proven so
-  far. Use it for any package, config-file or command change to SMCs instead of an ad hoc playbook.
+  How to run smc_change, write a change spec, read its stages, gates and run records, how it persists a change on overlayroot Pis, what it
+  leaves on a box (nothing, after a success), how to roll back, how to extend it, and what is proven so far.
 ---
 
 # smc_change role
@@ -19,19 +19,19 @@ Summary: >-
 - [When to use it](#when-to-use-it)
 - [Where it is](#where-it-is)
 - [Running it](#running-it)
+- [Stages and output](#stages-and-output)
 - [Writing a change spec](#writing-a-change-spec)
 - [What it checks](#what-it-checks)
 - [Overlayroot persistence](#overlayroot-persistence)
-- [Run records](#run-records)
+- [Nothing left on the box, run records, rollback](#nothing-left-on-the-box-run-records-rollback)
+- [Extending it](#extending-it)
 - [Status and open items](#status-and-open-items)
 - [Pitfalls it already handles](#pitfalls-it-already-handles)
 
 ## When to use it
 
-Any change to SMC boxes that must be proven harmless: a package to a fixed version, a config file from a template, an ini option, a scripted step. It probes the box before, refuses an unhealthy or
-full box, backs up, applies the change live and (on Pis with overlayroot) in the lower dir, restarts what runs the changed code, reboots when the spec says, probes again and fails the host on any gate
-that does not hold. Built for the PHP CVE-2026-109618 rollout (2026-10-23, operator: "not limited to just this kind of change"). A project outside ansible-wifi that needs to change SMCs should add a
-spec here rather than write its own playbook.
+Any change to SMC boxes that must be proven harmless: a package to a fixed version, a config file from a template, an ini option, a scripted step. Built for the PHP CVE-2026-109618 rollout
+(2026-10-23, operator: "not limited to just this kind of change"). A project outside ansible-wifi that needs to change SMCs adds a spec rather than writing its own playbook.
 
 ## Where it is
 
@@ -39,39 +39,37 @@ spec here rather than write its own playbook.
 | -------------------------------------------------------------------------------------- | ------------------------------------ |
 | `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/roles/smc_change/`        | `roles/smc_change` (symlink)         |
 | `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/playbooks/smc_change.yml` | `smc_change.yml` (symlink)           |
+| `.../ansible-wifi-root-governance/ruff.toml`                                           | `ruff.toml` (symlink)                |
 
-Both are listed in the checkout's `.git/info/exclude`, so they never reach Bitbucket; the source is in the local-knowledge-ansible repository (private GitHub). Wiring and the rest of that folder:
-`18_local-knowledge-ansible.md`. The role's own `README.md` is the full manual.
+All listed in the checkout's `.git/info/exclude`, so none reaches Bitbucket. The role's `README.md` is the full manual and the header of `smc_change.yml` explains every `-e` option. Wiring and the
+rest of that folder: `18_local-knowledge-ansible.md`.
 
 ## Running it
 
-From the ansible-wifi root, one inventory per run (topology_vars load per inventory):
-
 ```bash
-ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_change=<spec>                       # check: read only
+ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_change=<spec>                        # check: read only
 ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_change=<spec> -e smc_change_mode=apply
 ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_change=<spec> -e smc_change_mode=verify
 ```
 
-| Variable                              | Default  | Meaning                                                                          |
-| ------------------------------------- | -------- | -------------------------------------------------------------------------------- |
-| `smc_change`                          | required | spec name in `files/changes/`                                                    |
-| `smc_change_mode`                     | `check`  | `check` read only; `apply`; `verify` (probe twice, gates, no change)             |
-| `smc_change_serial`                   | 1        | hosts per batch; `max_fail_percentage: 0` stops the run at the first failed host |
-| `smc_change_rollback`                 | `repack` | `repack` saves the apt_pin packages as .deb first; `fix_forward` does not        |
-| `smc_change_soak_minutes`             | 5        | wait after apply so client traffic reaches the box before the after-probe        |
-| `smc_change_reboot`                   | true     | false never reboots, whatever the spec says                                      |
-| `smc_change_allow_unhealthy_baseline` | false    | apply even when the before-probe is unhealthy                                    |
-| `smc_change_allow_nbn_wh`             | false    | nbn_wh only on an explicit operator decision (ansible-wifi AGENTS.md)            |
-| `smc_change_report_dir`               | `runs/`  | controller directory for run records                                             |
+Main options: `smc_change_serial` (default 1), `smc_change_on_refusal` (`skip` default: a refused host is recorded and skipped), `smc_change_rollback` (`repack` default), `smc_change_soak_minutes`
+(5), `smc_change_reboot` (true), `smc_change_allow_unhealthy_baseline`, `smc_change_allow_nbn_wh`, `smc_change_report_dir` (default `roles/smc_change/runs`). An unreachable host is recorded and
+skipped, so one offline box does not stop a fleet run (side-agent review, 2026-10-23); a host that fails after its change started stops the run.
 
 Rollout pattern (operator, depth before breadth): one stage box in `check`, then `apply`; one prod box per flavor; then the flavor with `-e smc_change_serial=5`, run by the operator from the
 handed-over command.
 
+## Stages and output
+
+Eleven stages, each printed as `STAGE n/11 NAME - what it does now` (operator, 2026-10-23: show where the play is): 1 SPEC, 2 SCOPE, 3 PROBE, 4 GUARD, 5 BACKUP, 6 ACTIONS, 7 RESTART, 8 REBOOT, 9
+VERIFY, 10 CLEANUP, 11 RECORD. check runs 1-4 and 11; verify 1-4, 9 and 11; apply all. The output has **Change requested** (stage 1), **Planned on this host** (stage 4, e.g. `1. apt_pin: php8.1-common
+8.1.2-1ubuntu2.18 -> 8.1.2-1ubuntu2.28`), a HOST/HEALTH/CHECK summary, a **RESULT** block (`PASSED: all 10 gates hold (...)` plus one `CHECK` line per check), and a final play listing every host of
+the run with its result (`passed`, `gates_failed`, `failed`, `refused`, `unreachable`, `probed`).
+
 ## Writing a change spec
 
-`files/changes/<name>.yml`, `name` equal to the file name. Templates in `templates/<name>/`, copied files in `files/<name>/`. A check runs only when the spec lists it. The PHP spec, abridged (source:
-`roles/smc_change/files/changes/php-cve-2026-109618.yml`, local-knowledge-ansible, uncommitted at writing):
+`files/changes/<name>.yml`, `name` equal to the file name; templates in `templates/<name>/`, copied files in `files/<name>/`. A check runs only when the spec lists it. The PHP spec, abridged (source:
+`roles/smc_change/files/changes/php-cve-2026-109618.yml`, uncommitted at writing):
 
 ```yaml
 name: php-cve-2026-109618
@@ -93,47 +91,24 @@ verify:
   http: [{name: portal, fqdn_var: smc_bases_portal_fqdn, protocol_var: smc_bases_portal_protocol, same_status: true,
           bad_markers: [must be writable, Undefined variable, Fatal error, Kohana_Exception, '<?php']}]
   logs: [{path: /var/log/apache2/error.log, fail_on: 'PHP (Fatal|Parse) error|Segmentation fault'}]
-  report_only: [{path: /var/log/apache2/access.log, count: ['" 5\d\d ', 'wifi/access/\d+ HTTP/[\d.]+" 302 ']}]
+  report_only: [{path: /var/log/apache2/access.log, count: {5xx: '" 5\d\d ', pin_activations: 'wifi/access/\d+ HTTP/[\d.]+" 302 '}}]
 ```
 
-| Action     | Fields                                                  | Overlay box                                                      |
-| ---------- | ------------------------------------------------------- | ---------------------------------------------------------------- |
-| `apt_pin`  | `packages` (dpkg globs; only installed ones), `version` | live apt, then `dpkg -i` of the same .debs in a lower-dir chroot |
-| `template` | `src`, `dest`, `owner`, `group`, `mode`                 | rendered to the live path and the lower-dir path                 |
-| `copy`     | `src`, `dest`, `owner`, `group`, `mode`                 | same                                                             |
-| `ini`      | `path`, `section`, `option`, `value`                    | same (community.general.ini_file)                                |
-| `command`  | `cmd`, `check` (exit 0 = already done), `chroot`          | `chroot` required on overlay boxes: `true` also runs it in the lower-dir chroot, `false` accepts the reboot undoes it |
-
-Other specs in place: `php-ini-upload-progress-off` (the interim php.ini mitigation, an `ini` action).
+Action types: `apt_pin` (packages, version), `template` and `copy` (src, dest, owner, group, mode), `ini` (path, section, option, value), `command` (cmd, check, chroot; on an overlay box `chroot` is
+required). Other specs: `php-ini-upload-progress-off` (an `ini` action).
 
 ## What it checks
 
-`files/probe.py` (read only, run as `python3 -` on the box) produces the before-probe and the after-probe, and judges them. Before an apply the `services`, `commands` and `http` checks must hold;
-after, every gate must:
-
-| Gate               | Holds when                                                                                     |
-| ------------------ | ---------------------------------------------------------------------------------------------- |
-| `services`         | every `services_active` unit is active                                                         |
-| `commands`         | each command exits 0 (or `expect_rc`) and prints `expect_text`                                 |
-| `http`             | each endpoint answers a redirect, or 200 with HTML and no `bad_markers`                        |
-| `http_same_status` | each `same_status` endpoint answers the code it answered before                                |
-| `packages`         | apt_pin: same package set as before, all at the version                                        |
-| `persisted`        | overlay boxes: the lower dir's dpkg database and file hashes hold what was written             |
-| `files`            | written files still hash as written (after a reboot: as written to the lower dir)              |
-| `overlay`          | overlayroot in the state it was in before                                                      |
-| `stale`            | no process maps a deleted file matching `stale_maps` (everything restarted onto the new build) |
-| `same_as_before`   | each listed command prints the same sorted output                                              |
-| `logs`             | no line written since the before-probe matches `fail_on`                                       |
-| `processes`        | each cron-respawned process that ran before runs again                                         |
-
-HTTP endpoints are fetched by their real ServerName with `curl --resolve` to the address `apache2ctl -S` binds it to (rct hosts have no `topology_interfaces`; a `localhost` probe hits the default
-vhost and looks healthy on a dead portal, `10_captive-portal.md` 11.8).
+Only checks the spec configures produce a gate: `overlay` (always), `services`, `commands`, `same_as_before`, `http`, `http_same_status`, `packages`, `files`, `persisted` (overlay boxes), `stale` (no
+process maps a deleted file matching `stale_maps`), `logs`, `processes` (each cron-respawned process that ran before runs again). Before an apply, the configured `services`, `commands` and `http` must
+hold, else the host is refused. HTTP endpoints are fetched by their real ServerName with `curl --resolve` to the address `apache2ctl -S` binds (rct hosts have no `topology_interfaces`; a `localhost`
+probe hits the default vhost, `10_captive-portal.md` 11.8).
 
 ## Overlayroot persistence
 
-On a box whose `/` is overlayroot the role remounts `/media/root-ro` read-write for the write phase and always remounts it read-only after. For `apt_pin` it installs live (fixed at once, held in
-tmpfs), downloads the same .debs into the lower dir and installs them in a chroot of it with `/usr/sbin/policy-rc.d` returning 101, then refuses to continue unless the lower dir's dpkg database shows
-the version, so a box is never rebooted onto the old build. Core of it (source `roles/smc_change/tasks/actions/apt_pin.yml`, uncommitted at writing):
+The lower dir `/media/root-ro` is remounted rw for the write phase and always back to ro. File actions write to both paths; `apt_pin` installs live, then `dpkg -i` of the same .debs in a chroot of the
+lower dir with `policy-rc.d` returning 101, and refuses to go on unless the lower dir's dpkg database shows the version, so a box is never rebooted onto the old build. Then one reboot (operator choice
+over the two- reboot disable/enable-overlay path). `UNVERIFIED` until the warehouse-rct01 canary. Core (source `roles/smc_change/tasks/actions/apt_pin.yml`):
 
 ```yaml
 - name: Install the .debs inside the chroot
@@ -141,38 +116,55 @@ the version, so a box is never rebooted onto the old build. Core of it (source `
     cmd: >-
       chroot {{ smc_change_lower_dir }} /bin/sh -c 'DEBIAN_FRONTEND=noninteractive
       dpkg --force-confdef --force-confold -i {{ smc_change_stage_dir }}/*.deb'
-- name: Read the lower dir's versions
-  ansible.builtin.command:
-    cmd: >-
-      dpkg-query --admindir={{ smc_change_lower_dir }}/var/lib/dpkg -W '-f=${Package}=${Version}\n'
-      {{ smc_change_pin.pkgs.keys() | join(' ') }}
 ```
 
-Chosen by the operator (2026-10-23) over the two-reboot path (`smc_disable_overlay.yml`, change, `smc_enable_overlay.yml`). `UNVERIFIED`: overlayfs leaves changes to a mounted lower dir undefined; the
-reboot that follows clears that state. Backups go under the lower dir so they survive it. See `07_hardware-overlay.md` §8 for the overlay itself.
+## Nothing left on the box, run records, rollback
 
-## Run records
+Operator, 2026-10-23: nothing may be left on an SMC after a successful change. The role writes nothing on the box except the change and, during the run, its backup. Stage 10 (successful apply only)
+copies the backup to `runs/<spec>/backups/<host>-<start>/` on the controller, removes it from the box (lower dir included), removes the .debs apt downloaded and dpkg-repack if the run installed it,
+and fails if anything it listed is left. A failed run keeps its backup on the box. Every run writes `runs/<spec>/<host>-<spec>-<mode>-<start>.json` on the controller only: result, stage and task of a
+failure, refusal or unreachable reason, gates, plan, backup path, both probes.
 
-Every run (check, apply, verify, failed) writes `roles/smc_change/runs/<spec>/<host>-<spec>-<mode>-<start>.json` on the controller: result (`probed`, `passed`, `gates_failed`, `failed`), failure task
-and message, gates, backup path, expected file hashes, the full before and after probes. Apply and verify runs also leave a copy in `/var/log/smc_change/` on the host (tmpfs on overlay boxes). The
-role body runs in `block`/`rescue`, so a refusal or a crash is recorded too.
+Rollback has no mode of its own. With `repack` the old builds are saved as .deb because the Ubuntu archive keeps only the newest build. x86: copy the backup folder to the box and `dpkg -i` the .debs,
+then restart apache2; an overlay Pi also needs the same in a lower-dir chroot and a reboot. The commands are in the header of `smc_change.yml` and in the role README.
+
+## Extending it
+
+The role's tasks name no action or check type (operator, 2026-10-23: generic). Type knowledge lives in two places: `tasks/actions/<type>.yml` (how to make a change; register anything to remove in
+`smc_change_cleanup_paths`/`_globs`/`_packages`) and `files/probe/NN_<check>.py`, one file per check type that calls `register(Check(...))` with `collect`, `healthy`, `gates`, `persisted`, `describe`
+and, for an action type, `plan`. `tasks/probe.yml` joins the parts in name order and pipes them to `python3 -`, so nothing is written to the box. Python is two-space indented and checked with ruff
+(`files/probe/check.sh`: lint on the joined program, format per part) against the project-root `ruff.toml`, which excludes the 22 existing four-space files with `force-exclude` (operator: new files
+only).
+
+```python
+# roles/smc_change/files/probe/99_main.py (2026-10-23)
+for check in CHECKS:
+  check.call("collect", cfg, out, base)
+...
+gates = {"overlay": out["overlay"] == base["overlay"]}
+for check in CHECKS:
+  gates.update(check.call("gates", cfg, out, base, default={}))
+```
+
+The split was proven behaviour-neutral: four runs (check and verify on warehouse-smc01 and nocprov-smc01) gave identical records before and after, timestamps and live traffic counts aside.
 
 ## Status and open items
 
 As of 2026-10-23:
 
-- `check` and `verify` ran on warehouse-smc01 and nocprov-smc01 (x86) and warehouse-rct01 (Pi, overlay off). `verify` on warehouse-smc01 failed `stale` correctly: apache still maps the deleted old
-  `libphp8.1.so` after unattended-upgrades moved the packages to `.28` (13_known-issues).
-- `apply` has not run anywhere. Next: `smc_enable_overlay.yml` on warehouse-rct01, then `apply` of `php-cve-2026-109618` there (operator choice of canary), reboot it once more by hand and `verify`.
-- `playbooks/smc_update_php.yml` (single-file predecessor) stays until the role's apply path is proven.
+- nocprov-smc01 (x86 stage bench box): `apply` by the operator moved php8.1 .18 to .28, all gates passed (before the cleanup stage existed, so its backup, 7 host-side records, dpkg-repack and 7 cached
+  .debs are still on it).
+- warehouse-smc01: packages at .28 by unattended-upgrades, apache still on the deleted old libphp (`verify` fails `stale`).
+- Pi canary warehouse-rct01 off Teleport since about 13:45 (backdoor up); the overlay path is `UNVERIFIED`.
+- Not yet run: an `apply` with the cleanup stage (the agent's apply was refused by the auto-mode classifier; operator to run it).
+- `playbooks/smc_update_php.yml` stays until the role's overlay apply path is proven.
 
 ## Pitfalls it already handles
 
-- Installed version is not running code: the `stale` gate reads `/proc/*/maps` for deleted files (13_known-issues, Learned 2026-10-23).
-- Ansible `environment:` values sit on the remote shell's command line, so `pgrep -f` matched the probe's own shell; the probe leaves its ancestor chain out of every count (13_known-issues, Learned
-  2026-10-23 (b)).
-- A skipped task re-registers its variable; decisions shared between the chroot open and close passes are kept in a fact (skill-coder `languages/ansible.md`, Learned 2026-10-23 (b)).
-- A `command` action on an overlay box must set `chroot` (guard refuses the run before any write otherwise): a live-only command is undone by the
-  role's own reboot and no gate sees it. With `chroot: true`, add a `verify.commands` entry that proves the result after the reboot (side-agent
-  review, 2026-10-23).
-- Cron-started PHP processes (apn-mqtt-client, rct-tstik) are killed and waited on up to 7 minutes; a process with `respawn: none` is never killed.
+- Installed version is not running code: the `stale` gate reads `/proc/*/maps` (13_known-issues, Learned 2026-10-23).
+- Ansible `environment:` values sit on the remote command line, so `pgrep -f` matched the probe's own shell; the probe leaves its ancestor chain out (13_known-issues, Learned 2026-10-23 (b)).
+- A skipped task re-registers its variable; chroot open/close share a fact instead (skill-coder `languages/ansible.md`).
+- A YAML folded scalar passes `'\n'` to Jinja as a literal backslash-n; the probe join uses a newline variable from a double-quoted string.
+- A `-l` limit also filters a `hosts: localhost` play; the run stamp and summary run on the managed group, delegated to localhost.
+- ruff honours `.git/info/exclude` through the checkout's symlink and then finds no files; `check.sh` works from the physical path.
+- A `command` action on an overlay box must set `chroot`, or the role's own reboot undoes it unseen (side-agent review).

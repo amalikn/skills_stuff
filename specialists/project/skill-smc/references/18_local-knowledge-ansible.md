@@ -58,7 +58,8 @@ printf '<name>.yml\n' >> /Volumes/Data/_ansible/ansible-wifi/.git/info/exclude
 git -C /Volumes/Data/_ansible/ansible-wifi check-ignore -v <name>.yml     # must name .git/info/exclude
 ```
 
-A symlinked role resolves because `ansible.cfg` sets `roles_path = ./roles`. Keep a symlinked playbook self-contained or role-based: do not rely on paths relative to the playbook file.
+The project-root `ruff.toml` (Python lint and format, two-space indent, new files only) is wired the same way from
+`ansible-wifi-root-governance/ruff.toml` (2026-10-23). A symlinked role resolves because `ansible.cfg` sets `roles_path = ./roles`. Keep a symlinked playbook self-contained or role-based: do not rely on paths relative to the playbook file.
 
 ## Operator tooling built here
 

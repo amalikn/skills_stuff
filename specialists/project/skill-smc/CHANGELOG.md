@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261023_1351
+Last rotated: 20261023_1455
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261023_1455 — smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> v0.7.2)](#20261023_1455--smc_change-generic-role-probe-split-per-check-cleanup-skip-unreachablerefused-stages-ruff-root-config-v071---v072)
 - [20261023_1351 — backdoor-watch.sh resolves stage hosts; smc_change command guard (v0.7.0 -> v0.7.1)](#20261023_1351--backdoor-watchsh-resolves-stage-hosts-smc_change-command-guard-v070---v071)
 - [20261023_1339 — Local-knowledge folder reference and index script; PHP verification by mapped files; smc_change role recorded (v0.6.9 -> v0.7.0)](#20261023_1339--local-knowledge-folder-reference-and-index-script-php-verification-by-mapped-files-smc_change-role-recorded-v069---v070)
 - [20261022_1718 — Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)](#20261022_1718--evidence-capture-timeouts-reported-as-such-full-capture-timing-end-marker-fix-v068---v069)
@@ -36,7 +37,13 @@ Last rotated: 20261023_1351
 - [20261020_0939 — Client MACs may be stored; S11 ATA reads; IPSSH as TP-Link; Teleport command labels (v0.5.0 -> v0.5.1)](#20261020_0939--client-macs-may-be-stored-s11-ata-reads-ipssh-as-tp-link-teleport-command-labels-v050---v051)
 - [20261020_0049 — Bot-host skill scripts, dhcpd shared networks, uplink gateway (v0.4.9 -> v0.5.0)](#20261020_0049--bot-host-skill-scripts-dhcpd-shared-networks-uplink-gateway-v049---v050)
 - [20261019_1119 — Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)](#20261019_1119--working-teleport-ssh-reads-take-79-s-10-s-attempts-two-tries-random-nodes-v048---v049)
-- [20261015_1751 — WireGuard and NETMAP kernel modules present on rcp and rct SMCs; no overlay tools installed (no version change)](#20261015_1751--wireguard-and-netmap-kernel-modules-present-on-rcp-and-rct-smcs-no-overlay-tools-installed-no-version-change)
+
+## 20261023_1455 — smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> v0.7.2)
+
+`19_smc-change-role.md` rewritten for the role as it now is: 11 announced stages, plan and result summaries worded by the probe, probe split
+into `files/probe/NN_*.py` with a check registry (proven identical on four runs), only configured checks gated, stage 10 CLEANUP (nothing left
+on the box after success, backups copied to the controller), records on the controller only, unreachable and refused hosts recorded and
+skipped, run summary, rollback steps, ruff with two-space indent and `force-exclude` of the 22 existing files. manifest 0.7.1 -> 0.7.2.
 
 ## 20261023_1351 — backdoor-watch.sh resolves stage hosts; smc_change command guard (v0.7.0 -> v0.7.1)
 
@@ -190,9 +197,3 @@ across the fleet, the `lat` label differs from tstiklatlon. All read back after 
 ## 20261019_1119 — Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)
 
 references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-16 entry from the unified-network-controller host verifier: fresh tsh ssh reads took 7–9 s and a 6 s deadline failed healthy boxes. Written in the 2026-10-19 backlog audit of 15–17 Oct.
-
-## 20261015_1751 — WireGuard and NETMAP kernel modules present on rcp and rct SMCs; no overlay tools installed (no version change)
-
-- `references/07_hardware-overlay.md`: read-only on umoona and old-looma (rcp) and adjamarragu and alamirra (rct Pi): `wireguard.ko` and
-  `xt_NETMAP.ko` present, iptables 1.8.7, netplan 0.104/0.105, no wireguard-tools or tailscale; every box is 10.255.0.1. Found by
-  unified-network-controller's direct-reach design.
