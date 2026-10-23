@@ -41,14 +41,16 @@ def _swapper(order: list, i: int, j: int) -> object:
 class EndToEnd(E2EGrid):
     """Lays out, improves and draws the End-to-end page."""
 
-    def __init__(self, data: dict, profile: Profile) -> None:
+    def __init__(self, data: dict, profile: Profile, numbers: dict | None = None) -> None:
         """Place, plan and size (E2EGrid), then improve track and port orders to cut crossings.
 
         Args:
-            data: the validated map.
+            data: the validated map, or one family's part of it (flowmap.e2e_family).
             profile: the project's drawing profile.
+            numbers: {flow id: its number in the whole map} for a part; default the flows' order.
         """
-        super().__init__(data, profile)
+        super().__init__(data, profile, numbers)
+        self.title = "**End-to-end flow: every component, every flow**"
         self._improve()
 
     def _track_x(self, ch: int, key: str) -> float:
@@ -264,7 +266,7 @@ class EndToEnd(E2EGrid):
             page: the page.
             right: the right edge of the last column.
         """
-        head = ["**End-to-end flow: every component, every flow**", BLANK,
+        head = [self.title, BLANK,
                 f"Generated from {self.profile.map} by `{self.profile.command}`; do not edit.", BLANK,
                 "**Paths:** each flow is a path through the components that act in its steps, coloured by "
                 + ("flow." if self.profile.look.get("e2e_layers", "family") == "flow" else "family."),
@@ -342,13 +344,17 @@ class EndToEnd(E2EGrid):
         if used:   # the symbols the boxes use, as on a flow page
             shape_legend(page, used, MARGIN, ly + 40, "e2e")
 
-    def page(self) -> Page:
+    def page(self, page_id: str = "end-to-end", name: str = "End-to-end flow") -> Page:
         """Draw the page: frame, boxes, arrows and labels per family, and the legend.
+
+        Args:
+            page_id: the diagram id (a family page passes its own).
+            name: the tab name.
 
         Returns:
             The page.
         """
-        page = Page("end-to-end", "End-to-end flow")
+        page = Page(page_id, name)
         right = self.col_x[-1] + E2E_BW + (self.ch_w[-1] if self.nch >= self.ncol else 0)   # a one-column page draws its channel too
         self._frame(page, right)
         for cid, comp in self.comps.items():

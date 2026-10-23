@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from drawio.mxfile import Page, label, wrapped_lines
 
-from .model import comp_style, option_blocks
+from .model import comp_style, flow_family, option_blocks
 from .shapes import component_shape, fit_height, person_badge
 from .overview_layout import THIN_GREY
 from .profile import DISTINCT, Profile
@@ -64,6 +64,31 @@ def colour_legend(page: Page, x: float, y: float, thick: list) -> float:
     return y + 40
 
 
+def family_entries(page: Page, data: dict, profile: Profile, x: float, y: float) -> float:
+    """One index entry per family End-to-end page (flowmap.e2e_family), right under the full page's; none unless `look.e2e_family_pages`.
+
+    Args:
+        page: the Overview.
+        data: the validated map.
+        profile: the drawing profile (families, look).
+        x: the index column's left edge.
+        y: the index's running offset (entries go at y + 102, as decision page entries do).
+
+    Returns:
+        The offset after the entries.
+    """
+    if not profile.look.get("e2e_family_pages"):
+        return y
+    of = [flow_family(f, profile) for f in data["flows"]]
+    for fam, name, _col, _ids in (g for g in profile.families if g[0] in of):
+        nums = ", ".join(str(i) for i, f in enumerate(of, 1) if f == fam)
+        page.box(f"ov-f-end-to-end-{fam}", label(f"**End-to-end: {name}**", f"flows {nums} only"), x, y + 102, 340, 52,
+                 "rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f4fa;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
+                 link=f"data:page/id,end-to-end-{fam}", tooltip=f"The {name} flows only, and the components they touch")
+        y += 62
+    return y
+
+
 def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> float:
     """The flow index (one clickable box per flow page, plus the End-to-end page and, when the map has them, the decision pages) and the component
     kind legend, right of the group grid.
@@ -82,6 +107,7 @@ def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> 
     page.box("ov-f-end-to-end", label("**End-to-end flow**", "every component and every flow on one page"), x, y + 40, 340, 52,
              "rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f4fa;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
              link="data:page/id,end-to-end", tooltip="All flows as coloured paths through their components, one layer per family")
+    y = family_entries(page, data, profile, x, y)
     for pid, name, block in option_blocks(data):   # decision pages (flowmap.options) sit after the End-to-end entry; without them the index is unchanged
         page.box(f"ov-f-{pid}", label(f"**{name}**", "the questions, each choice's flow, pros and cons, and what was decided"),
                  x, y + 102, 340, 52, "rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=6;",

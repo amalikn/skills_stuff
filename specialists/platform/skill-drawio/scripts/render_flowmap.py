@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 from drawio.audit import faults, page_audit
-from flowmap import e2e, model, options, overview, pages
+from flowmap import e2e, e2e_family, model, options, overview, pages
 from flowmap.profile import Profile, look_report
 
 #: The oldest Python this script runs on (stdlib; PyYAML to read the map).
@@ -62,6 +62,7 @@ def audit(root: Path, profile: Profile) -> list[str]:
         return [f"map: {p}" for p in problems]
     return ([f"Overview: {f}" for f in faults(page_audit(overview.overview_page(data, profile)))]
             + [f"End-to-end: {f}" for f in faults(page_audit(e2e.end_to_end_page(data, profile)))]
+            + [f"{p.name}: {f}" for p in e2e_family.family_pages(data, profile) for f in faults(page_audit(p))]
             + [f"{name}: {f}" for pid, name, block in model.option_blocks(data)
                for f in faults(page_audit(options.options_page(data, profile, block, pid, name)))]
             + [f"Flow {i + 1} ({fl['id']}): {f}" for i, fl in enumerate(data["flows"])   # flow pages too (2026-10-21: overlaps went unseen)

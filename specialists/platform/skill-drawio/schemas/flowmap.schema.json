@@ -596,6 +596,10 @@
               "type": "number",
               "minimum": 0.5,
               "description": "Stroke width of the End-to-end dashed connectors (a component a flow runs on, is owned by or depends on); default 1.25."
+            },
+            "e2e_family_pages": {
+              "type": "boolean",
+              "description": "Also draw one End-to-end page per flow family after the full one: that family's flows and the components they touch, numbered as in the whole map; default false."
             }
           }
         }

@@ -225,6 +225,7 @@ class Page:
         self.layers: list[tuple[str, str]] = []
         self.tips: dict[str, str] = {}   # hover text per edge id, set before the edge is drawn; its label mark shows the same text
         self.tags: dict[str, tuple] = {}   # draw.io tags per cell id (edges, and boxes drawn without a `tags` argument); a mark takes its edge's
+        self.rename: tuple[str, str] = ()   # (old, new) id prefix applied when serialised, so a second page built by the same code keeps ids unique
 
     def box(self, cid: str, label: str, x: float, y: float, w: float, h: float, style: str, link: str = "", tooltip: str = "",
             layer: str = "1", solid: bool = False, tags: tuple = ()) -> None:
@@ -332,6 +333,9 @@ class Page:
         """
         layers = "".join(f'        <mxCell id="{lid}" value={quoteattr(name)} parent="0"/>\n' for lid, name in self.layers)
         body = "\n".join(f"        {c}" for c in self.cells)
+        if self.rename:   # every id reference (id, parent, source, target) that starts with the old prefix
+            old, new = self.rename
+            layers, body = (re.sub(rf'\b(id|parent|source|target)="{re.escape(old)}', rf'\1="{new}', t) for t in (layers, body))
         return (f'  <diagram id="{self.page_id}" name={quoteattr(self.name)}>\n'
                 '    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" '
                 'math="0" shadow="0">\n      <root>\n        <mxCell id="0"/>\n        <mxCell id="1" parent="0"/>\n'

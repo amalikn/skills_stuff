@@ -35,6 +35,7 @@ DEFAULT_LOOK = {
     "uncross": "on",               # redraw two flow arrows that cross in the other order, kept when crossings drop (operator review 2026-10-22); "off"
     "e2e_layers": "family",        # End-to-end colours and layers per "family", or per "flow" (each x of x.y its own; operator, 2026-10-23)
     "connector_width": 1.25,       # End-to-end dashed connector stroke width; 2 matches the step arrows (operator asked for bold, 2026-10-23)
+    "e2e_family_pages": False,     # also one End-to-end page per family after the full one, only that family's flows and boxes (operator, 2026-10-23)
 }
 
 #: Thick arrow and family colours: distinct hues, each at least 4.5:1 on white (blue, green, red, purple, teal, olive, magenta, orange,

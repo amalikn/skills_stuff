@@ -95,20 +95,22 @@ class Link:
 class E2EGrid:
     """Places, plans and sizes the End-to-end page (flowmap.e2e.EndToEnd turns the plans into polylines)."""
 
-    def __init__(self, data: dict, profile: Profile) -> None:
+    def __init__(self, data: dict, profile: Profile, numbers: dict | None = None) -> None:
         """Place every component, plan every link and size the grid.
 
         Args:
-            data: the validated map.
+            data: the validated map (or one family's part of it, flowmap.e2e_family).
             profile: the project's drawing profile (tiers, band, families).
+            numbers: {flow id: its number in the whole map}, so a part keeps the whole map's x of x.y; default the flows' order here.
         """
         self.data, self.profile = data, profile
+        self.number = numbers or {f["id"]: i for i, f in enumerate(data["flows"], 1)}
         self.comps = {c["id"]: c for c in data["components"]}
         self.ncol = len(profile.tiers)
         # Channels sit between columns; a one-column page keeps one on its right, so links inside the column still have a track (2026-10-19).
         self.nch = max(self.ncol - 1, 1)
         self.cell, self.band = self._place()
-        self.groups, self.group_of = e2e_groups(data, profile)
+        self.groups, self.group_of = e2e_groups(data, profile, numbers)
         self.links = self._links()
         for link in self.links:
             self._plan(link)
@@ -193,7 +195,8 @@ class E2EGrid:
             The links, in map order.
         """
         links, seen, name = [], set(), {c: self.comps[c]["name"] for c in self.comps}
-        for fi, f in enumerate(self.data["flows"], 1):
+        for f in self.data["flows"]:
+            fi = self.number[f["id"]]
             fam = self.group_of[f["id"]]
             steps = f["steps"]
             acts = [s["actor"] for s in steps]

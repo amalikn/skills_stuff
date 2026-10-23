@@ -157,6 +157,10 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 - End-to-end labels read x.y: flow x, step y. x.1 runs from the component the flow `runs_on`; a step done by the same component as the step
   before draws no arrow and is named in the next arrow's tooltip. `look.e2e_layers: flow` gives each flow its own colour and layer (default
   `family`); `look.connector_width` sets the dashed connectors' stroke (default 1.25, 2 for bold) (operator, 2026-10-23).
+- `look.e2e_family_pages: true` keeps the full End-to-end page and adds one page per family after it (`flowmap.e2e_family`): only that
+  family's flows and the boxes they touch, the whole map's flow numbers on every x.y, colours taken in the page's own order so none repeats,
+  unused tier columns dropped, ids renamed `e2f-<family>-`; the Overview index links each one. It is the exportable form of View > Tags
+  `family-<id>` (operator, 2026-10-23: "leave the existing end to end as it is and add more end to end pages").
 - Box names and arrow labels are bold (operator, 2026-10-19). Labels mix bold field names with plain values; render `**...**` spans as `<b>` everywhere in a line, and test that no literal `**`
   survives into the drawing [C-D30].
 - Code paths in a monospace font (`<font face="Courier New">`), with soft breaks so they wrap ([layout-and-routing.md](layout-and-routing.md)).
@@ -306,3 +310,21 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 >         chosen.append(best)
 >     return picks
 > ```
+
+> **Learned 2026-10-23** · End-to-end family pages · VERIFIED_PRIMARY · Source: `scripts/flowmap/e2e_family.py`, `tests/test_e2e_family.py`;
+> unified-network-controller render; screenshots `references/screenshots/20261023-e2e-family-pages/` · Falsifier: a family page whose x.y
+> numbers differ from the full page's, or a file with a cell id used on two pages
+> unified-network-controller's End-to-end page held 31 flows and 73 boxes (5,534 x 8,622 px). Splitting by boxes does not work there: the best
+> two-page split still put five hub boxes (Nautobot web, the Celery worker, apn-unc01, the SMC, the operator) on both pages and left 23 flows on
+> one. Splitting by family does: five extra pages of 4 to 11 flows and 17 to 37 boxes (2,000 to 3,600 px, whole at export scale 1), the full
+> page byte-identical. One engine draws both: the family page is the same EndToEnd built on a part of the map, given the whole map's numbers,
+> and its ids are renamed when written, since draw.io ids must be unique in the file.
+>
+> ```python
+> # scripts/flowmap/e2e_family.py (skills_stuff, 2026-10-23)
+> numbers = {f["id"]: i for i, f in enumerate(data["flows"], 1)}
+> e2e = EndToEnd(part, narrowed(profile, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})
+> page = e2e.page(f"end-to-end-{fam}", f"End-to-end: {name}")
+> page.rename = ("e2e-", f"e2f-{fam}-")
+> ```
+
