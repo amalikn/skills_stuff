@@ -90,6 +90,15 @@ class CellsTipsAndTags(unittest.TestCase):
         self.assertEqual(box.get("tags"), "kind-container group-g flow-f")
         self.assertTrue(box.get("tooltip").startswith("B (container)\nhost: h"))
 
+    def test_overview_dependency_arrows_have_tooltips(self) -> None:
+        """An Overview thin arrow names what depends on what, with the needed component's health check."""
+        root = ET.fromstring(TestMap._render(TestMap._minimal()).split("-->", 1)[1])
+        ov = next(d for d in root.iter("diagram") if d.get("id") == "overview")
+        arrow = next(u for u in ov.iter("UserObject") if u.get("id") == "ov-d-b-a")
+        self.assertEqual(arrow.get("tooltip"), "B needs A (health: ok)")
+        self.assertEqual(tips.needs_tip({"name": "X"}, [{"name": "Y", "health": "h1"}, {"name": "Z", "health": "h2"}]),
+                         "X needs Y (health: h1)\nX needs Z (health: h2)")
+
     def test_every_generated_cell_is_frozen(self) -> None:
         """Every box, label and arrow has Movable off (movable=0), so the drawing cannot be dragged by mistake; layers stay unlocked."""
         root = ET.fromstring(TestMap._render(TestMap._minimal()).split("-->", 1)[1])

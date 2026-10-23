@@ -127,7 +127,8 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   `look.uncross`, on by default; layout-and-routing.md, Learned 2026-10-22).
 - Arrows turn with rounded corners on every page (operator, 2026-10-21: "make the arrows with curves like the overview"; `look.arrow_corners`).
 - Every arrow and its label carry a tooltip saying what happens (End-to-end: the step, the steps that stayed in the source, `via`; a dashed
-  connector: why the flow needs the component); step boxes and component boxes carry the whole map entry (`flowmap.tips`). A tooltip only adds:
+  connector: why the flow needs the component); step boxes and component boxes carry the whole map entry (`flowmap.tips`). On the Overview
+  every thin arrow, thick arrow (and its ×n count) and dot lists who needs whom, with each needed health check (operator, 2026-10-23). A tooltip only adds:
   exported PNG and PDF have none, so must-read facts stay in boxes and notes (operator, 2026-10-23).
 - draw.io tags on generated cells, for the Tags dialog (select, hide or show across layers): `flow-<id>`, `family-<id>`, `step-arrow`,
   `connector`, `back-arrow`, `kind-<kind>`, `group-<group>`, `gate`, `decision`, `fails`, `runs-flow-<id>` (`drawio.cell`; operator, 2026-10-23).

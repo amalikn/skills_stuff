@@ -83,6 +83,19 @@ def need(flow: dict, cid: str) -> str:
     return " and ".join(why) or "uses"
 
 
+def needs_tip(comp: dict, needs: list[dict]) -> str:
+    """An Overview dependency's hover text: what a component needs, one line per need with that component's health check.
+
+    Args:
+        comp: the component that depends.
+        needs: the components it depends on.
+
+    Returns:
+        The lines, joined by newlines.
+    """
+    return "\n".join(f"{comp['name']} needs {n['name']} (health: {n['health']})" for n in needs)
+
+
 def step_arrow_tip(flow: dict, number: int, k: int, ends: tuple[str, str], stayed: list[str]) -> str:
     """An End-to-end step arrow's hover text: the steps that stayed in its source since the last arrow, then the step it leads into.
 

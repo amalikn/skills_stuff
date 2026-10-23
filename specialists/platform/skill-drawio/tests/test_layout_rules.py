@@ -200,7 +200,7 @@ class Arrows(unittest.TestCase):
         data["components"].append({"id": "c", "name": "C", "kind": "container", "group": "H", "host": "h", "health": "ok", "depends_on": ["a", "b"]})
         page = overview.overview_page(data, _profile(data))
         text = "\n".join(page.cells)
-        styles = dict(re.findall(r'id="(ov-(?:d|gg)-[^"]+)"[^>]*style="([^"]+)"', text))
+        styles = dict(re.findall(r'id="(ov-(?:d|gg)-[^"]+)"[^>]*?(?:><mxCell)?[^>]*?style="([^"]+)"', text))   # a tooltip arrow is a UserObject
         self.assertEqual(set(styles), {"ov-d-b-a", "ov-gg-1-0"})
         self.assertIn(f"strokeColor={layout.THIN_GREY}", styles["ov-d-b-a"])
         self.assertNotIn("dashed=1", styles["ov-d-b-a"])
