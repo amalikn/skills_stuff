@@ -1376,6 +1376,48 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 >   package is held. The rcp apt lists were stale (php8.1-common candidate `.26` when jammy-security had `.28`). Security fixes reach the fleet
 >   only by a deliberate run, and builds drift box to box (seven php8.1 builds seen, `.13` to `.24`, including on the Pis). No visual surface.
 
+> **Learned 2026-10-23** · PHP upgrade verification on x86 SMCs · VERIFIED-OBSERVED (warehouse-smc01, rcp stage, 2026-10-23 12:10) · Source:
+> local-knowledge-ansible `ansible-wifi/playbooks/smc_update_php.yml` (symlinked into the ansible-wifi root), `-e smc_php_mode=verify` · Falsifier: an
+> apache2 whose `/proc/<pid>/maps` shows no `(deleted)` libphp after a package upgrade with no restart
+> An installed package version does not prove the running code is fixed. warehouse-smc01 had every php8.1 package at `8.1.2-1ubuntu2.28`
+> (unattended-upgrades, enabled on this stage box, ran at 06:56) but apache2, started 2026-10-12, still mapped the deleted old
+> `libphp8.1.so` and its extensions. Check the running processes, not dpkg:
+>
+> ```python
+> # smc_update_php.yml probe (local-knowledge playbooks/, 2026-10-23)
+> for maps in glob.glob("/proc/[0-9]*/maps"):
+>     with open(maps) as fh:
+>         if any("(deleted)" in l and re.search(r"php", l) for l in fh):
+>             stale.append(pid)   # still runs a replaced PHP build: restart it
+> ```
+>
+> The 2026-10-22 (f) note that nothing patches itself holds for the prod boxes surveyed, not for stage boxes.
+> rct hosts carry no `topology_interfaces` (empty on 20-mile-smc01 and warehouse-rct01), so a play that derives the portal address from
+> `topology_interfaces['portal']` gets nothing there. Read it from the box instead: `apache2ctl -S` on warehouse-rct01 shows
+> `10.254.0.1:80 wifi.a8me.au`; the playbook matches the ServerName in that output and curls with `--resolve`. No visual surface.
+
+> **Learned 2026-10-23 (b)** · counting SMC processes from an Ansible task · VERIFIED-OBSERVED (warehouse-smc01, nocprov-smc01, warehouse-rct01,
+> 2026-10-23 13:33-13:34, role check runs against `ps -eo args`) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/probe.py`
+> (`ancestors`, `count_procs`; uncommitted at writing) · Falsifier: an Ansible `environment:` value absent from the remote shell's /proc cmdline
+> `pgrep -f 'php -S '` from a probe run with Ansible `environment: {PROBE_CONFIG: ...}` counted processes that did not exist (warehouse-smc01: 1 `php -S`,
+> none in `ps`): Ansible puts environment values on the remote shell's command line, so the shell that started the probe matched its own patterns.
+> Leave the probe's own process chain out of every count:
+>
+> ```python
+> # roles/smc_change/files/probe.py (local-knowledge-ansible, 2026-10-23)
+> def ancestors():
+>     pids, pid = set(), str(os.getpid())
+>     while pid not in ("0", "") and pid not in pids:
+>         pids.add(pid)
+>         with open(f"/proc/{pid}/stat") as fh:
+>             pid = fh.read().rsplit(")", 1)[1].split()[1]      # ppid
+>     return pids
+> count = len([p for p in run(["pgrep", "-f", pattern])[1].split() if p not in ancestors()])
+> ```
+>
+> On these boxes `php Start.php` (apn-mqtt-client) and `php -S` (rct-tstik) are cron */5 and come and go; a single count of 0 is not proof the client
+> is off. Also seen: `pgrep -f 'php Start.php'` counts the cron `/bin/sh -c cd ... && php Start.php` wrapper too (nocprov-smc01: 2). No visual surface.
+
 ## 2026-10-22 — umoona still has no Asterisk process (known: no active SIP clients); evidence scripts lacked a tsh deadline (RESOLVED 2026-10-22)
 
 - umoona-smc01: the 2026-10-22 voip capture found no Asterisk process, as on 2026-08-25 (unit `active (exited)`, see `scripts/README.md`), and the operator confirms

@@ -86,7 +86,9 @@ agent. **Never report a box as unreachable until that backdoor has been checked*
 3. **Service down, or DHCP/DNS/WiFi/VoIP/HA misbehaving?** `references/05_troubleshooting.md` Tiers 2–6. DNS differs by host: Unbound + Stubby on most boxes, BIND on the `smc_ltp`
    low-touch sites, and the box's own resolution bypasses both.
 4. **Metrics missing?** Tier 7: textfile collectors have staleness windows (`references/02_service-map.md`), and federation rides its own autossh tunnel.
-5. **Changing Ansible?** `references/08_ansible-authoring.md` first: edit `topology_vars/<site>.yml`, never the hidden `.<site>.yml` cache; a `group_vars` or plugin change reaches all
+5. **Changing boxes (a package, a config file, a setting) on one or many SMCs?** Use the `smc_change` role with a change spec, not an ad hoc
+   playbook: `references/19_smc-change-role.md`.
+6. **Changing Ansible?** `references/08_ansible-authoring.md` first: edit `topology_vars/<site>.yml`, never the hidden `.<site>.yml` cache; a `group_vars` or plugin change reaches all
    flavors; one inventory per run (`-i A -i B` loses B's topology vars); validate with yamllint, ansible-lint, ansible-inventory, then `--syntax-check`.
 
 ## Related Workspaces
@@ -101,6 +103,10 @@ Treat these paths as part of the SMC working surface:
 | `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi`   | Local-only plans, reports, OPA artifacts, and SMC investigation knowledge for `ansible-wifi`                                       |
 | `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller`        | FOSS network controller build (Nautobot + adapter layer) intended to eventually replace/complement `smc_cnmaestro_provisioning`'s  |
 |                                             |   role — call `skill-cambium` first for device-layer questions, this pack for SMC/Ansible-layer questions                          |
+
+**Stay across the local-knowledge folder (operator, 2026-10-23).** At the start of SMC work run `just local_knowledge_index` to see what is symlinked into
+ansible-wifi and what changed there lately; when something is built there (playbook, role, change spec, evidence set), record it in
+`references/18_local-knowledge-ansible.md` in the same session.
 
 When behavior, layout, or troubleshooting assumptions change in one of these surfaces, update the corresponding references in the others during the same session where practical.
 
@@ -134,6 +140,11 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
   in `skill-cambium` — see Related Skills below.
 - `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture, the `SNMP-<location>` read-write
   community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/tplink-switch.sh`.
+- `references/19_smc-change-role.md` — `smc_change`: the spec-driven role for any change to SMCs (packages, templates, ini, commands) with
+  before/after probe, gates, overlayroot lower-dir persistence and a JSON record of every run; how to run it, write a spec, read its gates.
+- `references/18_local-knowledge-ansible.md` — the local-only ansible-wifi knowledge folder: layout, how its playbooks/roles/governance are symlinked into the
+  repo and kept out of Bitbucket (`.git/info/exclude`), operator tooling built there (`smc_change` role), and the standing rule to read it at the start of
+  SMC work (`just local_knowledge_index`).
 - `references/17_site-ata-dallas-delta.md` — the rct site ATA (Dallas Delta DDC_VoIP-m): address, web-UI-only management, no SNMP, SIP registration readout, site-unique settings.
 - `references/vendor-sources-raspberry-pi-20261008_1043/readme.md` and `references/vendor-sources-dallas-delta-20261008_1043/readme.md` — verbatim vendor documents, captures and firmware
   manifests for the Raspberry Pi SMC and the site ATA; Pi EEPROM images in `firmware-files/raspberry-pi/`.

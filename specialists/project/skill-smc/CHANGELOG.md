@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1718
+Last rotated: 20261023_1339
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261023_1339 — Local-knowledge folder reference and index script; PHP verification by mapped files; smc_change role recorded (v0.6.9 -> v0.7.0)](#20261023_1339--local-knowledge-folder-reference-and-index-script-php-verification-by-mapped-files-smc_change-role-recorded-v069---v070)
 - [20261022_1718 — Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)](#20261022_1718--evidence-capture-timeouts-reported-as-such-full-capture-timing-end-marker-fix-v068---v069)
 - [20261022_1703 — Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8)](#20261022_1703--evidence-scripts-a-deadline-on-every-tsh-call-with-an-offline-test-v067---v068)
 - [20261022_1653 — Asterisk memory measured on the rcp fleet; umoona still without Asterisk; evidence script lacks a tsh deadline (v0.6.6 -> v0.6.7)](#20261022_1653--asterisk-memory-measured-on-the-rcp-fleet-umoona-still-without-asterisk-evidence-script-lacks-a-tsh-deadline-v066---v067)
@@ -36,8 +37,16 @@ Last rotated: 20261022_1718
 - [20261019_1119 — Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)](#20261019_1119--working-teleport-ssh-reads-take-79-s-10-s-attempts-two-tries-random-nodes-v048---v049)
 - [20261015_1751 — WireGuard and NETMAP kernel modules present on rcp and rct SMCs; no overlay tools installed (no version change)](#20261015_1751--wireguard-and-netmap-kernel-modules-present-on-rcp-and-rct-smcs-no-overlay-tools-installed-no-version-change)
 - [20261015_1632 — Operator's account of the 1 Sep trigger, monthly PIN expiry, two incident-evidence scripts (v0.4.7 -> v0.4.8)](#20261015_1632--operators-account-of-the-1-sep-trigger-monthly-pin-expiry-two-incident-evidence-scripts-v047---v048)
-- [20261015_1558 — Why the 2025 portal misconfiguration stayed latent; 1 Sep trigger checks (v0.4.6 -> v0.4.7)](#20261015_1558--why-the-2025-portal-misconfiguration-stayed-latent-1-sep-trigger-checks-v046---v047)
-- [20261015_1553 — The SMC runs four parallel SNMP walks cleanly; fping absent on old-looma-smc01 too (v0.4.5 -> v0.4.6)](#20261015_1553--the-smc-runs-four-parallel-snmp-walks-cleanly-fping-absent-on-old-looma-smc01-too-v045---v046)
+
+## 20261023_1339 — Local-knowledge folder reference and index script; PHP verification by mapped files; smc_change role recorded (v0.6.9 -> v0.7.0)
+
+New `references/18_local-knowledge-ansible.md` (operator, 2026-10-23: the pack must stay across what is built in local-knowledge-ansible): layout,
+symlink-plus-`.git/info/exclude` wiring, operator tooling (the new `smc_change` role, its PHP and php.ini specs, `smc_update_php.yml`), standing rule
+to read it at the start of SMC work. New `references/19_smc-change-role.md` (operator: any project should be able to use smc_change): running it, spec format, gates, overlay
+lower-dir persistence, run records, status; SKILL.md decision tree step 5 sends box changes to it. New read-only `scripts/local_knowledge_index.sh` (`just local_knowledge_index`, ~1 s). SKILL.md and RUNBOOK
+point to both. `13_known-issues.md`: installed package version is not running code (warehouse-smc01 apache on a deleted libphp after
+unattended-upgrades); rct has no `topology_interfaces`, read the portal from `apache2ctl -S`; Ansible `environment:` makes `pgrep -f` match the
+probe's own shell. manifest 0.6.9 -> 0.7.0.
 
 ## 20261022_1718 — Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)
 
@@ -187,12 +196,3 @@ references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-1
 - `references/13_known-issues.md`: operator-stated August Route 53 `A` change for `communitywifi.net.au` to `10.254.0.1` as the trigger, with what is and is not verified; pointer to the nbn response record.
 - `references/14_pin-activation-diagnosis.md`: free PINs expire on the 1st of each month.
 - New read-only scripts `scripts/dns_capture_top.sh` and `scripts/teleport_sessions.py`, catalogued in `scripts/README.md`, recipes in `justfile`; smoke-tested on koonibba 2026-10-09 and the 2026-08-31..09-01 audit window.
-
-## 20261015_1558 — Why the 2025 portal misconfiguration stayed latent; 1 Sep trigger checks (v0.4.6 -> v0.4.7)
-
-- `references/13_known-issues.md` (2026-09-11 entry): Unbound template line that masked the wrong redirect, 5 Sep unbound rewrite, cert and Route 53 ruled out, CloudTrail and Graylog gaps, staff sessions 1-3 Sep.
-
-## 20261015_1553 — The SMC runs four parallel SNMP walks cleanly; fping absent on old-looma-smc01 too (v0.4.5 -> v0.4.6)
-
-- `references/02_service-map.md`: old-looma-smc01 (rcp) ran 4 concurrent snmpwalks plus 2 shared SSH sessions without errors (2026-10-15);
-  fping is not installed there either. Found by unified-network-controller's onboarding speedups.

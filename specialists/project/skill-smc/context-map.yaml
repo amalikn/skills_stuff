@@ -118,6 +118,8 @@ routing:
       only, no SNMP or SSH, SIP registration readout, site-unique settings, read quirks.
     read:
     - references/17_site-ata-dallas-delta.md
+    - references/18_local-knowledge-ansible.md
+    - references/19_smc-change-role.md
     - references/vendor-sources-dallas-delta-20261008_1043/readme.md
   raspberry_pi_smc:
     description: Raspberry Pi SMC (rct, wh) identity without DMI, one-port eth0 layout,

@@ -36,6 +36,7 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 | Script                              | Touches                 | Safety    | Notes                                                                                                                    |
 | ----------------------------------- | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | [survey_snmp_tooling.sh](survey_snmp_tooling.sh) | Live SMC appliances | **read-only** | Reports per box whether `snmpget` is present and whether overlayroot is mounted, scoped by Teleport flavour label (`FLAVOURS`, default `rcp,nbn_accelerate`). Both facts vary per box and neither can be inferred from the flavour — that mistake is what it exists to prevent |
+| [local_knowledge_index.sh](local_knowledge_index.sh) | Local files only | **read-only** | Lists repo symlinks into the local-knowledge folder (and their ignore status), recent entries per folder, uncommitted changes. ~1 s. `just local_knowledge_index` |
 | [install_packages.sh](install_packages.sh) | Live SMC appliances | **modifies-state** | Installs apt packages across flavour-scoped boxes. Idempotent, `--dry-run` first, verifies the resulting binary rather than apt's exit code, waits on the dpkg lock via `DPkg::Lock::Timeout`, and refuses boxes with overlayroot mounted unless `--force-overlay`. Defaults to 5 workers for constrained backhaul |
 | [collect-smc-evidence.sh](collect-smc-evidence.sh) | Live SMC appliances     | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as** |
 |                                     |   over Teleport         |           |   **arguments — no default site list** (genericized from the original, which defaulted to one investigation's            |
@@ -489,6 +490,13 @@ against `apn-teleport01`: DOWN on kupungarri (50468), UP on windjana-gorge (5047
 | -------------------- | ------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
 | `backdoor-watch.sh`  | bastion via `tsh` (`ss`, auth logs), ansible-wifi        | **read-only**, `external-network` | Never touches the SMC box or ansible-wifi; history writes one temp file on the     |
 |                      |   inventories (read-only)                               |                                 |   bastion and removes it                                                          |
+
+### `local_knowledge_index.sh`
+
+Added 2026-10-23 (operator: the pack must stay across what is built in the local-knowledge folder). `local_knowledge_index.sh [--root DIR] [--repo DIR]
+[--days N] [--per-dir N]` prints every symlink from the ansible-wifi checkout into `local-knowledge-ansible/ansible-wifi` with whether git ignores it, the
+newest entries per top-level folder within the window, and uncommitted changes there. Read-only; about 1 s on the full folder (7,000+ files per big folder).
+Background: `../references/18_local-knowledge-ansible.md`.
 
 ### `php_package_probe.sh` and `backdoor_exec.sh`
 

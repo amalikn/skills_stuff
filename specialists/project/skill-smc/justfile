@@ -96,6 +96,10 @@ pi_identity_probe proxy +nodes:
 php_package_probe proxy +nodes:
     @bash scripts/php_package_probe.sh --proxy "{{proxy}}" {{nodes}}
 
+# What is in the local-only ansible-wifi knowledge folder and what is symlinked into the repo (read-only). Example: just local_knowledge_index 3
+local_knowledge_index days="14":
+    @bash scripts/local_knowledge_index.sh --days "{{days}}"
+
 # Run a command on a box through its autossh backdoor when Teleport cannot reach it; checks hostname first. Example: just backdoor_exec darlngunaya "hostname; uptime"
 backdoor_exec target cmd="hostname":
     @bash scripts/backdoor_exec.sh "{{target}}" "{{cmd}}"
