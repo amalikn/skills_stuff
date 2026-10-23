@@ -321,5 +321,40 @@ class AuditThresholds(unittest.TestCase):
         self.assertEqual(e2e.e2e_untouched(data, e2e.end_to_end_page(data, _profile(data))), ["lonely"])
 
 
+def _contrast(hex_a: str, hex_b: str = "#ffffff") -> float:
+    """WCAG 2 contrast ratio between two sRGB colours (references/visual-style.md, Contrast).
+
+    Args:
+        hex_a: a colour as `#rrggbb`.
+        hex_b: the background, white by default.
+
+    Returns:
+        The ratio, 1 to 21.
+    """
+    def lum(h: str) -> float:
+        c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+        c = [x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c]
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+    hi, lo = sorted((lum(hex_a), lum(hex_b)), reverse=True)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+class Palette(unittest.TestCase):
+    """The flow and family palette: twenty distinct hues, the first ten unchanged, every one readable on white (operator, 2026-10-23)."""
+
+    def test_twenty_unique_and_first_ten_kept(self) -> None:
+        """Appending keeps every drawing of ten or fewer families byte-identical."""
+        self.assertEqual(len(profile.DISTINCT), 20)
+        self.assertEqual(len({c.lower() for c in profile.DISTINCT}), 20)
+        self.assertEqual(profile.DISTINCT[:10], ("#1f4e9c", "#1b7a3a", "#b3261e", "#6a3fa0", "#00707a", "#4d6b00", "#a0306e", "#b45309",
+                                                 "#0f172a", "#8a5a00"))
+
+    def test_each_at_least_4_5_on_white(self) -> None:
+        """Arrow counts and step numbers are drawn in the arrow's colour, so every colour is text-grade."""
+        for colour in profile.DISTINCT:
+            self.assertGreaterEqual(_contrast(colour), 4.5, colour)
+        self.assertLess(_contrast("#9ca3af"), 4.5)   # the check can fail: a light grey is refused
+
+
 if __name__ == "__main__":
     unittest.main()

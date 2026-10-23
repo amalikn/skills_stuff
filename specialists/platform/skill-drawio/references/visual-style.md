@@ -28,8 +28,10 @@ Rules from UNC's flow-map renderer and the operator's reviews of it, generalised
 
 - **Every primary family gets its own colour**, and no two may share one (operator, 2026-10-19: no two target groups may share a colour) [C-D30]. On UNC's overview a thick arrow takes the colour of
   the group it points into; on the End-to-end page an arrow takes its flow family's colour.
-- **Distinct hues, not shades**: blue, green, red, purple, teal, olive, magenta, orange, navy-black, then brown. Brown is kept last because next to orange it reads as the same colour; when a drawing
-  needs more colours than the palette has distinct hues, split the drawing or group families rather than adding near-duplicates.
+- **Distinct hues, not shades**: blue, green, red, purple, teal, olive, magenta, orange, navy-black, then brown. Brown is kept last because next to orange it reads as the same colour. A second ten
+  follow (operator, 2026-10-23: "extend the color palette"): chocolate, sky, maroon, pine, fuchsia, ultramarine, mustard, bronze, plum, jade, picked farthest-first by CIEDE2000, each at least
+  13.8 from every other colour and the thin grey, above the first ten's closest pair (green and olive, 13.1). Twenty is the ceiling at that bar (the next pick measured 11.9); a drawing that needs more
+  than twenty colours repeats them, so split it or group families rather than adding near-duplicates.
 - **One neutral thin grey for every secondary arrow** (UNC: `#4b5563` for arrows inside a group), so no secondary arrow is mistaken for a primary one [C-D30].
 - A dot on a box in an arrow's colour marks a box that feeds that arrow; stack several dots down the box's right edge and keep a text margin so they never sit on the label.
 
@@ -47,6 +49,16 @@ UNC's palette (`DISTINCT` in the renderer), with contrast against white computed
 | Orange     | `#b45309` | 5.02:1            |
 | Navy-black | `#0f172a` | 17.85:1           |
 | Brown      | `#8a5a00` | 5.93:1            |
+| Chocolate  | `#572f19` | 11.50:1           |
+| Sky        | `#0f7ab3` | 4.71:1            |
+| Maroon     | `#71142b` | 11.43:1           |
+| Pine       | `#195744` | 8.44:1            |
+| Fuchsia    | `#c200c2` | 5.16:1            |
+| Ultramarine | `#0000c2` | 11.80:1           |
+| Mustard    | `#857700` | 4.53:1            |
+| Bronze     | `#574b19` | 8.66:1            |
+| Plum       | `#680863` | 11.64:1           |
+| Jade       | `#008571` | 4.57:1            |
 | Thin grey  | `#4b5563` | 7.56:1            |
 
 ## Contrast

@@ -38,8 +38,11 @@ DEFAULT_LOOK = {
 }
 
 #: Thick arrow and family colours: distinct hues, each at least 4.5:1 on white (blue, green, red, purple, teal, olive, magenta, orange,
-#: navy-black, then brown, kept last because next to orange it reads as the same colour).
-DISTINCT = ("#1f4e9c", "#1b7a3a", "#b3261e", "#6a3fa0", "#00707a", "#4d6b00", "#a0306e", "#b45309", "#0f172a", "#8a5a00")
+#: navy-black, then brown, kept last because next to orange it reads as the same colour). The second ten (operator, 2026-10-23: extend the
+#: palette) were picked farthest-first by CIEDE2000 and each sits at least 13.8 from every other colour and the thin grey, above the first
+#: ten's closest pair (green and olive, 13.1): chocolate, sky, maroon, pine, fuchsia, ultramarine, mustard, bronze, plum, jade.
+DISTINCT = ("#1f4e9c", "#1b7a3a", "#b3261e", "#6a3fa0", "#00707a", "#4d6b00", "#a0306e", "#b45309", "#0f172a", "#8a5a00",
+            "#572f19", "#0f7ab3", "#71142b", "#195744", "#c200c2", "#0000c2", "#857700", "#574b19", "#680863", "#008571")
 #: Default (fill, stroke) pairs for component kinds a profile does not name, in order of first use.
 KIND_PALETTE = (("#dae8fc", "#6c8ebf"), ("#d5e8d4", "#82b366"), ("#fff2cc", "#d6b656"), ("#ffe6cc", "#d79b00"), ("#e1d5e7", "#9673a6"),
                 ("#f8cecc", "#b85450"), ("#f5f5f5", "#666666"), ("#dfe7f3", "#3d5a80"), ("#e6e6e6", "#4d4d4d"), ("#fff8e1", "#bf9000"))
