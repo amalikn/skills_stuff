@@ -37,6 +37,7 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 | ----------------------------------- | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | [survey_snmp_tooling.sh](survey_snmp_tooling.sh) | Live SMC appliances | **read-only** | Reports per box whether `snmpget` is present and whether overlayroot is mounted, scoped by Teleport flavour label (`FLAVOURS`, default `rcp,nbn_accelerate`). Both facts vary per box and neither can be inferred from the flavour — that mistake is what it exists to prevent |
 | [local_knowledge_index.sh](local_knowledge_index.sh) | Local files only | **read-only** | Lists repo symlinks into the local-knowledge folder (and their ignore status), recent entries per folder, uncommitted changes. ~1 s. `just local_knowledge_index` |
+| [smc_change_compare_records.py](smc_change_compare_records.py) | Local files only | **read-only** | Pairs two sets of smc_change run records by host, change and mode and reports IDENTICAL or the differences, volatile fields ignored. <0.1 s. `just smc_change_compare` |
 | [install_packages.sh](install_packages.sh) | Live SMC appliances | **modifies-state** | Installs apt packages across flavour-scoped boxes. Idempotent, `--dry-run` first, verifies the resulting binary rather than apt's exit code, waits on the dpkg lock via `DPkg::Lock::Timeout`, and refuses boxes with overlayroot mounted unless `--force-overlay`. Defaults to 5 workers for constrained backhaul |
 | [collect-smc-evidence.sh](collect-smc-evidence.sh) | Live SMC appliances     | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as** |
 |                                     |   over Teleport         |           |   **arguments — no default site list** (genericized from the original, which defaulted to one investigation's            |
@@ -491,6 +492,13 @@ against `apn-teleport01`: DOWN on kupungarri (50468), UP on windjana-gorge (5047
 | -------------------- | ------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
 | `backdoor-watch.sh`  | bastion via `tsh` (`ss`, auth logs), ansible-wifi        | **read-only**, `external-network` | Never touches the SMC box or ansible-wifi; history writes one temp file on the     |
 |                      |   inventories (read-only)                               |                                 |   bastion and removes it                                                          |
+
+### `smc_change_compare_records.py`
+
+Added 2026-10-23, promoted from the proof that splitting the smc_change probe into per-check files changed nothing. Run the same check and
+verify runs with `-e smc_change_report_dir=<before>`, change the role, rerun with `<after>`, then `smc_change_compare_records.py <before>
+<after>`: exit 0 when every pair is identical. Ignores timestamps, free space, log positions, hit counts and samples. Background:
+`../references/19_smc-change-role.md`.
 
 ### `local_knowledge_index.sh`
 

@@ -132,3 +132,13 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > dest = (doc.parent / target).resolve() if target else doc.resolve()
 > if dest.is_relative_to(root):
 > ```
+
+> **Learned 2026-10-23** · ruff 0.17.2 · VERIFIED-OBSERVED (ansible-wifi checkout, 2026-10-23) · Source: `uvx ruff config indent-width`;
+> local-knowledge-ansible `ansible-wifi-root-governance/ruff.toml`, `roles/smc_change/files/probe/check.sh` · Falsifier: ruff formatting an
+> excluded file passed by name with `force-exclude = true`
+> Two-space Python with ruff: `indent-width = 2` (the default is 4). To apply a new style to new files only, list the existing files in
+> `extend-exclude` and set `force-exclude = true`, so a hook or editor that passes an excluded file by name is still skipped (measured:
+> the 22 tracked files reported "No Python files found"; a new four-space file was flagged). ruff honours git's ignore rules, including
+> `.git/info/exclude`, so files reached through a git-excluded symlink are skipped; run from the physical path (`pwd -P`). Python joined from
+> parts before it runs is linted on the joined program (names cross files) and formatted per part. A backslash inside an f-string
+> expression is a SyntaxError before Python 3.12; compute it outside the f-string when the code may run on 3.10 (Ubuntu 22.04).

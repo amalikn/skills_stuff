@@ -96,6 +96,10 @@ pi_identity_probe proxy +nodes:
 php_package_probe proxy +nodes:
     @bash scripts/php_package_probe.sh --proxy "{{proxy}}" {{nodes}}
 
+# Compare two sets of smc_change run records, ignoring timestamps and live traffic, to prove a refactor changed nothing. Example: just smc_change_compare /tmp/before /tmp/after
+smc_change_compare before after:
+    @python3 scripts/smc_change_compare_records.py "{{before}}" "{{after}}"
+
 # What is in the local-only ansible-wifi knowledge folder and what is symlinked into the repo (read-only). Example: just local_knowledge_index 3
 local_knowledge_index days="14":
     @bash scripts/local_knowledge_index.sh --days "{{days}}"

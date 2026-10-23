@@ -141,3 +141,29 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > `ansible_failed_result.msg` in a fact, writes the record (`delegate_to: localhost`, `check_mode: false`, so check runs are recorded too) and fails
 > again. A command that really needs a shell (an operator-supplied string with pipes) runs as `ansible.builtin.command: argv: [/bin/sh, -c, ...]`,
 > which states the shell and passes ansible-lint `command-instead-of-shell` without a suppression.
+
+> **Learned 2026-10-23 (d)** · ansible-core 2.21.5 · VERIFIED-OBSERVED (smc_change runs, stage hosts) · Source: local-knowledge-ansible
+> `ansible-wifi/roles/smc_change/tasks/probe.yml`, `playbooks/smc_change.yml` (uncommitted at writing) · Falsifier: a `-l host` run that still
+> runs a `hosts: localhost` play
+> Four traps met building one role: (1) a `-l` limit filters every play, so a `hosts: localhost` play is skipped ("no hosts matched"); run
+> such steps in the managed group's play with `run_once: true` and `delegate_to: localhost` (`delegate_facts: true` to keep a fact there).
+> (2) In a folded scalar (`>-`), `'\n'` inside Jinja reaches the output as a literal backslash-n; take the newline from a variable set in a
+> double-quoted YAML string (`nl: "\n\n"`). (3) `lookup('file', <list>)` fails ("'_AnsibleLazyTemplateList' object has no attribute
+> 'split'"); loop over the files and accumulate. (4) With `ignore_unreachable: true` on a first `ping`, an offline host can be recorded and
+> ended with `meta: end_host`, which is not a failure, so `max_fail_percentage: 0` does not stop the run for the hosts after it.
+>
+> ```yaml
+> - name: Join the probe parts in name order
+>   ansible.builtin.set_fact:
+>     smc_change_probe_src: >-
+>       {{ (smc_change_probe_src if smc_change_idx > 0 else '') ~ lookup('ansible.builtin.file', smc_change_part) ~ smc_change_nl }}
+>   vars:
+>     smc_change_nl: "\n\n"
+>   loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/files/probe/*.py') | sort }}"
+> ```
+
+> **Learned 2026-10-23 (e)** · task comments · USER_STATED (operator, 2026-10-23: "not for every task but the simple ones you can ignore
+> but the ones which should have some description you can add") · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/`
+> A comment goes above a task only when it says something the name does not: why the task exists, a constraint, a non-obvious effect or
+> failure mode. Simple tasks (a stage banner, a debug print, an include whose name says it all) carry none. Each task file starts with a
+> header block: purpose, Called by, Reads, Sets, Notes.
