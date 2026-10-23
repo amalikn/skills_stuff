@@ -82,8 +82,11 @@ attributes; the inner `mxCell` carries style, parent and geometry and has no id 
 - `placeholders="1"` on a UserObject substitutes `%attribute%` in its label; leave it off unless used.
 - Tags live on the wrapper too: `tags="flow-apply step-arrow"`, space-separated, each tag without spaces; a plain `mxCell` cannot carry them
   (draw.io XML reference, @drawio/mcp 1.5.0 `xml-reference.md`, "Tags"). An edge with a tooltip or tags is wrapped the same way as a vertex.
-- `movable=0;` in a cell's style turns draw.io's Movable property off: the cell stays selectable and hoverable but cannot be dragged. Use it
-  rather than locking a layer, which blocks every click on that layer.
+- `movable=0;resizable=0;rotatable=0;bendable=0;editable=0;deletable=0;` in a cell's style (mxConstants `STYLE_*` keys, 0 or 1, default 1)
+  freezes it: still selectable and hoverable, but not dragged, resized, re-bent, retyped or deleted. Use it rather than locking a layer, which
+  blocks every click on that layer.
+- A `tooltip` is shown as HTML after `Graph.sanitizeHtml` (jgraph/drawio `Graph.js` `convertValueToTooltip`): escape the text (`<change>` is
+  otherwise read as a tag and dropped) and use `<b>`, `<br>`, `<ul><li>` and `<font face="Courier New">` for structure.
 
 ## HTML labels
 

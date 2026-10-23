@@ -5,15 +5,81 @@ A tooltip adds detail on hover in draw.io; an exported PNG or PDF has none, so a
 adds to it (operator, 2026-10-23). Tags (drawio.cell.tag) let a reader select, hide or show related cells across layers in the Tags dialog:
 `flow-<id>`, `family-<id>`, `step-arrow`, `connector`, `kind-<kind>`, `group-<group>`, `gate`, `decision`, `back-arrow`, `fails`.
 
+draw.io shows a `tooltip` attribute as HTML after `Graph.sanitizeHtml` (jgraph/drawio `Graph.js`, `convertValueToTooltip`, read 2026-10-23), so
+every hover text here is escaped HTML: a bold title, bold field names, and a bullet list where a field holds more than one item (operator,
+2026-10-23: "use bold and bullets where makes sense"). Escaping also keeps text such as `<change>` from being read as a tag and dropped.
+
 Imported, not run: `from flowmap.tips import comp_tip, step_tip` with the skill's scripts/ on sys.path.
 """
 
 from __future__ import annotations
 
+import re
+
 from drawio.cell import tag
+from drawio.mxfile import label
 
 from .model import flow_extras, flow_family, status_text
 from .profile import DISTINCT, Profile
+
+
+#: A tooltip bullet list, kept tight (draw.io's tooltip box has little room).
+LIST = "<ul style='margin:2px 0 2px 0;padding-left:16px;'>"   # single quotes: the XML attribute keeps its double quotes
+
+
+#: Text a tooltip sets in code style: a path (has a slash), a file name with a known extension, a snake_case name or setting (`a_b=c`), a flag.
+CODEISH = re.compile(r"(?<![\w`])(--?[a-z][\w-]*|[\w.<>*-]*/[\w./<>*-]+|[\w<>-]+\.(?:ya?ml|py|json|sh|md|j2|cfg|conf|ini|txt|drawio|deb|tgz)"
+                     r"|[a-z0-9]+(?:_[a-z0-9]+)+(?:=[\w.-]+)?)(?![\w`])")
+
+
+def code_spans(text: str) -> str:
+    """Mark commands, paths, file names and snake_case names as `code`, outside spans already marked (operator, 2026-10-23).
+
+    Args:
+        text: a plain-text line.
+
+    Returns:
+        The line with those tokens in backticks, which label() sets in a monospace font.
+    """
+    parts = text.split("`")
+    return "`".join(CODEISH.sub(r"`\1`", p) if i % 2 == 0 else p for i, p in enumerate(parts))
+
+
+def _fmt(text: str) -> str:
+    """One tooltip line as HTML: code spans marked, then escaped and formatted by label().
+
+    Args:
+        text: a plain-text line.
+
+    Returns:
+        The line's HTML.
+    """
+    return label(code_spans(text))
+
+
+def tip_html(title: str, *rows) -> str:
+    """One tooltip as HTML: a bold title, then each row; a row is a text line or (name, items).
+
+    Args:
+        title: the title line (plain text; `**bold**` and `code` spans are formatted as in labels).
+        rows: a str is one line; (name, items) is "**name:** item" for one item, or the bold name over a bullet list for several;
+            empty rows and empty item lists are dropped.
+
+    Returns:
+        The HTML.
+    """
+    out = [f"<b>{_fmt(title)}</b>"]
+    for row in rows:
+        if isinstance(row, str):
+            out += [f"<div>{_fmt(row)}</div>"] if row else []
+            continue
+        name, items = row
+        items = [x for x in ([items] if isinstance(items, str) else items) if x]
+        if len(items) == 1:
+            out.append(f"<div><b>{label(name)}:</b> {_fmt(items[0])}</div>")
+        elif items:
+            out.append(f"<div><b>{label(name)}</b></div>{LIST}" + "".join(f"<li>{_fmt(x)}</li>" for x in items) + "</ul>")
+    return "".join(out[:1] + ["<br>"] + out[1:]) if len(out) > 1 else out[0]
 
 
 def comp_tip(comp: dict) -> str:
@@ -23,12 +89,10 @@ def comp_tip(comp: dict) -> str:
         comp: the component from the map.
 
     Returns:
-        The lines, joined by newlines.
+        The tooltip HTML.
     """
-    ports = ", ".join(str(p) for p in comp.get("ports", []))
-    return "\n".join(x for x in (f"{comp['name']} ({comp['kind']})", f"host: {comp['host']}", f"ports: {ports}" if ports else "",
-                                 f"health: {comp['health']}", comp.get("notes", ""),
-                                 f"status: {status_text(comp)}" if comp.get("status") else "") if x)
+    return tip_html(f"{comp['name']} ({comp['kind']})", ("Host", comp["host"]), ("Ports", [str(p) for p in comp.get("ports", [])]),
+                    ("Health", comp["health"]), ("Notes", comp.get("notes", "")), ("Status", status_text(comp) if comp.get("status") else ""))
 
 
 def step_tip(step: dict, number: str, actor: str) -> str:
@@ -40,13 +104,31 @@ def step_tip(step: dict, number: str, actor: str) -> str:
         actor: the acting component's name.
 
     Returns:
-        The lines, joined by newlines.
+        The tooltip HTML.
     """
-    joined = (("via", "via"), ("reads", "reads"), ("writes", "writes"), ("failures", "fails"), ("look", "look"), ("code", "code"))
-    when = "; ".join(f"{label} -> {target}" for target, label in (step.get("when") or {}).items())
-    return "\n".join(x for x in (f"{number} {step['id']} ({actor})", step["action"], f"GATE: {step['gate']}" if step.get("gate") else "",
-                                 f"branches: {when}" if when else "", f"runs flow {step['flow']} (click to open)" if step.get("flow") else "",
-                                 *(f"{name}: " + "; ".join(step[key]) for key, name in joined if step.get(key))) if x)
+    lists = (("via", "Via"), ("reads", "Reads"), ("writes", "Writes"), ("failures", "Fails"), ("look", "Look"), ("code", "Code"))
+    return tip_html(f"{number} {step['id']} ({actor})", step["action"], ("Gate", step.get("gate", "")),
+                    ("Branches", [f"{label_} -> {target}" for target, label_ in (step.get("when") or {}).items()]),
+                    ("Runs flow", f"{step['flow']} (click to open)" if step.get("flow") else ""),
+                    *((name, step.get(key, [])) for key, name in lists))
+
+
+def flow_arrow_tip(number: int, src: tuple, dst: tuple, actor: str, back: bool) -> str:
+    """A flow page arrow's hover text: the step it leads into, after which step, and what happens there.
+
+    Args:
+        number: the flow's number.
+        src: (index, step) the arrow leaves.
+        dst: (index, step) it leads into.
+        actor: the name of the component acting in the target step.
+        back: True for an arrow back to an earlier step.
+
+    Returns:
+        The tooltip HTML.
+    """
+    (i, a), (j, b) = src, dst
+    return tip_html(f"{number}.{j + 1} {b['id']}" + (" (back)" if back else ""), b["action"], ("After", f"{i + 1} {a['id']}"),
+                    ("Done by", actor), ("When", (a.get("when") or {}).get(b["id"], "")), ("Via", b.get("via", [])))
 
 
 def e2e_groups(data: dict, profile: Profile) -> tuple[tuple, dict]:
@@ -83,35 +165,35 @@ def need(flow: dict, cid: str) -> str:
     return " and ".join(why) or "uses"
 
 
-def needs_tip(comp: dict, needs: list[dict]) -> str:
-    """An Overview dependency's hover text: what a component needs, one line per need with that component's health check.
+def needs_tip(title: str, pairs: list[tuple[dict, list[dict]]]) -> str:
+    """An Overview dependency's hover text: who needs whom, each need with the needed component's health check.
 
     Args:
-        comp: the component that depends.
-        needs: the components it depends on.
+        title: the title line (the arrow or dot it describes).
+        pairs: (component, the components it needs) per component that depends.
 
     Returns:
-        The lines, joined by newlines.
+        The tooltip HTML.
     """
-    return "\n".join(f"{comp['name']} needs {n['name']} (health: {n['health']})" for n in needs)
+    return tip_html(title, *((f"{c['name']} needs", [f"**{n['name']}** (health: {n['health']})" for n in ns]) for c, ns in pairs if ns))
 
 
 def step_arrow_tip(flow: dict, number: int, k: int, ends: tuple[str, str], stayed: list[str]) -> str:
-    """An End-to-end step arrow's hover text: the steps that stayed in its source since the last arrow, then the step it leads into.
+    """An End-to-end step arrow's hover text: the step it leads into, then the steps that stayed in its source since the last arrow.
 
     Args:
         flow: the flow from the map.
         number: the flow's number (the x of x.y).
         k: the step's index (y - 1).
         ends: (source component name, target component name).
-        stayed: lines for the steps before it that drew no arrow.
+        stayed: "x.y id: action" for the steps before it that drew no arrow (same component).
 
     Returns:
-        The lines, joined by newlines.
+        The tooltip HTML.
     """
     s = flow["steps"][k]
-    return "\n".join([*stayed, f"{number}.{k + 1} {flow['title']}, step {k + 1} {s['id']}: {ends[0]} to {ends[1]}", s["action"]]
-                     + ([f"via {', '.join(s['via'])}"] if s.get("via") else []))
+    return tip_html(f"{number}.{k + 1} {flow['title']}: step {k + 1} {s['id']}", s["action"], ("From", ends[0]), ("To", ends[1]),
+                    ("Via", s.get("via", [])), (f"Earlier in {ends[0]} (no arrow)", stayed))
 
 
 def connector_tip(users: list[dict], near: str, name: str, cid: str) -> str:
@@ -124,9 +206,9 @@ def connector_tip(users: list[dict], near: str, name: str, cid: str) -> str:
         cid: the component's id.
 
     Returns:
-        The lines, joined by newlines.
+        The tooltip HTML.
     """
-    return "\n".join([f"Not a step; joined from {near}"] + [f"{g['title']} {need(g, cid)} {name}" for g in users])
+    return tip_html(f"{name}: not a step", ("Joined from", near), ("Why", [f"**{g['title']}** {need(g, cid)} {name}" for g in users]))
 
 
 def comp_tags(comp: dict, flows: list[dict]) -> tuple:

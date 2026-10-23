@@ -132,8 +132,11 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   exported PNG and PDF have none, so must-read facts stay in boxes and notes (operator, 2026-10-23).
 - draw.io tags on generated cells, for the Tags dialog (select, hide or show across layers): `flow-<id>`, `family-<id>`, `step-arrow`,
   `connector`, `back-arrow`, `kind-<kind>`, `group-<group>`, `gate`, `decision`, `fails`, `runs-flow-<id>` (`drawio.cell`; operator, 2026-10-23).
-- Every generated cell has Movable off (`movable=0`, `drawio.mxfile.FROZEN`): nothing drags out of shape by mistake, yet every box and arrow
-  stays clickable; layers are never locked, which would block clicks (operator, 2026-10-23).
+- Every generated cell is frozen (`drawio.mxfile.FROZEN`: `movable`, `resizable`, `rotatable`, `bendable`, `editable`, `deletable` all 0):
+  nothing is dragged, resized, re-bent, retyped or deleted by mistake, yet every box and arrow stays clickable and hoverable; layers are never
+  locked, which would block clicks (operator, 2026-10-23).
+- Tooltips are HTML (draw.io sanitises and renders them): a bold title, bold field names, bullets for several items, and commands, paths,
+  file names and snake_case names in code font (`flowmap.tips.tip_html`, `code_spans`; operator, 2026-10-23).
 - End-to-end labels read x.y: flow x, step y. x.1 runs from the component the flow `runs_on`; a step done by the same component as the step
   before draws no arrow and is named in the next arrow's tooltip. `look.e2e_layers: flow` gives each flow its own colour and layer (default
   `family`); `look.connector_width` sets the dashed connectors' stroke (default 1.25, 2 for bold) (operator, 2026-10-23).

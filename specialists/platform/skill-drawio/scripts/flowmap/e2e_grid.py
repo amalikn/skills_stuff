@@ -203,7 +203,7 @@ class E2EGrid:
             for k in range(len(steps)):
                 a, b, s = path[k], path[k + 1], steps[k]
                 if a == b:   # same actor as the step before: no arrow (nothing moves); the next arrow's hover text names the step
-                    stayed.append(f"{fi}.{k + 1} {s['id']} (no arrow, stays in {name[a]}): {s['action']}")
+                    stayed.append(f"**{fi}.{k + 1} {s['id']}:** {s['action']}")
                     continue
                 tip, stayed = step_arrow_tip(f, fi, k, (name[a], name[b]), stayed), []
                 links.append(Link(f"e2e-a-{f['id']}-{k + 1}", a, b, "thick", fam, f"{fi}.{k + 1}", tip=tip,

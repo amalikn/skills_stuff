@@ -210,7 +210,7 @@ class Overview:
         """
         for gi in self.lay:
             for (s, d), pts in self._thin_routes(gi).items():
-                page.tips[f"ov-d-{s}-{d}"] = needs_tip(self.by_id[s], [self.by_id[d]])
+                page.tips[f"ov-d-{s}-{d}"] = needs_tip(f"{self.by_id[s]['name']} needs {self.by_id[d]['name']}", [(self.by_id[s], [self.by_id[d]])])
                 page.route(f"ov-d-{s}-{d}", f"ov-c-{s}", f"ov-c-{d}", pts,
                            f"edgeStyle=none;rounded=1;html=1;strokeColor={THIN_GREY};strokeWidth=1.5;endArrow=block;endSize=6;jumpStyle=arc;jumpSize={OV_THIN_JUMP};",
                            klass="thin", layer="ov-L-inside", ignore=(f"ov-g-{gi}",), jump=OV_THIN_JUMP)
@@ -278,8 +278,7 @@ class Overview:
             a, b = p["a"], p["b"]
             p["full"] = self._thick_points(p, frac, row_bot)
             pairs = [(c, [self.by_id[d] for d in c.get("depends_on", []) if self.gof[d] == b]) for c in map(self.by_id.get, self.groups[self.gnames[a]])]
-            page.tips[f"ov-gg-{a}-{b}"] = "\n".join([f"{self.gnames[a]} needs {self.gnames[b]} (×{p['n']})"]
-                                                    + [needs_tip(c, ds) for c, ds in pairs if ds])
+            page.tips[f"ov-gg-{a}-{b}"] = needs_tip(f"{self.gnames[a]} needs {self.gnames[b]} (×{p['n']})", pairs)
             page.route(f"ov-gg-{a}-{b}", f"ov-g-{a}", f"ov-g-{b}", p["full"],
                        f"edgeStyle=none;rounded=1;html=1;strokeColor={self.tcol[b]};strokeWidth=4;endArrow=block;endSize=9;jumpStyle=arc;jumpSize={OV_JUMP};",
                        klass="thick", layer=f"ov-L-into-{b}", jump=OV_JUMP)
@@ -305,7 +304,7 @@ class Overview:
                     needs = [self.by_id[d] for d in self.by_id[cid].get("depends_on", []) if self.gof[d] == tg]
                     page.box(f"ov-dot-{cid}-{tg}", "", bx + OV_BW - 17, by + 5 + n_dot * 15, 12, 12,
                              f"ellipse;html=1;fillColor={self.tcol[tg]};strokeColor=#ffffff;strokeWidth=1;", layer=f"ov-L-into-{tg}",
-                             tooltip=f"Feeds the arrow into {self.gnames[tg]}\n" + needs_tip(self.by_id[cid], needs))
+                             tooltip=needs_tip(f"Feeds the arrow into {self.gnames[tg]}", [(self.by_id[cid], needs)]))
 
     def page(self) -> Page:
         """Draw the page: layers, title, groups and boxes, thin arrows, thick arrows and counts, dots, the flow index and the legends.

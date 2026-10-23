@@ -34,9 +34,10 @@ HEADING_LINE = re.compile(r"^\^\^(\d+)\|(.*)$")
 #: A token this long or longer gets invisible break points (soft_breaks), so draw.io can wrap a code path inside its shape.
 LONG_TOKEN = 24
 #: The orthogonal style draw.io's own router uses for Page.edge().
-#: Appended to every generated cell's style: draw.io's Movable property off, so a drawing cannot be dragged out of shape by mistake while every
-#: box and arrow stays selectable, hoverable and taggable (a locked layer would block clicks; operator, 2026-10-23). Change the map, not the drawing.
-FROZEN = "movable=0;"
+#: Appended to every generated cell's style: draw.io's Movable, Resizable, Rotatable, Bendable, Editable and Deletable properties off (mxConstants
+#: STYLE_* keys), so nothing is dragged, resized, re-bent, retyped or deleted by mistake while every box and arrow stays selectable, hoverable and
+#: taggable (a locked layer would block clicks; operator, 2026-10-23). Change the map, not the drawing.
+FROZEN = "movable=0;resizable=0;rotatable=0;bendable=0;editable=0;deletable=0;"
 EDGE_BASE = "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;fontSize=16;fontStyle=1;labelBackgroundColor=#ffffff;"
 
 Rect = tuple[float, float, float, float]

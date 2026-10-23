@@ -25,7 +25,7 @@ from .uncross import uncross
 from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, fit_height, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
-from .tips import step_tags, step_tip
+from .tips import flow_arrow_tip, step_tags, step_tip
 
 #: Flow page geometry: lane heading width, least lane height, step column width, step box width and least height.
 STEP_H = 92
@@ -210,13 +210,10 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     edges = step_edges(steps, fid)
     order = {s["id"]: k for k, s in enumerate(steps)}
     by_id = {s["id"]: s for s in steps}
-    for cid, a, b, text, _st in edges:   # hover text on each arrow and its number: where it goes and what the step there does
-        t = by_id[b]
-        page.tags[cid] = ("back-arrow",) if "back to" in text else ("step-arrow",)
-        page.tips[cid] = "\n".join([f"{number}.{order[b] + 1} {t['id']}" + (" (back)" if "back to" in text else "")
-                                     + f": after {order[a] + 1} {a}, {comps[t['actor']]['name']}", t["action"]]
-                                    + ([f"when {t_when}" for t_when in [by_id[a].get("when", {}).get(b)] if t_when])
-                                    + ([f"via {', '.join(t['via'])}"] if t.get("via") else []))
+    for cid, a, b, text, _st in edges:   # hover text and tags on each arrow and its number: where it goes and what the step there does
+        back = "back to" in text
+        page.tags[cid] = ("back-arrow",) if back else ("step-arrow",)
+        page.tips[cid] = flow_arrow_tip(number, (order[a], by_id[a]), (order[b], by_id[b]), comps[by_id[b]["actor"]]["name"], back)
     widths = {order[a]: 18 + 9 * len(branch_label(next(s for s in steps if s["id"] == a), b, order[b] + 1, profile.look)[0])
               for _c, a, b, text, _st in edges if "back to" not in text and order[b] == order[a] + 1}
     gaps = label_gaps(col_gap(profile.look), widths, len(steps))
