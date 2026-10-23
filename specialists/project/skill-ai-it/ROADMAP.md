@@ -97,6 +97,8 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   excused any lost line whose words appear in order anywhere in the record, archives or trackers was written and **reverted** (operator, 2026-10-22
   14:39: keep the audit strict; such text could pass when the same words appear elsewhere). Until a reviewed design is approved (for example, match
   only inside the same dated entry), baseline rewrapped lines by hand with a reason, after checking their text whitespace-normalised.
+  Recurred 2026-10-23 (ansible-wifi-root-governance): after `markdown-rewrap/rewrap.py --update SCRATCHPAD.md` the audit reported 85 lines LOST;
+  every HEAD line was present whitespace-normalised in SCRATCHPAD or its archives (checked on the first 60 characters of each line).
 - [ ] **check_code_map covers shell and every code folder** (found 2026-10-20, smc-resiliency): the template globs `*.py` under
   `MODULE_ROOTS` only, so `.sh` scripts escape the map; smc-resiliency's split checker covers `.sh` and `spike/`. Take the roots from `code-map.toml`
   `roots` and include shell.
