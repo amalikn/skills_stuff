@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261023 Learned entries from smc-resiliency's re-render: a flag with a value splits its tooltip code span (open; references/visual-style.md), and a project's narrowed schema copy refuses new look keys until copied in (references/data-first-diagrams.md)
 - 20261023 `DISTINCT` palette 10 -> 20 hues (chocolate, sky, maroon, pine, fuchsia, ultramarine, mustard, bronze, plum, jade), each >= 4.5:1 on white and >= 13.8 CIEDE2000 from every other colour; first ten unchanged; references/visual-style.md, tests Palette (operator: "extend the color palette")
 - 20261023 Classic arrowhead is the skill default: one constant `ARROW_HEAD` in `scripts/drawio/mxfile.py`, used by every arrow style (operator)
 - 20261023 Every arrowhead `endArrow=classic` instead of `block` (operator: "use this arrow type ... everywhere"); connectors keep the oval end; references/visual-style.md, file-format.md

@@ -254,3 +254,15 @@ When the signs disagree (a banner on a file the operator says they edited), stop
 > problems += [f"drawing.{k}: {v!r} contains '--', which an XML comment cannot hold; name a recipe (just ...) instead"
 >              for k, v in (("command", profile.command), ("check", profile.check)) if "--" in v]
 > ```
+
+> **Learned 2026-10-23** · a narrowed schema copy lags new look keys · VERIFIED_PRIMARY · Source: smc-resiliency `just flows` (commit 602c73c),
+> `docs/flows/flows.schema.json`; schemas/flowmap.schema.json `$defs.drawing.look` · Falsifier: a project with its own schema copy that renders a new look key unchanged
+> A project that calls `render_flowmap.py --schema <its copy>` validates `drawing.look` against that copy, which is `additionalProperties: false`: the
+> skill's new keys (`uncross` 2026-10-22, `e2e_layers` and `connector_width` 2026-10-23) failed with `unknown key` until copied in. When a release adds a
+> look key, say so in its CHANGELOG line; a consumer copies the key's subtree from the skill's schema, leaving its own narrowing alone.
+>
+> ```python
+> # how smc-resiliency took the keys (one-off, 2026-10-23): only look keys the copy lacks
+> for k in skill["$defs"]["drawing"]["properties"]["look"]["properties"]:
+>     proj["$defs"]["drawing"]["properties"]["look"]["properties"].setdefault(k, skill_look[k])
+> ```

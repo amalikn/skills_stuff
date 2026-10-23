@@ -274,3 +274,15 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 >     return str(number), PLAIN
 > case = (step.get("when") or {}).get(target)
 > ```
+
+> **Learned 2026-10-23** · a flag with a value splits its code span · VERIFIED_PRIMARY · Source: smc-resiliency flow map render (commit 602c73c), tooltip of
+> component Activation step; scripts/flowmap/tips.py:CODEISH (skills_stuff bfd150c) · Falsifier: a tooltip that sets `--noexec=false` as one code span
+> `code_spans()` matches a flag as `--?[a-z][\w-]*` and stops at `=`, so `--noexec=false` renders as `--noexec` in code font and `=false` plain (also
+> `--level=24.04-20261020`). Open, not fixed: letting the flag alternative take `(?:=[\w.<>/-]+)?` changes every consumer's drawing, so the fix is
+> released with a re-render of each map. Until then a map can mark the whole flag with backticks. Screenshot: none, tooltips are not exported; the excerpt is the output.
+>
+> ```python
+> # scripts/flowmap/tips.py (skills_stuff bfd150c)
+> CODEISH = re.compile(r"(?<![\w`])(--?[a-z][\w-]*|[\w.<>*-]*/[\w./<>*-]+|...")
+> code_spans("refreshes with --noexec=false, then")  # -> 'refreshes with `--noexec`=false, then'
+> ```
