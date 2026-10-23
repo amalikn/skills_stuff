@@ -38,7 +38,10 @@ LONG_TOKEN = 24
 #: STYLE_* keys), so nothing is dragged, resized, re-bent, retyped or deleted by mistake while every box and arrow stays selectable, hoverable and
 #: taggable (a locked layer would block clicks; operator, 2026-10-23). Change the map, not the drawing.
 FROZEN = "movable=0;resizable=0;rotatable=0;bendable=0;editable=0;deletable=0;"
-EDGE_BASE = "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;fontSize=16;fontStyle=1;labelBackgroundColor=#ffffff;"
+#: The skill's arrowhead on every arrow: draw.io's classic head, never the block triangle (operator, 2026-10-23: "make this arrow the default").
+#: A style that needs another end (a connector's oval dot) sets its own endArrow instead.
+ARROW_HEAD = "endArrow=classic;endFill=1;"
+EDGE_BASE = "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;" + ARROW_HEAD + "fontSize=16;fontStyle=1;labelBackgroundColor=#ffffff;"
 
 Rect = tuple[float, float, float, float]
 Point = tuple[float, float]

@@ -11,7 +11,7 @@ Imported, not run: `from flowmap.overview import overview_page` with the skill's
 from __future__ import annotations
 
 from drawio import route
-from drawio.mxfile import BLANK, HEADER_STYLE, Page, Point, Rect, header_height, label
+from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, Point, Rect, header_height, label
 
 from .model import GROUP_HEAD, MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
@@ -212,7 +212,7 @@ class Overview:
             for (s, d), pts in self._thin_routes(gi).items():
                 page.tips[f"ov-d-{s}-{d}"] = needs_tip(f"{self.by_id[s]['name']} needs {self.by_id[d]['name']}", [(self.by_id[s], [self.by_id[d]])])
                 page.route(f"ov-d-{s}-{d}", f"ov-c-{s}", f"ov-c-{d}", pts,
-                           f"edgeStyle=none;rounded=1;html=1;strokeColor={THIN_GREY};strokeWidth=1.5;endArrow=block;endSize=6;jumpStyle=arc;jumpSize={OV_THIN_JUMP};",
+                           f"edgeStyle=none;rounded=1;html=1;strokeColor={THIN_GREY};strokeWidth=1.5;{ARROW_HEAD}endSize=6;jumpStyle=arc;jumpSize={OV_THIN_JUMP};",
                            klass="thin", layer="ov-L-inside", ignore=(f"ov-g-{gi}",), jump=OV_THIN_JUMP)
 
     def _ends(self) -> dict:
@@ -280,7 +280,7 @@ class Overview:
             pairs = [(c, [self.by_id[d] for d in c.get("depends_on", []) if self.gof[d] == b]) for c in map(self.by_id.get, self.groups[self.gnames[a]])]
             page.tips[f"ov-gg-{a}-{b}"] = needs_tip(f"{self.gnames[a]} needs {self.gnames[b]} (×{p['n']})", pairs)
             page.route(f"ov-gg-{a}-{b}", f"ov-g-{a}", f"ov-g-{b}", p["full"],
-                       f"edgeStyle=none;rounded=1;html=1;strokeColor={self.tcol[b]};strokeWidth=4;endArrow=block;endSize=9;jumpStyle=arc;jumpSize={OV_JUMP};",
+                       f"edgeStyle=none;rounded=1;html=1;strokeColor={self.tcol[b]};strokeWidth=4;{ARROW_HEAD}endSize=9;jumpStyle=arc;jumpSize={OV_JUMP};",
                        klass="thick", layer=f"ov-L-into-{b}", jump=OV_JUMP)
         placed: list[Rect] = []
         for p in self.plans:

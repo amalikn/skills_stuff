@@ -103,6 +103,12 @@ class CellsTipsAndTags(unittest.TestCase):
         many = tips.needs_tip("X", [({"name": "X"}, [{"name": "Y", "health": "h1"}, {"name": "Z", "health": "h2"}])])
         self.assertEqual(many.count("<li>"), 2)
 
+    def test_every_arrowhead_is_classic(self) -> None:
+        """Every arrow ends in draw.io's classic head, never the block triangle (operator, 2026-10-23); connectors keep their oval end."""
+        heads = re.findall(r"endArrow=(\w+)", TestMap._render(TestMap._minimal()))
+        self.assertTrue(heads)
+        self.assertEqual(set(heads) - {"classic", "oval"}, set())
+
     def test_every_generated_cell_is_frozen(self) -> None:
         """Every box, label and arrow is frozen (movable, resizable, rotatable, bendable, editable, deletable 0); layers stay unlocked."""
         root = ET.fromstring(TestMap._render(TestMap._minimal()).split("-->", 1)[1])

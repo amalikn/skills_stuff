@@ -75,11 +75,14 @@ Weight carries meaning as much as colour does. UNC's choices:
 
 | Arrow                                        | Style                                                             |
 | -------------------------------------------- | ----------------------------------------------------------------- |
-| Primary (overview group-to-group)            | `strokeWidth=4`, `endArrow=block`, `endSize=9`, hops `jumpSize=7` |
-| Flow step (End-to-end)                       | `strokeWidth=2`, block head                                       |
+| Primary (overview group-to-group)            | `strokeWidth=4`, `endArrow=classic`, `endSize=9`, hops `jumpSize=7` |
+| Flow step (End-to-end)                       | `strokeWidth=2`, classic head                                     |
 | Secondary (inside a group)                   | `strokeWidth=1.5`, thin grey, `endSize=6`, hops `jumpSize=4`      |
-| Dependency connector (touches, does not act) | `strokeWidth=1.25`, `dashed=1;dashPattern=8 4`, oval end          |
+| Dependency connector (touches, does not act) | `look.connector_width` (1.25), `dashed=1;dashPattern=8 4`, oval end |
 | Loop-back on a flow page                     | dashed purple                                                     |
+
+Every arrowhead is draw.io's classic head (`drawio.mxfile.ARROW_HEAD`, `endArrow=classic;endFill=1;`, the skill's default), never the block triangle (operator, 2026-10-23: "use this arrow type, not the
+default one. Everywhere"); only the dependency connector keeps its oval end, which marks "not a step".
 
 Routed arrows use `edgeStyle=none` with explicit waypoints, so draw.io draws straight runs between the generator's points and adds nothing of its own.
 

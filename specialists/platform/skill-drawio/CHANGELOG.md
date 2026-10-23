@@ -15,6 +15,8 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261023 Classic arrowhead is the skill default: one constant `ARROW_HEAD` in `scripts/drawio/mxfile.py`, used by every arrow style (operator)
+- 20261023 Every arrowhead `endArrow=classic` instead of `block` (operator: "use this arrow type ... everywhere"); connectors keep the oval end; references/visual-style.md, file-format.md
 - 20261023 Tooltip ports inline; references/visual-style.md: commands are marked with backticks in the map (heuristics catch paths, files, flags, snake_case only) (operator)
 - 20261023 Tooltips as formatted HTML (bold title and fields, bullets, code font for commands and paths; escaped, so `<change>` survives) via `scripts/flowmap/tips.py` `tip_html`; cells also resizable, rotatable, bendable, editable and deletable 0; file-format.md and visual-style.md (operator)
 - 20261023 Overview tooltips: thin and thick arrows, ×n counts and dots name each dependency with the needed health check (`scripts/flowmap/tips.py` `needs_tip`); header says hover for detail (operator)

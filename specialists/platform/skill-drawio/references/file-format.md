@@ -106,7 +106,7 @@ The ends are pinned with fractions of each box: `exitX`, `exitY` on the source a
 
 ```xml
 <mxCell id="e1" value="" edge="1" parent="L-thick" source="box-a" target="box-b"
-        style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=4;jumpStyle=arc;jumpSize=7;exitX=1;exitY=0.5;entryX=0;entryY=0.25;exitPerimeter=0;entryPerimeter=0;">
+        style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeWidth=4;jumpStyle=arc;jumpSize=7;exitX=1;exitY=0.5;entryX=0;entryY=0.25;exitPerimeter=0;entryPerimeter=0;">
   <mxGeometry relative="1" as="geometry">
     <Array as="points"><mxPoint x="300" y="110"/><mxPoint x="300" y="215"/></Array>
   </mxGeometry>

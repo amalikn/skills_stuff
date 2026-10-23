@@ -11,7 +11,7 @@ Imported, not run: `from flowmap.e2e import end_to_end_page` with the skill's sc
 from __future__ import annotations
 
 from drawio.audit import rects_overlap, seg_hits_rect, segments
-from drawio.mxfile import BLANK, HEADER_STYLE, Page, Point, header_height, label
+from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, Point, header_height, label
 from drawio.route import count_crossings, oriented
 
 from .e2e_grid import E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_LABEL_H, E2E_LABEL_W, E2E_SP, E2EGrid, Link, e2e_box_lines, e2e_text_height
@@ -307,7 +307,7 @@ class EndToEnd(E2EGrid):
                            klass="thin", layer=f"e2e-L-{fam}")
             for link in (x for x in self.links if x.family == fam and x.klass == "thick"):
                 page.route(link.cid, f"e2e-c-{link.src}", f"e2e-c-{link.dst}", self.pts[link.cid],
-                           f"edgeStyle=none;rounded=1;html=1;strokeColor={colour[fam]};strokeWidth=2;endArrow=block;endFill=1;endSize=6;"
+                           f"edgeStyle=none;rounded=1;html=1;strokeColor={colour[fam]};strokeWidth=2;{ARROW_HEAD}endSize=6;"
                            f"jumpStyle=arc;jumpSize={E2E_JUMP};", klass="thick", layer=f"e2e-L-{fam}", jump=E2E_JUMP)
         for link in self.links:
             if link.klass == "thick":
