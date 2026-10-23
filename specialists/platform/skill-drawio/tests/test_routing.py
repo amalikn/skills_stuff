@@ -46,6 +46,9 @@ class FlowRouterTests(unittest.TestCase):
         self.assertEqual(router.branch_label(dict(gate, when={"b": "stale"}), "b", 5, {}), ("5 · stale", router.PLAIN))
         self.assertEqual(router.branch_label({"next": ["a"]}, "a", 2, {}), ("2", router.PLAIN))
         self.assertEqual(router.branch_label(gate, "a", 4, {"branch_labels": "off"}), ("4", router.PLAIN))
+        shaped = {"shape": "decision", "next": ["a", "b"], "when": {"a": "overlay Pi"}}   # a decision by shape, no gate
+        self.assertEqual(router.branch_label(shaped, "a", 3, {}), ("3 · overlay Pi", router.PLAIN))
+        self.assertEqual(router.branch_label(shaped, "b", 4, {}), ("4 · No", router.NO))
 
     def test_lane_head_symbol_sized_to_text(self) -> None:
         """lanes: an external (cloud) lane head needs room for its text; a plain head needs none."""

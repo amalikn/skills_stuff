@@ -48,7 +48,9 @@ def branch_label(step: dict, target: str, number: int, look: dict) -> tuple[str,
         ("5", black), ("5 · Yes", green), ("5 · No", red), or ("5 · <case>", black) for a step's own `when` case.
     """
     nxt = step.get("next") or []
-    if not step.get("gate") or len(nxt) < 2 or look.get("branch_labels", "yes-no") == "off":
+    # A decision is a gate or an explicit shape: decision; every branch out of it says why it is taken (operator, 2026-10-23).
+    decision = step.get("gate") or step.get("shape") == "decision"
+    if not decision or len(nxt) < 2 or look.get("branch_labels", "yes-no") == "off":
         return str(number), PLAIN
     case = (step.get("when") or {}).get(target)
     if case:

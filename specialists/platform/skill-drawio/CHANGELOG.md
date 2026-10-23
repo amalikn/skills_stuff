@@ -15,6 +15,8 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261023 Fix: branches of a `shape: decision` step (no gate) are labelled with their `when` case or Yes/No; test in tests/test_routing.py; Learned in references/visual-style.md (operator, 2026-10-23).
+- 20261023 Fix: a banner command or check containing `--` is a map problem (XML comment; draw.io refused the file); `banner()` raises; tests/test_banner.py; Learned in references/data-first-diagrams.md.
 - 20261022 Learned: a reject branch in the middle of a flow (terminal listed after its gate, `next: []`); screenshot `references/screenshots/20261022-midflow-reject/` (smc-resiliency release-publish).
 - 20261022 Decision page legend and header say choice, not option (Choice: chosen, a choice's flow, a choice under evaluation), one vocabulary with question and decision (operator, 2026-10-22).
 - 20261022 Decision pages, never options (operator, unified-network-controller): `decision_pages` (page `decisions-<id>`), the single block's tab "Decisions: <title>", index line and legend "decision page", audit text; `option_pages` still read; test `test_decision_pages_never_called_options`; Learned 2026-10-22 in `references/data-first-diagrams.md`, rule in `references/visual-style.md`.

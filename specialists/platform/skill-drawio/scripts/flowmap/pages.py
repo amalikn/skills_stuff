@@ -328,6 +328,9 @@ def evaluate(root: Path, profile: Profile) -> Outcome:
         The outcome: problems, the rendered text, and whether the file on disk is stale.
     """
     data, problems = load(root, profile)
+    # The banner is an XML comment, where "--" is illegal: draw.io then refuses the whole file ("Export failed").
+    problems += [f"drawing.{k}: {v!r} contains '--', which an XML comment cannot hold; name a recipe (just ...) instead"
+                 for k, v in (("command", profile.command), ("check", profile.check)) if "--" in v]
     if problems or data is None:
         return Outcome(problems=problems)
     text = render(data, profile)

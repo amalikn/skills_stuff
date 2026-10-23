@@ -229,3 +229,17 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 >     depth = max(0, depth + (text[i] in "([{") - (text[i] in ")]}"))
 >     cur, i = cur + text[i], i + 1
 > ```
+
+> **Learned 2026-10-23** · decision branch labels · VERIFIED-OBSERVED (ansible-wifi smc_change flow map) · Source: scripts/flowmap/routing.py:branch_label ·
+> Falsifier: a step with `shape: decision` and two `next` targets rendered with bare step numbers on its arrows
+> A step drawn as a decision through `shape: decision` (no `gate`) used to get bare numbers on its branches, its `when` cases dropped. Every branch
+> out of a diamond now says why it is taken (operator, 2026-10-23): its `when` case, else Yes/No for two branches. Screenshot:
+> `references/screenshots/20261023-decision-branch-labels/`.
+>
+> ```python
+> nxt = step.get("next") or []
+> decision = step.get("gate") or step.get("shape") == "decision"
+> if not decision or len(nxt) < 2 or look.get("branch_labels", "yes-no") == "off":
+>     return str(number), PLAIN
+> case = (step.get("when") or {}).get(target)
+> ```
