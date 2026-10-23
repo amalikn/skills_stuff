@@ -167,3 +167,13 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > A comment goes above a task only when it says something the name does not: why the task exists, a constraint, a non-obvious effect or
 > failure mode. Simple tasks (a stage banner, a debug print, an include whose name says it all) carry none. Each task file starts with a
 > header block: purpose, Called by, Reads, Sets, Notes.
+
+> **Learned 2026-10-23 (f)** · ansible-core 2.21.5 · VERIFIED-OBSERVED (smc_change role, ansible-lint production profile) · Source:
+> local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/` · Falsifier: a templated free-form include_tasks that passes syntax-check
+> (1) `include_tasks: "{{ 'a.yml' if x else 'b.yml' }}"` fails syntax-check ("Invalid options"); write `include_tasks:` with `file: ...`.
+> (2) In a folded scalar (`>-`) a more-indented continuation line keeps its newline, which shows as `\n` in output; keep continuations at
+> the same indent or move the expression into a variable. (3) Read-only commands whose output a later task prints need `check_mode:
+> false`, or a `--check` run reports empty values. (4) Lint for inventories: `ANSIBLE_INVENTORY_ANY_UNPARSED_IS_FAILED=true
+> ansible-inventory -i <file> --list` fails on a source that does not parse; it reads only, so it can cover every inventory, existing ones
+> included. (5) Per-host state a rerun must honour (done hosts skipped, a force flag to redo them) belongs on the controller (one file per
+> host, written with `delegate_to: localhost`), not on the managed box.

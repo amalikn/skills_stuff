@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261023_1455
+Last rotated: 20261023_1536
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261023_1536 — smc_change rollback mode and done-tracking; root linters for every language (v0.7.2 -> v0.7.3)](#20261023_1536--smc_change-rollback-mode-and-done-tracking-root-linters-for-every-language-v072---v073)
 - [20261023_1455 — smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> v0.7.2)](#20261023_1455--smc_change-generic-role-probe-split-per-check-cleanup-skip-unreachablerefused-stages-ruff-root-config-v071---v072)
 - [20261023_1351 — backdoor-watch.sh resolves stage hosts; smc_change command guard (v0.7.0 -> v0.7.1)](#20261023_1351--backdoor-watchsh-resolves-stage-hosts-smc_change-command-guard-v070---v071)
 - [20261023_1339 — Local-knowledge folder reference and index script; PHP verification by mapped files; smc_change role recorded (v0.6.9 -> v0.7.0)](#20261023_1339--local-knowledge-folder-reference-and-index-script-php-verification-by-mapped-files-smc_change-role-recorded-v069---v070)
@@ -35,8 +36,12 @@ Last rotated: 20261023_1455
 - [20261020_1141 — ATA page markers by position; lingering tsh proxy after an ssh timeout (v0.5.2 -> v0.5.3)](#20261020_1141--ata-page-markers-by-position-lingering-tsh-proxy-after-an-ssh-timeout-v052---v053)
 - [20261020_0944 — Write-back evidence: code excerpts and screenshots (v0.5.1 -> v0.5.2)](#20261020_0944--write-back-evidence-code-excerpts-and-screenshots-v051---v052)
 - [20261020_0939 — Client MACs may be stored; S11 ATA reads; IPSSH as TP-Link; Teleport command labels (v0.5.0 -> v0.5.1)](#20261020_0939--client-macs-may-be-stored-s11-ata-reads-ipssh-as-tp-link-teleport-command-labels-v050---v051)
-- [20261020_0049 — Bot-host skill scripts, dhcpd shared networks, uplink gateway (v0.4.9 -> v0.5.0)](#20261020_0049--bot-host-skill-scripts-dhcpd-shared-networks-uplink-gateway-v049---v050)
-- [20261019_1119 — Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)](#20261019_1119--working-teleport-ssh-reads-take-79-s-10-s-attempts-two-tries-random-nodes-v048---v049)
+
+## 20261023_1536 — smc_change rollback mode and done-tracking; root linters for every language (v0.7.2 -> v0.7.3)
+
+`19_smc-change-role.md`: rollback is a mode (per-type `<type>_rollback.yml`, controller or box backup, health plus restored gates);
+per-host state in `runs/<spec>/state/` skips hosts already done, `smc_change_force` re-runs them. `18_local-knowledge-ansible.md`: one
+root config per language (ruff, djlint, taplo, biome, shfmt/shellcheck via .editorconfig) and `lint_new.sh`. manifest 0.7.2 -> 0.7.3.
 
 ## 20261023_1455 — smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> v0.7.2)
 
@@ -187,13 +192,3 @@ From unified-network-controller's 2026-10-20 run. `references/13_known-issues.md
 `/auth` then `/SYS`, `/_REG`, `/webdata`; adjamarragu's ATA MAC changed. `references/16_tplink-site-switches.md`: UNC treats IPSSH as TP-Link;
 gan-gan's two IPSSH hosts. `references/03_communication-flows.md`: Teleport command labels read from one `tsh ls` per cluster, `overlay` values
 across the fleet, the `lat` label differs from tstiklatlon. All read back after writing.
-
-## 20261020_0049 — Bot-host skill scripts, dhcpd shared networks, uplink gateway (v0.4.9 -> v0.5.0)
-
-- `references/13_known-issues.md`: three entries from unified-network-controller, 2026-10-19/20: skill scripts on a Machine ID host need
-  `TSH_IDENTITY` and `sshpass`; dhcpd's shared networks (`public`, `management`, `provisioning`) and an on-box lease summary that keeps client
-  MACs on the SMC; an uplink's gateway is in its policy routing table (`ip -4 route show table all dev <iface>`).
-
-## 20261019_1119 — Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)
-
-references/01_overview.md (Network Link — Satellite) gains a Learned 2026-10-16 entry from the unified-network-controller host verifier: fresh tsh ssh reads took 7–9 s and a 6 s deadline failed healthy boxes. Written in the 2026-10-19 backlog audit of 15–17 Oct.

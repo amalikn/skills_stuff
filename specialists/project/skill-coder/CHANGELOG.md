@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261023 Operator rule in `SKILL.md`: one root linter per language for new files only. Learned 2026-10-23 in `languages/yaml-json-toml.md` (taplo, biome, djlint), `languages/shell.md` (shfmt editorconfig ignore, shellcheck from shfmt -f), and 2026-10-23 (f) in `languages/ansible.md` (include_tasks file:, folded-scalar newline, check_mode false for reads, inventory parse lint, controller-side state).
 - 20261023 Learned 2026-10-23 (d, e) in `languages/ansible.md` (`-l` skips localhost plays, `'\n'` in folded scalars, file lookup of a list, unreachable hosts skipped without stopping a run; comment only tasks that need it) and 2026-10-23 in `languages/python.md` (ruff two-space, new files only with force-exclude, git-excluded symlinks, f-string backslash before 3.12).
 - 20261023 Operator rule in `SKILL.md`, `languages/python.md`, `languages/shell.md`: two-space indentation in every language; ruff (`indent-width = 2`) formats and lints Python as yamllint does YAML.
 - 20261023 Learned 2026-10-23 (a, b, c) in `languages/ansible.md`: `environment:` values sit on the remote command line (pgrep -f self-match, ps-visible); a skipped task re-registers its variable; block/rescue run records and `argv: [/bin/sh, -c]` for operator shell strings.

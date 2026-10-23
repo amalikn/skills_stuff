@@ -58,8 +58,14 @@ printf '<name>.yml\n' >> /Volumes/Data/_ansible/ansible-wifi/.git/info/exclude
 git -C /Volumes/Data/_ansible/ansible-wifi check-ignore -v <name>.yml     # must name .git/info/exclude
 ```
 
-The project-root `ruff.toml` (Python lint and format, two-space indent, new files only) is wired the same way from
-`ansible-wifi-root-governance/ruff.toml` (2026-10-23). A symlinked role resolves because `ansible.cfg` sets `roles_path = ./roles`. Keep a symlinked playbook self-contained or role-based: do not rely on paths relative to the playbook file.
+One linter per language at the checkout root, each config a symlink into `ansible-wifi-root-governance/` and git-excluded the same way
+(operator, 2026-10-23: two-space indent, new files only, existing files listed as excluded): `ruff.toml` (Python; 22 files
+`force-exclude`d), `djlint.toml` (Jinja2, lint only, HTML rules ignored; 123 templates excluded), `.taplo.toml` (TOML), `biome.jsonc`
+(JSON, biome 2.5.15 via npx; 18 files excluded), `.editorconfig` + `.shellcheckrc` (shell: shfmt honours the editorconfig `ignore = true`
+list of the 24 existing scripts, shellcheck checks what shfmt lists). `./lint_new.sh` at the root runs them all plus an `ansible-inventory`
+parse of every inventory (about 8 s); a negative test with one bad file per language failed every step. Tools that skip a git-excluded or
+symlinked tree (ruff, shfmt, djlint) get the physical path of the local-only roles; `.editorconfig` is also linked into
+`local-knowledge-ansible/ansible-wifi/` so shfmt finds it from there. A symlinked role resolves because `ansible.cfg` sets `roles_path = ./roles`. Keep a symlinked playbook self-contained or role-based: do not rely on paths relative to the playbook file.
 
 ## Operator tooling built here
 

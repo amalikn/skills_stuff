@@ -24,6 +24,7 @@ Summary: >-
 - [What it checks](#what-it-checks)
 - [Overlayroot persistence](#overlayroot-persistence)
 - [Nothing left on the box, run records, rollback](#nothing-left-on-the-box-run-records-rollback)
+- [Already done, and force](#already-done-and-force)
 - [Extending it](#extending-it)
 - [Status and open items](#status-and-open-items)
 - [Pitfalls it already handles](#pitfalls-it-already-handles)
@@ -125,8 +126,19 @@ copies the backup to `runs/<spec>/backups/<host>-<start>/` on the controller, re
 and fails if anything it listed is left. A failed run keeps its backup on the box. Every run writes `runs/<spec>/<host>-<spec>-<mode>-<start>.json` on the controller only: result, stage and task of a
 failure, refusal or unreachable reason, gates, plan, backup path, both probes.
 
-Rollback has no mode of its own. With `repack` the old builds are saved as .deb because the Ubuntu archive keeps only the newest build. x86: copy the backup folder to the box and `dpkg -i` the .debs,
-then restart apache2; an overlay Pi also needs the same in a lower-dir chroot and a reboot. The commands are in the header of `smc_change.yml` and in the role README.
+Rollback is a mode: `-e smc_change_mode=rollback` (operator, 2026-10-23). It finds the newest backup of the change for the host (controller
+`runs/<spec>/backups/<host>-*` first, else one a failed apply left on the box; `-e smc_change_rollback_from=<host>-<start>` picks one),
+stages it, and undoes the actions last first through `tasks/actions/<type>_rollback.yml`: `apt_pin` reinstalls the saved .debs with
+`dpkg -i` (live, and in a lower-dir chroot on overlay boxes), `template`/`copy`/`ini` restore the file from `paths.tgz`, `command` runs the
+spec's `undo`. It restarts, reboots per the spec, and is judged on health plus `restored`. Allowed on an unhealthy box. Check-mode run on
+nocprov-smc01 found the box backup of the operator's apply and its six `.18` builds; a real rollback has not run (it would reinstate the
+vulnerable build).
+
+## Already done, and force
+
+Each passed apply or rollback is stored per host in `runs/<spec>/state/<host>.json` on the controller (operator, 2026-10-23: a rerun must
+skip the SMCs already done). The next apply skips such a host as `already_done`, records it and goes on with the rest; `-e
+smc_change_force=true` re-runs them (tested in check mode on nocprov-smc01 with a stored state: skipped, then not skipped with force).
 
 ## Extending it
 

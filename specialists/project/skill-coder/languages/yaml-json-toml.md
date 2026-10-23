@@ -55,3 +55,16 @@ YAML 1.2.2 specification, yamllint rules documentation, RFC 8259 (JSON), TOML 1.
 ## Open items
 
 - Schema tooling choice and JSON5 or JSONC policy: UNVERIFIED stubs.
+
+> **Learned 2026-10-23** · taplo 0.9.3, biome 2.5.15, djlint 1.47.0 · VERIFIED-OBSERVED (ansible-wifi checkout; a negative test with one
+> bad file per language failed each step) · Source: local-knowledge-ansible `ansible-wifi/ansible-wifi-root-governance/{.taplo.toml,
+> biome.jsonc,djlint.toml,lint_new.sh}` (uncommitted at writing); taplo and biome docs via context7 · Falsifier: a tool that lints an
+> excluded file, or misses a bad new one
+> TOML: taplo, `.taplo.toml` at the root with `exclude` globs and `[formatting] indent_string = "  "` (its default), `column_width`; `taplo
+> lint` and `taplo fmt --check`. JSON: biome, `biome.jsonc` with `files.includes` = `["**/*.json", "!folder", "!path/file.json", ...]`
+> (negations must follow a `**` pattern; a folder is `!folder`, not `!folder/**`, or biome warns useBiomeIgnoreFolder), `formatter.indentWidth
+> 2`; pin a release at least two weeks old (`npx -y @biomejs/biome@<version> check`). Both follow symlinks, so local-only folders
+> symlinked into a checkout need excluding by name. Jinja2: djlint reads `djlint.toml` (`profile`, `extension`, `indent`, `ignore`,
+> `exclude`, `extend_exclude` as a comma-separated string); on non-HTML templates (netplan, shell, Apache) use `--lint` only and ignore
+> the H (HTML) rules, which misfire there; never `--reformat` them. djlint does not descend into a symlinked folder: pass the physical path
+> with `--configuration`.

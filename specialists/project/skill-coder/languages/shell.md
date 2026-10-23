@@ -164,3 +164,12 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > ```bash
 > pkgs=$(dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' 'php8.1-*' libapache2-mod-php8.1 2>/dev/null | awk '$1=="ii"{print $2}')
 > ```
+
+> **Learned 2026-10-23** · shfmt 3.14.1 (`uvx --from shfmt-py shfmt`), ShellCheck · VERIFIED-OBSERVED (ansible-wifi checkout) · Source:
+> local-knowledge-ansible `ansible-wifi/ansible-wifi-root-governance/{.editorconfig,.shellcheckrc,lint_new.sh}` · Falsifier: shfmt
+> listing a file marked `ignore = true`
+> Two-space shell for new scripts only: shfmt reads `.editorconfig` (`[*.{sh,bash}] indent_style = space`, `indent_size = 2`,
+> `shell_variant = bash`), and a section listing the existing scripts with `ignore = true` (plus `indent_size = unset` so editors keep their
+> style) keeps them out. `shfmt -f <dirs>` then lists exactly the scripts to check, including extensionless ones found by shebang (6 here
+> that a `*.sh` glob missed); pass that list to `shfmt -d` and `shellcheck`. shfmt does not descend into a symlinked folder, and finds
+> `.editorconfig` by walking up from each file, so a physical path outside the checkout needs the file linked into an ancestor.
