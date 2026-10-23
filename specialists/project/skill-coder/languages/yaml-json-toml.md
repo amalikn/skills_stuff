@@ -68,3 +68,16 @@ YAML 1.2.2 specification, yamllint rules documentation, RFC 8259 (JSON), TOML 1.
 > `exclude`, `extend_exclude` as a comma-separated string); on non-HTML templates (netplan, shell, Apache) use `--lint` only and ignore
 > the H (HTML) rules, which misfire there; never `--reformat` them. djlint does not descend into a symlinked folder: pass the physical path
 > with `--configuration`.
+
+> **Learned 2026-10-23** · YAML: a backtick cannot start a plain scalar · VERIFIED_PRIMARY · Source: unified-network-controller
+> `docs/flows/parts/flows-monitoring-custom.yaml` (bedfc16), PyYAML "found character '`' that cannot start any token"; YAML 1.2 lists the backtick as a
+> reserved indicator · Falsifier: a YAML 1.2 parser loading an unquoted value or flow-sequence item that begins with a backtick
+> Marking commands with backticks in a YAML map (Markdown-style code spans) breaks loading wherever the value or a flow-sequence item now begins with
+> one; quote that value. A value with a backtick in the middle stays plain. A scripted edit that adds backticks checks each changed line for a
+> leading one, as a block value and as a `[...]` item, and the map is loaded again before anything renders from it.
+>
+> ```yaml
+> # unified-network-controller, 2026-10-23: line 198 failed, the fix quotes the item
+> reads: [tsh/tbot status, OpenWISP health (`docker exec`, 120 s), "`nbshell` guard (180 s)"]
+> ```
+
