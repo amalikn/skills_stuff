@@ -12,6 +12,8 @@ Change log for the `skills_stuff` parent repository.
   line is kept before `---`; anchors keep double hyphens for ` + ` and ` — ` and suffix repeated slugs; the block also ends at the next heading so a missing `---` cannot swallow the file.
   `--update` now refuses (exit 2) a Contents with fewer entries unless `--allow-shrink`. Five offline tests in `tests/test_toc.py` fail on the old code and pass (11 of 11 in the pack);
   a 16-entry tracker copy regenerates byte-identical to its hand-fixed Contents with every anchor resolving, in 0.04 s.
+- skill-commtracker SKILL.md: Teams chats with several turns are one block per turn (no `---` between turns, no blank line after the label, lines
+  joined by `\` hard breaks), the format the operator asked for on 2026-10-23 ("a lot of extra gap").
 
 ## 2026-10-16
 - Extend skill-slurp-chat's existing helper for explicit Codex rollout JSONL: preserve repeated user turns, ignore mirrored messages, inventory tool names without arguments, and retain

@@ -279,6 +279,10 @@ Entry format:
   - Wrong: `communications/attachments/slug-filename.png`
   - Correct: `attachments/slug-filename.png`
 - **CID substitution** — replace `[cid:CONTENT-ID]` with `![alt text](attachments/slug-filename)` using the saved image, never with a text placeholder like `[Attachment: filename]`
+- **Teams chats with several turns** (operator, 2026-10-23: "a lot of extra gap"): keep each turn one block, no `---` between turns and no blank
+  line after the speaker label. Write `**Name (h:mm PM):**\` and put the turn's lines under it, each line but the last ending in `\` (a hard line
+  break); one blank line between turns; a table in a turn keeps a blank line above and below. The entry still ends with one `---`. The opening
+  message needs no label (the `**From:**` line names its sender).
 - **Forwarded messages** — strip the full forwarded/quoted content; replace with `*[Prior thread omitted — see below for summary]*` then a concise bullet-point summary. Do not use subheadings like `### Forwarded`
 
 ---
