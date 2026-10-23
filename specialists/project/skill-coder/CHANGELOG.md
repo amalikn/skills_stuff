@@ -15,6 +15,8 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261023 Learned 2026-10-23 (b) in `languages/python.md` (pyright executionEnvironments for joined modules, not inline suppression) and Learned 2026-10-23 (b) in `references/generated-artifacts.md` (no `--` in an XML banner).
+- 20261023 `just test` green again: 2026-10-23 entries labelled `VERIFIED-OBSERVED` relabelled `VERIFIED_PRIMARY` (text unchanged) in `languages/python.md`, `languages/yaml-json-toml.md`, `languages/ansible.md`, `languages/shell.md`; Learned 2026-10-23 (e) in `languages/ansible.md` given its missing Falsifier.
 - 20261023 Operator rule in `SKILL.md`: one root linter per language for new files only. Learned 2026-10-23 in `languages/yaml-json-toml.md` (taplo, biome, djlint), `languages/shell.md` (shfmt editorconfig ignore, shellcheck from shfmt -f), and 2026-10-23 (f) in `languages/ansible.md` (include_tasks file:, folded-scalar newline, check_mode false for reads, inventory parse lint, controller-side state).
 - 20261023 Learned 2026-10-23 (d, e) in `languages/ansible.md` (`-l` skips localhost plays, `'\n'` in folded scalars, file lookup of a list, unreachable hosts skipped without stopping a run; comment only tasks that need it) and 2026-10-23 in `languages/python.md` (ruff two-space, new files only with force-exclude, git-excluded symlinks, f-string backslash before 3.12).
 - 20261023 Operator rule in `SKILL.md`, `languages/python.md`, `languages/shell.md`: two-space indentation in every language; ruff (`indent-width = 2`) formats and lints Python as yamllint does YAML.

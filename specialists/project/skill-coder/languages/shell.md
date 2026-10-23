@@ -165,7 +165,7 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > pkgs=$(dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' 'php8.1-*' libapache2-mod-php8.1 2>/dev/null | awk '$1=="ii"{print $2}')
 > ```
 
-> **Learned 2026-10-23** · shfmt 3.14.1 (`uvx --from shfmt-py shfmt`), ShellCheck · VERIFIED-OBSERVED (ansible-wifi checkout) · Source:
+> **Learned 2026-10-23** · shfmt 3.14.1 (`uvx --from shfmt-py shfmt`), ShellCheck · VERIFIED_PRIMARY (ansible-wifi checkout) · Source:
 > local-knowledge-ansible `ansible-wifi/ansible-wifi-root-governance/{.editorconfig,.shellcheckrc,lint_new.sh}` · Falsifier: shfmt
 > listing a file marked `ignore = true`
 > Two-space shell for new scripts only: shfmt reads `.editorconfig` (`[*.{sh,bash}] indent_style = space`, `indent_size = 2`,

@@ -105,7 +105,7 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > defaults were null placeholders), and the defaults at role precedence (a throwaway role linking the real `defaults/main.yml`; `include_vars` would
 > outrank the inventory). Prove it against a file the real role wrote on a live host.
 
-> **Learned 2026-10-23** · ansible-core 2.21.5 · VERIFIED-OBSERVED (three Ubuntu 22.04 hosts over Teleport; `ps -eo args` against the probe's counts) ·
+> **Learned 2026-10-23** · ansible-core 2.21.5 · VERIFIED_PRIMARY (three Ubuntu 22.04 hosts over Teleport; `ps -eo args` against the probe's counts) ·
 > Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/probe.py` and `tasks/probe.yml` (uncommitted at writing) · Falsifier: an
 > `environment:` value that does not appear in the remote shell's `/proc/<pid>/cmdline`
 > A task's `environment:` values are put on the remote shell's command line, so they are visible to `ps` and to `pgrep -f` for as long as the task runs.
@@ -134,7 +134,7 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 >   when: smc_change_chroot_step == 'open'
 > ```
 
-> **Learned 2026-10-23 (c)** · ansible-core 2.21.5, ansible-lint production profile · VERIFIED-OBSERVED (role runs on stage hosts; ansible-lint pass) ·
+> **Learned 2026-10-23 (c)** · ansible-core 2.21.5, ansible-lint production profile · VERIFIED_PRIMARY (role runs on stage hosts; ansible-lint pass) ·
 > Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/main.yml`, `record.yml`, `actions/command.yml` · Falsifier: a failed run that
 > leaves no record
 > To record every run of a role, failed ones included: wrap the role body in `block`/`rescue`; the rescue keeps `ansible_failed_task.name` and
@@ -142,7 +142,7 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > again. A command that really needs a shell (an operator-supplied string with pipes) runs as `ansible.builtin.command: argv: [/bin/sh, -c, ...]`,
 > which states the shell and passes ansible-lint `command-instead-of-shell` without a suppression.
 
-> **Learned 2026-10-23 (d)** · ansible-core 2.21.5 · VERIFIED-OBSERVED (smc_change runs, stage hosts) · Source: local-knowledge-ansible
+> **Learned 2026-10-23 (d)** · ansible-core 2.21.5 · VERIFIED_PRIMARY (smc_change runs, stage hosts) · Source: local-knowledge-ansible
 > `ansible-wifi/roles/smc_change/tasks/probe.yml`, `playbooks/smc_change.yml` (uncommitted at writing) · Falsifier: a `-l host` run that still
 > runs a `hosts: localhost` play
 > Four traps met building one role: (1) a `-l` limit filters every play, so a `hosts: localhost` play is skipped ("no hosts matched"); run
@@ -163,12 +163,13 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > ```
 
 > **Learned 2026-10-23 (e)** · task comments · USER_STATED (operator, 2026-10-23: "not for every task but the simple ones you can ignore
-> but the ones which should have some description you can add") · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/`
+> but the ones which should have some description you can add") · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/` ·
+> Falsifier: the operator asks for a comment on every task, or for none
 > A comment goes above a task only when it says something the name does not: why the task exists, a constraint, a non-obvious effect or
 > failure mode. Simple tasks (a stage banner, a debug print, an include whose name says it all) carry none. Each task file starts with a
 > header block: purpose, Called by, Reads, Sets, Notes.
 
-> **Learned 2026-10-23 (f)** · ansible-core 2.21.5 · VERIFIED-OBSERVED (smc_change role, ansible-lint production profile) · Source:
+> **Learned 2026-10-23 (f)** · ansible-core 2.21.5 · VERIFIED_PRIMARY (smc_change role, ansible-lint production profile) · Source:
 > local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/` · Falsifier: a templated free-form include_tasks that passes syntax-check
 > (1) `include_tasks: "{{ 'a.yml' if x else 'b.yml' }}"` fails syntax-check ("Invalid options"); write `include_tasks:` with `file: ...`.
 > (2) In a folded scalar (`>-`) a more-indented continuation line keeps its newline, which shows as `\n` in output; keep continuations at

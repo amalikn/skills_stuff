@@ -92,3 +92,9 @@ diff. Why: a hand-edited lock file can claim a version the resolver never chose.
 > # review copy, not the output: move the sheet first, then `qlmanage -t` the copy
 > wb.move_sheet("Plan and status", -1); wb.active = 0; wb.save(scratch / "preview.xlsx")
 > ```
+
+> **Learned 2026-10-23 (b)** · XML banners on generated files · VERIFIED_PRIMARY · Source: skill-drawio `scripts/drawio/mxfile.py:banner`
+> (612d33e); draw.io 32.5.5 "Export failed" on every page · Falsifier: an XML parser that accepts `--` inside a comment
+> A "generated, do not edit" banner written as an XML comment must not contain `--`: a regenerate command such as `render.py --write` in it makes
+> the whole file not well-formed, and consumers refuse it with an unrelated error. Validate the banner text when it is built (raise), and name a
+> task-runner recipe in the banner instead of a command with long options.

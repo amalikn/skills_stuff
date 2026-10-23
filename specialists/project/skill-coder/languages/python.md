@@ -133,7 +133,7 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > if dest.is_relative_to(root):
 > ```
 
-> **Learned 2026-10-23** · ruff 0.17.2 · VERIFIED-OBSERVED (ansible-wifi checkout, 2026-10-23) · Source: `uvx ruff config indent-width`;
+> **Learned 2026-10-23** · ruff 0.17.2 · VERIFIED_PRIMARY (ansible-wifi checkout, 2026-10-23) · Source: `uvx ruff config indent-width`;
 > local-knowledge-ansible `ansible-wifi-root-governance/ruff.toml`, `roles/smc_change/files/probe/check.sh` · Falsifier: ruff formatting an
 > excluded file passed by name with `force-exclude = true`
 > Two-space Python with ruff: `indent-width = 2` (the default is 4). To apply a new style to new files only, list the existing files in
@@ -142,3 +142,12 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > `.git/info/exclude`, so files reached through a git-excluded symlink are skipped; run from the physical path (`pwd -P`). Python joined from
 > parts before it runs is linted on the joined program (names cross files) and formatted per part. A backslash inside an f-string
 > expression is a SyntaxError before Python 3.12; compute it outside the f-string when the code may run on 3.10 (Ubuntu 22.04).
+
+> **Learned 2026-10-23 (b)** · pyright/Pylance, modules joined before they run · VERIFIED_PRIMARY · Source: pyright docs "Execution Environment
+> Options" (docs/configuration.md); ansible-wifi local-knowledge `ansible-wifi-root-governance/pyrightconfig.json` · Falsifier: an
+> `executionEnvironments` entry whose diagnostic override does not change the report for files under its root
+> Parts that a controller joins into one program (each part uses names another part defines) show "X is not defined" in the editor for every part.
+> Keep the linter on the joined program as the real check, and turn the rule off for that folder only with a root `pyrightconfig.json`
+> (`{"executionEnvironments": [{"root": "<folder>", "reportUndefinedVariable": "none"}]}`), never an inline suppression. A `"//"` comment key is
+> reported as an unrecognized setting: document the config in the project's rules instead. Proven: `npx pyright@1.1.407 <part>` 0 warnings with it,
+> 3 "is not defined" without.

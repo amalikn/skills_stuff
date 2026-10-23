@@ -56,7 +56,7 @@ YAML 1.2.2 specification, yamllint rules documentation, RFC 8259 (JSON), TOML 1.
 
 - Schema tooling choice and JSON5 or JSONC policy: UNVERIFIED stubs.
 
-> **Learned 2026-10-23** · taplo 0.9.3, biome 2.5.15, djlint 1.47.0 · VERIFIED-OBSERVED (ansible-wifi checkout; a negative test with one
+> **Learned 2026-10-23** · taplo 0.9.3, biome 2.5.15, djlint 1.47.0 · VERIFIED_PRIMARY (ansible-wifi checkout; a negative test with one
 > bad file per language failed each step) · Source: local-knowledge-ansible `ansible-wifi/ansible-wifi-root-governance/{.taplo.toml,
 > biome.jsonc,djlint.toml,lint_new.sh}` (uncommitted at writing); taplo and biome docs via context7 · Falsifier: a tool that lints an
 > excluded file, or misses a bad new one
