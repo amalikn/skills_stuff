@@ -47,6 +47,52 @@ For any SMC incident/debug fix in `ansible-wifi` that changes behavior, defaults
    - validation command(s)
 3. Treat the reference update as part of done criteria for the task, not optional follow-up.
 
+### Adding a new SMC to an inventory (operator, 2026-10-23)
+
+Use `scripts/smc_inventory_add.py` (`just smc_inventory_add ...`), plan first, then `--apply`. Do not hand-copy another site's files.
+Every site, prod or stage, is the same six pieces (VERIFIED_PRIMARY, `inventories/rct/prod` arrkapa and every other site, 2026-10-23):
+
+| Piece                                    | Content                                                                  |
+| ---------------------------------------- | ------------------------------------------------------------------------ |
+| `[<site>_smc_bases]` in `<flavor>/<env>` | the host, one per line                                                   |
+| `[smc_bases:children]`                   | a `<site>_smc_bases` line                                                |
+| `[<site>:children]`                      | `<site>_smc_bases`                                                       |
+| `group_vars/<site>.yml`                  | `site_name: <site>`                                                      |
+| `host_vars/<host>.yml`                   | `site_eclipse_siteid: <id>` (rct: `smc_bases_iridium` when Iridium)      |
+| `topology_vars/<site>.yml`               | the flavor's standard topology from the generator template, host renamed |
+
+- Site name is the host without its `-smcNN` suffix (`map-smc01` -> `map`, `php-rct-smc01` -> `php-rct`).
+- The templates live in `roles/smc_generate_smc_files/templates/<flavor>/` (rct, wh, nbn_accelerate, plus `topology_vars_booth.j2`). There are none
+  for rcp or nbn_wh: add those by hand from a sibling site and diff every `vlanid` against the box (see the cloning risk below).
+- The generator role itself (`smc_generate_smc_files`, CSV input `smc_name,eclipse_site_ID,site_name[,smc_size]`) rewrites the whole inventory file through
+  a JSON round-trip, so it reorders groups and drops comments; the script renders the same templates and inserts text instead.
+- Site ID: `site_eclipse_siteid` sets the backdoor port (50000 + id). Read it from the box when nobody has it: `--siteid-from-box` takes the
+  `autossh -R <port>:127.0.0.1:22` port. A box built from a generic image can still carry that image's ID: on 2026-10-23 php-rct-smc01 held 181, the
+  ID in the `generic-rct01*` host vars, so two boxes on one image would fight for one bastion port. The script refuses a shared ID until
+  `--allow-shared-siteid`.
+- Check the live box before trusting the standard topology: `ip -br addr` should show lo `10.254.0.1/32`, bridge_500 `10.255.0.1/24` +
+  `192.168.5.100/24`, bridge_501 `10.0.0.1/23`, vlan521 `192.168.100.50/24`, vlan522 (rct standard; matched on php-rct-smc01, 2026-10-23).
+- Then `./lint_new.sh` in the repo and a read-only run (`smc_change.yml -l <host>` defaults to check mode). The hidden topology cache
+  (`topology_vars/.<site>.yml`) appears on the first playbook run that loads the vars plugin.
+- Reading inventory vars from a shell trips the ansible-vars guard hook (`ansible-inventory --host`, `cat`/`cp`/`diff` on a vars file). Read single
+  keys with `ansible -i <inv> <host> -m ansible.builtin.debug -a "msg={{ site_name }}"`, or compare with `cmp -s`.
+
+Insertion logic (`scripts/smc_inventory_add.py` in this pack):
+
+```python
+lines = text.split("\n")
+kids = lines.index("[smc_bases:children]")
+end = kids + 1
+while end < len(lines) and lines[end].strip() and not lines[end].startswith("["):
+  end += 1
+lines.insert(end, f"{site}_smc_bases")                 # child at the end of smc_bases:children
+lines[kids:kids] = [f"[{site}_smc_bases]", host, ""]   # site group just above it
+tail = len(lines)
+while tail > 0 and (not lines[tail - 1].strip() or lines[tail - 1].lstrip().startswith("#")):
+  tail -= 1
+lines[tail:tail] = ["", f"[{site}:children]", f"{site}_smc_bases"]  # before any trailing "# End of File" comment
+```
+
 ### Task key order: `when:` goes LAST, with `tags:` after it (operator convention, 2026-08-27)
 
 **House convention for every task written in `ansible-wifi`.** Put `when:` at the **end** of the task, and where a task also carries `tags:`, `tags:` follows `when:`.

@@ -104,6 +104,11 @@ smc_change_compare before after:
 local_knowledge_index days="14":
     @bash scripts/local_knowledge_index.sh --days "{{days}}"
 
+# Add a new SMC to an ansible-wifi inventory (3 groups + group/host/topology vars). Plan only unless args include --apply.
+# Example: just smc_inventory_add --flavor rct --env stage --host php-rct-smc01 --siteid-from-box
+smc_inventory_add *args:
+    @python3 scripts/smc_inventory_add.py {{args}}
+
 # Run a command on a box through its autossh backdoor when Teleport cannot reach it; checks hostname first. Example: just backdoor_exec darlngunaya "hostname; uptime"
 backdoor_exec target cmd="hostname":
     @bash scripts/backdoor_exec.sh "{{target}}" "{{cmd}}"

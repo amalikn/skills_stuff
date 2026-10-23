@@ -98,6 +98,11 @@ authenticates with a raw OpenSSH key (`/var/local/autossh/ssh-portfwding.id_rsa`
 **Port formula** (`smc_bases.yml:78`): `openssh_remoteport = 50000 + site_eclipse_siteid`. `site_eclipse_siteid` is a globally unique Eclipse site ID (required var, `smc_definition` role) — the
 resulting port uniquely identifies one site fleet-wide, regardless of which project/teleport cluster it belongs to.
 
+> **Learned 2026-10-23** · reading the site ID from the box · VERIFIED-OBSERVED (php-rct-smc01, `ps -eo args`) · Falsifier: a box whose -R port
+> differs from 50000 + its host vars ID after a RISE run
+> The box shows its own ID: `autossh ... -R <50000+id>:127.0.0.1:22 ssh-portfwding@<bastion>`. A box imaged from a generic build can still carry
+> the image's ID (181 = `generic-rct01*`), which is not unique; `scripts/smc_inventory_add.py --siteid-from-box` reads it and flags the clash.
+
 **Which bastion, per project** (`group_vars/smc_bases.yml` per inventory; each project has multiple flavors nested under it — see `01_overview.md` "Remote Access"):
 
 | Project        | Flavors (incl. central-infra)                     | `teleport_fqdn`                 | Bastion IP / alias                                              |

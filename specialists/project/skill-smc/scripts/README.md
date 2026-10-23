@@ -38,6 +38,7 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 | [survey_snmp_tooling.sh](survey_snmp_tooling.sh) | Live SMC appliances | **read-only** | Reports per box whether `snmpget` is present and whether overlayroot is mounted, scoped by Teleport flavour label (`FLAVOURS`, default `rcp,nbn_accelerate`). Both facts vary per box and neither can be inferred from the flavour — that mistake is what it exists to prevent |
 | [local_knowledge_index.sh](local_knowledge_index.sh) | Local files only | **read-only** | Lists repo symlinks into the local-knowledge folder (and their ignore status), recent entries per folder, uncommitted changes. ~1 s. `just local_knowledge_index` |
 | [smc_change_compare_records.py](smc_change_compare_records.py) | Local files only | **read-only** | Pairs two sets of smc_change run records by host, change and mode and reports IDENTICAL or the differences, volatile fields ignored. <0.1 s. `just smc_change_compare` |
+| [smc_inventory_add.py](smc_inventory_add.py) | ansible-wifi inventory files; tsh read of one box | **modifies-state** (plan by default, `--apply` writes) | Adds a new SMC the way every site is added: `[<site>_smc_bases]`, `smc_bases:children`, `[<site>:children]` and group/host/topology vars rendered from the repo's generator templates. Refuses an existing host, site or file; flags a shared site ID; can read the ID from the box. ~2 s. `just smc_inventory_add` |
 | [install_packages.sh](install_packages.sh) | Live SMC appliances | **modifies-state** | Installs apt packages across flavour-scoped boxes. Idempotent, `--dry-run` first, verifies the resulting binary rather than apt's exit code, waits on the dpkg lock via `DPkg::Lock::Timeout`, and refuses boxes with overlayroot mounted unless `--force-overlay`. Defaults to 5 workers for constrained backhaul |
 | [collect-smc-evidence.sh](collect-smc-evidence.sh) | Live SMC appliances     | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as** |
 |                                     |   over Teleport         |           |   **arguments — no default site list** (genericized from the original, which defaulted to one investigation's            |
@@ -506,6 +507,15 @@ Added 2026-10-23 (operator: the pack must stay across what is built in the local
 [--days N] [--per-dir N]` prints every symlink from the ansible-wifi checkout into `local-knowledge-ansible/ansible-wifi` with whether git ignores it, the
 newest entries per top-level folder within the window, and uncommitted changes there. Read-only; about 1 s on the full folder (7,000+ files per big folder).
 Background: `../references/18_local-knowledge-ansible.md`.
+
+### `smc_inventory_add.py`
+
+Added 2026-10-23 (operator: adding a new SMC to the inventory must be straightforward, not guessed each time). `smc_inventory_add.py --flavor
+<rct|wh|nbn_accelerate> --env <stage|prod> --host <host> (--siteid N | --siteid-from-box) [--site S] [--iridium] [--booth] [--allow-shared-siteid]
+[--apply]`. Renders `roles/smc_generate_smc_files/templates/<flavor>/*.j2` through `ansible-playbook` (same engine as the generator role, so identical
+output) and inserts the three groups by text, because the generator role itself round-trips the whole inventory through JSON. Proven 2026-10-23 on
+php-rct-smc01: output byte-identical to the hand-made files; refuses a second apply. Background: `../references/08_ansible-authoring.md` (Adding a new
+SMC to an inventory).
 
 ### `php_package_probe.sh` and `backdoor_exec.sh`
 

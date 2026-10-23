@@ -88,7 +88,9 @@ agent. **Never report a box as unreachable until that backdoor has been checked*
 4. **Metrics missing?** Tier 7: textfile collectors have staleness windows (`references/02_service-map.md`), and federation rides its own autossh tunnel.
 5. **Changing boxes (a package, a config file, a setting) on one or many SMCs?** Use the `smc_change` role with a change spec, not an ad hoc
    playbook: `references/19_smc-change-role.md`.
-6. **Changing Ansible?** `references/08_ansible-authoring.md` first: edit `topology_vars/<site>.yml`, never the hidden `.<site>.yml` cache; a `group_vars` or plugin change reaches all
+6. **Adding a new SMC to an inventory?** `just smc_inventory_add --flavor <f> --env <stage|prod> --host <host> --siteid-from-box`, then `--apply`;
+   never hand-copy another site's files (`references/08_ansible-authoring.md`, Adding a new SMC).
+7. **Changing Ansible?** `references/08_ansible-authoring.md` first: edit `topology_vars/<site>.yml`, never the hidden `.<site>.yml` cache; a `group_vars` or plugin change reaches all
    flavors; one inventory per run (`-i A -i B` loses B's topology vars); validate with yamllint, ansible-lint, ansible-inventory, then `--syntax-check`.
 
 ## Related Workspaces

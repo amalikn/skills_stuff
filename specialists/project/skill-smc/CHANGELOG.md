@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261023_1536
+Last rotated: 20261023_1626
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261023_1625 — smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)](#20261023_1625--smc_inventory_addpy-add-a-new-smc-to-an-inventory-without-guessing-v073---v074)
 - [20261023_1536 — smc_change rollback mode and done-tracking; root linters for every language (v0.7.2 -> v0.7.3)](#20261023_1536--smc_change-rollback-mode-and-done-tracking-root-linters-for-every-language-v072---v073)
 - [20261023_1455 — smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> v0.7.2)](#20261023_1455--smc_change-generic-role-probe-split-per-check-cleanup-skip-unreachablerefused-stages-ruff-root-config-v071---v072)
 - [20261023_1351 — backdoor-watch.sh resolves stage hosts; smc_change command guard (v0.7.0 -> v0.7.1)](#20261023_1351--backdoor-watchsh-resolves-stage-hosts-smc_change-command-guard-v070---v071)
@@ -35,7 +36,16 @@ Last rotated: 20261023_1536
 - [20261020_1322 — Ubuntu 24.04 arm64 spike VM for the read-only Pi image (v0.5.3 -> v0.5.4)](#20261020_1322--ubuntu-2404-arm64-spike-vm-for-the-read-only-pi-image-v053---v054)
 - [20261020_1141 — ATA page markers by position; lingering tsh proxy after an ssh timeout (v0.5.2 -> v0.5.3)](#20261020_1141--ata-page-markers-by-position-lingering-tsh-proxy-after-an-ssh-timeout-v052---v053)
 - [20261020_0944 — Write-back evidence: code excerpts and screenshots (v0.5.1 -> v0.5.2)](#20261020_0944--write-back-evidence-code-excerpts-and-screenshots-v051---v052)
-- [20261020_0939 — Client MACs may be stored; S11 ATA reads; IPSSH as TP-Link; Teleport command labels (v0.5.0 -> v0.5.1)](#20261020_0939--client-macs-may-be-stored-s11-ata-reads-ipssh-as-tp-link-teleport-command-labels-v050---v051)
+
+## 20261023_1625 — smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)
+
+- `scripts/smc_inventory_add.py` + `just smc_inventory_add`: the three groups and three vars files for a new SMC, rendered from the repo's
+  generator templates; plan by default, `--apply` writes; refuses an existing host/site/file; flags a shared site ID; `--siteid-from-box`.
+  Proven on php-rct-smc01 (byte-identical to hand-made files, second apply refused, live box read). Operator, 2026-10-23.
+- `references/08_ansible-authoring.md`: new section "Adding a new SMC to an inventory" (six pieces, site naming, generator caveat, standard rct
+  interfaces, reading vars past the guard hook).
+- `references/03_communication-flows.md`: site ID readable from the box's autossh -R port; generic image ID 181 is shared.
+- `SKILL.md` decision tree: new point 6 for adding a box.
 
 ## 20261023_1536 — smc_change rollback mode and done-tracking; root linters for every language (v0.7.2 -> v0.7.3)
 
@@ -184,11 +194,3 @@ children can outlive a timed-out ssh on a Machine ID host (cause unverified) and
 ## 20261020_0944 — Write-back evidence: code excerpts and screenshots (v0.5.1 -> v0.5.2)
 
 Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20). In `SKILL.md`; today's entries in 03, 13, 16 and 17 carry their excerpts, screenshots marked pending until UNC 0.8.47 is deployed.
-
-## 20261020_0939 — Client MACs may be stored; S11 ATA reads; IPSSH as TP-Link; Teleport command labels (v0.5.0 -> v0.5.1)
-
-From unified-network-controller's 2026-10-20 run. `references/13_known-issues.md`: the never-store-client-MACs rule superseded (operator), dhcpd's
-`epoch` lease-time form. `references/17_site-ata-dallas-delta.md`: 20-mile's ATA is a DDC_VoIP-BIA on S11 firmware, read with `--http0.9` and
-`/auth` then `/SYS`, `/_REG`, `/webdata`; adjamarragu's ATA MAC changed. `references/16_tplink-site-switches.md`: UNC treats IPSSH as TP-Link;
-gan-gan's two IPSSH hosts. `references/03_communication-flows.md`: Teleport command labels read from one `tsh ls` per cluster, `overlay` values
-across the fleet, the `lat` label differs from tstiklatlon. All read back after writing.
