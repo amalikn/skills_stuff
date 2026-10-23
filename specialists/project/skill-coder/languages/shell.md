@@ -47,6 +47,8 @@ The Google Shell Style Guide, the GNU Bash manual (The Set Builtin), the ShellCh
 | Script length | About 100 lines, or any non-trivial control flow: rewrite in  | Google: "you should rewrite it in a more structured language now. Bear in mind that scripts grow"                    |
 |               |   a structured language                                       |   (VERIFIED_PRIMARY). Tightens the core 400-line module budget                                                       |
 | Line length   | 80                                                            | Google Shell Style Guide (VERIFIED_PRIMARY); a project's own setting wins                                            |
+| Indentation   | Two spaces per level                                          | Operator rule 2026-10-23, every                                                                                      |
+|               |                                                               |   language (USER_STATED); Google also uses 2                                                                         |
 | Function      | Core 60 lines                                                 | No change                                                                                                            |
 
 ## POSIX sh

@@ -79,6 +79,10 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | Line length         | The project's ruff setting; PEP 8 says 79 (72 for docstrings and comments), Google says 80; the operator's projects    | Follow the project's config; do not reflow code to    |
 |                     |   commonly allow longer                                                                                                |   change it                                           |
+| Indentation         | Two spaces per level: ruff `indent-width = 2` with `indent-style = "space"` in the project ruff.toml                   | Operator rule 2026-10-23 (USER_STATED); overrides     |
+|                     |   (operator rule, every language)                                                                                      |   PEP 8 (4) by design                                 |
+| Format and lint     | `ruff format` and `ruff check` are the Python tools, as yamllint is for YAML; a project keeps one ruff.toml at         | Operator rule 2026-10-23                              |
+|                     |   its root                                                                                                             |   (USER_STATED)                                       |
 | Module and function | Core defaults (400 and 60)                                                                                             | No change                                             |
 
 ## Open items

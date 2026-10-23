@@ -116,6 +116,8 @@ A language file never removes a safety rule. A loosening without a reason is voi
 - A refactor changes no behaviour and proves it with a before-and-after comparison.
 - State and measure the runtime of anything that repeats.
 - Gate a commit, push or deploy on the check's own exit code, never through a pipe or `;`.
+- Indent with two spaces in every language (operator, 2026-10-23); Python is formatted and linted with ruff (`indent-width = 2`), as YAML
+  is with yamllint. Existing tracked code keeps its indentation until a reformat is decided.
 - Label load-bearing claims `VERIFIED_PRIMARY`, `VERIFIED_SECONDARY`, `UNVERIFIED` or `USER_STATED`; never present a guess as a fact.
 
 ## Standing write-back contract

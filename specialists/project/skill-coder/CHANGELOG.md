@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261023 Operator rule in `SKILL.md`, `languages/python.md`, `languages/shell.md`: two-space indentation in every language; ruff (`indent-width = 2`) formats and lints Python as yamllint does YAML.
 - 20261023 Learned 2026-10-23 (a, b, c) in `languages/ansible.md`: `environment:` values sit on the remote command line (pgrep -f self-match, ps-visible); a skipped task re-registers its variable; block/rescue run records and `argv: [/bin/sh, -c]` for operator shell strings.
 - 20261023 Learned 2026-10-23 in `references/generated-artifacts.md`: Quick Look previews only the first sheet of an .xlsx and collapses empty rows; review a moved-sheet copy and give spacer rows a height.
 - 20261022 Learned 2026-10-22 (f) in `references/generated-artifacts.md`: size a hook-run formatter change, old against new, before it ships.
