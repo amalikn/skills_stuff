@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261023_1626
+Last rotated: 20261023_1738
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261023_1737 — smc_change on an overlay Pi: close after restart, overlay_fallback, proves, soak_minutes; tstik bench note; identity probe hosts_name (v0.7.4 -> v0.7.5)](#20261023_1737--smc_change-on-an-overlay-pi-close-after-restart-overlay_fallback-proves-soak_minutes-tstik-bench-note-identity-probe-hosts_name-v074---v075)
 - [20261023_1625 — smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)](#20261023_1625--smc_inventory_addpy-add-a-new-smc-to-an-inventory-without-guessing-v073---v074)
 - [20261023_1536 — smc_change rollback mode and done-tracking; root linters for every language (v0.7.2 -> v0.7.3)](#20261023_1536--smc_change-rollback-mode-and-done-tracking-root-linters-for-every-language-v072---v073)
 - [20261023_1455 — smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> v0.7.2)](#20261023_1455--smc_change-generic-role-probe-split-per-check-cleanup-skip-unreachablerefused-stages-ruff-root-config-v071---v072)
@@ -35,7 +36,14 @@ Last rotated: 20261023_1626
 - [20261020_1335 — A Pi SMC's internet is eth0 untagged, read on five rct sites (v0.5.4 -> v0.5.5)](#20261020_1335--a-pi-smcs-internet-is-eth0-untagged-read-on-five-rct-sites-v054---v055)
 - [20261020_1322 — Ubuntu 24.04 arm64 spike VM for the read-only Pi image (v0.5.3 -> v0.5.4)](#20261020_1322--ubuntu-2404-arm64-spike-vm-for-the-read-only-pi-image-v053---v054)
 - [20261020_1141 — ATA page markers by position; lingering tsh proxy after an ssh timeout (v0.5.2 -> v0.5.3)](#20261020_1141--ata-page-markers-by-position-lingering-tsh-proxy-after-an-ssh-timeout-v052---v053)
-- [20261020_0944 — Write-back evidence: code excerpts and screenshots (v0.5.1 -> v0.5.2)](#20261020_0944--write-back-evidence-code-excerpts-and-screenshots-v051---v052)
+
+## 20261023_1737 — smc_change on an overlay Pi: close after restart, overlay_fallback, proves, soak_minutes; tstik bench note; identity probe hosts_name (v0.7.4 -> v0.7.5)
+
+- `references/19_smc-change-role.md`: EBUSY on the first overlay apply (deleted-but-open inodes), lower dir now closed after stage 7, `reboot:
+  overlay_fallback`, `verify.proves`, spec `soak_minutes`, `SMC_CHANGE_BACKUP` for command undo; proven on php-rct-smc01 (commits 01083c8, faf6866).
+- `references/06_failure-modes.md`: tstik empty AVR reads mean nothing answers on ttyS0; the bench unit has no AVR; manual check commands.
+- `references/08_ansible-authoring.md`: operator kept site ID 181 for php-rct-smc01. `justfile`: `smc_change_flows`, `smc_change_flows_check`.
+- `scripts/pi_identity_probe.sh`: prints `hosts_name` (the 127.0.1.1 name in /etc/hosts) beside hostname and boot_hostname.
 
 ## 20261023_1625 — smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)
 
@@ -190,7 +198,3 @@ Pi image's systemd steps run there before a spare Pi; package facts for Ubuntu 2
 `references/17_site-ata-dallas-delta.md` Learned 2026-10-20 (b): "Dallas Delta Corp" is past byte 24,545 on S11, "DDC_VoIP" is in both
 generations' first 2 KB; six DDC_VoIP-m sites read (unified-network-controller 075d6b9, 5b3d4e6). `references/13_known-issues.md`: `tsh proxy`
 children can outlive a timed-out ssh on a Machine ID host (cause unverified) and the process-group pattern that leaves nothing behind.
-
-## 20261020_0944 — Write-back evidence: code excerpts and screenshots (v0.5.1 -> v0.5.2)
-
-Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20). In `SKILL.md`; today's entries in 03, 13, 16 and 17 carry their excerpts, screenshots marked pending until UNC 0.8.47 is deployed.

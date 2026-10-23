@@ -10,6 +10,8 @@
 # driver and speed, bridges, VLAN interfaces and memory, then the swap-check lines: hostname vs the hostname the box booted with,
 # root filesystem and overlayroot setting, boot time, journal boot count and when the previous journalled boot ended. After a site
 # visit, boot_hostname=generic-wh01-* or root_fs on ext4 where RISE runs means a spare disk or unit went in (kupungarri, 2026-10-09).
+# hosts_name is the 127.0.1.1 name in /etc/hosts: a box renamed from a generic image can keep the image's name there, and sudo then warns
+# "unable to resolve host" (php-rct-smc01, 2026-10-23; fix with smc_change spec etc-hosts-hostname).
 # Then the EEPROM lines (2026-10-22): bootloader version, the bootloader config it runs (vcgencmd bootloader_config), rpi-eeprom-update's
 # report (bare command: reports, never stages), autoboot.txt presence and the hardware watchdog's identity.
 # Only reads; writes nothing on the box or locally. Every tsh call has a deadline (default 90 s, `--deadline`).
@@ -49,7 +51,7 @@ for i in $(ls /sys/class/net); do [ -e /sys/class/net/$i/device ] && echo nic=$i
 echo bridges=$(ip -br link show type bridge | cut -d" " -f1 | tr "\n" " ")
 echo vlans=$(ip -br link show type vlan | cut -d" " -f1 | tr "\n" " ")
 echo mem=$(free -g | awk "/Mem/{print \$2}")G
-echo hostname=$(hostname) boot_hostname=$(journalctl -b 0 --no-pager -o cat 2>/dev/null | sed -n "s/^Hostname set to <\(.*\)>\.$/\1/p" | head -1)
+echo hostname=$(hostname) boot_hostname=$(journalctl -b 0 --no-pager -o cat 2>/dev/null | sed -n "s/^Hostname set to <\(.*\)>\.$/\1/p" | head -1) hosts_name=$(awk "/^127\.0\.1\.1/{print \$2}" /etc/hosts)
 echo root_fs=$(findmnt -n -o SOURCE,FSTYPE / | tr -s " " ,) overlayroot_conf=$(grep -h "^overlayroot=" /etc/overlayroot.conf /media/root-ro/etc/overlayroot.conf 2>/dev/null | tail -1)
 echo boot_now=$(uptime -s) journal_boots=$(journalctl --list-boots --no-pager 2>/dev/null | grep -cE "^ *-?[0-9]+ ") prev_boot_end=$(journalctl --list-boots --no-pager 2>/dev/null | tail -2 | head -1 | sed "s/.*—//")
 echo eeprom_version=$(vcgencmd bootloader_version 2>/dev/null | tr "\n" " ")
