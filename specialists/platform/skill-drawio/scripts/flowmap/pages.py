@@ -208,7 +208,13 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
     shapes = {s["id"]: (step_shape(steps, k, comps, profile.kind_shapes, profile.io_vias) if profile.look["shapes"] else "process")
               for k, s in enumerate(steps)}
     texts, box_w, box_h = size_steps(steps, shapes, profile)
-    width = LANE_HEAD_W + sum(box_w.values()) + len(steps) * col_gap(profile.look) + GAP
+    edges = step_edges(steps, fid)
+    order = {s["id"]: k for k, s in enumerate(steps)}
+    widths = {order[a]: 18 + 9 * len(branch_label(next(s for s in steps if s["id"] == a), b, order[b] + 1, profile.look)[0])
+              for _c, a, b, text, _st in edges if "back to" not in text and order[b] == order[a] + 1}
+    gaps = label_gaps(col_gap(profile.look), widths, len(steps))
+    # Lanes and header span the label-widened gaps, so a long branch label never pushes the last step past the lanes (operator, 2026-10-23).
+    width = LANE_HEAD_W + sum(box_w.values()) + sum(gaps) + GAP
     header = flow_header_lines(flow, comps, number)
     head_w = max(width, 900)
     head_chars = int((head_w - 16) / 7)   # font 12: about 6.5 px a character, so 7 px is conservative
@@ -217,15 +223,10 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile)
              "rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=12;",
              link="data:page/id,overview")
     top = MARGIN + head_h + GAP
-    edges = step_edges(steps, fid)
     plan = plan_runs(steps, [(a, b) for _cid, a, b, text, _st in edges if "back to" not in text])
     tg = float(profile.look.get("track_gap", 12))
     room = {key: reserve(n, tg) for key, n in plan["count"].items()}
-    lanes, lane_y, lane_h = draw_lanes(page, flow, comps, profile, top, box_h, box_w, room)
-    order = {s["id"]: k for k, s in enumerate(steps)}
-    widths = {order[a]: 18 + 9 * len(branch_label(next(s for s in steps if s["id"] == a), b, order[b] + 1, profile.look)[0])
-              for _c, a, b, text, _st in edges if "back to" not in text and order[b] == order[a] + 1}
-    gaps = label_gaps(col_gap(profile.look), widths, len(steps))
+    lanes, lane_y, lane_h = draw_lanes(page, flow, comps, profile, top, box_h, box_w, room, width)
     lefts = column_lefts([box_w[s["id"]] for s in steps], gaps)
     notes_top = top + sum(lane_h) + GAP
     note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts, room, box_w)) for k in range(len(steps))]

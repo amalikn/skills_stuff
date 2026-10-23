@@ -245,7 +245,7 @@ When the signs disagree (a banner on a file the operator says they edited), stop
 > - id: evidence
 > ```
 
-> **Learned 2026-10-23** · banner command · VERIFIED-OBSERVED (draw.io 32.5.5 "Export failed" on every page) · Source: scripts/drawio/mxfile.py:banner,
+> **Learned 2026-10-23** · banner command · VERIFIED_PRIMARY · Source: draw.io 32.5.5 "Export failed" on every page; scripts/drawio/mxfile.py:banner,
 > scripts/flowmap/pages.py:evaluate · Falsifier: a drawing whose banner holds "--" that draw.io opens and exports
 > The generated banner is an XML comment, and "--" is illegal inside one: a `drawing.command` such as `render_flowmap.py --root . --write` made the file
 > unparseable and draw.io refused every page. `evaluate()` now reports it as a map problem and `banner()` raises; name a recipe (`just ...`) instead.
