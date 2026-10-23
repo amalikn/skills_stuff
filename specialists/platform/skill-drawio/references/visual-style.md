@@ -286,3 +286,23 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > CODEISH = re.compile(r"(?<![\w`])(--?[a-z][\w-]*|[\w.<>*-]*/[\w./<>*-]+|...")
 > code_spans("refreshes with --noexec=false, then")  # -> 'refreshes with `--noexec`=false, then'
 > ```
+
+> **Learned 2026-10-23** · palette extended to twenty hues · VERIFIED_PRIMARY · Source: `scripts/flowmap/profile.py` `DISTINCT`, `scripts/palette_check.py`
+> (skills_stuff 9166fcb and this entry's commit); screenshot `references/screenshots/20261023-palette-export/` · Falsifier: two of the twenty read as one
+> colour in a legend review, or `just palette-check` reporting a pair under 13.1
+> The operator asked to extend the palette after unified-network-controller's 31 flows cycled ten colours. Distance is measured (CIEDE2000), not
+> judged: the first ten's closest pair is green and olive at 13.1, so a new hue had to beat that and reach 4.5:1 on white. Farthest-first picks from a
+> grid of dark hues gave ten at 13.8 or more; the eleventh measured 11.9, so twenty is the ceiling. Appending kept every drawing of ten or fewer
+> families byte-identical (the shop example unchanged). `just palette-check` measures a palette and `--suggest N` picks more.
+>
+> ```python
+> # scripts/palette_check.py (skills_stuff, 2026-10-23)
+> def suggest(palette, avoid, n):
+>     chosen, picks, pool = list(palette) + list(avoid), [], candidates()
+>     for _ in range(n):
+>         best = max(pool, key=lambda c: min(de2000(c, x) for x in chosen))
+>         near = min(chosen, key=lambda x: de2000(best, x))
+>         picks.append((best, de2000(best, near), near))
+>         chosen.append(best)
+>     return picks
+> ```

@@ -200,6 +200,11 @@ render-flowmap *args: _require-venv
 count-crossings *args: _require-venv
     @{{py}} scripts/count_crossings.py "$@"
 
+# [read-only] Measure a line-colour palette (contrast on white, CIEDE2000 to the nearest other) and optionally suggest more: just palette-check --suggest 5
+[positional-arguments]
+palette-check *args: _require-venv
+    @{{py}} scripts/palette_check.py "$@"
+
 # Quality of every flow page a map renders (faults, crossings, shared starts); read-only. Run from a project root: --map docs/flows/flows.yaml
 flow-quality *args: _require-venv
     @{{py}} scripts/flow_quality.py "$@"

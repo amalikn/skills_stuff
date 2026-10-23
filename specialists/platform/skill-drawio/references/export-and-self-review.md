@@ -141,3 +141,16 @@ me."
 | Text overflow        | Words outside the box                                  | Characters-per-line budget too generous for bold text             |
 | Ghost layer          | Colour layer hides nothing, or base layer shows arrows | A cell's parent is the wrong layer                                |
 | Same-looking colours | Two families indistinguishable                         | Hues too close (orange and brown)                                 |
+
+> **Learned 2026-10-23** · large pages clip at export scale 1 · VERIFIED_PRIMARY · Source: unified-network-controller End-to-end page export
+> (draw.io 32.5.5, `scripts/drawio_export.py --pages 5 --scale 1`); screenshots `references/screenshots/20261023-palette-export/` · Falsifier: a page
+> over about 8,000 px tall exporting whole at scale 1 on the same draw.io version
+> A page of about 5,500 x 8,600 px exported at scale 1 came back full size but blank below about 4,500 px, its arrows cut off mid-run, with exit 0; at
+> scale 0.5 the same page exported whole. Before reviewing a big page, check its export reaches the legend; export it at 0.5 for the whole view and crop
+> the scale 1 export only where it is drawn. Do not judge the drawing from a clipped export: the cells were all there (geometry up to y 8516).
+>
+> ```bash
+> # unified-network-controller, 2026-10-23: the review that found it
+> drawio_export.py docs/flows/drawio/unc-flows.drawio --out-dir out --pages 1,5,8 --scale 1    # page 5 clipped
+> drawio_export.py docs/flows/drawio/unc-flows.drawio --out-dir half --pages 5 --scale 0.5     # page 5 whole
+> ```

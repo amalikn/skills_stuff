@@ -145,3 +145,17 @@ Tune the reach to the drawing's scale, and test against several real drawings; t
 - Matching a port label to the nearest box rather than the nearest line: labels usually sit beside the line, between two boxes.
 - Treating the drawing as truth: it records what someone drew, which may differ from what is installed; compare it with discovery and say which one each fact came from.
 - Writing back to the file: a reader never modifies the drawing it reads.
+
+> **Learned 2026-10-23** · parse attributes, never regex them · VERIFIED_PRIMARY · Source: unified-network-controller review of
+> `docs/flows/drawio/unc-flows.drawio` (bedfc16) · Falsifier: a generated file whose attributes all use one quote style
+> A regex over `tooltip="..."` reported six flows missing their x.1 arrows; they were there, written as `tooltip='...'` because their text held a
+> double quote (`&quot;` would otherwise be needed). Read cells with an XML parser (`xml.etree.ElementTree` or `drawio.read`), which also undoes the
+> entities and keeps `&lt;node&gt;` as `<node>`; zero-width spaces that the engine adds inside code paths break plain substring matches too.
+>
+> ```python
+> # the check that replaced the regex (unified-network-controller review, 2026-10-23)
+> root = ET.parse("docs/flows/drawio/unc-flows.drawio").getroot()
+> page = root.findall("diagram")[4]
+> arrows = [u for u in page.iter("UserObject") if "step-arrow" in (u.get("tags") or "") and not u.get("id").endswith("-l")]
+> tip = arrows[0].get("tooltip").replace("\u200b", "")
+> ```
