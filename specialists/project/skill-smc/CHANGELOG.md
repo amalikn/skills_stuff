@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261026_1510
+Last rotated: 20261026_1534
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261026_1534 — smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)](#20261026_1534--smc_change-backupshared-name-identified-backup-files-kept-once-for-all-smcs-v076---v077)
 - [20261026_1506 — smc_change flow map in parts, one E2E page per change spec (v0.7.5 -> v0.7.6)](#20261026_1506--smc_change-flow-map-in-parts-one-e2e-page-per-change-spec-v075---v076)
 - [20261023_1737 — smc_change on an overlay Pi: close after restart, overlay_fallback, proves, soak_minutes; tstik bench note; identity probe hosts_name (v0.7.4 -> v0.7.5)](#20261023_1737--smc_change-on-an-overlay-pi-close-after-restart-overlay_fallback-proves-soak_minutes-tstik-bench-note-identity-probe-hosts_name-v074---v075)
 - [20261023_1625 — smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)](#20261023_1625--smc_inventory_addpy-add-a-new-smc-to-an-inventory-without-guessing-v073---v074)
@@ -34,7 +35,14 @@ Last rotated: 20261026_1510
 - [20261020_1752 — Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky Muster read cost (v0.5.7 -> v0.5.8)](#20261020_1752--pi-uplink-on-the-eth0-trunk-ssh-forwards-detach-from-the-caller-sky-muster-read-cost-v057---v058)
 - [20261020_1706 — /etc census in overlay-usage-breakdown; fqdn2ip still on darlngunaya (v0.5.6 -> v0.5.7)](#20261020_1706--etc-census-in-overlay-usage-breakdown-fqdn2ip-still-on-darlngunaya-v056---v057)
 - [20261020_1647 — Run-time writers under /etc; read-only /etc on the new image (v0.5.5 -> v0.5.6)](#20261020_1647--run-time-writers-under-etc-read-only-etc-on-the-new-image-v055---v056)
-- [20261020_1335 — A Pi SMC's internet is eth0 untagged, read on five rct sites (v0.5.4 -> v0.5.5)](#20261020_1335--a-pi-smcs-internet-is-eth0-untagged-read-on-five-rct-sites-v054---v055)
+
+## 20261026_1534 — smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)
+
+- `references/19_smc-change-role.md`: Learned 2026-10-26 entry for spec field `backup.shared` (globs; matching backup files kept once per change on the
+  controller under `runs/backups/shared/`, `shared.txt` per host, rollback copies them back; default per-SMC copies; name-only match, `paths.tgz`
+  refused at spec load; dpkg-repack output differs per run so no checksum compare), with the cleanup.yml excerpt (local-knowledge-ansible `2ade781`);
+  PHP spec example gains `shared: ['*.deb']`.
+- manifest 0.7.6 -> 0.7.7.
 
 ## 20261026_1506 — smc_change flow map in parts, one E2E page per change spec (v0.7.5 -> v0.7.6)
 
@@ -187,9 +195,3 @@ long-up boxes. `references/13_known-issues.md`: fqdn2ip still active on darlngun
 Learned 2026-10-20 in `references/07_hardware-overlay.md` (new section): the four run-time writers under `/etc` (teleport-tags-exporter,
 fake-hwclock, squid blocklists, multipathd) with x86 daily counts, and that a merged confext on systemd 255 makes `/etc` read-only and noexec.
 From smc-resiliency's S2 R2 work.
-
-## 20261020_1335 — A Pi SMC's internet is eth0 untagged, read on five rct sites (v0.5.4 -> v0.5.5)
-
-References: `references/03_communication-flows.md`, Learned 2026-10-20: the default route and the public IP (AS38172 IPSTAR) are on `eth0`;
-`vlan521` only reaches the modem's subnet (curl rc 7), `vlan522` has no address; read the default route's interface, not only a role's
-interfaces (unified-network-controller `uplink_provider.read`, 03e4a8e). manifest 0.5.4 -> 0.5.5.

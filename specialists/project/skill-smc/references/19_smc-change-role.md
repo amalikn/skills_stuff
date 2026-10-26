@@ -6,7 +6,7 @@ Authority: local-supplement
 Scope: >-
   roles/smc_change and smc_change.yml (source local-knowledge-ansible/ansible-wifi, symlinked into the ansible-wifi checkout); usable from any
   project that changes SMC boxes
-Last reviewed: 2026-10-23
+Last reviewed: 2026-10-26
 Summary: >-
   How to run smc_change, write a change spec, read its stages, gates and run records, how it persists a change on overlayroot Pis, what it
   leaves on a box (nothing, after a success), how to roll back, how to extend it, and what is proven so far.
@@ -77,7 +77,7 @@ name: php-cve-2026-109618
 applies_to: {flavors: [rcp, nbn_accelerate, rct, wh, nbn_wh], arch: [x86_64, aarch64]}
 actions:
   - {type: apt_pin, packages: ['php8.1*', 'libapache2-mod-php8.1'], version: 8.1.2-1ubuntu2.28}
-backup: {paths: [/etc/php, /etc/apache2], repack: true}
+backup: {paths: [/etc/php, /etc/apache2], repack: true, shared: ['*.deb']}
 restart:
   services: [apache2]
   processes:
@@ -231,4 +231,27 @@ As of 2026-10-23:
 >     argv: [/bin/sh, -c, "{{ smc_change_action.undo }}"]
 >   environment:
 >     SMC_CHANGE_BACKUP: "{{ smc_change_rb_dir }}"
+> ```
+
+> **Learned 2026-10-26** · spec field backup.shared: name-identified backup files kept once for all SMCs · VERIFIED_PRIMARY (offline) · Source:
+> local-knowledge-ansible `2ade781`, roles/smc_change tasks/cleanup.yml, tasks/rollback_locate.yml, tasks/load_spec.yml; warehouse-rct01 apply
+> 20261026_145159 fetched the same seven php8.1 .debs per SMC · Falsifier: a second SMC at an already pooled version still fetches its .debs
+> Operator, 2026-10-26: the same build must not be copied from every SMC, and which files that applies to is the change spec's choice, not the
+> role's (the role stays generic; a future change may want per-SMC copies or share another file type). Spec `backup.shared` is a list of globs;
+> stage 10 fetches only backup files whose name the controller pool `files/changes/<spec>/runs/backups/shared/`
+> lacks, links fetched ones into the pool (`ln` never overwrites, so two SMCs fetching the same name at once leave one copy) and writes
+> `shared.txt` in the host folder; rollback copies the listed files back beside `paths.tgz`. Absent or `[]` = full copy per SMC (etc-hosts-hostname,
+> php-ini-upload-progress-off). The match is by name only: dpkg-repack of one build on two SMCs gives different bytes (embedded timestamps), so a
+> checksum compare would never share anything. Only list files whose name changes when the content does (`<package>_<version>_<arch>.deb`); the
+> spec loader refuses globs matching `paths.tgz` (same name on every SMC, that SMC's own config). Per-SMC config differences stay in `paths.tgz`,
+> restored after `dpkg -i --force-confold`. Tested offline (glob split, pool skip, race guard, missing `shared.txt`); not yet run on an SMC.
+>
+> ```yaml
+> # roles/smc_change/tasks/cleanup.yml (local-knowledge-ansible 2ade781)
+> - name: Copy the backups to the controller
+>   ansible.builtin.fetch:
+>     src: "{{ smc_change_file }}"
+>     dest: "{{ smc_change_ctl_backup }}/"
+>     flat: true
+>   loop: "{{ smc_change_backup_files.files | default([]) | map(attribute='path') | reject('in', smc_change_pooled_on_box) | list }}"
 > ```
