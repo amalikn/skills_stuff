@@ -3,7 +3,8 @@
 
 Run it with python3 on the controller: smc_change_runs_table.py <runs_dir> [--mode apply] [--host SUBSTR]
   e.g. smc_change_runs_table.py .../roles/smc_change/files/changes/php-cve-2026-109618/runs
-Reads the <host>-<change>-<mode>-<start>.json records in runs_dir (oldest first by start stamp). Read-only. A reboot is a changed boot_id
+Reads the <host>-<change>-<mode>-<start>.json records under runs_dir: runs/<flavor>/records/ (standard since 2026-10-27; give runs/ for
+every flavor or runs/<flavor> for one), runs/records/, or a flat older runs/; oldest first by start stamp. Read-only. A reboot is a changed boot_id
 between the before- and after-probe; "?" when the run has no after-probe. Exit 0, or 2 on bad usage.
 Written 2026-10-26 to answer "which runs rebooted, and did the ones that rebooted fail" across one change's rollout.
 """
@@ -77,8 +78,11 @@ def main(argv):
   if not os.path.isdir(args.runs_dir):
     print(f"not a directory: {args.runs_dir}", file=sys.stderr)
     return 2
+  # runs/<flavor>/records/ (standard since 2026-10-27; runs/ given: every flavor), runs/records/, or a flat older runs/.
+  dirs = [os.path.join(args.runs_dir, "records")] + glob.glob(os.path.join(args.runs_dir, "*", "records"))
+  dirs = [d for d in dirs if os.path.isdir(d)] or [args.runs_dir]
   pattern = "*.json" if args.mode == "all" else f"*-{args.mode}-*.json"
-  paths = [p for p in glob.glob(os.path.join(args.runs_dir, pattern)) if args.host in os.path.basename(p)]
+  paths = [p for d in dirs for p in glob.glob(os.path.join(d, pattern)) if args.host in os.path.basename(p)]
   paths.sort(key=lambda p: os.path.basename(p).rsplit("-", 1)[-1])
   print(f"{'run':<64} {'result':<12} {'total':>5} {'p6':>4} {'p7':>4} {'p8':>4} {'p9':>4} reboot  busy / failure")
   for path in paths:

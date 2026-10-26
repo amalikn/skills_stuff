@@ -123,12 +123,14 @@ over the two- reboot disable/enable-overlay path). `UNVERIFIED` until the wareho
 ## Nothing left on the box, run records, rollback
 
 Operator, 2026-10-23: nothing may be left on an SMC after a successful change. The role writes nothing on the box except the change and, during the run, its backup. Stage 10 (successful apply only)
-copies the backup to `files/changes/<spec>/runs/backups/<host>-<start>/` on the controller, removes it from the box (lower dir included), removes the .debs apt downloaded and dpkg-repack if the run installed it,
-and fails if anything it listed is left. A failed run keeps its backup on the box. Every run writes `files/changes/<spec>/runs/<host>-<spec>-<mode>-<start>.json` on the controller only: result, stage and task of a
+copies the backup to `files/changes/<spec>/runs/<flavor>/backups/<host>-<start>/` on the controller, removes it from the box (lower dir included), removes the .debs apt downloaded and dpkg-repack if the run installed it,
+and fails if anything it listed is left. A failed run keeps its backup on the box. Every run writes `files/changes/<spec>/runs/<flavor>/records/<host>-<spec>-<mode>-<start>.json` (standard layout since 2026-10-27, operator: one folder per flavor, the `-i` inventory folder, made on its first run; moved by
+`local-knowledge-ansible/ansible-wifi/scripts/smc_change_runs_by_flavor.py`, which moved six active journals safely because `defaults/` is outside the
+resume fingerprint; older trees kept them flat in `runs/` or `runs/records/`) on the controller only: result, stage and task of a
 failure, refusal or unreachable reason, gates, plan, backup path, both probes.
 
 Rollback is a mode: `-e smc_change_mode=rollback` (operator, 2026-10-23). It finds the newest backup of the change for the host (controller
-`files/changes/<spec>/runs/backups/<host>-*` first, else one a failed apply left on the box; `-e smc_change_rollback_from=<host>-<start>` picks one),
+`files/changes/<spec>/runs/<flavor>/backups/<host>-*` first, else one a failed apply left on the box; `-e smc_change_rollback_from=<host>-<start>` picks one),
 stages it, and undoes the actions last first through `tasks/actions/<type>_rollback.yml`: `apt_pin` reinstalls the saved .debs with
 `dpkg -i` (live, and in a lower-dir chroot on overlay boxes), `template`/`copy`/`ini` restore the file from `paths.tgz`, `command` runs the
 spec's `undo`. It restarts, reboots per the spec, and is judged on health plus `restored`. Allowed on an unhealthy box. Check-mode run on
@@ -137,8 +139,12 @@ vulnerable build).
 
 ## Already done, and force
 
-Each passed apply or rollback is stored per host in `files/changes/<spec>/runs/state/<host>.json` on the controller (operator, 2026-10-23: a rerun must
-skip the SMCs already done). The next apply skips such a host as `already_done`, records it and goes on with the rest; `-e
+Each passed apply or rollback is stored per host in `files/changes/<spec>/runs/<flavor>/state/<host>.json` on the controller (operator, 2026-10-23: a rerun must
+skip the SMCs already done). Since 2026-10-27 (operator: a done SMC is ignored, not verified again) the playbook's first play, `tasks/pending.yml`, reads that state and
+the journal on the controller and runs the change play over `smc_change_todo` only: done SMCs get no ping, probe, serial slot or record
+(apply, check and assess skip a passed apply; rollback a passed rollback; verify never). Before that, each skip still cost about 17 s and a
+batch slot (`already_done` records of 20261027_081918). Proved controller-only: check on 20-mile and alpara ran in 2 s with no connection;
+the split put arrkapa-smc01 (no state) in todo; `-e
 smc_change_force=true` re-runs them (tested in check mode on nocprov-smc01 with a stored state: skipped, then not skipped with force).
 
 ## Extending it
@@ -239,7 +245,7 @@ As of 2026-10-23:
 > 20261026_145159 fetched the same seven php8.1 .debs per SMC · Falsifier: a second SMC at an already pooled version still fetches its .debs
 > Operator, 2026-10-26: the same build must not be copied from every SMC, and which files that applies to is the change spec's choice, not the
 > role's (the role stays generic; a future change may want per-SMC copies or share another file type). Spec `backup.shared` is a list of globs;
-> stage 10 fetches only backup files whose name the controller pool `files/changes/<spec>/runs/backups/shared/`
+> stage 10 fetches only backup files whose name the controller pool `files/changes/<spec>/runs/<flavor>/backups/shared/`
 > lacks, links fetched ones into the pool (`ln` never overwrites, so two SMCs fetching the same name at once leave one copy) and writes
 > `shared.txt` in the host folder; rollback copies the listed files back beside `paths.tgz`. Absent or `[]` = full copy per SMC (etc-hosts-hostname,
 > php-ini-upload-progress-off). The match is by name only: dpkg-repack of one build on two SMCs gives different bytes (embedded timestamps), so a
@@ -298,7 +304,7 @@ were not demonstrated. Review: local-knowledge `evidence/smc-change-recovery-202
 
 `USER_STATED` (2026-10-26): add a generic recovery journal and safe explicit resume; optimize only after phase timings exist.
 `VERIFIED_PRIMARY`: prior `verify.yml` called `record.yml`, which marked done before cleanup. Interim records now say `verified`; only final
-verified-and-cleaned applies/rollbacks say `passed` and update state. Journals under `runs/journal/<host>.json` are controller-only, 0600,
+verified-and-cleaned applies/rollbacks say `passed` and update state. Journals under `runs/<flavor>/journal/<host>.json` are controller-only, 0600,
 written before writes/phases, retaining the original baseline/id/backup/cleanup ownership. Attempts have separate record timestamps.
 
 Use `-e smc_change_mode=assess` for read-only recovery safety (skips application commands); it reports complete, safe_to_restart,
@@ -460,3 +466,45 @@ today at the same step (alice-well-smc01 the first): `UNVERIFIED` hypothesis tha
 SMC's dpkg.log and journal, candidate fix `ionice -c3 nice -n19` on the chroot dpkg. `run_once` for the role's bookkeeping is a patch in
 local-knowledge `plans/smc-change-run-once-20261026_2220.patch` (not applied); the operator wants run-once steps defined by the role and
 declared in the change spec (design open).
+
+## Done skip, runs per flavor, retries, timing, journal freeze (2026-10-27)
+
+Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `plans/smc-change-resume-20261027_1038/README.md`.
+
+- **Done SMCs are left out before any connection** (operator: "an smc which has been completed ... is ignored in the next run"). The
+  playbook's first play (no serial, controller only) runs `tasks/pending.yml` and the change play runs over `smc_change_todo`. apply, check
+  and assess skip a passed apply of the current target; rollback a passed rollback; verify never; `-e smc_change_force=true` none. The
+  summary lists them as ALREADY DONE.
+
+  ```yaml
+  - name: Group the host as done or still to do
+    ansible.builtin.group_by:
+      key: "{{ 'smc_change_done' if smc_change_done_why is defined else 'smc_change_todo' }}"
+  ```
+
+- **Run evidence per flavor** (operator: "the standard for all the changes"): `files/changes/<spec>/runs/<flavor>/{records,state,journal,
+  backups}`, flavor = the `-i` inventory folder, made on its first run (`smc_change_runs_dir` in `defaults/main.yml`). Moved by
+  `scripts/smc_change_runs_by_flavor.py` (dry run by default; `--with-active` only when `runs_dir` moves in the same step).
+- **SSH retries**: `ansible_ssh_retries: 8` on the change play rides out ~117 s of a satellite or Teleport blip (rc 255 only; ansible.cfg's 3
+  gave ~4 s). Seen: banana-well-smc01 "Data could not be sent ... Connection closed" while staging .debs in stage 6.
+- **TASK_TIMING**: `true` writes `task_timing/smc_change-<start>.json` (slowest first) and prints one line; `verbose` also prints the per-task
+  lines and recap (the old `true`); `TASK_TIMING_DIR` moves it.
+- **Teleport online filter (in the frozen patch)**: `tsh ls --proxy=<proxy> --format=json flavor=<inventory folder>,env=<inventory file>`
+  once per run; the `flavor` and `env` labels match the inventory folder and file (rct prod 290, rct stage 1; rcp prod 17 of 21 in
+  inventory, the four `generic-*` hosts not in Teleport). Label form and `--query 'labels.flavor == "rct"'` return the same.
+- **Run-once preparation (in the frozen patch)**: `tasks/prepare.yml` does spec load and check, plan banner, fingerprint, probe program and
+  folders once per run in the first play; `tasks/probe_cfg.yml` keeps the per-SMC HTTP resolution.
+- **Captive portal render is part of the PHP verification**: the spec's `http` checks `portal` (home) and `portal-terms`
+  (`/index.php/wifi/terms`) at the SMC's portal FQDN must redirect, or answer 200 with HTML and none of the bad markers, with the same status
+  as the before-probe; a portal broken before the change refuses the apply (`files/probe/40_http.py`, `tasks/guard.yml`). Shown as the first
+  step of the PHP Prove flow.
+- **An active journal freezes the role code** (RULE-007, incident 2026-10-27): editing `tasks/pending.yml` under open journals made six
+  resumes `needs_repair`; they resume only on the exact file they started with (both kept with sha256 in the plans folder). The fingerprint
+  covers `tasks`, `templates`, `files` (less `files/changes`, `files/tests`) plus the resolved spec, so the spec is frozen too; `defaults/`,
+  `meta/`, `drawio/` and the playbook are not.
+
+  ```python
+  drifted = journal.get("fingerprint") != data.get("fingerprint")
+  if drifted and journal.get("phase") not in (7, 8, 9, 10):
+    result["reasons"] = ["Host or resolved spec fingerprint changed; do not replay this transaction."]
+  ```

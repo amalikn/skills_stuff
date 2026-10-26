@@ -29,7 +29,6 @@ the default for code work. skill-drawio is built to its rules. Open work is acti
 Detail and order: UNC's [retirement
 assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/reports/project-reviews/skill-drawio-and-skill-coder-retirement-assessment-20261019_1841.md).
 
-- [x] **Layer check** — UNC's `check_import_layers` calls `scripts/import_layers.py` (same verdict on 2026-10-19; its baseline file is already this format).
 - [x] **Per-root package naming** — `import_layers.py --graph` names packages by top folder; UNC's graph names them per root (`under`/`self`), 16 packages against
   29. Add the option (or a roots table in `code-map.toml`), match UNC's report, then UNC's `scripts/checks/import_graph.py` retires.
 - [ ] **Write gates** — decide whether local file writes count as writes (`write_gates.py` found none in skill-drawio although `--write`/`--apply` write files; on UNC it flagged a capture script UNC's

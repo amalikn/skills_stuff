@@ -46,6 +46,7 @@ commit on its own.
 | Task                                                                                          | Core reference                           | Then                                                      |
 | --------------------------------------------------------------------------------------------- | ---------------------------------------- | --------------------------------------------------------- |
 | Shape a new module, package or service; choose layers; decide whether to build                | [references/design-principles.md](references/design-principles.md) | the language file                                         |
+| Reuse a proven design (resumable work, done ledger, partition before batch, evidence layout) | [references/design-patterns.md](references/design-patterns.md) | the language file's realisation |
 | Size, split, group into packages or name modules and functions; adopt a size budget on        | [references/module-and-function-shape.md](references/module-and-function-shape.md) | `scripts/code_size.py`,                                   |
 |   old code                                                                                    |                                          |   `scripts/ratchet.py`, `scripts/module_groups.py`        |
 | Name files, identifiers, commands and recipes in any language                                 | [references/naming-conventions.md](references/naming-conventions.md) | the language file                                         |
@@ -136,6 +137,12 @@ line under `## Unreleased` naming that file and date:
 
 A contradiction is a `Disputed` entry beside the old text with `Conflicts: <claim ID>`; never delete or silently rewrite. Read the edited file back. Full contract, release reconciliation and
 promotion: [references/evolution-and-write-back.md](references/evolution-and-write-back.md).
+
+**Design patterns are owed too** (operator, 2026-10-27: "its logic and out of box thinking and how it can benefit other projects"). When a
+project's code solves a general problem in a way that is not obvious (resumable changes, skipping finished work, partitioning before batching,
+an evidence layout), write it as a pattern in [references/design-patterns.md](references/design-patterns.md): problem, solution, why it works,
+reuse elsewhere, pitfalls, and its realisation per language with an excerpt, headed by a `Learned` line (`reusable_candidate` until a second
+project uses it), like skill-nautobot's capability patterns. The language trick that made it work goes in the language file, linked both ways.
 
 **The calling project owes it** (operator, 2026-10-19: "any project which is calling skill coder should write that learning back"). A session in any project that invoked this skill, followed its rules
 or ran its helpers is engaged, and its closeout (skill-slurp-chat Step 5b) classifies, writes and commits the entry here. When this source cannot be written, the entry is parked in the project under

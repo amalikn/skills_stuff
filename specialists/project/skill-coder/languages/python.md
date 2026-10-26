@@ -151,3 +151,19 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > (`{"executionEnvironments": [{"root": "<folder>", "reportUndefinedVariable": "none"}]}`), never an inline suppression. A `"//"` comment key is
 > reported as an unrecognized setting: document the config in the project's rules instead. Proven: `npx pyright@1.1.407 <part>` 0 warnings with it,
 > 3 "is not defined" without.
+
+> **Learned 2026-10-27** · git 2.x, Python 3.14 subprocess · VERIFIED_PRIMARY (failed `--apply` run, then fixed and re-run: 198 moves) ·
+> Source: local-knowledge-ansible `scripts/smc_change_runs_by_flavor.py` `move()` · Falsifier: `git -C <dir> mv <name> <relative dst>`
+> landing the file at `<cwd>/<relative dst>`
+> `git -C <dir>` changes directory before reading its arguments, so a relative destination resolves under `<dir>`, not the caller's cwd: the
+> first migration run failed with exit 128 on its first file. Resolve both paths before calling git, and plan every move before the first one
+> (a dry run that prints them) so a failure mid-way leaves a known state.
+>
+> ```python
+> src, dst = src.resolve(), dst.resolve()  # git -C changes directory, so relative paths would point elsewhere
+> dst.parent.mkdir(parents=True, exist_ok=True)
+> subprocess.run(["git", "-C", str(src.parent), "mv", src.name, str(dst)], check=True)
+> ```
+
+> Design patterns realised in Python (resumable journal, done ledger, partition before batch, plug-in probe, plan then apply) are in
+> [../references/design-patterns.md](../references/design-patterns.md), table "Language realisations"; entries here record the Python behaviour they rely on.

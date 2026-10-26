@@ -3,7 +3,7 @@
 
 Run it with python3 on the controller: smc_change_compare_records.py <before_dir> <after_dir>
   e.g. run the same check/verify runs with -e smc_change_report_dir=<before_dir>, change the role, rerun with <after_dir>, then compare.
-Both dirs hold <change>/<host>-<change>-<mode>-<start>.json records; records are paired by host, change and mode. Read-only.
+Both dirs hold <change>/runs/<flavor>/records/<host>-<change>-<mode>-<start>.json records (older: runs/records/, runs/ or <change>/); records are paired by host, change and mode. Read-only.
 Ignored fields: timestamps (epoch, start, end), free space, log positions and hit counts (live traffic), samples, page sizes, and summary
 lines that report new log lines or free space. Exit 0 when every pair is identical, 1 when any differs or has no partner, 2 on bad usage.
 """
@@ -44,8 +44,11 @@ def load(root):
     {(host, change, mode): normalised record}; the newest record wins when a key repeats.
   """
   out = {}
-  for path in sorted(glob.glob(os.path.join(root, "*", "*.json"))):
-    rec = json.load(open(path))
+  layouts = (("*", "runs", "*", "records", "*.json"), ("*", "runs", "records", "*.json"), ("*", "runs", "*.json"), ("*", "*.json"))
+  paths = [p for layout in layouts for p in glob.glob(os.path.join(root, *layout)) if "-" in os.path.basename(p)]
+  for path in sorted(paths, key=os.path.basename):
+    with open(path, encoding="utf-8") as handle:
+      rec = json.load(handle)
     out[(rec.get("host"), rec.get("change"), rec.get("mode"))] = {k: norm(rec.get(k)) for k in COMPARED}
   return out
 

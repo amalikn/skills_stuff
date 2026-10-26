@@ -88,7 +88,8 @@ unmatched name silently, so the old command still exits 0 and does nothing (oper
 > ```
 
 > **Learned 2026-10-26** · process matching from automation kills or waits on itself · VERIFIED_PRIMARY (ansible-wifi smc_change:
-> akwalirrumanja-smc01 session dropped twice at a `pkill -f`; an AVR check waited 60 s on itself every probe) · Falsifier: a `pgrep -f` in an
+> session dropped twice at a `pkill -f`; an AVR check waited 60 s on itself every probe) · Source: local-knowledge-ansible
+> `roles/smc_change/tasks/restart.yml` (commit 0918fc0 era, 2026-10-26) · Falsifier: a `pgrep -f` in an
 > Ansible shell task that never matches its own shell although the pattern is in `environment:` or in the script text
 > `pgrep -f`/`pkill -f` match whole command lines. Ansible's `environment:` values land on the remote command line, and a shell script's
 > own text is its shell's command line, so a pattern placed in either matches the task itself: pkill then kills the task's session, a wait

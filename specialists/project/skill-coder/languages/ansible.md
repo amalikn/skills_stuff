@@ -219,3 +219,73 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 >   when: src is not defined or base is none
 >   run_once: true
 > ```
+
+> **Learned 2026-10-27 (g)** · ansible-core 2.21.5 · VERIFIED_PRIMARY (local tests on rct prod inventory, controller only) ·
+> Source: local-knowledge-ansible `playbooks/smc_change.yml` first play + `roles/smc_change/tasks/pending.yml` · Falsifier: a host the first
+> play left out of the group still appears in the second play's serial batches
+> To do work once per run and keep serial batches dense, put a play with no `serial` before the serial play: work there runs once
+> (`run_once` there is once per run, since the play has one batch), and `group_by` sorts hosts into a group the next play targets
+> (`hosts: smc_change_todo`). Serial batches are built from that play's host list when it starts, so excluded hosts take no slot. A group with
+> no members gives "Could not match supplied host pattern ... skipping: no hosts matched" and the play is skipped, not failed; set any fact a
+> later play reads (a run-start stamp) in the first play, with `delegate_to: localhost` + `delegate_facts: true`.
+>
+> ```yaml
+> - name: Prepare the run and pick the SMCs it still has to do
+>   hosts: smc_bases
+>   gather_facts: false
+>   tasks:
+>     - name: Sort the targeted SMCs
+>       ansible.builtin.group_by:
+>         key: "{{ 'smc_change_done' if smc_change_done_why is defined else 'smc_change_todo' }}"
+> - name: Apply one SMC change spec and verify it
+>   hosts: smc_change_todo
+>   serial: "{{ smc_change_serial | default(1) }}"
+> ```
+
+> **Learned 2026-10-27 (h)** · ansible-core 2.21.5 · VERIFIED_PRIMARY (bug seen, fix tested with `ansible -m debug`) ·
+> Source: local-knowledge-ansible `roles/smc_change/tasks/pending.yml` (Teleport proxy) · Falsifier: `x | default('') is search('[.]t[.]')`
+> true for a matching x without parentheses
+> Parenthesise a filter chain before a test: `ansible_host | default('') is search('\\.teleport\\.')` evaluated false for
+> `host01.teleport.example.net` inside a `when`/`if`, while `(ansible_host | default('')) is search('[.]teleport[.]')` is true. `[.]` also
+> avoids backslash escaping across YAML and Jinja string literals.
+>
+> ```yaml
+> smc_change_tsh_proxy: >-
+>   {{ (ansible_host | default('')) | regex_replace('^' ~ (inventory_hostname | regex_escape) ~ '[.]', '')
+>      if (ansible_host | default('')) is search('[.]teleport[.]') else '' }}
+> ```
+
+> **Learned 2026-10-27 (i)** · ansible-core 2.21.5 · VERIFIED_PRIMARY (source `plugins/connection/ssh.py` `_ssh_retry`, timed on a closed
+> port: retries 3 = 4.6 s, 8 = 116.7 s) · Source: local-knowledge-ansible `playbooks/smc_change.yml` play vars · Falsifier: a retry after a
+> remote command's own non-zero exit, or pauses not 0,1,3,7,15,30,30,30
+> The ssh connection retries only when ssh itself returns 255, `retries` + 1 attempts, pausing `2**attempt - 1` seconds capped at 30. So
+> `retries = 3` (ansible.cfg) rides out about 4 s; 8 about 2 minutes, enough for a satellite or Teleport blip. Set it per play with the
+> `ansible_ssh_retries` variable (honoured from play `vars:`). A retry runs the whole module again: fine for idempotent tasks; an async
+> start retried after the job began would start a second job.
+>
+> ```yaml
+> vars:
+>   ansible_ssh_retries: 8   # pauses 0+1+3+7+15+30+30+30 s
+> ```
+
+> **Learned 2026-10-27 (j)** · ansible-core 2.21.5 · VERIFIED_PRIMARY (local run: three hosts, plan banner printed once with `apply`; part 2
+> is Ansible's documented behaviour that a skipped task still registers its variable, not tested here) · Source: local-knowledge-ansible
+> `plans/smc-change-resume-20261027_1038/prepare-once.patch` (`tasks/prepare.yml`, `tasks/recovery.yml`) · Falsifier: tasks inside a
+> `run_once` include running on every host
+> (1) `run_once` set on `include_tasks` belongs to the include; give the included tasks the keyword with `apply: {run_once: true}`.
+> (2) A task skipped by `when` still sets its `register` (to a skipped result), so a fact that may come from elsewhere needs its own name:
+> the role fingerprint prepared once is `smc_change_code_fingerprint`, and the per-host command keeps `register: smc_change_code_digest`,
+> read as `smc_change_code_fingerprint | default(smc_change_code_digest.stdout)`.
+>
+> ```yaml
+> - name: Load and check the change spec once
+>   ansible.builtin.include_tasks:
+>     file: load_spec.yml
+>     apply:
+>       run_once: true
+>   vars:
+>     smc_change_spec_only: true
+> ```
+
+> Design patterns realised in Ansible (resumable journal, done ledger, partition before batch, plug-in probe, plan then apply) are in
+> [../references/design-patterns.md](../references/design-patterns.md), table "Language realisations"; entries here record the Ansible behaviour they rely on.

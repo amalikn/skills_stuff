@@ -45,6 +45,11 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   text, and fall back to a `.proposed` file rather than rewriting the live one. Done when a test upgrades a commented `context-map.yaml` and every
   comment survives. Unblocks the unstamped-projects item above.
 
+- [ ] **`rotate_records.py` reads prose as a tracker path** (2026-10-27, ansible-wifi session): skill-coder's SCRATCHPAD front matter says
+  `Open items tracker: this file, Open items`; `scripts/rotate_records.py:771` takes the first word, so `just rotate --apply` moved its open
+  items into a new file named `this`, staged it, and linked it from SCRATCHPAD (undone by hand). Fix: treat a value that is not a path ending
+  in `.md` (or that says "this file") as "no separate tracker"; add a regression test with that front matter.
+
 ## Archcore
 
 - [ ] **`promote` mode implementation** — flesh out the promote mode workflow: read `ARCHCORE_PROMOTION_CANDIDATES.md`, resolve each candidate, write `.archcore/` files with provenance headers and

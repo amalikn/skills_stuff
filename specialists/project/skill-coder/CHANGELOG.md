@@ -139,6 +139,23 @@ Summary: Release history and governance changes of skill-coder; the release head
   reviewing that pattern for `just check`; both now `proposed`, awaiting the operator's promotion approval. `archcore status` passes.
 - Feedback to all-scraper: the ShellCheck wiki page answered with a bot challenge during research; recorded in its `ROADMAP.md` Backlog.
 
+## 20261027_1049 — Design patterns reference: out-of-the-box logic from smc_change, per language
+
+- `references/design-patterns.md` (new, operator 2026-10-27: capture the out-of-the-box logic so projects without SMCs benefit; like
+  skill-nautobot's capability patterns): Learned 2026-10-27 (a-l), twelve patterns from the smc_change engine (generic engine, baseline
+  gates, write-ahead journal with fingerprint, done ledger by target hash, prepare once then partition, detached long step, evidence tree,
+  shared pool, joined plug-in probe, fail-open filters, code freeze under open transactions, plan then apply), each with Ansible and Python
+  realisations. `SKILL.md`: routing row and a write-back contract paragraph making patterns owed by calling projects; pointers from
+  `languages/ansible.md` and `languages/python.md`.
+- `references/safety-and-writes.md`: Learned 2026-10-26 entry given its missing `Source:` field (contract test failed since 0918fc0) and its
+  site name removed.
+
+## 20261027_1045 — Ansible: once-per-run play, test precedence, ssh retry backoff, include apply; git -C paths
+
+- `languages/ansible.md`: Learned 2026-10-27 (g) once-per-run play before the serial play with group_by keeps batches dense; (h) parenthesise a filter chain before a Jinja test; (i) ssh retries only
+  rc 255, pauses 2^n-1 capped 30 s, 8 retries ride out ~117 s, per-play `ansible_ssh_retries`; (j) `run_once` on include_tasks needs `apply`, a skipped task still registers.
+- `languages/python.md`: Learned 2026-10-27 `git -C` resolves a relative destination under its directory; resolve paths first.
+
 ## 20261026_2222 — Ansible: run_once is per serial batch, results reach every host
 
 - `languages/ansible.md`: Learned 2026-10-26 (f) - run_once applies include_vars, set_fact and register to all batch hosts; when judged on the first host; once per batch, not per run.
