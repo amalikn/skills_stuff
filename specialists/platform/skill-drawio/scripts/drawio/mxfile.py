@@ -168,7 +168,7 @@ class Route:
         src: the source cell id.
         dst: the target cell id.
         points: the polyline; the first point lies on the source's border, the last on the target's.
-        klass: "thick" or "thin": which head room (drawio.audit.HEAD_ROOM) the audit asks for, and whether shared runs are checked.
+        klass: "thick" or "thin": which head room (drawio.audit.HEAD_ROOM) the audit asks for; thin edges are checked for shared runs only with no end in common.
         ignore: cell ids the edge may pass over (its ends and the group holding them).
         jump: the arc size draw.io draws where the edge crosses another (0 for none).
         layer: the layer cell id the edge sits in.

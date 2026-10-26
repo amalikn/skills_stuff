@@ -504,6 +504,15 @@
                 "items": {
                   "$ref": "#/$defs/id"
                 }
+              },
+              "own_page": {
+                "type": "boolean",
+                "description": "Draw this family's flows only on its own End-to-end page (drawn even with look.e2e_family_pages off), leave them off the full one, and number them from 1 with colours of their own; for example one change's flows (operator, 2026-10-26)."
+              },
+              "prefix": {
+                "type": "string",
+                "minLength": 1,
+                "description": "With own_page: the word before the family's flow numbers on tabs and the Overview index (\"PHP 1. Plan\"); default the family name."
               }
             }
           }

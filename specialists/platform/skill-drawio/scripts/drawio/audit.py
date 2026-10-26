@@ -110,6 +110,26 @@ def rects_overlap(a: Rect, b: Rect) -> bool:
     return a[0] < b[0] + b[2] and b[0] < a[0] + a[2] and a[1] < b[1] + b[3] and b[1] < a[1] + a[3]
 
 
+def shared_runs(routes: list, segs: dict) -> set[str]:
+    """Pairs of edges drawn as one line: two thick edges on a common run, or two other edges on one with no end in common (a fan-out from one
+    box may share its first run; 2026-10-26: an Overview arrow dropped down another box's exit line and a thick-only check passed it).
+
+    Args:
+        routes: the drawio.mxfile.Route records.
+        segs: {edge id: its runs} (segments()).
+
+    Returns:
+        {"<id> = <id>"} for each such pair.
+    """
+    out = set()
+    for kind in ("thick", "other"):
+        group = [r for r in routes if (r.klass == "thick") == (kind == "thick")]
+        for i, a in enumerate(group):
+            for b in group[i + 1:]:
+                if (kind == "thick" or (a.src != b.src and a.dst != b.dst)) and any(collinear(s, t) for s in segs[a.cid] for t in segs[b.cid]):
+                    out.add(f"{a.cid} = {b.cid}")
+    return out
+
 def layout_audit(obstacles: dict, routes: list, marks: list = (), cells: list = (), layers: list = (),
                  head_room: dict | None = None) -> dict[str, list]:
     """Check a routed drawing for every fault in AUDIT_KEYS.
@@ -123,7 +143,7 @@ def layout_audit(obstacles: dict, routes: list, marks: list = (), cells: list = 
         head_room: {klass: least final run}; default HEAD_ROOM.
 
     Returns:
-        {fault: sorted offending ids} for every key in AUDIT_KEYS: an edge crossing a box; a diagonal run; two thick edges sharing a run; a
+        {fault: sorted offending ids} for every key in AUDIT_KEYS: an edge crossing a box; a diagonal run; two thick edges sharing a run, or two other edges with no end in common; a
         last run shorter than its head room; a label on another edge; two labels overlapping; an edge whose hops at two crossings are closer than
         two arcs plus ARC_GAP (a double twist); a parent that is not a declared layer.
     """
@@ -140,11 +160,7 @@ def layout_audit(obstacles: dict, routes: list, marks: list = (), cells: list = 
         (p, q) = segs[r.cid][-1]
         if abs(p[0] - q[0]) + abs(p[1] - q[1]) < room[r.klass] - 0.5:
             out["short_heads"].add(r.cid)
-    thick = [r for r in routes if r.klass == "thick"]
-    for i, a in enumerate(thick):
-        for b in thick[i + 1:]:
-            if any(collinear(s, t) for s in segs[a.cid] for t in segs[b.cid]):
-                out["shared_runs"].add(f"{a.cid} = {b.cid}")
+    out["shared_runs"] = shared_runs(routes, segs)
     for m in marks:
         for r in routes:
             if r.cid != m.owner and any(seg_hits_rect(p, q, m.rect, 0) for p, q in segs[r.cid]):

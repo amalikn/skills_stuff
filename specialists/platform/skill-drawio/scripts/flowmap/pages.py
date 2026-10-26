@@ -17,6 +17,7 @@ from drawio.mxfile import BLANK, Page, banner, heading, label, mxfile, wrapped_l
 from .e2e import end_to_end_page
 from .e2e_family import family_pages
 from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
+from .map_parts import flow_labels
 from .model import option_blocks
 from .options import options_page
 from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, label_gaps, plan_runs, reserve, run_ys, step_width
@@ -96,14 +97,14 @@ def note_lines(step: dict, number: int) -> list[str]:
     return out
 
 
-def flow_header_lines(flow: dict, comps: dict[str, dict], number: int) -> list[str]:
+def flow_header_lines(flow: dict, comps: dict[str, dict], number: int | str) -> list[str]:
     """A flow page's header, set out like a note: bold title and category, a blank line, the purpose, a blank line, one line per field with its
     name in bold, a blank line, then the link back.
 
     Args:
         flow: the flow from the map.
         comps: every component by id.
-        number: the flow's position in the map.
+        number: the flow's number or label (flowmap.map_parts.flow_labels, "PHP 2" in an own family).
 
     Returns:
         Label lines for drawio.mxfile.label() (fields the flow does not have are left out).
@@ -149,7 +150,7 @@ def size_steps(steps: list[dict], shapes: dict, profile: Profile) -> tuple[dict,
             box_w[sid] += 20
     return texts, box_w, box_h
 
-def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: tuple, number: int = 1) -> float:
+def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: tuple, number: int | str = 1) -> float:
     """Draw one step box, centred in its lane, and its note below the lanes.
 
     Args:
@@ -160,7 +161,7 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
         profile: the kind colours.
         where: (lanes, lane tops, lane heights, step box heights, step texts, notes top, step shapes, column left edges, room for runs,
             step box widths).
-        number: the flow's number, for the x.y in the step's hover text.
+        number: the flow's number or label, for the x.y in the step's hover text.
 
     Returns:
         The note's height.
@@ -190,14 +191,14 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
     return nh
 
 
-def flow_page(flow: dict, comps: dict[str, dict], number: int, profile: Profile) -> Page:
+def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Profile) -> Page:
     """One flow: a header, a lane per component (in order of first use), the steps left to right with numbered arrows, a note per step, and a
     legend of the shapes the page uses (flowmap.shapes).
 
     Args:
         flow: the flow from the map.
         comps: every component by id.
-        number: the flow's position in the map, for the tab name.
+        number: the flow's number or label (flowmap.map_parts.flow_labels), for the tab name.
         profile: the kind colours.
 
     Returns:
@@ -317,9 +318,9 @@ def render(data: dict, profile: Profile) -> str:
         `look.e2e_family_pages` is on), one page per flow, and the decision pages after the
         Overview when the map has an `options` block, `decision_pages` or `option_pages`.
     """
-    comps = {c["id"]: c for c in data["components"]}
+    comps, labels = {c["id"]: c for c in data["components"]}, flow_labels(data, profile)
     pages = ([overview_page(data, profile), end_to_end_page(data, profile)] + family_pages(data, profile)   # family pages only with look.e2e_family_pages
-             + [flow_page(f, comps, i + 1, profile) for i, f in enumerate(data["flows"])])
+             + [flow_page(f, comps, labels[f["id"]], profile) for f in data["flows"]])
     for k, (pid, name, block) in enumerate(option_blocks(data)):   # optional: decision pages go right after the Overview, in map order
         pages.insert(1 + k, options_page(data, profile, block, pid, name))
     for page in pages:   # the background layer locked on every page: nothing on it moves by accident (operator, 2026-10-26)

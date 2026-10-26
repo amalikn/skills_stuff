@@ -14,7 +14,8 @@ from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, header_height, 
 from drawio.route import count_crossings, oriented
 
 from .e2e_grid import E2E_BAND_HEAD, E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_SP, E2E_TIER_HEAD, E2EGrid, Link, e2e_box_lines, e2e_text_height
-from .step_labels import label_setup, label_spot, step_label, total_words
+from .step_labels import label_setup, label_spot, legend_fit, legend_text, step_label, total_words
+from .map_parts import flow_numbers, shared_part
 from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .profile import Profile
@@ -38,7 +39,6 @@ def _swapper(order: list, i: int, j: int) -> object:
         """Swap the entries."""
         order[i], order[j] = order[j], order[i]
     return run
-
 
 class EndToEnd(E2EGrid):
     """Lays out, improves and draws the End-to-end page."""
@@ -329,17 +329,12 @@ class EndToEnd(E2EGrid):
             page.box(f"e2e-leg-{fam}-t", label(text), MARGIN + 50, ly, right - MARGIN - 50, 24,
                      "text;html=1;align=left;verticalAlign=middle;fontSize=12;", layer=leg, **iso)
         ly = y + 34 + len(self.groups) * 28 + 6
-        page.box("e2e-leg-solid", label(f"**Solid arrow, label {total_words(self.step_total) if total else 'x.y'}:** flow x (its number on the Overview) moves to the "
-                                        f"component acting in its step y{' of n' if total else ''}; "
-                                        "x.1 starts at the component the flow runs on, and a step done by the same component as the step before "
-                                        + ("is a loop on its box. " if self.loops else "has no arrow. ") + "**Dashed line, dot end:** not a step; the flow runs on, is owned by or depends on that component. "
-                                        "Hover an arrow for what happens. Arcs mark crossings."
-                                        + (" **Click** an arrow, a dashed line, a label or a legend row to see that flow alone; click it again to see "
-                                           "every flow." if dim is not None else "")),
-                 MARGIN, ly, right - MARGIN, 24, "text;html=1;align=left;verticalAlign=middle;fontSize=12;")
+        text = legend_text(self.step_total, bool(self.loops), dim is not None)
+        wrap, h = legend_fit(text, right - MARGIN)
+        page.box("e2e-leg-solid", label(text), MARGIN, ly, right - MARGIN, h, f"text;html=1;{wrap}align=left;verticalAlign=middle;fontSize=12;")
         used = component_shapes_used(list(self.comps.values()), self.profile)
         if used:   # the symbols the boxes use, as on a flow page
-            shape_legend(page, used, MARGIN, ly + 40, "e2e")
+            shape_legend(page, used, MARGIN, ly + h + 16, "e2e")
 
     def page(self, page_id: str = "end-to-end", name: str = "") -> Page:
         """Draw the page: frame, boxes, arrows and labels per family, and the legend.
@@ -369,7 +364,8 @@ class EndToEnd(E2EGrid):
 
 
 def end_to_end_page(data: dict, profile: Profile) -> Page:
-    """The End-to-end page: every component in tier columns, every flow as a coloured path, one layer per family.
+    """The End-to-end page: every component in tier columns, every flow as a coloured path, one layer per family; a family with `own_page`
+    is left off (flowmap.e2e_family draws it alone) and the rest are numbered among themselves (flowmap.map_parts.flow_numbers).
 
     Args:
         data: the validated map.
@@ -378,7 +374,13 @@ def end_to_end_page(data: dict, profile: Profile) -> Page:
     Returns:
         The page.
     """
-    return EndToEnd(data, profile).page()
+    part = shared_part(data, profile)
+    if part is data:
+        return EndToEnd(data, profile).page()
+    numbers = flow_numbers(data, profile)
+    e2e = EndToEnd(part, profile, {f["id"]: numbers[f["id"]] for f in part["flows"]})
+    e2e.title = "**End-to-end flow: every component, every shared flow** (a family with its own page is drawn only there)"
+    return e2e.page()
 
 
 def e2e_untouched(data: dict, page: Page) -> list[str]:

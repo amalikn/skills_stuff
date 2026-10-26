@@ -164,6 +164,11 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 - `look.e2e_family_colours` (with `e2e_layers: flow`) picks the family pages' colours: `page` (default) restarts the palette on each page,
   so none repeats; `flow` keeps each flow's full-page colour on every page, so a flow is the same colour everywhere and two flows 20 apart
   share one when a family holds both (operator, 2026-10-26: "switch to one colour per flow everywhere").
+- A family with `own_page: true` (in `drawing.families`) tells a story of its own, for example one change run through a generic role: its
+  flows are drawn only on its own End-to-end page (drawn even with `e2e_family_pages` off) and never on the full one, they are numbered from
+  1 with colours of their own, and their tabs and Overview index rows carry the family's `prefix` ("PHP 1. Plan"; default the family name).
+  The full page's shared flows are numbered among themselves, so adding such a family renumbers nothing (`flowmap.map_parts`; operator,
+  2026-10-26: "it wont be added to the e2e flow", "it should not be starting from 5.x").
 - `look.e2e_step_total` adds each flow's step count n to its End-to-end arrow labels and legend rows, so a reader knows how long a flow is
   and that a skipped number is a step done by the same component, not a missing arrow: `sub` (x.y with n as a subscript; `true` means
   `sub`), `sup` or `slash` (x.y/n). `look.e2e_label_font` sets the label size (default 10); the label box is sized from the text
@@ -463,4 +468,41 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > for y0, y1 in title_spans(grid, c):   # a top-row box's room ends at its tier heading, not the column's top
 >     up = min(up, top - y1) if y1 <= top else up
 >     down = min(down, y0 - top - h) if y0 >= top + h else down
+> ```
+
+> **Learned 2026-10-26** · a change on a page of its own · VERIFIED_PRIMARY · Source: `scripts/flowmap/map_parts.py` (`shared_part`,
+> `flow_numbers`, `flow_labels`), `scripts/flowmap/e2e_family.py` `family_pages`; `tests/test_own_page.py`; ansible-wifi smc_change render;
+> screenshots `references/screenshots/20261026-own-page/` · Falsifier: a map with an `own_page` family whose full End-to-end page carries a
+> cell tagged with one of its flows, or whose own page numbers a flow other than 1..n
+> A role that runs many changes (ansible-wifi's smc_change) wants one page per change, but a family page reuses the whole map's numbers and
+> the full page draws every flow, so the first PHP page read "5.1" and its flow also crowded the shared page. Leaving the family's flows out of
+> the full page's part, and dropping only the components no shared flow touches, keeps that page whole; numbering per family keeps every
+> page readable alone. The operator then asked for phases of one run as separate flows (1 Plan ... 5 Prove), not one long flow.
+>
+> ```python
+> # scripts/flowmap/map_parts.py (skills_stuff, 2026-10-26)
+> for f in data["flows"]:
+>     fam = flow_family(f, profile) if profile.own_families else ""
+>     key = fam if fam in profile.own_families else ""
+>     seen[key] = seen.get(key, 0) + 1
+>     out[f["id"]] = seen[key]
+> # shared_part: the full page's flows and components
+> kept = set(c["id"] for c in flows_part(data, shared)["components"])
+> only_own = set(c["id"] for c in flows_part(data, own)["components"]) - kept
+> ```
+
+> **Learned 2026-10-26** · thin arrows on one line, and legend text that never wrapped · VERIFIED_PRIMARY · Source: `scripts/drawio/audit.py`
+> `shared_runs`, `scripts/flowmap/overview.py` `_thin_routes`, `scripts/flowmap/step_labels.py` `legend_fit`; `tests/test_own_page.py`
+> `ThinSharedRuns` (proved red with the nudge disabled) · Falsifier: an Overview whose thin arrows with no end in common share a run while
+> the audit reports clean, or an End-to-end legend line wider than its box
+> The shared-run audit checked thick arrows only, so an Overview thin arrow that dropped down another box's exit line (a box stacked straight
+> above the other's target, both at the centre fraction) passed as clean; the operator saw it in the export. Thin arrows are now checked
+> unless they share an end (a fan-out may share its first run), and an entry that would land on another exit line moves half a slot. The
+> End-to-end legend's reading line had no `whiteSpace=wrap`: draw.io laid it out on one line about 2,400 px wide whatever its box, which
+> showed only on a narrow family page; it now wraps when the estimate needs more than one line, so wide pages are byte-identical.
+>
+> ```python
+> # scripts/flowmap/overview.py _thin_routes (skills_stuff, 2026-10-26)
+> if any(abs(pos[ch[-1]][0] + OV_BW * fi - x) < 3 for k, x in exits.items() if k != id(ch)):
+>     fi += 1 / (2 * (len(ins[ch[-1]]) + 1))   # its drop would run down another box's exit line: enter half a slot right
 > ```

@@ -8,6 +8,10 @@ can be exported and read alone. The full page stays as it is.
 Each family page keeps the whole map's flow numbers (x of x.y matches the Overview and the full page), takes colours in its own order (no
 colour repeats on it; `look.e2e_family_colours: flow` keeps each flow's full-page colour instead), drops tier columns it does not use, and renames its cell ids `e2e-` to `e2f-<family>-` so every id stays unique in the file.
 
+A family with `own_page: true` (operator, 2026-10-26: one change's flows, "it wont be added to the e2e flow") gets its page even with
+`look.e2e_family_pages` off, the full page leaves its flows off (flowmap.map_parts.shared_part), and its flows are numbered from 1 with colours
+of their own (flowmap.map_parts.flow_numbers; "it should not be starting from 5.x").
+
 Imported, not run: `from flowmap.e2e_family import family_pages` with the skill's scripts/ on sys.path.
 """
 
@@ -18,7 +22,8 @@ from dataclasses import replace
 from drawio.mxfile import Page
 
 from .e2e import EndToEnd
-from .model import e2e_tier, flow_extras, flow_family
+from .map_parts import flow_numbers, flows_part
+from .model import e2e_tier, flow_family
 from .profile import Profile
 
 
@@ -35,10 +40,8 @@ def family_parts(data: dict, profile: Profile) -> list[tuple[str, str, dict]]:
     parts = []
     for fam, name, _colour, _ids in profile.families:
         flows = [f for f in data["flows"] if flow_family(f, profile) == fam]
-        if not flows:
-            continue
-        used = {c for f in flows for c in [s["actor"] for s in f["steps"]] + flow_extras(f)}
-        parts.append((fam, name, {**data, "flows": flows, "components": [c for c in data["components"] if c["id"] in used]}))
+        if flows:
+            parts.append((fam, name, flows_part(data, flows)))
     return parts
 
 
@@ -74,17 +77,19 @@ def family_page(data: dict, profile: Profile, fam: str, name: str, part: dict) -
     Returns:
         The page, id `end-to-end-<family>`, its cell ids renamed to `e2f-<family>-`.
     """
-    numbers = {f["id"]: i for i, f in enumerate(data["flows"], 1)}
+    numbers = flow_numbers(data, profile)   # an own family counts from 1; the others keep the full page's numbers
     e2e = EndToEnd(part, narrowed(profile, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})
     nums = ", ".join(str(numbers[f["id"]]) for f in part["flows"])
-    e2e.title = f"**End-to-end: {name}** (flows {nums}; the full End-to-end page shows every flow)"
+    own = fam in profile.own_families
+    e2e.title = f"**End-to-end: {name}** (flows {nums}; " + ("drawn on this page only)" if own else "the full End-to-end page shows every flow)")
     page = e2e.page(f"end-to-end-{fam}", f"{profile.look.get('e2e_tab', 'End-to-end')}: {name}")
     page.rename = ("e2e-", f"e2f-{fam}-")
     return page
 
 
 def family_pages(data: dict, profile: Profile) -> list[Page]:
-    """The family End-to-end pages, in the profile's family order; none unless `look.e2e_family_pages` is on.
+    """The family End-to-end pages, in the profile's family order: every family with `look.e2e_family_pages` on, else only the families
+    with `own_page` (drawn whatever the look says, since the full page leaves their flows off).
 
     Args:
         data: the validated map.
@@ -93,6 +98,6 @@ def family_pages(data: dict, profile: Profile) -> list[Page]:
     Returns:
         The pages.
     """
-    if not profile.look.get("e2e_family_pages"):
-        return []
-    return [family_page(data, profile, fam, name, part) for fam, name, part in family_parts(data, profile)]
+    every = profile.look.get("e2e_family_pages")
+    return [family_page(data, profile, fam, name, part) for fam, name, part in family_parts(data, profile)
+            if every or fam in profile.own_families]

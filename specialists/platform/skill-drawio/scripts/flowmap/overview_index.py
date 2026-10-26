@@ -9,6 +9,7 @@ from __future__ import annotations
 from drawio.mxfile import Page, label, wrapped_lines
 
 from .isolate import LEGEND_TAG, ov_cell
+from .map_parts import flow_labels, flow_numbers
 from .model import comp_style, flow_family, option_blocks
 from .shapes import component_shape, fit_height, person_badge
 from .overview_layout import THIN_GREY
@@ -74,7 +75,8 @@ def colour_legend(page: Page, x: float, y: float, thick: list, dim: float | None
 
 
 def family_entries(page: Page, data: dict, profile: Profile, x: float, y: float) -> float:
-    """One index entry per family End-to-end page (flowmap.e2e_family), right under the full page's; none unless `look.e2e_family_pages`.
+    """One index entry per family End-to-end page (flowmap.e2e_family), right under the full page's: every family with
+    `look.e2e_family_pages`, else only the `own_page` families.
 
     Args:
         page: the Overview.
@@ -86,17 +88,42 @@ def family_entries(page: Page, data: dict, profile: Profile, x: float, y: float)
     Returns:
         The offset after the entries.
     """
-    if not profile.look.get("e2e_family_pages"):
+    every = profile.look.get("e2e_family_pages")
+    if not every and not profile.own_families:
         return y
     of = [flow_family(f, profile) for f in data["flows"]]
-    for fam, name, _col, _ids in (g for g in profile.families if g[0] in of):
-        nums = ", ".join(str(i) for i, f in enumerate(of, 1) if f == fam)
+    for fam, name, _col, _ids in (g for g in profile.families if g[0] in of and (every or g[0] in profile.own_families)):
+        nums = ", ".join(str(n) for f, n in zip(of, flow_numbers(data, profile).values()) if f == fam)
         page.box(f"ov-f-end-to-end-{fam}", label(f"**End-to-end: {name}**", f"flows {nums} only"), x, y + 102, 340, 52,
                  "rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f4fa;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
                  link=f"data:page/id,end-to-end-{fam}", tooltip=f"The {name} flows only, and the components they touch")
         y += 62
     return y
 
+
+def flow_entries(page: Page, data: dict, profile: Profile, x: float, top: float) -> float:
+    """One clickable index box per flow page, numbered as its tab is (flowmap.map_parts.flow_labels).
+
+    Args:
+        page: the Overview.
+        data: the validated map.
+        profile: the drawing profile.
+        x: the index column's left edge.
+        top: where the first box goes.
+
+    Returns:
+        The offset after the last box.
+    """
+    labels = flow_labels(data, profile)
+    for f in data["flows"]:
+        sub = f"{f['trigger']['kind']} · runs on {f['runs_on']} · {f['category']}"
+        title, line2 = f"**{labels[f['id']]}. {f['title']}**", (f"*{f['status']['state']} since {f['status']['since']}* · {sub}" if f.get("status") else sub)
+        h = index_height(title, line2)
+        page.box(f"ov-f-{f['id']}", label(title, line2),
+                 x, top, 340, h, "rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
+                 link=f"data:page/id,flow-{f['id']}", tooltip=f["purpose"])
+        top += h + INDEX_GAP
+    return top
 
 def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> float:
     """The flow index (one clickable box per flow page, plus the End-to-end page and, when the map has them, the decision pages) and the component
@@ -113,7 +140,8 @@ def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> 
         The bottom of the kind legend (the colour legend goes below it).
     """
     page.box("ov-flows", label("**Flows** (click to open the page)"), x, y, 340, 30, "text;html=1;align=left;verticalAlign=middle;fontSize=13;")
-    page.box("ov-f-end-to-end", label("**End-to-end flow**", "every component and every flow on one page"), x, y + 40, 340, 52,
+    every = "every shared flow; a family with its own page below" if profile.own_families else "every component and every flow on one page"
+    page.box("ov-f-end-to-end", label("**End-to-end flow**", every), x, y + 40, 340, 52,
              "rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f4fa;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
              link="data:page/id,end-to-end", tooltip="All flows as coloured paths through their components, one layer per family")
     y = family_entries(page, data, profile, x, y)
@@ -122,16 +150,7 @@ def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> 
                  x, y + 102, 340, 52, "rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=6;",
                  link=f"data:page/id,{pid}", tooltip=block.get("purpose", block["title"]))
         y += 62
-    top = y + 102
-    for fi, f in enumerate(data["flows"]):
-        sub = f"{f['trigger']['kind']} · runs on {f['runs_on']} · {f['category']}"
-        title, line2 = f"**{fi + 1}. {f['title']}**", (f"*{f['status']['state']} since {f['status']['since']}* · {sub}" if f.get("status") else sub)
-        h = index_height(title, line2)
-        page.box(f"ov-f-{f['id']}", label(title, line2),
-                 x, top, 340, h, "rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
-                 link=f"data:page/id,flow-{f['id']}", tooltip=f["purpose"])
-        top += h + INDEX_GAP
-    ly = top + 20
+    ly = flow_entries(page, data, profile, x, y + 102) + 20
     page.box("ov-legend", label("**Legend: component kinds**"), x, ly - 18, 340, 30, "text;html=1;align=left;fontSize=12;whiteSpace=wrap;")
     kinds = list(profile.kind_style)   # each kind drawn as it appears in the drawing: its colour and, when on, its symbol
     sample_h = [fit_height({"kind": k}, profile, 28) for k in kinds]

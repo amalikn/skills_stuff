@@ -11,8 +11,10 @@ Imported, not run: `from flowmap.step_labels import step_label` with the skill's
 
 from __future__ import annotations
 
+import math
+
 from drawio.audit import rects_overlap, seg_hits_rect, segments
-from drawio.mxfile import Page, Point, label
+from drawio.mxfile import Page, Point, label, wrapped_lines
 
 from .e2e_grid import E2E_LABEL_H, E2E_LABEL_W, Link
 from .profile import Profile
@@ -172,3 +174,42 @@ def label_spot(cid: str, pts: dict, page: Page, label_w: float, label_h: float) 
                 return (cx, cy)
     p1, p2 = segs[0]
     return ((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
+
+
+#: Average width of a 12 pt legend character in px, conservative for the bold spans (sizes the wrapped legend text box).
+LEGEND_CHAR_W = 6.5
+
+
+def legend_text(total: str | None, loops: bool, click: bool) -> str:
+    """The End-to-end legend's line on how to read an arrow.
+
+    Args:
+        total: the look's e2e_step_total style, or None for plain x.y.
+        loops: whether the page draws loops (look.e2e_loops placed some).
+        click: whether a click isolates a flow (look.click_isolate).
+
+    Returns:
+        The text, with **bold** spans.
+    """
+    return (f"**Solid arrow, label {total_words(total) if total else 'x.y'}:** flow x (its number on the Overview) moves to the "
+            f"component acting in its step y{' of n' if total else ''}; "
+            "x.1 starts at the component the flow runs on, and a step done by the same component as the step before "
+            + ("is a loop on its box. " if loops else "has no arrow. ") + "**Dashed line, dot end:** not a step; the flow runs on, is owned by or depends on that component. "
+            "Hover an arrow for what happens. Arcs mark crossings."
+            + (" **Click** an arrow, a dashed line, a label or a legend row to see that flow alone; click it again to see "
+               "every flow." if click else ""))
+
+
+def legend_fit(text: str, width: float) -> tuple[str, float]:
+    """How the legend line fits its box: one line keeps the plain cell; a longer text (a narrow page, one family's) wraps to the grid's
+    width (operator, 2026-10-26: "should be wrapped").
+
+    Args:
+        text: the legend text, with ** spans.
+        width: the box width in px.
+
+    Returns:
+        (the style's wrap key or "", the box height).
+    """
+    lines = math.ceil(wrapped_lines(text.replace("*", ""), max(1, int(width / LEGEND_CHAR_W))))
+    return ("", 24) if lines == 1 else ("whiteSpace=wrap;", lines * 16 + 8)

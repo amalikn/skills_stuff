@@ -119,12 +119,13 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/__init__.py` | Package `flowmap`: data-first flow maps | `safe` |
 | `scripts/flowmap/profile.py` | `Profile`: a project's paths, kind colours, tiers and families; `from_drawing()` defaults | `safe` |
 | `scripts/flowmap/model.py` | Load and validate a map (PyYAML at the edge), cross-references, the map's questions | `safe` |
+| `scripts/flowmap/map_parts.py` | Parts of a map (a page's flows and the components they touch; the full End-to-end page without `own_page` families) and flow numbers (an own family counts from 1, tabs prefixed) | `safe` |
 | `scripts/flowmap/overview_layout.py` | Overview geometry: layered group interiors, box text sizing, group edges and channels | `safe` |
 | `scripts/flowmap/overview.py` | The Overview page: groups, thick and thin arrows, counts, dots, layers, index, legends | `safe` |
 | `scripts/flowmap/e2e_grid.py` | End-to-end grid: placement, link plans, row heights, ports, channel and corridor tracks | `safe` |
 | `scripts/flowmap/e2e.py` | End-to-end polylines, crossing-cutting local search, and the drawing | `safe` |
-| `scripts/flowmap/e2e_family.py` | One End-to-end page per flow family after the full one (`look.e2e_family_pages`): that family's flows and components, the map's flow numbers, ids renamed `e2f-<family>-` | `safe` |
-| `scripts/flowmap/step_labels.py` | End-to-end step arrow labels: x.y and the flow's step count (`look.e2e_step_total`: sub, sup, slash), label font and size, the spots tried on a run | `safe` |
+| `scripts/flowmap/e2e_family.py` | One End-to-end page per flow family after the full one (`look.e2e_family_pages`): that family's flows and components, the map's flow numbers (an `own_page` family's own, drawn even with the look off), ids renamed `e2f-<family>-` | `safe` |
+| `scripts/flowmap/step_labels.py` | End-to-end step arrow labels: x.y and the flow's step count (`look.e2e_step_total`: sub, sup, slash), label font and size, the spots tried on a run; the legend's reading line, wrapped on a narrow page | `safe` |
 | `scripts/flowmap/loops.py` | End-to-end self-loops (`look.e2e_loops`): a step that stays in its box drawn as a loop on the roomier of its top and bottom edges, gaps widened only where room lacks | `safe` |
 | `scripts/flowmap/isolate.py` | Click a flow to see it alone (`look.e2e_click_isolate`): draw.io `data:action/json` links that dim every other flow on an End-to-end page, and the Show all reset | `safe` |
 | `scripts/flowmap/overview_index.py` | The Overview's right column: flow index (decision pages linked), kind, status and arrow colour legends | `safe` |

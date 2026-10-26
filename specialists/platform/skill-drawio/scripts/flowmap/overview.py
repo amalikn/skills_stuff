@@ -181,9 +181,12 @@ class Overview:
         # First the x of every horizontal run (one per chain hop, in its row gap), then the tracks: each gap keeps its runs in chain order unless
         # swapping two neighbouring tracks strictly lowers that gap's crossings (route.gap_order), so a layout that is already best is unchanged.
         runs: list[tuple[int, float, float]] = []   # (row, start x, end x), one per chain hop in chain order
+        exits = {id(ch): pos[ch[0]][0] + OV_BW * (outs[ch[0]].index(ch) + 1) / (len(outs[ch[0]]) + 1) for ch in gl.chains}
         for ch in gl.chains:
             fi = (ins[ch[-1]].index(ch) + 1) / (len(ins[ch[-1]]) + 1)
-            px = pos[ch[0]][0] + OV_BW * (outs[ch[0]].index(ch) + 1) / (len(outs[ch[0]]) + 1)
+            if any(abs(pos[ch[-1]][0] + OV_BW * fi - x) < 3 for k, x in exits.items() if k != id(ch)):
+                fi += 1 / (2 * (len(ins[ch[-1]]) + 1))   # its drop would run down another box's exit line: enter half a slot right (2026-10-26)
+            px = exits[id(ch)]
             for a, b in zip(ch, ch[1:]):
                 nx = (pos[b][0] + OV_SLOT / 2) if b.startswith("slot:") else (pos[b][0] + OV_BW * fi)
                 runs.append((row_of[a], px, nx))

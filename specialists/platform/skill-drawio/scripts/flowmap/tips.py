@@ -113,11 +113,11 @@ def step_tip(step: dict, number: str, actor: str) -> str:
                     *((name, step.get(key, [])) for key, name in lists))
 
 
-def flow_arrow_tip(number: int, src: tuple, dst: tuple, actor: str, back: bool) -> str:
+def flow_arrow_tip(number: int | str, src: tuple, dst: tuple, actor: str, back: bool) -> str:
     """A flow page arrow's hover text: the step it leads into, after which step, and what happens there.
 
     Args:
-        number: the flow's number.
+        number: the flow's number or label.
         src: (index, step) the arrow leaves.
         dst: (index, step) it leads into.
         actor: the name of the component acting in the target step.

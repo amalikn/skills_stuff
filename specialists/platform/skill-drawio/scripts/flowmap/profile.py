@@ -81,6 +81,9 @@ class Profile:
         default_tier: the column for anything else.
         families: flow families: (id, legend and layer name, colour, flow ids in it); one draw.io layer each.
         family_by_category: {flow category: family id} for a flow named in no family.
+        own_families: families with `own_page: true`, drawn only on their own End-to-end page and left off the full one, their flows numbered
+            from 1 on their own (operator, 2026-10-26).
+        family_prefix: {own family id: the word before its flow numbers on tabs and the index, `prefix` else the family name}.
         band_title: the heading of the band below the columns.
         kind_shapes: {component kind: flow page shape} from `drawing.kind_shapes` (flowmap.shapes.DEFAULT_KIND_SHAPES fills the rest).
         io_vias: transports that cross a network, lower case, from `drawing.io_vias` (default flowmap.shapes.DEFAULT_IO_VIAS).
@@ -105,6 +108,8 @@ class Profile:
     default_tier: int = 0
     families: tuple = ()
     family_by_category: dict = field(default_factory=dict)
+    own_families: frozenset = frozenset()
+    family_prefix: dict = field(default_factory=dict)
     band_title: str = "Stores and secrets"
     kind_shapes: dict = field(default_factory=dict)
     io_vias: tuple = DEFAULT_IO_VIAS
@@ -159,7 +164,9 @@ class Profile:
                    group_columns=group_columns(d),
                    group_cells={k: (int(v[0]) - 1, int(v[1]) - 1) for k, v in (d.get("group_cell") or {}).items()}, tiers=tiers, below_groups=below_groups, below_kinds=below_kinds,
                    kind_tier=dict(d.get("kind_tier") or {}), default_tier=int(d.get("default_tier", 0)), families=families,
-                   family_by_category=by_cat, band_title=d.get("band_title", "Stores and secrets"),
+                   family_by_category=by_cat, own_families=frozenset(f["id"] for f in d.get("families") or () if f.get("own_page")),
+                   family_prefix={f["id"]: f.get("prefix", f["name"]) for f in d.get("families") or () if f.get("own_page")},
+                   band_title=d.get("band_title", "Stores and secrets"),
                    kind_shapes=dict(d.get("kind_shapes") or {}), io_vias=tuple(v.lower() for v in d.get("io_vias", DEFAULT_IO_VIAS)),
                    look={**DEFAULT_LOOK, **(d.get("look") or {})})
 
