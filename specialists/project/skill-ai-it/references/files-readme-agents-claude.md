@@ -35,7 +35,7 @@ Authority: canonical
 Scope: Front door of <project folder>
 Last reviewed: <YYYY-MM-DD>
 Summary: <One or two sentences: what the project is for and who uses it.>
-Budget: 200 lines
+Budget: 200 lines, 25 KB
 ---
 
 # <Project Name>

@@ -49,7 +49,7 @@ class AdoptTest(unittest.TestCase):
             just, roadmap = (root / "justfile").read_text(), (root / "ROADMAP.md").read_text()
             self.assertEqual(just.count("roadmap_trim.py"), 1)
             self.assertIn('    @{{py}} "{{ai_it}}/scripts/roadmap_trim.py" --project-root . {{ARGS}}', just)
-            for key in ("Kind: roadmap", "Budget: 200 lines", "Archive:", "Last reviewed:"):
+            for key in ("Kind: roadmap", "Budget: 200 lines, 25 KB", "Archive:", "Last reviewed:"):
                 self.assertIn(key, roadmap)
             self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
             self.assertEqual((just, roadmap), ((root / "justfile").read_text(), (root / "ROADMAP.md").read_text()))
@@ -136,7 +136,7 @@ class AdoptTest(unittest.TestCase):
             self.assertIn("\n---\n\n@../AGENTS.md\n\n# AGENTS.md", agents)
             readme = (root / "README.md").read_text()
             self.assertIn("Summary: What this project does, in one paragraph.", readme)
-            self.assertIn("Budget: 200 lines", readme)
+            self.assertIn("Budget: 200 lines, 25 KB", readme)
             self.assertIn("Review by:", readme)
             self.assertIn("role_check.py", (root / "justfile").read_text())
             self.assertTrue((root / "scripts" / "role-check-baseline.json").is_file())

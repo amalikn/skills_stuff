@@ -11,7 +11,7 @@ headings differently and keeps a Contents list that must gain the new entry's li
 3. Detects the order (newest first, or oldest first) and inserts above the newest entry or appends at the end.
 4. Adds the entry's link to the Contents list when the file keeps one, in the same position.
 5. Verifies every original line is still present, in order. Without `--apply` it prints the heading and position and changes nothing.
-After writing, it says when the file is over its 200-line budget (`just budget --apply` rotates it).
+After writing, it says when the file is over its 200-line / 25 KB budget (`just budget --apply` rotates it).
 
 Usage:
     python scripts/add_changelog_entry.py --project-root . --title "Navigation block compact" --body-file /tmp/entry.md
@@ -34,7 +34,7 @@ STYLES = [
     ("date", re.compile(r"^## (\d{4}-\d{2}-\d{2})\b")),
 ]
 TOC_ENTRY = re.compile(r"^\s*- \[(.+?)\]\(#[^)]*\)\s*$")
-BUDGET = 200   # lines only (operator, 2026-10-26)
+BUDGET = (200, 25 * 1024)
 
 
 def slug(heading: str) -> str:
@@ -175,8 +175,8 @@ def main(argv: list[str] | None = None) -> int:
         print("plan only; add --apply to write")
         return 0
     path.write_text(new)
-    lines = new.count("\n")
-    print(f"written; {args.record} is {lines} lines" + ("; over budget, run `just budget --apply`" if lines > BUDGET else ""))
+    lines, size = new.count("\n"), len(new.encode())
+    print(f"written; {args.record} is {lines} lines, {size // 1024} KB" + ("; over budget, run `just budget --apply`" if lines > BUDGET[0] or size > BUDGET[1] else ""))
     return 0
 
 

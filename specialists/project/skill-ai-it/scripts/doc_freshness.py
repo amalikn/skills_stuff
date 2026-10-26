@@ -11,7 +11,7 @@ loads whole keep growing, and a file without a header must be opened to be judge
 2. `superseded-in-place`: `Status: superseded ...` outside an `archive/` folder (move it with `move_doc.py`).
 3. `dependency-changed`: a file named under `Depends on` was committed after the document's `Last reviewed`.
 4. `over-budget`: a file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, ROADMAP.md, SKILL.md, MEMORY.md, or
-   any file with a `Budget` key) over 200 lines, one standard for every agent (operator, 2026-10-10; lines only, no KB, 2026-10-26). Rotate records with
+   any file with a `Budget` key) over 200 lines or 25 KB, one standard for every agent (operator, 2026-10-10). Rotate records with
    `rotate_records.py`; trim the others.
 5. `no-header`: a tracked markdown, Python, YAML, shell, justfile or TOML file with no summary in its native header form (JSON and
    JSON-in-YAML are data and need none).
@@ -49,7 +49,7 @@ DEFAULT_WINDOW_DAYS = 30
 LIVING_STATUSES = ("current", "draft", "proposed")
 POINT_IN_TIME = re.compile(r"report|review|audit|sources?\b|source-index|sources-index|evidence|capture|changelog|record|prompt|handoff|archive", re.I)
 BUDGET_NAMES = {"AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md", "SCRATCHPAD.md", "CHANGELOG.md", "ROADMAP.md", "SKILL.md", "MEMORY.md"}  # ROADMAP 2026-10-14
-DEFAULT_BUDGET = 200   # lines; budgets count lines only, never bytes (operator, 2026-10-26: "remove file size limit from everywhere.. just use line count")
+DEFAULT_BUDGET = (200, 25 * 1024)
 CHECKER_SPLIT_LINES = 800
 DATE = re.compile(r"(\d{4})-?(\d{2})-?(\d{2})")
 
@@ -72,17 +72,23 @@ def parse_date(value: str) -> dt.date | None:
         return None
 
 
-def parse_budget(value: str) -> int:
-    """A `Budget` value such as `200 lines` (a KB part left in an old header is ignored).
+def parse_budget(value: str) -> tuple[int, int]:
+    """A `Budget` value such as `200 lines, 25 KB`.
 
     Args:
         value: the header value; empty for the default.
 
     Returns:
-        The maximum lines.
+        (maximum lines, maximum bytes); a part not given keeps the default.
     """
+    lines, size = DEFAULT_BUDGET
     m = re.search(r"(\d+)\s*lines", value or "")
-    return int(m.group(1)) if m else DEFAULT_BUDGET
+    if m:
+        lines = int(m.group(1))
+    m = re.search(r"(\d+)\s*KB", value or "", re.I)
+    if m:
+        size = int(m.group(1)) * 1024
+    return lines, size
 
 
 def last_commit_date(root: pathlib.Path, rel: str) -> dt.date | None:
@@ -112,7 +118,7 @@ def findings(root: pathlib.Path, today: dt.date, window_days: int) -> dict[str, 
 
     Returns:
         Finding key (`<rule>:<path>`, plus `:<dependency>` for rule 3) to a one-line explanation; for rule 4 the explanation starts with
-        `lines=<n>`, which the ratchet compares.
+        `lines=<n> bytes=<n>`, which the ratchet compares.
     """
     out: dict[str, str] = {}
     for path in file_headers.tracked(root, []):
@@ -123,9 +129,11 @@ def findings(root: pathlib.Path, today: dt.date, window_days: int) -> dict[str, 
         # A `Budget` header counts only when it states a size (`N lines` or `N KB`): a script's docstring line "Budget: 60 seconds" is a runtime
         # budget, not a file budget (unified-network-controller, 2026-10-15: two Python modules flagged as over a 200-line file budget).
         if path.name in BUDGET_NAMES or re.search(r"\d+\s*(lines|KB)\b", head.get("budget", ""), re.I):
-            nlines, max_lines = path.read_bytes().count(b"\n"), parse_budget(head.get("budget", ""))
-            if nlines > max_lines:
-                out[f"over-budget:{rel}"] = f"lines={nlines} {rel}: over its budget of {max_lines} lines"
+            text = path.read_bytes()
+            nlines, nbytes = text.count(b"\n"), len(text)
+            max_lines, max_bytes = parse_budget(head.get("budget", ""))
+            if nlines > max_lines or nbytes > max_bytes:
+                out[f"over-budget:{rel}"] = f"lines={nlines} bytes={nbytes} {rel}: over its budget of {max_lines} lines, {max_bytes // 1024} KB"
         if path.suffix != ".md":
             continue
         status = head.get("status", "").lower()
@@ -152,22 +160,22 @@ def findings(root: pathlib.Path, today: dt.date, window_days: int) -> dict[str, 
         n = checker.read_text(encoding="utf-8", errors="ignore").count("\n")
         if n > CHECKER_SPLIT_LINES:
             # Rule 6: a single-file checker past the split threshold (skill-ai-it patterns/governance-checks.md, "Structure and growth").
-            out["checker-size:scripts/check_governance.py"] = (f"lines={n} scripts/check_governance.py: {n} lines in one file; split it with "
+            out["checker-size:scripts/check_governance.py"] = (f"lines={n} bytes=0 scripts/check_governance.py: {n} lines in one file; split it with "
                                                                 f"skill-ai-it scripts/split_checker.py (threshold {CHECKER_SPLIT_LINES})")
     return out
 
 
-def sizes(value: str) -> int:
-    """The `lines=` number at the start of an over-budget finding or baseline value (an old baseline's `bytes=` is ignored).
+def sizes(value: str) -> tuple[int, int]:
+    """The `lines=` and `bytes=` numbers at the start of an over-budget finding or baseline value.
 
     Args:
         value: the text.
 
     Returns:
-        The lines; 0 when absent.
+        (lines, bytes); (0, 0) when absent.
     """
-    m = re.match(r"lines=(\d+)", value or "")
-    return int(m.group(1)) if m else 0
+    m = re.match(r"lines=(\d+) bytes=(\d+)", value or "")
+    return (int(m.group(1)), int(m.group(2))) if m else (0, 0)
 
 
 def regressions(found: dict[str, str], baseline: dict[str, str]) -> dict[str, str]:
@@ -186,8 +194,8 @@ def regressions(found: dict[str, str], baseline: dict[str, str]) -> dict[str, st
             out[key] = msg
         elif key.startswith(("over-budget:", "checker-size:")):
             now, then = sizes(msg), sizes(baseline[key])
-            if now > then:
-                out[key] = f"{msg} (grew from {then} lines)"
+            if now[0] > then[0] or now[1] > then[1]:
+                out[key] = f"{msg} (grew from {then[0]} lines, {then[1]} bytes)"
     return out
 
 

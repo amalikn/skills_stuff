@@ -2,8 +2,7 @@
 """Rotate a running record (CHANGELOG.md, SCRATCHPAD.md) into dated archive files so the live file stays within its budget. Stdlib plus git.
 
 Why (operator, 2026-10-10): records an agent loads grew to thousands of lines (UNC: CHANGELOG 7,483, SCRATCHPAD 2,519); the standard is 200 lines
-for any file loaded whole (line count only, no size in KB: operator, 2026-10-26). Rotation must "not lose data", "not move things that should
-remain active", and give a way to consult the
+and 25 KB for any file loaded whole. Rotation must "not lose data", "not move things that should remain active", and give a way to consult the
 rotated data only when needed. So:
 
 - **Units.** A log (`Kind: log`, CHANGELOG) rotates whole dated `## <stamp>` entries. A working-state file (`Kind: state`, SCRATCHPAD) rotates
@@ -18,7 +17,7 @@ rotated data only when needed. So:
   working state keeps a pointer to it. Resolved items (`[x]`, done, closed) rotate to history like any entry.
 - **Per-section counts.** `Keep: Next actions=1, Memory pointers=1, ...` sets how many newest entries a section keeps; dated `##`
   sections of one kind (nine "Residual risk <stamp>" sections) form one group and keep 1. Bullets and numbered items are units.
-- **Oldest first** until the file fits `Budget` (default 200 lines); it reports when protected units keep it over.
+- **Oldest first** until the file fits `Budget` (default 200 lines, 25 KB); it reports when protected units keep it over.
 - **No loss.** Units move verbatim except relative markdown links, rewritten for the archive's folder; before writing, every removed line must be
   found in the archive or the run stops. Git keeps the rest.
 - **Recall on need.** Each archive opens with an index (stamp, section, first line); `--find TERM` searches the archives and `--show STAMP` prints one
@@ -340,7 +339,7 @@ def group_key(kind: str, head: str) -> str:
 
 
 def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: int, pinned: set[str], cited: set[str],
-           budget: int, preview_len, section_keep: dict[str, int] | None = None, open_days: int | None = None) -> tuple[int, int]:
+           budget: tuple[int, int], preview_len, section_keep: dict[str, int] | None = None, open_days: int | None = None) -> tuple[int, int]:
     """Mark the units to move, oldest first, until the live file fits its budget.
 
     Args:
@@ -351,7 +350,7 @@ def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: i
         min_keep: the newest units of each section (of the whole log, for `log`) that stay.
         pinned: section headings whose unresolved units never move.
         cited: stamps live files cite.
-        budget: the maximum lines.
+        budget: (max lines, max bytes).
         preview_len: a function giving (lines, bytes) of the live file as currently marked.
         section_keep: newest units to keep per group, by a substring of its heading (`Next actions=1`); others use min_keep, a group of
             dated sections uses 1.
@@ -403,7 +402,7 @@ def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: i
         if u.moved:
             continue
         size = preview_len()
-        if size[0] <= budget:
+        if size[0] <= budget[0] and size[1] <= budget[1]:
             break
         u.moved = True
     return preview_len()
@@ -736,8 +735,11 @@ def main(argv: list[str] | None = None) -> int:
     keep_days = args.keep_days if args.keep_days is not None else DEFAULTS[kind]["keep_days"]
     min_keep = args.min_keep if args.min_keep is not None else DEFAULTS[kind]["min_keep"]
     pinned = {p.strip() for p in head.get("pinned sections", "Open items" if kind == "state" else "").split(",") if p.strip()}
-    m = re.search(r"(\d+)\s*lines", head.get("budget", ""))   # a KB part left in an old header is ignored and dropped on rewrite
-    budget_lines = int(m.group(1)) if m else 200
+    budget_lines, budget_bytes = 200, 25 * 1024
+    m = re.search(r"(\d+)\s*lines", head.get("budget", ""))
+    budget_lines = int(m.group(1)) if m else budget_lines
+    m = re.search(r"(\d+)\s*KB", head.get("budget", ""), re.I)
+    budget_bytes = int(m.group(1)) * 1024 if m else budget_bytes
     original = path.read_text(encoding="utf-8")
     rec = parse(original, kind)
     assert "\n".join(render(rec)) == original, "parser did not round-trip the file; refusing to rotate"
@@ -753,7 +755,7 @@ def main(argv: list[str] | None = None) -> int:
         "Summary": ("Newest entries only; older ones rotate to docs/history (search with --find, print with --show)." if kind == "log" else
                     "Current working state, newest first per section; superseded entries rotate to docs/history (search with --find)."),
     }
-    new_keys |= {"Kind": kind, "Budget": f"{budget_lines} lines", "Archive": f"{ARCHIVE_DIR}/ (`--find`, `--show`)",
+    new_keys |= {"Kind": kind, "Budget": f"{budget_lines} lines, {budget_bytes // 1024} KB", "Archive": f"{ARCHIVE_DIR}/ (`--find`, `--show`)",
                 "Last rotated": stamp_now}
 
     def preview() -> tuple[int, int]:
@@ -767,7 +769,7 @@ def main(argv: list[str] | None = None) -> int:
 
     section_keep = {k.strip(): int(v) for k, _, v in (p.partition("=") for p in head.get("keep", "").split(",")) if v.strip().isdigit()}
     tracker_rel = head.get("open items tracker", "").split(" ")[0].strip("`")
-    after = choose(rec, kind, now, keep_days, min_keep, pinned, cited_stamps(root), budget_lines, preview,
+    after = choose(rec, kind, now, keep_days, min_keep, pinned, cited_stamps(root), (budget_lines, budget_bytes), preview,
                    section_keep=section_keep, open_days=7 if tracker_rel else None)
     units = [u for _, items in rec.blocks for u in items if isinstance(u, Unit)]
     to_archive = [u for u in units if u.moved and not u.to_tracker]
@@ -783,12 +785,11 @@ def main(argv: list[str] | None = None) -> int:
                 items.insert(at, pointer)
         after = preview()
     kept = Counter(u.keep_reason for u in units if not u.moved)
-    print(f"{live}: {original.count(chr(10))} lines -> {after[0]} lines; {len(to_archive)} unit(s) to {archive_rel}"
+    print(f"{live}: {original.count(chr(10))} lines -> {after[0]} lines, {after[1] // 1024} KB; {len(to_archive)} unit(s) to {archive_rel}"
           + (f", {len(to_tracker)} open item(s) to {tracker_rel}" if to_tracker else ""))
     print("  kept: " + ", ".join(f"{n} {r or 'within budget'}" for r, n in kept.most_common()))
-    if after[0] > budget_lines:
-        print(f"  note: still over {budget_lines} lines because of kept units; review them, move durable reference sections out with move_sections.py, "
-              "or raise Budget")
+    if after[0] > budget_lines or after[1] > budget_bytes:
+        print(f"  note: still over {budget_lines} lines / {budget_bytes // 1024} KB because of kept units; review them, move durable reference sections out with move_sections.py, or raise Budget")
     if not to_archive and not to_tracker:
         return 0
     source_dir = os.path.dirname(live)

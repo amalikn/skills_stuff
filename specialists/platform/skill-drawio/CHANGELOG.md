@@ -6,7 +6,7 @@ Authority: local-supplement
 Scope: Release and governance history of the skill-drawio pack
 Last reviewed: 2026-10-19
 Kind: log
-Budget: 200 lines
+Budget: 200 lines, 25 KB
 Archive: docs/history/
 Summary: Release history and governance changes of skill-drawio; the release heading holds the version of record.
 ---

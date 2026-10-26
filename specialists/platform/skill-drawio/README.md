@@ -6,7 +6,7 @@ Authority: local-supplement
 Scope: skill-drawio pack — draw.io practice and the data-first diagram engine for any project
 Last reviewed: 2026-10-19
 Summary: Entry index for skill-drawio, with what the pack is for, its folders and key files, and where governance lives.
-Budget: 200 lines
+Budget: 200 lines, 25 KB
 ---
 
 # skill-drawio

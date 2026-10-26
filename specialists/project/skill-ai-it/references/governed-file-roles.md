@@ -31,9 +31,9 @@ Every root file sits in one tier. A tier decides how often an agent pays for the
 
 | Tier                      | Files                              | When an agent reads it                       | Size rule                          | How it stays that size                          |
 | ------------------------- | ---------------------------------- | -------------------------------------------- | ---------------------------------- | ----------------------------------------------- |
-| 1. Always loaded          | AGENTS.md,                         | Every session, before any work               | 200 lines                          | Rules and pointers only; area rules move to a   |
+| 1. Always loaded          | AGENTS.md,                         | Every session, before any work               | 200 lines, 25 KB                   | Rules and pointers only; area rules move to a   |
 |                           |   CLAUDE.md, AI_NAVIGATION.md      |                                              |                                    |   file read before that work                    |
-| 2. Read whole at session  | SCRATCHPAD.md, CHANGELOG.md,       | Once per session, when the task needs state, | 200 lines                          | Rotation and trim move old entries verbatim to  |
+| 2. Read whole at session  | SCRATCHPAD.md, CHANGELOG.md,       | Once per session, when the task needs state, | 200 lines, 25 KB                   | Rotation and trim move old entries verbatim to  |
 |   start or on first touch |   ROADMAP.md, README.md, SKILL.md  |   history, plans or orientation              |                                    |   `docs/history/`                               |
 |                           |                                    |                                              |                                    |   (`just rotate`, `just budget`)                |
 | 3. On need                | ARCHITECTURE.md, CONVENTIONS.md,   | Only when the task touches design, style,    | No line budget; a front-matter     | `just docs <folder>` triage, `just outline` /   |

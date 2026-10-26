@@ -4,7 +4,7 @@ Category: working-state
 Status: current
 Summary: Current working state, newest first per section; superseded entries rotate to docs/history (search with --find).
 Kind: state
-Budget: 200 lines
+Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Last rotated: 20261010_1801
 ---

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Move named sections of a governed markdown file (AGENTS.md, SCRATCHPAD.md, SKILL.md) verbatim into an on-need reference file. Stdlib only.
 
-Why (operator, 2026-10-10): rotation moves only dated history, so a file held over its 200-line budget by durable reference material
+Why (operator, 2026-10-10): rotation moves only dated history, so a file held over its 200-line / 25 KB budget by durable reference material
 (key anchors, audit procedures, hardware tables) stayed over budget after every rotation, and each fix needed hand-written scripts. One run does it:
 1. Cut the named `##`, `###` or `####` sections (each to the next heading at its level or above) and write them, verbatim and in order, to the
    destination under a front-matter header.

@@ -281,6 +281,6 @@ Pointers only; the record holds the reasoning.
   always-read files carry rules and pointers, detail sits one link down. [references/governed-file-roles.md](references/governed-file-roles.md).
 - **Roles enforced as a ratchet, introduced by adoption** (2026-10-14): `scripts/role_check.py` gates `just check` against a per-project
   baseline that `adopt_governed_files.py` writes at slurp, so no project fails on day one. CHANGELOG `20261014_1002`.
-- **README budget per project, not on the default list** (2026-10-14): adoption adds `Budget: 200 lines` (lines only since 2026-10-26) and grandfathers the size.
+- **README budget per project, not on the default list** (2026-10-14): adoption adds `Budget: 200 lines, 25 KB` and grandfathers the size.
 - **Records rotate instead of growing** (operator, 2026-10-10): CHANGELOG, SCRATCHPAD and ROADMAP move old entries verbatim to `docs/history/`.
 - **Graphify disabled** (operator, 2026-10-10): 0 graph queries in 30 days; every call gated by `GRAPHIFY_ENABLED=1` (verified 2026-10-14).
