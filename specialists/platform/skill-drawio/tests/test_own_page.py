@@ -92,6 +92,27 @@ class OwnPage(unittest.TestCase):
         self.assertEqual(ids[at + 1], f"end-to-end-{OWN}")
         self.assertEqual([i for i in ids if i.startswith("end-to-end-")], [f"end-to-end-{OWN}"])
 
+    def test_e2e_page_false_keeps_only_flow_pages(self) -> None:
+        """`e2e_page: false` on an own family: no family End-to-end page or index entry, its flows off the full page, each on its own page."""
+        data = _map()
+        for fam in data["drawing"]["families"]:
+            if fam["id"] == OWN:
+                fam["e2e_page"] = False
+        dia = _diagrams(data)
+        self.assertFalse([i for i in dia if i.startswith("end-to-end-")])
+        self.assertNotIn(f"end-to-end-{OWN}", ET.tostring(dia["overview"], encoding="unicode"))
+        full = ET.tostring(dia["end-to-end"], encoding="unicode")
+        for fid in _own_flows(data):
+            self.assertNotIn(f"flow-{fid}", full)
+            self.assertIn(f"flow-{fid}", dia)
+
+    def test_tab_names_the_flow_page(self) -> None:
+        """A flow's `tab` is its page's tab name in place of '<number>. <title>'."""
+        data = _map()
+        data["flows"][0]["tab"] = "Named outright"
+        names = {d.get("id"): d.get("name") for d in _diagrams(data).values()}
+        self.assertEqual(names[f"flow-{data['flows'][0]['id']}"], "Named outright")
+
     def test_full_page_leaves_the_own_flows_off(self) -> None:
         """No cell on the full page is tagged with an own flow; the own page tags each of them."""
         data = _map(e2e_layers="flow")

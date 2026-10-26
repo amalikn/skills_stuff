@@ -92,7 +92,8 @@ def family_entries(page: Page, data: dict, profile: Profile, x: float, y: float)
     if not every and not profile.own_families:
         return y
     of = [flow_family(f, profile) for f in data["flows"]]
-    for fam, name, _col, _ids in (g for g in profile.families if g[0] in of and (every or g[0] in profile.own_families)):
+    for fam, name, _col, _ids in (g for g in profile.families
+                                  if g[0] in of and (every or g[0] in profile.own_families) and g[0] not in profile.no_e2e_pages):
         nums = ", ".join(str(n) for f, n in zip(of, flow_numbers(data, profile).values()) if f == fam)
         page.box(f"ov-f-end-to-end-{fam}", label(f"**End-to-end: {name}**", f"flows {nums} only"), x, y + 102, 340, 52,
                  "rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f4fa;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",

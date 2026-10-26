@@ -198,14 +198,14 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
     Args:
         flow: the flow from the map.
         comps: every component by id.
-        number: the flow's number or label (flowmap.map_parts.flow_labels), for the tab name.
+        number: the flow's number or label (flowmap.map_parts.flow_labels), for the tab name unless the flow sets `tab`.
         profile: the kind colours.
 
     Returns:
         The page.
     """
     fid, steps = flow["id"], flow["steps"]
-    page = Page(f"flow-{fid}", f"{number}. {flow['title']}"[:60])
+    page = Page(f"flow-{fid}", (flow.get("tab") or f"{number}. {flow['title']}")[:60])   # `tab` names it outright (operator, 2026-10-26)
     shapes = {s["id"]: (step_shape(steps, k, comps, profile.kind_shapes, profile.io_vias) if profile.look["shapes"] else "process")
               for k, s in enumerate(steps)}
     texts, box_w, box_h = size_steps(steps, shapes, profile)

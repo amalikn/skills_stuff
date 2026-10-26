@@ -172,6 +172,9 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   2026-10-26: "it wont be added to the e2e flow", "it should not be starting from 5.x").
 - `flow_pages: false` on a family drops its flows' own pages and Overview index rows; the family is read on its End-to-end page only
   (operator, 2026-10-26: "Don't need individual PHP pages").
+- `e2e_page: false` on an `own_page` family draws no End-to-end page and no Overview entry for it, only its flow pages: one
+  step-by-step page of a change told as the change (operator, 2026-10-26; ansible-wifi `php-steps`, tab "PHP fix 1. Step by step").
+- A flow's `tab` names its page's tab outright, in place of `<number>. <title>` (same day: the PHP step page's tab is "PHP CVE-2026-109618").
 - `look.e2e_step_total` adds each flow's step count n to its End-to-end arrow labels and legend rows, so a reader knows how long a flow is
   and that a skipped number is a step done by the same component, not a missing arrow: `sub` (x.y with n as a subscript; `true` means
   `sub`), `sup` or `slash` (x.y/n). `look.e2e_label_font` sets the label size (default 10); the label box is sized from the text

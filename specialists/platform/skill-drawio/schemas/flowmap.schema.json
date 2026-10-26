@@ -189,6 +189,12 @@
           "type": "string",
           "minLength": 1
         },
+        "tab": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "The flow page's tab name, in place of '<number>. <title>'; for example a change's one step-by-step page named after the change (operator, 2026-10-26: \"PHP CVE-2026-109618\")."
+        },
         "category": {
           "type": "string",
           "minLength": 1,
@@ -508,6 +514,10 @@
               "own_page": {
                 "type": "boolean",
                 "description": "Draw this family's flows only on its own End-to-end page (drawn even with look.e2e_family_pages off), leave them off the full one, and number them from 1 with colours of their own; for example one change's flows (operator, 2026-10-26)."
+              },
+              "e2e_page": {
+                "type": "boolean",
+                "description": "With own_page: false draws no End-to-end page and no Overview index entry for this family, only its flow pages; for example one step-by-step page of a change (operator, 2026-10-26). Default true."
               },
               "flow_pages": {
                 "type": "boolean",

@@ -68,7 +68,7 @@ def family_page(data: dict, profile: Profile, fam: str, name: str, part: dict) -
 
 def family_pages(data: dict, profile: Profile) -> list[Page]:
     """The family End-to-end pages, in the profile's family order: every family with `look.e2e_family_pages` on, else only the families
-    with `own_page` (drawn whatever the look says, since the full page leaves their flows off).
+    with `own_page` (drawn whatever the look says, since the full page leaves their flows off); never one with `e2e_page: false`.
 
     Args:
         data: the validated map.
@@ -79,4 +79,4 @@ def family_pages(data: dict, profile: Profile) -> list[Page]:
     """
     every = profile.look.get("e2e_family_pages")
     return [family_page(data, profile, fam, name, part) for fam, name, part in family_parts(data, profile)
-            if every or fam in profile.own_families]
+            if (every or fam in profile.own_families) and fam not in profile.no_e2e_pages]
