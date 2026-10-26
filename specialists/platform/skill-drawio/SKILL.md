@@ -90,6 +90,8 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
 - Every arrow on a routed page has explicit waypoints, and `drawio.audit.page_audit()` reports nothing before the drawing ships.
 - Export, crop, trace every arrow and fix before showing a drawing; never send an unreviewed first render.
 - Every subprocess (the draw.io CLI) has a timeout; a write takes `--write` or `--apply`.
+- A layout fault a reviewer sees (a crossing, an overlap, text past its box) is fixed in the engine's logic, never by hand in one map or
+  drawing, so every consumer gains (operator, 2026-10-26: "improve the logic in the skill, not like a manual handwork").
 
 ## Standing write-back contract
 
