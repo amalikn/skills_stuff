@@ -20,9 +20,9 @@ from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_
 from .map_parts import flow_labels, paged_flows
 from .model import option_blocks
 from .options import options_page
-from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, label_gaps, plan_runs, reserve, run_ys, step_width
+from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, label_gaps, label_widths, plan_runs, reserve, run_ys, step_width
 from .lanes import draw_lanes
-from .routing import branch_label, route_flow
+from .routing import route_flow
 from .uncross import uncross
 from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, fit_height, lane_shape, shape_legend, step_shape
 from .overview import overview_page
@@ -216,8 +216,7 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
         back = "back to" in text
         page.tags[cid] = ("back-arrow",) if back else ("step-arrow",)
         page.tips[cid] = flow_arrow_tip(number, (order[a], by_id[a]), (order[b], by_id[b]), comps[by_id[b]["actor"]]["name"], back)
-    widths = {order[a]: 18 + 9 * len(branch_label(next(s for s in steps if s["id"] == a), b, order[b] + 1, profile.look)[0])
-              for _c, a, b, text, _st in edges if "back to" not in text and order[b] == order[a] + 1}
+    widths = label_widths(steps, edges, profile.look)
     gaps = label_gaps(col_gap(profile.look), widths, len(steps))
     # Lanes and header span the label-widened gaps, so a long branch label never pushes the last step past the lanes (operator, 2026-10-23).
     width = LANE_HEAD_W + sum(box_w.values()) + sum(gaps) + GAP

@@ -9,6 +9,7 @@ from __future__ import annotations
 from drawio.mxfile import ARROW_HEAD, Page, label
 
 from .model import GAP, MARGIN
+from .routing import branch_label
 
 #: Flow page geometry shared with flowmap.pages: lane heading width, column width and step box width.
 LANE_HEAD_W, COL_W, STEP_W = 190, 270, 220
@@ -73,6 +74,30 @@ def label_gaps(base: float, labels: dict, n: int) -> list[float]:
         One gap per column.
     """
     return [max(base, labels.get(k, 0) + 12 + 22 + 8) for k in range(n)]
+
+
+def label_widths(steps: list[dict], edges: list, look: dict) -> dict[int, float]:
+    """The label width each column's gap must hold: arrows to the next step in the same or the next lane only.
+
+    A label goes on its arrow's longest run (routing.label_spot). Two or more lanes apart, that is the vertical drop, so widening the gap for
+    the label only leaves empty space (operator review 2026-10-26: "unnecessarily larger gap" between a decision and its far branch).
+
+    Args:
+        steps: the flow's steps in order.
+        edges: step_edges output.
+        look: the drawing look (branch labels).
+
+    Returns:
+        {column index: label width in px}.
+    """
+    order = {s["id"]: k for k, s in enumerate(steps)}
+    by_id = {s["id"]: s for s in steps}
+    lane_of: dict[str, int] = {}
+    for st in steps:
+        lane_of.setdefault(st["actor"], len(lane_of))
+    return {order[a]: 18 + 9 * len(branch_label(by_id[a], b, order[b] + 1, look)[0])
+            for _c, a, b, text, _st in edges
+            if "back to" not in text and order[b] == order[a] + 1 and abs(lane_of[by_id[a]["actor"]] - lane_of[by_id[b]["actor"]]) < 2}
 
 
 def plan_runs(steps: list[dict], pairs: list[tuple[str, str]]) -> dict:
