@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261026_1534
+Last rotated: 20261026_1617
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261026_1617 — smc_change PHP verify: soak from the restart, start_now, named command checks, tstik AVR and 8080 checks; tstik-capture AVR counts (v0.7.7 -> v0.7.8)](#20261026_1617--smc_change-php-verify-soak-from-the-restart-start_now-named-command-checks-tstik-avr-and-8080-checks-tstik-capture-avr-counts-v077---v078)
 - [20261026_1534 — smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)](#20261026_1534--smc_change-backupshared-name-identified-backup-files-kept-once-for-all-smcs-v076---v077)
 - [20261026_1506 — smc_change flow map in parts, one E2E page per change spec (v0.7.5 -> v0.7.6)](#20261026_1506--smc_change-flow-map-in-parts-one-e2e-page-per-change-spec-v075---v076)
 - [20261023_1737 — smc_change on an overlay Pi: close after restart, overlay_fallback, proves, soak_minutes; tstik bench note; identity probe hosts_name (v0.7.4 -> v0.7.5)](#20261023_1737--smc_change-on-an-overlay-pi-close-after-restart-overlay_fallback-proves-soak_minutes-tstik-bench-note-identity-probe-hosts_name-v074---v075)
@@ -33,8 +34,19 @@ Last rotated: 20261026_1534
 - [20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.6.0)](#20261020_2028--sky-muster-reads-session-set-up-and-the-concurrency-curve-v059---v060)
 - [20261020_1905 — networkd keeps changed netdevs; render with the task's options; /etc executables; fleet-health TSH_PROXY and fqdn2ip bundle (v0.5.8 -> v0.5.9)](#20261020_1905--networkd-keeps-changed-netdevs-render-with-the-tasks-options-etc-executables-fleet-health-tsh_proxy-and-fqdn2ip-bundle-v058---v059)
 - [20261020_1752 — Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky Muster read cost (v0.5.7 -> v0.5.8)](#20261020_1752--pi-uplink-on-the-eth0-trunk-ssh-forwards-detach-from-the-caller-sky-muster-read-cost-v057---v058)
-- [20261020_1706 — /etc census in overlay-usage-breakdown; fqdn2ip still on darlngunaya (v0.5.6 -> v0.5.7)](#20261020_1706--etc-census-in-overlay-usage-breakdown-fqdn2ip-still-on-darlngunaya-v056---v057)
-- [20261020_1647 — Run-time writers under /etc; read-only /etc on the new image (v0.5.5 -> v0.5.6)](#20261020_1647--run-time-writers-under-etc-read-only-etc-on-the-new-image-v055---v056)
+
+## 20261026_1617 — smc_change PHP verify: soak from the restart, start_now, named command checks, tstik AVR and 8080 checks; tstik-capture AVR counts (v0.7.7 -> v0.7.8)
+
+- `references/19_smc-change-role.md`: Learned 2026-10-26 entry: soak counted from the restart or reboot, `restart.processes[].start_now` (root's
+  cron line run at once; only for programs that cope with a second start, as rct-tstik's `php -S` does), probe commands' `name`/`timeout`/note,
+  the PHP spec's portal-terms, tstik 8080 and AVR read checks (`php artisan update:stats`, `Total Read Data[126,...]`, no AVR error; no AVR ever
+  logged passes), RCT AVR fact (all but php-rct-smc01, operator), `pgrep -f` self-match in shells, nightly `pkill -9 php`, Run summary gates;
+  with the verify.yml excerpt (local-knowledge-ansible `17a5803`, skill-smc `f13c22f`).
+- `scripts/tstik-capture.sh`: capture 07 counts AVR reads, empty reads, AVR errors and `local.ERROR` per laravel.log file plus the top error kinds
+  (smoke run warehouse-rct01 2026-10-26: 164,169 reads, 0 AVR errors, 308 network errors; ~90 s for the whole capture). Header: the cron
+  frequency was written as every minute (arrkapa, 2026-10-07); root's crontab on warehouse-rct01, alice-well, cave-hill and adjamarragu runs
+  `update:stats` every 5 minutes, so reset limits count runs. Catalogue row updated.
+- manifest 0.7.7 -> 0.7.8.
 
 ## 20261026_1534 — smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)
 
@@ -183,15 +195,3 @@ capture failed) and a read-only `06-fqdn2ip-state` bundle (smoke: darlngunaya, a
 `references/03_communication-flows.md`: Learned (b) a Pi's uplink Circuit sits on `eth0` (named interface, NTD on the switch), (c) `ssh` leaves
 its `tsh proxy` child on a kill and `ssh -f` forwards leave the caller's session, so they are closed by name (confirms the 20261020_1141
 lingering-proxy note). `references/13_known-issues.md`: Learned (d) about 40 to 50 s per unit read over Sky Muster Plus (unified-network-controller).
-
-## 20261020_1706 — /etc census in overlay-usage-breakdown; fqdn2ip still on darlngunaya (v0.5.6 -> v0.5.7)
-
-`scripts/overlay-usage-breakdown.sh` gains `--etc` (the `/etc` census, true uptime) and a per-host deadline (`HOST_DEADLINE`, 60 s; a perl alarm
-before exec did not stop `tsh`, so a watcher sends TERM then KILL; proved with a 3 s limit). `references/07_hardware-overlay.md`: census of six
-long-up boxes. `references/13_known-issues.md`: fqdn2ip still active on darlngunaya-smc01 (nbn_wh), removed on bungardi; to look at later.
-
-## 20261020_1647 — Run-time writers under /etc; read-only /etc on the new image (v0.5.5 -> v0.5.6)
-
-Learned 2026-10-20 in `references/07_hardware-overlay.md` (new section): the four run-time writers under `/etc` (teleport-tags-exporter,
-fake-hwclock, squid blocklists, multipathd) with x86 daily counts, and that a merged confext on systemd 255 makes `/etc` read-only and noexec.
-From smc-resiliency's S2 R2 work.

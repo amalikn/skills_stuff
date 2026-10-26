@@ -10,7 +10,11 @@
 # and 8.8.8.8/1.1.1.1, and power-cycles a rail through the AVR when a counter passes its limit: switch after 11 failed switch/AP runs
 # or 71 failed internet runs, NTD after 11 failed modem runs or 35 failed internet runs, phone after 11 failed UI runs.
 # storage/stats.json is only the latest snapshot; the history is storage/logs/laravel.log*, rotated by size, so only a few days, UTC.
-# The cron runs every minute, so the limits above are minutes (switch reset after ~11 min of failed switch/AP pings).
+# The limits above count cron runs. Read as every minute on arrkapa (2026-10-07); root's crontab on warehouse-rct01, alice-well, cave-hill and
+# adjamarragu (2026-10-26) runs it every 5 minutes (switch reset after ~55 min of failed pings there). 04-cron.txt shows the box's own schedule.
+# Each run also reads the AVR over serial (~24 reads, `Total Read Data[126,...]`); `Unable to read the data from AVR` means the read failed.
+# Every RCT SMC has an AVR except the bench Pi php-rct-smc01 (operator, 2026-10-26). laravel.log also holds many network ERROR lines (cURL 6/28,
+# socket_connect) that are normal on satellite sites; 07-tstik-avr-and-errors.txt counts them apart from AVR errors.
 # The kernel log since boot holds eth0 link up/down events (cable or switch power) - it survives until the box reboots.
 # storage/config.json is NOT copied (site configuration, may hold credentials).
 set -u
@@ -41,4 +45,5 @@ run 03-tstik-resets-per-day.txt "cd $T/logs && echo 'UTC day / action / count'; 
 run 04-cron.txt "crontab -l 2>/dev/null | grep -i tstik"
 run 05-kernel-link.log "journalctl -k --no-pager -o short-iso 2>/dev/null | grep -iE 'eth0|genet|link is|carrier|usb.*(disconnect|reset)' | tail -2000"
 run 06-eth0-counters.txt "ip -s -s link show eth0; for d in eth0.500 eth0.501 vlan521 vlan522; do ip -s link show \$d 2>/dev/null | head -6; done; ethtool eth0 2>/dev/null"
+run 07-tstik-avr-and-errors.txt "cd $T/logs && echo 'file / AVR reads / empty reads / AVR errors / local.ERROR'; for f in \$(ls -tr laravel.log*); do printf '%s ' \$f; zcat -f \$f | awk '/Total Read Data\\[126/{r++} /Total Read Data\\[\\]/{e++} /Unable to read the data from AVR/{a++} /local\\.ERROR/{x++} END{print r+0, e+0, a+0, x+0}'; done; echo 'error kinds (all files):'; zcat -f \$(ls -tr laravel.log*) | grep -aoE 'local\\.(ERROR|CRITICAL|ALERT|EMERGENCY): [^{[]{0,70}' | sort | uniq -c | sort -rn | head -15"
 echo "saved to $out"

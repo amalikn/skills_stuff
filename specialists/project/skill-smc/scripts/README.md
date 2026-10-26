@@ -579,7 +579,7 @@ work as CLIs. Recipes: `just -f fleet-health.justfile stability-timeline|stabili
 | `undervoltage-profile.py`     | Graylog (via `smc_graylog.py`)                   | **read-only**, `external-network` | `hourly` makes 24 queries per day; keep ranges short        |
 | `overlay-usage-breakdown.sh`  | Live SMC appliances via `tsh ssh`                | **read-only**                     | du/find under nice+ionice; `TSH_PROXY` for the CW cluster; `--etc` census; per-host deadline |
 | `vlan-traffic-timeline.py`    | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | Per-interface rates, or counter deltas across a dark gap |
-| `tstik-capture.sh`            | Live RCT box via `tsh ssh`                       | **read-only**                     | TSTIK stats + reset history + eth0 link log; `WAIT_UP=1` polls Teleport first; never copies `config.json` |
+| `tstik-capture.sh`            | Live RCT box via `tsh ssh`                       | **read-only**                     | TSTIK stats + reset history + eth0 link log + AVR reads/errors and ERROR kinds (07, ~90 s in all); `WAIT_UP=1` polls Teleport first; never copies `config.json` |
 
 ### `tplink-switch.sh` and `tplink_cli_driver.py`
 
