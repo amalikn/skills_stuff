@@ -109,16 +109,20 @@ local_knowledge_index days="14":
 smc_inventory_add *args:
     @python3 scripts/smc_inventory_add.py {{args}}
 
-# smc_change flow map: render roles/smc_change/flows.yaml to drawio/flows.drawio with skill-drawio (writes the drawing), or check it for drift.
+# smc_change flow map: assemble roles/smc_change/drawio/flows.yaml from drawio/parts/master.yaml (role parts, plus the flow parts in each
+# files/changes/<change>/ folder), then
+# render drawio/flows.drawio with skill-drawio (writes both), or check both for drift.
 smc_change_role := "/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/roles/smc_change"
 drawio_skill := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/platform/skill-drawio"
 drawio_py := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-drawio/.venv/bin/python"
 
 smc_change_flows:
-    @{{drawio_py}} {{drawio_skill}}/scripts/render_flowmap.py --root {{smc_change_role}} --map flows.yaml --write
+    @cd {{smc_change_role}} && {{drawio_py}} {{drawio_skill}}/scripts/assemble_flowmap.py --master drawio/parts/master.yaml --out drawio/flows.yaml --command "just smc_change_flows (skill-smc)" --write
+    @{{drawio_py}} {{drawio_skill}}/scripts/render_flowmap.py --root {{smc_change_role}} --map drawio/flows.yaml --write
 
 smc_change_flows_check:
-    @{{drawio_py}} {{drawio_skill}}/scripts/render_flowmap.py --root {{smc_change_role}} --map flows.yaml
+    @cd {{smc_change_role}} && {{drawio_py}} {{drawio_skill}}/scripts/assemble_flowmap.py --master drawio/parts/master.yaml --out drawio/flows.yaml --command "just smc_change_flows (skill-smc)"
+    @{{drawio_py}} {{drawio_skill}}/scripts/render_flowmap.py --root {{smc_change_role}} --map drawio/flows.yaml
 
 # Run a command on a box through its autossh backdoor when Teleport cannot reach it; checks hostname first. Example: just backdoor_exec darlngunaya "hostname; uptime"
 backdoor_exec target cmd="hostname":

@@ -54,7 +54,7 @@ ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_c
 ```
 
 Main options: `smc_change_serial` (default 1), `smc_change_on_refusal` (`skip` default: a refused host is recorded and skipped), `smc_change_rollback` (`repack` default), `smc_change_soak_minutes`
-(5), `smc_change_reboot` (true), `smc_change_allow_unhealthy_baseline`, `smc_change_allow_nbn_wh`, `smc_change_report_dir` (default `roles/smc_change/runs`). An unreachable host is recorded and
+(5), `smc_change_reboot` (true), `smc_change_allow_unhealthy_baseline`, `smc_change_allow_nbn_wh`, `smc_change_report_dir` (default `roles/smc_change/files/changes`), `smc_change_runs_dir` (default `<report_dir>/<change>/runs`). An unreachable host is recorded and
 skipped, so one offline box does not stop a fleet run (side-agent review, 2026-10-23); a host that fails after its change started stops the run.
 
 Rollout pattern (operator, depth before breadth): one stage box in `check`, then `apply`; one prod box per flavor; then the flavor with `-e smc_change_serial=5`, run by the operator from the
@@ -69,8 +69,8 @@ the run with its result (`passed`, `gates_failed`, `failed`, `refused`, `unreach
 
 ## Writing a change spec
 
-`files/changes/<name>.yml`, `name` equal to the file name; templates in `templates/<name>/`, copied files in `files/<name>/`. A check runs only when the spec lists it. The PHP spec, abridged (source:
-`roles/smc_change/files/changes/php-cve-2026-109618.yml`, uncommitted at writing):
+`files/changes/<name>/<name>.yml` (one folder per change: the spec, its flow-map parts and its `runs/`; operator, 2026-10-26), `name` equal to the file name; templates in `templates/<name>/`, copied files in `files/<name>/`. A check runs only when the spec lists it. The PHP spec, abridged (source:
+`roles/smc_change/files/changes/php-cve-2026-109618/php-cve-2026-109618.yml`):
 
 ```yaml
 name: php-cve-2026-109618
@@ -122,12 +122,12 @@ over the two- reboot disable/enable-overlay path). `UNVERIFIED` until the wareho
 ## Nothing left on the box, run records, rollback
 
 Operator, 2026-10-23: nothing may be left on an SMC after a successful change. The role writes nothing on the box except the change and, during the run, its backup. Stage 10 (successful apply only)
-copies the backup to `runs/<spec>/backups/<host>-<start>/` on the controller, removes it from the box (lower dir included), removes the .debs apt downloaded and dpkg-repack if the run installed it,
-and fails if anything it listed is left. A failed run keeps its backup on the box. Every run writes `runs/<spec>/<host>-<spec>-<mode>-<start>.json` on the controller only: result, stage and task of a
+copies the backup to `files/changes/<spec>/runs/backups/<host>-<start>/` on the controller, removes it from the box (lower dir included), removes the .debs apt downloaded and dpkg-repack if the run installed it,
+and fails if anything it listed is left. A failed run keeps its backup on the box. Every run writes `files/changes/<spec>/runs/<host>-<spec>-<mode>-<start>.json` on the controller only: result, stage and task of a
 failure, refusal or unreachable reason, gates, plan, backup path, both probes.
 
 Rollback is a mode: `-e smc_change_mode=rollback` (operator, 2026-10-23). It finds the newest backup of the change for the host (controller
-`runs/<spec>/backups/<host>-*` first, else one a failed apply left on the box; `-e smc_change_rollback_from=<host>-<start>` picks one),
+`files/changes/<spec>/runs/backups/<host>-*` first, else one a failed apply left on the box; `-e smc_change_rollback_from=<host>-<start>` picks one),
 stages it, and undoes the actions last first through `tasks/actions/<type>_rollback.yml`: `apt_pin` reinstalls the saved .debs with
 `dpkg -i` (live, and in a lower-dir chroot on overlay boxes), `template`/`copy`/`ini` restore the file from `paths.tgz`, `command` runs the
 spec's `undo`. It restarts, reboots per the spec, and is judged on health plus `restored`. Allowed on an unhealthy box. Check-mode run on
@@ -136,7 +136,7 @@ vulnerable build).
 
 ## Already done, and force
 
-Each passed apply or rollback is stored per host in `runs/<spec>/state/<host>.json` on the controller (operator, 2026-10-23: a rerun must
+Each passed apply or rollback is stored per host in `files/changes/<spec>/runs/state/<host>.json` on the controller (operator, 2026-10-23: a rerun must
 skip the SMCs already done). The next apply skips such a host as `already_done`, records it and goes on with the rest; `-e
 smc_change_force=true` re-runs them (tested in check mode on nocprov-smc01 with a stored state: skipped, then not skipped with force).
 
@@ -206,8 +206,12 @@ As of 2026-10-23:
 >   when: smc_change_before.overlay
 > ```
 >
-> Flow map: `roles/smc_change/flows.yaml` renders `drawio/flows.drawio` (Overview, End-to-end, Check, Apply, Verify, Rollback) with
-> `just smc_change_flows`; `just smc_change_flows_check` reports drift.
+> Flow map: `roles/smc_change/drawio/parts/master.yaml` and its parts assemble to `drawio/flows.yaml`, which renders `drawio/flows.drawio`, both with
+> `just smc_change_flows`; `just smc_change_flows_check` reports drift in either. Pages: Overview, `E2E flow` (the modes Check, Apply,
+> Verify, Rollback), one `E2E: <change>` page per change spec, then the mode pages. A change spec's folder `files/changes/<spec>/` holds its parts
+> `flow-components.yaml` and `flow-flows.yaml`, included from master, and a family in `drawing.families` with `own_page: true, flow_pages: false`: its flows explain
+> the change itself (where the affected code runs, the fix, why it takes effect, the proof, the way back), each step naming the stage that
+> does it, numbered from 1 and kept off the `E2E flow` page. Written by hand from the spec; nothing generates them (operator, 2026-10-26).
 
 > **Learned 2026-10-23** · spec fields proves and soak_minutes, undo backup path · VERIFIED_PRIMARY · Source: php-rct-smc01 runs of
 > etc-hosts-hostname (apply refused, then rollback, apply); roles/smc_change files/probe/30_commands.py, tasks/load_spec.yml,

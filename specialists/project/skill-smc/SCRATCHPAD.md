@@ -8,7 +8,7 @@ Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Rec
 Open items tracker: docs/trackers/open-items-20261010_1821.md
 Budget: 200 lines
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261010_1821
+Last rotated: 20261026_1516
 ---
 
 # SCRATCHPAD — skill-smc
@@ -101,6 +101,8 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Open items
 
+- [ ] **Review the overdue open-items tracker** (2026-10-26). `docs/trackers/open-items-20261010_1821.md` (13 open items) was due 2026-10-24;
+  `just check` fails on it alone. Operator chose to commit and review later: close, decide or drop each item, then set Last reviewed.
 - Older open items are tracked in [open-items-20261010_1821.md](docs/trackers/open-items-20261010_1821.md).
 - [ ] **2026-10-08 `KEEP`, proposed, not decided:** extend the 0–9 patch scheme (operator rule 2026-10-07, skill-smc only so far) to skill-cambium (0.6.45) and
   skill-mikrotik (0.1.24), each with `check_version_format`. Asked 2026-10-07, no answer yet.
@@ -161,8 +163,6 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 - On a new machine: `ln -s` the pack to `~/.claude/skills/skill-smc`, then `just bootstrap`; run `just check` and `just nav_validate` before calling any change done.
 - New reference file: update the four index surfaces (`RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, `context-map.yaml`); the checker fails until all four name it.
-- Explore the remaining unreviewed Grafana dashboards flagged 2026-08-03 (Data Backlog, RW-backlog pair, Servers Network/System Information, RISE Dashboard `rise-stage0_5`) next time Grafana access is
-  used — see Open Items
 - Cross-reference the RW-backlog dashboards against `autossh-prometheus-federation` in `02_service-map.md` once reviewed — may reveal federation-pipeline health signals not currently documented
 - Re-check `nbn_wh` overlayroot status after the operator's planned rollout lands
 - `cw` flavor still has no site-level hosts to check (central-infra only); `aurukun-smc03` still unreachable — note if either changes
