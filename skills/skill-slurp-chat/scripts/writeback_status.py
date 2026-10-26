@@ -69,7 +69,7 @@ def newest_changelog(folder: Path) -> str:
         return "no CHANGELOG"
     text = path.read_text(encoding="utf-8")
     # Headings ("## 20261026_1844 ...") and dated lines ("- 20261026 ...") are both used; the newest date wins, the first written on a tie.
-    entries = [(m.group(2), -m.start(), m.group(1)) for m in re.finditer(r"^(?:## |- )((\d{8})\b.*)$", text, re.M)]
+    entries = [(m.group(2), -m.start(), m.group(1)) for m in re.finditer(r"^(?:## |- )((\d{8})(?:_\d{4})?\b.*)$", text, re.MULTILINE)]
     return max(entries)[2][:140] if entries else "no dated entry"
 
 
@@ -95,7 +95,7 @@ def main() -> int:
     Returns:
         1 when a skill is dirty or missing, else 0.
     """
-    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     ap.add_argument("skills", nargs="+", help="skill folder names")
     ap.add_argument("--repo", type=Path, default=DEFAULT_REPO)
     a = ap.parse_args()
