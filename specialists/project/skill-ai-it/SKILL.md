@@ -119,7 +119,7 @@ This skill must be safe to run many times on the same project.
 
 - **Headers.** Every governed file states its purpose in its type's native header (governance `naming-and-file-summary-guide.md`, "File headers"); `scripts/file_headers.py` reads them all, and `just
   docs <folder>` is the triage view agents use before opening files.
-- **Budget.** A file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, ROADMAP.md, SKILL.md, MEMORY.md) stays within 200 lines and 25 KB for every agent;
+- **Budget.** A file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, ROADMAP.md, SKILL.md, MEMORY.md) stays within 200 lines for every agent (line count only, no KB: operator, 2026-10-26);
   `doc_freshness.py` holds older ones as a shrink-only ratchet. Area rules go in a file read before that work.
 - **Rotation.** `just rotate --apply` also moves ROADMAP's done items out (`scripts/roadmap_trim.py`; contract in [references/files-architecture-conventions-roadmap.md](references/files-architecture-conventions-roadmap.md)). `just budget --apply`
   (`scripts/budget_plan.py`): normalise, rotate to `docs/history/`, move non-working-state sections out, audit, `just check`; it names what still holds a file over (unfinished, never reported done).

@@ -104,8 +104,8 @@ register or `.archcore/adr/`). An agent reads it whole, so it has a budget like 
 
 | Rule        | ROADMAP.md                                                                                                                   |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Header      | Front matter with `Kind: roadmap`, `Budget: 200 lines, 25 KB` and `Archive: docs/history/ (roadmap-*.md, \`just rotate\`)`   |
-| Budget      | 200 lines and 25 KB; `doc_freshness.py` holds it there (ROADMAP.md is in its default budget list)                             |
+| Header      | Front matter with `Kind: roadmap`, `Budget: 200 lines` and `Archive: docs/history/ (roadmap-*.md, \`just rotate\`)`   |
+| Budget      | 200 lines (no KB, 2026-10-26); `doc_freshness.py` holds it there (ROADMAP.md is in its default budget list)                             |
 | Current phase | One dated paragraph (`**YYYY-MM-DD.**`), rewritten, not appended, when the phase changes                                    |
 | Items       | `- [ ]` open, `- [x]` done; each names its owner when it waits on someone and links the document that holds its detail        |
 | Done items  | Moved verbatim to `docs/history/roadmap-<stamp>.md` by `scripts/roadmap_trim.py` (run by `just rotate`) once older than 7 days; `` `PIN` `` keeps one |
@@ -123,7 +123,7 @@ Scope: Current phase and open milestones of <Project Name>
 Last reviewed: <YYYY-MM-DD>
 Summary: Current phase and open milestones; done items move to docs/history (just rotate).
 Kind: roadmap
-Budget: 200 lines, 25 KB
+Budget: 200 lines
 Archive: docs/history/ (roadmap-*.md, `just rotate`)
 ---
 

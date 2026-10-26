@@ -300,7 +300,7 @@ def fix_record(path: pathlib.Path, kind: str, stamp: str) -> None:
     """
     text = path.read_text(encoding="utf-8")
     keys = {"Authority": "record" if kind == "log" else "working-state" if kind == "state" else "canonical", "Scope": RECORD_SCOPE[kind],
-            "Kind": kind, "Budget": "200 lines, 25 KB"} | ({"Archive": "docs/history/ (roadmap-*.md, `just rotate`)"} if kind == "roadmap" else {})
+            "Kind": kind, "Budget": "200 lines"} | ({"Archive": "docs/history/ (roadmap-*.md, `just rotate`)"} if kind == "roadmap" else {})
     if "\nLast reviewed:" not in text.split("\n---", 1)[0]:
         # ROADMAP is a living document and needs a review date; take the newest date a record names (dated from its content), else today.
         # Dates after today are deadlines, not reviews (enterprise-strategy SCRATCHPAD, 2026-10-14, got a 25 Oct deadline as Last reviewed).
@@ -425,7 +425,7 @@ def fix_header(root: pathlib.Path, name: str) -> None:
     """Give a root file `---` front matter: fence a legacy block (moving it above an `@` import), complete a partial one, or write a new one.
 
     The new header's Title is the first heading, its Summary the first paragraph; `Last reviewed` is the last commit and `Review by` 30 days on,
-    so the file is read before it counts as reviewed. README also gets `Budget: 200 lines, 25 KB` (it is read whole).
+    so the file is read before it counts as reviewed. README also gets `Budget: 200 lines` (it is read whole).
 
     Args:
         root: the project root.
@@ -470,7 +470,7 @@ def fix_header(root: pathlib.Path, name: str) -> None:
     if "Last reviewed" not in keys and "Review by" not in keys:
         new["Review by"] = (dt.date.today() + dt.timedelta(days=30)).isoformat()
     if name == "README.md" and "Budget" not in new:
-        new["Budget"] = "200 lines, 25 KB"
+        new["Budget"] = "200 lines"
     head = "\n".join(f"{k}: {fm_value(v)}" for k, v in new.items())
     p.write_text("---\n" + head + "\n---\n\n" + ("\n".join(imports) + "\n\n" if imports else "") + body, encoding="utf-8")
 

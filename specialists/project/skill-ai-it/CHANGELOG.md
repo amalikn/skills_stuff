@@ -7,15 +7,16 @@ Scope: Dated changes to the skill-ai-it package
 Last reviewed: 2026-10-14
 Summary: Newest entries only; older ones rotate to docs/history (search with --find, print with --show).
 Kind: log
-Budget: 200 lines, 25 KB
+Budget: 200 lines
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_2132
+Last rotated: 20261026_1437
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261026_1437 — Budgets count lines only: the 25 KB file size limit removed everywhere](#20261026_1437--budgets-count-lines-only-the-25-kb-file-size-limit-removed-everywhere)
 - [20261022_2132 — plan_tracker: What next gets a detail block per item](#20261022_2132--plan_tracker-what-next-gets-a-detail-block-per-item)
 - [20261022_1819 — plan_tracker: plan tracker page setup and upkeep promoted from smc-resiliency and unified-network-controller](#20261022_1819--plan_tracker-plan-tracker-page-setup-and-upkeep-promoted-from-smc-resiliency-and-unified-network-controller)
 - [20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check](#20261022_1749--slurp-tracker-linking-documented-incident-a-commit-made-on-a-failed-check)
@@ -33,9 +34,20 @@ Last rotated: 20261022_2132
 - [20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate](#20261020_1634--rotate_records-project-sync-outbox-and-inbox-lines-never-rotate)
 - [20261020_1632 — Template: govcheck/core.py header states it is read-only](#20261020_1632--template-govcheckcorepy-header-states-it-is-read-only)
 - [20261020_1322 — pitfalls: navigation dry run exits 2 when changes are pending](#20261020_1322--pitfalls-navigation-dry-run-exits-2-when-changes-are-pending)
-- [20261020_1308 — Code map in bootstrap and refresh: adopt_code_map.py, check_code_map](#20261020_1308--code-map-in-bootstrap-and-refresh-adopt_code_mappy-check_code_map)
-- [20261019_1829 — pitfalls: promote leaves routing to the deleted candidates file](#20261019_1829--pitfalls-promote-leaves-routing-to-the-deleted-candidates-file)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261026_1437 — Budgets count lines only: the 25 KB file size limit removed everywhere
+
+- Operator, 2026-10-26 (smc-resiliency session, when skill-drawio's CHANGELOG went 250 bytes over 25 KB with no unit left to rotate): "remove file size limit from
+  everywhere.. just use line count". A `Budget` now counts lines only.
+- `doc_freshness.py`: `parse_budget` returns lines; an over-budget finding reads `lines=<n> <path>: over its budget of <n> lines`; the ratchet compares lines, and an
+  old baseline's `bytes=` and an old header's KB part are read and ignored. `rotate_records.py` rotates to the line budget and writes `Budget: <n> lines`;
+  `budget_plan.py`, `add_changelog_entry.py`, `adopt_governed_files.py` and `move_sections.py` follow. New test `tests/test_doc_freshness_budget.py` (a 50-line,
+  50 KB file passes; 250 lines fail; KB parts ignored), proved red on the old code (3 failures).
+- Docs: SKILL.md Budget rule, ARCHITECTURE, references (governed-file-roles, files-records, files-readme-agents-claude, files-architecture-conventions-roadmap),
+  scripts/README. Governance `categories/naming-and-file-summary-guide.md` Budget rule updated; it keeps the reason the KB cap existed (Codex's 32 KiB AGENTS.md
+  cap) as a note to keep AGENTS.md lines wrapped.
+- Every `Budget: 200 lines, 25 KB` header in the workspace (57 files plus this pack's own) is now `Budget: 200 lines`.
 
 ## 20261022_2132 — plan_tracker: What next gets a detail block per item
 
@@ -167,20 +179,6 @@ copy for a missing safety statement (found in smc-resiliency, which recopied it)
 
 References: `references/pitfalls.md`, Learned 2026-10-20 (smc-resiliency refresh): `nav_upgrade_dry_run` exits 2 when changes are pending, not on
 an error; `govern` needs a commit after a working session.
-
-## 20261020_1308 — Code map in bootstrap and refresh: adopt_code_map.py, check_code_map
-
-Operator: "coder-map to be created.. it should be part of skill-ai-it bootstrap/refresh". New `scripts/adopt_code_map.py` creates skill-coder's
-`code-map.toml` when a project has code and none, and adds an `unreviewed:` `[modules]` entry for each Python script outside `src/` that the map
-does not list; `govern` (template justfile) runs it after `adopt_governed_files.py`. The checker template's `check_code_map` fails on a placeholder,
-a script with no entry or an entry for a gone file (side-agent finding: a placeholder must not pass as a decision). First runs: smc-resiliency
-(created, then decided by hand), unified-network-controller (current, unchanged). AGENTS.md gains a Code changes section (skill-coder for any
-script here, operator 2026-10-20). Reference: `references/files-support.md` (code-map.toml); catalogued in `scripts/README.md`; SKILL.md refresh bullet.
-
-## 20261019_1829 — pitfalls: promote leaves routing to the deleted candidates file
-
-promote deletes the candidates file but left context-map.yaml routing and repomix include naming it (skill-drawio, skill-coder);
-references/pitfalls.md now lists the companion updates to make in the same pass.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

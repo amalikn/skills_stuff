@@ -21,7 +21,7 @@ _spec.loader.exec_module(rt)
 ROADMAP = """---
 Title: Roadmap
 Kind: roadmap
-Budget: 200 lines, 25 KB
+Budget: 200 lines
 ---
 
 # Roadmap

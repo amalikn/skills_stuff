@@ -6,7 +6,7 @@ Authority: canonical
 Scope: Current phase and open milestones of skill-coder
 Summary: Current phase and open milestones; done items move to docs/history (just rotate).
 Kind: roadmap
-Budget: 200 lines, 25 KB
+Budget: 200 lines
 Archive: docs/history/ (roadmap-*.md, `just rotate`)
 Last reviewed: 2026-10-19
 ---

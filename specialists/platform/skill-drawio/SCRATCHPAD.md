@@ -6,7 +6,7 @@ Authority: local-supplement
 Scope: Working state of the skill-drawio pack between sessions
 Last reviewed: 2026-10-19
 Kind: state
-Budget: 200 lines, 25 KB
+Budget: 200 lines
 Keep: KEEP-marked items only
 Open items tracker: this file, Open items
 Summary: Transient working state for skill-drawio; durable facts move to references, sources.yaml or CHANGELOG.

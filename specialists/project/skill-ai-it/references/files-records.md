@@ -50,7 +50,7 @@ Scope: Working state of <project name> between sessions
 Last reviewed: <YYYY-MM-DD>
 Summary: Current working state, newest first per section; older entries rotate to docs/history, older open items to docs/trackers.
 Kind: state
-Budget: 200 lines, 25 KB
+Budget: 200 lines
 Archive: docs/history/ (`just history <term>`)
 Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
 Open items tracker: docs/trackers/open-items-<YYYYMMDD_hhmm>.md
@@ -136,7 +136,7 @@ Scope: Dated changes to <Project Name>
 Last reviewed: <YYYY-MM-DD>
 Summary: Newest entries only; older ones rotate to docs/history (just history <term>).
 Kind: log
-Budget: 200 lines, 25 KB
+Budget: 200 lines
 Archive: docs/history/ (`just history`, `just history-show`)
 ---
 

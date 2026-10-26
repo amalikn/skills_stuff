@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bring a project's governed files within budget, or say exactly what keeps one over. Stdlib plus git.
 
-Why (operator, 2026-10-10): after the first rollout, records stayed over 200 lines / 25 KB and the work to find out why (a size table per
+Why (operator, 2026-10-10): after the first rollout, records stayed over 200 lines and the work to find out why (a size table per
 section, then a hand-written script) was done by hand each time. This plans and, with `--apply`, runs the whole sequence with the skill's tools:
 0. Tidy pointer clutter earlier runs left (duplicate tracker pointers, numbered pointer sections).
 1. Measure every file loaded whole (CHANGELOG.md, SCRATCHPAD.md, AGENTS.md, CLAUDE.md, AI_NAVIGATION.md) against its budget.
@@ -39,7 +39,7 @@ rr = importlib.util.module_from_spec(_spec)
 sys.modules.setdefault("rotate_records", rr)
 _spec.loader.exec_module(rr)
 
-BUDGET = (200, 25 * 1024)
+BUDGET = (200, 0)   # (lines, unused): budgets count lines only (operator, 2026-10-26)
 MAX_MOVES = 8
 RECORDS = ("SCRATCHPAD.md", "CHANGELOG.md")
 REPORT_ONLY = ("AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md", "SKILL.md")
@@ -69,7 +69,7 @@ def over(lines_bytes: tuple[int, int]) -> bool:
     Returns:
         True when either is over.
     """
-    return lines_bytes[0] > BUDGET[0] or lines_bytes[1] > BUDGET[1]
+    return lines_bytes[0] > BUDGET[0]
 
 
 def sections(text: str) -> list[tuple[str, int]]:
@@ -221,7 +221,7 @@ def handle_record(root: pathlib.Path, name: str, apply: bool, stamp: str) -> tup
         (still over budget, report lines).
     """
     path = root / name
-    lines = [f"{name}: {size(path)[0]} lines, {size(path)[1] // 1024} KB (budget {BUDGET[0]} lines, 25 KB)"]
+    lines = [f"{name}: {size(path)[0]} lines (budget {BUDGET[0]} lines)"]
     if not over(size(path)):
         return False, lines + ["  within budget"]
     steps = ([["normalise_records.py", "--project-root", str(root), name]] if name == "SCRATCHPAD.md" else []) + \
@@ -258,7 +258,7 @@ def handle_record(root: pathlib.Path, name: str, apply: bool, stamp: str) -> tup
             break
     still = over(size(path))
     after = size(path)
-    lines.append(f"  now {after[0]} lines, {after[1] // 1024} KB")
+    lines.append(f"  now {after[0]} lines")
     if still:
         biggest = max(sections(path.read_text()), key=lambda x: x[1], default=("", 0))
         lines.append(f"  STILL OVER: held by working-state section {biggest[0]!r} ({biggest[1]} lines): undated prose a reader must date, split or close")
@@ -300,7 +300,7 @@ def main(argv: list[str] | None = None) -> int:
         p = root / name
         if p.is_file() and over(size(p)):
             top = sorted(sections(p.read_text()), key=lambda x: -x[1])[:4]
-            print(f"{name}: {size(p)[0]} lines, {size(p)[1] // 1024} KB: OVER; largest sections: " + ", ".join(f"{h[3:]} ({n})" for h, n in top)
+            print(f"{name}: {size(p)[0]} lines: OVER; largest sections: " + ", ".join(f"{h[3:]} ({n})" for h, n in top)
                   + ". Rules stay; move reference with move_sections.py.")
             text = p.read_text()
             if ("skill-ai-it:navigation" in text and "skill-ai-it-version: 2026-10-10-compact" not in text

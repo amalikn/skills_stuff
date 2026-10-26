@@ -6,7 +6,7 @@ Authority: local-supplement
 Scope: skill-coder pack — language-agnostic programming practice with per-language overrides and stdlib checkers
 Last reviewed: 2026-10-19
 Summary: Entry index for skill-coder, with what the pack is for, its folders and key files, and where governance lives.
-Budget: 200 lines, 25 KB
+Budget: 200 lines
 ---
 
 # skill-coder

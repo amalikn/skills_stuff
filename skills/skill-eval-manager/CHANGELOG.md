@@ -4,7 +4,7 @@ Category: change-log
 Status: current
 Summary: Newest entries only; older ones rotate to docs/history (search with --find, print with --show).
 Kind: log
-Budget: 200 lines, 25 KB
+Budget: 200 lines
 Archive: docs/history/ (`--find`, `--show`)
 Last rotated: 20261010_1806
 ---
