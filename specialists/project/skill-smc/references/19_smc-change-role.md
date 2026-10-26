@@ -210,7 +210,7 @@ As of 2026-10-23:
 > `just smc_change_flows`; `just smc_change_flows_check` reports drift in either. Pages: Overview, `E2E flow` (the modes Check, Apply,
 > Verify, Rollback), one `E2E: <change>` page per change spec, then the mode pages. A change spec's folder `files/changes/<spec>/` holds its parts
 > `flow-components.yaml` and `flow-flows.yaml`, included from master, and a family in `drawing.families` with `own_page: true, flow_pages: false`: its flows explain
-> the change itself (where the affected code runs, the fix, why it takes effect, the proof, the way back), each step naming the stage that
+> the change itself (where the affected code runs, the fix, why it takes effect, the proof, the rollback), each step naming the stage that
 > does it, numbered from 1 and kept off the `E2E flow` page. Written by hand from the spec; nothing generates them (operator, 2026-10-26).
 
 > **Learned 2026-10-23** · spec fields proves and soak_minutes, undo backup path · VERIFIED_PRIMARY · Source: php-rct-smc01 runs of
