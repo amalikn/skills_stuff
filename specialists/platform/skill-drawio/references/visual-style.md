@@ -168,6 +168,10 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   and that a skipped number is a step done by the same component, not a missing arrow: `sub` (x.y with n as a subscript; `true` means
   `sub`), `sup` or `slash` (x.y/n). `look.e2e_label_font` sets the label size (default 10); the label box is sized from the text
   (operator, 2026-10-26: "x.y/max_y", then "subscript or superscript instead", and labels at 12).
+- `look.e2e_loops` draws a step done by the same component as the step before as a loop on that box, labelled x.y (x.y–z for a run),
+  Turing-machine style: on the box's top or bottom edge, whichever had more clear room once the page was laid out, packed by label width
+  and overflowing to the other edge; a gap is widened only by the room an edge lacks (operator, 2026-10-26: "create a 14.3 as a loop on
+  the same box", "the top or the bottom, depending where more space is available ... case by case").
 - `look.click_isolate` (true, or the opacity of the rest) makes one click show a colour alone and a second click show everything: on the
   End-to-end pages a step arrow, its label, a dashed connector or a legend row (other rows dim too); on the Overview a thick arrow, its
   count, a dot, a thin arrow or a legend row. A click on another colour switches in one click; there is no "Show all" button. Nothing is
@@ -423,4 +427,23 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > actions = [{"toggleStyle": {"tags": list(dimmed), "tagsMatch": "or", "key": k, "value": value, "defaultValue": "100", "transient": True}}
 >            for k in keys]
 > actions += [{"style": {"tags": [keep], "key": k, "value": "100", "transient": True}} for k in keys]
+> ```
+
+> **Learned 2026-10-26** · self-loops on the End-to-end page · VERIFIED_PRIMARY · Source: `scripts/flowmap/loops.py`
+> (`loop_runs`, `_room`, `plan_loops`, `draw_loops`), `scripts/flowmap/e2e_grid.py` `loop_reserve`; `tests/test_e2e_family.py` `Loops`;
+> unified-network-controller render; screenshots `references/screenshots/20261026-e2e-loops/` · Falsifier: a page with loops on whose
+> audit reports a fault, or a box whose loops sit on the edge that had less room
+> Arrows meet End-to-end boxes only on their sides, so the sides hold a port every 24 px and are 34 px from the first track, while the top
+> and bottom are free: in unified-network-controller the looped boxes had 34 to 1,686 px clear above or below. Measuring that room after
+> the first layout and widening a gap only by an edge's shortfall placed 21 loops (27 steps) with the full page 22 px taller and four of
+> six pages unchanged in size. A loop is 24 px tall so its last run passes the thick head-room audit, and is drawn before the arrow
+> labels so they keep clear of it. A draw.io edge with the same source and target and explicit waypoints renders as the loop.
+>
+> ```python
+> # scripts/flowmap/loops.py plan_loops (skills_stuff, 2026-10-26)
+> up, down = _room(e2e, comp, taken)
+> edges = ("top", "bottom") if up >= down else ("bottom", "top")
+> for loop in by_comp[comp]:
+>     loop.edge = edges[0] if used[edges[0]] + loop.width <= E2E_BW - 2 * LOOP_PAD else edges[1]
+>     used[loop.edge] += loop.width
 > ```

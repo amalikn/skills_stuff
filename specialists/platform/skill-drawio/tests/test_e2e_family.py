@@ -19,7 +19,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 (page_audit,) = (importlib.import_module("drawio.audit").page_audit,)
-e2e_family, isolate, step_labels, pages, profile = (importlib.import_module(f"flowmap.{n}") for n in ("e2e_family", "isolate", "step_labels", "pages", "profile"))
+e2e_family, isolate, loops, step_labels, pages, profile = (importlib.import_module(f"flowmap.{n}")
+                                                           for n in ("e2e_family", "isolate", "loops", "step_labels", "pages", "profile"))
 EXAMPLE = ROOT / "examples" / "shop" / "flows.yaml"
 
 
@@ -294,6 +295,65 @@ class ClickIsolate(unittest.TestCase):
             for d in _diagrams(_render(_map(lock_base_layer=value, e2e_family_pages=True))):
                 base = next(c for c in d.iter("mxCell") if c.get("id") == "1")
                 self.assertEqual(base.get("style"), want and "locked=1;", d.get("id"))
+
+class Loops(unittest.TestCase):
+    """`look.e2e_loops`: a step done by the same box as the step before is a loop on that box's roomier edge, every page audit clean."""
+
+    def test_every_stay_is_one_loop_on_its_box(self) -> None:
+        """One loop per run of same-box steps, from the box back to it, above or below it, labelled x.y or x.y-z; audits clean; off, none."""
+        data = _map(e2e_layers="flow", e2e_loops=True, e2e_family_pages=True)
+        prof = profile.Profile.from_drawing(data, "flows.yaml", "s.json", "g")
+        e2e = importlib.import_module("flowmap.e2e").EndToEnd(data, prof)
+        runs = loops.loop_runs(e2e)
+        self.assertTrue(runs)
+        number = {f["id"]: i for i, f in enumerate(data["flows"], 1)}
+        for f in data["flows"]:
+            acts = [s["actor"] for s in f["steps"]]
+            path = ([f["runs_on"]] if f["runs_on"] != acts[0] else [acts[0]]) + acts
+            stays = [k + 1 for k in range(len(acts)) if path[k] == path[k + 1]]
+            covered = [j for lp in runs if lp.cid.startswith(f"e2e-o-{f['id']}-") for j in self._steps(lp.text, number[f["id"]])]
+            self.assertEqual(covered, stays, f["id"])
+        page = next(d for d in _diagrams(_render(data)) if d.get("id") == "end-to-end")
+        edges = [u for u in page.iter("UserObject") if (u.get("id") or "").startswith("e2e-o-") and not u.get("id").endswith("-l")]
+        self.assertEqual(len(edges), len(runs))
+        for u in edges:
+            cell = u.find("mxCell")
+            self.assertEqual(cell.get("source"), cell.get("target"))
+            self.assertIn("loop", u.get("tags").split())
+        for pg in [importlib.import_module("flowmap.e2e").end_to_end_page(data, prof)] + e2e_family.family_pages(data, prof):
+            self.assertFalse([k for k, v in page_audit(pg).items() if v], pg.page_id)
+        self.assertFalse([u for u in next(d for d in _diagrams(_render(_map(e2e_layers="flow"))) if d.get("id") == "end-to-end").iter("UserObject")
+                          if (u.get("id") or "").startswith("e2e-o-")])
+
+    def test_loops_take_the_roomier_edge(self) -> None:
+        """Each box's first loop sits on the edge that had more room before any loop was placed."""
+        data = _map(e2e_layers="flow", e2e_loops=True)
+        prof = profile.Profile.from_drawing(data, "flows.yaml", "s.json", "g")
+        e2e_mod = importlib.import_module("flowmap.e2e")
+        plain = e2e_mod.EndToEnd(_map(e2e_layers="flow"), prof)
+        plain.label_h = e2e_mod.EndToEnd(data, prof).label_h
+        drawn = e2e_mod.EndToEnd(data, prof)
+        first = {}
+        for lp in drawn.loops:
+            first.setdefault(lp.comp, lp.edge)
+        for comp, edge in first.items():
+            up, down = loops._room(plain, comp, {})
+            self.assertEqual(edge, "top" if up >= down else "bottom", comp)
+
+    @staticmethod
+    def _steps(text: str, number: int) -> list[int]:
+        """The step numbers a loop label covers.
+
+        Args:
+            text: x.y or x.y-z (en dash).
+            number: the flow's number.
+
+        Returns:
+            The steps, in order.
+        """
+        a, _, b = text[len(f"{number}."):].partition("\u2013")
+        return list(range(int(a), int(b or a) + 1))
+
 
 if __name__ == "__main__":
     unittest.main()

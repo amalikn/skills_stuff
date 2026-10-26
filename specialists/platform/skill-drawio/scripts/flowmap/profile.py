@@ -40,6 +40,7 @@ DEFAULT_LOOK = {
                                    # legend gives each flow's count; true means "sub" (operator, 2026-10-26: x.y/n, then a subscript instead)
     "e2e_label_font": 10,          # End-to-end arrow label font size; the label box grows to fit (operator asked for 12, 2026-10-26)
     "click_isolate": False,        # a click on an End-to-end or Overview arrow or legend row shows its colour alone, a second all; true or the dim opacity (2026-10-26)
+    "e2e_loops": False,            # a step done by the same box as the step before is a loop on that box's top or bottom (operator, 2026-10-26)
     "lock_base_layer": False,      # every page's background layer ("1") drawn locked (operator, 2026-10-26)
     "e2e_tab": "End-to-end",       # End-to-end tab names: "<e2e_tab> flow" and "<e2e_tab>: <family>" (operator asked for "E2E", 2026-10-26)
     "e2e_family_colours": "page",  # family-page flow colours: "page" (restart on each page, no repeats) or "flow" (full-page colour; operator, 2026-10-26)

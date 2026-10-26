@@ -15,7 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
-- 20261026 `look` keys `e2e_family_colours`, `e2e_step_total`, `e2e_label_font`, `click_isolate` (one-click toggle, transient, Overview too), `lock_base_layer`, `e2e_tab`; `add_layer(locked=)` (`scripts/flowmap/isolate.py`, `scripts/flowmap/step_labels.py`); Learned 2026-10-26 in references/visual-style.md (operator)
+- 20261026 `look` keys `e2e_family_colours`, `e2e_step_total`, `e2e_label_font`, `e2e_loops` (self-loops, `scripts/flowmap/loops.py`), `click_isolate` (one-click toggle, transient, Overview too), `lock_base_layer`, `e2e_tab`; `add_layer(locked=)` (`scripts/flowmap/isolate.py`, `scripts/flowmap/step_labels.py`); Learned 2026-10-26 in references/visual-style.md (operator)
 - 20261023 `look.e2e_family_pages`: one End-to-end page per family (`scripts/flowmap/e2e_family.py`); full page unchanged; Learned 2026-10-23 in references/visual-style.md; README flow-quality row repaired (operator)
 - 20261023 `scripts/palette_check.py`; Learned 2026-10-23 in references/visual-style.md, export-and-self-review.md, reading-drawings.md
 - 20261023 Learned entries from smc-resiliency's re-render: a flag with a value splits its tooltip code span (open; references/visual-style.md), and a project's narrowed schema copy refuses new look keys until copied in (references/data-first-diagrams.md)

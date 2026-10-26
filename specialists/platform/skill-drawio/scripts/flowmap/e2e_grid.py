@@ -105,6 +105,7 @@ class E2EGrid:
         """
         self.data, self.profile = data, profile
         self.number = numbers or {f["id"]: i for i, f in enumerate(data["flows"], 1)}
+        self.loop_reserve: dict[int, tuple[float, float]] = {}   # {gap: (room at its top, at its bottom)} kept clear for loops (flowmap.loops)
         self.comps = {c["id"]: c for c in data["components"]}
         self.ncol = len(profile.tiers)
         # Channels sit between columns; a one-column page keeps one on its right, so links inside the column still have a track (2026-10-19).
@@ -306,7 +307,7 @@ class E2EGrid:
         for g in range(-1, self.n_rows):
             need = 2 * E2E_EDGE + (gcount[g] - 1) * E2E_SP if g in gcount else 0
             least = E2E_HEAD if g == -1 else (E2E_BAND_GAP if g == self.band - 1 else E2E_MIN_CORR)
-            gap_h[g] = max(least, need)
+            gap_h[g] = max(least, need) + sum(self.loop_reserve.get(g, (0, 0)))
         self.gap_h = gap_h
         y = MARGIN + 70
         self.gap_top, self.row_top = {-1: y}, []
@@ -346,9 +347,9 @@ class E2EGrid:
         Returns:
             The y.
         """
-        n = len(self.gslot[g])
+        n, (rt, rb) = len(self.gslot[g]), self.loop_reserve.get(g, (0, 0))
         slot = self.gslot[g][self.gtrack[(cid, g)]]
-        return self.gap_top[g] + (self.gap_h[g] - (n - 1) * E2E_SP) / 2 + slot * E2E_SP
+        return self.gap_top[g] + rt + (self.gap_h[g] - rt - rb - (n - 1) * E2E_SP) / 2 + slot * E2E_SP
 
     def _verticals(self, link: Link) -> list[tuple[int, float, float, str]]:
         """A link's vertical runs in channels.

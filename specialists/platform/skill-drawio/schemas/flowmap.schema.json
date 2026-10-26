@@ -616,6 +616,10 @@
               "maximum": 1,
               "description": "One click on an End-to-end arrow, dashed line, label or legend row, or an Overview arrow, count, dot or legend row, shows that colour alone (the rest at this opacity, 0.15 for true); a second click shows all; default false."
             },
+            "e2e_loops": {
+              "type": "boolean",
+              "description": "Draw a step done by the same component as the step before as a loop on that component's box (top or bottom, whichever has more room), labelled x.y or x.y–z; default false (no arrow, named in the next arrow's hover text)."
+            },
             "lock_base_layer": {
               "type": "boolean",
               "description": "Draw every page's background layer locked, so nothing on it can be selected or moved by accident; default false."

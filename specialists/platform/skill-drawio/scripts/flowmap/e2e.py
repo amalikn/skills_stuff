@@ -18,6 +18,7 @@ from .step_labels import label_setup, label_spot, step_label, total_words
 from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .profile import Profile
+from .loops import draw_loops, plan_loops
 from .isolate import BOX_TAG, E2E_DIMMED, LEGEND_TAG, dim_level, group_tag, isolate_link
 from .tips import comp_tags, comp_tip
 
@@ -54,6 +55,7 @@ class EndToEnd(E2EGrid):
         self.title = "**End-to-end flow: every component, every flow**"
         self.label_font, self.step_total, self.n_steps, self.label_w, self.label_h = label_setup(self.links, data, self.number, profile)
         self._improve()
+        self.loops = plan_loops(self)   # with look.e2e_loops: steps that stay in a box, as loops on it (may widen gaps and lay out again)
 
     def _track_x(self, ch: int, key: str) -> float:
         """A vertical run's track x.
@@ -247,7 +249,7 @@ class EndToEnd(E2EGrid):
                 "**Paths:** each flow is a path through the components that act in its steps, coloured by "
                 + ("flow." if self.profile.look.get("e2e_layers", "family") == "flow" else "family."),
                 (f"**Arrow labels:** {total_words(self.step_total)} = flow x, step y of its n steps (the step the arrow leads into, numbered as on the "
-                 "flow's page); a number with no arrow is a step done by the same component as the step before. Hover an arrow for the step."
+                 f"flow's page); {'a loop on a box' if self.loops else 'a number with no arrow'} is a step done by the same component as the step before. Hover an arrow for the step."
                  if self.step_total else
                  "**Arrow labels:** x.y = flow x, step y (the step the arrow leads into, numbered as on the flow's page). Hover an arrow for the step."),
                 "**Dashed lines:** not steps; a component the flow runs on, is owned by or depends on, joined to the flow's nearest actor.",
@@ -280,7 +282,7 @@ class EndToEnd(E2EGrid):
         for fam, name, _col, _ids in self.groups:   # locked when clicks isolate a flow: the editor runs a link on a click only there
             page.add_layer(f"e2e-L-{fam}", f"Flow {name}" if per_flow else f"Family: {name}", locked=dim is not None)
         for link in self.links:   # hover text and tags on every arrow and connector, and on each arrow's x.y label
-            page.tips[link.cid], page.tags[link.cid] = link.tip, link.tags
+            page.tips[link.cid], page.tags[link.cid] = link.tip.replace("(no arrow)", "(a loop on it)" if self.loops else "(no arrow)"), link.tags
             if dim is not None:   # one click shows that flow alone, a second click all flows (operator, 2026-10-26)
                 page.links[link.cid] = isolate_link(self.group_index[link.family], E2E_DIMMED, group_tag(self.profile.look, link.family), dim)
         width = self.profile.look.get("connector_width", 1.25)
@@ -293,9 +295,10 @@ class EndToEnd(E2EGrid):
                 page.route(link.cid, f"e2e-c-{link.src}", f"e2e-c-{link.dst}", self.pts[link.cid],
                            f"edgeStyle=none;rounded=1;html=1;strokeColor={colour[fam]};strokeWidth=2;{ARROW_HEAD}endSize=6;"
                            f"jumpStyle=arc;jumpSize={E2E_JUMP};", klass="thick", layer=f"e2e-L-{fam}", jump=E2E_JUMP)
+        draw_loops(self, page, colour, dim)   # before the arrow labels, which then keep clear of loops and their labels
         for link in self.links:
             if link.klass == "thick":
-                cx, cy = label_spot(link.cid, self.pts, page, self.label_w, self.label_h)
+                cx, cy = label_spot(link.cid, {**self.pts, **{lp.cid: lp.pts for lp in self.loops}}, page, self.label_w, self.label_h)
                 page.mark(f"{link.cid}-l", step_label(link.text, self.n_steps[link.text.split('.')[0]], self.step_total), cx, cy, self.label_w, self.label_h,
                           f"text;html=1;align=center;verticalAlign=middle;fontSize={self.label_font:g};fontColor={colour[link.family]};labelBackgroundColor=#ffffff;"
                           "spacing=0;", owner=link.cid, layer=f"e2e-L-{link.family}")
@@ -327,8 +330,8 @@ class EndToEnd(E2EGrid):
         ly = y + 34 + len(self.groups) * 28 + 6
         page.box("e2e-leg-solid", label(f"**Solid arrow, label {total_words(self.step_total) if total else 'x.y'}:** flow x (its number on the Overview) moves to the "
                                         f"component acting in its step y{' of n' if total else ''}; "
-                                        "x.1 starts at the component the flow runs on, and a step done by the same component as the step before has no "
-                                        "arrow. **Dashed line, dot end:** not a step; the flow runs on, is owned by or depends on that component. "
+                                        "x.1 starts at the component the flow runs on, and a step done by the same component as the step before "
+                                        + ("is a loop on its box. " if self.loops else "has no arrow. ") + "**Dashed line, dot end:** not a step; the flow runs on, is owned by or depends on that component. "
                                         "Hover an arrow for what happens. Arcs mark crossings."
                                         + (" **Click** an arrow, a dashed line, a label or a legend row to see that flow alone; click it again to see "
                                            "every flow." if dim is not None else "")),
