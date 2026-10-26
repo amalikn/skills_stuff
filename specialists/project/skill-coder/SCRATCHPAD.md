@@ -16,6 +16,11 @@ Summary: Transient working state for skill-coder; durable facts move to referenc
 
 ## Open items
 
+- KEEP design-patterns.md follow-ups (2026-10-27): (1) all twelve patterns are `reusable_candidate`: when a second project uses one, cite it and
+  raise the evidence (falsifiers are in each header); (2) P-05 is CANDIDATE until ansible-wifi applies `plans/smc-change-resume-20261027_1038/
+  prepare-once.patch` and its canary passes; (3) harvest patterns from other projects (operator: "all the out of the box thinking"):
+  unified-network-controller (code-map, write gates, Nautobot app seams), skill-drawio (data-first diagrams with drift check), skill-ai-it
+  (governed-file budgets and rotation); (4) Python column has two suggested rows (P-05, P-06): move to built when a project does.
 - KEEP Activation DONE 2026-10-20 (operator: "if you are now happy with skill-coder, promote it as well"; all four steps below, in one pass).
   Was PENDING until the pack is tested (operator, 2026-10-19: "make it default once we have tested the skill"). Then, in one pass:
   1. global policy `~/.agents/AGENTS.md`, "Skills, context, and task routing": "for any code use `skill-coder`" beside `safe-change-validation`; re-run

@@ -292,10 +292,14 @@ if all_problems:
 
 ## Language realisations
 
-| Pattern | Ansible (`languages/ansible.md`)                         | Python (`languages/python.md`)                       |
-| ------- | -------------------------------------------------------- | ---------------------------------------------------- |
-| P-03    | journal and recovery tasks; Learned (e) drop-proof waits | pure `classify(journal, current)` function, tested   |
-| P-05    | no-serial first play + `group_by`; Learned (g), (j)      | build the plan once, then `concurrent.futures` batch |
-| P-06    | `async` + `poll: 0` + await; Learned (e), (i)            | detached job id + idempotent status poll             |
-| P-09    | `include_tasks` per type; joined probe via stdin         | `register(Check(...))` plug-in registry              |
-| P-12    | `--check` / diff before apply                            | `plan()` then `--apply`; Learned 2026-10-27          |
+Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet
+built anywhere; move it to built, with its source, when a project does.
+
+| Pattern | Ansible (`languages/ansible.md`)                                     | Python (`languages/python.md`)                                  |
+| ------- | -------------------------------------------------------------------- | --------------------------------------------------------------- |
+| P-01    | built: `include_tasks` per action type, `<type>_rollback` in reverse | built: probe check registry `register(Check(...))`              |
+| P-03    | built: journal and recovery tasks; Learned (e) drop-proof waits      | built: `recovery.py` pure classification over the journal       |
+| P-05    | built: no-serial first play + `group_by`; Learned (g), (j)           | suggested: build the plan once, then a bounded worker pool      |
+| P-06    | built: `async` + `poll: 0` + await; Learned (e), (i)                 | suggested: detached job id + idempotent status poll             |
+| P-09    | built: joined probe piped on stdin                                   | built: `files/probe/NN_*.py` parts joined into one program      |
+| P-12    | built: `--check` before apply                                        | built: `smc_change_runs_by_flavor.py` `plan()` then `--apply`   |
