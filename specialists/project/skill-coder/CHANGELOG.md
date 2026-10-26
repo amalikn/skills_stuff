@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261026 Learned 2026-10-26 in `references/version-control-and-review.md`: commit your own hunks while another session edits the same files (blob staging, proved in a scratch worktree)
 - 20261026 Learned 2026-10-26 in `references/testing.md`: test through the entry point the user triggers; a host's default can depend on the call path (skill-drawio click actions)
 - 20261023 Learned 2026-10-23 in `languages/yaml-json-toml.md`: a backtick cannot start a plain YAML scalar or flow-sequence item; quote it (unified-network-controller flow map)
 - 20261023 Learned 2026-10-23 (b) in `languages/python.md` (pyright executionEnvironments for joined modules, not inline suppression) and Learned 2026-10-23 (b) in `references/generated-artifacts.md` (no `--` in an XML banner).

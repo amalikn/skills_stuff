@@ -79,6 +79,21 @@ Summary: >-
 > git diff backup/pre-rebase-<stamp> HEAD -- <files both sides changed>
 > ```
 
+> **Learned 2026-10-26** · git, two sessions editing the same files · VERIFIED_PRIMARY · Source: skills_stuff 661075a and cf059eb (smc-resiliency
+> CHANGELOG 20261026_1440) · Falsifier: a blob staged this way whose commit differs from HEAD plus only the intended hunks
+> When another live session has unrelated hunks in the same files (here e2e.py, visual-style.md, CHANGELOG.md), `git add -p` is interactive and
+> unavailable to an agent, and a stash takes the other session's work with it. Build the content you mean to commit (HEAD plus your own edits) in a
+> scratch file, write it as a blob and point the index at it; the working tree, with both sessions' edits, is left alone. Then apply
+> `git diff --cached --binary` to a scratch worktree at HEAD and run the tests and check there, so the commit is proved on its own, not on the
+> mixed working tree (the shared tree's half-written edits failed the tests mid-session). Agree the split by file and hunk with the other session
+> first, and let it commit on top.
+>
+> ```bash
+> git show HEAD:path/file.py > /scratch/file.mine.py && <apply only your edits to it>
+> git update-index --cacheinfo 100644,"$(git hash-object -w /scratch/file.mine.py)",path/file.py
+> git diff --cached --binary | git -C /scratch/wt apply --index && (cd /scratch/wt && just test && just check)
+> ```
+
 ## Gate on the exit code
 
 Gate a commit, push or deploy on the validation command's own exit code, never through a pipe or a `;`:
